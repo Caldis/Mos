@@ -1,0 +1,528 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA31E25344E00E4BFBF /* AppDelegate.swift */; };
+		22142DA61E25344E00E4BFBF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* ViewController.swift */; };
+		22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA71E25344E00E4BFBF /* Assets.xcassets */; };
+		22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA91E25344E00E4BFBF /* Main.storyboard */; };
+		22142DB61E25344F00E4BFBF /* MosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DB51E25344F00E4BFBF /* MosTests.swift */; };
+		22142DC11E25344F00E4BFBF /* MosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DC01E25344F00E4BFBF /* MosUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		22142DB21E25344F00E4BFBF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22142D981E25344E00E4BFBF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 22142D9F1E25344E00E4BFBF;
+			remoteInfo = Mos;
+		};
+		22142DBD1E25344F00E4BFBF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22142D981E25344E00E4BFBF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 22142D9F1E25344E00E4BFBF;
+			remoteInfo = Mos;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		22142DA31E25344E00E4BFBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		22142DA51E25344E00E4BFBF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		22142DA71E25344E00E4BFBF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		22142DAA1E25344E00E4BFBF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		22142DAC1E25344E00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		22142DB11E25344F00E4BFBF /* MosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		22142DB51E25344F00E4BFBF /* MosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosTests.swift; sourceTree = "<group>"; };
+		22142DB71E25344F00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		22142DBC1E25344F00E4BFBF /* MosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		22142DC01E25344F00E4BFBF /* MosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosUITests.swift; sourceTree = "<group>"; };
+		22142DC21E25344F00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		22142D9D1E25344E00E4BFBF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		22142DAE1E25344F00E4BFBF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		22142DB91E25344F00E4BFBF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		22142D971E25344E00E4BFBF = {
+			isa = PBXGroup;
+			children = (
+				22142DA21E25344E00E4BFBF /* Mos */,
+				22142DB41E25344F00E4BFBF /* MosTests */,
+				22142DBF1E25344F00E4BFBF /* MosUITests */,
+				22142DA11E25344E00E4BFBF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		22142DA11E25344E00E4BFBF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				22142DA01E25344E00E4BFBF /* Mos.app */,
+				22142DB11E25344F00E4BFBF /* MosTests.xctest */,
+				22142DBC1E25344F00E4BFBF /* MosUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		22142DA21E25344E00E4BFBF /* Mos */ = {
+			isa = PBXGroup;
+			children = (
+				22142DA31E25344E00E4BFBF /* AppDelegate.swift */,
+				22142DA51E25344E00E4BFBF /* ViewController.swift */,
+				22142DA71E25344E00E4BFBF /* Assets.xcassets */,
+				22142DA91E25344E00E4BFBF /* Main.storyboard */,
+				22142DAC1E25344E00E4BFBF /* Info.plist */,
+			);
+			path = Mos;
+			sourceTree = "<group>";
+		};
+		22142DB41E25344F00E4BFBF /* MosTests */ = {
+			isa = PBXGroup;
+			children = (
+				22142DB51E25344F00E4BFBF /* MosTests.swift */,
+				22142DB71E25344F00E4BFBF /* Info.plist */,
+			);
+			path = MosTests;
+			sourceTree = "<group>";
+		};
+		22142DBF1E25344F00E4BFBF /* MosUITests */ = {
+			isa = PBXGroup;
+			children = (
+				22142DC01E25344F00E4BFBF /* MosUITests.swift */,
+				22142DC21E25344F00E4BFBF /* Info.plist */,
+			);
+			path = MosUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		22142D9F1E25344E00E4BFBF /* Mos */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 22142DC51E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "Mos" */;
+			buildPhases = (
+				22142D9C1E25344E00E4BFBF /* Sources */,
+				22142D9D1E25344E00E4BFBF /* Frameworks */,
+				22142D9E1E25344E00E4BFBF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Mos;
+			productName = Mos;
+			productReference = 22142DA01E25344E00E4BFBF /* Mos.app */;
+			productType = "com.apple.product-type.application";
+		};
+		22142DB01E25344F00E4BFBF /* MosTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 22142DC81E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "MosTests" */;
+			buildPhases = (
+				22142DAD1E25344F00E4BFBF /* Sources */,
+				22142DAE1E25344F00E4BFBF /* Frameworks */,
+				22142DAF1E25344F00E4BFBF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				22142DB31E25344F00E4BFBF /* PBXTargetDependency */,
+			);
+			name = MosTests;
+			productName = MosTests;
+			productReference = 22142DB11E25344F00E4BFBF /* MosTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		22142DBB1E25344F00E4BFBF /* MosUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 22142DCB1E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "MosUITests" */;
+			buildPhases = (
+				22142DB81E25344F00E4BFBF /* Sources */,
+				22142DB91E25344F00E4BFBF /* Frameworks */,
+				22142DBA1E25344F00E4BFBF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				22142DBE1E25344F00E4BFBF /* PBXTargetDependency */,
+			);
+			name = MosUITests;
+			productName = MosUITests;
+			productReference = 22142DBC1E25344F00E4BFBF /* MosUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		22142D981E25344E00E4BFBF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0820;
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = Cb;
+				TargetAttributes = {
+					22142D9F1E25344E00E4BFBF = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 2H959AEV62;
+						ProvisioningStyle = Automatic;
+					};
+					22142DB01E25344F00E4BFBF = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 2H959AEV62;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 22142D9F1E25344E00E4BFBF;
+					};
+					22142DBB1E25344F00E4BFBF = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 2H959AEV62;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 22142D9F1E25344E00E4BFBF;
+					};
+				};
+			};
+			buildConfigurationList = 22142D9B1E25344E00E4BFBF /* Build configuration list for PBXProject "Mos" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 22142D971E25344E00E4BFBF;
+			productRefGroup = 22142DA11E25344E00E4BFBF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				22142D9F1E25344E00E4BFBF /* Mos */,
+				22142DB01E25344F00E4BFBF /* MosTests */,
+				22142DBB1E25344F00E4BFBF /* MosUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		22142D9E1E25344E00E4BFBF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */,
+				22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		22142DAF1E25344F00E4BFBF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		22142DBA1E25344F00E4BFBF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		22142D9C1E25344E00E4BFBF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22142DA61E25344E00E4BFBF /* ViewController.swift in Sources */,
+				22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		22142DAD1E25344F00E4BFBF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22142DB61E25344F00E4BFBF /* MosTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		22142DB81E25344F00E4BFBF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22142DC11E25344F00E4BFBF /* MosUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		22142DB31E25344F00E4BFBF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 22142D9F1E25344E00E4BFBF /* Mos */;
+			targetProxy = 22142DB21E25344F00E4BFBF /* PBXContainerItemProxy */;
+		};
+		22142DBE1E25344F00E4BFBF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 22142D9F1E25344E00E4BFBF /* Mos */;
+			targetProxy = 22142DBD1E25344F00E4BFBF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		22142DA91E25344E00E4BFBF /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				22142DAA1E25344E00E4BFBF /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		22142DC31E25344F00E4BFBF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		22142DC41E25344F00E4BFBF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+			};
+			name = Release;
+		};
+		22142DC61E25344F00E4BFBF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 2H959AEV62;
+				INFOPLIST_FILE = Mos/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = u2sk.Mos;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		22142DC71E25344F00E4BFBF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 2H959AEV62;
+				INFOPLIST_FILE = Mos/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = u2sk.Mos;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+		22142DC91E25344F00E4BFBF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 2H959AEV62;
+				INFOPLIST_FILE = MosTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = u2sk.MosTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mos.app/Contents/MacOS/Mos";
+			};
+			name = Debug;
+		};
+		22142DCA1E25344F00E4BFBF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 2H959AEV62;
+				INFOPLIST_FILE = MosTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = u2sk.MosTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mos.app/Contents/MacOS/Mos";
+			};
+			name = Release;
+		};
+		22142DCC1E25344F00E4BFBF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 2H959AEV62;
+				INFOPLIST_FILE = MosUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = u2sk.MosUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = Mos;
+			};
+			name = Debug;
+		};
+		22142DCD1E25344F00E4BFBF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 2H959AEV62;
+				INFOPLIST_FILE = MosUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = u2sk.MosUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_TARGET_NAME = Mos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		22142D9B1E25344E00E4BFBF /* Build configuration list for PBXProject "Mos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				22142DC31E25344F00E4BFBF /* Debug */,
+				22142DC41E25344F00E4BFBF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		22142DC51E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "Mos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				22142DC61E25344F00E4BFBF /* Debug */,
+				22142DC71E25344F00E4BFBF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		22142DC81E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "MosTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				22142DC91E25344F00E4BFBF /* Debug */,
+				22142DCA1E25344F00E4BFBF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		22142DCB1E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "MosUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				22142DCC1E25344F00E4BFBF /* Debug */,
+				22142DCD1E25344F00E4BFBF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 22142D981E25344E00E4BFBF /* Project object */;
+}
