@@ -997,7 +997,7 @@
             <objects>
                 <viewController title="About" storyboardIdentifier="about" showSeguePresentationStyle="single" id="RfV-Ow-3mF" customClass="PreferencesAboutViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" autoresizesSubviews="NO" id="XoI-kN-0eA">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="165"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="128"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <visualEffectView autoresizesSubviews="NO" canDrawConcurrently="YES" fixedFrame="YES" blendingMode="behindWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="Kdo-BP-USk">
@@ -1016,29 +1016,45 @@
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
                                             </button>
-                                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R1Y-0J-qbW">
-                                                <rect key="frame" x="371" y="14" width="32" height="17"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Help" id="4Zw-Va-Z6x">
-                                                    <font key="font" metaFont="systemMedium" size="12"/>
-                                                    <color key="textColor" red="0.99019607843137258" green="1" blue="1" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                </textFieldCell>
-                                            </textField>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QC7-yb-ZOk">
-                                                <rect key="frame" x="20" y="12" width="89" height="19"/>
+                                                <rect key="frame" x="20" y="12" width="90" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                 <buttonCell key="cell" type="roundRect" title="HomePage" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="yDf-dn-Mcz">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="cellTitle"/>
                                                 </buttonCell>
+                                                <connections>
+                                                    <action selector="homepageButtonClick:" target="RfV-Ow-3mF" id="wKC-Uo-lMi"/>
+                                                </connections>
+                                            </button>
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d3t-VS-dLU">
+                                                <rect key="frame" x="118" y="12" width="90" height="19"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="roundRect" title="Github" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="99M-8D-HLN">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="cellTitle"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="githubButtonClick:" target="RfV-Ow-3mF" id="v5O-Wm-odK"/>
+                                                </connections>
+                                            </button>
+                                            <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="38d-cH-Mcc">
+                                                <rect key="frame" x="216" y="12" width="181" height="19"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                <buttonCell key="cell" type="roundRect" title="Donate" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="AM8-cj-DnH">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="cellTitle"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <segue destination="HYX-CS-fYi" kind="popover" popoverAnchorView="38d-cH-Mcc" popoverBehavior="t" preferredEdge="maxY" id="65s-Qo-69I"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                     </customView>
                                 </subviews>
                             </visualEffectView>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S8y-Am-MEW">
-                                <rect key="frame" x="18" y="88" width="137" height="71"/>
+                                <rect key="frame" x="18" y="57" width="137" height="71"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Mos" id="2AK-Pu-mot">
                                     <font key="font" metaFont="systemThin" size="70"/>
@@ -1047,7 +1063,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uMH-2l-9yi">
-                                <rect key="frame" x="18" y="63" width="414" height="17"/>
+                                <rect key="frame" x="159" y="57" width="273" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Just some little job for mouse." id="5cx-xS-eRe">
                                     <font key="font" metaFont="systemLight" size="11"/>
@@ -1055,25 +1071,69 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iKi-fd-Gf9">
-                                <rect key="frame" x="159" y="88" width="273" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Corrent Version" id="WRP-Je-p5Q">
-                                    <font key="font" metaFont="systemLight" size="13"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                         </subviews>
                     </view>
                     <connections>
+                        <outlet property="donateButton" destination="38d-cH-Mcc" id="wXa-Sg-yMR"/>
+                        <outlet property="githubButton" destination="d3t-VS-dLU" id="U9W-8Q-MbS"/>
+                        <outlet property="helpButton" destination="Heq-gZ-eDZ" id="7v9-sh-Gez"/>
                         <outlet property="homePageButton" destination="yDf-dn-Mcz" id="sUw-3W-edB"/>
-                        <outlet property="versionLabel" destination="iKi-fd-Gf9" id="xii-G5-hnc"/>
                     </connections>
                 </viewController>
                 <customObject id="r6n-Nn-xNW" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1831" y="1191.5"/>
+            <point key="canvasLocation" x="1831" y="1173"/>
+        </scene>
+        <!--Preferences Donate View Controller-->
+        <scene sceneID="YcU-UJ-LwR">
+            <objects>
+                <viewController id="HYX-CS-fYi" customClass="PreferencesDonateViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="NWm-eD-Q0k">
+                        <rect key="frame" x="0.0" y="0.0" width="601" height="272"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cTQ-RR-Izk">
+                                <rect key="frame" x="55" y="197" width="100" height="41"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AlipayLogo" id="dw7-en-g43"/>
+                            </imageView>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PxZ-JL-fgP">
+                                <rect key="frame" x="30" y="31" width="151" height="151"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AlipayQR" id="86z-w2-DQf"/>
+                            </imageView>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tVv-UV-KC0">
+                                <rect key="frame" x="231" y="197" width="118" height="41"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="WechatpayLogo" id="KxG-B6-8jE"/>
+                            </imageView>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Gz-X2-Fwd">
+                                <rect key="frame" x="218" y="31" width="146" height="151"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="WechatpayQR" id="jdG-KX-g7K"/>
+                            </imageView>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WhP-jP-gB6">
+                                <rect key="frame" x="431" y="197" width="100" height="41"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="PaypalLogo" id="Ho9-ZJ-OXg"/>
+                            </imageView>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EWm-8G-1in">
+                                <rect key="frame" x="425" y="97" width="113" height="19"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="roundRect" title="Donate by paypal" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="aPi-cE-maK">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="cellTitle"/>
+                                    <connections>
+                                        <action selector="donateByPaypalClick:" target="HYX-CS-fYi" id="hx5-ed-EI7"/>
+                                    </connections>
+                                </buttonCell>
+                            </button>
+                        </subviews>
+                    </view>
+                </viewController>
+                <customObject id="HME-8h-VSk" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1832" y="1588"/>
         </scene>
         <!--Scroll Watcher-->
         <scene sceneID="hIz-AP-VOD">
@@ -1342,9 +1402,14 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
         </scene>
     </scenes>
     <resources>
+        <image name="AlipayLogo" width="250" height="93"/>
+        <image name="AlipayQR" width="296" height="299"/>
+        <image name="PaypalLogo" width="238" height="58"/>
         <image name="PreferencesAbout" width="500" height="500"/>
         <image name="PreferencesAdvanced" width="500" height="500"/>
         <image name="PreferencesGeneral" width="500" height="500"/>
         <image name="PreferencesUpdatas" width="500" height="500"/>
+        <image name="WechatpayLogo" width="309" height="80"/>
+        <image name="WechatpayQR" width="473" height="473"/>
     </resources>
 </document>

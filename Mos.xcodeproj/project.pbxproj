@@ -22,6 +22,7 @@
 		22816CFF1E2B31020020D6B1 /* ScrollMointorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22816CFE1E2B31020020D6B1 /* ScrollMointorWindowController.swift */; };
 		22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */; };
 		2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2291A8A21E2A5400004181B8 /* ScrollCore.swift */; };
+		22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */; };
 		22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */; };
 		22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */; };
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
@@ -114,6 +115,7 @@
 		22816CFE1E2B31020020D6B1 /* ScrollMointorWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollMointorWindowController.swift; sourceTree = "<group>"; };
 		22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
 		2291A8A21E2A5400004181B8 /* ScrollCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollCore.swift; sourceTree = "<group>"; };
+		22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesDonateViewController.swift; sourceTree = "<group>"; };
 		22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAboutViewController.swift; sourceTree = "<group>"; };
 		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 		22A32B3A1E334B5900A5CF38 /* PreferencesPanel */ = {
 			isa = PBXGroup;
 			children = (
+				22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */,
 				22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */,
 				22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */,
 				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
@@ -435,6 +438,7 @@
 				2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */,
 				22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */,
 				226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */,
+				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,
 				22816CFF1E2B31020020D6B1 /* ScrollMointorWindowController.swift in Sources */,
 				22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */,
 				22142DA61E25344E00E4BFBF /* ScrollMointorViewController.swift in Sources */,
