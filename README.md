@@ -16,6 +16,23 @@
 - 一个用于监控滚动事件的图形化呈现窗口。
 - 基于Swift3构建。
 
+## 功能
+
+<p align="center">
+  <a href="https://github.com/Caldis/Mos">
+    <img width="600" src="https://github.com/Caldis/Mos/blob/master/Doc/mointor.png?raw=true">
+  </a>
+</p>
+<p align="center">
+  <a href="https://github.com/Caldis/Mos">
+    <img width="600" src="https://github.com/Caldis/Mos/blob/master/Doc/preferences-general.png?raw=true">
+  </a>
+</p>
+<p align="center">
+  <a href="https://github.com/Caldis/Mos">
+    <img width="600" src="https://github.com/Caldis/Mos/blob/master/Doc/preferences-advanced.png?raw=true">
+  </a>
+</p>
 
 ## 下载
 
