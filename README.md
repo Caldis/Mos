@@ -19,9 +19,7 @@
 
 ## 下载
 
-```bash
 - [GithubRelease](https://github.com/Caldis/Mos/releases/)
-```
 
 
 ## 鸣谢
@@ -36,7 +34,7 @@
 
 ##LICENSE
 
-Copyright (c) 2015 coderyi.all rights reserved.
+Copyright (c) 2017 Caldis rights reserved.
 
 EN: [CC Attribution-NonCommercial](http://creativecommons.org/licenses/by-nc/4.0/) 
 
