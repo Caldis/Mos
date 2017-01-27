@@ -98,7 +98,6 @@
 		22142DB51E25344F00E4BFBF /* MosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosTests.swift; sourceTree = "<group>"; };
 		22142DB71E25344F00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		22142DBC1E25344F00E4BFBF /* MosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		22142DCE1E26716500E4BFBF /* Codetest.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Codetest.playground; sourceTree = "<group>"; };
 		2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAdvanceViewController.swift; sourceTree = "<group>"; };
 		2225F8E01E3A37FF0020DD22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		2225F8E11E3A388A0020DD22 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
@@ -150,7 +149,6 @@
 		22142D971E25344E00E4BFBF = {
 			isa = PBXGroup;
 			children = (
-				22142DCE1E26716500E4BFBF /* Codetest.playground */,
 				22142DA21E25344E00E4BFBF /* Mos */,
 				22142DB41E25344F00E4BFBF /* MosTests */,
 				22142DA11E25344E00E4BFBF /* Products */,
