@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  Mos
+
+  Created by Cb on 2017/1/27.
+  Copyright © 2017年 Cb. All rights reserved.
+*/
+
+"Version" = "版本";
+"Corrent Version" = "当前版本";
+"Scroll Mointor" = "滚动监控";
+"Preferences" = "偏好设置";
+"HomePage" = "主页";

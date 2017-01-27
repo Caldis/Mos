@@ -8,11 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA31E25344E00E4BFBF /* AppDelegate.swift */; };
-		22142DA61E25344E00E4BFBF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* ViewController.swift */; };
+		22142DA61E25344E00E4BFBF /* ScrollMointorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* ScrollMointorViewController.swift */; };
 		22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA71E25344E00E4BFBF /* Assets.xcassets */; };
 		22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA91E25344E00E4BFBF /* Main.storyboard */; };
 		22142DB61E25344F00E4BFBF /* MosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DB51E25344F00E4BFBF /* MosTests.swift */; };
-		22142DC11E25344F00E4BFBF /* MosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DC01E25344F00E4BFBF /* MosUITests.swift */; };
+		2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */; };
+		2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2225F8EA1E3B1A5C0020DD22 /* Localizable.strings */; };
+		226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 226A2E6D1E2E68620035F1A6 /* MouseEvent.m */; };
+		2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */; };
+		228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */; };
+		22816CF51E2A6CF10020D6B1 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22816CF01E2A6CD00020D6B1 /* Charts.framework */; };
+		22816CF61E2A6CF10020D6B1 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22816CF01E2A6CD00020D6B1 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22816CFF1E2B31020020D6B1 /* ScrollMointorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22816CFE1E2B31020020D6B1 /* ScrollMointorWindowController.swift */; };
+		22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */; };
+		2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2291A8A21E2A5400004181B8 /* ScrollCore.swift */; };
+		22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */; };
+		22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */; };
+		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,12 +42,54 @@
 			remoteGlobalIDString = 22142D9F1E25344E00E4BFBF;
 			remoteInfo = Mos;
 		};
+		22816CEF1E2A6CD00020D6B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 06165F241D8110E600722320;
+			remoteInfo = Charts;
+		};
+		22816CF11E2A6CD00020D6B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 06B120D51D811E6200D14B02;
+			remoteInfo = ChartsRealm;
+		};
+		22816CF31E2A6CD00020D6B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 06165F2E1D8110E600722320;
+			remoteInfo = ChartsTests;
+		};
+		22816CF71E2A6CF10020D6B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 06165F231D8110E600722320;
+			remoteInfo = Charts;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		22816CF91E2A6CF20020D6B1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				22816CF61E2A6CF10020D6B1 /* Charts.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22142DA31E25344E00E4BFBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		22142DA51E25344E00E4BFBF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		22142DA51E25344E00E4BFBF /* ScrollMointorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollMointorViewController.swift; sourceTree = "<group>"; };
 		22142DA71E25344E00E4BFBF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22142DAA1E25344E00E4BFBF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		22142DAC1E25344E00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -43,8 +97,26 @@
 		22142DB51E25344F00E4BFBF /* MosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosTests.swift; sourceTree = "<group>"; };
 		22142DB71E25344F00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		22142DBC1E25344F00E4BFBF /* MosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		22142DC01E25344F00E4BFBF /* MosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosUITests.swift; sourceTree = "<group>"; };
-		22142DC21E25344F00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		22142DCE1E26716500E4BFBF /* Codetest.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Codetest.playground; sourceTree = "<group>"; };
+		2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAdvanceViewController.swift; sourceTree = "<group>"; };
+		2225F8E01E3A37FF0020DD22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
+		2225F8E11E3A388A0020DD22 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		2225F8E21E3A389D0020DD22 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
+		2225F8E91E3B1A5C0020DD22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		2225F8EB1E3B1A610020DD22 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		2225F8EC1E3B1A610020DD22 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		226A2E6C1E2E68610035F1A6 /* Mos-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Mos-Bridging-Header.h"; sourceTree = "<group>"; };
+		226A2E6D1E2E68620035F1A6 /* MouseEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MouseEvent.m; sourceTree = "<group>"; };
+		226A2E711E2E68A00035F1A6 /* MouseEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MouseEvent.h; sourceTree = "<group>"; };
+		2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
+		2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesGeneralViewController.swift; sourceTree = "<group>"; };
+		22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Framework/Charts-master/Charts.xcodeproj"; sourceTree = "<group>"; };
+		22816CFE1E2B31020020D6B1 /* ScrollMointorWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollMointorWindowController.swift; sourceTree = "<group>"; };
+		22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
+		2291A8A21E2A5400004181B8 /* ScrollCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollCore.swift; sourceTree = "<group>"; };
+		22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAboutViewController.swift; sourceTree = "<group>"; };
+		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
+		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +124,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22816CF51E2A6CF10020D6B1 /* Charts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,10 +148,11 @@
 		22142D971E25344E00E4BFBF = {
 			isa = PBXGroup;
 			children = (
+				22142DCE1E26716500E4BFBF /* Codetest.playground */,
 				22142DA21E25344E00E4BFBF /* Mos */,
 				22142DB41E25344F00E4BFBF /* MosTests */,
-				22142DBF1E25344F00E4BFBF /* MosUITests */,
 				22142DA11E25344E00E4BFBF /* Products */,
+				22816CFA1E2A6DFA0020D6B1 /* Framework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -96,9 +170,14 @@
 			isa = PBXGroup;
 			children = (
 				22142DA31E25344E00E4BFBF /* AppDelegate.swift */,
-				22142DA51E25344E00E4BFBF /* ViewController.swift */,
-				22142DA71E25344E00E4BFBF /* Assets.xcassets */,
+				2291A8A21E2A5400004181B8 /* ScrollCore.swift */,
+				22A32B3B1E334B7A00A5CF38 /* ScrollMointorPanel */,
+				22A32B3A1E334B5900A5CF38 /* PreferencesPanel */,
+				22A32B3C1E334B9700A5CF38 /* StatusMenu */,
+				22DF0E401E39B9820003FA77 /* MouseEventBridge */,
 				22142DA91E25344E00E4BFBF /* Main.storyboard */,
+				2225F8ED1E3B1B220020DD22 /* Localization */,
+				22142DA71E25344E00E4BFBF /* Assets.xcassets */,
 				22142DAC1E25344E00E4BFBF /* Info.plist */,
 			);
 			path = Mos;
@@ -113,13 +192,70 @@
 			path = MosTests;
 			sourceTree = "<group>";
 		};
-		22142DBF1E25344F00E4BFBF /* MosUITests */ = {
+		2225F8ED1E3B1B220020DD22 /* Localization */ = {
 			isa = PBXGroup;
 			children = (
-				22142DC01E25344F00E4BFBF /* MosUITests.swift */,
-				22142DC21E25344F00E4BFBF /* Info.plist */,
+				2225F8EA1E3B1A5C0020DD22 /* Localizable.strings */,
 			);
-			path = MosUITests;
+			name = Localization;
+			sourceTree = "<group>";
+		};
+		22816CEA1E2A6CD00020D6B1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				22816CF01E2A6CD00020D6B1 /* Charts.framework */,
+				22816CF21E2A6CD00020D6B1 /* ChartsRealm.framework */,
+				22816CF41E2A6CD00020D6B1 /* ChartsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		22816CFA1E2A6DFA0020D6B1 /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */,
+			);
+			name = Framework;
+			sourceTree = "<group>";
+		};
+		22A32B3A1E334B5900A5CF38 /* PreferencesPanel */ = {
+			isa = PBXGroup;
+			children = (
+				22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */,
+				22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */,
+				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
+				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
+				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
+				2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */,
+			);
+			name = PreferencesPanel;
+			sourceTree = "<group>";
+		};
+		22A32B3B1E334B7A00A5CF38 /* ScrollMointorPanel */ = {
+			isa = PBXGroup;
+			children = (
+				22142DA51E25344E00E4BFBF /* ScrollMointorViewController.swift */,
+				22816CFE1E2B31020020D6B1 /* ScrollMointorWindowController.swift */,
+			);
+			name = ScrollMointorPanel;
+			sourceTree = "<group>";
+		};
+		22A32B3C1E334B9700A5CF38 /* StatusMenu */ = {
+			isa = PBXGroup;
+			children = (
+				22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */,
+			);
+			name = StatusMenu;
+			sourceTree = "<group>";
+		};
+		22DF0E401E39B9820003FA77 /* MouseEventBridge */ = {
+			isa = PBXGroup;
+			children = (
+				226A2E6C1E2E68610035F1A6 /* Mos-Bridging-Header.h */,
+				226A2E711E2E68A00035F1A6 /* MouseEvent.h */,
+				226A2E6D1E2E68620035F1A6 /* MouseEvent.m */,
+			);
+			name = MouseEventBridge;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -132,10 +268,12 @@
 				22142D9C1E25344E00E4BFBF /* Sources */,
 				22142D9D1E25344E00E4BFBF /* Frameworks */,
 				22142D9E1E25344E00E4BFBF /* Resources */,
+				22816CF91E2A6CF20020D6B1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				22816CF81E2A6CF10020D6B1 /* PBXTargetDependency */,
 			);
 			name = Mos;
 			productName = Mos;
@@ -191,6 +329,7 @@
 					22142D9F1E25344E00E4BFBF = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 2H959AEV62;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 					22142DB01E25344F00E4BFBF = {
@@ -214,10 +353,18 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			productRefGroup = 22142DA11E25344E00E4BFBF /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 22816CEA1E2A6CD00020D6B1 /* Products */;
+					ProjectRef = 22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				22142D9F1E25344E00E4BFBF /* Mos */,
@@ -227,12 +374,37 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		22816CF01E2A6CD00020D6B1 /* Charts.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Charts.framework;
+			remoteRef = 22816CEF1E2A6CD00020D6B1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22816CF21E2A6CD00020D6B1 /* ChartsRealm.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ChartsRealm.framework;
+			remoteRef = 22816CF11E2A6CD00020D6B1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22816CF41E2A6CD00020D6B1 /* ChartsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ChartsTests.xctest;
+			remoteRef = 22816CF31E2A6CD00020D6B1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
 		22142D9E1E25344E00E4BFBF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */,
+				2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */,
 				22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -258,7 +430,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22142DA61E25344E00E4BFBF /* ViewController.swift in Sources */,
+				2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */,
+				2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */,
+				2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */,
+				22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */,
+				226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */,
+				22816CFF1E2B31020020D6B1 /* ScrollMointorWindowController.swift in Sources */,
+				22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */,
+				22142DA61E25344E00E4BFBF /* ScrollMointorViewController.swift in Sources */,
+				22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */,
+				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
+				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
 				22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -275,7 +457,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22142DC11E25344F00E4BFBF /* MosUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +473,11 @@
 			target = 22142D9F1E25344E00E4BFBF /* Mos */;
 			targetProxy = 22142DBD1E25344F00E4BFBF /* PBXContainerItemProxy */;
 		};
+		22816CF81E2A6CF10020D6B1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Charts;
+			targetProxy = 22816CF71E2A6CF10020D6B1 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -299,8 +485,21 @@
 			isa = PBXVariantGroup;
 			children = (
 				22142DAA1E25344E00E4BFBF /* Base */,
+				2225F8E01E3A37FF0020DD22 /* en */,
+				2225F8E11E3A388A0020DD22 /* zh-Hans */,
+				2225F8E21E3A389D0020DD22 /* zh-Hant */,
 			);
 			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		2225F8EA1E3B1A5C0020DD22 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2225F8E91E3B1A5C0020DD22 /* en */,
+				2225F8EB1E3B1A610020DD22 /* zh-Hans */,
+				2225F8EC1E3B1A610020DD22 /* zh-Hant */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -310,6 +509,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -359,6 +559,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -399,13 +600,18 @@
 		22142DC61E25344F00E4BFBF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 2H959AEV62;
 				INFOPLIST_FILE = Mos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = u2sk.Mos;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.u2sk.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Mos/Mos-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -413,13 +619,17 @@
 		22142DC71E25344F00E4BFBF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 2H959AEV62;
 				INFOPLIST_FILE = Mos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = u2sk.Mos;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = com.u2sk.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Mos/Mos-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
@@ -505,6 +715,7 @@
 				22142DC71E25344F00E4BFBF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		22142DC81E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "MosTests" */ = {
 			isa = XCConfigurationList;
@@ -513,6 +724,7 @@
 				22142DCA1E25344F00E4BFBF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		22142DCB1E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "MosUITests" */ = {
 			isa = XCConfigurationList;
@@ -521,6 +733,7 @@
 				22142DCD1E25344F00E4BFBF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

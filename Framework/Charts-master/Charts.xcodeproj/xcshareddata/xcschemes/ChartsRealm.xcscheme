@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "22142D9F1E25344E00E4BFBF"
-               BuildableName = "Mos.app"
-               BlueprintName = "Mos"
-               ReferencedContainer = "container:Mos.xcodeproj">
+               BlueprintIdentifier = "06B120D41D811E6200D14B02"
+               BuildableName = "ChartsRealm.framework"
+               BlueprintName = "ChartsRealm"
+               ReferencedContainer = "container:Charts.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -26,36 +26,17 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "22142DB01E25344F00E4BFBF"
-               BuildableName = "MosTests.xctest"
-               BlueprintName = "MosTests"
-               ReferencedContainer = "container:Mos.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "22142DBB1E25344F00E4BFBF"
-               BuildableName = "MosUITests.xctest"
-               BlueprintName = "MosUITests"
-               ReferencedContainer = "container:Mos.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "22142D9F1E25344E00E4BFBF"
-            BuildableName = "Mos.app"
-            BlueprintName = "Mos"
-            ReferencedContainer = "container:Mos.xcodeproj">
+            BlueprintIdentifier = "06B120D41D811E6200D14B02"
+            BuildableName = "ChartsRealm.framework"
+            BlueprintName = "ChartsRealm"
+            ReferencedContainer = "container:Charts.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -71,16 +52,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "22142D9F1E25344E00E4BFBF"
-            BuildableName = "Mos.app"
-            BlueprintName = "Mos"
-            ReferencedContainer = "container:Mos.xcodeproj">
+            BlueprintIdentifier = "06B120D41D811E6200D14B02"
+            BuildableName = "ChartsRealm.framework"
+            BlueprintName = "ChartsRealm"
+            ReferencedContainer = "container:Charts.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -90,16 +70,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "22142D9F1E25344E00E4BFBF"
-            BuildableName = "Mos.app"
-            BlueprintName = "Mos"
-            ReferencedContainer = "container:Mos.xcodeproj">
+            BlueprintIdentifier = "06B120D41D811E6200D14B02"
+            BuildableName = "ChartsRealm.framework"
+            BlueprintName = "ChartsRealm"
+            ReferencedContainer = "container:Charts.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
