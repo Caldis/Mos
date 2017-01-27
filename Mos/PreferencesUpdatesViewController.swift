@@ -22,4 +22,7 @@ class PreferencesUpdatesViewController: NSViewController {
         versionLabel.stringValue = "\(CorrentVersionLabelTitle) : \(version as! String)"
     }
     
+    @IBAction func checkButtonClick(_ sender: NSButton) {
+        NSWorkspace.shared().open(URL(string: "https://github.com/Caldis/Mos/releases/")!)
+    }
 }

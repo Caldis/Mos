@@ -852,6 +852,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="cellTitle"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="checkButtonClick:" target="EWu-DP-7Gj" id="i2G-yK-k2b"/>
+                                </connections>
                             </button>
                             <textField wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XeP-Gc-BVl">
                                 <rect key="frame" x="179" y="20" width="212" height="17"/>

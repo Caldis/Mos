@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/Caldis/Mos">
-    <img width="320" src="https://github.com/Caldis/Mos/blob/master/Doc/Intro.jpg?raw=true">
+    <img width="320" src="https://github.com/Caldis/Mos/blob/master/Doc/Intro.png?raw=true">
   </a>
 </p>
 
@@ -20,7 +20,7 @@
 ## 下载
 
 ```bash
-npm install antd
+- [GithubRelease](https://github.com/Caldis/Mos/releases/)
 ```
 
 
