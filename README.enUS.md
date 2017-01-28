@@ -45,7 +45,7 @@ A simple tool to smooth and reverse your mouse scroll, easy and free.
 
 ## Contributing
 
-我们欢迎任何形式的贡献，有任何建议或意见您可以进行 [Pull Request](https://github.com/Caldis/Mos/pulls)，或者给我们 [提问](https://github.com/Caldis/Mos/issues)。
+We welcome all contributions. You can submit any ideas as [pull requests](https://github.com/Caldis/Mos/pulls) or as [GitHub issues](https://github.com/Caldis/Mos/issues). Have a good time! :)
 
 
 ## LICENSE
