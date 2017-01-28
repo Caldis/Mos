@@ -4,13 +4,17 @@
   </a>
 </p>
 
+# 其他语言 | Other Language | その他の言語
+[中文](https://github.com/Caldis/Mos/blob/master/README.md)
+[English](https://github.com/Caldis/Mos/blob/master/README.enUS.md)
+
 # Homepage
 
 http://mos.u2sk.com/
 
 # Mos
 
-A simple tool to smooth and reverse your mouse scroll, easy and free.
+A simple tool to smooth and reverse your mouse scroll, handy and free.
 
 
 ## Features

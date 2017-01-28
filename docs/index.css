@@ -123,6 +123,9 @@ button:active {
 .info:active {
     color: #666;
 }
+.infoStar {
+    margin-top: 10px;
+}
 
 
 
