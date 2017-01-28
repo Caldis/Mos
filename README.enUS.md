@@ -4,25 +4,23 @@
   </a>
 </p>
 
-[English](https://github.com/Caldis/Mos/blob/master/README.enUS.md)
-
-# 主页
+# Homepage
 
 http://mos.u2sk.com/
 
 # Mos
 
-一个用于在MacOS上平滑你的鼠标滚动效果的小工具, 让你的滚轮丝滑如触控板。
+A simple tool to smooth and reverse your mouse scroll, easy and free.
 
 
-## 特性
+## Features
 
-- 平滑鼠标滚动效果 !
-- 支持分离触控板/鼠标事件, 单独翻转鼠标滚动方向。
-- 一个用于监控滚动事件的图形化呈现窗口。
-- 基于Swift3构建。
+- Smooth the mouse wheel scroll !
+- Distinguish the touchpad scroll and mouse wheel scroll, reverse the scroll position separatily.
+- A mointor can render the scroll event.
+- Base on swift3.
 
-## 截图
+## Screenshot
 
 <p align="center">
   <img width="600" src="https://github.com/Caldis/Mos/blob/master/Doc/mointor.png?raw=true">
@@ -34,17 +32,18 @@ http://mos.u2sk.com/
   <img width="600" src="https://github.com/Caldis/Mos/blob/master/Doc/preferences-advanced.png?raw=true">
 </p>
 
-## 下载
+## Download
 
 - [GithubRelease](https://github.com/Caldis/Mos/releases/)
 
 
-## 鸣谢
+## Thanks
+
 - [Charts](https://github.com/danielgindi/Charts)
 - [Smoothscroll-for-websites](https://github.com/galambalazs/smoothscroll-for-websites)
 
 
-## 贡献
+## Contributing
 
 我们欢迎任何形式的贡献，有任何建议或意见您可以进行 [Pull Request](https://github.com/Caldis/Mos/pulls)，或者给我们 [提问](https://github.com/Caldis/Mos/issues)。
 
