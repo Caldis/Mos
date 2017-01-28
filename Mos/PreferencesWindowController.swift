@@ -15,7 +15,7 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
         // 实现NSWindowDelegate
         window?.delegate = self
         // 在第一个tabItem(general)后面插入一个 NSToolbarFlexibleSpaceItem, 这里的 NSToolbarFlexibleSpaceItem 必须要出现在窗口的toolbar的allow items里面
-        window?.toolbar?.insertItem(withItemIdentifier: "NSToolbarFlexibleSpaceItem", at: 2)
+        window?.toolbar?.insertItem(withItemIdentifier: "NSToolbarFlexibleSpaceItem", at: 3)
     }
     
     func windowWillClose(_ notification: Notification) {

@@ -29,6 +29,7 @@ class PreferencesTabViewController: NSTabViewController {
     // 从tabViewController中获取一个指定id的item
     func tabViewItemInTabViewController(identifier: String) -> NSTabViewItem? {
         let tabViewController = instantiateWindowController(with: "preferencesTabViewController") as! NSTabViewController
+        // 遍历数组查找对应项
         if let tabViewItem = tabViewController.tabViewItems.filter({($0.identifier as! String) == identifier}).first {
             return tabViewItem
         } else {

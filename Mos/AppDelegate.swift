@@ -29,13 +29,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             } else {
                 // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
                 
+                
+                // 获取光标当前窗口信息
+                // 更新每次的PID
+                ScrollCore.lastEventTargetPID = ScrollCore.eventTargetPID
+                ScrollCore.eventTargetPID = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
+                // 如果目标PID有变化, 则重新获取一次窗口名字, 更新到 ScrollCore.eventTargetName 里面
+                if ScrollCore.lastEventTargetPID/ScrollCore.eventTargetPID != 1 {
+                    if let applicationName = ScrollCore.getApplicationNameFrom(pid: ScrollCore.eventTargetPID) {
+                        ScrollCore.eventTargetName = applicationName
+                    }
+                }
+                
                 // 定义滚动数据
                 // TODO: 处理X轴数据
                 var scrollY:Int64!
                 var scrollPtY:Double!
                 var scrollFixY:Double!
-                // 是否翻转鼠标事件
-                if ScrollCore.option.reverse {
+                // 是否翻转鼠标事件, 且窗口不包含在禁止翻转滚动列表内
+                if ScrollCore.option.reverse && !ScrollCore.applicationInReverseBenList(name: ScrollCore.eventTargetName) {
                     scrollY = -event.getIntegerValueField(.scrollWheelEventDeltaAxis1)
                     scrollPtY = -event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)
                     scrollFixY = -event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)
@@ -43,6 +55,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: scrollY)
                     event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: scrollPtY)
                     event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: scrollFixY)
+                    
                 } else {
                     scrollY = event.getIntegerValueField(.scrollWheelEventDeltaAxis1)
                     scrollPtY = event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)
@@ -51,9 +64,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 
                 // 设置了此字段之后滚动事件才会以像素级别执行
                 event.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
-                
-                // 是否平滑滚动
-                if ScrollCore.option.smooth {
+
+                // 是否平滑滚动, 且窗口名称不包含在禁止翻转滚动列表内
+                if ScrollCore.option.smooth && !ScrollCore.applicationInSmoothBenList(name: ScrollCore.eventTargetName) {
                     // 禁止返回原始对象
                     handbackOriginalEvent = false
                     // 如果输入值小于10, 则格式化为10
@@ -92,14 +105,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         ScrollCore.readPreferencesData()
         // 开始截取事件
         eventTap = ScrollCore.startCapture(event: mask, to: eventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)
-        // 开始后台处理事务
+        // 初始化事件发送器
         ScrollCore.initScrollEventPoster()
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
         // 停止截取事件
         ScrollCore.stopCapture(tap: eventTap)
-        // 停止后台处理事务
+        // 停止事件发送器
         ScrollCore.stopScrollEventPoster()
     }
 }

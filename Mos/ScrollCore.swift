@@ -13,8 +13,10 @@ class ScrollCore: NSObject {
     // 全局设置相关
     static let defOption = ( smooth: true, reverse: true )
     static let defAdvancedOption = ( speed: 0.95, time: 320 )
+    static let defBanList = ( smooth: [String](), reverse: [String]() )
     static var option = ( smooth: true, reverse: true )
-    static var advancedOption = ( speed: 0.95, time: 400 )
+    static var advancedOption = ( speed: 0.95, time: 320 )
+    static var banList = ( smooth: [String](), reverse: [String]() )
     
     // 延迟执行相关
     static var delayTimer:Timer!
@@ -28,6 +30,11 @@ class ScrollCore: NSObject {
     static var scrollEventPosterStopCountY = 0
     static var scrollEventPosterStopCountX = 0
     static var scrollEventPoster:CVDisplayLink?
+    
+    // 区分目标窗口相关
+    static var lastEventTargetPID:pid_t = 1
+    static var eventTargetPID:pid_t = 1
+    static var eventTargetName:String!
     
     // 新滚动事件相关
     static var pulseGap = 0.3 // 间隔时间(s)
@@ -225,17 +232,17 @@ class ScrollCore: NSObject {
                         // 否则按照套路来, 从前面计数
                         startIndexY = ScrollCore.findApproachMaxValue(of: ScrollCore.autoScrollRef.Y, from: ScrollCore.realPluseDataY)
                     }
-                    MouseEvent().scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[startIndexY]), xScroll: 0)
+                    MouseEvent.scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[startIndexY]), xScroll: 0)
                     ScrollCore.scrollEventPosterStopCountY = startIndexY==0 ? 1 : startIndexY // 避免一直在0循环
                 } else {
                     // 否则就按正常缓动的滚动事件, 按照正常递增
-                    MouseEvent().scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]), xScroll: 0)
+                    MouseEvent.scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]), xScroll: 0)
                     ScrollCore.autoScrollRef.Y = ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]
                     ScrollCore.scrollEventPosterStopCountY += 1
                 }
             } else {
                 // 缓动的滚动事件, 按照正常递增
-                MouseEvent().scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]), xScroll: 0)
+                MouseEvent.scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]), xScroll: 0)
                 ScrollCore.autoScrollRef.Y = ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]
                 ScrollCore.scrollEventPosterStopCountY += 1
             }
@@ -400,6 +407,29 @@ class ScrollCore: NSObject {
         }
     }
     
+    
+    
+    // 从Pid获取进程名称
+    static func getApplicationNameFrom(pid: pid_t) -> String? {
+        // 更新列表
+        let workSpace = NSWorkspace.shared()
+        let apps = workSpace.runningApplications
+        return apps.filter({$0.processIdentifier == pid}).first?.localizedName! as String?
+    }
+    // 根据名称判断程序是否在禁止平滑滚动列表内
+    static func applicationInSmoothBenList(name: String?) -> Bool {
+        if let appName = name {
+            return ScrollCore.banList.smooth.contains(appName)
+        }
+        return false
+    }
+    // 根据名称判断程序是否在禁止翻转滚动列表内
+    static func applicationInReverseBenList(name: String?) -> Bool {
+        if let appName = name {
+            return ScrollCore.banList.reverse.contains(appName)
+        }
+        return false
+    }
     
     
     
