@@ -4,17 +4,20 @@
   </a>
 </p>
 
-# 其他语言 | Other Language | その他の言語
-[中文](https://github.com/Caldis/Mos/blob/master/README.md)
-[English](https://github.com/Caldis/Mos/blob/master/README.enUS.md)
+
+# Mos
+
+![Xcode 8.2+](https://img.shields.io/badge/Xcode-8.2%2B-blue.svg)
+![Swift 3.0+](https://img.shields.io/badge/Swift-3.0%2B-orange.svg)
+
+A simple tool to smooth and reverse your mouse scroll on MacOS, handy and free.
+
+[中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md
+
 
 # Homepage
 
 http://mos.u2sk.com/
-
-# Mos
-
-A simple tool to smooth and reverse your mouse scroll on MacOS, handy and free.
 
 
 ## Features
@@ -23,6 +26,7 @@ A simple tool to smooth and reverse your mouse scroll on MacOS, handy and free.
 - Distinguish the touchpad scroll and mouse wheel scroll, reverse the scroll position separatily.
 - A mointor can render the scroll event.
 - Base on swift3.
+
 
 ## Screenshot
 
@@ -35,6 +39,7 @@ A simple tool to smooth and reverse your mouse scroll on MacOS, handy and free.
 <p align="center">
   <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferences-advanced.png?raw=true">
 </p>
+
 
 ## Download
 
