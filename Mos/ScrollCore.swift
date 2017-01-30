@@ -13,10 +13,9 @@ class ScrollCore: NSObject {
     // 全局设置相关
     static let defOption = ( smooth: true, reverse: true )
     static let defAdvancedOption = ( speed: 0.95, time: 320 )
-    static let defBanList = ( smooth: [String](), reverse: [String]() )
     static var option = ( smooth: true, reverse: true )
     static var advancedOption = ( speed: 0.95, time: 320 )
-    static var banList = ( smooth: [String](), reverse: [String]() )
+    static var ignoreList = ( smooth: [String](), reverse: [String]() )
     
     // 延迟执行相关
     static var delayTimer:Timer!
@@ -34,7 +33,8 @@ class ScrollCore: NSObject {
     // 区分目标窗口相关
     static var lastEventTargetPID:pid_t = 1
     static var eventTargetPID:pid_t = 1
-    static var eventTargetName:String!
+    static var eventTargetBundleId:String!
+    static var ignoredApplications = [IgnoredApplication]()
     
     // 新滚动事件相关
     static var pulseGap = 0.3 // 间隔时间(s)
@@ -63,11 +63,6 @@ class ScrollCore: NSObject {
     static var basePluseData = ScrollCore.initPluseData()
     static var realPluseDataY = [Double]()
     static var realPluseDataX = [Double]()
-    
-    // 新: Smoothstep插值
-    static var totalScroll = ( Y: 0.0, X: 0.0 )
-    static var correntScroll = ( Y: 0.0, X: 0.0 )
-    
     
     // 开始截取事件
     static func startCapture(event mask: CGEventMask, to eventHandler: @escaping CGEventTapCallBack, at eventTap: CGEventTapLocation, where eventPlace: CGEventTapPlacement, for behaver: CGEventTapOptions) -> CFMachPort {
@@ -137,11 +132,6 @@ class ScrollCore: NSObject {
         ScrollCore.lastScrollRef = ScrollCore.scrollRef
         ScrollCore.scrollRef.Y = Y
         ScrollCore.scrollRef.X = X
-    }
-    // 更新滚动数据 (增量)
-    static func updataScrollDataIncremental(Y: Double, X: Double) {
-        ScrollCore.totalScroll.Y += Y
-        ScrollCore.totalScroll.X += X
     }
     // 更新实际滚动曲线
     static func updateRealPluseData(Y: Double, X: Double) {
@@ -405,28 +395,55 @@ class ScrollCore: NSObject {
         if UserDefaults.standard.integer(forKey: "time") != 0 {
             ScrollCore.advancedOption.time = UserDefaults.standard.integer(forKey: "time")
         }
+        if let archivedData = UserDefaults.standard.object(forKey: "ignoredApplications") {
+            let ignoredApplications = NSKeyedUnarchiver.unarchiveObject(with: archivedData as! Data)
+            ScrollCore.ignoredApplications = ignoredApplications as? [IgnoredApplication] ?? [IgnoredApplication]()
+            ScrollCore.updateIgnoreList()
+        }
+    }
+    
+    
+    
+    // 更新ignoreList
+    static func updateIgnoreList() {
+        // 清空一下数据
+        ScrollCore.ignoreList.smooth = [String]()
+        ScrollCore.ignoreList.reverse = [String]()
+        // 从ignoredApplications读到ignoreList
+        for ignoredApplication in ScrollCore.ignoredApplications {
+            if ignoredApplication.notSmooth {
+                ScrollCore.ignoreList.smooth.append(ignoredApplication.bundleId)
+            }
+            if ignoredApplication.notReverse {
+                ScrollCore.ignoreList.reverse.append(ignoredApplication.bundleId)
+            }
+        }
+        // 保存设置
+        let archivedData = NSKeyedArchiver.archivedData(withRootObject: ScrollCore.ignoredApplications)
+        UserDefaults.standard.set(archivedData, forKey:"ignoredApplications")
     }
     
     
     
     // 从Pid获取进程名称
-    static func getApplicationNameFrom(pid: pid_t) -> String? {
+    static func getApplicationBundleIdFrom(pid: pid_t) -> String? {
         // 更新列表
         let workSpace = NSWorkspace.shared()
         let apps = workSpace.runningApplications
-        return apps.filter({$0.processIdentifier == pid}).first?.localizedName! as String?
+        // 用pid找bundleID
+        return apps.filter({$0.processIdentifier == pid}).first?.bundleIdentifier! as String?
     }
     // 根据名称判断程序是否在禁止平滑滚动列表内
-    static func applicationInSmoothBenList(name: String?) -> Bool {
-        if let appName = name {
-            return ScrollCore.banList.smooth.contains(appName)
+    static func applicationInSmoothIgnoreList(bundleId: String?) -> Bool {
+        if let id = bundleId {
+            return ScrollCore.ignoreList.smooth.contains(id)
         }
         return false
     }
     // 根据名称判断程序是否在禁止翻转滚动列表内
-    static func applicationInReverseBenList(name: String?) -> Bool {
-        if let appName = name {
-            return ScrollCore.banList.reverse.contains(appName)
+    static func applicationInReverseIgnoreList(bundleId: String?) -> Bool {
+        if let id = bundleId {
+            return ScrollCore.ignoreList.reverse.contains(id)
         }
         return false
     }

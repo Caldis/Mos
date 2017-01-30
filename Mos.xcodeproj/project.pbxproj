@@ -15,6 +15,8 @@
 		2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */; };
 		2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2225F8EA1E3B1A5C0020DD22 /* Localizable.strings */; };
 		226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 226A2E6D1E2E68620035F1A6 /* MouseEvent.m */; };
+		2278EE991E3DF770000AB25B /* PreferencesIgnoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2278EE981E3DF770000AB25B /* PreferencesIgnoreViewController.swift */; };
+		2278EE9D1E3DFAC8000AB25B /* IgnoredApplicationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2278EE9C1E3DFAC8000AB25B /* IgnoredApplicationData.swift */; };
 		2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */; };
 		228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */; };
 		22816CF51E2A6CF10020D6B1 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22816CF01E2A6CD00020D6B1 /* Charts.framework */; };
@@ -108,6 +110,8 @@
 		226A2E6C1E2E68610035F1A6 /* Mos-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Mos-Bridging-Header.h"; sourceTree = "<group>"; };
 		226A2E6D1E2E68620035F1A6 /* MouseEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MouseEvent.m; sourceTree = "<group>"; };
 		226A2E711E2E68A00035F1A6 /* MouseEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MouseEvent.h; sourceTree = "<group>"; };
+		2278EE981E3DF770000AB25B /* PreferencesIgnoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesIgnoreViewController.swift; sourceTree = "<group>"; };
+		2278EE9C1E3DFAC8000AB25B /* IgnoredApplicationData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IgnoredApplicationData.swift; sourceTree = "<group>"; };
 		2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesGeneralViewController.swift; sourceTree = "<group>"; };
 		22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Framework/Charts-master/Charts.xcodeproj"; sourceTree = "<group>"; };
@@ -224,6 +228,8 @@
 				22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */,
 				22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */,
 				22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */,
+				2278EE9C1E3DFAC8000AB25B /* IgnoredApplicationData.swift */,
+				2278EE981E3DF770000AB25B /* PreferencesIgnoreViewController.swift */,
 				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
 				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
 				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
@@ -332,6 +338,11 @@
 						DevelopmentTeam = 2H959AEV62;
 						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
 					};
 					22142DB01E25344F00E4BFBF = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -440,9 +451,11 @@
 				22816CFF1E2B31020020D6B1 /* ScrollMointorWindowController.swift in Sources */,
 				22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */,
 				22142DA61E25344E00E4BFBF /* ScrollMointorViewController.swift in Sources */,
+				2278EE991E3DF770000AB25B /* PreferencesIgnoreViewController.swift in Sources */,
 				22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
 				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
+				2278EE9D1E3DFAC8000AB25B /* IgnoredApplicationData.swift in Sources */,
 				22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

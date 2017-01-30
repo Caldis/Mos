@@ -10,8 +10,13 @@ import Cocoa
 
 class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     
+    @IBOutlet weak var preferenceWindow: NSWindow!
+    static var preferenceWindowRef:NSWindow!
+    
     override func windowDidLoad() {
         super.windowDidLoad()
+        // 共享一下preferenceWindow的引用 (用于IgnoreView中的beginSheetModalForWindow)
+        PreferencesWindowController.preferenceWindowRef = preferenceWindow
         // 实现NSWindowDelegate
         window?.delegate = self
         // 在第一个tabItem(general)后面插入一个 NSToolbarFlexibleSpaceItem, 这里的 NSToolbarFlexibleSpaceItem 必须要出现在窗口的toolbar的allow items里面

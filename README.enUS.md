@@ -14,7 +14,7 @@ http://mos.u2sk.com/
 
 # Mos
 
-A simple tool to smooth and reverse your mouse scroll, handy and free.
+A simple tool to smooth and reverse your mouse scroll on MacOS, handy and free.
 
 
 ## Features

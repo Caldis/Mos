@@ -31,7 +31,7 @@ class PreferencesAboutViewController: NSViewController {
     }
     
     @IBAction func homepageButtonClick(_ sender: NSButton) {
-        NSWorkspace.shared().open(URL(string: "https://github.com/Caldis/Mos")!)
+        NSWorkspace.shared().open(URL(string: "http://mos.u2sk.com")!)
     }
     @IBAction func githubButtonClick(_ sender: NSButton) {
         NSWorkspace.shared().open(URL(string: "https://github.com/Caldis/Mos")!)

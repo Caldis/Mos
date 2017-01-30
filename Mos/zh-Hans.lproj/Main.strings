@@ -488,4 +488,5 @@
 /* Class = "NSMenuItem"; title = "Show Substitutions"; ObjectID = "z6F-FW-3nz"; */
 "z6F-FW-3nz.title" = "Show Substitutions";
 
-"dTH-6b-CZl.title" = "限制";
+"bga-wG-iim.title" = "忽略";
+"cwG-SE-cYu.title" = "列表中的应用程序将会被忽略其对应选中的功能";
