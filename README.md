@@ -15,7 +15,7 @@
 [中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md)
 
 
-# 主页
+## 主页
 
 http://mos.u2sk.com/
 
