@@ -1,6 +1,6 @@
 <p align="center">
   <a href="http://mos.u2sk.com/">
-    <img width="320" src="https://github.com/Caldis/Mos/blob/master/Doc/Intro.png?raw=true">
+    <img width="320" src="https://github.com/Caldis/Mos/blob/master/docs/Intro.png?raw=true">
   </a>
 </p>
 
@@ -27,13 +27,13 @@ http://mos.u2sk.com/
 ## 截图
 
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/Doc/mointor.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/mointor.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/Doc/preferences-general.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferences-general.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/Doc/preferences-advanced.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferences-advanced.png?raw=true">
 </p>
 
 ## 下载
