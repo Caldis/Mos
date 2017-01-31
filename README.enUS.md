@@ -12,7 +12,7 @@
 
 A simple tool to smooth and reverse your mouse scroll on MacOS, handy and free.
 
-[中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md
+[中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md)
 
 
 ## Homepage

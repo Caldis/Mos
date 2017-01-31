@@ -1,4 +1,7 @@
 
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "0gK-I9-96c"; */
+"0gK-I9-96c.title" = "Text Cell";
+
 /* Class = "NSMenuItem"; title = "Customize Toolbar…"; ObjectID = "1UK-8n-QPP"; */
 "1UK-8n-QPP.title" = "Customize Toolbar…";
 
@@ -18,7 +21,7 @@
 "2h7-ER-AoG.title" = "Raise";
 
 /* Class = "NSButtonCell"; title = "Reset to default"; ObjectID = "2ho-yL-X2k"; */
-"2ho-yL-X2k.title" = "重设所有";
+"2ho-yL-X2k.title" = "恢复为预设值";
 
 /* Class = "NSMenuItem"; title = "Transformations"; ObjectID = "2oI-Rn-ZJC"; */
 "2oI-Rn-ZJC.title" = "Transformations";
@@ -41,9 +44,6 @@
 /* Class = "NSMenuItem"; title = "Enter Full Screen"; ObjectID = "4J7-dP-txa"; */
 "4J7-dP-txa.title" = "Enter Full Screen";
 
-/* Class = "NSTextFieldCell"; title = "Help"; ObjectID = "4Zw-Va-Z6x"; */
-"4Zw-Va-Z6x.title" = "帮助";
-
 /* Class = "NSMenuItem"; title = "Quit Mos"; ObjectID = "4sb-4s-VLi"; */
 "4sb-4s-VLi.title" = "Quit Mos";
 
@@ -56,11 +56,14 @@
 /* Class = "NSTextFieldCell"; title = "Just some little job for mouse."; ObjectID = "5cx-xS-eRe"; */
 "5cx-xS-eRe.title" = "只是做了一些微小的工作";
 
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "5ft-0j-oso"; */
+"5ft-0j-oso.title" = "Text Cell";
+
 /* Class = "NSMenuItem"; title = "About Mos"; ObjectID = "5kV-Vb-QxS"; */
 "5kV-Vb-QxS.title" = "About Mos";
 
-/* Class = "NSTextFieldCell"; title = "Current Version: 0.0.1"; ObjectID = "5oM-oR-Dsq"; */
-"5oM-oR-Dsq.title" = "当前版本:";
+/* Class = "NSTextFieldCell"; title = "Current Version"; ObjectID = "5oM-oR-Dsq"; */
+"5oM-oR-Dsq.title" = "当前版本";
 
 /* Class = "NSButtonCell"; title = "Scroll Reverse"; ObjectID = "6FR-2r-rxl"; */
 "6FR-2r-rxl.title" = "反转滚动";
@@ -74,17 +77,23 @@
 /* Class = "NSMenu"; title = "Writing Direction"; ObjectID = "8mr-sm-Yjd"; */
 "8mr-sm-Yjd.title" = "Writing Direction";
 
+/* Class = "NSButtonCell"; title = "Github"; ObjectID = "99M-8D-HLN"; */
+"99M-8D-HLN.title" = "Github";
+
 /* Class = "NSMenuItem"; title = "Substitutions"; ObjectID = "9ic-FL-obx"; */
 "9ic-FL-obx.title" = "Substitutions";
 
 /* Class = "NSMenuItem"; title = "Smart Copy/Paste"; ObjectID = "9yt-4B-nSM"; */
 "9yt-4B-nSM.title" = "Smart Copy/Paste";
 
+/* Class = "NSButtonCell"; title = "Donate"; ObjectID = "AM8-cj-DnH"; */
+"AM8-cj-DnH.title" = "请作者喝杯咖啡";
+
 /* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
 "AYu-sK-qS6.title" = "Main Menu";
 
 /* Class = "NSMenuItem"; title = "Preferences…"; ObjectID = "BOF-NM-1cW"; */
-"BOF-NM-1cW.title" = "偏好设置…";
+"BOF-NM-1cW.title" = "Preferences…";
 
 /* Class = "NSMenuItem"; title = "\tLeft to Right"; ObjectID = "BgM-ve-c93"; */
 "BgM-ve-c93.title" = "\tLeft to Right";
@@ -133,6 +142,12 @@
 
 /* Class = "NSMenuItem"; title = "View"; ObjectID = "H8h-7b-M4v"; */
 "H8h-7b-M4v.title" = "View";
+
+/* Class = "NSTableColumn"; headerCell.title = " Not S"; ObjectID = "HDo-Iu-l7K"; */
+"HDo-Iu-l7K.headerCell.title" = " Not S";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "HEV-nL-Tno"; */
+"HEV-nL-Tno.title" = "Text Cell";
 
 /* Class = "NSMenuItem"; title = "Text Replacement"; ObjectID = "HFQ-gK-NFA"; */
 "HFQ-gK-NFA.title" = "Text Replacement";
@@ -183,13 +198,16 @@
 "MkV-Pr-PK5.title" = "Copy Ruler";
 
 /* Class = "NSTextFieldCell"; title = "Check for updates:"; ObjectID = "N0S-yo-DTg"; */
-"N0S-yo-DTg.title" = "检查更新:";
+"N0S-yo-DTg.title" = "更新:";
 
 /* Class = "NSMenuItem"; title = "Services"; ObjectID = "NMo-om-nkz"; */
 "NMo-om-nkz.title" = "Services";
 
 /* Class = "NSMenuItem"; title = "\tDefault"; ObjectID = "Nop-cj-93Q"; */
 "Nop-cj-93Q.title" = "\tDefault";
+
+/* Class = "NSTextFieldCell"; title = "Not S: Not Smooth / Not R: Not Reverse"; ObjectID = "Nvh-BG-caL"; */
+"Nvh-BG-caL.title" = "Not S: 忽略平滑滚动 / Not R: 忽略反转滚动";
 
 /* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "OY7-WF-poV"; */
 "OY7-WF-poV.title" = "Minimize";
@@ -221,6 +239,9 @@
 /* Class = "NSViewController"; title = "About"; ObjectID = "RfV-Ow-3mF"; */
 "RfV-Ow-3mF.title" = "关于";
 
+/* Class = "NSTextFieldCell"; title = "Ignored Application list:"; ObjectID = "Rgu-cb-5lp"; */
+"Rgu-cb-5lp.title" = "被忽略的应用程序功能列表:";
+
 /* Class = "NSMenuItem"; title = "Superscript"; ObjectID = "Rqc-34-cIF"; */
 "Rqc-34-cIF.title" = "Superscript";
 
@@ -231,7 +252,7 @@
 "S0p-oC-mLd.title" = "Jump to Selection";
 
 /* Class = "NSTextFieldCell"; title = "          Presenting the data on this window are extremely bad for scroll performance, keep close if not necessary."; ObjectID = "TUE-3v-CaJ"; */
-"TUE-3v-CaJ.title" = "          呈现该窗口的数据会极大地影响滚动性能, 如果非必要, 请勿打开此窗口";
+"TUE-3v-CaJ.title" = "          呈现该窗口的数据会极大地影响滚动性能, 如果非必要, 请勿保留此窗口";
 
 /* Class = "NSMenu"; title = "Window"; ObjectID = "Td7-aD-5lo"; */
 "Td7-aD-5lo.title" = "Window";
@@ -245,8 +266,8 @@
 /* Class = "NSMenuItem"; title = "Center"; ObjectID = "VIY-Ag-zcb"; */
 "VIY-Ag-zcb.title" = "Center";
 
-/* Class = "NSTextFieldCell"; title = "Reverse the wheel scroll position."; ObjectID = "VUb-ZM-hXo"; */
-"VUb-ZM-hXo.title" = "反转鼠标滚动的滚动方向";
+/* Class = "NSTextFieldCell"; title = "Reverse the mouse wheel scroll direction."; ObjectID = "VUb-ZM-hXo"; */
+"VUb-ZM-hXo.title" = "单独反转鼠标滚动的滚动方向";
 
 /* Class = "NSMenuItem"; title = "Hide Others"; ObjectID = "Vdr-fp-XzO"; */
 "Vdr-fp-XzO.title" = "Hide Others";
@@ -260,9 +281,6 @@
 /* Class = "NSMenuItem"; title = "Underline"; ObjectID = "WRG-CD-K1S"; */
 "WRG-CD-K1S.title" = "Underline";
 
-/* Class = "NSTextFieldCell"; title = "Version: 0.6.8"; ObjectID = "WRP-Je-p5Q"; */
-"WRP-Je-p5Q.title" = "当前版本:";
-
 /* Class = "NSMenuItem"; title = "New"; ObjectID = "Was-JA-tGl"; */
 "Was-JA-tGl.title" = "New";
 
@@ -274,6 +292,9 @@
 
 /* Class = "NSViewController"; title = "Log"; ObjectID = "XfG-lQ-9wD"; */
 "XfG-lQ-9wD.title" = "Log";
+
+/* Class = "NSTextFieldCell"; title = "Application Name"; ObjectID = "XjY-7g-GLL"; */
+"XjY-7g-GLL.title" = "Application Name";
 
 /* Class = "NSMenuItem"; title = "Find…"; ObjectID = "Xz5-n4-O0W"; */
 "Xz5-n4-O0W.title" = "Find…";
@@ -296,6 +317,9 @@
 /* Class = "NSMenuItem"; title = "Paragraph"; ObjectID = "ZvO-Gk-QUH"; */
 "ZvO-Gk-QUH.title" = "Paragraph";
 
+/* Class = "NSButtonCell"; title = "Donate by paypal"; ObjectID = "aPi-cE-maK"; */
+"aPi-cE-maK.title" = "通过 Paypal 捐赠";
+
 /* Class = "NSMenuItem"; title = "Print…"; ObjectID = "aTl-1u-JFS"; */
 "aTl-1u-JFS.title" = "Print…";
 
@@ -307,6 +331,9 @@
 
 /* Class = "NSMenuItem"; title = "Use Default"; ObjectID = "agt-UL-0e3"; */
 "agt-UL-0e3.title" = "Use Default";
+
+/* Class = "NSViewController"; title = "Ignore"; ObjectID = "bga-wG-iim"; */
+"bga-wG-iim.title" = "忽略";
 
 /* Class = "NSMenuItem"; title = "Show Colors"; ObjectID = "bgn-CT-cEk"; */
 "bgn-CT-cEk.title" = "Show Colors";
@@ -327,7 +354,7 @@
 "cqv-fj-IhA.title" = "Selection";
 
 /* Class = "NSWindow"; title = "Preferences"; ObjectID = "cvF-hf-KVW"; */
-"cvF-hf-KVW.title" = "偏好设置";
+"cvF-hf-KVW.title" = "Preferences";
 
 /* Class = "NSMenuItem"; title = "Smart Links"; ObjectID = "cwL-P1-jid"; */
 "cwL-P1-jid.title" = "Smart Links";
@@ -343,9 +370,6 @@
 
 /* Class = "NSMenuItem"; title = "Undo"; ObjectID = "dRJ-4n-Yzg"; */
 "dRJ-4n-Yzg.title" = "Undo";
-
-/* Class = "NSTextFieldCell"; title = "axisY only"; ObjectID = "eDW-hJ-eCB"; */
-"eDW-hJ-eCB.title" = "仅针对竖直方向";
 
 /* Class = "NSMenuItem"; title = "Paste"; ObjectID = "gVA-U4-sdL"; */
 "gVA-U4-sdL.title" = "Paste";
@@ -410,11 +434,14 @@
 /* Class = "NSMenuItem"; title = "Check Spelling While Typing"; ObjectID = "rbD-Rh-wIN"; */
 "rbD-Rh-wIN.title" = "Check Spelling While Typing";
 
+/* Class = "NSTableColumn"; headerCell.title = " Not R"; ObjectID = "rd0-ca-ufI"; */
+"rd0-ca-ufI.headerCell.title" = " Not R";
+
 /* Class = "NSMenuItem"; title = "Smart Dashes"; ObjectID = "rgM-f4-ycn"; */
 "rgM-f4-ycn.title" = "Smart Dashes";
 
-/* Class = "NSTextFieldCell"; title = "400"; ObjectID = "rzC-bb-p1R"; */
-"rzC-bb-p1R.title" = "400";
+/* Class = "NSTextFieldCell"; title = "480"; ObjectID = "rzC-bb-p1R"; */
+"rzC-bb-p1R.title" = "480";
 
 /* Class = "NSMenuItem"; title = "Preferences"; ObjectID = "set-dB-WDd"; */
 "set-dB-WDd.title" = "偏好设置";
@@ -444,7 +471,7 @@
 "uRl-iY-unG.title" = "Cut";
 
 /* Class = "NSTextFieldCell"; title = "Time Setting:"; ObjectID = "vEz-OS-QE8"; */
-"vEz-OS-QE8.title" = "延时:";
+"vEz-OS-QE8.title" = "时间:";
 
 /* Class = "NSMenuItem"; title = "Paste Style"; ObjectID = "vKC-jM-MkH"; */
 "vKC-jM-MkH.title" = "Paste Style";
@@ -459,7 +486,7 @@
 "vmV-6d-7jI.title" = "Make Upper Case";
 
 /* Class = "NSTextFieldCell"; title = "Control the maxium scroll speed."; ObjectID = "vmk-zZ-ifN"; */
-"vmk-zZ-ifN.title" = "控制滚动速度";
+"vmk-zZ-ifN.title" = "控制滚动的速度";
 
 /* Class = "NSMenu"; title = "Ligatures"; ObjectID = "w0m-vy-SC9"; */
 "w0m-vy-SC9.title" = "Ligatures";
@@ -471,13 +498,16 @@
 "weE-be-TAy.title" = "平滑滚动";
 
 /* Class = "NSMenuItem"; title = "Help"; ObjectID = "wpr-3q-Mcd"; */
-"wpr-3q-Mcd.title" = "帮助";
+"wpr-3q-Mcd.title" = "Help";
 
 /* Class = "NSMenuItem"; title = "Copy"; ObjectID = "x3v-GG-iWU"; */
 "x3v-GG-iWU.title" = "Copy";
 
 /* Class = "NSMenuItem"; title = "Use All"; ObjectID = "xQD-1f-W4t"; */
 "xQD-1f-W4t.title" = "Use All";
+
+/* Class = "NSTableColumn"; headerCell.title = "Application"; ObjectID = "xfG-Cd-oIk"; */
+"xfG-Cd-oIk.headerCell.title" = "应用程序";
 
 /* Class = "NSMenuItem"; title = "Speech"; ObjectID = "xrE-MZ-jX0"; */
 "xrE-MZ-jX0.title" = "Speech";
@@ -487,6 +517,3 @@
 
 /* Class = "NSMenuItem"; title = "Show Substitutions"; ObjectID = "z6F-FW-3nz"; */
 "z6F-FW-3nz.title" = "Show Substitutions";
-
-"bga-wG-iim.title" = "忽略";
-"cwG-SE-cYu.title" = "列表中的应用程序将会被忽略其对应选中的功能";

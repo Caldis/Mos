@@ -75,6 +75,7 @@ class PreferencesAdvanceViewController: NSViewController {
         // 重新初始化曲线
         ScrollCore.totalPoint = Int(ScrollCore.fps * Double(ScrollCore.advancedOption.time) / 1000.0)
         ScrollCore.basePluseData = ScrollCore.initPluseData()
+        ScrollCore.turningPoint = Int(round(Double(ScrollCore.totalPoint)*ScrollCore.turningScale))
         // 保存设置
         UserDefaults.standard.set(ScrollCore.advancedOption.time, forKey:"time")
     }
@@ -91,6 +92,7 @@ class PreferencesAdvanceViewController: NSViewController {
         let defTime = Int32(ScrollCore.defAdvancedOption.time)
         scrollTimeStepper.intValue = defTime
         scrollTimeSlider.intValue = defTime
+        scrollTimeLabel.stringValue = String(format: "%.2i", defTime)
         setScrollTime(value: defTime)
     }
 }

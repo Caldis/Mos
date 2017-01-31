@@ -12,9 +12,9 @@ class ScrollCore: NSObject {
     
     // 全局设置相关
     static let defOption = ( smooth: true, reverse: true )
-    static let defAdvancedOption = ( speed: 0.95, time: 320 )
+    static let defAdvancedOption = ( speed: 0.95, time: 480 )
     static var option = ( smooth: true, reverse: true )
-    static var advancedOption = ( speed: 0.95, time: 320 )
+    static var advancedOption = ( speed: 0.95, time: 480 )
     static var ignoreList = ( smooth: [String](), reverse: [String]() )
     
     // 延迟执行相关
@@ -55,14 +55,17 @@ class ScrollCore: NSObject {
     // 动画相关
     static var fps = 60.0 // 帧数
     static var animTime = 380.0 // 动画时间 (这里已经由全局设置代替)
-    static var turningPoint = 0.22 // 转折点
+    static var turningScale = 0.18 // 转折位置
     static var scrollScale = 0.95 // 放大系数 (这里已经由全局设置代替)
     static var totalPoint = Int(ScrollCore.fps * Double(ScrollCore.defAdvancedOption.time) / 1000.0)
+    static var turningPoint = Int(round(Double(ScrollCore.totalPoint)*ScrollCore.turningScale))
     
     // 初始化缓动曲线
     static var basePluseData = ScrollCore.initPluseData()
     static var realPluseDataY = [Double]()
     static var realPluseDataX = [Double]()
+    
+    
     
     // 开始截取事件
     static func startCapture(event mask: CGEventMask, to eventHandler: @escaping CGEventTapCallBack, at eventTap: CGEventTapLocation, where eventPlace: CGEventTapPlacement, for behaver: CGEventTapOptions) -> CFMachPort {
@@ -200,7 +203,7 @@ class ScrollCore: NSObject {
     
     
     
-    // Legency Interpolation BEGIN
+
     // 主处理函数(CVDisplayLink)
     static func handleScrollY() {
         if ScrollCore.scrollEventPosterStopCountY >= ScrollCore.totalPoint {
@@ -208,22 +211,23 @@ class ScrollCore: NSObject {
             ScrollCore.stopScrollEventPoster()
             ScrollCore.scrollEventPosterStopCountY = 0
             ScrollCore.singleScrollCount = 0
+            ScrollCore.autoScrollRef.Y = 0
         } else {
             // 否则则截取ScrollRef内的值来发送
             if ScrollCore.scrollEventPosterStopCountY == 0 {
                 if ScrollCore.autoScrollRef.Y != 0 {
                     // 输入的滚动事件, 且不是第一次滚动, 则查找最接近的值来滚动
-                    // let startIndexY = ScrollCore.findApproachMaxValue(of: ScrollCore.autoScrollRef.Y, from: ScrollCore.realPluseDataY)
                     var startIndexY = 0
-                    if ScrollCore.singleScrollCount >= 3 {
-                        // 如果单次滚动计数大于等于3, 则直接跳到后面的下降区间
-                        startIndexY = ScrollCore.findApproachMaxDownValue(of: ScrollCore.autoScrollRef.Y, from: ScrollCore.realPluseDataY)
+                    if ScrollCore.singleScrollCount >= ScrollCore.turningPoint {
+                        // 如果单次滚动计数大于等于转折位置, 则直接取峰值
+                        startIndexY = ScrollCore.findPeakIndex(from: ScrollCore.realPluseDataY)
                     } else {
-                        // 否则按照套路来, 从前面计数
-                        startIndexY = ScrollCore.findApproachMaxValue(of: ScrollCore.autoScrollRef.Y, from: ScrollCore.realPluseDataY)
+                        // 否则从前面计数
+                        startIndexY = ScrollCore.findApproachMaxHeadValue(of: ScrollCore.autoScrollRef.Y, from: ScrollCore.realPluseDataY)
                     }
                     MouseEvent.scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[startIndexY]), xScroll: 0)
                     ScrollCore.scrollEventPosterStopCountY = startIndexY==0 ? 1 : startIndexY // 避免一直在0循环
+                    ScrollCore.singleScrollCount += 1
                 } else {
                     // 否则就按正常缓动的滚动事件, 按照正常递增
                     MouseEvent.scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]), xScroll: 0)
@@ -294,13 +298,13 @@ class ScrollCore: NSObject {
         for i in 1...ScrollCore.totalPoint {
             let di = Double(i)
             let dTotalPoint = Double(ScrollCore.totalPoint)
-            if (di <= dTotalPoint*ScrollCore.turningPoint) {
+            if (di <= dTotalPoint*ScrollCore.turningScale) {
                 samplePoint = di
-                basePoint = dTotalPoint*ScrollCore.turningPoint
+                basePoint = dTotalPoint*ScrollCore.turningScale
                 plusePoint = ScrollCore.headPulse(pos: samplePoint/basePoint)
             } else {
-                samplePoint = di - dTotalPoint*ScrollCore.turningPoint
-                basePoint = dTotalPoint*(1-ScrollCore.turningPoint)
+                samplePoint = di - dTotalPoint*ScrollCore.turningScale
+                basePoint = dTotalPoint*(1-ScrollCore.turningScale)
                 plusePoint = ScrollCore.tailPulse(pos: samplePoint/basePoint)
             }
             pulseData.append(plusePoint * ScrollCore.advancedOption.speed)
@@ -332,7 +336,7 @@ class ScrollCore: NSObject {
         return 0
     }
     // 查找数组中最接近输入值中最大的的项的Index
-    static func findApproachMaxValue(of value: Double, from array: [Double]) -> Int {
+    static func findApproachMaxHeadValue(of value: Double, from array: [Double]) -> Int {
         for i in 1...array.count {
             let left = array[i-1]
             let right = array[i]
@@ -351,7 +355,7 @@ class ScrollCore: NSObject {
         return 0
     }
     // 查找数组中最接近输入值中最大的的项位于下降区间的Index
-    static func findApproachMaxDownValue(of value: Double, from array: [Double]) -> Int {
+    static func findApproachMaxTailValue(of value: Double, from array: [Double]) -> Int {
         let peakIndex = findPeakIndex(from: array)
         // 直接从峰值之后找
         for i in peakIndex..<array.count {
@@ -361,7 +365,7 @@ class ScrollCore: NSObject {
             let leftDiff = value - left
             let rightDiff = value - right
             if leftDiff*rightDiff<=0 {
-                return array.index(of: left)! - 2
+                return array.index(of: left)!<peakIndex ? peakIndex : array.index(of: left)!-1
             }
         }
         // 找不到, 直接返回最大值
@@ -377,7 +381,6 @@ class ScrollCore: NSObject {
             return array.index(of: array.max()!)!
         }
     }
-    // Legency Interpolation END
     
     
     

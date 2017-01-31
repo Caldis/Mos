@@ -1,4 +1,7 @@
 
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "0gK-I9-96c"; */
+"0gK-I9-96c.title" = "Text Cell";
+
 /* Class = "NSMenuItem"; title = "Customize Toolbar…"; ObjectID = "1UK-8n-QPP"; */
 "1UK-8n-QPP.title" = "Customize Toolbar…";
 
@@ -41,9 +44,6 @@
 /* Class = "NSMenuItem"; title = "Enter Full Screen"; ObjectID = "4J7-dP-txa"; */
 "4J7-dP-txa.title" = "Enter Full Screen";
 
-/* Class = "NSTextFieldCell"; title = "Help"; ObjectID = "4Zw-Va-Z6x"; */
-"4Zw-Va-Z6x.title" = "Help";
-
 /* Class = "NSMenuItem"; title = "Quit Mos"; ObjectID = "4sb-4s-VLi"; */
 "4sb-4s-VLi.title" = "Quit Mos";
 
@@ -56,11 +56,14 @@
 /* Class = "NSTextFieldCell"; title = "Just some little job for mouse."; ObjectID = "5cx-xS-eRe"; */
 "5cx-xS-eRe.title" = "Just some little job for mouse.";
 
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "5ft-0j-oso"; */
+"5ft-0j-oso.title" = "Text Cell";
+
 /* Class = "NSMenuItem"; title = "About Mos"; ObjectID = "5kV-Vb-QxS"; */
 "5kV-Vb-QxS.title" = "About Mos";
 
-/* Class = "NSTextFieldCell"; title = "Current Version: 0.0.1"; ObjectID = "5oM-oR-Dsq"; */
-"5oM-oR-Dsq.title" = "Current Version: 0.0.1";
+/* Class = "NSTextFieldCell"; title = "Current Version"; ObjectID = "5oM-oR-Dsq"; */
+"5oM-oR-Dsq.title" = "Current Version";
 
 /* Class = "NSButtonCell"; title = "Scroll Reverse"; ObjectID = "6FR-2r-rxl"; */
 "6FR-2r-rxl.title" = "Scroll Reverse";
@@ -74,11 +77,17 @@
 /* Class = "NSMenu"; title = "Writing Direction"; ObjectID = "8mr-sm-Yjd"; */
 "8mr-sm-Yjd.title" = "Writing Direction";
 
+/* Class = "NSButtonCell"; title = "Github"; ObjectID = "99M-8D-HLN"; */
+"99M-8D-HLN.title" = "Github";
+
 /* Class = "NSMenuItem"; title = "Substitutions"; ObjectID = "9ic-FL-obx"; */
 "9ic-FL-obx.title" = "Substitutions";
 
 /* Class = "NSMenuItem"; title = "Smart Copy/Paste"; ObjectID = "9yt-4B-nSM"; */
 "9yt-4B-nSM.title" = "Smart Copy/Paste";
+
+/* Class = "NSButtonCell"; title = "Donate"; ObjectID = "AM8-cj-DnH"; */
+"AM8-cj-DnH.title" = "Donate";
 
 /* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
 "AYu-sK-qS6.title" = "Main Menu";
@@ -133,6 +142,12 @@
 
 /* Class = "NSMenuItem"; title = "View"; ObjectID = "H8h-7b-M4v"; */
 "H8h-7b-M4v.title" = "View";
+
+/* Class = "NSTableColumn"; headerCell.title = " Not S"; ObjectID = "HDo-Iu-l7K"; */
+"HDo-Iu-l7K.headerCell.title" = " Not S";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "HEV-nL-Tno"; */
+"HEV-nL-Tno.title" = "Text Cell";
 
 /* Class = "NSMenuItem"; title = "Text Replacement"; ObjectID = "HFQ-gK-NFA"; */
 "HFQ-gK-NFA.title" = "Text Replacement";
@@ -191,6 +206,9 @@
 /* Class = "NSMenuItem"; title = "\tDefault"; ObjectID = "Nop-cj-93Q"; */
 "Nop-cj-93Q.title" = "\tDefault";
 
+/* Class = "NSTextFieldCell"; title = "Not S: Not Smooth / Not R: Not Reverse"; ObjectID = "Nvh-BG-caL"; */
+"Nvh-BG-caL.title" = "Not S: Not Smooth / Not R: Not Reverse";
+
 /* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "OY7-WF-poV"; */
 "OY7-WF-poV.title" = "Minimize";
 
@@ -221,6 +239,9 @@
 /* Class = "NSViewController"; title = "About"; ObjectID = "RfV-Ow-3mF"; */
 "RfV-Ow-3mF.title" = "About";
 
+/* Class = "NSTextFieldCell"; title = "Ignored Application list:"; ObjectID = "Rgu-cb-5lp"; */
+"Rgu-cb-5lp.title" = "Ignored Application list:";
+
 /* Class = "NSMenuItem"; title = "Superscript"; ObjectID = "Rqc-34-cIF"; */
 "Rqc-34-cIF.title" = "Superscript";
 
@@ -245,8 +266,8 @@
 /* Class = "NSMenuItem"; title = "Center"; ObjectID = "VIY-Ag-zcb"; */
 "VIY-Ag-zcb.title" = "Center";
 
-/* Class = "NSTextFieldCell"; title = "Reverse the wheel scroll position."; ObjectID = "VUb-ZM-hXo"; */
-"VUb-ZM-hXo.title" = "Reverse the wheel scroll position.";
+/* Class = "NSTextFieldCell"; title = "Reverse the mouse wheel scroll direction."; ObjectID = "VUb-ZM-hXo"; */
+"VUb-ZM-hXo.title" = "Reverse the mouse wheel scroll direction.";
 
 /* Class = "NSMenuItem"; title = "Hide Others"; ObjectID = "Vdr-fp-XzO"; */
 "Vdr-fp-XzO.title" = "Hide Others";
@@ -260,9 +281,6 @@
 /* Class = "NSMenuItem"; title = "Underline"; ObjectID = "WRG-CD-K1S"; */
 "WRG-CD-K1S.title" = "Underline";
 
-/* Class = "NSTextFieldCell"; title = "Version: 0.6.8"; ObjectID = "WRP-Je-p5Q"; */
-"WRP-Je-p5Q.title" = "Version: 0.6.8";
-
 /* Class = "NSMenuItem"; title = "New"; ObjectID = "Was-JA-tGl"; */
 "Was-JA-tGl.title" = "New";
 
@@ -274,6 +292,9 @@
 
 /* Class = "NSViewController"; title = "Log"; ObjectID = "XfG-lQ-9wD"; */
 "XfG-lQ-9wD.title" = "Log";
+
+/* Class = "NSTextFieldCell"; title = "Application Name"; ObjectID = "XjY-7g-GLL"; */
+"XjY-7g-GLL.title" = "Application Name";
 
 /* Class = "NSMenuItem"; title = "Find…"; ObjectID = "Xz5-n4-O0W"; */
 "Xz5-n4-O0W.title" = "Find…";
@@ -296,6 +317,9 @@
 /* Class = "NSMenuItem"; title = "Paragraph"; ObjectID = "ZvO-Gk-QUH"; */
 "ZvO-Gk-QUH.title" = "Paragraph";
 
+/* Class = "NSButtonCell"; title = "Donate by paypal"; ObjectID = "aPi-cE-maK"; */
+"aPi-cE-maK.title" = "Donate by paypal";
+
 /* Class = "NSMenuItem"; title = "Print…"; ObjectID = "aTl-1u-JFS"; */
 "aTl-1u-JFS.title" = "Print…";
 
@@ -307,6 +331,9 @@
 
 /* Class = "NSMenuItem"; title = "Use Default"; ObjectID = "agt-UL-0e3"; */
 "agt-UL-0e3.title" = "Use Default";
+
+/* Class = "NSViewController"; title = "Ignore"; ObjectID = "bga-wG-iim"; */
+"bga-wG-iim.title" = "Ignore";
 
 /* Class = "NSMenuItem"; title = "Show Colors"; ObjectID = "bgn-CT-cEk"; */
 "bgn-CT-cEk.title" = "Show Colors";
@@ -343,9 +370,6 @@
 
 /* Class = "NSMenuItem"; title = "Undo"; ObjectID = "dRJ-4n-Yzg"; */
 "dRJ-4n-Yzg.title" = "Undo";
-
-/* Class = "NSTextFieldCell"; title = "axisY only"; ObjectID = "eDW-hJ-eCB"; */
-"eDW-hJ-eCB.title" = "axisY only";
 
 /* Class = "NSMenuItem"; title = "Paste"; ObjectID = "gVA-U4-sdL"; */
 "gVA-U4-sdL.title" = "Paste";
@@ -410,11 +434,14 @@
 /* Class = "NSMenuItem"; title = "Check Spelling While Typing"; ObjectID = "rbD-Rh-wIN"; */
 "rbD-Rh-wIN.title" = "Check Spelling While Typing";
 
+/* Class = "NSTableColumn"; headerCell.title = " Not R"; ObjectID = "rd0-ca-ufI"; */
+"rd0-ca-ufI.headerCell.title" = " Not R";
+
 /* Class = "NSMenuItem"; title = "Smart Dashes"; ObjectID = "rgM-f4-ycn"; */
 "rgM-f4-ycn.title" = "Smart Dashes";
 
-/* Class = "NSTextFieldCell"; title = "400"; ObjectID = "rzC-bb-p1R"; */
-"rzC-bb-p1R.title" = "400";
+/* Class = "NSTextFieldCell"; title = "480"; ObjectID = "rzC-bb-p1R"; */
+"rzC-bb-p1R.title" = "480";
 
 /* Class = "NSMenuItem"; title = "Preferences"; ObjectID = "set-dB-WDd"; */
 "set-dB-WDd.title" = "Preferences";
@@ -478,6 +505,9 @@
 
 /* Class = "NSMenuItem"; title = "Use All"; ObjectID = "xQD-1f-W4t"; */
 "xQD-1f-W4t.title" = "Use All";
+
+/* Class = "NSTableColumn"; headerCell.title = "Application"; ObjectID = "xfG-Cd-oIk"; */
+"xfG-Cd-oIk.headerCell.title" = "Application";
 
 /* Class = "NSMenuItem"; title = "Speech"; ObjectID = "xrE-MZ-jX0"; */
 "xrE-MZ-jX0.title" = "Speech";

@@ -831,10 +831,10 @@
             </objects>
             <point key="canvasLocation" x="612" y="1185"/>
         </scene>
-        <!--Exclude-->
+        <!--Ignore-->
         <scene sceneID="UqT-28-MT6">
             <objects>
-                <viewController title="Exclude" storyboardIdentifier="ignore" id="bga-wG-iim" customClass="PreferencesIgnoreViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Ignore" storyboardIdentifier="ignore" id="bga-wG-iim" customClass="PreferencesIgnoreViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="NAU-na-Vke">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -965,7 +965,7 @@
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="8dl-2h-i32">
-                                    <rect key="frame" x="1" y="254" width="408" height="16"/>
+                                    <rect key="frame" x="1" y="7" width="0.0" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="LP2-dF-uOZ">
@@ -1008,7 +1008,7 @@
                                 </connections>
                             </segmentedControl>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="yml-hF-QvX">
-                                <rect key="frame" x="20" y="333" width="410" height="5"/>
+                                <rect key="frame" x="20" y="333" width="410" height="4"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
@@ -1124,7 +1124,7 @@
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GPP-0S-Ldb">
                                 <rect key="frame" x="381" y="76" width="30" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="320" id="rzC-bb-p1R">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="480" id="rzC-bb-p1R">
                                     <font key="font" metaFont="system" size="10"/>
                                     <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1133,7 +1133,7 @@
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rUi-10-gBK">
                                 <rect key="frame" x="166" y="75" width="211" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <sliderCell key="cell" state="on" alignment="left" minValue="50" maxValue="1000" doubleValue="320" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="Zuj-l1-8M6"/>
+                                <sliderCell key="cell" state="on" alignment="left" minValue="50" maxValue="1000" doubleValue="480" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="Zuj-l1-8M6"/>
                                 <connections>
                                     <action selector="scrollTimeSliderChange:" target="iW5-CD-5OC" id="Ii3-bn-6H0"/>
                                 </connections>
