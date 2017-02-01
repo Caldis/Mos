@@ -39,6 +39,9 @@ http://mos.u2sk.com/
 <p align="center">
   <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferences-advanced.png?raw=true">
 </p>
+<p align="center">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferences-ignoredList.png?raw=true">
+</p>
 
 
 ## Download

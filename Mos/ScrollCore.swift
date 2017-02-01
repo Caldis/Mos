@@ -55,7 +55,7 @@ class ScrollCore: NSObject {
     // 动画相关
     static var fps = 60.0 // 帧数
     static var animTime = 380.0 // 动画时间 (这里已经由全局设置代替)
-    static var turningScale = 0.18 // 转折位置
+    static var turningScale = 0.20 // 转折位置
     static var scrollScale = 0.95 // 放大系数 (这里已经由全局设置代替)
     static var totalPoint = Int(ScrollCore.fps * Double(ScrollCore.defAdvancedOption.time) / 1000.0)
     static var turningPoint = Int(round(Double(ScrollCore.totalPoint)*ScrollCore.turningScale))
