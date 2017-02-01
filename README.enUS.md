@@ -57,7 +57,7 @@ http://mos.u2sk.com/
 
 ## Contributing
 
-We welcome all contributions. You can submit any ideas as [pull requests](https://github.com/Caldis/Mos/pulls) or as [GitHub issues](https://github.com/Caldis/Mos/issues). Have a good time! :)
+We welcome all contributions. You can submit any ideas or issue as [GitHub issues](https://github.com/Caldis/Mos/issues). Have a good time! :)
 
 
 ## LICENSE
