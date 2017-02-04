@@ -144,7 +144,7 @@
 "H8h-7b-M4v.title" = "View";
 
 /* Class = "NSTableColumn"; headerCell.title = " Not S"; ObjectID = "HDo-Iu-l7K"; */
-"HDo-Iu-l7K.headerCell.title" = " Not S";
+"HDo-Iu-l7K.headerCell.title" = " No S";
 
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "HEV-nL-Tno"; */
 "HEV-nL-Tno.title" = "Text Cell";
@@ -207,7 +207,7 @@
 "Nop-cj-93Q.title" = "\tDefault";
 
 /* Class = "NSTextFieldCell"; title = "Not S: Not Smooth / Not R: Not Reverse"; ObjectID = "Nvh-BG-caL"; */
-"Nvh-BG-caL.title" = "Not S: 忽略平滑滚动 / Not R: 忽略反转滚动";
+"Nvh-BG-caL.title" = "No S: 忽略平滑滚动 / No R: 忽略反转滚动";
 
 /* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "OY7-WF-poV"; */
 "OY7-WF-poV.title" = "Minimize";
@@ -435,7 +435,7 @@
 "rbD-Rh-wIN.title" = "Check Spelling While Typing";
 
 /* Class = "NSTableColumn"; headerCell.title = " Not R"; ObjectID = "rd0-ca-ufI"; */
-"rd0-ca-ufI.headerCell.title" = " Not R";
+"rd0-ca-ufI.headerCell.title" = " No R";
 
 /* Class = "NSMenuItem"; title = "Smart Dashes"; ObjectID = "rgM-f4-ycn"; */
 "rgM-f4-ycn.title" = "Smart Dashes";

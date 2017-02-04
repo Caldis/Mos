@@ -772,7 +772,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xh5-Hi-00d">
-                                <rect key="frame" x="166" y="90" width="107" height="18"/>
+                                <rect key="frame" x="166" y="90" width="130" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Scroll Smooth" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="weE-be-TAy">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -783,7 +783,7 @@
                                 </connections>
                             </button>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4ys-FQ-Ez6">
-                                <rect key="frame" x="166" y="43" width="109" height="18"/>
+                                <rect key="frame" x="166" y="43" width="130" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Scroll Reverse" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="6FR-2r-rxl">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -794,7 +794,7 @@
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uce-5T-Uvc">
-                                <rect key="frame" x="60" y="91" width="89" height="17"/>
+                                <rect key="frame" x="30" y="91" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Scroll Setting:" id="ILt-Gz-RiV">
                                     <font key="font" metaFont="system"/>
@@ -1008,7 +1008,7 @@
                                 </connections>
                             </segmentedControl>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="yml-hF-QvX">
-                                <rect key="frame" x="20" y="333" width="410" height="4"/>
+                                <rect key="frame" x="20" y="333" width="410" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
@@ -1156,7 +1156,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f4W-iU-YEd">
-                                <rect key="frame" x="56" y="126" width="94" height="17"/>
+                                <rect key="frame" x="30" y="126" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Speed Setting:" id="suV-WY-rbw">
                                     <font key="font" metaFont="system"/>
@@ -1176,7 +1176,7 @@
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0bd-7K-p6L">
-                                <rect key="frame" x="65" y="77" width="85" height="17"/>
+                                <rect key="frame" x="30" y="77" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Time Setting:" id="vEz-OS-QE8">
                                     <font key="font" metaFont="system"/>
@@ -1196,7 +1196,7 @@
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="612" y="1421"/>
+            <point key="canvasLocation" x="612" y="1420.5"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">

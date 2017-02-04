@@ -11,7 +11,7 @@ import Cocoa
 class PreferencesUpdatesViewController: NSViewController {
 
     // 国际化相关
-    let CorrentVersionLabelTitle = NSLocalizedString("Corrent Version", comment: "")
+    let CurrentVersionLabelTitle = NSLocalizedString("Current Version", comment: "")
     
     @IBOutlet weak var versionLabel: NSTextField!
     
@@ -19,7 +19,7 @@ class PreferencesUpdatesViewController: NSViewController {
         super.viewDidLoad()
         // 获取一下版本号
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
-        versionLabel.stringValue = "\(CorrentVersionLabelTitle) : \(version as! String)"
+        versionLabel.stringValue = "\(CurrentVersionLabelTitle) : \(version as! String)"
     }
     
     @IBAction func checkButtonClick(_ sender: NSButton) {
