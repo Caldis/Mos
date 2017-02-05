@@ -18,7 +18,7 @@ class HotKey {
         self.hotKey = hotKey
         self.eventHandler = eventHandler
     }
-
+    
     static func register(keyCode: UInt32, modifiers: UInt32, block: @escaping () -> ()) -> HotKey? {
         var hotKey:EventHotKeyRef?
         let hotkeyHandler:EventHandlerUPP = { _, _, _ in return noErr }

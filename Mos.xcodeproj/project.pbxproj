@@ -27,7 +27,7 @@
 		22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */; };
 		22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */; };
 		22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */; };
-		22A330CC1E46E9C800AF425E /* Hotkey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A330CB1E46E9C800AF425E /* Hotkey.swift */; };
+		22CE34FE1E47550C00E5E761 /* HotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22CE34FD1E47550C00E5E761 /* HotKey.swift */; };
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
 		22FCB97E1E461DFD008F72B1 /* MASShortcut.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22FCB9791E461DE1008F72B1 /* MASShortcut.framework */; };
 		22FCB97F1E461DFD008F72B1 /* MASShortcut.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22FCB9791E461DE1008F72B1 /* MASShortcut.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -155,7 +155,7 @@
 		2295D8271E40542B00054A5C /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAboutViewController.swift; sourceTree = "<group>"; };
 		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
-		22A330CB1E46E9C800AF425E /* Hotkey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Hotkey.swift; path = ../Hotkey.swift; sourceTree = "<group>"; };
+		22CE34FD1E47550C00E5E761 /* HotKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HotKey.swift; sourceTree = "<group>"; };
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MASShortcut.xcodeproj; path = "Framework/MASShortcut-master/MASShortcut.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -212,7 +212,7 @@
 			children = (
 				22142DA31E25344E00E4BFBF /* AppDelegate.swift */,
 				2291A8A21E2A5400004181B8 /* ScrollCore.swift */,
-				22A330CB1E46E9C800AF425E /* Hotkey.swift */,
+				22CE34FD1E47550C00E5E761 /* HotKey.swift */,
 				22A32B3B1E334B7A00A5CF38 /* ScrollMointorPanel */,
 				22A32B3A1E334B5900A5CF38 /* PreferencesPanel */,
 				22A32B3C1E334B9700A5CF38 /* StatusMenu */,
@@ -529,7 +529,7 @@
 				22142DA61E25344E00E4BFBF /* ScrollMointorViewController.swift in Sources */,
 				2278EE991E3DF770000AB25B /* PreferencesIgnoreViewController.swift in Sources */,
 				22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */,
-				22A330CC1E46E9C800AF425E /* Hotkey.swift in Sources */,
+				22CE34FE1E47550C00E5E761 /* HotKey.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
 				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
 				2278EE9D1E3DFAC8000AB25B /* IgnoredApplicationData.swift in Sources */,
