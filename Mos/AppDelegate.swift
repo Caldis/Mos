@@ -11,9 +11,6 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     
-    // 应用相关
-    let appIdentifier = "com.u2sk.Mos"
-    
     // eventTap相关
     var eventTap:CFMachPort?
     let mask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
@@ -102,7 +99,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // 读取用户设置
+        // 读取用户保存设置
         ScrollCore.readPreferencesData()
         // 开始截取事件
         eventTap = ScrollCore.startCapture(event: mask, to: eventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)

@@ -10,6 +10,11 @@ import Cocoa
 
 class ScrollCore: NSObject {
     
+    // 语言相关
+    static let sysLang = NSLocale.preferredLanguages[0]
+    static let cnLangs = ["zh-Hant-CN","zh-Hans-CN","zh-Hant-TW","zh-Hant-MO","zh-Hant-HK"]
+    static let appLanguageIsCN = ScrollCore.cnLangs.contains(ScrollCore.sysLang) //判断是否中文语系
+    
     // 全局设置相关
     static let defOption = ( smooth: true, reverse: true )
     static let defAdvancedOption = ( speed: 0.95, time: 480 )

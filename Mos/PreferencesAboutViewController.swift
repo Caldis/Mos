@@ -31,9 +31,13 @@ class PreferencesAboutViewController: NSViewController {
     }
     
     @IBAction func homepageButtonClick(_ sender: NSButton) {
-        NSWorkspace.shared().open(URL(string: "http://mos.u2sk.com")!)
+        let homePageUrl = ScrollCore.appLanguageIsCN ? "http://mos.u2sk.com/indexCN.html" : "http://mos.u2sk.com"
+        NSWorkspace.shared().open(URL(string:homePageUrl)!)
     }
     @IBAction func githubButtonClick(_ sender: NSButton) {
         NSWorkspace.shared().open(URL(string: "https://github.com/Caldis/Mos")!)
+    }
+    @IBAction func helpButtonClick(_ sender: NSButton) {
+        NSWorkspace.shared().open(URL(string: "https://github.com/Caldis/Mos/wiki")!)
     }
 }

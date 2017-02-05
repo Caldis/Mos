@@ -1,7 +1,7 @@
 //
 //  MouseEvent.h
 //  Mos
-//  用于封装OC中CGEventCreateScrollWheelEvent事件, Swift中缺失这个事件
+//  用于封装OC方法
 //  Created by Cb on 2017/1/17.
 //  Copyright © 2017年 Cb. All rights reserved.
 //

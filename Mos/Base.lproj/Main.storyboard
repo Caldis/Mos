@@ -1008,7 +1008,7 @@
                                 </connections>
                             </segmentedControl>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="yml-hF-QvX">
-                                <rect key="frame" x="20" y="333" width="410" height="4"/>
+                                <rect key="frame" x="20" y="333" width="410" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
@@ -1221,6 +1221,9 @@
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
+                                                <connections>
+                                                    <action selector="helpButtonClick:" target="RfV-Ow-3mF" id="ON8-if-teL"/>
+                                                </connections>
                                             </button>
                                             <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QC7-yb-ZOk">
                                                 <rect key="frame" x="20" y="12" width="90" height="19"/>

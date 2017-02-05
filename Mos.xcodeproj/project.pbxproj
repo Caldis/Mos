@@ -27,7 +27,10 @@
 		22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */; };
 		22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */; };
 		22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */; };
+		22A330CC1E46E9C800AF425E /* Hotkey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A330CB1E46E9C800AF425E /* Hotkey.swift */; };
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
+		22FCB97E1E461DFD008F72B1 /* MASShortcut.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22FCB9791E461DE1008F72B1 /* MASShortcut.framework */; };
+		22FCB97F1E461DFD008F72B1 /* MASShortcut.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22FCB9791E461DE1008F72B1 /* MASShortcut.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +76,34 @@
 			remoteGlobalIDString = 06165F231D8110E600722320;
 			remoteInfo = Charts;
 		};
+		22FCB9781E461DE1008F72B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0D827CD31990D4420010B8EF;
+			remoteInfo = MASShortcut;
+		};
+		22FCB97A1E461DE1008F72B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0D827D8319910AFF0010B8EF;
+			remoteInfo = MASShortcutTests;
+		};
+		22FCB97C1E461DE1008F72B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0D827D371990D5E70010B8EF;
+			remoteInfo = Demo;
+		};
+		22FCB9801E461DFD008F72B1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 0D827CD21990D4420010B8EF;
+			remoteInfo = MASShortcut;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -82,6 +113,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				22FCB97F1E461DFD008F72B1 /* MASShortcut.framework in Embed Frameworks */,
 				22816CF61E2A6CF10020D6B1 /* Charts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -123,7 +155,9 @@
 		2295D8271E40542B00054A5C /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAboutViewController.swift; sourceTree = "<group>"; };
 		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
+		22A330CB1E46E9C800AF425E /* Hotkey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Hotkey.swift; path = ../Hotkey.swift; sourceTree = "<group>"; };
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
+		22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MASShortcut.xcodeproj; path = "Framework/MASShortcut-master/MASShortcut.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +165,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22FCB97E1E461DFD008F72B1 /* MASShortcut.framework in Frameworks */,
 				22816CF51E2A6CF10020D6B1 /* Charts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -177,10 +212,11 @@
 			children = (
 				22142DA31E25344E00E4BFBF /* AppDelegate.swift */,
 				2291A8A21E2A5400004181B8 /* ScrollCore.swift */,
+				22A330CB1E46E9C800AF425E /* Hotkey.swift */,
 				22A32B3B1E334B7A00A5CF38 /* ScrollMointorPanel */,
 				22A32B3A1E334B5900A5CF38 /* PreferencesPanel */,
 				22A32B3C1E334B9700A5CF38 /* StatusMenu */,
-				22DF0E401E39B9820003FA77 /* MouseEventBridge */,
+				22DF0E401E39B9820003FA77 /* OCBridge */,
 				22142DA91E25344E00E4BFBF /* Main.storyboard */,
 				2225F8ED1E3B1B220020DD22 /* Localization */,
 				22142DA71E25344E00E4BFBF /* Assets.xcassets */,
@@ -219,6 +255,7 @@
 		22816CFA1E2A6DFA0020D6B1 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */,
 				22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */,
 			);
 			name = Framework;
@@ -257,14 +294,24 @@
 			name = StatusMenu;
 			sourceTree = "<group>";
 		};
-		22DF0E401E39B9820003FA77 /* MouseEventBridge */ = {
+		22DF0E401E39B9820003FA77 /* OCBridge */ = {
 			isa = PBXGroup;
 			children = (
 				226A2E6C1E2E68610035F1A6 /* Mos-Bridging-Header.h */,
 				226A2E711E2E68A00035F1A6 /* MouseEvent.h */,
 				226A2E6D1E2E68620035F1A6 /* MouseEvent.m */,
 			);
-			name = MouseEventBridge;
+			name = OCBridge;
+			sourceTree = "<group>";
+		};
+		22FCB9711E461DE1008F72B1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				22FCB9791E461DE1008F72B1 /* MASShortcut.framework */,
+				22FCB97B1E461DE1008F72B1 /* MASShortcutTests.xctest */,
+				22FCB97D1E461DE1008F72B1 /* Demo.app */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -283,6 +330,7 @@
 			);
 			dependencies = (
 				22816CF81E2A6CF10020D6B1 /* PBXTargetDependency */,
+				22FCB9811E461DFD008F72B1 /* PBXTargetDependency */,
 			);
 			name = Mos;
 			productName = Mos;
@@ -379,6 +427,10 @@
 					ProductGroup = 22816CEA1E2A6CD00020D6B1 /* Products */;
 					ProjectRef = 22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */;
 				},
+				{
+					ProductGroup = 22FCB9711E461DE1008F72B1 /* Products */;
+					ProjectRef = 22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -409,6 +461,27 @@
 			fileType = wrapper.cfbundle;
 			path = ChartsTests.xctest;
 			remoteRef = 22816CF31E2A6CD00020D6B1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22FCB9791E461DE1008F72B1 /* MASShortcut.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MASShortcut.framework;
+			remoteRef = 22FCB9781E461DE1008F72B1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22FCB97B1E461DE1008F72B1 /* MASShortcutTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = MASShortcutTests.xctest;
+			remoteRef = 22FCB97A1E461DE1008F72B1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22FCB97D1E461DE1008F72B1 /* Demo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Demo.app;
+			remoteRef = 22FCB97C1E461DE1008F72B1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -456,6 +529,7 @@
 				22142DA61E25344E00E4BFBF /* ScrollMointorViewController.swift in Sources */,
 				2278EE991E3DF770000AB25B /* PreferencesIgnoreViewController.swift in Sources */,
 				22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */,
+				22A330CC1E46E9C800AF425E /* Hotkey.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
 				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
 				2278EE9D1E3DFAC8000AB25B /* IgnoredApplicationData.swift in Sources */,
@@ -495,6 +569,11 @@
 			isa = PBXTargetDependency;
 			name = Charts;
 			targetProxy = 22816CF71E2A6CF10020D6B1 /* PBXContainerItemProxy */;
+		};
+		22FCB9811E461DFD008F72B1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MASShortcut;
+			targetProxy = 22FCB9801E461DFD008F72B1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

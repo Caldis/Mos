@@ -53,7 +53,7 @@ class PreferencesIgnoreViewController: NSViewController {
                     let applicationUrl = String(describing: openPanel.url!)
                     let applicationPath = (openPanel.url?.path)!
                     let applicationIcon = NSWorkspace.shared().icon(forFile: applicationPath)
-                    let applicationName = FileManager().displayName(atPath: applicationUrl)
+                    let applicationName = FileManager().displayName(atPath: applicationUrl).removingPercentEncoding!
                     if let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
                         let application = IgnoredApplication(notSmooth: true, notReverse: true, icon: applicationIcon, title: applicationName, bundleId: applicationBundleId)
                         ScrollCore.ignoredApplications.append(application)
