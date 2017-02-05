@@ -66,7 +66,7 @@
 "5oM-oR-Dsq.title" = "Current Version";
 
 /* Class = "NSButtonCell"; title = "Scroll Reverse"; ObjectID = "6FR-2r-rxl"; */
-"6FR-2r-rxl.title" = "Scroll Reverse";
+"6FR-2r-rxl.title" = "Reverse Scrolling";
 
 /* Class = "NSMenuItem"; title = "Redo"; ObjectID = "6dh-zS-Vam"; */
 "6dh-zS-Vam.title" = "Redo";
@@ -123,7 +123,7 @@
 "FeM-D8-WVr.title" = "Substitutions";
 
 /* Class = "NSTextFieldCell"; title = "Let the mouse wheel scroll smooth like a buttery."; ObjectID = "G8a-97-8Ey"; */
-"G8a-97-8Ey.title" = "Let the mouse wheel scroll smooth like a buttery.";
+"G8a-97-8Ey.title" = "Let the mouse wheel scrolling smooth like butter";
 
 /* Class = "NSMenuItem"; title = "Bold"; ObjectID = "GB9-OM-e27"; */
 "GB9-OM-e27.title" = "Bold";
@@ -144,7 +144,7 @@
 "H8h-7b-M4v.title" = "View";
 
 /* Class = "NSTableColumn"; headerCell.title = " Not S"; ObjectID = "HDo-Iu-l7K"; */
-"HDo-Iu-l7K.headerCell.title" = " Not S";
+"HDo-Iu-l7K.headerCell.title" = " No S";
 
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "HEV-nL-Tno"; */
 "HEV-nL-Tno.title" = "Text Cell";
@@ -165,7 +165,7 @@
 "IAo-SY-fd9.title" = "Open…";
 
 /* Class = "NSTextFieldCell"; title = "Scroll Setting:"; ObjectID = "ILt-Gz-RiV"; */
-"ILt-Gz-RiV.title" = "Scroll Setting:";
+"ILt-Gz-RiV.title" = "Scrolling Settings:";
 
 /* Class = "NSViewController"; title = "General"; ObjectID = "ITL-GD-CPd"; */
 "ITL-GD-CPd.title" = "General";
@@ -207,7 +207,7 @@
 "Nop-cj-93Q.title" = "\tDefault";
 
 /* Class = "NSTextFieldCell"; title = "Not S: Not Smooth / Not R: Not Reverse"; ObjectID = "Nvh-BG-caL"; */
-"Nvh-BG-caL.title" = "Not S: Not Smooth / Not R: Not Reverse";
+"Nvh-BG-caL.title" = "No S: No Smooth Scrolling / No R: No Reverse Scrolling";
 
 /* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "OY7-WF-poV"; */
 "OY7-WF-poV.title" = "Minimize";
@@ -240,7 +240,7 @@
 "RfV-Ow-3mF.title" = "About";
 
 /* Class = "NSTextFieldCell"; title = "Ignored Application list:"; ObjectID = "Rgu-cb-5lp"; */
-"Rgu-cb-5lp.title" = "Ignored Application list:";
+"Rgu-cb-5lp.title" = "List of ignored Applications:";
 
 /* Class = "NSMenuItem"; title = "Superscript"; ObjectID = "Rqc-34-cIF"; */
 "Rqc-34-cIF.title" = "Superscript";
@@ -252,7 +252,7 @@
 "S0p-oC-mLd.title" = "Jump to Selection";
 
 /* Class = "NSTextFieldCell"; title = "          Presenting the data on this window are extremely bad for scroll performance, keep close if not necessary."; ObjectID = "TUE-3v-CaJ"; */
-"TUE-3v-CaJ.title" = "          Presenting the data on this window are extremely bad for scroll performance, keep close if not necessary.";
+"TUE-3v-CaJ.title" = "          Leaving this window open would greatly impact scrolling performance. Close this window unless necessary.";
 
 /* Class = "NSMenu"; title = "Window"; ObjectID = "Td7-aD-5lo"; */
 "Td7-aD-5lo.title" = "Window";
@@ -267,7 +267,7 @@
 "VIY-Ag-zcb.title" = "Center";
 
 /* Class = "NSTextFieldCell"; title = "Reverse the mouse wheel scroll direction."; ObjectID = "VUb-ZM-hXo"; */
-"VUb-ZM-hXo.title" = "Reverse the mouse wheel scroll direction.";
+"VUb-ZM-hXo.title" = "Reverse scrolling for mouse wheel only";
 
 /* Class = "NSMenuItem"; title = "Hide Others"; ObjectID = "Vdr-fp-XzO"; */
 "Vdr-fp-XzO.title" = "Hide Others";
@@ -288,7 +288,7 @@
 "WeT-3V-zwk.title" = "Paste and Match Style";
 
 /* Class = "NSTextFieldCell"; title = "Control the time on scroll transition anim."; ObjectID = "X5f-kH-7lZ"; */
-"X5f-kH-7lZ.title" = "Control the time on scroll transition anim.";
+"X5f-kH-7lZ.title" = "Change the scrolling animation time";
 
 /* Class = "NSViewController"; title = "Log"; ObjectID = "XfG-lQ-9wD"; */
 "XfG-lQ-9wD.title" = "Log";
@@ -306,7 +306,7 @@
 "YGs-j5-SAR.title" = "\tDefault";
 
 /* Class = "NSMenuItem"; title = "Scroll Mointor"; ObjectID = "Ykd-J1-W5H"; */
-"Ykd-J1-W5H.title" = "Scroll Mointor";
+"Ykd-J1-W5H.title" = "Scrolling Mointor";
 
 /* Class = "NSMenuItem"; title = "Start Speaking"; ObjectID = "Ynk-f8-cLZ"; */
 "Ynk-f8-cLZ.title" = "Start Speaking";
@@ -318,7 +318,7 @@
 "ZvO-Gk-QUH.title" = "Paragraph";
 
 /* Class = "NSButtonCell"; title = "Donate by paypal"; ObjectID = "aPi-cE-maK"; */
-"aPi-cE-maK.title" = "Donate by paypal";
+"aPi-cE-maK.title" = "Donate Via PayPal";
 
 /* Class = "NSMenuItem"; title = "Print…"; ObjectID = "aTl-1u-JFS"; */
 "aTl-1u-JFS.title" = "Print…";
@@ -435,7 +435,7 @@
 "rbD-Rh-wIN.title" = "Check Spelling While Typing";
 
 /* Class = "NSTableColumn"; headerCell.title = " Not R"; ObjectID = "rd0-ca-ufI"; */
-"rd0-ca-ufI.headerCell.title" = " Not R";
+"rd0-ca-ufI.headerCell.title" = " No R";
 
 /* Class = "NSMenuItem"; title = "Smart Dashes"; ObjectID = "rgM-f4-ycn"; */
 "rgM-f4-ycn.title" = "Smart Dashes";
@@ -450,7 +450,7 @@
 "snW-S8-Cw5.title" = "Show Toolbar";
 
 /* Class = "NSTextFieldCell"; title = "Speed Setting:"; ObjectID = "suV-WY-rbw"; */
-"suV-WY-rbw.title" = "Speed Setting:";
+"suV-WY-rbw.title" = "Maximum Speed:";
 
 /* Class = "NSMenuItem"; title = "Data Detectors"; ObjectID = "tRr-pd-1PS"; */
 "tRr-pd-1PS.title" = "Data Detectors";
@@ -471,7 +471,7 @@
 "uRl-iY-unG.title" = "Cut";
 
 /* Class = "NSTextFieldCell"; title = "Time Setting:"; ObjectID = "vEz-OS-QE8"; */
-"vEz-OS-QE8.title" = "Time Setting:";
+"vEz-OS-QE8.title" = "Animation time:";
 
 /* Class = "NSMenuItem"; title = "Paste Style"; ObjectID = "vKC-jM-MkH"; */
 "vKC-jM-MkH.title" = "Paste Style";
@@ -486,7 +486,7 @@
 "vmV-6d-7jI.title" = "Make Upper Case";
 
 /* Class = "NSTextFieldCell"; title = "Control the maxium scroll speed."; ObjectID = "vmk-zZ-ifN"; */
-"vmk-zZ-ifN.title" = "Control the maxium scroll speed.";
+"vmk-zZ-ifN.title" = "Control the maximum scrolling speed";
 
 /* Class = "NSMenu"; title = "Ligatures"; ObjectID = "w0m-vy-SC9"; */
 "w0m-vy-SC9.title" = "Ligatures";
@@ -495,7 +495,7 @@
 "wb2-vD-lq4.title" = "Align Right";
 
 /* Class = "NSButtonCell"; title = "Scroll Smooth"; ObjectID = "weE-be-TAy"; */
-"weE-be-TAy.title" = "Scroll Smooth";
+"weE-be-TAy.title" = "Smooth Scrolling";
 
 /* Class = "NSMenuItem"; title = "Help"; ObjectID = "wpr-3q-Mcd"; */
 "wpr-3q-Mcd.title" = "Help";
@@ -513,7 +513,7 @@
 "xrE-MZ-jX0.title" = "Speech";
 
 /* Class = "NSButtonCell"; title = "HomePage"; ObjectID = "yDf-dn-Mcz"; */
-"yDf-dn-Mcz.title" = "HomePage";
+"yDf-dn-Mcz.title" = "Home Page";
 
 /* Class = "NSMenuItem"; title = "Show Substitutions"; ObjectID = "z6F-FW-3nz"; */
 "z6F-FW-3nz.title" = "Show Substitutions";
