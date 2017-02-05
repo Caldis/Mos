@@ -144,7 +144,7 @@
 "H8h-7b-M4v.title" = "View";
 
 /* Class = "NSTableColumn"; headerCell.title = " Not S"; ObjectID = "HDo-Iu-l7K"; */
-"HDo-Iu-l7K.headerCell.title" = " No S";
+"HDo-Iu-l7K.headerCell.title" = "  No S";
 
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "HEV-nL-Tno"; */
 "HEV-nL-Tno.title" = "Text Cell";
@@ -435,7 +435,7 @@
 "rbD-Rh-wIN.title" = "Check Spelling While Typing";
 
 /* Class = "NSTableColumn"; headerCell.title = " Not R"; ObjectID = "rd0-ca-ufI"; */
-"rd0-ca-ufI.headerCell.title" = " No R";
+"rd0-ca-ufI.headerCell.title" = "  No R";
 
 /* Class = "NSMenuItem"; title = "Smart Dashes"; ObjectID = "rgM-f4-ycn"; */
 "rgM-f4-ycn.title" = "Smart Dashes";
