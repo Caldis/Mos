@@ -10,14 +10,28 @@ import Cocoa
 
 class PreferencesGeneralViewController: NSViewController {
     
+    // Checkbox
     @IBOutlet weak var scrollSmoothCheckBox: NSButton!
     @IBOutlet weak var scrollReverseCheckBox: NSButton!
+    // Shortcut
+    // var kShortCut: MASShortcut!
+    // @IBOutlet weak var scrollSmoothShortcutRecoder: MASShortcutView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // 恢复一下设置
         scrollSmoothCheckBox.state = ScrollCore.option.smooth ? 1 : 0
         scrollReverseCheckBox.state = ScrollCore.option.reverse ? 1 : 0
+        // 初始化Shortcut
+//        scrollSmoothShortcutRecoder.shortcutValueChange = {
+//            sender in
+//            if let shortCutKey = self.scrollSmoothShortcutRecoder.shortcutValue {
+//                self.kShortCut = shortCutKey
+//                MASShortcutMonitor.shared().register(self.scrollSmoothShortcutRecoder.shortcutValue, withAction: {
+//                    print("\(shortCutKey) shortcut handler")
+//                })
+//            }
+//        }
     }
     
     // 是否启用平滑滚动

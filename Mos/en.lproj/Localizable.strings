@@ -1,7 +1,7 @@
 /* 
   Localizable.strings
   Mos
-
+  用于部分于代码内初始化的界面文本国际化
   Created by Cb on 2017/1/27.
   Copyright © 2017年 Cb. All rights reserved.
 */
@@ -10,6 +10,3 @@
 "Current Version" = "Current Version";
 "Scroll Mointor" = "Scroll Mointor";
 "Preferences" = "Preferences";
-"HomePage" = "HomePage";
-"Github" = "GitHub";
-"Donate" = "Buy author a cup of coffee";

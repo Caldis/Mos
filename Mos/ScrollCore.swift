@@ -98,7 +98,7 @@ class ScrollCore: NSObject {
         if ScrollCore.delayTimer !== nil {
             ScrollCore.delayTimer.invalidate()
         }
-        ScrollCore.delayTimer = Timer.scheduledTimer(timeInterval: ScrollCore.delayGap, target:ScrollCore.self, selector: #selector(ScrollCore.startScrollEventPoster), userInfo:nil, repeats:false)
+        ScrollCore.delayTimer = Timer.scheduledTimer(timeInterval: ScrollCore.delayGap, target:ScrollCore.self, selector: #selector(ScrollCore.activeScrollEventPoster), userInfo:nil, repeats:false)
     }
     
     
@@ -115,14 +115,14 @@ class ScrollCore: NSObject {
                 return kCVReturnSuccess
         })
     }
-    static func startScrollEventPoster() {
+    static func activeScrollEventPoster() {
         ScrollCore.updateRealPluseData(Y: ScrollCore.scrollRef.Y, X: ScrollCore.scrollRef.X)
         // 如果事件发送器没有在运行, 就运行一下
         if !CVDisplayLinkIsRunning(ScrollCore.scrollEventPoster!) {
             CVDisplayLinkStart(ScrollCore.scrollEventPoster!)
         } else {
             // TODO: 处理X轴数据
-            // 如果已经在运行, 则重设一下计步器
+            // 如果已经在运行, 则重设一下计数器
             ScrollCore.scrollEventPosterStopCountY = 0
             ScrollCore.scrollEventPosterStopCountX = 0
         }
@@ -136,10 +136,11 @@ class ScrollCore: NSObject {
     
     // 更新滚动数据
     static func updateScrollData(Y: Double, X: Double) {
+        // TODO: 处理X轴数据
         ScrollCore.beforeLastScrollRef = ScrollCore.lastScrollRef
         ScrollCore.lastScrollRef = ScrollCore.scrollRef
         ScrollCore.scrollRef.Y = Y
-        ScrollCore.scrollRef.X = X
+        // ScrollCore.scrollRef.X = X
     }
     // 更新实际滚动曲线
     static func updateRealPluseData(Y: Double, X: Double) {
@@ -177,7 +178,7 @@ class ScrollCore: NSObject {
     
     // 判断是否新的滚动事件
     static func isNewScroll(of event: CGEvent) -> Bool {
-        // 内部函数, 用于重设时间戳
+        // 重设时间戳
         func updatePulseTime() {
             let nowTime = NSDate()
             ScrollCore.pulseTimeCache = nowTime

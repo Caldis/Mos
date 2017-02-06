@@ -62,21 +62,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
                     // 是否平滑滚动, 且窗口BundleId不包含在禁止翻转滚动列表内
                     if ScrollCore.option.smooth && !ScrollCore.applicationInSmoothIgnoreList(bundleId: ScrollCore.eventTargetBundleId) {
-                        // 禁止返回原始对象
+                        // 禁止返回原始事件
                         handbackOriginalEvent = false
                         // 如果输入值小于10, 则格式化为10
-                        if abs(scrollPtY) < 10 {
-                            let y = scrollPtY<0.0 ? -10.0 : 10.0
-                            let x = 0.0
-                            ScrollCore.updateScrollData(Y: y, X: x)
+                        let absY = abs(scrollPtY)
+                        if absY > 0.0 && absY < 10.0 {
+                            ScrollCore.updateScrollData(Y: scrollPtY<0.0 ? -10.0 : 10.0, X: 0.0)
                         } else {
                             ScrollCore.updateScrollData(Y: scrollPtY, X: 0.0)
                         }
                         // 启动一下事件
-                        ScrollCore.startScrollEventPoster()
+                        ScrollCore.activeScrollEventPoster()
                     }
                 }
-                // 处理滚动数据 (X轴横向滚轮, 如 Logetech MxMaster)
+                // 处理滚动数据 (X轴, 横向滚轮, 如 Logetech MxMaster)
                 if event.getIntegerValueField(.scrollWheelEventDeltaAxis2) != 0 {
                     // 啥都不干
                 }

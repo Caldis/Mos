@@ -77,8 +77,8 @@
 /* Class = "NSMenu"; title = "Writing Direction"; ObjectID = "8mr-sm-Yjd"; */
 "8mr-sm-Yjd.title" = "Writing Direction";
 
-/* Class = "NSButtonCell"; title = "Github"; ObjectID = "99M-8D-HLN"; */
-"99M-8D-HLN.title" = "Github";
+/* Class = "NSButtonCell"; title = "GitHub"; ObjectID = "99M-8D-HLN"; */
+"99M-8D-HLN.title" = "GitHub";
 
 /* Class = "NSMenuItem"; title = "Substitutions"; ObjectID = "9ic-FL-obx"; */
 "9ic-FL-obx.title" = "Substitutions";
@@ -512,8 +512,8 @@
 /* Class = "NSMenuItem"; title = "Speech"; ObjectID = "xrE-MZ-jX0"; */
 "xrE-MZ-jX0.title" = "Speech";
 
-/* Class = "NSButtonCell"; title = "HomePage"; ObjectID = "yDf-dn-Mcz"; */
-"yDf-dn-Mcz.title" = "HomePage";
+/* Class = "NSButtonCell"; title = "Home Page"; ObjectID = "yDf-dn-Mcz"; */
+"yDf-dn-Mcz.title" = "Home Page";
 
 /* Class = "NSMenuItem"; title = "Show Substitutions"; ObjectID = "z6F-FW-3nz"; */
 "z6F-FW-3nz.title" = "Show Substitutions";
