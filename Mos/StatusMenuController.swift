@@ -11,13 +11,13 @@ import Cocoa
 class StatusMenuController: NSObject {
     
     // 国际化相关
-    let ScrollMointorWindowTitle = NSLocalizedString("Scroll Mointor", comment: "")
+    let ScrollMonitorWindowTitle = NSLocalizedString("Scroll Monitor", comment: "")
     let PreferencesWindowTitle = NSLocalizedString("Preferences", comment: "")
     
     // 创建窗口相关
-    static var scrollMointorWindowIsOpen = false
+    static var scrollMonitorWindowIsOpen = false
     static var preferencesWindowIsOpen = false
-    static var scrollMointorWindowController:NSWindowController?
+    static var scrollMonitorWindowController:NSWindowController?
     static var preferencesWindowController:NSWindowController?
     
     // 状态栏相关
@@ -48,11 +48,11 @@ class StatusMenuController: NSObject {
     // 点击ScrollWatcher按钮
     @IBAction func scrollWatcherClick(_ sender: Any) {
         // 显示ScrollWatcher窗口
-        if !StatusMenuController.scrollMointorWindowIsOpen {
-            StatusMenuController.scrollMointorWindowController = instantiateWindowController(with: "ScrollMointorWindowController") as? ScrollMointorWindowController
-            StatusMenuController.scrollMointorWindowController?.window?.makeKeyAndOrderFront(self)
-            showWindowWithTitle(StatusMenuController.scrollMointorWindowController!, title: ScrollMointorWindowTitle)
-            StatusMenuController.scrollMointorWindowIsOpen = true
+        if !StatusMenuController.scrollMonitorWindowIsOpen {
+            StatusMenuController.scrollMonitorWindowController = instantiateWindowController(with: "ScrollMonitorWindowController") as? ScrollMonitorWindowController
+            StatusMenuController.scrollMonitorWindowController?.window?.makeKeyAndOrderFront(self)
+            showWindowWithTitle(StatusMenuController.scrollMonitorWindowController!, title: ScrollMonitorWindowTitle)
+            StatusMenuController.scrollMonitorWindowIsOpen = true
         } else {
             // 如果已经显示了, 就前置显示
             NSApp.activate(ignoringOtherApps: true)

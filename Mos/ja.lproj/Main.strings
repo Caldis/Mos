@@ -305,8 +305,8 @@
 /* Class = "NSMenuItem"; title = "\tDefault"; ObjectID = "YGs-j5-SAR"; */
 "YGs-j5-SAR.title" = "\tDefault";
 
-/* Class = "NSMenuItem"; title = "Scroll Mointor"; ObjectID = "Ykd-J1-W5H"; */
-"Ykd-J1-W5H.title" = "Scroll Mointor";
+/* Class = "NSMenuItem"; title = "Scroll Monitor"; ObjectID = "Ykd-J1-W5H"; */
+"Ykd-J1-W5H.title" = "Scroll Monitor";
 
 /* Class = "NSMenuItem"; title = "Start Speaking"; ObjectID = "Ynk-f8-cLZ"; */
 "Ynk-f8-cLZ.title" = "Start Speaking";
@@ -517,3 +517,30 @@
 
 /* Class = "NSMenuItem"; title = "Show Substitutions"; ObjectID = "z6F-FW-3nz"; */
 "z6F-FW-3nz.title" = "Show Substitutions";
+
+/* Class = "NSTextFieldCell"; title = "Recorder"; ObjectID = "efv-Gs-PYF"; */
+"efv-Gs-PYF.title" = "Recorder";
+
+/* Class = "NSTextFieldCell"; title = "The Scroll Monitor is ..."; ObjectID = "GgW-De-o8u"; */
+"GgW-De-o8u.title" = "The Scroll Monitor is using to monitoring the scroll event. When you find MOS working not good with your mouse, you can help to improve MOS via record and upload your mouse wheel's scroll data.";
+
+/* Class = "NSTextFieldCell"; title = "To feedback the issue..."; ObjectID = "xEL-d6-OKW"; */
+"xEL-d6-OKW.title" = "To feedback the issue, please follow the step below: ";
+
+/* Class = "NSTextFieldCell"; title = "1. Click the ▶️ button on corner of the Scroll Monitor."; ObjectID = "IqW-Z5-ToN"; */
+"IqW-Z5-ToN.title" = "1. Click the ▶️ button on corner of the Scroll Monitor.";
+
+/* Class = "NSTextFieldCell"; title = "2. Repeat the issue scroll action."; ObjectID = "Nq1-es-wP6"; */
+"Nq1-es-wP6.title" = "2. Repeat the issue scroll action.";
+
+/* Class = "NSTextFieldCell"; title = "3. Click the ⏹ to stop record, and save the log files."; ObjectID = "qyu-4j-edC"; */
+"qyu-4j-edC.title" = "3. Click the ⏹ to stop record, and save the log files.";
+
+/* Class = "NSTextFieldCell"; title = "4. Give us your feedback here: "; ObjectID = "dAp-hk-dXG"; */
+"dAp-hk-dXG.title" = "4. Give us your feedback here: ";
+
+/* Class = "NSTextFieldCell"; title = "5. Describle your issue, do..."; ObjectID = "hnM-2T-1QS"; */
+"hnM-2T-1QS.title" = "5. Describle your issue, don't forget to open the log file and copy&patse the content to your issue post.";
+
+/* Class = "NSTextFieldCell"; title = "We hope to listen your voice, please feedback if you get any issue."; ObjectID = "eYe-7m-IC2"; */
+"eYe-7m-IC2.title" = "We hope to listen your voice, please feedback if you get any issue.";

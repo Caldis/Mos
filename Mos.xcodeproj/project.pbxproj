@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA31E25344E00E4BFBF /* AppDelegate.swift */; };
-		22142DA61E25344E00E4BFBF /* ScrollMointorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* ScrollMointorViewController.swift */; };
+		22142DA61E25344E00E4BFBF /* ScrollMonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* ScrollMonitorViewController.swift */; };
 		22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA71E25344E00E4BFBF /* Assets.xcassets */; };
 		22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA91E25344E00E4BFBF /* Main.storyboard */; };
 		22142DB61E25344F00E4BFBF /* MosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DB51E25344F00E4BFBF /* MosTests.swift */; };
@@ -21,7 +21,7 @@
 		228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */; };
 		22816CF51E2A6CF10020D6B1 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22816CF01E2A6CD00020D6B1 /* Charts.framework */; };
 		22816CF61E2A6CF10020D6B1 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22816CF01E2A6CD00020D6B1 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22816CFF1E2B31020020D6B1 /* ScrollMointorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22816CFE1E2B31020020D6B1 /* ScrollMointorWindowController.swift */; };
+		22816CFF1E2B31020020D6B1 /* ScrollMonitorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22816CFE1E2B31020020D6B1 /* ScrollMonitorWindowController.swift */; };
 		22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */; };
 		2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2291A8A21E2A5400004181B8 /* ScrollCore.swift */; };
 		22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */; };
@@ -124,7 +124,7 @@
 /* Begin PBXFileReference section */
 		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22142DA31E25344E00E4BFBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		22142DA51E25344E00E4BFBF /* ScrollMointorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollMointorViewController.swift; sourceTree = "<group>"; };
+		22142DA51E25344E00E4BFBF /* ScrollMonitorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollMonitorViewController.swift; sourceTree = "<group>"; };
 		22142DA71E25344E00E4BFBF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22142DAA1E25344E00E4BFBF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		22142DAC1E25344E00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -144,7 +144,7 @@
 		2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesGeneralViewController.swift; sourceTree = "<group>"; };
 		22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Framework/Charts-master/Charts.xcodeproj"; sourceTree = "<group>"; };
-		22816CFE1E2B31020020D6B1 /* ScrollMointorWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollMointorWindowController.swift; sourceTree = "<group>"; };
+		22816CFE1E2B31020020D6B1 /* ScrollMonitorWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollMonitorWindowController.swift; sourceTree = "<group>"; };
 		22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
 		2291A8A21E2A5400004181B8 /* ScrollCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollCore.swift; sourceTree = "<group>"; };
 		22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesDonateViewController.swift; sourceTree = "<group>"; };
@@ -213,7 +213,7 @@
 				22142DA31E25344E00E4BFBF /* AppDelegate.swift */,
 				2291A8A21E2A5400004181B8 /* ScrollCore.swift */,
 				22CE34FD1E47550C00E5E761 /* HotKey.swift */,
-				22A32B3B1E334B7A00A5CF38 /* ScrollMointorPanel */,
+				22A32B3B1E334B7A00A5CF38 /* ScrollMonitorPanel */,
 				22A32B3A1E334B5900A5CF38 /* PreferencesPanel */,
 				22A32B3C1E334B9700A5CF38 /* StatusMenu */,
 				22DF0E401E39B9820003FA77 /* OCBridge */,
@@ -277,13 +277,13 @@
 			name = PreferencesPanel;
 			sourceTree = "<group>";
 		};
-		22A32B3B1E334B7A00A5CF38 /* ScrollMointorPanel */ = {
+		22A32B3B1E334B7A00A5CF38 /* ScrollMonitorPanel */ = {
 			isa = PBXGroup;
 			children = (
-				22142DA51E25344E00E4BFBF /* ScrollMointorViewController.swift */,
-				22816CFE1E2B31020020D6B1 /* ScrollMointorWindowController.swift */,
+				22142DA51E25344E00E4BFBF /* ScrollMonitorViewController.swift */,
+				22816CFE1E2B31020020D6B1 /* ScrollMonitorWindowController.swift */,
 			);
-			name = ScrollMointorPanel;
+			name = ScrollMonitorPanel;
 			sourceTree = "<group>";
 		};
 		22A32B3C1E334B9700A5CF38 /* StatusMenu */ = {
@@ -524,9 +524,9 @@
 				22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */,
 				226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */,
 				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,
-				22816CFF1E2B31020020D6B1 /* ScrollMointorWindowController.swift in Sources */,
+				22816CFF1E2B31020020D6B1 /* ScrollMonitorWindowController.swift in Sources */,
 				22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */,
-				22142DA61E25344E00E4BFBF /* ScrollMointorViewController.swift in Sources */,
+				22142DA61E25344E00E4BFBF /* ScrollMonitorViewController.swift in Sources */,
 				2278EE991E3DF770000AB25B /* PreferencesIgnoreViewController.swift in Sources */,
 				22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */,
 				22CE34FE1E47550C00E5E761 /* HotKey.swift in Sources */,

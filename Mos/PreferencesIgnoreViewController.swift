@@ -51,7 +51,7 @@ class PreferencesIgnoreViewController: NSViewController {
                 if result == NSFileHandlingPanelOKButton && result == NSModalResponseOK {
                     // 根据路径获取application信息并保存到ignoredApplications列表中
                     let applicationUrl = String(describing: openPanel.url!)
-                    let applicationPath = (openPanel.url?.path)!
+                    let applicationPath = openPanel.url!.path
                     let applicationIcon = NSWorkspace.shared().icon(forFile: applicationPath)
                     let applicationName = FileManager().displayName(atPath: applicationUrl).removingPercentEncoding!
                     if let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {

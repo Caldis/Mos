@@ -41,7 +41,7 @@ class ScrollCore: NSObject {
     static var eventTargetBundleId:String!
     static var ignoredApplications = [IgnoredApplication]()
     
-    // 新滚动事件相关
+    // 区分新滚动事件相关
     static var pulseGap = 0.3 // 间隔时间(s)
     static var pulseTimeCache: NSDate? //用于缓存上一次的时间
     
@@ -180,8 +180,7 @@ class ScrollCore: NSObject {
     static func isNewScroll(of event: CGEvent) -> Bool {
         // 重设时间戳
         func updatePulseTime() {
-            let nowTime = NSDate()
-            ScrollCore.pulseTimeCache = nowTime
+            ScrollCore.pulseTimeCache = NSDate()
         }
         
         // 如果scrollWheelEventScrollCount字段存在, 则为触控板继续加速运动, 非新滚动

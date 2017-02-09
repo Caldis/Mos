@@ -305,7 +305,7 @@
 /* Class = "NSMenuItem"; title = "\tDefault"; ObjectID = "YGs-j5-SAR"; */
 "YGs-j5-SAR.title" = "\tDefault";
 
-/* Class = "NSMenuItem"; title = "Scroll Mointor"; ObjectID = "Ykd-J1-W5H"; */
+/* Class = "NSMenuItem"; title = "Scroll Monitor"; ObjectID = "Ykd-J1-W5H"; */
 "Ykd-J1-W5H.title" = "滚动监控";
 
 /* Class = "NSMenuItem"; title = "Start Speaking"; ObjectID = "Ynk-f8-cLZ"; */
@@ -517,3 +517,30 @@
 
 /* Class = "NSMenuItem"; title = "Show Substitutions"; ObjectID = "z6F-FW-3nz"; */
 "z6F-FW-3nz.title" = "Show Substitutions";
+
+/* Class = "NSTextFieldCell"; title = "Recorder"; ObjectID = "efv-Gs-PYF"; */
+"efv-Gs-PYF.title" = "记录";
+
+/* Class = "NSTextFieldCell"; title = "The Scroll Monitor is ..."; ObjectID = "GgW-De-o8u"; */
+"GgW-De-o8u.title" = "滚动监视器是用于监控鼠标或触控板的滚动曲线的工具. 当您发现MOS在您使用某个鼠标时出现工作不正常时, 您可以录制一段您鼠标滚轮的滚动事件提交给我们以帮助我们更加方便地定位罕见的鼠标特性, 并推动我们不断改善MOS";
+
+/* Class = "NSTextFieldCell"; title = "To feedback the issue..."; ObjectID = "xEL-d6-OKW"; */
+"xEL-d6-OKW.title" = "如果要反馈问题, 请跟随以下步骤: ";
+
+/* Class = "NSTextFieldCell"; title = "1. Click the ▶️ button on corner of the Scroll Monitor."; ObjectID = "IqW-Z5-ToN"; */
+"IqW-Z5-ToN.title" = "1. 点击滚动监视器右下的 ▶️ 按钮开始记录滚动事件";
+
+/* Class = "NSTextFieldCell"; title = "2. Repeat the issue scroll action."; ObjectID = "Nq1-es-wP6"; */
+"Nq1-es-wP6.title" = "2. 重复您发生问题的步骤";
+
+/* Class = "NSTextFieldCell"; title = "3. Click the ⏹ to stop record, and save the log files."; ObjectID = "qyu-4j-edC"; */
+"qyu-4j-edC.title" = "3. 点击 ⏹ 按钮停止记录, 然后保存记录文件";
+
+/* Class = "NSTextFieldCell"; title = "4. Give us your feedback here: "; ObjectID = "dAp-hk-dXG"; */
+"dAp-hk-dXG.title" = "4. 在这里提交你的问题: ";
+
+/* Class = "NSTextFieldCell"; title = "5. Describle your issue, do..."; ObjectID = "hnM-2T-1QS"; */
+"hnM-2T-1QS.title" = "5. 在issue帖子中描述您的问题, 也别忘了打开刚刚保存的记录文件, 然后复制黏贴到帖子内";
+
+/* Class = "NSTextFieldCell"; title = "We hope to listen your voice, please feedback if you get any issue."; ObjectID = "eYe-7m-IC2"; */
+"eYe-7m-IC2.title" = "我们非常期望听到您的反馈, 欢迎随时联系我们";

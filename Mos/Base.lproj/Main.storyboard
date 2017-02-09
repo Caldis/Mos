@@ -665,7 +665,7 @@
                 </customObject>
                 <menu id="W7F-SC-gG1">
                     <items>
-                        <menuItem title="Scroll Mointor" id="Ykd-J1-W5H">
+                        <menuItem title="Scroll Monitor" id="Ykd-J1-W5H">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
                                 <action selector="scrollWatcherClick:" target="IRm-4F-5BO" id="C5K-YP-d1G"/>
@@ -692,7 +692,7 @@
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController storyboardIdentifier="ScrollMointorWindowController" showSeguePresentationStyle="single" id="B8D-0N-5wS" customClass="ScrollMointorWindowController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <windowController storyboardIdentifier="ScrollMonitorWindowController" showSeguePresentationStyle="single" id="B8D-0N-5wS" customClass="ScrollMonitorWindowController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -700,6 +700,7 @@
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
                     </window>
                     <connections>
+                        <outlet property="scrollMonitorWindow" destination="IQv-IB-iLA" id="GVP-B8-xHF"/>
                         <segue destination="XfG-lQ-9wD" kind="relationship" relationship="window.shadowedContentViewController" id="cq2-FE-JQM"/>
                     </connections>
                 </windowController>
@@ -1343,10 +1344,10 @@
             </objects>
             <point key="canvasLocation" x="2139" y="1577"/>
         </scene>
-        <!--Scroll Watcher-->
+        <!--Scroll Monitor-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController title="Log" id="XfG-lQ-9wD" userLabel="Scroll Watcher" customClass="ScrollMointorViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Log" id="XfG-lQ-9wD" userLabel="Scroll Monitor" customClass="ScrollMonitorViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="1138" height="413"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1573,19 +1574,75 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
+                                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kfQ-e6-NHS">
+                                        <rect key="frame" x="1098" y="9" width="25" height="25"/>
+                                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="R9r-gb-UtQ">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <segue destination="rFC-5g-iyr" kind="popover" popoverAnchorView="kfQ-e6-NHS" popoverBehavior="t" preferredEdge="maxY" id="p5c-fA-ewn"/>
+                                        </connections>
+                                    </button>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MgV-PD-aBm">
+                                        <rect key="frame" x="1038" y="11" width="50" height="22"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="50" id="1Nc-nZ-izM"/>
+                                            <constraint firstAttribute="height" constant="19" id="TqN-nz-hu7"/>
+                                        </constraints>
+                                        <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="ScrollMonitorStartRecorder" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="dXa-1k-JHJ">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="scrollEventRecorderButtonClick:" target="XfG-lQ-9wD" id="ydB-Kd-M2r"/>
+                                        </connections>
+                                    </button>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WWJ-BS-d1o">
+                                        <rect key="frame" x="924" y="16" width="104" height="13"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="100" id="y4n-Q4-5hF"/>
+                                        </constraints>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Recorder" id="efv-Gs-PYF">
+                                            <font key="font" metaFont="system" size="10"/>
+                                            <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="OlM-8K-9cL">
+                                        <rect key="frame" x="1001" y="181" width="119" height="18"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="115" id="vHb-7W-CLR"/>
+                                        </constraints>
+                                        <buttonCell key="cell" type="check" title="OriginEvent" bezelStyle="regularSquare" imagePosition="right" alignment="right" state="on" inset="2" id="oL3-5T-vtP">
+                                            <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system" size="10"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="scrollEventRecoderPlayOriginEventCheckBoxOnToggle:" target="XfG-lQ-9wD" id="66I-Nz-CIj"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="MgV-PD-aBm" secondAttribute="bottom" constant="13" id="426-uw-r6R"/>
+                                    <constraint firstItem="kfQ-e6-NHS" firstAttribute="leading" secondItem="MgV-PD-aBm" secondAttribute="trailing" constant="12" id="5Uh-Kk-Sai"/>
                                     <constraint firstItem="5GB-25-6Oj" firstAttribute="top" secondItem="mt4-oP-Qe0" secondAttribute="top" constant="35" id="6uL-nK-RhN"/>
                                     <constraint firstItem="bhk-ID-ins" firstAttribute="top" secondItem="5GB-25-6Oj" secondAttribute="bottom" constant="8" symbolic="YES" id="GZK-BH-fPY"/>
+                                    <constraint firstItem="bhk-ID-ins" firstAttribute="top" secondItem="OlM-8K-9cL" secondAttribute="bottom" constant="13" id="HLW-mn-1I1"/>
                                     <constraint firstAttribute="bottom" secondItem="bhk-ID-ins" secondAttribute="bottom" constant="40" id="MZh-5K-CHm"/>
                                     <constraint firstAttribute="bottom" secondItem="bb8-Rh-HpB" secondAttribute="bottom" constant="20" id="OEV-8O-phb"/>
                                     <constraint firstItem="5GB-25-6Oj" firstAttribute="leading" secondItem="bhk-ID-ins" secondAttribute="leading" id="PlV-Xg-dbh"/>
+                                    <constraint firstAttribute="trailing" secondItem="OlM-8K-9cL" secondAttribute="trailing" constant="20" id="Qyn-wo-JNf"/>
                                     <constraint firstItem="5GB-25-6Oj" firstAttribute="leading" secondItem="mt4-oP-Qe0" secondAttribute="leading" constant="20" symbolic="YES" id="b7F-lZ-Yao"/>
                                     <constraint firstItem="5GB-25-6Oj" firstAttribute="centerX" secondItem="bhk-ID-ins" secondAttribute="centerX" id="cZc-b6-RW2"/>
                                     <constraint firstItem="bb8-Rh-HpB" firstAttribute="leading" secondItem="mt4-oP-Qe0" secondAttribute="leading" id="fcE-sN-dwO"/>
+                                    <constraint firstAttribute="trailing" secondItem="kfQ-e6-NHS" secondAttribute="trailing" constant="17" id="kfv-Fg-w5u"/>
                                     <constraint firstItem="bb8-Rh-HpB" firstAttribute="baseline" secondItem="Was-VF-M63" secondAttribute="baseline" id="mk4-xE-9jv"/>
                                     <constraint firstAttribute="trailing" secondItem="bhk-ID-ins" secondAttribute="trailing" constant="17" id="px1-eA-DVB"/>
                                     <constraint firstItem="bb8-Rh-HpB" firstAttribute="leading" secondItem="Was-VF-M63" secondAttribute="leading" id="r0B-Ms-DQw"/>
+                                    <constraint firstAttribute="bottom" secondItem="WWJ-BS-d1o" secondAttribute="bottom" constant="16" id="u5p-Kc-wwd"/>
+                                    <constraint firstItem="MgV-PD-aBm" firstAttribute="leading" secondItem="WWJ-BS-d1o" secondAttribute="trailing" constant="12" id="v8Q-re-45C"/>
+                                    <constraint firstAttribute="bottom" secondItem="kfQ-e6-NHS" secondAttribute="bottom" constant="12" id="y25-4n-fxn"/>
                                 </constraints>
                             </visualEffectView>
                         </subviews>
@@ -1601,12 +1658,115 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                         <outlet property="otherLogTextField" destination="As1-do-X5y" id="cUY-I3-MTu"/>
                         <outlet property="processLogTextField" destination="jHZ-op-O4X" id="IQh-kA-14o"/>
                         <outlet property="scrollDetailLogTextField" destination="3Ss-fa-4gd" id="8la-Zr-BBH"/>
+                        <outlet property="scrollEventRecoderPlayOriginEventCheckBox" destination="OlM-8K-9cL" id="169-Bx-bFB"/>
+                        <outlet property="scrollEventRecoderTitle" destination="WWJ-BS-d1o" id="2vA-mZ-WJT"/>
+                        <outlet property="scrollEventRecorderButton" destination="MgV-PD-aBm" id="Lp4-XR-iyt"/>
                         <outlet property="scrollLogTextField" destination="nyM-dG-I4A" id="wPZ-Da-AoK"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="75" y="794.5"/>
+        </scene>
+        <!--Scroll Monitor Help View Controller-->
+        <scene sceneID="pwV-nW-gT1">
+            <objects>
+                <viewController id="rFC-5g-iyr" customClass="ScrollMonitorHelpViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="ub4-PF-jNu">
+                        <rect key="frame" x="0.0" y="0.0" width="399" height="255"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k6H-08-izG">
+                                <rect key="frame" x="18" y="196" width="349" height="39"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="justified" id="GgW-De-o8u">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <string key="title">The Scroll Monitor is using to monitoring the scroll event. When you find MOS working not good with your mouse, you can help to improve MOS via record and upload your mouse wheel's scroll data.</string>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hWk-YB-Vd9">
+                                <rect key="frame" x="20" y="171" width="347" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="To feedback the issue, please follow the step below: " id="xEL-d6-OKW">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RdH-qC-7rb">
+                                <rect key="frame" x="32" y="146" width="335" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="1. Click the ▶️ button on the corner of the Scroll Monitor." id="IqW-Z5-ToN">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CEP-Em-VsM">
+                                <rect key="frame" x="32" y="108" width="335" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="3. Click the ⏹ to stop record, and save the log files." id="qyu-4j-edC">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hA0-LZ-QVQ">
+                                <rect key="frame" x="32" y="89" width="335" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="4. Give us your feedback here: " id="dAp-hk-dXG">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rfN-7Q-Q5p">
+                                <rect key="frame" x="44" y="73" width="231" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="https://github.com/Caldis/Mos/issues" id="wgs-us-Zeb">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" red="0.0" green="0.54296875" blue="0.94086371527777779" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AJK-lh-eck">
+                                <rect key="frame" x="30" y="44" width="337" height="27"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="5. Describle your issue, don't forget to open the log file and copy&amp;patse the content to your issue post." id="hnM-2T-1QS">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zm1-0L-Jyu">
+                                <rect key="frame" x="18" y="20" width="347" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="We hope to listen your voice, please feedback if you get any issue." id="eYe-7m-IC2">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eVe-DH-ocR">
+                                <rect key="frame" x="32" y="127" width="335" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="2. Repeat the issue scroll action." id="Nq1-es-wP6">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="issueUrl" destination="rfN-7Q-Q5p" id="jos-Eo-YwC"/>
+                    </connections>
+                </viewController>
+                <customObject id="DQl-fR-8xQ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-294.5" y="1247.5"/>
         </scene>
     </scenes>
     <resources>
@@ -1620,6 +1780,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
         <image name="PreferencesGeneral" width="500" height="500"/>
         <image name="PreferencesIgnore" width="500" height="500"/>
         <image name="PreferencesUpdatas" width="500" height="500"/>
+        <image name="ScrollMonitorStartRecorder" width="500" height="500"/>
         <image name="WechatpayLogo" width="309" height="80"/>
         <image name="WechatpayQR" width="473" height="473"/>
     </resources>
