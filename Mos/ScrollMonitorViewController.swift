@@ -10,7 +10,7 @@ import Foundation
 import Cocoa
 import Charts
 
-class ScrollMonitorViewController: NSViewController {
+class ScrollMonitorViewController: NSViewController, ChartViewDelegate {
     
     // 监听相关
     var eventTap:CFMachPort?
@@ -34,6 +34,7 @@ class ScrollMonitorViewController: NSViewController {
     @IBOutlet var otherLogTextField: NSTextView!
     
     // Recorder相关
+    var scrollEventLoadedData:[String]?
     var eventRecoderTap:CFMachPort?
     var scrollEventRecorder = [String]()
     var scrollEventRecorderOnRun = false
@@ -62,10 +63,11 @@ class ScrollMonitorViewController: NSViewController {
             // 隐藏切换原始事件的CheckBox (Release环境)
             scrollEventRecoderPlayOriginEventCheckBox.isHidden = true
         #endif
-        
     }
     
     override func viewWillAppear() {
+        // 设置代理
+        lineChart.delegate = self
         // 初始化图表数据
         lineChartCount = 0.0
         let dataSet = LineChartDataSet(values: [ChartDataEntry(x: 0.0, y: 0.0)], label: "ScrollData")
@@ -82,6 +84,15 @@ class ScrollMonitorViewController: NSViewController {
         dataSet.circleColors = [NSUIColor.white]
         // 开始监听并输出滚动事件
         startMonitorScrollEvent()
+    }
+    
+    
+    // 点击chart对应位置时呈现对应数据
+    func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+        if scrollEventLoadedData != nil {
+            let eventData = scrollEventLoadedData![Int(highlight.x)].components(separatedBy: ", ")
+            updateLogView(eventData[3], eventData[4], eventData[5], nil)
+        }
     }
     
     
@@ -111,38 +122,16 @@ class ScrollMonitorViewController: NSViewController {
             let data = notification.object as! String
             let eventData = data.components(separatedBy: ", ")
             // 更新图表数据
-            let scrollY = Double(eventData[1])!
-            lineChart.data?.addEntry(ChartDataEntry(x: lineChartCount, y: scrollY), dataSetIndex: 0)
-            lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 200.0)
-            lineChart.moveViewToX(lineChartCount)
-            lineChart.notifyDataSetChanged()
-            lineChartCount += 1.0
+            updateChartView(x: lineChartCount, y: Double(eventData[1])!)
             // 设置log数据
-            let scrollLog = eventData[3]
-            let scrollDetailLog = eventData[4]
-            let scrollProcessLog = eventData[5]
-            scrollLogTextField.string = scrollLog
-            scrollDetailLogTextField.string = scrollDetailLog
-            processLogTextField.string = scrollProcessLog
+            updateLogView(eventData[3], eventData[4], eventData[5], nil)
         } else {
             // 正常监听模式
             let event = notification.object as! CGEvent
             // 更新图表数据
-            let scrollY = event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)
-            lineChart.data?.addEntry(ChartDataEntry(x: lineChartCount, y: scrollY), dataSetIndex: 0)
-            lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 200.0)
-            lineChart.moveViewToX(lineChartCount)
-            lineChart.notifyDataSetChanged()
-            lineChartCount += 1.0
+            updateChartView(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1))
             // 设置log数据
-            let scrollLog = ScrollCore.getScrollLog(of: event)
-            let scrollDetailLog = ScrollCore.getScrollDetailLog(of: event)
-            let scrollProcessLog = ScrollCore.getProcessLog(of: event)
-            let scrollOtherLog = ScrollCore.getOtherLog(of: event)
-            scrollLogTextField.string = scrollLog
-            scrollDetailLogTextField.string = scrollDetailLog
-            processLogTextField.string = scrollProcessLog
-            otherLogTextField.string = scrollOtherLog
+            updateLogView(ScrollCore.getScrollLog(of: event), ScrollCore.getScrollDetailLog(of: event), ScrollCore.getProcessLog(of: event), ScrollCore.getOtherLog(of: event))
         }
     }
     @objc private func recoderScrollEventData(notification: NSNotification) {
@@ -163,6 +152,37 @@ class ScrollMonitorViewController: NSViewController {
             let log = [scrollData, scrollLog, scrollDetailLog, scrollProcessLog, timeInterval].joined(separator: ", ")
             scrollEventRecorder.append(log)
             scrollEventRecorder.append("logsTag")
+        }
+    }
+    // 更新Chart区域
+    func updateChartView(x: Double, y: Double) {
+        lineChart.data?.addEntry(ChartDataEntry(x: x, y: y), dataSetIndex: 0)
+        lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 200.0)
+        lineChart.moveViewToX(x)
+        lineChart.notifyDataSetChanged()
+        lineChartCount += 1.0
+    }
+    // 更新Log区域
+    func updateLogView(_ scrollLog: String?, _ scrollDetailLog: String?, _ scrollProcessLog: String?, _ scrollOtherLog: String?) {
+        if scrollLog != nil {
+            scrollLogTextField.string = scrollLog
+        } else {
+            scrollLogTextField.string = "No Data"
+        }
+        if scrollDetailLog != nil {
+            scrollDetailLogTextField.string = scrollDetailLog
+        } else {
+            scrollDetailLogTextField.string = "No Data"
+        }
+        if scrollProcessLog != nil {
+            processLogTextField.string = scrollProcessLog
+        } else {
+            processLogTextField.string = "No Data"
+        }
+        if scrollOtherLog != nil {
+            otherLogTextField.string = scrollOtherLog
+        } else {
+            otherLogTextField.string = "No Data"
         }
     }
     
@@ -192,6 +212,7 @@ class ScrollMonitorViewController: NSViewController {
                     // 读取文件
                     let stringData = try String(contentsOfFile: applicationPath, encoding: .utf8)
                     let arrayData = stringData.components(separatedBy: ", logsTag, ")
+                    self.scrollEventLoadedData = arrayData
                     // 开始监听事件
                     if self.scrollEventRecorderPlayOriginalEvent {
                         NotificationCenter.default.addObserver(self, selector: #selector(self.updateMonitorData), name:NSNotification.Name(rawValue: "ScrollWheelEventMonitorUpdate"), object: nil)
@@ -201,9 +222,9 @@ class ScrollMonitorViewController: NSViewController {
                         }
                         NotificationCenter.default.removeObserver(self)
                         // 切换到监听模式
-                        self.scrollEventRecorderOnReplay = false
+                        // self.scrollEventRecorderOnReplay = false
                         // 重新开始监听
-                        self.startMonitorScrollEvent()
+                        // self.startMonitorScrollEvent()
                     } else {
                         for data in arrayData {
                             // 给SmoothScrolling处理
@@ -232,9 +253,9 @@ class ScrollMonitorViewController: NSViewController {
                             }
                         }
                         // 切换到监听模式
-                        self.scrollEventRecorderOnReplay = false
+                        // self.scrollEventRecorderOnReplay = false
                         // 重新开始监听
-                        self.startMonitorScrollEvent()
+                        // self.startMonitorScrollEvent()
                     }
                 } catch {
                     print(error)
