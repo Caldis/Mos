@@ -208,6 +208,21 @@ class ScrollCore: NSObject {
     
     
     
+    // 判断给定的轴数据是否不为0, 作为处理判断依据
+    static func yAxisExistDataIn(_ scrollFixY: Int64, _ scrollPtY: Double, _ scrollFixPtY: Double) -> (data: Double, isFixed: Bool)? {
+        if scrollPtY != 0.0 {
+            return (data: scrollPtY, isFixed: false)
+        }
+        if scrollFixPtY != 0.0 {
+            return (data: scrollFixPtY, isFixed: true)
+        }
+        if scrollFixY != 0 {
+            return (data: Double(scrollFixY), isFixed: true)
+        }
+        return nil
+    }
+    
+    
 
     // 主处理函数(CVDisplayLink)
     static func handleScrollY() {
@@ -466,12 +481,12 @@ class ScrollCore: NSObject {
     static func getScrollLog(of event: CGEvent) -> String {
         return (
             "Is using TouchPad: \(ScrollCore.isTouchPad(of: event))\n" +
-                "Y: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis1))\n" +
-                "X: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis2))\n" +
+                "Fix Y: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis1))\n" +
+                "Fix X: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis2))\n" +
                 "Pt Y: \(event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1))\n" +
                 "Pt X: \(event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2))\n" +
-                "FixPt Y: \(event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1))\n" +
-            "FixPt X: \(event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2))\n"
+                "Fix Pt Y: \(event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1))\n" +
+            "Fix Pt X: \(event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2))\n"
         )
     }
     // 获取处理进程相关信息

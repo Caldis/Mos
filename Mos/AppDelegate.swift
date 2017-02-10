@@ -38,33 +38,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 
                 // 处理滚动数据
-                var scrollY = Int64(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
+                var scrollFixY = Int64(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
                 var scrollPtY = event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)
-                var scrollFixY = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)
+                var scrollFixPtY = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)
                 // Y轴
-                if scrollPtY != 0 || scrollFixY != 0 || scrollY != 0 {
+                if var scrollY = ScrollCore.yAxisExistDataIn(scrollFixY, scrollPtY, scrollFixPtY) {
                     // 是否翻转鼠标事件, 且窗口BundleId不在禁止翻转滚动列表内
                     if ScrollCore.option.reverse && !ScrollCore.applicationInReverseIgnoreList(bundleId: ScrollCore.eventTargetBundleId) {
-                        scrollY = -scrollY
-                        scrollPtY = -scrollPtY
-                        scrollFixY = -scrollFixY
                         if !ScrollCore.option.smooth {
-                            // 如果翻转了鼠标事件且不使用平滑滚动, 则需要重设一下原始的Y数据
-                            event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: scrollY)
-                            event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: scrollPtY)
-                            event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: scrollFixY)
+                            // 如果翻转了鼠标事件且不使用平滑滚动, 则需要重设一下原始事件的Y数据
+                            event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: -scrollFixY)
+                            event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: -scrollPtY)
+                            event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: -scrollFixPtY)
+                        } else {
+                            // 否则只需要重设这个就行
+                            scrollY.data = -scrollY.data
                         }
                     }
                     // 是否平滑滚动, 且窗口BundleId不包含在禁止翻转滚动列表内
                     if ScrollCore.option.smooth && !ScrollCore.applicationInSmoothIgnoreList(bundleId: ScrollCore.eventTargetBundleId) {
                         // 禁止返回原始事件
                         handbackOriginalEvent = false
-                        // 如果输入值小于10, 则格式化为10
-                        let absY = abs(scrollPtY)
-                        if absY > 0.0 && absY < 10.0 {
-                            ScrollCore.updateScrollData(Y: scrollPtY<0.0 ? -10.0 : 10.0, X: 0.0)
+                        // 如果输入值为Fixed型则不处理; 如果为非Fixed类型且小于10则归一化为10
+                        if scrollY.isFixed {
+                            ScrollCore.updateScrollData(Y: scrollY.data, X: 0.0)
                         } else {
-                            ScrollCore.updateScrollData(Y: scrollPtY, X: 0.0)
+                            let absY = abs(scrollY.data)
+                            if absY > 0.0 && absY < 10.0 {
+                                ScrollCore.updateScrollData(Y: scrollY.data<0.0 ? -10.0 : 10.0, X: 0.0)
+                            } else {
+                                ScrollCore.updateScrollData(Y: scrollY.data, X: 0.0)
+                            }
                         }
                         // 启动一下事件
                         ScrollCore.activeScrollEventPoster()
@@ -72,7 +76,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 // X轴 (横向滚轮, 如 Logetech MxMaster)
                 // if event.getIntegerValueField(.scrollWheelEventDeltaAxis2) != 0 {
-                    // 暂时啥都不干
+                    // 暂时不作处理
                 // }
             }
         
