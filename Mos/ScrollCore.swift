@@ -105,15 +105,15 @@ class ScrollCore: NSObject {
     
     // 事件发送器 (CVDisplayLink)
     static func initScrollEventPoster() {
-        // 新建一个CVDisplayHandler来执行循环
+        // 新建一个CVDisplayLinkSetOutputCallback来执行循环
         CVDisplayLinkCreateWithActiveCGDisplays(&ScrollCore.scrollEventPoster)
-        CVDisplayLinkSetOutputHandler(ScrollCore.scrollEventPoster!, {
-            (displayLink, inNow, inOutputTime, flagsIn, flagsOut) -> CVReturn in
-                // TODO: 处理X轴数据
-                // 处理Y轴事件
-                ScrollCore.handleScrollY()
-                return kCVReturnSuccess
-        })
+        CVDisplayLinkSetOutputCallback(ScrollCore.scrollEventPoster!, {
+            (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in
+            // TODO: 处理X轴数据
+            // 处理Y轴事件
+            ScrollCore.handleScrollY()
+            return kCVReturnSuccess
+        }, nil)
     }
     static func activeScrollEventPoster() {
         ScrollCore.updateRealPluseData(Y: ScrollCore.scrollRef.Y, X: ScrollCore.scrollRef.X)
