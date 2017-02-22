@@ -159,16 +159,12 @@ class ScrollCore: NSObject {
     
     // 判断是否触控板事件
     static func isTouchPad(of event: CGEvent) -> Bool {
+        // MomentumPhase 或 ScrollPhase任一不为零, 则为触控板
+        if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
+            return true
+        }
+        // 累计加速度
         if event.getDoubleValueField(.scrollWheelEventScrollCount) != 0.0 {
-            return true
-        }
-        if event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0 {
-            return true
-        }
-        if event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0 && event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1) != 0.0 {
-            return true
-        }
-        if event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0 && event.getDoubleValueField(.eventSourceUnixProcessID) == 0 {
             return true
         }
         return false
@@ -481,11 +477,11 @@ class ScrollCore: NSObject {
     static func getScrollLog(of event: CGEvent) -> String {
         return (
             "Is using TouchPad: \(ScrollCore.isTouchPad(of: event))\n" +
-                "Fix Y: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis1))\n" +
-                "Fix X: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis2))\n" +
-                "Pt Y: \(event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1))\n" +
-                "Pt X: \(event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2))\n" +
-                "Fix Pt Y: \(event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1))\n" +
+            "Fix Y: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis1))\n" +
+            "Fix X: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis2))\n" +
+            "Pt Y: \(event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1))\n" +
+            "Pt X: \(event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2))\n" +
+            "Fix Pt Y: \(event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1))\n" +
             "Fix Pt X: \(event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2))\n"
         )
     }
@@ -493,11 +489,13 @@ class ScrollCore: NSObject {
     static func getScrollDetailLog(of event: CGEvent) -> String {
         return (
             "scrollWheelEventInstantMouser: \(event.getDoubleValueField(.scrollWheelEventInstantMouser))\n" +
-                // 该字段影响采样精度, 设为1时为像素级别
-                "scrollWheelEventIsContinuous: \(event.getDoubleValueField(.scrollWheelEventIsContinuous))\n" +
-                "scrollWheelEventMomentumPhase: \(event.getDoubleValueField(.scrollWheelEventMomentumPhase))\n" +
-                "scrollWheelEventScrollCount: \(event.getDoubleValueField(.scrollWheelEventScrollCount))\n" +
-                // 该字段根据多点触控反馈改变, 128:双指触碰未滑动,8:双指触碰未滑动拿开,2:双指滑动中/MM左侧滚轮滑动中,4:双指滑动完拿开,0:双指未在触控板上(是滑动事件缓动或滚轮)
+            // 该字段影响采样精度, 设为1时为像素级别
+            "scrollWheelEventIsContinuous: \(event.getDoubleValueField(.scrollWheelEventIsContinuous))\n" +
+            // 加速度累计
+            "scrollWheelEventScrollCount: \(event.getDoubleValueField(.scrollWheelEventScrollCount))\n" +
+            // 该字段根据触控板响应阶段改变
+            "scrollWheelEventMomentumPhase: \(event.getDoubleValueField(.scrollWheelEventMomentumPhase))\n" +
+            // 该字段根据触控板响应阶段改变, 128:双指触碰未滑动,8:双指触碰未滑动拿开,2:双指滑动中/MM左侧滚轮滑动中,4:双指滑动完拿开,0:双指未在触控板上(是滑动事件缓动或滚轮)
             "scrollWheelEventScrollPhase: \(event.getDoubleValueField(.scrollWheelEventScrollPhase))\n"
         )
     }
@@ -505,14 +503,14 @@ class ScrollCore: NSObject {
     static func getOtherLog(of event: CGEvent) -> String {
         return (
             "mouseEventNumber: \(event.getDoubleValueField(.mouseEventNumber))\n" +
-                "mouseEventClickState: \(event.getDoubleValueField(.mouseEventClickState))\n" +
-                "mouseEventPressure: \(event.getDoubleValueField(.mouseEventPressure))\n" +
-                "mouseEventButtonNumber: \(event.getDoubleValueField(.mouseEventButtonNumber))\n" +
-                "mouseEventDeltaX: \(event.getDoubleValueField(.mouseEventDeltaX))\n" +
-                "mouseEventDeltaY: \(event.getDoubleValueField(.mouseEventDeltaY))\n" +
-                "mouseEventInstantMouser: \(event.getDoubleValueField(.mouseEventInstantMouser))\n" +
-                "mouseEventSubtype: \(event.getDoubleValueField(.mouseEventSubtype))\n" +
-                "mouseEventWindowUnderMousePointer: \(event.getDoubleValueField(.mouseEventWindowUnderMousePointer))\n" +
+            "mouseEventClickState: \(event.getDoubleValueField(.mouseEventClickState))\n" +
+            "mouseEventPressure: \(event.getDoubleValueField(.mouseEventPressure))\n" +
+            "mouseEventButtonNumber: \(event.getDoubleValueField(.mouseEventButtonNumber))\n" +
+            "mouseEventDeltaX: \(event.getDoubleValueField(.mouseEventDeltaX))\n" +
+            "mouseEventDeltaY: \(event.getDoubleValueField(.mouseEventDeltaY))\n" +
+            "mouseEventInstantMouser: \(event.getDoubleValueField(.mouseEventInstantMouser))\n" +
+            "mouseEventSubtype: \(event.getDoubleValueField(.mouseEventSubtype))\n" +
+            "mouseEventWindowUnderMousePointer: \(event.getDoubleValueField(.mouseEventWindowUnderMousePointer))\n" +
             "mouseEventWindowUnderMousePointerThatCanHandleThisEvent: \(event.getDoubleValueField(.mouseEventWindowUnderMousePointerThatCanHandleThisEvent))\n"
         )
     }
@@ -520,11 +518,11 @@ class ScrollCore: NSObject {
     static func getProcessLog(of event: CGEvent) -> String {
         return (
             "eventTargetProcessSerialNumber: \(event.getDoubleValueField(.eventTargetProcessSerialNumber))\n" +
-                "eventTargetUnixProcessID: \(event.getDoubleValueField(.eventTargetUnixProcessID))\n" +
-                "eventSourceUnixProcessID: \(event.getDoubleValueField(.eventSourceUnixProcessID))\n" +
-                "eventSourceUserData: \(event.getDoubleValueField(.eventSourceUserData))\n" +
-                "eventSourceUserID: \(event.getDoubleValueField(.eventSourceUserID))\n" +
-                "eventSourceGroupID: \(event.getDoubleValueField(.eventSourceGroupID))\n" +
+            "eventTargetUnixProcessID: \(event.getDoubleValueField(.eventTargetUnixProcessID))\n" +
+            "eventSourceUnixProcessID: \(event.getDoubleValueField(.eventSourceUnixProcessID))\n" +
+            "eventSourceUserData: \(event.getDoubleValueField(.eventSourceUserData))\n" +
+            "eventSourceUserID: \(event.getDoubleValueField(.eventSourceUserID))\n" +
+            "eventSourceGroupID: \(event.getDoubleValueField(.eventSourceGroupID))\n" +
             "eventSourceStateID: \(event.getDoubleValueField(.eventSourceStateID))\n"
         )
     }
@@ -532,28 +530,28 @@ class ScrollCore: NSObject {
     static func getTabletLog(of event: CGEvent) -> String {
         return (
             "tabletEventPointX: \(event.getDoubleValueField(.tabletEventPointX))\n" +
-                "tabletEventPointY: \(event.getDoubleValueField(.tabletEventPointY))\n" +
-                "tabletEventPointZ: \(event.getDoubleValueField(.tabletEventPointZ))\n" +
-                "tabletEventPointButtons: \(event.getDoubleValueField(.tabletEventPointButtons))\n" +
-                "tabletEventPointPressure: \(event.getDoubleValueField(.tabletEventPointPressure))\n" +
-                "tabletEventTiltX: \(event.getDoubleValueField(.tabletEventTiltX))\n" +
-                "tabletEventTiltY: \(event.getDoubleValueField(.tabletEventTiltY))\n" +
-                "tabletEventRotation: \(event.getDoubleValueField(.tabletEventRotation))\n" +
-                "tabletEventTangentialPressure: \(event.getDoubleValueField(.tabletEventTangentialPressure))\n" +
-                "tabletEventDeviceID: \(event.getDoubleValueField(.tabletEventDeviceID))\n" +
-                "tabletEventVendor1: \(event.getDoubleValueField(.tabletEventVendor1))\n" +
-                "tabletEventVendor2: \(event.getDoubleValueField(.tabletEventVendor2))\n" +
-                "tabletEventVendor3: \(event.getDoubleValueField(.tabletEventVendor3))\n" +
-                "tabletProximityEventVendorID: \(event.getDoubleValueField(.tabletProximityEventVendorID))\n" +
-                "tabletProximityEventTabletID: \(event.getDoubleValueField(.tabletProximityEventTabletID))\n" +
-                "tabletProximityEventPointerID: \(event.getDoubleValueField(.tabletProximityEventPointerID))\n" +
-                "tabletProximityEventDeviceID: \(event.getDoubleValueField(.tabletProximityEventDeviceID))\n" +
-                "tabletProximityEventSystemTabletID: \(event.getDoubleValueField(.tabletProximityEventSystemTabletID))\n" +
-                "tabletProximityEventVendorPointerType: \(event.getDoubleValueField(.tabletProximityEventVendorPointerType))\n" +
-                "tabletProximityEventVendorPointerSerialNumber: \(event.getDoubleValueField(.tabletProximityEventVendorPointerSerialNumber))\n" +
-                "tabletProximityEventVendorUniqueID: \(event.getDoubleValueField(.tabletProximityEventVendorUniqueID))\n" +
-                "tabletProximityEventCapabilityMask: \(event.getDoubleValueField(.tabletProximityEventCapabilityMask))\n" +
-                "tabletProximityEventPointerType: \(event.getDoubleValueField(.tabletProximityEventPointerType))\n" +
+            "tabletEventPointY: \(event.getDoubleValueField(.tabletEventPointY))\n" +
+            "tabletEventPointZ: \(event.getDoubleValueField(.tabletEventPointZ))\n" +
+            "tabletEventPointButtons: \(event.getDoubleValueField(.tabletEventPointButtons))\n" +
+            "tabletEventPointPressure: \(event.getDoubleValueField(.tabletEventPointPressure))\n" +
+            "tabletEventTiltX: \(event.getDoubleValueField(.tabletEventTiltX))\n" +
+            "tabletEventTiltY: \(event.getDoubleValueField(.tabletEventTiltY))\n" +
+            "tabletEventRotation: \(event.getDoubleValueField(.tabletEventRotation))\n" +
+            "tabletEventTangentialPressure: \(event.getDoubleValueField(.tabletEventTangentialPressure))\n" +
+            "tabletEventDeviceID: \(event.getDoubleValueField(.tabletEventDeviceID))\n" +
+            "tabletEventVendor1: \(event.getDoubleValueField(.tabletEventVendor1))\n" +
+            "tabletEventVendor2: \(event.getDoubleValueField(.tabletEventVendor2))\n" +
+            "tabletEventVendor3: \(event.getDoubleValueField(.tabletEventVendor3))\n" +
+            "tabletProximityEventVendorID: \(event.getDoubleValueField(.tabletProximityEventVendorID))\n" +
+            "tabletProximityEventTabletID: \(event.getDoubleValueField(.tabletProximityEventTabletID))\n" +
+            "tabletProximityEventPointerID: \(event.getDoubleValueField(.tabletProximityEventPointerID))\n" +
+            "tabletProximityEventDeviceID: \(event.getDoubleValueField(.tabletProximityEventDeviceID))\n" +
+            "tabletProximityEventSystemTabletID: \(event.getDoubleValueField(.tabletProximityEventSystemTabletID))\n" +
+            "tabletProximityEventVendorPointerType: \(event.getDoubleValueField(.tabletProximityEventVendorPointerType))\n" +
+            "tabletProximityEventVendorPointerSerialNumber: \(event.getDoubleValueField(.tabletProximityEventVendorPointerSerialNumber))\n" +
+            "tabletProximityEventVendorUniqueID: \(event.getDoubleValueField(.tabletProximityEventVendorUniqueID))\n" +
+            "tabletProximityEventCapabilityMask: \(event.getDoubleValueField(.tabletProximityEventCapabilityMask))\n" +
+            "tabletProximityEventPointerType: \(event.getDoubleValueField(.tabletProximityEventPointerType))\n" +
             "tabletProximityEventEnterProximity: \(event.getDoubleValueField(.tabletProximityEventEnterProximity))\n"
         )
     }
