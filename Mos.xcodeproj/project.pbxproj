@@ -29,8 +29,6 @@
 		22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */; };
 		22CE34FE1E47550C00E5E761 /* HotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22CE34FD1E47550C00E5E761 /* HotKey.swift */; };
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
-		22FCB97E1E461DFD008F72B1 /* MASShortcut.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22FCB9791E461DE1008F72B1 /* MASShortcut.framework */; };
-		22FCB97F1E461DFD008F72B1 /* MASShortcut.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22FCB9791E461DE1008F72B1 /* MASShortcut.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,34 +74,6 @@
 			remoteGlobalIDString = 06165F231D8110E600722320;
 			remoteInfo = Charts;
 		};
-		22FCB9781E461DE1008F72B1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 0D827CD31990D4420010B8EF;
-			remoteInfo = MASShortcut;
-		};
-		22FCB97A1E461DE1008F72B1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 0D827D8319910AFF0010B8EF;
-			remoteInfo = MASShortcutTests;
-		};
-		22FCB97C1E461DE1008F72B1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 0D827D371990D5E70010B8EF;
-			remoteInfo = Demo;
-		};
-		22FCB9801E461DFD008F72B1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 0D827CD21990D4420010B8EF;
-			remoteInfo = MASShortcut;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -113,7 +83,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				22FCB97F1E461DFD008F72B1 /* MASShortcut.framework in Embed Frameworks */,
 				22816CF61E2A6CF10020D6B1 /* Charts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -157,7 +126,6 @@
 		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
 		22CE34FD1E47550C00E5E761 /* HotKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HotKey.swift; sourceTree = "<group>"; };
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
-		22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MASShortcut.xcodeproj; path = "Framework/MASShortcut-master/MASShortcut.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,7 +133,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22FCB97E1E461DFD008F72B1 /* MASShortcut.framework in Frameworks */,
 				22816CF51E2A6CF10020D6B1 /* Charts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -255,7 +222,6 @@
 		22816CFA1E2A6DFA0020D6B1 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
-				22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */,
 				22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */,
 			);
 			name = Framework;
@@ -304,16 +270,6 @@
 			name = OCBridge;
 			sourceTree = "<group>";
 		};
-		22FCB9711E461DE1008F72B1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				22FCB9791E461DE1008F72B1 /* MASShortcut.framework */,
-				22FCB97B1E461DE1008F72B1 /* MASShortcutTests.xctest */,
-				22FCB97D1E461DE1008F72B1 /* Demo.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -330,7 +286,6 @@
 			);
 			dependencies = (
 				22816CF81E2A6CF10020D6B1 /* PBXTargetDependency */,
-				22FCB9811E461DFD008F72B1 /* PBXTargetDependency */,
 			);
 			name = Mos;
 			productName = Mos;
@@ -427,10 +382,6 @@
 					ProductGroup = 22816CEA1E2A6CD00020D6B1 /* Products */;
 					ProjectRef = 22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */;
 				},
-				{
-					ProductGroup = 22FCB9711E461DE1008F72B1 /* Products */;
-					ProjectRef = 22FCB9701E461DE1008F72B1 /* MASShortcut.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -461,27 +412,6 @@
 			fileType = wrapper.cfbundle;
 			path = ChartsTests.xctest;
 			remoteRef = 22816CF31E2A6CD00020D6B1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		22FCB9791E461DE1008F72B1 /* MASShortcut.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MASShortcut.framework;
-			remoteRef = 22FCB9781E461DE1008F72B1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		22FCB97B1E461DE1008F72B1 /* MASShortcutTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = MASShortcutTests.xctest;
-			remoteRef = 22FCB97A1E461DE1008F72B1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		22FCB97D1E461DE1008F72B1 /* Demo.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = Demo.app;
-			remoteRef = 22FCB97C1E461DE1008F72B1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -569,11 +499,6 @@
 			isa = PBXTargetDependency;
 			name = Charts;
 			targetProxy = 22816CF71E2A6CF10020D6B1 /* PBXContainerItemProxy */;
-		};
-		22FCB9811E461DFD008F72B1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = MASShortcut;
-			targetProxy = 22FCB9801E461DFD008F72B1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
