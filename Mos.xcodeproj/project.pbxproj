@@ -27,7 +27,7 @@
 		22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */; };
 		22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */; };
 		22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */; };
-		22CE34FE1E47550C00E5E761 /* HotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22CE34FD1E47550C00E5E761 /* HotKey.swift */; };
+		22DFD03B1E840DFA00B1E366 /* LaunchStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DFD03A1E840DFA00B1E366 /* LaunchStarter.swift */; };
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -77,6 +77,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		221E91D81E69A20500215A67 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LoginItems;
+			dstSubfolderSpec = 1;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		22816CF91E2A6CF20020D6B1 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -108,6 +117,7 @@
 		226A2E6C1E2E68610035F1A6 /* Mos-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Mos-Bridging-Header.h"; sourceTree = "<group>"; };
 		226A2E6D1E2E68620035F1A6 /* MouseEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MouseEvent.m; sourceTree = "<group>"; };
 		226A2E711E2E68A00035F1A6 /* MouseEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MouseEvent.h; sourceTree = "<group>"; };
+		2270D90F1E69BA1500C48231 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		2278EE981E3DF770000AB25B /* PreferencesIgnoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesIgnoreViewController.swift; sourceTree = "<group>"; };
 		2278EE9C1E3DFAC8000AB25B /* IgnoredApplicationData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IgnoredApplicationData.swift; sourceTree = "<group>"; };
 		2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
@@ -124,7 +134,7 @@
 		2295D8271E40542B00054A5C /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAboutViewController.swift; sourceTree = "<group>"; };
 		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
-		22CE34FD1E47550C00E5E761 /* HotKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HotKey.swift; sourceTree = "<group>"; };
+		22DFD03A1E840DFA00B1E366 /* LaunchStarter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LaunchStarter.swift; sourceTree = "<group>"; };
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -160,7 +170,8 @@
 				22142DA21E25344E00E4BFBF /* Mos */,
 				22142DB41E25344F00E4BFBF /* MosTests */,
 				22142DA11E25344E00E4BFBF /* Products */,
-				22816CFA1E2A6DFA0020D6B1 /* Framework */,
+				22816CFA1E2A6DFA0020D6B1 /* Libs */,
+				2270D90E1E69BA1400C48231 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -179,7 +190,7 @@
 			children = (
 				22142DA31E25344E00E4BFBF /* AppDelegate.swift */,
 				2291A8A21E2A5400004181B8 /* ScrollCore.swift */,
-				22CE34FD1E47550C00E5E761 /* HotKey.swift */,
+				22DFD03A1E840DFA00B1E366 /* LaunchStarter.swift */,
 				22A32B3B1E334B7A00A5CF38 /* ScrollMonitorPanel */,
 				22A32B3A1E334B5900A5CF38 /* PreferencesPanel */,
 				22A32B3C1E334B9700A5CF38 /* StatusMenu */,
@@ -209,6 +220,14 @@
 			name = Localization;
 			sourceTree = "<group>";
 		};
+		2270D90E1E69BA1400C48231 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2270D90F1E69BA1500C48231 /* ServiceManagement.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		22816CEA1E2A6CD00020D6B1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -219,12 +238,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		22816CFA1E2A6DFA0020D6B1 /* Framework */ = {
+		22816CFA1E2A6DFA0020D6B1 /* Libs */ = {
 			isa = PBXGroup;
 			children = (
 				22816CE91E2A6CD00020D6B1 /* Charts.xcodeproj */,
 			);
-			name = Framework;
+			name = Libs;
 			sourceTree = "<group>";
 		};
 		22A32B3A1E334B5900A5CF38 /* PreferencesPanel */ = {
@@ -281,6 +300,7 @@
 				22142D9D1E25344E00E4BFBF /* Frameworks */,
 				22142D9E1E25344E00E4BFBF /* Resources */,
 				22816CF91E2A6CF20020D6B1 /* Embed Frameworks */,
+				221E91D81E69A20500215A67 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -454,12 +474,12 @@
 				22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */,
 				226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */,
 				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,
+				22DFD03B1E840DFA00B1E366 /* LaunchStarter.swift in Sources */,
 				22816CFF1E2B31020020D6B1 /* ScrollMonitorWindowController.swift in Sources */,
 				22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */,
 				22142DA61E25344E00E4BFBF /* ScrollMonitorViewController.swift in Sources */,
 				2278EE991E3DF770000AB25B /* PreferencesIgnoreViewController.swift in Sources */,
 				22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */,
-				22CE34FE1E47550C00E5E761 /* HotKey.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
 				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
 				2278EE9D1E3DFAC8000AB25B /* IgnoredApplicationData.swift in Sources */,

@@ -16,9 +16,9 @@ class ScrollCore: NSObject {
     static let appLanguageIsCN = ScrollCore.cnLangs.contains(ScrollCore.sysLang) //判断是否中文语系
     
     // 全局设置相关
-    static let defOption = ( smooth: true, reverse: true )
+    static let defOption = ( smooth: true, reverse: true, autoLaunch: false )
     static let defAdvancedOption = ( speed: 0.95, time: 480 )
-    static var option = ( smooth: true, reverse: true )
+    static var option = ( smooth: true, reverse: true, autoLaunch: false )
     static var advancedOption = ( speed: 0.95, time: 480 )
     static var ignoreList = ( smooth: [String](), reverse: [String]() )
     
@@ -454,6 +454,14 @@ class ScrollCore: NSObject {
     }
     // 根据名称判断程序是否在禁止平滑滚动列表内
     static func applicationInSmoothIgnoreList(bundleId: String?) -> Bool {
+        // 针对 Launchpad 和 MissionControl 特殊处理
+        if ScrollCore.ignoreList.smooth.contains("com.apple.launchpad.launcher") && ScrollCore.launchpadIsActive() {
+            return true
+        }
+        if ScrollCore.ignoreList.smooth.contains("com.apple.exposelauncher") && ScrollCore.missioncontrolIsActive() {
+            return true
+        }
+        // 一般 App
         if let id = bundleId {
             return ScrollCore.ignoreList.smooth.contains(id)
         }
@@ -461,8 +469,42 @@ class ScrollCore: NSObject {
     }
     // 根据名称判断程序是否在禁止翻转滚动列表内
     static func applicationInReverseIgnoreList(bundleId: String?) -> Bool {
+        // 针对 Launchpad 和 MissionControl 特殊处理
+        if ScrollCore.ignoreList.reverse.contains("com.apple.launchpad.launcher") && ScrollCore.launchpadIsActive() {
+            return true
+        }
+        if ScrollCore.ignoreList.reverse.contains("com.apple.exposelauncher") && ScrollCore.missioncontrolIsActive() {
+            return true
+        }
+        // 一般 App
         if let id = bundleId {
             return ScrollCore.ignoreList.reverse.contains(id)
+        }
+        return false
+    }
+    // TODO: 节流处理
+    // 判断 LaunchPad 是否激活
+    static func launchpadIsActive() -> Bool {
+        let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]!
+        for windowInfo in windowInfoList! {
+            let windowName = windowInfo[kCGWindowName]!
+            if windowName != nil && windowName as! String == "LPSpringboard" {
+                return true
+            }
+        }
+        return false
+    }
+    // TODO: 节流处理
+    // 判断 MissionControl 是否激活
+    static func missioncontrolIsActive() -> Bool {
+        let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]!
+        for windowInfo in windowInfoList! {
+            let windowOwnerName = windowInfo[kCGWindowOwnerName]!
+            if windowOwnerName != nil && windowOwnerName as! String == "Dock" {
+                if windowInfo[kCGWindowName]! == nil {
+                    return true
+                }
+            }
         }
         return false
     }

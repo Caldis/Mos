@@ -540,7 +540,16 @@
 "dAp-hk-dXG.title" = "4. 在这里提交你的问题: ";
 
 /* Class = "NSTextFieldCell"; title = "5. Describle your issue, do..."; ObjectID = "hnM-2T-1QS"; */
-"hnM-2T-1QS.title" = "5. 在issue帖子中描述您的问题, 也别忘了打开刚刚保存的记录文件, 然后复制黏贴到帖子内";
+"hnM-2T-1QS.title" = "5. 在issue帖子中描述您的问题, 也别忘了附上您刚刚保存的鼠标记录文件. (直接拖拽到文本框内即可上传文件)";
 
 /* Class = "NSTextFieldCell"; title = "We hope to listen your voice, please feedback if you get any issue."; ObjectID = "eYe-7m-IC2"; */
 "eYe-7m-IC2.title" = "我们非常期望听到您的反馈, 欢迎随时联系我们";
+
+/* Class = "NSTextFieldCell"; title = "Other Setting:"; ObjectID = "8sv-2I-VeW"; */
+"8sv-2I-VeW.title" = "其他:";
+
+/* Class = "NSButtonCell"; title = "Launch on Login"; ObjectID = "HZF-2o-Mrh"; */
+"HZF-2o-Mrh.title" = "开机启动";
+
+/* Class = "NSTextFieldCell"; title = "Auto launch Mos on your MacOS login."; ObjectID = "wY5-9W-iNv"; */
+"wY5-9W-iNv.title" = "在系统登录时自动运行Mos";

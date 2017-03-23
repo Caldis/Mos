@@ -43,17 +43,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 var scrollFixPtY = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)
                 // Y轴
                 if var scrollY = ScrollCore.yAxisExistDataIn(scrollFixY, scrollPtY, scrollFixPtY) {
-                    // 是否翻转鼠标事件, 且窗口BundleId不在禁止翻转滚动列表内
+                    // 是否翻转滚动, 且窗口BundleId不在禁止翻转滚动列表内
                     if ScrollCore.option.reverse && !ScrollCore.applicationInReverseIgnoreList(bundleId: ScrollCore.eventTargetBundleId) {
-                        if !ScrollCore.option.smooth {
-                            // 如果翻转了鼠标事件且不使用平滑滚动, 则需要重设一下原始事件的Y数据
-                            event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: -scrollFixY)
-                            event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: -scrollPtY)
-                            event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: -scrollFixPtY)
-                        } else {
-                            // 否则只需要重设这个就行
-                            scrollY.data = -scrollY.data
-                        }
+                        event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: -scrollFixY)
+                        event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: -scrollPtY)
+                        event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: -scrollFixPtY)
+                        scrollY.data = -scrollY.data
                     }
                     // 是否平滑滚动, 且窗口BundleId不包含在禁止翻转滚动列表内
                     if ScrollCore.option.smooth && !ScrollCore.applicationInSmoothIgnoreList(bundleId: ScrollCore.eventTargetBundleId) {
@@ -87,12 +82,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 return nil
             }
     }
+
     
     func applicationWillFinishLaunching(_ notification: Notification) {
+        // 这里是主程序的ID
+        let mainBundleID = Bundle.main.bundleIdentifier!
+        // 这里是Helper的ID
+        let helperBundleID = "com.u2sk.MosHelper"
         // 禁止重复运行
-        let bundleID = Bundle.main.bundleIdentifier!
-        if NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).count > 1 {
+        if NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID).count > 1 {
             NSApp.terminate(nil)
+        }
+        // 干掉Helper
+        if NSRunningApplication.runningApplications(withBundleIdentifier: helperBundleID).count > 1 {
+            NotificationCenter.default.post(name: Notification.Name("killMosHelper"), object: mainBundleID)
         }
     }
     

@@ -769,11 +769,11 @@
             <objects>
                 <viewController title="General" storyboardIdentifier="general" showSeguePresentationStyle="single" id="ITL-GD-CPd" customClass="PreferencesGeneralViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="FVX-bT-5h2">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="128"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="183"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xh5-Hi-00d">
-                                <rect key="frame" x="166" y="90" width="130" height="18"/>
+                                <rect key="frame" x="166" y="145" width="130" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Scroll Smooth" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="weE-be-TAy">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -784,7 +784,7 @@
                                 </connections>
                             </button>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4ys-FQ-Ez6">
-                                <rect key="frame" x="166" y="43" width="130" height="18"/>
+                                <rect key="frame" x="166" y="98" width="130" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Scroll Reverse" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="6FR-2r-rxl">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -794,8 +794,19 @@
                                     <action selector="scrollReverseClick:" target="ITL-GD-CPd" id="Lha-Po-zWt"/>
                                 </connections>
                             </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f7l-dp-PUc">
+                                <rect key="frame" x="166" y="43" width="130" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Launch on Login" bezelStyle="regularSquare" imagePosition="left" inset="2" id="HZF-2o-Mrh">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="launchOnLoginClick:" target="ITL-GD-CPd" id="Qpy-su-UHF"/>
+                                </connections>
+                            </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uce-5T-Uvc">
-                                <rect key="frame" x="30" y="91" width="120" height="17"/>
+                                <rect key="frame" x="30" y="146" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Scroll Setting:" id="ILt-Gz-RiV">
                                     <font key="font" metaFont="system"/>
@@ -804,7 +815,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J2s-3N-vK7">
-                                <rect key="frame" x="166" y="67" width="261" height="17"/>
+                                <rect key="frame" x="166" y="122" width="261" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Let the mouse wheel scroll smooth like a buttery." id="G8a-97-8Ey">
                                     <font key="font" metaFont="smallSystem"/>
@@ -813,7 +824,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qbC-OJ-7HS">
-                                <rect key="frame" x="166" y="20" width="223" height="17"/>
+                                <rect key="frame" x="166" y="75" width="223" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Reverse the mouse wheel scroll direction." id="VUb-ZM-hXo">
                                     <font key="font" metaFont="smallSystem"/>
@@ -821,16 +832,35 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZaA-rA-uF7">
+                                <rect key="frame" x="166" y="20" width="223" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Auto launch Mos on your MacOS login." id="wY5-9W-iNv">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YDA-cP-xvj">
+                                <rect key="frame" x="30" y="43" width="120" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Other Setting:" id="8sv-2I-VeW">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                     </view>
                     <connections>
+                        <outlet property="launchOnLoginCheckBox" destination="f7l-dp-PUc" id="nYw-QJ-YfX"/>
                         <outlet property="scrollReverseCheckBox" destination="4ys-FQ-Ez6" id="ezN-IR-x0I"/>
                         <outlet property="scrollSmoothCheckBox" destination="xh5-Hi-00d" id="J6N-sg-9IX"/>
                     </connections>
                 </viewController>
                 <customObject id="KsC-af-ap0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="612" y="1185"/>
+            <point key="canvasLocation" x="612" y="1212.5"/>
         </scene>
         <!--Ignore-->
         <scene sceneID="UqT-28-MT6">
@@ -1165,17 +1195,6 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JW0-jn-P0t">
-                                <rect key="frame" x="28" y="19" width="395" height="19"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="roundRect" title="Reset to default" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="2ho-yL-X2k">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="cellTitle"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="resetAllToDefaultClick:" target="iW5-CD-5OC" id="Bev-ON-0On"/>
-                                </connections>
-                            </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0bd-7K-p6L">
                                 <rect key="frame" x="30" y="77" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1185,6 +1204,17 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JW0-jn-P0t">
+                                <rect key="frame" x="20" y="19" width="410" height="19"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="roundRect" title="Reset to default" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="2ho-yL-X2k">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="cellTitle"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="resetAllToDefaultClick:" target="iW5-CD-5OC" id="Bev-ON-0On"/>
+                                </connections>
+                            </button>
                         </subviews>
                     </view>
                     <connections>
@@ -1197,7 +1227,7 @@
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="612" y="1420.5"/>
+            <point key="canvasLocation" x="612" y="1475.5"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">
@@ -1485,9 +1515,9 @@ eventSourceStateID: 0.0</string>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
                                             </scrollView>
-                                            <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="2jT-qX-gdB">
+                                            <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="2jT-qX-gdB">
                                                 <rect key="frame" x="700" y="0.0" width="401" height="130"/>
-                                                <clipView key="contentView" drawsBackground="NO" id="jph-Lx-Im2">
+                                                <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="jph-Lx-Im2">
                                                     <rect key="frame" x="0.0" y="0.0" width="401" height="130"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
@@ -1526,8 +1556,8 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                                     <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
-                                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="JsD-dl-hdC">
-                                                    <rect key="frame" x="385" y="0.0" width="16" height="130"/>
+                                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="JsD-dl-hdC">
+                                                    <rect key="frame" x="-100" y="-100" width="16" height="130"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
                                             </scrollView>
@@ -1734,8 +1764,9 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AJK-lh-eck">
                                 <rect key="frame" x="30" y="44" width="337" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="5. Describle your issue, don't forget to open the log file and copy&amp;patse the content to your issue post." id="hnM-2T-1QS">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="hnM-2T-1QS">
                                     <font key="font" metaFont="system" size="10"/>
+                                    <string key="title">5. Describle your issue, don't forget to attach your log file on your issue post. (Just drag the file into the comment block to upload)</string>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>

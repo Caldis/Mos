@@ -37,7 +37,7 @@ class PreferencesIgnoreViewController: NSViewController {
     func openFileSelectPanel() {
         let openPanel = NSOpenPanel()
         openPanel.directoryURL = NSURL.fileURL(withPath: "/application", isDirectory: true)
-        // 不可选择文件夹
+        // 禁止选择文件夹
         openPanel.canChooseDirectories = false
         // 能选择文件
         openPanel.canChooseFiles = true

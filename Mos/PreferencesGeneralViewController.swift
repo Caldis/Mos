@@ -7,18 +7,21 @@
 //
 
 import Cocoa
+import ServiceManagement
 
 class PreferencesGeneralViewController: NSViewController {
     
     // Checkbox
     @IBOutlet weak var scrollSmoothCheckBox: NSButton!
     @IBOutlet weak var scrollReverseCheckBox: NSButton!
+    @IBOutlet weak var launchOnLoginCheckBox: NSButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // 恢复一下设置
         scrollSmoothCheckBox.state = ScrollCore.option.smooth ? 1 : 0
         scrollReverseCheckBox.state = ScrollCore.option.reverse ? 1 : 0
+        launchOnLoginCheckBox.state = ScrollCore.option.autoLaunch ? 1 : 0
     }
     
     // 是否启用平滑滚动
@@ -40,5 +43,19 @@ class PreferencesGeneralViewController: NSViewController {
         }
         // 保存设置
         UserDefaults.standard.set(ScrollCore.option.reverse ? "true" : "false", forKey:"reverse")
+    }
+    
+    // 是否开机启动
+    @IBAction func launchOnLoginClick(_ sender: NSButton) {
+        if sender.state == 0 {
+            ScrollCore.option.autoLaunch = false
+            LaunchStarter.disableLaunchAtStartup()
+        } else {
+            ScrollCore.option.autoLaunch = true
+            LaunchStarter.enableLaunchAtStartup()
+        }
+        
+        // 保存设置
+        UserDefaults.standard.set(ScrollCore.option.autoLaunch ? "true" : "false", forKey:"autoLaunch")
     }
 }

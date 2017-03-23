@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>MosHelper.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>4</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -23,6 +28,21 @@
 			<true/>
 		</dict>
 		<key>22142DBB1E25344F00E4BFBF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>221E91AE1E69A19B00215A67</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>221E91BC1E69A19B00215A67</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>221E91C71E69A19B00215A67</key>
 		<dict>
 			<key>primary</key>
 			<true/>
