@@ -482,33 +482,54 @@ class ScrollCore: NSObject {
         }
         return false
     }
-    // TODO: 节流处理
     // 判断 LaunchPad 是否激活
+    static var launchpadActiveCache = false
+    static var launchpadLastDetectTime = 0.0
     static func launchpadIsActive() -> Bool {
-        let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]!
-        for windowInfo in windowInfoList! {
-            let windowName = windowInfo[kCGWindowName]!
-            if windowName != nil && windowName as! String == "LPSpringboard" {
-                return true
-            }
-        }
-        return false
-    }
-    // TODO: 节流处理
-    // 判断 MissionControl 是否激活
-    static func missioncontrolIsActive() -> Bool {
-        let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]!
-        for windowInfo in windowInfoList! {
-            let windowOwnerName = windowInfo[kCGWindowOwnerName]!
-            if windowOwnerName != nil && windowOwnerName as! String == "Dock" {
-                if windowInfo[kCGWindowName]! == nil {
+        // 如果距离上次检测时间大于500ms, 则重新检测一遍, 否则直接返回上次的结果
+        let nowTime = NSDate().timeIntervalSince1970
+        if nowTime - missioncontrolLastDetectTime > 0.5 {
+            ScrollCore.missioncontrolLastDetectTime = nowTime
+            let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]!
+            for windowInfo in windowInfoList! {
+                let windowName = windowInfo[kCGWindowName]!
+                if windowName != nil && windowName as! String == "LPSpringboard" {
+                    ScrollCore.launchpadActiveCache = true
                     return true
                 }
             }
+            ScrollCore.launchpadActiveCache = false
+            return false
+        } else {
+            ScrollCore.missioncontrolLastDetectTime = nowTime
+            return ScrollCore.launchpadActiveCache
         }
-        return false
     }
-    
+    // 判断 MissionControl 是否激活
+    static var missioncontrolActiveCache = false
+    static var missioncontrolLastDetectTime = 0.0
+    static func missioncontrolIsActive() -> Bool {
+        // 如果距离上次检测时间大于500ms, 则重新检测一遍, 否则直接返回上次的结果
+        let nowTime = NSDate().timeIntervalSince1970
+        if nowTime - missioncontrolLastDetectTime > 0.5 {
+            ScrollCore.missioncontrolLastDetectTime = nowTime
+            let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]!
+            for windowInfo in windowInfoList! {
+                let windowOwnerName = windowInfo[kCGWindowOwnerName]!
+                if windowOwnerName != nil && windowOwnerName as! String == "Dock" {
+                    if windowInfo[kCGWindowName]! == nil {
+                        ScrollCore.missioncontrolActiveCache = true
+                        return true
+                    }
+                }
+            }
+            ScrollCore.missioncontrolActiveCache = false
+            return false
+        } else {
+            ScrollCore.missioncontrolLastDetectTime = nowTime
+            return ScrollCore.missioncontrolActiveCache
+        }
+    }
     
     
     // 打印Log
