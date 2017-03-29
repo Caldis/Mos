@@ -44,7 +44,6 @@ class PreferencesGeneralViewController: NSViewController {
         // 保存设置
         UserDefaults.standard.set(ScrollCore.option.reverse ? "true" : "false", forKey:"reverse")
     }
-    
     // 是否开机启动
     @IBAction func launchOnLoginClick(_ sender: NSButton) {
         if sender.state == 0 {
@@ -54,7 +53,6 @@ class PreferencesGeneralViewController: NSViewController {
             ScrollCore.option.autoLaunch = true
             LaunchStarter.enableLaunchAtStartup()
         }
-        
         // 保存设置
         UserDefaults.standard.set(ScrollCore.option.autoLaunch ? "true" : "false", forKey:"autoLaunch")
     }

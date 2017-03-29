@@ -408,6 +408,9 @@ class ScrollCore: NSObject {
         if let reverse = UserDefaults.standard.string(forKey: "reverse") {
             ScrollCore.option.reverse = reverse=="true" ? true : false
         }
+        if let autoLaunch = UserDefaults.standard.string(forKey: "autoLaunch") {
+            ScrollCore.option.autoLaunch = autoLaunch=="true" ? true : false
+        }
         if UserDefaults.standard.double(forKey: "speed") != 0.0 {
             ScrollCore.advancedOption.speed = UserDefaults.standard.double(forKey: "speed")
         }
