@@ -544,3 +544,9 @@
 
 /* Class = "NSTextFieldCell"; title = "We hope to listen your voice, please feedback if you get any issue."; ObjectID = "eYe-7m-IC2"; */
 "eYe-7m-IC2.title" = "We hope to listen your voice, please feedback if you get any issue.";
+
+/* Class = "NSButtonCell"; title = "Launch on Login"; ObjectID = "HZF-2o-Mrh"; */
+"HZF-2o-Mrh.title" = "Launch on Login";
+
+/* Class = "NSTextFieldCell"; title = "Auto launch Mos on your MacOS login."; ObjectID = "wY5-9W-iNv"; */
+"wY5-9W-iNv.title" = "Auto launch Mos on your MacOS login.";
