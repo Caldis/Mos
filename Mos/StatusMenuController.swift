@@ -26,7 +26,7 @@ class StatusMenuController: NSObject {
     
     override func awakeFromNib() {
         // 初始化状态栏
-        let statusBarIcon =  #imageLiteral(resourceName: "StatusBarIcon")
+        let statusBarIcon = #imageLiteral(resourceName: "StatusBarIcon")
         statusBarIcon.isTemplate = true
         statusItem.image = statusBarIcon
         statusItem.menu = statusMenu

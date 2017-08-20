@@ -12,15 +12,16 @@ class ScrollCore: NSObject {
     
     // 语言相关
     static let sysLang = NSLocale.preferredLanguages[0]
-    static let cnLangs = ["zh-Hant-CN","zh-Hans-CN","zh-Hant-TW","zh-Hant-MO","zh-Hant-HK"]
+    static let cnLangs = ["zh-Hant-CN", "zh-Hant-HK", "zh-Hant-TW", "zh-Hans-CN", "zh-Hans-HK", "zh-Hans-TW", "zh-Hant-MO"]
     static let appLanguageIsCN = ScrollCore.cnLangs.contains(ScrollCore.sysLang) //判断是否中文语系
     
     // 全局设置相关
     static let defOption = ( smooth: true, reverse: true, autoLaunch: false )
-    static let defAdvancedOption = ( speed: 0.95, time: 480 )
+    static let defAdvancedOption = ( speed: 0.95, time: 480, peak: 0.20 )
     static var option = ( smooth: true, reverse: true, autoLaunch: false )
-    static var advancedOption = ( speed: 0.95, time: 480 )
+    static var advancedOption = ( speed: 0.95, time: 480, peak: 0.20 )
     static var ignoreList = ( smooth: [String](), reverse: [String]() )
+    static var whiteListMode = false
     
     // 延迟执行相关
     static var delayTimer:Timer!
@@ -59,11 +60,11 @@ class ScrollCore: NSObject {
     static var tailPulseNormalize = 1.032
     // 动画相关
     static var fps = 60.0 // 帧数
-    static var animTime = 380.0 // 动画时间 (这里已经由全局设置代替)
-    static var turningScale = 0.20 // 转折位置
-    static var scrollScale = 0.95 // 放大系数 (这里已经由全局设置代替)
+    static var animTime = 380.0 // 动画时间 (这里已经由全局设置内的 '时间' 代替)
+    static var turningScale = 0.20 // 转折位置 (这里已经由全局设置内的 '峰值位置' 代替)
+    static var scrollScale = 0.95 // 放大系数 (这里已经由全局设置内的 '速度' 代替)
     static var totalPoint = Int(ScrollCore.fps * Double(ScrollCore.defAdvancedOption.time) / 1000.0)
-    static var turningPoint = Int(round(Double(ScrollCore.totalPoint)*ScrollCore.turningScale))
+    static var turningPoint = Int(round(Double(ScrollCore.totalPoint)*ScrollCore.advancedOption.peak))
     
     // 初始化缓动曲线
     static var basePluseData = ScrollCore.initPluseData()
@@ -314,13 +315,13 @@ class ScrollCore: NSObject {
         for i in 1...ScrollCore.totalPoint {
             let di = Double(i)
             let dTotalPoint = Double(ScrollCore.totalPoint)
-            if (di <= dTotalPoint*ScrollCore.turningScale) {
+            if (di <= dTotalPoint*ScrollCore.advancedOption.peak) {
                 samplePoint = di
-                basePoint = dTotalPoint*ScrollCore.turningScale
+                basePoint = dTotalPoint*ScrollCore.advancedOption.peak
                 plusePoint = ScrollCore.headPulse(pos: samplePoint/basePoint)
             } else {
-                samplePoint = di - dTotalPoint*ScrollCore.turningScale
-                basePoint = dTotalPoint*(1-ScrollCore.turningScale)
+                samplePoint = di - dTotalPoint*ScrollCore.advancedOption.peak
+                basePoint = dTotalPoint*(1-ScrollCore.advancedOption.peak)
                 plusePoint = ScrollCore.tailPulse(pos: samplePoint/basePoint)
             }
             pulseData.append(plusePoint * ScrollCore.advancedOption.speed)
@@ -417,13 +418,18 @@ class ScrollCore: NSObject {
         if UserDefaults.standard.integer(forKey: "time") != 0 {
             ScrollCore.advancedOption.time = UserDefaults.standard.integer(forKey: "time")
         }
+        if UserDefaults.standard.double(forKey: "peak") != 0.0 {
+            ScrollCore.advancedOption.peak = UserDefaults.standard.double(forKey: "peak")
+        }
+        if let whiteListMode = UserDefaults.standard.string(forKey: "whiteListMode") {
+            ScrollCore.whiteListMode = whiteListMode=="true" ? true : false
+        }
         if let archivedData = UserDefaults.standard.object(forKey: "ignoredApplications") {
             let ignoredApplications = NSKeyedUnarchiver.unarchiveObject(with: archivedData as! Data)
             ScrollCore.ignoredApplications = ignoredApplications as? [IgnoredApplication] ?? [IgnoredApplication]()
             ScrollCore.updateIgnoreList()
         }
     }
-    
     
     
     // 更新ignoreList
@@ -455,36 +461,7 @@ class ScrollCore: NSObject {
         // 用pid找bundleID
         return apps.filter({$0.processIdentifier == pid}).first?.bundleIdentifier! as String?
     }
-    // 根据名称判断程序是否在禁止平滑滚动列表内
-    static func applicationInSmoothIgnoreList(bundleId: String?) -> Bool {
-        // 针对 Launchpad 和 MissionControl 特殊处理
-        if ScrollCore.ignoreList.smooth.contains("com.apple.launchpad.launcher") && ScrollCore.launchpadIsActive() {
-            return true
-        }
-        if ScrollCore.ignoreList.smooth.contains("com.apple.exposelauncher") && ScrollCore.missioncontrolIsActive() {
-            return true
-        }
-        // 一般 App
-        if let id = bundleId {
-            return ScrollCore.ignoreList.smooth.contains(id)
-        }
-        return false
-    }
-    // 根据名称判断程序是否在禁止翻转滚动列表内
-    static func applicationInReverseIgnoreList(bundleId: String?) -> Bool {
-        // 针对 Launchpad 和 MissionControl 特殊处理
-        if ScrollCore.ignoreList.reverse.contains("com.apple.launchpad.launcher") && ScrollCore.launchpadIsActive() {
-            return true
-        }
-        if ScrollCore.ignoreList.reverse.contains("com.apple.exposelauncher") && ScrollCore.missioncontrolIsActive() {
-            return true
-        }
-        // 一般 App
-        if let id = bundleId {
-            return ScrollCore.ignoreList.reverse.contains(id)
-        }
-        return false
-    }
+    
     // 判断 LaunchPad 是否激活
     static var launchpadActiveCache = false
     static var launchpadLastDetectTime = 0.0
@@ -531,6 +508,110 @@ class ScrollCore: NSObject {
         } else {
             ScrollCore.missioncontrolLastDetectTime = nowTime
             return ScrollCore.missioncontrolActiveCache
+        }
+    }
+    // 从 ScrollCore.ignoredApplications 中取回符合传入的 bundleId 的 IgnoredApplication 对象
+    static func applicationInIgnoreListOf(bundleId: String?) -> IgnoredApplication? {
+        if let id = bundleId {
+            let appList = ScrollCore.ignoredApplications.filter {
+                return $0.bundleId == id
+            }
+            return appList.count>0 ? appList[0] : nil
+        }
+        return nil
+    }
+    // 根据传入的 IgnoredApplication 对象判断是否需要禁止平滑滚动
+    static func applicationNeedIgnoreSmooth(application: IgnoredApplication?) -> Bool {
+        // 针对 Launchpad 和 MissionControl 特殊处理, 不论是否在列表内均禁用平滑
+        if ScrollCore.launchpadIsActive() {
+            return true
+        }
+        if ScrollCore.missioncontrolIsActive() {
+            return true
+        }
+        // 一般 App
+        if let app = application {
+            return app.notSmooth
+        }
+        return false
+    }
+    // 根据 bundleId 判断程序是否在禁止平滑滚动列表内
+    static func applicationInSmoothIgnoreList(bundleId: String?) -> Bool {
+        // 针对 Launchpad 和 MissionControl 特殊处理, 不论是否在列表内均禁用平滑
+        if ScrollCore.launchpadIsActive() {
+            return true
+        }
+        if ScrollCore.missioncontrolIsActive() {
+            return true
+        }
+        // 一般 App
+        if let id = bundleId {
+            return ScrollCore.ignoreList.smooth.contains(id)
+        }
+        return false
+    }
+    // 根据传入的 IgnoredApplication 对象判断是否需要禁止翻转滚动
+    static func applicationNeedIgnoreReverse(application: IgnoredApplication?) -> Bool {
+        // 针对 Launchpad 和 MissionControl 特殊处理
+        if ScrollCore.ignoreList.reverse.contains("com.apple.launchpad.launcher") && ScrollCore.launchpadIsActive() {
+            return true
+        }
+        if ScrollCore.ignoreList.reverse.contains("com.apple.exposelauncher") && ScrollCore.missioncontrolIsActive() {
+            return true
+        }
+        // 一般 App
+        if let app = application {
+            return app.notReverse
+        }
+        return false
+    }
+    // 根据 bundleId 判断程序是否在禁止翻转滚动列表内
+    static func applicationInReverseIgnoreList(bundleId: String?) -> Bool {
+        // 针对 Launchpad 和 MissionControl 特殊处理
+        if ScrollCore.ignoreList.reverse.contains("com.apple.launchpad.launcher") && ScrollCore.launchpadIsActive() {
+            return true
+        }
+        if ScrollCore.ignoreList.reverse.contains("com.apple.exposelauncher") && ScrollCore.missioncontrolIsActive() {
+            return true
+        }
+        // 一般 App
+        if let id = bundleId {
+            return ScrollCore.ignoreList.reverse.contains(id)
+        }
+        return false
+    }
+    // 是否启用平滑
+    static func enableSmooth(ignoredApplicaton: IgnoredApplication?) -> Bool {
+        let applicationInIgnoreList = ignoredApplicaton !== nil
+        if ScrollCore.option.smooth {
+            if ScrollCore.whiteListMode {
+                if applicationInIgnoreList {
+                    return !ScrollCore.applicationNeedIgnoreSmooth(application: ignoredApplicaton)
+                } else {
+                    return false
+                }
+            } else {
+                return !ScrollCore.applicationNeedIgnoreSmooth(application: ignoredApplicaton)
+            }
+        } else {
+            return false
+        }
+    }
+    // 是否启用翻转
+    static func enableReverse(ignoredApplicaton: IgnoredApplication?) -> Bool {
+        let applicationInIgnoreList = ignoredApplicaton !== nil
+        if ScrollCore.option.reverse {
+            if ScrollCore.whiteListMode {
+                if applicationInIgnoreList {
+                    return !ScrollCore.applicationNeedIgnoreReverse(application: ignoredApplicaton)
+                } else {
+                    return false
+                }
+            } else {
+                return !ScrollCore.applicationNeedIgnoreReverse(application: ignoredApplicaton)
+            }
+        } else {
+            return false
         }
     }
     

@@ -239,8 +239,8 @@
 /* Class = "NSViewController"; title = "About"; ObjectID = "RfV-Ow-3mF"; */
 "RfV-Ow-3mF.title" = "About";
 
-/* Class = "NSTextFieldCell"; title = "Ignored Application list:"; ObjectID = "Rgu-cb-5lp"; */
-"Rgu-cb-5lp.title" = "List of ignored Applications:";
+/* Class = "NSTextFieldCell"; title = "Exceptional Application list:"; ObjectID = "Rgu-cb-5lp"; */
+"Rgu-cb-5lp.title" = "Exceptional Application list:";
 
 /* Class = "NSMenuItem"; title = "Superscript"; ObjectID = "Rqc-34-cIF"; */
 "Rqc-34-cIF.title" = "Superscript";
@@ -550,3 +550,15 @@
 
 /* Class = "NSTextFieldCell"; title = "Auto launch Mos on your MacOS login."; ObjectID = "wY5-9W-iNv"; */
 "wY5-9W-iNv.title" = "Auto launch Mos on your MacOS login.";
+
+/* Class = "NSButtonCell"; title = "White List Mode"; ObjectID = "Ksp-g1-48g"; */
+"Ksp-g1-48g.title" = "White List Mode";
+
+/* Class = "NSTextFieldCell"; title = "The white List Mode will only ..."; ObjectID = "v26-RK-BtL"; */
+"v26-RK-BtL.title" = "The white List Mode will only enable MOS on selected Application below the list.";
+
+/* Class = "NSTextFieldCell"; title = "Peak:"; ObjectID = "Hwu-eX-4yv"; */
+"Hwu-eX-4yv.title" = "Peak:";
+
+/* Class = "NSTextFieldCell"; title = "Peak:"; ObjectID = "1RC-aL-R3D"; */
+"1RC-aL-R3D.title" = "Control the peak position of interpolation line.";

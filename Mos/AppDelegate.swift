@@ -20,9 +20,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // 是否返回原始事件
             var handbackOriginalEvent = true
         
-            // 判断输入源
+            // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动是模拟鼠标输入的)
             if ScrollCore.isTouchPad(of: event) {
-                // 当触控板输入, 啥都不干
+                // 当触控板输入时, 啥都不干
             } else {
                 // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
                 
@@ -37,21 +37,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     }
                 }
                 
+                // 获取列表中应用程序的设置信息
+                let ignoredApplicaton = ScrollCore.applicationInIgnoreListOf(bundleId: ScrollCore.eventTargetBundleId)
+                
                 // 处理滚动数据
                 var scrollFixY = Int64(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
                 var scrollPtY = event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)
                 var scrollFixPtY = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)
                 // Y轴
                 if var scrollY = ScrollCore.yAxisExistDataIn(scrollFixY, scrollPtY, scrollFixPtY) {
-                    // 是否翻转滚动, 且窗口BundleId不在禁止翻转滚动列表内
-                    if ScrollCore.option.reverse && !ScrollCore.applicationInReverseIgnoreList(bundleId: ScrollCore.eventTargetBundleId) {
+                    // 是否翻转滚动
+                    if ScrollCore.enableReverse(ignoredApplicaton: ignoredApplicaton) {
                         event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: -scrollFixY)
                         event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: -scrollPtY)
                         event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: -scrollFixPtY)
                         scrollY.data = -scrollY.data
                     }
-                    // 是否平滑滚动, 且窗口BundleId不包含在禁止翻转滚动列表内
-                    if ScrollCore.option.smooth && !ScrollCore.applicationInSmoothIgnoreList(bundleId: ScrollCore.eventTargetBundleId) {
+                    // 是否平滑滚动
+                    if ScrollCore.enableSmooth(ignoredApplicaton: ignoredApplicaton) {
                         // 禁止返回原始事件
                         handbackOriginalEvent = false
                         // 如果输入值为Fixed型则不处理; 如果为非Fixed类型且小于10则归一化为10
@@ -68,7 +71,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         // 启动一下事件
                         ScrollCore.activeScrollEventPoster()
                     }
+                    
+                    
                 }
+                
                 // X轴 (横向滚轮, 如 Logetech MxMaster)
                 // if event.getIntegerValueField(.scrollWheelEventDeltaAxis2) != 0 {
                     // 暂时不作处理

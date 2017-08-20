@@ -54,7 +54,7 @@
 "5Vv-lz-BsD.title" = "Copy Style";
 
 /* Class = "NSTextFieldCell"; title = "Just some little job for mouse."; ObjectID = "5cx-xS-eRe"; */
-"5cx-xS-eRe.title" = "只是做了一些微小的工作";
+"5cx-xS-eRe.title" = "很惭愧，就做了一点微小的工作";
 
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "5ft-0j-oso"; */
 "5ft-0j-oso.title" = "Text Cell";
@@ -207,7 +207,7 @@
 "Nop-cj-93Q.title" = "\tDefault";
 
 /* Class = "NSTextFieldCell"; title = "Not S: Not Smooth / Not R: Not Reverse"; ObjectID = "Nvh-BG-caL"; */
-"Nvh-BG-caL.title" = "No S: 忽略平滑滚动 / No R: 忽略反转滚动";
+"Nvh-BG-caL.title" = "No S: 禁用平滑滚动 / No R: 禁用反转滚动";
 
 /* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "OY7-WF-poV"; */
 "OY7-WF-poV.title" = "Minimize";
@@ -239,8 +239,8 @@
 /* Class = "NSViewController"; title = "About"; ObjectID = "RfV-Ow-3mF"; */
 "RfV-Ow-3mF.title" = "关于";
 
-/* Class = "NSTextFieldCell"; title = "Ignored Application list:"; ObjectID = "Rgu-cb-5lp"; */
-"Rgu-cb-5lp.title" = "被忽略的应用程序功能列表:";
+/* Class = "NSTextFieldCell"; title = "Exceptional Application list:"; ObjectID = "Rgu-cb-5lp"; */
+"Rgu-cb-5lp.title" = "例外的应用程序功能列表:";
 
 /* Class = "NSMenuItem"; title = "Superscript"; ObjectID = "Rqc-34-cIF"; */
 "Rqc-34-cIF.title" = "Superscript";
@@ -333,7 +333,7 @@
 "agt-UL-0e3.title" = "Use Default";
 
 /* Class = "NSViewController"; title = "Ignore"; ObjectID = "bga-wG-iim"; */
-"bga-wG-iim.title" = "忽略";
+"bga-wG-iim.title" = "例外";
 
 /* Class = "NSMenuItem"; title = "Show Colors"; ObjectID = "bgn-CT-cEk"; */
 "bgn-CT-cEk.title" = "Show Colors";
@@ -450,7 +450,7 @@
 "snW-S8-Cw5.title" = "Show Toolbar";
 
 /* Class = "NSTextFieldCell"; title = "Speed Setting:"; ObjectID = "suV-WY-rbw"; */
-"suV-WY-rbw.title" = "速度:";
+"suV-WY-rbw.title" = "最大速度:";
 
 /* Class = "NSMenuItem"; title = "Data Detectors"; ObjectID = "tRr-pd-1PS"; */
 "tRr-pd-1PS.title" = "Data Detectors";
@@ -471,7 +471,7 @@
 "uRl-iY-unG.title" = "Cut";
 
 /* Class = "NSTextFieldCell"; title = "Time Setting:"; ObjectID = "vEz-OS-QE8"; */
-"vEz-OS-QE8.title" = "时间:";
+"vEz-OS-QE8.title" = "持续时间:";
 
 /* Class = "NSMenuItem"; title = "Paste Style"; ObjectID = "vKC-jM-MkH"; */
 "vKC-jM-MkH.title" = "Paste Style";
@@ -551,5 +551,17 @@
 /* Class = "NSButtonCell"; title = "Launch on Login"; ObjectID = "HZF-2o-Mrh"; */
 "HZF-2o-Mrh.title" = "开机启动";
 
-/* Class = "NSTextFieldCell"; title = "Auto launch Mos on your MacOS login."; ObjectID = "wY5-9W-iNv"; */
-"wY5-9W-iNv.title" = "在系统登录时自动运行Mos";
+/* Class = "NSTextFieldCell"; title = "Auto launch MOS on your MacOS login."; ObjectID = "wY5-9W-iNv"; */
+"wY5-9W-iNv.title" = "在系统登录时自动运行MOS";
+
+/* Class = "NSButtonCell"; title = "White List Mode"; ObjectID = "Ksp-g1-48g"; */
+"Ksp-g1-48g.title" = "白名单模式";
+
+/* Class = "NSTextFieldCell"; title = "The white List Mode will only ..."; ObjectID = "v26-RK-BtL"; */
+"v26-RK-BtL.title" = "勾选白名单模式后, Mos 仅对包含在下方的例外应用列表中启用, 未包含在内的则不受影响";
+
+/* Class = "NSTextFieldCell"; title = "Peak:"; ObjectID = "Hwu-eX-4yv"; */
+"Hwu-eX-4yv.title" = "峰值位置:";
+
+/* Class = "NSTextFieldCell"; title = "Peak:"; ObjectID = "1RC-aL-R3D"; */
+"1RC-aL-R3D.title" = "控制插值曲线相对于持续时间的峰值位置:";

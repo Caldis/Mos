@@ -10,13 +10,27 @@ import Cocoa
 
 class PreferencesIgnoreViewController: NSViewController {
     
-    // tableView引用
+    // 白名单CheckBox
+    @IBOutlet weak var whiteListModeCheckBox: NSButton!
+    // 表格, 表格底部工具栏
     @IBOutlet weak var tableView: NSTableView!
-    // tableViewToolBar引用
     @IBOutlet weak var tableViewToolBar: NSSegmentedControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 恢复一下设置
+        whiteListModeCheckBox.state = ScrollCore.whiteListMode ? 1 : 0
+    }
+    
+    // 是否启用白名单模式
+    @IBAction func whiteListModeClick(_ sender: NSButton) {
+        if sender.state == 0 {
+            ScrollCore.whiteListMode = false
+        } else {
+            ScrollCore.whiteListMode = true
+        }
+        // 保存设置
+        UserDefaults.standard.set(ScrollCore.whiteListMode ? "true" : "false", forKey:"whiteListMode")
     }
     
     // 列表底部的工具栏
@@ -55,7 +69,8 @@ class PreferencesIgnoreViewController: NSViewController {
                     let applicationIcon = NSWorkspace.shared().icon(forFile: applicationPath)
                     let applicationName = FileManager().displayName(atPath: applicationUrl).removingPercentEncoding!
                     if let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
-                        let application = IgnoredApplication(notSmooth: true, notReverse: true, icon: applicationIcon, title: applicationName, bundleId: applicationBundleId)
+                        // 添加的例外应用的默认状态与是否启用白名单模式挂钩, 如果启用了白名单模式, 则默认都不禁用; 如果未启用白名单模式, 则默认都禁用
+                        let application = IgnoredApplication(notSmooth: !ScrollCore.whiteListMode, notReverse: !ScrollCore.whiteListMode, icon: applicationIcon, title: applicationName, bundleId: applicationBundleId)
                         ScrollCore.ignoredApplications.append(application)
                         ScrollCore.updateIgnoreList()
                         self.tableView.reloadData()
@@ -126,7 +141,7 @@ extension PreferencesIgnoreViewController: NSTableViewDelegate {
         // 生成每个Cell
         if let cell = tableView.make(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
             let rowItem = ScrollCore.ignoredApplications[row]
-            // notSmooth列
+            // notSmooth列, 绑定对应方法
             if tableColumnIdentifier == CellIdentifiers.notSmoothCell {
                 let checkBox = cell.nextKeyView as! NSButton
                 checkBox.tag = row
@@ -135,7 +150,7 @@ extension PreferencesIgnoreViewController: NSTableViewDelegate {
                 checkBox.state = rowItem.notSmooth==true ? 1 : 0
                 return cell
             }
-            // notReverse列
+            // notReverse列, 绑定对应方法
             if tableColumnIdentifier == CellIdentifiers.notReverseCell {
                 let checkBox = cell.nextKeyView as! NSButton
                 checkBox.tag = row

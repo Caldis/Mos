@@ -16,6 +16,9 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBOutlet weak var scrollTimeSlider: NSSlider!
     @IBOutlet weak var scrollTimeLabel: NSTextField!
     @IBOutlet weak var scrollTimeStepper: NSStepper!
+    @IBOutlet weak var scrollPeakSlider: NSSlider!
+    @IBOutlet weak var scrollPeakLabel: NSTextField!
+    @IBOutlet weak var scrollPeakStepper: NSStepper!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +31,10 @@ class PreferencesAdvanceViewController: NSViewController {
         scrollTimeSlider.intValue = Int32(ScrollCore.advancedOption.time)
         scrollTimeLabel.stringValue = String(ScrollCore.advancedOption.time)
         scrollTimeStepper.intValue = Int32(ScrollCore.advancedOption.time)
+        // 峰值
+        scrollPeakSlider.doubleValue = ScrollCore.advancedOption.peak
+        scrollPeakLabel.stringValue = String(format: "%.2f", ScrollCore.advancedOption.peak)
+        scrollPeakStepper.doubleValue = ScrollCore.advancedOption.peak
     }
     
     // 速度设置
@@ -37,7 +44,7 @@ class PreferencesAdvanceViewController: NSViewController {
         // 更新值
         setScrollSpeed(value: sender.doubleValue)
     }
-    @IBAction func scrollSpeedSteeperChange(_ sender: NSStepper) {
+    @IBAction func scrollSpeedStepperChange(_ sender: NSStepper) {
         // 修改Slider
         scrollSpeedSlider.doubleValue = sender.doubleValue
         // 更新值
@@ -61,7 +68,7 @@ class PreferencesAdvanceViewController: NSViewController {
         // 更新值
         setScrollTime(value: sender.intValue)
     }
-    @IBAction func scrollTimeSteeperChange(_ sender: NSStepper) {
+    @IBAction func scrollTimeStepperChange(_ sender: NSStepper) {
         // 修改Slider
         scrollTimeSlider.intValue = sender.intValue
         // 更新值
@@ -80,6 +87,31 @@ class PreferencesAdvanceViewController: NSViewController {
         UserDefaults.standard.set(ScrollCore.advancedOption.time, forKey:"time")
     }
     
+    // 峰值设置
+    @IBAction func scrollPeakSliderChange(_ sender: NSSlider) {
+        // 修改Stepper
+        scrollPeakStepper.doubleValue = sender.doubleValue
+        // 更新值
+        setScrollPeak(value: sender.doubleValue)
+    }
+    @IBAction func scrollPeakStepperChange(_ sender: NSStepper) {
+        // 修改Slider
+        scrollPeakSlider.doubleValue = sender.doubleValue
+        // 更新值
+        setScrollPeak(value: sender.doubleValue)
+    }
+    func setScrollPeak(value: Double) {
+        // 修改文字
+        scrollPeakLabel.stringValue = String(format: "%.2f", value)
+        // 修改实际参数
+        ScrollCore.advancedOption.peak = value
+        // 重新初始化曲线
+        ScrollCore.basePluseData = ScrollCore.initPluseData()
+        // 保存设置
+        UserDefaults.standard.set(ScrollCore.advancedOption.peak, forKey:"peak")
+    }
+    
+    
     // 重置
     @IBAction func resetAllToDefaultClick(_ sender: NSButton) {
         // 重置速度
@@ -94,5 +126,11 @@ class PreferencesAdvanceViewController: NSViewController {
         scrollTimeSlider.intValue = defTime
         scrollTimeLabel.stringValue = String(format: "%.2i", defTime)
         setScrollTime(value: defTime)
+        // 重置峰值
+        let defPeak = ScrollCore.defAdvancedOption.peak
+        scrollPeakSlider.doubleValue = defPeak
+        scrollPeakStepper.doubleValue = defPeak
+        scrollPeakLabel.stringValue = String(format: "%.2f", defPeak)
+        setScrollPeak(value: defPeak)
     }
 }

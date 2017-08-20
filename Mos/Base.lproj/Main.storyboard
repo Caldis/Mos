@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
@@ -114,7 +114,7 @@
                 </windowController>
                 <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="250"/>
+            <point key="canvasLocation" x="-191" y="250"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="d5U-6w-uQ6">
@@ -243,7 +243,7 @@
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZaA-rA-uF7">
                                 <rect key="frame" x="166" y="20" width="223" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Auto launch Mos on your MacOS login." id="wY5-9W-iNv">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Auto launch MOS on your MacOS login." id="wY5-9W-iNv">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -268,7 +268,7 @@
                 </viewController>
                 <customObject id="KsC-af-ap0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="612" y="1212.5"/>
+            <point key="canvasLocation" x="446" y="1207"/>
         </scene>
         <!--Ignore-->
         <scene sceneID="UqT-28-MT6">
@@ -450,25 +450,78 @@
                                 <rect key="frame" x="20" y="333" width="410" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
-                                <rect key="frame" x="18" y="344" width="414" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Ignored Application list:" id="Rgu-cb-5lp">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
+                                <rect key="frame" x="18" y="347" width="414" height="14"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Exceptional Application list:" id="Rgu-cb-5lp">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FWV-z4-M2h">
+                                <rect key="frame" x="407" y="341" width="25" height="25"/>
+                                <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="lbW-Vn-frs">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <segue destination="o12-9v-Ej5" kind="popover" popoverAnchorView="FWV-z4-M2h" popoverBehavior="t" preferredEdge="maxY" id="1ja-Vq-zoO"/>
+                                </connections>
+                            </button>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="gnb-pe-ZN5">
+                                <rect key="frame" x="299" y="345" width="106" height="18"/>
+                                <buttonCell key="cell" type="check" title="White List Mode" bezelStyle="regularSquare" imagePosition="left" alignment="right" state="on" inset="2" id="Ksp-g1-48g">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="systemLight" size="11"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="whiteListModeClick:" target="bga-wG-iim" id="tEA-xE-VhI"/>
+                                </connections>
+                            </button>
                         </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="UmZ-aT-YrM" secondAttribute="trailing" constant="20" id="Quq-w8-9tf"/>
+                            <constraint firstItem="gnb-pe-ZN5" firstAttribute="top" secondItem="NAU-na-Vke" secondAttribute="top" constant="20" id="THA-zu-Ihq"/>
+                            <constraint firstItem="FWV-z4-M2h" firstAttribute="top" secondItem="NAU-na-Vke" secondAttribute="top" constant="16" id="WaF-7M-J8A"/>
+                            <constraint firstAttribute="trailing" secondItem="FWV-z4-M2h" secondAttribute="trailing" constant="20" id="e3l-mm-wzi"/>
+                            <constraint firstItem="FWV-z4-M2h" firstAttribute="leading" secondItem="gnb-pe-ZN5" secondAttribute="trailing" constant="6" id="iyK-Mn-Mre"/>
+                            <constraint firstItem="UmZ-aT-YrM" firstAttribute="top" secondItem="NAU-na-Vke" secondAttribute="top" constant="20" id="pfZ-0s-Z0w"/>
+                            <constraint firstItem="UmZ-aT-YrM" firstAttribute="leading" secondItem="NAU-na-Vke" secondAttribute="leading" constant="20" id="xHX-fF-0RY"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="tableView" destination="LmV-gi-3fE" id="GOb-17-dvX"/>
                         <outlet property="tableViewToolBar" destination="AQK-ih-gQD" id="hfd-VG-ezQ"/>
+                        <outlet property="whiteListModeCheckBox" destination="gnb-pe-ZN5" id="0Vr-XO-KI2"/>
                     </connections>
                 </viewController>
                 <customObject id="l11-a0-4Xa" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1139" y="1311.5"/>
+            <point key="canvasLocation" x="1445" y="1306"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="57E-oo-PEW">
+            <objects>
+                <viewController id="o12-9v-Ej5" sceneMemberID="viewController">
+                    <view key="view" id="wdx-Jb-jwG">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="53"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KGW-PK-8DX">
+                                <rect key="frame" x="18" y="20" width="414" height="13"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="justified" title="The white List Mode will only enable MOS on selected Application below the list." id="v26-RK-BtL">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </viewController>
+                <customObject id="ZNV-FD-bQh" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1445" y="1709"/>
         </scene>
         <!--Updates-->
         <scene sceneID="VTW-lQ-Mfk">
@@ -515,7 +568,7 @@
                 </viewController>
                 <customObject id="Tfe-PH-zhM" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1661" y="1162"/>
+            <point key="canvasLocation" x="2040" y="1156"/>
         </scene>
         <!--Advanced-->
         <scene sceneID="Fd7-iR-8pW">
@@ -523,11 +576,11 @@
                 <customObject id="T8g-3J-WxE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <viewController title="Advanced" storyboardIdentifier="advanced" id="iW5-CD-5OC" customClass="PreferencesAdvanceViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="cc6-G4-pCI">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="163"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="208"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kft-Xf-Btl">
-                                <rect key="frame" x="166" y="103" width="207" height="17"/>
+                                <rect key="frame" x="166" y="148" width="207" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Control the maxium scroll speed." id="vmk-zZ-ifN">
                                     <font key="font" metaFont="smallSystem"/>
@@ -536,7 +589,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sm0-hQ-Q0F">
-                                <rect key="frame" x="381" y="128" width="30" height="14"/>
+                                <rect key="frame" x="381" y="173" width="30" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="0.95" id="UzC-zQ-cqg">
                                     <font key="font" metaFont="system" size="10"/>
@@ -545,23 +598,23 @@
                                 </textFieldCell>
                             </textField>
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Z34-gx-WqH">
-                                <rect key="frame" x="166" y="126" width="211" height="19"/>
+                                <rect key="frame" x="166" y="171" width="211" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <sliderCell key="cell" state="on" alignment="left" minValue="0.01" maxValue="5" doubleValue="0.94999999999999996" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="AcR-3v-Dqn"/>
+                                <sliderCell key="cell" state="on" alignment="left" minValue="0.01" maxValue="10" doubleValue="0.94999999999999996" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="AcR-3v-Dqn"/>
                                 <connections>
                                     <action selector="scrollSpeedSliderChange:" target="iW5-CD-5OC" id="GIf-Gy-qS9"/>
                                 </connections>
                             </slider>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6m-U6-lbc">
-                                <rect key="frame" x="414" y="121" width="19" height="27"/>
+                                <rect key="frame" x="414" y="166" width="19" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="0.01" maxValue="10" doubleValue="0.94999999999999996" id="zlB-ur-whi"/>
                                 <connections>
-                                    <action selector="scrollSpeedSteeperChange:" target="iW5-CD-5OC" id="NrC-P6-YKK"/>
+                                    <action selector="scrollSpeedStepperChange:" target="iW5-CD-5OC" id="wGd-SN-Cwn"/>
                                 </connections>
                             </stepper>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GPP-0S-Ldb">
-                                <rect key="frame" x="381" y="76" width="30" height="14"/>
+                                <rect key="frame" x="381" y="121" width="30" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="480" id="rzC-bb-p1R">
                                     <font key="font" metaFont="system" size="10"/>
@@ -570,23 +623,48 @@
                                 </textFieldCell>
                             </textField>
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rUi-10-gBK">
-                                <rect key="frame" x="166" y="75" width="211" height="19"/>
+                                <rect key="frame" x="166" y="120" width="211" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <sliderCell key="cell" state="on" alignment="left" minValue="50" maxValue="1000" doubleValue="480" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="Zuj-l1-8M6"/>
+                                <sliderCell key="cell" state="on" alignment="left" minValue="50" maxValue="2000" doubleValue="480" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="Zuj-l1-8M6"/>
                                 <connections>
                                     <action selector="scrollTimeSliderChange:" target="iW5-CD-5OC" id="Ii3-bn-6H0"/>
                                 </connections>
                             </slider>
+                            <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LSC-Js-gYM">
+                                <rect key="frame" x="166" y="69" width="211" height="19"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <sliderCell key="cell" state="on" alignment="left" minValue="0.01" maxValue="0.98999999999999999" doubleValue="0.20000000000000001" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="Xy2-xg-jO7"/>
+                                <connections>
+                                    <action selector="scrollPeakSliderChange:" target="iW5-CD-5OC" id="S5H-FC-K33"/>
+                                </connections>
+                            </slider>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1NS-6N-uPt">
-                                <rect key="frame" x="414" y="70" width="19" height="27"/>
+                                <rect key="frame" x="414" y="115" width="19" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" minValue="1" maxValue="1000" doubleValue="380" id="pjr-Oq-LKo"/>
                                 <connections>
-                                    <action selector="scrollTimeSteeperChange:" target="iW5-CD-5OC" id="0d1-Vz-cwh"/>
+                                    <action selector="scrollTimeStepperChange:" target="iW5-CD-5OC" id="7Lb-OQ-6AV"/>
+                                </connections>
+                            </stepper>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bNF-kr-gyO">
+                                <rect key="frame" x="381" y="71" width="30" height="14"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="0.20" id="FJs-V9-W8x">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ILY-px-1rF">
+                                <rect key="frame" x="414" y="65" width="19" height="27"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="0.01" maxValue="0.98999999999999999" doubleValue="0.20000000000000001" id="JM2-oo-x7v"/>
+                                <connections>
+                                    <action selector="scrollPeakStepperChange:" target="iW5-CD-5OC" id="lbP-OW-Q2h"/>
                                 </connections>
                             </stepper>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SVv-bk-Tpc">
-                                <rect key="frame" x="166" y="52" width="221" height="17"/>
+                                <rect key="frame" x="166" y="97" width="221" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Control the time on scroll transition anim." id="X5f-kH-7lZ">
                                     <font key="font" metaFont="smallSystem"/>
@@ -594,19 +672,37 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f4W-iU-YEd">
-                                <rect key="frame" x="30" y="126" width="120" height="17"/>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mb8-iU-RfL">
+                                <rect key="frame" x="166" y="46" width="245" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Speed Setting:" id="suV-WY-rbw">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Control the peak position of interpolation line." id="1RC-aL-R3D">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f4W-iU-YEd">
+                                <rect key="frame" x="30" y="171" width="120" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Speed:" id="suV-WY-rbw">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0bd-7K-p6L">
-                                <rect key="frame" x="30" y="77" width="120" height="17"/>
+                                <rect key="frame" x="30" y="122" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Time Setting:" id="vEz-OS-QE8">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Time:" id="vEz-OS-QE8">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gbe-1U-vh9">
+                                <rect key="frame" x="30" y="70" width="120" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Peak:" id="Hwu-eX-4yv">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -626,6 +722,9 @@
                         </subviews>
                     </view>
                     <connections>
+                        <outlet property="scrollPeakLabel" destination="bNF-kr-gyO" id="G9p-es-FrI"/>
+                        <outlet property="scrollPeakSlider" destination="LSC-Js-gYM" id="eO5-X2-4kB"/>
+                        <outlet property="scrollPeakStepper" destination="ILY-px-1rF" id="Mqb-jX-Wjs"/>
                         <outlet property="scrollSpeedLabel" destination="sm0-hQ-Q0F" id="gwG-ZR-wK9"/>
                         <outlet property="scrollSpeedSlider" destination="Z34-gx-WqH" id="Jdm-Ba-CZl"/>
                         <outlet property="scrollSpeedStepper" destination="u6m-U6-lbc" id="ryB-lI-P95"/>
@@ -635,7 +734,7 @@
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="612" y="1475.5"/>
+            <point key="canvasLocation" x="947" y="1219"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">
@@ -702,20 +801,11 @@
                                 </subviews>
                             </visualEffectView>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S8y-Am-MEW">
-                                <rect key="frame" x="18" y="56" width="137" height="73"/>
+                                <rect key="frame" x="18" y="45" width="147" height="84"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Mos" id="2AK-Pu-mot">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="MOS" id="2AK-Pu-mot">
                                     <font key="font" metaFont="systemThin" size="70"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uMH-2l-9yi">
-                                <rect key="frame" x="151" y="59" width="273" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Just some little job for mouse." id="5cx-xS-eRe">
-                                    <font key="font" metaFont="systemLight" size="11"/>
-                                    <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
@@ -728,6 +818,15 @@
                                 </view>
                                 <color key="fillColor" red="0.14116021989999999" green="0.14118680359999999" blue="0.14115440849999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </box>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uMH-2l-9yi">
+                                <rect key="frame" x="169" y="60" width="273" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Just some little job for mouse." id="5cx-xS-eRe">
+                                    <font key="font" metaFont="systemLight" size="11"/>
+                                    <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                     </view>
                     <connections>
@@ -738,7 +837,7 @@
                 </viewController>
                 <customObject id="r6n-Nn-xNW" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2138" y="1185"/>
+            <point key="canvasLocation" x="2634" y="1179"/>
         </scene>
         <!--Preferences Donate View Controller-->
         <scene sceneID="YcU-UJ-LwR">
@@ -789,7 +888,7 @@
                 </viewController>
                 <customObject id="HME-8h-VSk" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2139" y="1577"/>
+            <point key="canvasLocation" x="2635" y="1560"/>
         </scene>
         <!--Scroll Monitor-->
         <scene sceneID="hIz-AP-VOD">
@@ -1113,7 +1212,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="794.5"/>
+            <point key="canvasLocation" x="-64" y="782"/>
         </scene>
         <!--Scroll Monitor Help View Controller-->
         <scene sceneID="pwV-nW-gT1">
@@ -1214,7 +1313,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                 </viewController>
                 <customObject id="DQl-fR-8xQ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-294.5" y="1247.5"/>
+            <point key="canvasLocation" x="-64" y="1243"/>
         </scene>
     </scenes>
     <resources>

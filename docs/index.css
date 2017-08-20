@@ -91,16 +91,17 @@ button:active {
 }
 .appName {
     height: 50px;
+    margin-bottom: 4px
 }
 .logoHr {
     display: inline-block;
-    width: 70px;
+    width: 88px;
     border-top: 2px solid #333;
 }
 .appDisc {
     font-size: 12px;
     color: #999;
-    margin: 0 auto;
+    margin: 15px auto 0;
 }
 .buttonContainer {
     width: 100%;

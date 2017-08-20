@@ -21,7 +21,7 @@
     CGEventPost(kCGSessionEventTap, event);
 }
 
-// 获取鼠标当前位置的顶层窗口信息 (暂时不可用, 无法获取外接屏幕的窗口信息)
+// 获取鼠标当前位置的顶层窗口信息 (暂时不可用, 无法获取到外接屏幕的窗口信息)
 // var eventTargetOwnerName:String!
 // if let eventTargetWindowData = MouseEvent.getWindowData(from: event) {
 //     eventTargetOwnerName = eventTargetWindowData["kCGWindowOwnerName"] as! String
