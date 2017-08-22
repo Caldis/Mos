@@ -31,16 +31,16 @@ http://mos.u2sk.com/indexCN.html
 ## 截图
 
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/mointor.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/mointorCN.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferences-general.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferencesGeneralCN.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferences-advanced.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferencesAdvancedCN.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferences-ignoredList.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferencesIgnoredListCN.png?raw=true">
 </p>
 
 
