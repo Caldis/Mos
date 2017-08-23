@@ -84,7 +84,7 @@ button:active {
     align-items: center;
 }
 .contentWrapper {
-
+    text-align: center;
 }
 .introTitle {
     padding-top: 30px;

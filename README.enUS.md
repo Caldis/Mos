@@ -22,9 +22,11 @@ http://mos.u2sk.com/
 
 ## Features
 
-- Smooth the mouse wheel scroll !
+- Smooth the mouse wheel scroll just like touchpad
 - Distinguish the touchpad scroll and mouse wheel scroll, reverse the scroll position separatily.
 - A mointor can render the scroll event.
+- Custom the scroll effect, the speed and easing effect.
+- Ignore list, black/white list mode.
 - Base on swift3.
 
 

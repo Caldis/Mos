@@ -10,7 +10,7 @@
 ![Xcode 8.2+](https://img.shields.io/badge/Xcode-8.2%2B-blue.svg)
 ![Swift 3.0+](https://img.shields.io/badge/Swift-3.0%2B-orange.svg)
 
-一个用于在MacOS上平滑你的鼠标滚动效果的小工具, 让你的滚轮丝滑如触控板。
+一个用于在MacOS上平滑你的鼠标滚动效果的小工具, 让你的滚轮爽如触控板。
 
 [中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md)
 
@@ -22,8 +22,10 @@ http://mos.u2sk.com/indexCN.html
 
 ## 特性
 
-- 平滑鼠标滚动效果 !
+- 疯狂平滑你的鼠标滚动效果
 - 支持分离触控板/鼠标事件, 单独翻转鼠标滚动方向。
+- 滚动曲线的自定义调整。
+- 支持区分应用处理, 黑/白名单系统。
 - 一个用于监控滚动事件的图形化呈现窗口。
 - 基于Swift3构建。
 
