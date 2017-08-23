@@ -79,6 +79,12 @@ button:active {
 
 #content {
     flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.contentWrapper {
+
 }
 .introTitle {
     padding-top: 30px;
