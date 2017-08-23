@@ -1,7 +1,7 @@
 //
 //  MouseEvent.h
 //  Mos
-//  用于封装OC方法
+//  用于封装OC方法 - 鼠标事件发送
 //  Created by Cb on 2017/1/17.
 //  Copyright © 2017年 Cb. All rights reserved.
 //

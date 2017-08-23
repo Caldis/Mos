@@ -45,6 +45,7 @@
 //     AnyHashable("kCGWindowName"): NSDictionary - Foundation | Apple Developer Documentation, AnyHashable("kCGWindowLayer"): 0,
 //     AnyHashable("kCGWindowNumber"): 6617, AnyHashable("kCGWindowAlpha"): 1
 // ])
+    
 +(NSDictionary*)getWindowDataFrom:(CGEventRef)event {
     // 获取鼠标当前位置的顶层窗口的windowNumber
     CGPoint location = CGEventGetLocation(event);

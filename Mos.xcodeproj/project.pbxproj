@@ -13,6 +13,7 @@
 		22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA71E25344E00E4BFBF /* Assets.xcassets */; };
 		22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA91E25344E00E4BFBF /* Main.storyboard */; };
 		22142DB61E25344F00E4BFBF /* MosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DB51E25344F00E4BFBF /* MosTests.swift */; };
+		221E5DFB1F4DE55B00AE17FA /* ProcessUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */; };
 		2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */; };
 		2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2225F8EA1E3B1A5C0020DD22 /* Localizable.strings */; };
 		226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 226A2E6D1E2E68620035F1A6 /* MouseEvent.m */; };
@@ -111,6 +112,8 @@
 		22142DB51E25344F00E4BFBF /* MosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosTests.swift; sourceTree = "<group>"; };
 		22142DB71E25344F00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		22142DBC1E25344F00E4BFBF /* MosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		221E5DF71F4DE52400AE17FA /* ProcessUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProcessUtils.h; sourceTree = "<group>"; };
+		221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProcessUtils.m; sourceTree = "<group>"; };
 		2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAdvanceViewController.swift; sourceTree = "<group>"; };
 		2225F8E91E3B1A5C0020DD22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2225F8EB1E3B1A610020DD22 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -285,6 +288,8 @@
 				226A2E6C1E2E68610035F1A6 /* Mos-Bridging-Header.h */,
 				226A2E711E2E68A00035F1A6 /* MouseEvent.h */,
 				226A2E6D1E2E68620035F1A6 /* MouseEvent.m */,
+				221E5DF71F4DE52400AE17FA /* ProcessUtils.h */,
+				221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */,
 			);
 			name = OCBridge;
 			sourceTree = "<group>";
@@ -475,6 +480,7 @@
 				226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */,
 				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,
 				22816CFF1E2B31020020D6B1 /* ScrollMonitorWindowController.swift in Sources */,
+				221E5DFB1F4DE55B00AE17FA /* ProcessUtils.m in Sources */,
 				22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */,
 				22003C6E1E8555F0001220BC /* Utils.swift in Sources */,
 				22142DA61E25344E00E4BFBF /* ScrollMonitorViewController.swift in Sources */,

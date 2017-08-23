@@ -458,8 +458,14 @@ class ScrollCore: NSObject {
         // 更新列表
         let workSpace = NSWorkspace.shared()
         let apps = workSpace.runningApplications
-        // 用pid找bundleID
-        return apps.filter({$0.processIdentifier == pid}).first?.bundleIdentifier! as String?
+        let matchApp = apps.filter({$0.processIdentifier == pid}).first
+        // 如果找到bundleId则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
+        if let bundleId = matchApp!.bundleIdentifier {
+            return bundleId as String?
+        } else {
+            let ppid = ProcessUtils.getParentPid(from: matchApp!.processIdentifier)
+            return ScrollCore.getApplicationBundleIdFrom(pid: ppid)
+        }
     }
     
     // 判断 LaunchPad 是否激活
