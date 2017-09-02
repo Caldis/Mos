@@ -456,15 +456,17 @@ class ScrollCore: NSObject {
     // 从Pid获取进程名称
     static func getApplicationBundleIdFrom(pid: pid_t) -> String? {
         // 更新列表
-        let workSpace = NSWorkspace.shared()
-        let apps = workSpace.runningApplications
-        let matchApp = apps.filter({$0.processIdentifier == pid}).first
-        // 如果找到bundleId则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
-        if let bundleId = matchApp!.bundleIdentifier {
-            return bundleId as String?
+        let runningApps = NSWorkspace.shared().runningApplications
+        if let matchApp = runningApps.filter({$0.processIdentifier == pid}).first {
+            // 如果找到bundleId则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
+            if let bundleId = matchApp.bundleIdentifier {
+                return bundleId as String?
+            } else {
+                let ppid = ProcessUtils.getParentPid(from: matchApp.processIdentifier)
+                return ppid==1 ? nil : ScrollCore.getApplicationBundleIdFrom(pid: ppid)
+            }
         } else {
-            let ppid = ProcessUtils.getParentPid(from: matchApp!.processIdentifier)
-            return ScrollCore.getApplicationBundleIdFrom(pid: ppid)
+            return nil
         }
     }
     
