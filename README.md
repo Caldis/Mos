@@ -51,6 +51,11 @@ http://mos.u2sk.com/indexCN.html
 - [GithubRelease](https://github.com/Caldis/Mos/releases/)
 
 
+## 帮助
+
+- [GithubWiki](https://github.com/Caldis/Mos/wiki)
+
+
 ## 鸣谢
 - [Charts](https://github.com/danielgindi/Charts)
 - [Smoothscroll-for-websites](https://github.com/galambalazs/smoothscroll-for-websites)
@@ -65,8 +70,6 @@ http://mos.u2sk.com/indexCN.html
 
 Copyright (c) 2017 Caldis rights reserved.
 
-EN: [CC Attribution-NonCommercial](http://creativecommons.org/licenses/by-nc/4.0/) 
-
-中文：[署名-非商业性使用协议](http://creativecommons.org/licenses/by-nc/3.0/cn/)
+[署名-非商业性使用协议](http://creativecommons.org/licenses/by-nc/3.0/cn/)
 
 And you can not upload it to the App Store.

@@ -51,6 +51,11 @@ http://mos.u2sk.com/
 - [GithubRelease](https://github.com/Caldis/Mos/releases/)
 
 
+## Guide
+
+- [GithubWiki](https://github.com/Caldis/Mos/wiki)
+
+
 ## Thanks
 
 - [Charts](https://github.com/danielgindi/Charts)
@@ -66,8 +71,6 @@ We welcome all contributions. You can submit any ideas or issue as [GitHub issue
 
 Copyright (c) 2017 Caldis rights reserved.
 
-EN: [CC Attribution-NonCommercial](http://creativecommons.org/licenses/by-nc/4.0/) 
-
-中文：[署名-非商业性使用协议](http://creativecommons.org/licenses/by-nc/3.0/cn/)
+[CC Attribution-NonCommercial](http://creativecommons.org/licenses/by-nc/4.0/)
 
 And you can not upload it to the App Store.
