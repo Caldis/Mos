@@ -17,7 +17,7 @@
 
 ## 主页
 
-http://mos.u2sk.com/indexCN.html
+http://mos.u2sk.com/index.html
 
 
 ## 特性
