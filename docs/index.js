@@ -31,6 +31,14 @@ var i18nLanguageMappingList = {
     star: {
         zh: "或者你可以来我们的 Github 赏个Star !",
         en: "Or Star the source code from Github !"
+    },
+    contact: {
+        zh: "联系作者",
+        en: "contact"
+    },
+    issue: {
+        zh: "帮助支持",
+        en: "Wiki"
     }
 }
 // 国际化页面文字
