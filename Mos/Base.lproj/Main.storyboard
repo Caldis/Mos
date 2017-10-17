@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
+        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
@@ -95,17 +96,20 @@
                 </menu>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-63" y="-39"/>
+            <point key="canvasLocation" x="-191" y="-39"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController storyboardIdentifier="ScrollMonitorWindowController" showSeguePresentationStyle="single" id="B8D-0N-5wS" customClass="ScrollMonitorWindowController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <window key="window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
-                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES"/>
+                    <window key="window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <connections>
+                            <outlet property="delegate" destination="B8D-0N-5wS" id="tcQ-Cv-MfP"/>
+                        </connections>
                     </window>
                     <connections>
                         <outlet property="scrollMonitorWindow" destination="IQv-IB-iLA" id="GVP-B8-xHF"/>
@@ -120,18 +124,20 @@
         <scene sceneID="d5U-6w-uQ6">
             <objects>
                 <windowController storyboardIdentifier="PreferencesWindowController" showSeguePresentationStyle="single" id="7TR-R5-fGE" customClass="PreferencesWindowController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <window key="window" title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="cvF-hf-KVW">
+                    <window key="window" title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" id="cvF-hf-KVW">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
-                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="13" y="1373" width="480" height="270"/>
+                        <rect key="contentRect" x="13" y="1373" width="450" height="270"/>
                         <rect key="screenRect" x="-412" y="1050" width="2560" height="1080"/>
-                        <toolbar key="toolbar" implicitIdentifier="3A8E6D95-AED6-4F18-A36A-90CA4DB7BF32" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="3Kg-EP-UWe">
+                        <toolbar key="toolbar" implicitIdentifier="3A8E6D95-AED6-4F18-A36A-90CA4DB7BF32" autosavesConfiguration="NO" prefersToBeShown="NO" displayMode="iconAndLabel" sizeMode="regular" id="3Kg-EP-UWe">
                             <allowedToolbarItems>
                                 <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="5ep-wA-hrh"/>
                                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="APu-jt-3Cb"/>
                             </allowedToolbarItems>
                             <defaultToolbarItems/>
                         </toolbar>
+                        <connections>
+                            <outlet property="delegate" destination="7TR-R5-fGE" id="aq4-gh-Ch5"/>
+                        </connections>
                     </window>
                     <connections>
                         <outlet property="preferenceWindow" destination="cvF-hf-KVW" id="8z2-JT-6sK"/>
@@ -145,7 +151,7 @@
         <!--Preferences Tab View Controller-->
         <scene sceneID="fde-aU-5x8">
             <objects>
-                <tabViewController storyboardIdentifier="preferencesTabViewController" selectedTabViewItemIndex="0" tabStyle="toolbar" id="0iY-5N-JBV" customClass="PreferencesTabViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <tabViewController storyboardIdentifier="preferencesTabViewController" showSeguePresentationStyle="single" selectedTabViewItemIndex="0" tabStyle="toolbar" canPropagateSelectedChildViewControllerTitle="NO" id="0iY-5N-JBV" customClass="PreferencesTabViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem identifier="general" image="PreferencesGeneral" id="Qwc-OE-zHR"/>
                         <tabViewItem identifier="advanced" image="PreferencesAdvanced" id="P9R-tX-qfW"/>
@@ -153,14 +159,17 @@
                         <tabViewItem identifier="updates" image="PreferencesUpdatas" id="1sm-Qq-6GS"/>
                         <tabViewItem identifier="about" image="PreferencesAbout" id="MrA-I8-n0Z"/>
                     </tabViewItems>
-                    <viewControllerTransitionOptions key="transitionOptions" allowUserInteraction="YES"/>
                     <tabView key="tabView" canDrawConcurrently="YES" type="noTabsNoBorder" id="sxC-q7-Qs6">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <font key="font" metaFont="message"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="270"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <font key="font" metaFont="system"/>
                         <tabViewItems/>
+                        <connections>
+                            <outlet property="delegate" destination="0iY-5N-JBV" id="VmR-wj-laa"/>
+                        </connections>
                     </tabView>
                     <connections>
+                        <outlet property="tabView" destination="sxC-q7-Qs6" id="CNF-oh-eK6"/>
                         <segue destination="ITL-GD-CPd" kind="relationship" relationship="tabItems" id="z3c-tg-aDc"/>
                         <segue destination="iW5-CD-5OC" kind="relationship" relationship="tabItems" id="GA4-xY-65w"/>
                         <segue destination="bga-wG-iim" kind="relationship" relationship="tabItems" id="kwS-lJ-OG9"/>
@@ -170,7 +179,7 @@
                 </tabViewController>
                 <customObject id="Huf-MT-zgs" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1086" y="690"/>
+            <point key="canvasLocation" x="1086" y="791"/>
         </scene>
         <!--General-->
         <scene sceneID="5zC-sP-JZj">
@@ -178,7 +187,7 @@
                 <viewController title="General" storyboardIdentifier="general" showSeguePresentationStyle="single" id="ITL-GD-CPd" customClass="PreferencesGeneralViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="FVX-bT-5h2">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="183"/>
-                        <autoresizingMask key="autoresizingMask"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xh5-Hi-00d">
                                 <rect key="frame" x="166" y="145" width="130" height="18"/>
@@ -213,7 +222,7 @@
                                     <action selector="launchOnLoginClick:" target="ITL-GD-CPd" id="Qpy-su-UHF"/>
                                 </connections>
                             </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uce-5T-Uvc">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uce-5T-Uvc">
                                 <rect key="frame" x="30" y="146" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Scroll Setting:" id="ILt-Gz-RiV">
@@ -222,7 +231,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J2s-3N-vK7">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J2s-3N-vK7">
                                 <rect key="frame" x="166" y="122" width="261" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Let the mouse wheel scroll smooth like a buttery." id="G8a-97-8Ey">
@@ -231,7 +240,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qbC-OJ-7HS">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qbC-OJ-7HS">
                                 <rect key="frame" x="166" y="75" width="223" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Reverse the mouse wheel scroll direction." id="VUb-ZM-hXo">
@@ -240,7 +249,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZaA-rA-uF7">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZaA-rA-uF7">
                                 <rect key="frame" x="166" y="20" width="223" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Auto launch MOS on your MacOS login." id="wY5-9W-iNv">
@@ -249,7 +258,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YDA-cP-xvj">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YDA-cP-xvj">
                                 <rect key="frame" x="30" y="43" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Other Setting:" id="8sv-2I-VeW">
@@ -268,13 +277,13 @@
                 </viewController>
                 <customObject id="KsC-af-ap0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="446" y="1207"/>
+            <point key="canvasLocation" x="446" y="1206.5"/>
         </scene>
         <!--Ignore-->
         <scene sceneID="UqT-28-MT6">
             <objects>
                 <viewController title="Ignore" storyboardIdentifier="ignore" id="bga-wG-iim" customClass="PreferencesIgnoreViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="NAU-na-Vke">
+                    <view key="view" autoresizesSubviews="NO" id="NAU-na-Vke">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
@@ -373,7 +382,7 @@
                                                             <rect key="frame" x="89" y="1" width="317" height="30"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fv1-rI-t5W">
+                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fv1-rI-t5W">
                                                                     <rect key="frame" x="37" y="6" width="279" height="18"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Application Name" id="XjY-7g-GLL">
@@ -416,7 +425,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableHeaderView>
                             </scrollView>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cwG-SE-cYu">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cwG-SE-cYu">
                                 <rect key="frame" x="18" y="20" width="414" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Not S: Not Smooth / Not R: Not Reverse" id="Nvh-BG-caL">
@@ -450,16 +459,18 @@
                                 <rect key="frame" x="20" y="333" width="410" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
                                 <rect key="frame" x="18" y="347" width="414" height="14"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Exceptional Application list:" id="Rgu-cb-5lp">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FWV-z4-M2h">
+                            <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FWV-z4-M2h">
                                 <rect key="frame" x="407" y="341" width="25" height="25"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="lbW-Vn-frs">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -468,8 +479,9 @@
                                     <segue destination="o12-9v-Ej5" kind="popover" popoverAnchorView="FWV-z4-M2h" popoverBehavior="t" preferredEdge="maxY" id="1ja-Vq-zoO"/>
                                 </connections>
                             </button>
-                            <button translatesAutoresizingMaskIntoConstraints="NO" id="gnb-pe-ZN5">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gnb-pe-ZN5">
                                 <rect key="frame" x="299" y="345" width="106" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="White List Mode" bezelStyle="regularSquare" imagePosition="left" alignment="right" state="on" inset="2" id="Ksp-g1-48g">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="systemLight" size="11"/>
@@ -479,15 +491,6 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="UmZ-aT-YrM" secondAttribute="trailing" constant="20" id="Quq-w8-9tf"/>
-                            <constraint firstItem="gnb-pe-ZN5" firstAttribute="top" secondItem="NAU-na-Vke" secondAttribute="top" constant="20" id="THA-zu-Ihq"/>
-                            <constraint firstItem="FWV-z4-M2h" firstAttribute="top" secondItem="NAU-na-Vke" secondAttribute="top" constant="16" id="WaF-7M-J8A"/>
-                            <constraint firstAttribute="trailing" secondItem="FWV-z4-M2h" secondAttribute="trailing" constant="20" id="e3l-mm-wzi"/>
-                            <constraint firstItem="FWV-z4-M2h" firstAttribute="leading" secondItem="gnb-pe-ZN5" secondAttribute="trailing" constant="6" id="iyK-Mn-Mre"/>
-                            <constraint firstItem="UmZ-aT-YrM" firstAttribute="top" secondItem="NAU-na-Vke" secondAttribute="top" constant="20" id="pfZ-0s-Z0w"/>
-                            <constraint firstItem="UmZ-aT-YrM" firstAttribute="leading" secondItem="NAU-na-Vke" secondAttribute="leading" constant="20" id="xHX-fF-0RY"/>
-                        </constraints>
                     </view>
                     <connections>
                         <outlet property="tableView" destination="LmV-gi-3fE" id="GOb-17-dvX"/>
@@ -497,7 +500,7 @@
                 </viewController>
                 <customObject id="l11-a0-4Xa" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1445" y="1306"/>
+            <point key="canvasLocation" x="1445" y="1305.5"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="57E-oo-PEW">
@@ -507,7 +510,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="450" height="53"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KGW-PK-8DX">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KGW-PK-8DX">
                                 <rect key="frame" x="18" y="20" width="414" height="13"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="justified" title="The white List Mode will only enable MOS on selected Application below the list." id="v26-RK-BtL">
@@ -527,11 +530,11 @@
         <scene sceneID="VTW-lQ-Mfk">
             <objects>
                 <viewController title="Updates" storyboardIdentifier="updates" id="EWu-DP-7Gj" customClass="PreferencesUpdatesViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" wantsLayer="YES" id="mGP-BF-mdE">
+                    <view key="view" autoresizesSubviews="NO" wantsLayer="YES" id="mGP-BF-mdE">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="82"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u0P-u6-9Am">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u0P-u6-9Am">
                                 <rect key="frame" x="29" y="45" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Check for updates:" id="N0S-yo-DTg">
@@ -551,7 +554,7 @@
                                     <action selector="checkButtonClick:" target="EWu-DP-7Gj" id="i2G-yK-k2b"/>
                                 </connections>
                             </button>
-                            <textField wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XeP-Gc-BVl">
+                            <textField wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XeP-Gc-BVl">
                                 <rect key="frame" x="179" y="20" width="212" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Current Version" id="5oM-oR-Dsq">
@@ -568,18 +571,18 @@
                 </viewController>
                 <customObject id="Tfe-PH-zhM" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2040" y="1156"/>
+            <point key="canvasLocation" x="1969" y="1156"/>
         </scene>
         <!--Advanced-->
         <scene sceneID="Fd7-iR-8pW">
             <objects>
                 <customObject id="T8g-3J-WxE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <viewController title="Advanced" storyboardIdentifier="advanced" id="iW5-CD-5OC" customClass="PreferencesAdvanceViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="cc6-G4-pCI">
+                    <view key="view" autoresizesSubviews="NO" id="cc6-G4-pCI">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="208"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kft-Xf-Btl">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kft-Xf-Btl">
                                 <rect key="frame" x="166" y="148" width="207" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Control the maxium scroll speed." id="vmk-zZ-ifN">
@@ -588,7 +591,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sm0-hQ-Q0F">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sm0-hQ-Q0F">
                                 <rect key="frame" x="381" y="173" width="30" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="0.95" id="UzC-zQ-cqg">
@@ -613,7 +616,7 @@
                                     <action selector="scrollSpeedStepperChange:" target="iW5-CD-5OC" id="wGd-SN-Cwn"/>
                                 </connections>
                             </stepper>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GPP-0S-Ldb">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GPP-0S-Ldb">
                                 <rect key="frame" x="381" y="121" width="30" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="480" id="rzC-bb-p1R">
@@ -646,7 +649,7 @@
                                     <action selector="scrollTimeStepperChange:" target="iW5-CD-5OC" id="7Lb-OQ-6AV"/>
                                 </connections>
                             </stepper>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bNF-kr-gyO">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bNF-kr-gyO">
                                 <rect key="frame" x="381" y="71" width="30" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="0.20" id="FJs-V9-W8x">
@@ -663,7 +666,7 @@
                                     <action selector="scrollPeakStepperChange:" target="iW5-CD-5OC" id="lbP-OW-Q2h"/>
                                 </connections>
                             </stepper>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SVv-bk-Tpc">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SVv-bk-Tpc">
                                 <rect key="frame" x="166" y="97" width="221" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Control the time on scroll transition anim." id="X5f-kH-7lZ">
@@ -672,7 +675,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mb8-iU-RfL">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mb8-iU-RfL">
                                 <rect key="frame" x="166" y="46" width="245" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Control the peak position of interpolation line." id="1RC-aL-R3D">
@@ -681,7 +684,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f4W-iU-YEd">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f4W-iU-YEd">
                                 <rect key="frame" x="30" y="171" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Speed:" id="suV-WY-rbw">
@@ -690,7 +693,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0bd-7K-p6L">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0bd-7K-p6L">
                                 <rect key="frame" x="30" y="122" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Time:" id="vEz-OS-QE8">
@@ -699,7 +702,7 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gbe-1U-vh9">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gbe-1U-vh9">
                                 <rect key="frame" x="30" y="70" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Peak:" id="Hwu-eX-4yv">
@@ -740,7 +743,7 @@
         <scene sceneID="cHd-3e-zIv">
             <objects>
                 <viewController title="About" storyboardIdentifier="about" showSeguePresentationStyle="single" id="RfV-Ow-3mF" customClass="PreferencesAboutViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" autoresizesSubviews="NO" id="XoI-kN-0eA">
+                    <view key="view" autoresizesSubviews="NO" canDrawConcurrently="YES" id="XoI-kN-0eA">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="128"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
@@ -748,7 +751,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="45"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
-                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hB7-ok-Sms">
+                                    <customView canDrawConcurrently="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hB7-ok-Sms">
                                         <rect key="frame" x="0.0" y="0.0" width="450" height="45"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <subviews>
@@ -800,7 +803,7 @@
                                     </customView>
                                 </subviews>
                             </visualEffectView>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S8y-Am-MEW">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S8y-Am-MEW">
                                 <rect key="frame" x="18" y="45" width="147" height="84"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="MOS" id="2AK-Pu-mot">
@@ -818,7 +821,7 @@
                                 </view>
                                 <color key="fillColor" red="0.14116021989999999" green="0.14118680359999999" blue="0.14115440849999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </box>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uMH-2l-9yi">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uMH-2l-9yi">
                                 <rect key="frame" x="169" y="60" width="273" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Just some little job for mouse." id="5cx-xS-eRe">
@@ -837,13 +840,13 @@
                 </viewController>
                 <customObject id="r6n-Nn-xNW" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2634" y="1179"/>
+            <point key="canvasLocation" x="2519" y="1179"/>
         </scene>
         <!--Preferences Donate View Controller-->
         <scene sceneID="YcU-UJ-LwR">
             <objects>
                 <viewController id="HYX-CS-fYi" customClass="PreferencesDonateViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="NWm-eD-Q0k">
+                    <view key="view" autoresizesSubviews="NO" id="NWm-eD-Q0k">
                         <rect key="frame" x="0.0" y="0.0" width="601" height="272"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
@@ -888,7 +891,7 @@
                 </viewController>
                 <customObject id="HME-8h-VSk" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2635" y="1560"/>
+            <point key="canvasLocation" x="2520" y="1562"/>
         </scene>
         <!--Scroll Monitor-->
         <scene sceneID="hIz-AP-VOD">
@@ -1079,10 +1082,9 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                             </scrollView>
                                         </subviews>
                                         <constraints>
-                                            <constraint firstItem="TZY-Nm-E2J" firstAttribute="leading" secondItem="bhk-ID-ins" secondAttribute="leading" constant="180" id="X87-Vg-wkf"/>
-                                            <constraint firstItem="aCb-Q4-94n" firstAttribute="leading" secondItem="bhk-ID-ins" secondAttribute="leading" constant="440" id="hUW-vK-3g4"/>
-                                            <constraint firstItem="2jT-qX-gdB" firstAttribute="leading" secondItem="bhk-ID-ins" secondAttribute="leading" constant="700" id="iNH-3Q-4Yb"/>
-                                            <constraint firstAttribute="height" constant="130" id="oK0-mP-abT"/>
+                                            <constraint firstItem="2jT-qX-gdB" firstAttribute="leading" secondItem="bhk-ID-ins" secondAttribute="leading" constant="700" id="D6g-nw-wkX"/>
+                                            <constraint firstItem="aCb-Q4-94n" firstAttribute="leading" secondItem="bhk-ID-ins" secondAttribute="leading" constant="440" id="U2E-em-pqh"/>
+                                            <constraint firstItem="TZY-Nm-E2J" firstAttribute="leading" secondItem="bhk-ID-ins" secondAttribute="leading" constant="180" id="sgP-1Y-94X"/>
                                         </constraints>
                                         <visibilityPriorities>
                                             <integer value="1000"/>
@@ -1099,12 +1101,8 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     </stackView>
                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="5GB-25-6Oj" customClass="LineChartView" customModule="Charts">
                                         <rect key="frame" x="20" y="178" width="1100" height="200"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="1100" id="Z1g-B5-ZSo"/>
-                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="200" id="giB-8L-teO"/>
-                                        </constraints>
                                     </customView>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bb8-Rh-HpB" userLabel="Rendering the data of this window is extremely bad for scroll performance, keep close if not necessary.">
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bb8-Rh-HpB" userLabel="Rendering the data of this window is extremely bad for scroll performance, keep close if not necessary.">
                                         <rect key="frame" x="-2" y="20" width="543" height="13"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="          Presenting the data on this window are extremely bad for scroll performance, keep close if not necessary." id="TUE-3v-CaJ">
                                             <font key="font" metaFont="system" size="10"/>
@@ -1112,7 +1110,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Was-VF-M63">
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Was-VF-M63">
                                         <rect key="frame" x="-2" y="20" width="30" height="13"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="       *" id="Luy-Tf-2zi">
                                             <font key="font" metaFont="system" size="10"/>
@@ -1131,10 +1129,9 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                         </connections>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MgV-PD-aBm">
-                                        <rect key="frame" x="1038" y="11" width="50" height="22"/>
+                                        <rect key="frame" x="1028" y="11" width="60" height="22"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="1Nc-nZ-izM"/>
-                                            <constraint firstAttribute="height" constant="19" id="TqN-nz-hu7"/>
+                                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="60" id="Lca-c6-kZt"/>
                                         </constraints>
                                         <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="ScrollMonitorStartRecorder" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="dXa-1k-JHJ">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1144,22 +1141,17 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                             <action selector="scrollEventRecorderButtonClick:" target="XfG-lQ-9wD" id="ydB-Kd-M2r"/>
                                         </connections>
                                     </button>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WWJ-BS-d1o">
-                                        <rect key="frame" x="924" y="16" width="104" height="13"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="100" id="y4n-Q4-5hF"/>
-                                        </constraints>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WWJ-BS-d1o">
+                                        <rect key="frame" x="970" y="16" width="48" height="13"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Recorder" id="efv-Gs-PYF">
                                             <font key="font" metaFont="system" size="10"/>
                                             <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="OlM-8K-9cL">
-                                        <rect key="frame" x="1001" y="181" width="119" height="18"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="115" id="vHb-7W-CLR"/>
-                                        </constraints>
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OlM-8K-9cL">
+                                        <rect key="frame" x="1041" y="181" width="79" height="18"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="check" title="OriginEvent" bezelStyle="regularSquare" imagePosition="right" alignment="right" state="on" inset="2" id="oL3-5T-vtP">
                                             <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system" size="10"/>
@@ -1170,33 +1162,37 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     </button>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="MgV-PD-aBm" secondAttribute="bottom" constant="13" id="426-uw-r6R"/>
-                                    <constraint firstItem="kfQ-e6-NHS" firstAttribute="leading" secondItem="MgV-PD-aBm" secondAttribute="trailing" constant="12" id="5Uh-Kk-Sai"/>
-                                    <constraint firstItem="5GB-25-6Oj" firstAttribute="top" secondItem="mt4-oP-Qe0" secondAttribute="top" constant="35" id="6uL-nK-RhN"/>
-                                    <constraint firstItem="bhk-ID-ins" firstAttribute="top" secondItem="5GB-25-6Oj" secondAttribute="bottom" constant="8" symbolic="YES" id="GZK-BH-fPY"/>
-                                    <constraint firstItem="bhk-ID-ins" firstAttribute="top" secondItem="OlM-8K-9cL" secondAttribute="bottom" constant="13" id="HLW-mn-1I1"/>
-                                    <constraint firstAttribute="bottom" secondItem="bhk-ID-ins" secondAttribute="bottom" constant="40" id="MZh-5K-CHm"/>
-                                    <constraint firstAttribute="bottom" secondItem="bb8-Rh-HpB" secondAttribute="bottom" constant="20" id="OEV-8O-phb"/>
-                                    <constraint firstItem="5GB-25-6Oj" firstAttribute="leading" secondItem="bhk-ID-ins" secondAttribute="leading" id="PlV-Xg-dbh"/>
-                                    <constraint firstAttribute="trailing" secondItem="OlM-8K-9cL" secondAttribute="trailing" constant="20" id="Qyn-wo-JNf"/>
-                                    <constraint firstItem="5GB-25-6Oj" firstAttribute="leading" secondItem="mt4-oP-Qe0" secondAttribute="leading" constant="20" symbolic="YES" id="b7F-lZ-Yao"/>
-                                    <constraint firstItem="5GB-25-6Oj" firstAttribute="centerX" secondItem="bhk-ID-ins" secondAttribute="centerX" id="cZc-b6-RW2"/>
-                                    <constraint firstItem="bb8-Rh-HpB" firstAttribute="leading" secondItem="mt4-oP-Qe0" secondAttribute="leading" id="fcE-sN-dwO"/>
-                                    <constraint firstAttribute="trailing" secondItem="kfQ-e6-NHS" secondAttribute="trailing" constant="17" id="kfv-Fg-w5u"/>
-                                    <constraint firstItem="bb8-Rh-HpB" firstAttribute="baseline" secondItem="Was-VF-M63" secondAttribute="baseline" id="mk4-xE-9jv"/>
-                                    <constraint firstAttribute="trailing" secondItem="bhk-ID-ins" secondAttribute="trailing" constant="17" id="px1-eA-DVB"/>
-                                    <constraint firstItem="bb8-Rh-HpB" firstAttribute="leading" secondItem="Was-VF-M63" secondAttribute="leading" id="r0B-Ms-DQw"/>
-                                    <constraint firstAttribute="bottom" secondItem="WWJ-BS-d1o" secondAttribute="bottom" constant="16" id="u5p-Kc-wwd"/>
-                                    <constraint firstItem="MgV-PD-aBm" firstAttribute="leading" secondItem="WWJ-BS-d1o" secondAttribute="trailing" constant="12" id="v8Q-re-45C"/>
-                                    <constraint firstAttribute="bottom" secondItem="kfQ-e6-NHS" secondAttribute="bottom" constant="12" id="y25-4n-fxn"/>
+                                    <constraint firstItem="MgV-PD-aBm" firstAttribute="baseline" secondItem="WWJ-BS-d1o" secondAttribute="firstBaseline" id="0P0-ea-ziN"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="bb8-Rh-HpB" secondAttribute="trailing" constant="20" symbolic="YES" id="34l-oW-EYe"/>
+                                    <constraint firstItem="bhk-ID-ins" firstAttribute="top" secondItem="5GB-25-6Oj" secondAttribute="bottom" constant="8" symbolic="YES" id="5VK-rq-3MM"/>
+                                    <constraint firstItem="bhk-ID-ins" firstAttribute="trailing" secondItem="kfQ-e6-NHS" secondAttribute="trailing" id="8Dn-gt-tsK"/>
+                                    <constraint firstAttribute="trailing" secondItem="bhk-ID-ins" secondAttribute="trailing" constant="17" id="8iD-2A-o5c"/>
+                                    <constraint firstItem="bb8-Rh-HpB" firstAttribute="leading" secondItem="mt4-oP-Qe0" secondAttribute="leading" id="HTb-Ne-HBD"/>
+                                    <constraint firstItem="MgV-PD-aBm" firstAttribute="centerY" secondItem="WWJ-BS-d1o" secondAttribute="centerY" id="Q43-RY-svU"/>
+                                    <constraint firstItem="kfQ-e6-NHS" firstAttribute="leading" secondItem="MgV-PD-aBm" secondAttribute="trailing" constant="12" symbolic="YES" id="Un5-Wr-a0J"/>
+                                    <constraint firstItem="bb8-Rh-HpB" firstAttribute="top" secondItem="bhk-ID-ins" secondAttribute="bottom" constant="7" id="XeD-12-vkh"/>
+                                    <constraint firstItem="bhk-ID-ins" firstAttribute="leading" secondItem="mt4-oP-Qe0" secondAttribute="leading" constant="20" symbolic="YES" id="ars-7e-Hn8"/>
+                                    <constraint firstItem="5GB-25-6Oj" firstAttribute="top" secondItem="mt4-oP-Qe0" secondAttribute="top" constant="35" id="dvc-bD-awp"/>
+                                    <constraint firstItem="bhk-ID-ins" firstAttribute="centerX" secondItem="5GB-25-6Oj" secondAttribute="centerX" id="eVB-rF-sEV"/>
+                                    <constraint firstItem="MgV-PD-aBm" firstAttribute="baseline" secondItem="WWJ-BS-d1o" secondAttribute="baseline" id="h3R-Xv-mt0"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Was-VF-M63" secondAttribute="trailing" constant="20" symbolic="YES" id="i1D-sh-ly7"/>
+                                    <constraint firstItem="MgV-PD-aBm" firstAttribute="top" secondItem="bhk-ID-ins" secondAttribute="bottom" constant="8" symbolic="YES" id="nqP-3O-wWS"/>
+                                    <constraint firstAttribute="bottom" secondItem="bhk-ID-ins" secondAttribute="bottom" constant="40" id="o9g-Pt-B20"/>
+                                    <constraint firstItem="MgV-PD-aBm" firstAttribute="centerY" secondItem="kfQ-e6-NHS" secondAttribute="centerY" id="rmk-Za-8dC"/>
+                                    <constraint firstItem="bhk-ID-ins" firstAttribute="leading" secondItem="5GB-25-6Oj" secondAttribute="leading" id="rrg-j7-gJt"/>
+                                    <constraint firstItem="bhk-ID-ins" firstAttribute="top" secondItem="mt4-oP-Qe0" secondAttribute="top" constant="243" id="tb5-4r-U4Y"/>
+                                    <constraint firstItem="bb8-Rh-HpB" firstAttribute="leading" secondItem="Was-VF-M63" secondAttribute="leading" id="v5q-4E-LtF"/>
+                                    <constraint firstItem="MgV-PD-aBm" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="WWJ-BS-d1o" secondAttribute="trailing" constant="8" symbolic="YES" id="vUi-30-AdP"/>
+                                    <constraint firstItem="WWJ-BS-d1o" firstAttribute="leading" secondItem="mt4-oP-Qe0" secondAttribute="leading" constant="972" id="vef-DR-GO6"/>
+                                    <constraint firstItem="bb8-Rh-HpB" firstAttribute="baseline" secondItem="Was-VF-M63" secondAttribute="baseline" id="vsd-CE-4NC"/>
                                 </constraints>
                             </visualEffectView>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="mt4-oP-Qe0" secondAttribute="trailing" id="Jn8-rX-s55"/>
-                            <constraint firstItem="mt4-oP-Qe0" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="aLb-WV-1Md"/>
-                            <constraint firstAttribute="bottom" secondItem="mt4-oP-Qe0" secondAttribute="bottom" id="d1m-ha-zoX"/>
-                            <constraint firstItem="mt4-oP-Qe0" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="fvW-dc-u0n"/>
+                            <constraint firstAttribute="trailing" secondItem="mt4-oP-Qe0" secondAttribute="trailing" id="6Za-oZ-6UO"/>
+                            <constraint firstAttribute="bottom" secondItem="mt4-oP-Qe0" secondAttribute="bottom" id="R4U-28-T6q"/>
+                            <constraint firstItem="mt4-oP-Qe0" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="eYj-Po-UQR"/>
+                            <constraint firstItem="mt4-oP-Qe0" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="tqT-Y3-9Zi"/>
                         </constraints>
                     </view>
                     <connections>
@@ -1212,7 +1208,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-64" y="782"/>
+            <point key="canvasLocation" x="-191" y="786"/>
         </scene>
         <!--Scroll Monitor Help View Controller-->
         <scene sceneID="pwV-nW-gT1">
@@ -1222,7 +1218,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                         <rect key="frame" x="0.0" y="0.0" width="399" height="255"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k6H-08-izG">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k6H-08-izG">
                                 <rect key="frame" x="18" y="196" width="349" height="39"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="justified" id="GgW-De-o8u">
@@ -1232,7 +1228,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hWk-YB-Vd9">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hWk-YB-Vd9">
                                 <rect key="frame" x="20" y="171" width="347" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="To feedback the issue, please follow the step below: " id="xEL-d6-OKW">
@@ -1241,7 +1237,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RdH-qC-7rb">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RdH-qC-7rb">
                                 <rect key="frame" x="32" y="146" width="335" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="1. Click the ▶️ button on the corner of the Scroll Monitor." id="IqW-Z5-ToN">
@@ -1250,7 +1246,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CEP-Em-VsM">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CEP-Em-VsM">
                                 <rect key="frame" x="32" y="108" width="335" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="3. Click the ⏹ to stop record, and save the log files." id="qyu-4j-edC">
@@ -1259,7 +1255,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hA0-LZ-QVQ">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hA0-LZ-QVQ">
                                 <rect key="frame" x="32" y="89" width="335" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="4. Give us your feedback here: " id="dAp-hk-dXG">
@@ -1268,7 +1264,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rfN-7Q-Q5p">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rfN-7Q-Q5p">
                                 <rect key="frame" x="44" y="73" width="231" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="https://github.com/Caldis/Mos/issues" id="wgs-us-Zeb">
@@ -1277,7 +1273,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AJK-lh-eck">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AJK-lh-eck">
                                 <rect key="frame" x="30" y="44" width="337" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="hnM-2T-1QS">
@@ -1287,7 +1283,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zm1-0L-Jyu">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zm1-0L-Jyu">
                                 <rect key="frame" x="18" y="20" width="347" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="We hope to listen your voice, please feedback if you get any issue." id="eYe-7m-IC2">
@@ -1296,7 +1292,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eVe-DH-ocR">
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eVe-DH-ocR">
                                 <rect key="frame" x="32" y="127" width="335" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="2. Repeat the issue scroll action." id="Nq1-es-wP6">
@@ -1313,7 +1309,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                 </viewController>
                 <customObject id="DQl-fR-8xQ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-64" y="1243"/>
+            <point key="canvasLocation" x="-191" y="1318"/>
         </scene>
     </scenes>
     <resources>

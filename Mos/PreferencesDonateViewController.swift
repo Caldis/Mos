@@ -18,7 +18,7 @@ class PreferencesDonateViewController: NSViewController {
     
     @IBAction func donateByPaypalClick(_ sender: NSButtonCell) {
         if let url = URL(string: "https://www.paypal.me/mosapp") {
-            NSWorkspace.shared().open(url)
+            NSWorkspace.shared.open(url)
         }
     }
 }

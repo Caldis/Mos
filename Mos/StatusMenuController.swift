@@ -22,7 +22,7 @@ class StatusMenuController: NSObject {
     
     // 状态栏相关
     @IBOutlet weak var statusMenu: NSMenu!
-    let statusItem = NSStatusBar.system().statusItem(withLength: NSVariableStatusItemLength)
+    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     
     override func awakeFromNib() {
         // 初始化状态栏
@@ -34,8 +34,8 @@ class StatusMenuController: NSObject {
     
     // 从StoryBroad获取一个实例
     func instantiateWindowController(with controllerIdentifier: String) -> Any {
-        let storyboard = NSStoryboard(name: "Main", bundle: nil)
-        return storyboard.instantiateController(withIdentifier: controllerIdentifier)
+        let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        return storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: controllerIdentifier))
     }
     
     // 显示窗口
@@ -47,35 +47,37 @@ class StatusMenuController: NSObject {
     
     // 点击ScrollWatcher按钮
     @IBAction func scrollWatcherClick(_ sender: Any) {
-        // 显示ScrollWatcher窗口
-        if !StatusMenuController.scrollMonitorWindowIsOpen {
+        // 判断窗口是否打开
+        if StatusMenuController.scrollMonitorWindowIsOpen {
+            // 如果已经显示了, 就前置显示
+            NSApp.activate(ignoringOtherApps: true)
+        } else {
+            // 如果没有显示, 则从 StoryBroad 获取一个实例
             StatusMenuController.scrollMonitorWindowController = instantiateWindowController(with: "ScrollMonitorWindowController") as? ScrollMonitorWindowController
             StatusMenuController.scrollMonitorWindowController?.window?.makeKeyAndOrderFront(self)
             showWindowWithTitle(StatusMenuController.scrollMonitorWindowController!, title: ScrollMonitorWindowTitle)
             StatusMenuController.scrollMonitorWindowIsOpen = true
-        } else {
-            // 如果已经显示了, 就前置显示
-            NSApp.activate(ignoringOtherApps: true)
         }
     }
     
     // 点击Preferences按钮
     @IBAction func preferencesClick(_ sender: Any) {
-        // 显示Preferences窗口
-        if !StatusMenuController.preferencesWindowIsOpen {
+        // 判断窗口是否打开
+        if StatusMenuController.preferencesWindowIsOpen {
+            // 如果已经显示了, 就前置显示
+            NSApp.activate(ignoringOtherApps: true)
+        } else {
+            // 如果没有显示, 则从 StoryBroad 获取一个实例
             StatusMenuController.preferencesWindowController = instantiateWindowController(with: "PreferencesWindowController") as? PreferencesWindowController
             StatusMenuController.preferencesWindowController?.window?.makeKeyAndOrderFront(self)
             showWindowWithTitle(StatusMenuController.preferencesWindowController!, title: PreferencesWindowTitle)
             StatusMenuController.preferencesWindowIsOpen = true
-        } else {
-            // 如果已经显示了, 就前置显示
-            NSApp.activate(ignoringOtherApps: true)
         }
     }
     
     // 点击退出按钮
     @IBAction func quitButtonClick(_ sender: Any) {
         // 终止程序
-        NSApplication.shared().terminate(self)
+        NSApplication.shared.terminate(self)
     }
 }

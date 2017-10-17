@@ -116,7 +116,7 @@ class ScrollCore: NSObject {
             return kCVReturnSuccess
         }, nil)
     }
-    static func activeScrollEventPoster() {
+    @objc static func activeScrollEventPoster() {
         ScrollCore.updateRealPluseData(Y: ScrollCore.scrollRef.Y, X: ScrollCore.scrollRef.X)
         // 如果事件发送器没有在运行, 就运行一下
         if !CVDisplayLinkIsRunning(ScrollCore.scrollEventPoster!) {
@@ -456,7 +456,7 @@ class ScrollCore: NSObject {
     // 从Pid获取进程名称
     static func getApplicationBundleIdFrom(pid: pid_t) -> String? {
         // 更新列表
-        let runningApps = NSWorkspace.shared().runningApplications
+        let runningApps = NSWorkspace.shared.runningApplications
         if let matchApp = runningApps.filter({$0.processIdentifier == pid}).first {
             // 如果找到bundleId则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
             if let bundleId = matchApp.bundleIdentifier {

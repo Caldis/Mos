@@ -19,14 +19,14 @@ class PreferencesGeneralViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // 恢复一下设置
-        scrollSmoothCheckBox.state = ScrollCore.option.smooth ? 1 : 0
-        scrollReverseCheckBox.state = ScrollCore.option.reverse ? 1 : 0
-        launchOnLoginCheckBox.state = ScrollCore.option.autoLaunch ? 1 : 0
+        scrollSmoothCheckBox.state = NSControl.StateValue(rawValue: ScrollCore.option.smooth ? 1 : 0)
+        scrollReverseCheckBox.state = NSControl.StateValue(rawValue: ScrollCore.option.reverse ? 1 : 0)
+        launchOnLoginCheckBox.state = NSControl.StateValue(rawValue: ScrollCore.option.autoLaunch ? 1 : 0)
     }
     
     // 是否启用平滑滚动
     @IBAction func scrollSmoothClick(_ sender: NSButton) {
-        if sender.state == 0 {
+        if sender.state.rawValue == 0 {
             ScrollCore.option.smooth = false
         } else {
             ScrollCore.option.smooth = true
@@ -36,7 +36,7 @@ class PreferencesGeneralViewController: NSViewController {
     }
     // 是否启用方向翻转
     @IBAction func scrollReverseClick(_ sender: NSButton) {
-        if sender.state == 0 {
+        if sender.state.rawValue == 0 {
             ScrollCore.option.reverse = false
         } else {
             ScrollCore.option.reverse = true
@@ -46,7 +46,7 @@ class PreferencesGeneralViewController: NSViewController {
     }
     // 是否开机启动
     @IBAction func launchOnLoginClick(_ sender: NSButton) {
-        if sender.state == 0 {
+        if sender.state.rawValue == 0 {
             ScrollCore.option.autoLaunch = false
             LaunchStarter.disableLaunchAtStartup()
         } else {

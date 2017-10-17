@@ -19,12 +19,12 @@ class PreferencesIgnoreViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // 恢复一下设置
-        whiteListModeCheckBox.state = ScrollCore.whiteListMode ? 1 : 0
+        whiteListModeCheckBox.state = NSControl.StateValue(rawValue: ScrollCore.whiteListMode ? 1 : 0)
     }
     
     // 是否启用白名单模式
     @IBAction func whiteListModeClick(_ sender: NSButton) {
-        if sender.state == 0 {
+        if sender.state.rawValue == 0 {
             ScrollCore.whiteListMode = false
         } else {
             ScrollCore.whiteListMode = true
@@ -62,11 +62,11 @@ class PreferencesIgnoreViewController: NSViewController {
         // 打开文件选择窗口并读取文件添加到 ignoredApplications
         openPanel.beginSheetModal(for: PreferencesWindowController.preferenceWindowRef, completionHandler: {
             result in
-                if result == NSFileHandlingPanelOKButton && result == NSModalResponseOK {
+                if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
                     // 根据路径获取application信息并保存到ignoredApplications列表中
                     let applicationUrl = String(describing: openPanel.url!)
                     let applicationPath = openPanel.url!.path
-                    let applicationIcon = NSWorkspace.shared().icon(forFile: applicationPath)
+                    let applicationIcon = NSWorkspace.shared.icon(forFile: applicationPath)
                     let applicationName = FileManager().displayName(atPath: applicationUrl).removingPercentEncoding!
                     if let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
                         // 添加的例外应用的默认状态与是否启用白名单模式挂钩, 如果启用了白名单模式, 则默认都不禁用; 如果未启用白名单模式, 则默认都禁用
@@ -92,17 +92,17 @@ class PreferencesIgnoreViewController: NSViewController {
     }
     
     // notSmooth列的checkbox被点击, 设置对应行的信息
-    func notSmoothClick(_ sender: NSButton!) {
+    @objc func notSmoothClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        ScrollCore.ignoredApplications[row].notSmooth = state==1 ? true : false
+        ScrollCore.ignoredApplications[row].notSmooth = state.rawValue==1 ? true : false
         ScrollCore.updateIgnoreList()
     }
     // notReverse列的checkbox被点击, 设置对应行的信息
-    func notReverseClick(_ sender: NSButton!) {
+    @objc func notReverseClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        ScrollCore.ignoredApplications[row].notReverse = state==1 ? true : false
+        ScrollCore.ignoredApplications[row].notReverse = state.rawValue==1 ? true : false
         ScrollCore.updateIgnoreList()
     }
     
@@ -139,28 +139,28 @@ extension PreferencesIgnoreViewController: NSTableViewDelegate {
         }
         
         // 生成每个Cell
-        if let cell = tableView.make(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
+        if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
             let rowItem = ScrollCore.ignoredApplications[row]
             // notSmooth列, 绑定对应方法
-            if tableColumnIdentifier == CellIdentifiers.notSmoothCell {
+            if tableColumnIdentifier.rawValue == CellIdentifiers.notSmoothCell {
                 let checkBox = cell.nextKeyView as! NSButton
                 checkBox.tag = row
                 checkBox.target = self
                 checkBox.action = #selector(notSmoothClick(_:))
-                checkBox.state = rowItem.notSmooth==true ? 1 : 0
+                checkBox.state = NSControl.StateValue(rawValue: rowItem.notSmooth==true ? 1 : 0)
                 return cell
             }
             // notReverse列, 绑定对应方法
-            if tableColumnIdentifier == CellIdentifiers.notReverseCell {
+            if tableColumnIdentifier.rawValue == CellIdentifiers.notReverseCell {
                 let checkBox = cell.nextKeyView as! NSButton
                 checkBox.tag = row
                 checkBox.target = self
                 checkBox.action = #selector(notReverseClick(_:))
-                checkBox.state = rowItem.notReverse==true ? 1 : 0
+                checkBox.state = NSControl.StateValue(rawValue: rowItem.notReverse==true ? 1 : 0)
                 return cell
             }
             // application列
-            if tableColumnIdentifier == CellIdentifiers.applicationCell {
+            if tableColumnIdentifier.rawValue == CellIdentifiers.applicationCell {
                 cell.imageView?.image = rowItem.icon ?? nil
                 cell.textField?.stringValue = rowItem.title
                 return cell

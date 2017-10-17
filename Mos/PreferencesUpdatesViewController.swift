@@ -24,6 +24,6 @@ class PreferencesUpdatesViewController: NSViewController {
     
     // 点击查询更新按钮
     @IBAction func checkButtonClick(_ sender: NSButton) {
-        NSWorkspace.shared().open(URL(string: "https://github.com/Caldis/Mos/releases/")!)
+        NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos/releases/")!)
     }
 }

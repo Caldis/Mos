@@ -23,7 +23,7 @@ class ScrollMonitorWindowController: NSWindowController, NSWindowDelegate {
         if let window = self.window {
             window.titleVisibility = .hidden
             window.titlebarAppearsTransparent = true
-            window.styleMask.insert(NSWindowStyleMask.fullSizeContentView)
+            window.styleMask.insert(NSWindow.StyleMask.fullSizeContentView)
         }
     }
     

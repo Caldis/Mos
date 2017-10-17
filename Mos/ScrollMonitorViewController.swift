@@ -165,22 +165,22 @@ class ScrollMonitorViewController: NSViewController, ChartViewDelegate {
     // 更新Log区域
     func updateLogView(_ scrollLog: String?, _ scrollDetailLog: String?, _ scrollProcessLog: String?, _ scrollOtherLog: String?) {
         if scrollLog != nil {
-            scrollLogTextField.string = scrollLog
+            scrollLogTextField.string = scrollLog!
         } else {
             scrollLogTextField.string = "No Data"
         }
         if scrollDetailLog != nil {
-            scrollDetailLogTextField.string = scrollDetailLog
+            scrollDetailLogTextField.string = scrollDetailLog!
         } else {
             scrollDetailLogTextField.string = "No Data"
         }
         if scrollProcessLog != nil {
-            processLogTextField.string = scrollProcessLog
+            processLogTextField.string = scrollProcessLog!
         } else {
             processLogTextField.string = "No Data"
         }
         if scrollOtherLog != nil {
-            otherLogTextField.string = scrollOtherLog
+            otherLogTextField.string = scrollOtherLog!
         } else {
             otherLogTextField.string = "No Data"
         }
@@ -188,7 +188,7 @@ class ScrollMonitorViewController: NSViewController, ChartViewDelegate {
     
     
     // 载入log文件 (仅Debug环境, 点击"记录"Title弹出)
-    func scrollEventLoaderClick(_ sender: Any) {
+    @objc func scrollEventLoaderClick(_ sender: Any) {
         // 停止监听
         stopMonitorScrollEvent()
         // 切换到播放模式
@@ -205,7 +205,7 @@ class ScrollMonitorViewController: NSViewController, ChartViewDelegate {
         // 打开文件选择窗口
         openPanel.beginSheetModal(for: ScrollMonitorWindowController.scrollMonitorWindowRef, completionHandler: {
             result in
-            if result == NSFileHandlingPanelOKButton && result == NSModalResponseOK {
+            if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
                 // 打开文件
                 let applicationPath = openPanel.url!.path
                 do {
@@ -302,7 +302,7 @@ class ScrollMonitorViewController: NSViewController, ChartViewDelegate {
         savePanel.directoryURL = NSURL.fileURL(withPath: "/desktop", isDirectory: true)
         savePanel.beginSheetModal(for: ScrollMonitorWindowController.scrollMonitorWindowRef, completionHandler: {
             result in
-            if result == NSFileHandlingPanelOKButton && result == NSModalResponseOK {
+            if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
                 let selectedUrl = savePanel.url!
                 let selectedPath = selectedUrl.path
                 FileManager().createFile(atPath: selectedPath, contents: nil, attributes: nil)
@@ -318,7 +318,7 @@ class ScrollMonitorViewController: NSViewController, ChartViewDelegate {
     }
     // 点击切换播放原始log还是平滑后的log
     @IBAction func scrollEventRecoderPlayOriginEventCheckBoxOnToggle(_ sender: NSButton) {
-        scrollEventRecorderPlayOriginalEvent = sender.state==1 ? true : false
+        scrollEventRecorderPlayOriginalEvent = sender.state.rawValue==1 ? true : false
     }
     
     
@@ -339,8 +339,8 @@ class ScrollMonitorHelpViewController: NSViewController {
         issueUrl.addGestureRecognizer(tapGesture)
     }
     
-    func issueUrlClick() {
-        NSWorkspace.shared().open(URL(string: "https://github.com/Caldis/Mos/issues")!)
+    @objc func issueUrlClick() {
+        NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos/issues")!)
     }
     
 }
