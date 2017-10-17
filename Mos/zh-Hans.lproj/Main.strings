@@ -555,10 +555,10 @@
 "wY5-9W-iNv.title" = "在系统登录时自动运行MOS";
 
 /* Class = "NSButtonCell"; title = "White List Mode"; ObjectID = "Ksp-g1-48g"; */
-"Ksp-g1-48g.title" = "白名单模式";
+"Ksp-g1-48g.title" = "设为白名单模式";
 
 /* Class = "NSTextFieldCell"; title = "The white List Mode will only ..."; ObjectID = "v26-RK-BtL"; */
-"v26-RK-BtL.title" = "勾选白名单模式后, Mos 仅对包含在下方的例外应用列表中启用, 未包含在内的则不受影响";
+"v26-RK-BtL.title" = "设为白名单模式后, Mos 仅对包含在下方的例外应用列表中启用, 未包含在内的则不受影响";
 
 /* Class = "NSTextFieldCell"; title = "Peak:"; ObjectID = "Hwu-eX-4yv"; */
 "Hwu-eX-4yv.title" = "峰值位置:";

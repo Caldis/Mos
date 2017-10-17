@@ -151,7 +151,7 @@
         <!--Preferences Tab View Controller-->
         <scene sceneID="fde-aU-5x8">
             <objects>
-                <tabViewController storyboardIdentifier="preferencesTabViewController" showSeguePresentationStyle="single" selectedTabViewItemIndex="0" tabStyle="toolbar" canPropagateSelectedChildViewControllerTitle="NO" id="0iY-5N-JBV" customClass="PreferencesTabViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <tabViewController storyboardIdentifier="preferencesTabViewController" showSeguePresentationStyle="single" selectedTabViewItemIndex="0" tabStyle="toolbar" id="0iY-5N-JBV" customClass="PreferencesTabViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem identifier="general" image="PreferencesGeneral" id="Qwc-OE-zHR"/>
                         <tabViewItem identifier="advanced" image="PreferencesAdvanced" id="P9R-tX-qfW"/>
@@ -159,9 +159,10 @@
                         <tabViewItem identifier="updates" image="PreferencesUpdatas" id="1sm-Qq-6GS"/>
                         <tabViewItem identifier="about" image="PreferencesAbout" id="MrA-I8-n0Z"/>
                     </tabViewItems>
+                    <viewControllerTransitionOptions key="transitionOptions" allowUserInteraction="YES"/>
                     <tabView key="tabView" canDrawConcurrently="YES" type="noTabsNoBorder" id="sxC-q7-Qs6">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="270"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems/>
                         <connections>
@@ -179,7 +180,7 @@
                 </tabViewController>
                 <customObject id="Huf-MT-zgs" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1086" y="791"/>
+            <point key="canvasLocation" x="1086" y="775"/>
         </scene>
         <!--General-->
         <scene sceneID="5zC-sP-JZj">
@@ -187,7 +188,7 @@
                 <viewController title="General" storyboardIdentifier="general" showSeguePresentationStyle="single" id="ITL-GD-CPd" customClass="PreferencesGeneralViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="FVX-bT-5h2">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="183"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xh5-Hi-00d">
                                 <rect key="frame" x="166" y="145" width="130" height="18"/>
@@ -283,7 +284,7 @@
         <scene sceneID="UqT-28-MT6">
             <objects>
                 <viewController title="Ignore" storyboardIdentifier="ignore" id="bga-wG-iim" customClass="PreferencesIgnoreViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" autoresizesSubviews="NO" id="NAU-na-Vke">
+                    <view key="view" id="NAU-na-Vke">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
@@ -530,7 +531,7 @@
         <scene sceneID="VTW-lQ-Mfk">
             <objects>
                 <viewController title="Updates" storyboardIdentifier="updates" id="EWu-DP-7Gj" customClass="PreferencesUpdatesViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" autoresizesSubviews="NO" wantsLayer="YES" id="mGP-BF-mdE">
+                    <view key="view" wantsLayer="YES" id="mGP-BF-mdE">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="82"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
@@ -578,7 +579,7 @@
             <objects>
                 <customObject id="T8g-3J-WxE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <viewController title="Advanced" storyboardIdentifier="advanced" id="iW5-CD-5OC" customClass="PreferencesAdvanceViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" autoresizesSubviews="NO" id="cc6-G4-pCI">
+                    <view key="view" id="cc6-G4-pCI">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="208"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
@@ -743,7 +744,7 @@
         <scene sceneID="cHd-3e-zIv">
             <objects>
                 <viewController title="About" storyboardIdentifier="about" showSeguePresentationStyle="single" id="RfV-Ow-3mF" customClass="PreferencesAboutViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" autoresizesSubviews="NO" canDrawConcurrently="YES" id="XoI-kN-0eA">
+                    <view key="view" id="XoI-kN-0eA">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="128"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
@@ -846,7 +847,7 @@
         <scene sceneID="YcU-UJ-LwR">
             <objects>
                 <viewController id="HYX-CS-fYi" customClass="PreferencesDonateViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" autoresizesSubviews="NO" id="NWm-eD-Q0k">
+                    <view key="view" id="NWm-eD-Q0k">
                         <rect key="frame" x="0.0" y="0.0" width="601" height="272"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
