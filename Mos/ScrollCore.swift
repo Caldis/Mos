@@ -228,7 +228,7 @@ class ScrollCore: NSObject {
             ScrollCore.resetScrollValue(axis: "Y")
         } else {
             // 否则则截取ScrollRef内的值来发送
-            scrollValue.Y = ScrollCore.getScrollValue(axis: "Y")
+            scrollValue.Y = ScrollCore.scrollRef.Y != 0.0 ? ScrollCore.getScrollValue(axis: "Y") : 0
         }
         // 处理 X 轴事件
         if ScrollCore.scrollEventPosterStopCount.X >= ScrollCore.totalPoint {
@@ -236,7 +236,7 @@ class ScrollCore: NSObject {
             ScrollCore.resetScrollValue(axis: "X")
         } else {
             // 否则则截取ScrollRef内的值来发送
-            scrollValue.X = ScrollCore.getScrollValue(axis: "X")
+            scrollValue.X = ScrollCore.scrollRef.X != 0.0 ? ScrollCore.getScrollValue(axis: "X") : 0
         }
         // 发送事件
         MouseEvent.scroll(ScrollCore.mousePos.YX, yScroll: scrollValue.Y, xScroll: scrollValue.X)
