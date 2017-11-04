@@ -22,12 +22,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
             // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动是模拟鼠标输入的)
             if ScrollCore.isTouchPad(of: event) {
-                // 当触控板输入时, 啥都不干
+                // 当触控板输入
+                // 啥都不干
             } else {
                 // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
                 
-                // 获取光标当前窗口信息, 用于在某些窗口中禁用
-                // 更新每次的PID
+                // 获取光标当前窗口信息, 用于在某些窗口中禁用, 更新每次的PID
                 ScrollCore.lastEventTargetPID = ScrollCore.eventTargetPID
                 ScrollCore.eventTargetPID = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
                 // 如果目标PID有变化, 则重新获取一次窗口名字, 更新到 ScrollCore.eventTargetName 里面
@@ -39,46 +39,78 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 
                 // 获取列表中应用程序的设置信息
                 let ignoredApplicaton = ScrollCore.applicationInIgnoreListOf(bundleId: ScrollCore.eventTargetBundleId)
+                // 是否翻转
+                let enableReverse = ScrollCore.enableReverse(ignoredApplicaton: ignoredApplicaton)
+                // 是否平滑
+                let enableSmooth = ScrollCore.enableSmooth(ignoredApplicaton: ignoredApplicaton)
                 
-                // 处理滚动数据
+                // 格式化滚动数据
                 var scrollFixY = Int64(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
+                var scrollFixX = Int64(event.getIntegerValueField(.scrollWheelEventDeltaAxis2))
                 var scrollPtY = event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)
+                var scrollPtX = event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)
                 var scrollFixPtY = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)
+                var scrollFixPtX = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2)
+                
+                // 处理事件
+                var scrollValue = ( Y: 0.0, X: 0.0 )
                 // Y轴
-                if var scrollY = ScrollCore.yAxisExistDataIn(scrollFixY, scrollPtY, scrollFixPtY) {
+                if var scrollY = ScrollCore.axisDataIsExistIn(scrollFixY, scrollPtY, scrollFixPtY) {
                     // 是否翻转滚动
-                    if ScrollCore.enableReverse(ignoredApplicaton: ignoredApplicaton) {
+                    if enableReverse {
                         event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: -scrollFixY)
                         event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: -scrollPtY)
                         event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: -scrollFixPtY)
                         scrollY.data = -scrollY.data
                     }
                     // 是否平滑滚动
-                    if ScrollCore.enableSmooth(ignoredApplicaton: ignoredApplicaton) {
+                    if enableSmooth {
                         // 禁止返回原始事件
                         handbackOriginalEvent = false
                         // 如果输入值为Fixed型则不处理; 如果为非Fixed类型且小于10则归一化为10
                         if scrollY.isFixed {
-                            ScrollCore.updateScrollData(Y: scrollY.data, X: 0.0)
+                            scrollValue.Y = scrollY.data
                         } else {
                             let absY = abs(scrollY.data)
                             if absY > 0.0 && absY < 10.0 {
-                                ScrollCore.updateScrollData(Y: scrollY.data<0.0 ? -10.0 : 10.0, X: 0.0)
+                                scrollValue.Y = scrollY.data<0.0 ? -10.0 : 10.0
                             } else {
-                                ScrollCore.updateScrollData(Y: scrollY.data, X: 0.0)
+                                scrollValue.Y = scrollY.data
                             }
                         }
-                        // 启动一下事件
-                        ScrollCore.activeScrollEventPoster()
                     }
-                    
-                    
                 }
-                
-                // X轴 (横向滚轮, 如 Logetech MxMaster)
-                // if event.getIntegerValueField(.scrollWheelEventDeltaAxis2) != 0 {
-                    // 暂时不作处理
-                // }
+                // X轴
+                if var scrollX = ScrollCore.axisDataIsExistIn(scrollFixX, scrollPtX, scrollFixPtX) {
+                    // 是否翻转滚动
+                    if ScrollCore.enableReverse(ignoredApplicaton: ignoredApplicaton) {
+                        event.setIntegerValueField(.scrollWheelEventDeltaAxis2, value: -scrollFixX)
+                        event.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: -scrollPtX)
+                        event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: -scrollFixPtX)
+                        scrollX.data = -scrollX.data
+                    }
+                    // 是否平滑滚动
+                    if ScrollCore.enableSmooth(ignoredApplicaton: ignoredApplicaton) {
+                        // 禁止返回原始事件
+                        handbackOriginalEvent = false
+                        // 如果输入值为Fixed型则不处理; 如果为非Fixed类型且小于10则归一化为10
+                        if scrollX.isFixed {
+                            scrollValue.X = scrollX.data
+                        } else {
+                            let absX = abs(scrollX.data)
+                            if absX > 0.0 && absX < 10.0 {
+                                scrollValue.X = scrollX.data<0.0 ? -10.0 : 10.0
+                            } else {
+                                scrollValue.X = scrollX.data
+                            }
+                        }
+                    }
+                }
+                // 启动一下事件
+                if (scrollValue.Y != 0.0 || scrollValue.X != 0.0) {
+                    ScrollCore.updateScrollData(Y: scrollValue.Y, X: scrollValue.X)
+                    ScrollCore.activeScrollEventPoster()
+                }
             }
         
             // 返回事件对象
@@ -91,9 +123,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     
     func applicationWillFinishLaunching(_ notification: Notification) {
-        // 这里是主程序的ID
+        // App运行相关标识符
         let mainBundleID = Bundle.main.bundleIdentifier!
-        // 这里是Helper的ID
         let helperBundleID = "com.u2sk.MosHelper"
         // 禁止重复运行
         if NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID).count > 1 {

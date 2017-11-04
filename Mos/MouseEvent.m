@@ -12,7 +12,7 @@
 @implementation MouseEvent
 
 // 创建一个鼠标滚轮事件. 并直接发送到kCGSessionEventTap层
-// CGWheelCount type = 2; // 1 for Y-only, 2 for Y-X, 3 for Y-X-Z
+// CGWheelCount type = 2; // 1 for Y or X only, 2 for Y-X, 3 for Y-X-Z
 // int32_t xScroll = −1; // Negative for right
 // int32_t yScroll = −2; // Negative for down
 +(void)scroll:(uint32_t)type yScroll:(int32_t)yScroll xScroll:(int32_t)xScroll {

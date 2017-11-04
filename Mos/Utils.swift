@@ -22,22 +22,22 @@ class LaunchStarter {
     }
     
     static func itemReferencesInLoginItems() -> (existingReference: LSSharedFileListItem?, lastReference: LSSharedFileListItem?) {
-        if let appURL : NSURL = NSURL.fileURL(withPath: Bundle.main.bundlePath) as NSURL? {
-            if let loginItemsRef = LSSharedFileListCreate(nil, kLSSharedFileListSessionLoginItems.takeRetainedValue(), nil).takeRetainedValue() as LSSharedFileList? {
-                let loginItems = LSSharedFileListCopySnapshot(loginItemsRef, nil).takeRetainedValue() as NSArray
-                let lastItemRef = loginItems.lastObject as! LSSharedFileListItem
-                
-                for loginItem in loginItems.enumerated() {
-                    let currentItemRef: LSSharedFileListItem = loginItem.element as! LSSharedFileListItem
-                    if let itemURL = LSSharedFileListItemCopyResolvedURL(currentItemRef, 0, nil) {
-                        if (itemURL.takeRetainedValue() as NSURL).isEqual(appURL) {
-                            return (currentItemRef, lastItemRef)
-                        }
+        let appURL = NSURL.fileURL(withPath: Bundle.main.bundlePath)
+        if let loginItemsRef = LSSharedFileListCreate(nil, kLSSharedFileListSessionLoginItems.takeRetainedValue(), nil).takeRetainedValue() as LSSharedFileList? {
+            let loginItems = LSSharedFileListCopySnapshot(loginItemsRef, nil).takeRetainedValue() as NSArray
+            let lastItemRef = loginItems.lastObject as! LSSharedFileListItem
+            
+            for loginItem in loginItems.enumerated() {
+                let currentItemRef: LSSharedFileListItem = loginItem.element as! LSSharedFileListItem
+                if let itemURL = LSSharedFileListItemCopyResolvedURL(currentItemRef, 0, nil) {
+                    if (itemURL.takeRetainedValue() as NSURL).isEqual(appURL) {
+                        return (currentItemRef, lastItemRef)
                     }
                 }
-                return (nil, lastItemRef)
             }
+            return (nil, lastItemRef)
         }
+        
         return (nil, nil)
     }
     
@@ -56,9 +56,8 @@ class LaunchStarter {
     static func enableLaunchAtStartup() {
         let itemReferences = LaunchStarter.itemReferencesInLoginItems()
         if let loginItemsRef = LSSharedFileListCreate( nil, kLSSharedFileListSessionLoginItems.takeRetainedValue(), nil).takeRetainedValue() as LSSharedFileList? {
-            if let appUrl = NSURL.fileURL(withPath: Bundle.main.bundlePath) as CFURL? {
-                LSSharedFileListInsertItemURL(loginItemsRef, itemReferences.lastReference, nil, nil, appUrl, nil, nil)
-            }
+         let appUrl = NSURL.fileURL(withPath: Bundle.main.bundlePath) as CFURL
+            LSSharedFileListInsertItemURL(loginItemsRef, itemReferences.lastReference, nil, nil, appUrl, nil, nil)
         }
     }
     

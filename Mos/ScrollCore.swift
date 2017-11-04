@@ -29,11 +29,10 @@ class ScrollCore: NSObject {
     
     // 处理鼠标事件的方向
     static var handleScrollType = ScrollCore.mousePos.Y
-    static let mousePos = ( Y: UInt32(1), YX: UInt32(2), YXZ: UInt32(3) )
+    static let mousePos = ( Y: UInt32(1), X: UInt32(1), YX: UInt32(2), YXZ: UInt32(3) )
     
     // 事件发送器相关
-    static var scrollEventPosterStopCountY = 0
-    static var scrollEventPosterStopCountX = 0
+    static var scrollEventPosterStopCount = ( Y: 0, X: 0 )
     static var scrollEventPoster:CVDisplayLink?
     
     // 区分目标窗口相关
@@ -51,7 +50,7 @@ class ScrollCore: NSObject {
     static var lastScrollRef = ( Y: 0.0, X: 0.0 )
     static var scrollRef = ( Y: 0.0, X: 0.0 )
     static var autoScrollRef = ( Y: 0.0, X: 0.0 ) // 缓动生成的滚动信息
-    static var singleScrollCount = 0 // 单次滚动计数
+    static var singleScrollCount =  ( Y: 0, X: 0 ) // 单次滚动计数
     
     // 曲线数据相关
     static var headPulseScale = 4.0
@@ -63,13 +62,12 @@ class ScrollCore: NSObject {
     static var animTime = 380.0 // 动画时间 (这里已经由全局设置内的 '时间' 代替)
     static var turningScale = 0.20 // 转折位置 (这里已经由全局设置内的 '峰值位置' 代替)
     static var scrollScale = 0.95 // 放大系数 (这里已经由全局设置内的 '速度' 代替)
-    static var totalPoint = Int(ScrollCore.fps * Double(ScrollCore.defAdvancedOption.time) / 1000.0)
+    static var totalPoint = Int(ScrollCore.fps * Double(ScrollCore.advancedOption.time) / 1000.0)
     static var turningPoint = Int(round(Double(ScrollCore.totalPoint)*ScrollCore.advancedOption.peak))
     
     // 初始化缓动曲线
     static var basePluseData = ScrollCore.initPluseData()
-    static var realPluseDataY = [Double]()
-    static var realPluseDataX = [Double]()
+    static var realPluseData = ( Y: [Double](), X: [Double]() )
     
     
     
@@ -110,9 +108,8 @@ class ScrollCore: NSObject {
         CVDisplayLinkCreateWithActiveCGDisplays(&ScrollCore.scrollEventPoster)
         CVDisplayLinkSetOutputCallback(ScrollCore.scrollEventPoster!, {
             (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in
-            // TODO: 处理X轴数据
             // 处理Y轴事件
-            ScrollCore.handleScrollY()
+            ScrollCore.handleScroll()
             return kCVReturnSuccess
         }, nil)
     }
@@ -122,10 +119,8 @@ class ScrollCore: NSObject {
         if !CVDisplayLinkIsRunning(ScrollCore.scrollEventPoster!) {
             CVDisplayLinkStart(ScrollCore.scrollEventPoster!)
         } else {
-            // TODO: 处理X轴数据
             // 如果已经在运行, 则重设一下计数器
-            ScrollCore.scrollEventPosterStopCountY = 0
-            ScrollCore.scrollEventPosterStopCountX = 0
+            ScrollCore.scrollEventPosterStopCount = ( Y: 0, X: 0 )
         }
     }
     static func stopScrollEventPoster() {
@@ -137,23 +132,22 @@ class ScrollCore: NSObject {
     
     // 更新滚动数据
     static func updateScrollData(Y: Double, X: Double) {
-        // TODO: 处理X轴数据
         ScrollCore.beforeLastScrollRef = ScrollCore.lastScrollRef
         ScrollCore.lastScrollRef = ScrollCore.scrollRef
         ScrollCore.scrollRef.Y = Y
-        // ScrollCore.scrollRef.X = X
+        ScrollCore.scrollRef.X = X
     }
     // 更新实际滚动曲线
     static func updateRealPluseData(Y: Double, X: Double) {
         // TODO: 处理X轴数据
         var realPluseDataY = [Double]()
-        // var realPluseDataX = [Double]()
+        var realPluseDataX = [Double]()
         for i in ScrollCore.basePluseData {
             realPluseDataY.append(i*Y)
-            // realPluseDataX.append(i*X)
+            realPluseDataX.append(i*X)
         }
-        ScrollCore.realPluseDataY = realPluseDataY
-        // ScrollCore.realPluseDataX = realPluseDataX
+        ScrollCore.realPluseData.Y = realPluseDataY
+        ScrollCore.realPluseData.X = realPluseDataX
     }
     
     
@@ -205,16 +199,16 @@ class ScrollCore: NSObject {
     
     
     
-    // 判断给定的轴数据是否不为0, 作为处理判断依据
-    static func yAxisExistDataIn(_ scrollFixY: Int64, _ scrollPtY: Double, _ scrollFixPtY: Double) -> (data: Double, isFixed: Bool)? {
-        if scrollPtY != 0.0 {
-            return (data: scrollPtY, isFixed: false)
+    // 判断指定的轴数据是否存在, 作为处理判断依据
+    static func axisDataIsExistIn(_ scrollFix: Int64, _ scrollPt: Double, _ scrollFixPt: Double) -> (data: Double, isFixed: Bool)? {
+        if scrollPt != 0.0 {
+            return (data: scrollPt, isFixed: false)
         }
-        if scrollFixPtY != 0.0 {
-            return (data: scrollFixPtY, isFixed: true)
+        if scrollFixPt != 0.0 {
+            return (data: scrollFixPt, isFixed: true)
         }
-        if scrollFixY != 0 {
-            return (data: Double(scrollFixY), isFixed: true)
+        if scrollFix != 0 {
+            return (data: Double(scrollFix), isFixed: true)
         }
         return nil
     }
@@ -222,43 +216,105 @@ class ScrollCore: NSObject {
     
 
     // 主处理函数(CVDisplayLink)
-    static func handleScrollY() {
-        if ScrollCore.scrollEventPosterStopCountY >= ScrollCore.totalPoint {
-            // 如果到达既定步数, 则停止事件
+    static func handleScroll() {
+        // 如果 X, Y 轴均到达既定步数, 则停止事件
+        if ScrollCore.scrollEventPosterStopCount.Y >= ScrollCore.totalPoint || ScrollCore.scrollEventPosterStopCount.X >= ScrollCore.totalPoint {
             ScrollCore.stopScrollEventPoster()
-            ScrollCore.scrollEventPosterStopCountY = 0
-            ScrollCore.singleScrollCount = 0
-            ScrollCore.autoScrollRef.Y = 0
+        }
+        var scrollValue = ( X: Int32(0), Y: Int32(0) )
+        // 处理 Y 轴事件
+        if ScrollCore.scrollEventPosterStopCount.Y >= ScrollCore.totalPoint {
+            // 如果 Y 轴均到达既定步数, 则清除临时变量
+            ScrollCore.resetScrollValue(axis: "Y")
         } else {
             // 否则则截取ScrollRef内的值来发送
-            if ScrollCore.scrollEventPosterStopCountY == 0 {
+            scrollValue.Y = ScrollCore.getScrollValue(axis: "Y")
+        }
+        // 处理 X 轴事件
+        if ScrollCore.scrollEventPosterStopCount.X >= ScrollCore.totalPoint {
+            // 如果 X 轴均到达既定步数, 则清除临时变量
+            ScrollCore.resetScrollValue(axis: "X")
+        } else {
+            // 否则则截取ScrollRef内的值来发送
+            scrollValue.X = ScrollCore.getScrollValue(axis: "X")
+        }
+        // 发送事件
+        MouseEvent.scroll(ScrollCore.mousePos.YX, yScroll: scrollValue.Y, xScroll: scrollValue.X)
+    }
+    // 清除临时变量
+    static func resetScrollValue(axis: String) {
+        if axis == "Y" {
+            ScrollCore.scrollEventPosterStopCount.Y = 0
+            ScrollCore.singleScrollCount.Y = 0
+            ScrollCore.autoScrollRef.Y = 0
+        }
+        if axis == "X" {
+            ScrollCore.scrollEventPosterStopCount.X = 0
+            ScrollCore.singleScrollCount.X = 0
+            ScrollCore.autoScrollRef.X = 0
+        }
+    }
+    static func getScrollValue(axis: String) -> Int32 {
+        var value = Int32(0)
+        if axis == "Y" {
+            if ScrollCore.scrollEventPosterStopCount.Y == 0 {
                 if ScrollCore.autoScrollRef.Y != 0 {
                     // 输入的滚动事件, 且不是第一次滚动, 则查找最接近的值来滚动
-                    var startIndexY = 0
-                    if ScrollCore.singleScrollCount >= ScrollCore.turningPoint {
+                    var startIndex = 0
+                    if ScrollCore.singleScrollCount.Y >= ScrollCore.turningPoint {
                         // 如果单次滚动计数大于等于转折位置, 则直接取峰值
-                        startIndexY = ScrollCore.findPeakIndex(from: ScrollCore.realPluseDataY)
+                        startIndex = ScrollCore.findPeakIndex(from: ScrollCore.realPluseData.Y)
                     } else {
                         // 否则从前面计数
-                        startIndexY = ScrollCore.findApproachMaxHeadValue(of: ScrollCore.autoScrollRef.Y, from: ScrollCore.realPluseDataY)
+                        startIndex = ScrollCore.findApproachMaxHeadValue(of: ScrollCore.autoScrollRef.Y, from: ScrollCore.realPluseData.Y)
                     }
-                    MouseEvent.scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[startIndexY]), xScroll: 0)
-                    ScrollCore.scrollEventPosterStopCountY = startIndexY==0 ? 1 : startIndexY // 避免一直在0循环
-                    ScrollCore.singleScrollCount += 1
+                    value = Int32(ScrollCore.realPluseData.Y[startIndex])
+                    ScrollCore.scrollEventPosterStopCount.Y = startIndex==0 ? 1 : startIndex // 避免一直在0循环
+                    ScrollCore.singleScrollCount.Y += 1
                 } else {
                     // 否则就按正常缓动的滚动事件, 按照正常递增
-                    MouseEvent.scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]), xScroll: 0)
-                    ScrollCore.autoScrollRef.Y = ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]
-                    ScrollCore.scrollEventPosterStopCountY += 1
+                    value = Int32(ScrollCore.realPluseData.Y[ScrollCore.scrollEventPosterStopCount.Y])
+                    ScrollCore.autoScrollRef.Y = ScrollCore.realPluseData.Y[ScrollCore.scrollEventPosterStopCount.Y]
+                    ScrollCore.scrollEventPosterStopCount.Y += 1
                 }
             } else {
                 // 缓动的滚动事件, 按照正常递增
-                MouseEvent.scroll(ScrollCore.mousePos.Y, yScroll: Int32(ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]), xScroll: 0)
-                ScrollCore.autoScrollRef.Y = ScrollCore.realPluseDataY[ScrollCore.scrollEventPosterStopCountY]
-                ScrollCore.scrollEventPosterStopCountY += 1
+                value = Int32(ScrollCore.realPluseData.Y[ScrollCore.scrollEventPosterStopCount.Y])
+                ScrollCore.autoScrollRef.Y = ScrollCore.realPluseData.Y[ScrollCore.scrollEventPosterStopCount.Y]
+                ScrollCore.scrollEventPosterStopCount.Y += 1
             }
         }
+        if axis == "X" {
+            if ScrollCore.scrollEventPosterStopCount.X == 0 {
+                if ScrollCore.autoScrollRef.X != 0 {
+                    // 输入的滚动事件, 且不是第一次滚动, 则查找最接近的值来滚动
+                    var startIndex = 0
+                    if ScrollCore.singleScrollCount.X >= ScrollCore.turningPoint {
+                        // 如果单次滚动计数大于等于转折位置, 则直接取峰值
+                        startIndex = ScrollCore.findPeakIndex(from: ScrollCore.realPluseData.X)
+                    } else {
+                        // 否则从前面计数
+                        startIndex = ScrollCore.findApproachMaxHeadValue(of: ScrollCore.autoScrollRef.X, from: ScrollCore.realPluseData.X)
+                    }
+                    value = Int32(ScrollCore.realPluseData.X[startIndex])
+                    ScrollCore.scrollEventPosterStopCount.X = startIndex==0 ? 1 : startIndex // 避免一直在0循环
+                    ScrollCore.singleScrollCount.X += 1
+                } else {
+                    // 否则就按正常缓动的滚动事件, 按照正常递增
+                    value = Int32(ScrollCore.realPluseData.X[ScrollCore.scrollEventPosterStopCount.X])
+                    ScrollCore.autoScrollRef.X = ScrollCore.realPluseData.X[ScrollCore.scrollEventPosterStopCount.X]
+                    ScrollCore.scrollEventPosterStopCount.X += 1
+                }
+            } else {
+                // 缓动的滚动事件, 按照正常递增
+                value = Int32(ScrollCore.realPluseData.X[ScrollCore.scrollEventPosterStopCount.X])
+                ScrollCore.autoScrollRef.X = ScrollCore.realPluseData.X[ScrollCore.scrollEventPosterStopCount.X]
+                ScrollCore.scrollEventPosterStopCount.X += 1
+            }
+        }
+        return value
     }
+    
     // 缓动曲线
     static func headPulse(pos: Double) -> Double {
         //  防止数据越界
