@@ -16,8 +16,8 @@
 		221E5DFB1F4DE55B00AE17FA /* ProcessUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */; };
 		2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */; };
 		2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2225F8EA1E3B1A5C0020DD22 /* Localizable.strings */; };
-		2247F2791F93821E00C99B37 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2247F2761F93820300C99B37 /* Charts.framework */; };
-		2247F27A1F93821E00C99B37 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2247F2761F93820300C99B37 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		224963491FAE312A00045B68 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224963451FAE310A00045B68 /* Charts.framework */; };
+		2249634A1FAE312A00045B68 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224963451FAE310A00045B68 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 226A2E6D1E2E68620035F1A6 /* MouseEvent.m */; };
 		2278EE991E3DF770000AB25B /* PreferencesIgnoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2278EE981E3DF770000AB25B /* PreferencesIgnoreViewController.swift */; };
 		2278EE9D1E3DFAC8000AB25B /* IgnoredApplicationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2278EE9C1E3DFAC8000AB25B /* IgnoredApplicationData.swift */; };
@@ -47,23 +47,23 @@
 			remoteGlobalIDString = 22142D9F1E25344E00E4BFBF;
 			remoteInfo = Mos;
 		};
-		2247F2751F93820300C99B37 /* PBXContainerItemProxy */ = {
+		224963441FAE310A00045B68 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2247F2701F93820200C99B37 /* Charts.xcodeproj */;
+			containerPortal = 2249633F1FAE310A00045B68 /* Charts.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 65AD9E95D9ED4DC0BD73A743;
 			remoteInfo = Charts;
 		};
-		2247F2771F93820300C99B37 /* PBXContainerItemProxy */ = {
+		224963461FAE310A00045B68 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2247F2701F93820200C99B37 /* Charts.xcodeproj */;
+			containerPortal = 2249633F1FAE310A00045B68 /* Charts.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 1CBBC58C6CE1EBEE9852CE41;
 			remoteInfo = ChartsTests;
 		};
-		2247F27B1F93821E00C99B37 /* PBXContainerItemProxy */ = {
+		2249634B1FAE312A00045B68 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2247F2701F93820200C99B37 /* Charts.xcodeproj */;
+			containerPortal = 2249633F1FAE310A00045B68 /* Charts.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A58A4ED274A941CA248EA921;
 			remoteInfo = Charts;
@@ -86,7 +86,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				2247F27A1F93821E00C99B37 /* Charts.framework in Embed Frameworks */,
+				2249634A1FAE312A00045B68 /* Charts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -111,7 +111,7 @@
 		2225F8E91E3B1A5C0020DD22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2225F8EB1E3B1A610020DD22 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		2225F8EC1E3B1A610020DD22 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		2247F2701F93820200C99B37 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = Libs/Charts/Charts.xcodeproj; sourceTree = "<group>"; };
+		2249633F1FAE310A00045B68 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = Libs/Charts/Charts.xcodeproj; sourceTree = "<group>"; };
 		226A2E6C1E2E68610035F1A6 /* Mos-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Mos-Bridging-Header.h"; sourceTree = "<group>"; };
 		226A2E6D1E2E68620035F1A6 /* MouseEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MouseEvent.m; sourceTree = "<group>"; };
 		226A2E711E2E68A00035F1A6 /* MouseEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MouseEvent.h; sourceTree = "<group>"; };
@@ -139,7 +139,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2247F2791F93821E00C99B37 /* Charts.framework in Frameworks */,
+				224963491FAE312A00045B68 /* Charts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,11 +216,11 @@
 			name = Localization;
 			sourceTree = "<group>";
 		};
-		2247F2711F93820200C99B37 /* Products */ = {
+		224963401FAE310A00045B68 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2247F2761F93820300C99B37 /* Charts.framework */,
-				2247F2781F93820300C99B37 /* ChartsTests.xctest */,
+				224963451FAE310A00045B68 /* Charts.framework */,
+				224963471FAE310A00045B68 /* ChartsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -236,7 +236,7 @@
 		22816CFA1E2A6DFA0020D6B1 /* Libs */ = {
 			isa = PBXGroup;
 			children = (
-				2247F2701F93820200C99B37 /* Charts.xcodeproj */,
+				2249633F1FAE310A00045B68 /* Charts.xcodeproj */,
 			);
 			name = Libs;
 			sourceTree = "<group>";
@@ -302,7 +302,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				2247F27C1F93821E00C99B37 /* PBXTargetDependency */,
+				2249634C1FAE312A00045B68 /* PBXTargetDependency */,
 			);
 			name = Mos;
 			productName = Mos;
@@ -397,8 +397,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 2247F2711F93820200C99B37 /* Products */;
-					ProjectRef = 2247F2701F93820200C99B37 /* Charts.xcodeproj */;
+					ProductGroup = 224963401FAE310A00045B68 /* Products */;
+					ProjectRef = 2249633F1FAE310A00045B68 /* Charts.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -411,18 +411,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		2247F2761F93820300C99B37 /* Charts.framework */ = {
+		224963451FAE310A00045B68 /* Charts.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Charts.framework;
-			remoteRef = 2247F2751F93820300C99B37 /* PBXContainerItemProxy */;
+			remoteRef = 224963441FAE310A00045B68 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2247F2781F93820300C99B37 /* ChartsTests.xctest */ = {
+		224963471FAE310A00045B68 /* ChartsTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = ChartsTests.xctest;
-			remoteRef = 2247F2771F93820300C99B37 /* PBXContainerItemProxy */;
+			remoteRef = 224963461FAE310A00045B68 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -507,10 +507,10 @@
 			target = 22142D9F1E25344E00E4BFBF /* Mos */;
 			targetProxy = 22142DBD1E25344F00E4BFBF /* PBXContainerItemProxy */;
 		};
-		2247F27C1F93821E00C99B37 /* PBXTargetDependency */ = {
+		2249634C1FAE312A00045B68 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Charts;
-			targetProxy = 2247F27B1F93821E00C99B37 /* PBXContainerItemProxy */;
+			targetProxy = 2249634B1FAE312A00045B68 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

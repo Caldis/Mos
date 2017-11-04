@@ -10,7 +10,6 @@
 //
 
 import Foundation
-import CoreGraphics
 
 @objc(ChartDataApproximator)
 open class DataApproximator: NSObject
