@@ -21,8 +21,8 @@ var i18nLanguageMappingList = {
         en: "Download Now"
     },
     version: {
-        zh: "版本 1.6.0, 支持 MacOS 10.11+ 系统。",
-        en: "Version 1.6.0, Require macOS MacOS 10.11+. "
+        zh: "版本 1.7.0, 支持 MacOS 10.11+ 系统。",
+        en: "Version 1.7.0, Require macOS MacOS 10.11+. "
     },
     notes: {
         zh: "查看更新日志",
