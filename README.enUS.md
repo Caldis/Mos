@@ -46,7 +46,28 @@ http://mos.u2sk.com/
 </p>
 
 
-## Download
+## Download & Install
+
+### Homebrew
+
+If you wish to install the application from [Homebrew](https://brew.sh):
+
+```bash
+$ brew cask install mos
+```
+
+The application will live at `/Applications/Mos.app`.
+
+To update the app:
+
+```bash
+$ brew update
+$ brew cask reinstall mos
+```
+
+Quit the app then relaunch the application.
+
+### Manual Installation
 
 - [GithubRelease](https://github.com/Caldis/Mos/releases/)
 

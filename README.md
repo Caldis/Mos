@@ -46,7 +46,28 @@ http://mos.u2sk.com/
 </p>
 
 
-## 下载
+## 下载及安装
+
+### Homebrew安装
+
+Mos可通过[Homebrew](https://brew.sh)来安装:
+
+```bash
+$ brew cask install mos
+```
+
+应用将被安装至 `/Applications/Mos.app`。
+
+若有新版本,可用以下命令升级:
+
+```bash
+$ brew update
+$ brew cask reinstall mos
+```
+
+重新启动应用即可。
+
+### 手动安装
 
 - [GithubRelease](https://github.com/Caldis/Mos/releases/)
 
