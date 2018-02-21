@@ -7,20 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B12EF1A203AD9C80058B169 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF19203AD9C80058B169 /* Options.swift */; };
+		0B12EF1D203ADD230058B169 /* ScrollUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF1C203ADD230058B169 /* ScrollUtils.swift */; };
+		0B12EF1F203ADFB10058B169 /* Interpolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF1E203ADFB10058B169 /* Interpolation.swift */; };
+		0B12EF57203AEC880058B169 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B12EF54203AEC7B0058B169 /* Charts.framework */; };
+		0B12EF58203AEC880058B169 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0B12EF54203AEC7B0058B169 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0B12EF5E203C7D650058B169 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF5D203C7D650058B169 /* Logger.swift */; };
 		22003C6E1E8555F0001220BC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22003C6D1E8555F0001220BC /* Utils.swift */; };
 		22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA31E25344E00E4BFBF /* AppDelegate.swift */; };
 		22142DA61E25344E00E4BFBF /* ScrollMonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* ScrollMonitorViewController.swift */; };
 		22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA71E25344E00E4BFBF /* Assets.xcassets */; };
 		22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA91E25344E00E4BFBF /* Main.storyboard */; };
-		22142DB61E25344F00E4BFBF /* MosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DB51E25344F00E4BFBF /* MosTests.swift */; };
 		221E5DFB1F4DE55B00AE17FA /* ProcessUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */; };
 		2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */; };
 		2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2225F8EA1E3B1A5C0020DD22 /* Localizable.strings */; };
-		224963491FAE312A00045B68 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224963451FAE310A00045B68 /* Charts.framework */; };
-		2249634A1FAE312A00045B68 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224963451FAE310A00045B68 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 226A2E6D1E2E68620035F1A6 /* MouseEvent.m */; };
 		2278EE991E3DF770000AB25B /* PreferencesIgnoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2278EE981E3DF770000AB25B /* PreferencesIgnoreViewController.swift */; };
-		2278EE9D1E3DFAC8000AB25B /* IgnoredApplicationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2278EE9C1E3DFAC8000AB25B /* IgnoredApplicationData.swift */; };
+		2278EE9D1E3DFAC8000AB25B /* ExceptionalApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2278EE9C1E3DFAC8000AB25B /* ExceptionalApplication.swift */; };
 		2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */; };
 		228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */; };
 		22816CFF1E2B31020020D6B1 /* ScrollMonitorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22816CFE1E2B31020020D6B1 /* ScrollMonitorWindowController.swift */; };
@@ -33,37 +36,23 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		22142DB21E25344F00E4BFBF /* PBXContainerItemProxy */ = {
+		0B12EF53203AEC7B0058B169 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 22142D981E25344E00E4BFBF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 22142D9F1E25344E00E4BFBF;
-			remoteInfo = Mos;
-		};
-		22142DBD1E25344F00E4BFBF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 22142D981E25344E00E4BFBF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 22142D9F1E25344E00E4BFBF;
-			remoteInfo = Mos;
-		};
-		224963441FAE310A00045B68 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2249633F1FAE310A00045B68 /* Charts.xcodeproj */;
+			containerPortal = 0B12EF4E203AEC7B0058B169 /* Charts.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 65AD9E95D9ED4DC0BD73A743;
 			remoteInfo = Charts;
 		};
-		224963461FAE310A00045B68 /* PBXContainerItemProxy */ = {
+		0B12EF55203AEC7B0058B169 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2249633F1FAE310A00045B68 /* Charts.xcodeproj */;
+			containerPortal = 0B12EF4E203AEC7B0058B169 /* Charts.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 1CBBC58C6CE1EBEE9852CE41;
 			remoteInfo = ChartsTests;
 		};
-		2249634B1FAE312A00045B68 /* PBXContainerItemProxy */ = {
+		0B12EF59203AEC880058B169 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2249633F1FAE310A00045B68 /* Charts.xcodeproj */;
+			containerPortal = 0B12EF4E203AEC7B0058B169 /* Charts.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A58A4ED274A941CA248EA921;
 			remoteInfo = Charts;
@@ -86,7 +75,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				2249634A1FAE312A00045B68 /* Charts.framework in Embed Frameworks */,
+				0B12EF58203AEC880058B169 /* Charts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -94,6 +83,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B12EF19203AD9C80058B169 /* Options.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
+		0B12EF1C203ADD230058B169 /* ScrollUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollUtils.swift; sourceTree = "<group>"; };
+		0B12EF1E203ADFB10058B169 /* Interpolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpolation.swift; sourceTree = "<group>"; };
+		0B12EF4E203AEC7B0058B169 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = Libs/Charts/Charts.xcodeproj; sourceTree = "<group>"; };
+		0B12EF5D203C7D650058B169 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		22003C6D1E8555F0001220BC /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22142DA31E25344E00E4BFBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -101,23 +95,18 @@
 		22142DA71E25344E00E4BFBF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22142DAA1E25344E00E4BFBF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		22142DAC1E25344E00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		22142DB11E25344F00E4BFBF /* MosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		22142DB51E25344F00E4BFBF /* MosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosTests.swift; sourceTree = "<group>"; };
-		22142DB71E25344F00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		22142DBC1E25344F00E4BFBF /* MosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		221E5DF71F4DE52400AE17FA /* ProcessUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProcessUtils.h; sourceTree = "<group>"; };
 		221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProcessUtils.m; sourceTree = "<group>"; };
 		2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAdvanceViewController.swift; sourceTree = "<group>"; };
 		2225F8E91E3B1A5C0020DD22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2225F8EB1E3B1A610020DD22 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		2225F8EC1E3B1A610020DD22 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		2249633F1FAE310A00045B68 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = Libs/Charts/Charts.xcodeproj; sourceTree = "<group>"; };
-		226A2E6C1E2E68610035F1A6 /* Mos-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Mos-Bridging-Header.h"; sourceTree = "<group>"; };
+		226A2E6C1E2E68610035F1A6 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		226A2E6D1E2E68620035F1A6 /* MouseEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MouseEvent.m; sourceTree = "<group>"; };
 		226A2E711E2E68A00035F1A6 /* MouseEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MouseEvent.h; sourceTree = "<group>"; };
 		2270D90F1E69BA1500C48231 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		2278EE981E3DF770000AB25B /* PreferencesIgnoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesIgnoreViewController.swift; sourceTree = "<group>"; };
-		2278EE9C1E3DFAC8000AB25B /* IgnoredApplicationData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IgnoredApplicationData.swift; sourceTree = "<group>"; };
+		2278EE9C1E3DFAC8000AB25B /* ExceptionalApplication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExceptionalApplication.swift; sourceTree = "<group>"; };
 		2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesGeneralViewController.swift; sourceTree = "<group>"; };
 		22816CFE1E2B31020020D6B1 /* ScrollMonitorWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollMonitorWindowController.swift; sourceTree = "<group>"; };
@@ -139,34 +128,115 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				224963491FAE312A00045B68 /* Charts.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		22142DAE1E25344F00E4BFBF /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		22142DB91E25344F00E4BFBF /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				0B12EF57203AEC880058B169 /* Charts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B12EF1B203ADD0B0058B169 /* ScrollCore */ = {
+			isa = PBXGroup;
+			children = (
+				2291A8A21E2A5400004181B8 /* ScrollCore.swift */,
+				0B12EF1C203ADD230058B169 /* ScrollUtils.swift */,
+				0B12EF1E203ADFB10058B169 /* Interpolation.swift */,
+			);
+			path = ScrollCore;
+			sourceTree = "<group>";
+		};
+		0B12EF20203AE0E00058B169 /* ScrollMonitorPanel */ = {
+			isa = PBXGroup;
+			children = (
+				22142DA51E25344E00E4BFBF /* ScrollMonitorViewController.swift */,
+				22816CFE1E2B31020020D6B1 /* ScrollMonitorWindowController.swift */,
+			);
+			path = ScrollMonitorPanel;
+			sourceTree = "<group>";
+		};
+		0B12EF21203AE0F50058B169 /* PreferencesPanel */ = {
+			isa = PBXGroup;
+			children = (
+				22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */,
+				22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */,
+				22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */,
+				2278EE981E3DF770000AB25B /* PreferencesIgnoreViewController.swift */,
+				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
+				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
+				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
+				2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */,
+			);
+			path = PreferencesPanel;
+			sourceTree = "<group>";
+		};
+		0B12EF26203AE25A0058B169 /* OCBridge */ = {
+			isa = PBXGroup;
+			children = (
+				226A2E6C1E2E68610035F1A6 /* BridgingHeader.h */,
+				226A2E711E2E68A00035F1A6 /* MouseEvent.h */,
+				226A2E6D1E2E68620035F1A6 /* MouseEvent.m */,
+				221E5DF71F4DE52400AE17FA /* ProcessUtils.h */,
+				221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */,
+			);
+			path = OCBridge;
+			sourceTree = "<group>";
+		};
+		0B12EF27203AE2CA0058B169 /* StatusMenu */ = {
+			isa = PBXGroup;
+			children = (
+				22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */,
+			);
+			path = StatusMenu;
+			sourceTree = "<group>";
+		};
+		0B12EF28203AE2E00058B169 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				2225F8EA1E3B1A5C0020DD22 /* Localizable.strings */,
+			);
+			path = Localization;
+			sourceTree = "<group>";
+		};
+		0B12EF4D203AEC710058B169 /* Libs */ = {
+			isa = PBXGroup;
+			children = (
+				0B12EF4E203AEC7B0058B169 /* Charts.xcodeproj */,
+			);
+			name = Libs;
+			sourceTree = "<group>";
+		};
+		0B12EF4F203AEC7B0058B169 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0B12EF54203AEC7B0058B169 /* Charts.framework */,
+				0B12EF56203AEC7B0058B169 /* ChartsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0B12EF5B203C3D510058B169 /* Options */ = {
+			isa = PBXGroup;
+			children = (
+				0B12EF19203AD9C80058B169 /* Options.swift */,
+				2278EE9C1E3DFAC8000AB25B /* ExceptionalApplication.swift */,
+			);
+			path = Options;
+			sourceTree = "<group>";
+		};
+		0B12EF5C203C7D510058B169 /* Logger */ = {
+			isa = PBXGroup;
+			children = (
+				0B12EF5D203C7D650058B169 /* Logger.swift */,
+			);
+			path = Logger;
+			sourceTree = "<group>";
+		};
 		22142D971E25344E00E4BFBF = {
 			isa = PBXGroup;
 			children = (
 				22142DA21E25344E00E4BFBF /* Mos */,
-				22142DB41E25344F00E4BFBF /* MosTests */,
+				0B12EF4D203AEC710058B169 /* Libs */,
 				22142DA11E25344E00E4BFBF /* Products */,
-				22816CFA1E2A6DFA0020D6B1 /* Libs */,
 				2270D90E1E69BA1400C48231 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -175,8 +245,6 @@
 			isa = PBXGroup;
 			children = (
 				22142DA01E25344E00E4BFBF /* Mos.app */,
-				22142DB11E25344F00E4BFBF /* MosTests.xctest */,
-				22142DBC1E25344F00E4BFBF /* MosUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -185,44 +253,20 @@
 			isa = PBXGroup;
 			children = (
 				22142DA31E25344E00E4BFBF /* AppDelegate.swift */,
-				2291A8A21E2A5400004181B8 /* ScrollCore.swift */,
 				22003C6D1E8555F0001220BC /* Utils.swift */,
-				22A32B3B1E334B7A00A5CF38 /* ScrollMonitorPanel */,
-				22A32B3A1E334B5900A5CF38 /* PreferencesPanel */,
-				22A32B3C1E334B9700A5CF38 /* StatusMenu */,
-				22DF0E401E39B9820003FA77 /* OCBridge */,
+				0B12EF5C203C7D510058B169 /* Logger */,
+				0B12EF5B203C3D510058B169 /* Options */,
+				0B12EF1B203ADD0B0058B169 /* ScrollCore */,
+				0B12EF20203AE0E00058B169 /* ScrollMonitorPanel */,
+				0B12EF21203AE0F50058B169 /* PreferencesPanel */,
+				0B12EF27203AE2CA0058B169 /* StatusMenu */,
+				0B12EF26203AE25A0058B169 /* OCBridge */,
+				0B12EF28203AE2E00058B169 /* Localization */,
 				22142DA91E25344E00E4BFBF /* Main.storyboard */,
-				2225F8ED1E3B1B220020DD22 /* Localization */,
 				22142DA71E25344E00E4BFBF /* Assets.xcassets */,
 				22142DAC1E25344E00E4BFBF /* Info.plist */,
 			);
 			path = Mos;
-			sourceTree = "<group>";
-		};
-		22142DB41E25344F00E4BFBF /* MosTests */ = {
-			isa = PBXGroup;
-			children = (
-				22142DB51E25344F00E4BFBF /* MosTests.swift */,
-				22142DB71E25344F00E4BFBF /* Info.plist */,
-			);
-			path = MosTests;
-			sourceTree = "<group>";
-		};
-		2225F8ED1E3B1B220020DD22 /* Localization */ = {
-			isa = PBXGroup;
-			children = (
-				2225F8EA1E3B1A5C0020DD22 /* Localizable.strings */,
-			);
-			name = Localization;
-			sourceTree = "<group>";
-		};
-		224963401FAE310A00045B68 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				224963451FAE310A00045B68 /* Charts.framework */,
-				224963471FAE310A00045B68 /* ChartsTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		2270D90E1E69BA1400C48231 /* Frameworks */ = {
@@ -231,59 +275,6 @@
 				2270D90F1E69BA1500C48231 /* ServiceManagement.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		22816CFA1E2A6DFA0020D6B1 /* Libs */ = {
-			isa = PBXGroup;
-			children = (
-				2249633F1FAE310A00045B68 /* Charts.xcodeproj */,
-			);
-			name = Libs;
-			sourceTree = "<group>";
-		};
-		22A32B3A1E334B5900A5CF38 /* PreferencesPanel */ = {
-			isa = PBXGroup;
-			children = (
-				22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */,
-				22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */,
-				22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */,
-				2278EE9C1E3DFAC8000AB25B /* IgnoredApplicationData.swift */,
-				2278EE981E3DF770000AB25B /* PreferencesIgnoreViewController.swift */,
-				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
-				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
-				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
-				2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */,
-			);
-			name = PreferencesPanel;
-			sourceTree = "<group>";
-		};
-		22A32B3B1E334B7A00A5CF38 /* ScrollMonitorPanel */ = {
-			isa = PBXGroup;
-			children = (
-				22142DA51E25344E00E4BFBF /* ScrollMonitorViewController.swift */,
-				22816CFE1E2B31020020D6B1 /* ScrollMonitorWindowController.swift */,
-			);
-			name = ScrollMonitorPanel;
-			sourceTree = "<group>";
-		};
-		22A32B3C1E334B9700A5CF38 /* StatusMenu */ = {
-			isa = PBXGroup;
-			children = (
-				22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */,
-			);
-			name = StatusMenu;
-			sourceTree = "<group>";
-		};
-		22DF0E401E39B9820003FA77 /* OCBridge */ = {
-			isa = PBXGroup;
-			children = (
-				226A2E6C1E2E68610035F1A6 /* Mos-Bridging-Header.h */,
-				226A2E711E2E68A00035F1A6 /* MouseEvent.h */,
-				226A2E6D1E2E68620035F1A6 /* MouseEvent.m */,
-				221E5DF71F4DE52400AE17FA /* ProcessUtils.h */,
-				221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */,
-			);
-			name = OCBridge;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -302,48 +293,12 @@
 			buildRules = (
 			);
 			dependencies = (
-				2249634C1FAE312A00045B68 /* PBXTargetDependency */,
+				0B12EF5A203AEC880058B169 /* PBXTargetDependency */,
 			);
 			name = Mos;
 			productName = Mos;
 			productReference = 22142DA01E25344E00E4BFBF /* Mos.app */;
 			productType = "com.apple.product-type.application";
-		};
-		22142DB01E25344F00E4BFBF /* MosTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 22142DC81E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "MosTests" */;
-			buildPhases = (
-				22142DAD1E25344F00E4BFBF /* Sources */,
-				22142DAE1E25344F00E4BFBF /* Frameworks */,
-				22142DAF1E25344F00E4BFBF /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				22142DB31E25344F00E4BFBF /* PBXTargetDependency */,
-			);
-			name = MosTests;
-			productName = MosTests;
-			productReference = 22142DB11E25344F00E4BFBF /* MosTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		22142DBB1E25344F00E4BFBF /* MosUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 22142DCB1E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "MosUITests" */;
-			buildPhases = (
-				22142DB81E25344F00E4BFBF /* Sources */,
-				22142DB91E25344F00E4BFBF /* Frameworks */,
-				22142DBA1E25344F00E4BFBF /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				22142DBE1E25344F00E4BFBF /* PBXTargetDependency */,
-			);
-			name = MosUITests;
-			productName = MosUITests;
-			productReference = 22142DBC1E25344F00E4BFBF /* MosUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -366,19 +321,6 @@
 							};
 						};
 					};
-					22142DB01E25344F00E4BFBF = {
-						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 2H959AEV62;
-						LastSwiftMigration = 0900;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 22142D9F1E25344E00E4BFBF;
-					};
-					22142DBB1E25344F00E4BFBF = {
-						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 2H959AEV62;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 22142D9F1E25344E00E4BFBF;
-					};
 				};
 			};
 			buildConfigurationList = 22142D9B1E25344E00E4BFBF /* Build configuration list for PBXProject "Mos" */;
@@ -397,32 +339,30 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 224963401FAE310A00045B68 /* Products */;
-					ProjectRef = 2249633F1FAE310A00045B68 /* Charts.xcodeproj */;
+					ProductGroup = 0B12EF4F203AEC7B0058B169 /* Products */;
+					ProjectRef = 0B12EF4E203AEC7B0058B169 /* Charts.xcodeproj */;
 				},
 			);
 			projectRoot = "";
 			targets = (
 				22142D9F1E25344E00E4BFBF /* Mos */,
-				22142DB01E25344F00E4BFBF /* MosTests */,
-				22142DBB1E25344F00E4BFBF /* MosUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		224963451FAE310A00045B68 /* Charts.framework */ = {
+		0B12EF54203AEC7B0058B169 /* Charts.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Charts.framework;
-			remoteRef = 224963441FAE310A00045B68 /* PBXContainerItemProxy */;
+			remoteRef = 0B12EF53203AEC7B0058B169 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		224963471FAE310A00045B68 /* ChartsTests.xctest */ = {
+		0B12EF56203AEC7B0058B169 /* ChartsTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = ChartsTests.xctest;
-			remoteRef = 224963461FAE310A00045B68 /* PBXContainerItemProxy */;
+			remoteRef = 0B12EF55203AEC7B0058B169 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -438,20 +378,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		22142DAF1E25344F00E4BFBF /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		22142DBA1E25344F00E4BFBF /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -463,7 +389,9 @@
 				2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */,
 				2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */,
 				22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */,
+				0B12EF5E203C7D650058B169 /* Logger.swift in Sources */,
 				226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */,
+				0B12EF1F203ADFB10058B169 /* Interpolation.swift in Sources */,
 				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,
 				22816CFF1E2B31020020D6B1 /* ScrollMonitorWindowController.swift in Sources */,
 				221E5DFB1F4DE55B00AE17FA /* ProcessUtils.m in Sources */,
@@ -473,44 +401,21 @@
 				2278EE991E3DF770000AB25B /* PreferencesIgnoreViewController.swift in Sources */,
 				22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
+				0B12EF1A203AD9C80058B169 /* Options.swift in Sources */,
 				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
-				2278EE9D1E3DFAC8000AB25B /* IgnoredApplicationData.swift in Sources */,
+				2278EE9D1E3DFAC8000AB25B /* ExceptionalApplication.swift in Sources */,
 				22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		22142DAD1E25344F00E4BFBF /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				22142DB61E25344F00E4BFBF /* MosTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		22142DB81E25344F00E4BFBF /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				0B12EF1D203ADD230058B169 /* ScrollUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		22142DB31E25344F00E4BFBF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 22142D9F1E25344E00E4BFBF /* Mos */;
-			targetProxy = 22142DB21E25344F00E4BFBF /* PBXContainerItemProxy */;
-		};
-		22142DBE1E25344F00E4BFBF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 22142D9F1E25344E00E4BFBF /* Mos */;
-			targetProxy = 22142DBD1E25344F00E4BFBF /* PBXContainerItemProxy */;
-		};
-		2249634C1FAE312A00045B68 /* PBXTargetDependency */ = {
+		0B12EF5A203AEC880058B169 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Charts;
-			targetProxy = 2249634B1FAE312A00045B68 /* PBXContainerItemProxy */;
+			targetProxy = 0B12EF59203AEC880058B169 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -656,9 +561,9 @@
 				INFOPLIST_FILE = Mos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER = com.u2sk.Mos;
+				PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Mos/Mos-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = Mos/OCBridge/BridgingHeader.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
@@ -676,75 +581,11 @@
 				INFOPLIST_FILE = Mos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER = com.u2sk.Mos;
+				PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Mos/Mos-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = Mos/OCBridge/BridgingHeader.h;
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
-			};
-			name = Release;
-		};
-		22142DC91E25344F00E4BFBF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 2H959AEV62;
-				INFOPLIST_FILE = MosTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = u2sk.MosTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mos.app/Contents/MacOS/Mos";
-			};
-			name = Debug;
-		};
-		22142DCA1E25344F00E4BFBF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 2H959AEV62;
-				INFOPLIST_FILE = MosTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = u2sk.MosTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = On;
-				SWIFT_VERSION = 4.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mos.app/Contents/MacOS/Mos";
-			};
-			name = Release;
-		};
-		22142DCC1E25344F00E4BFBF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 2H959AEV62;
-				INFOPLIST_FILE = MosUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = u2sk.MosUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_TARGET_NAME = Mos;
-			};
-			name = Debug;
-		};
-		22142DCD1E25344F00E4BFBF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 2H959AEV62;
-				INFOPLIST_FILE = MosUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = u2sk.MosUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-				TEST_TARGET_NAME = Mos;
 			};
 			name = Release;
 		};
@@ -765,24 +606,6 @@
 			buildConfigurations = (
 				22142DC61E25344F00E4BFBF /* Debug */,
 				22142DC71E25344F00E4BFBF /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		22142DC81E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "MosTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				22142DC91E25344F00E4BFBF /* Debug */,
-				22142DCA1E25344F00E4BFBF /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		22142DCB1E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "MosUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				22142DCC1E25344F00E4BFBF /* Debug */,
-				22142DCD1E25344F00E4BFBF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,19 +1,30 @@
 //
 //  Utils.swift
 //  Mos
-//  常用工具类
-//  Created by Cb on 2017/3/24.
-//  Copyright © 2017年 Cb. All rights reserved.
+//  实用方法
+//  Created by Caldis on 2017/3/24.
+//  Copyright © 2017年 Caldis. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 
-//
-//  用于管理开机启动项
-//  Created by Cb on 2017/3/23.
-//  Copyright © 2017年 Cb. All rights reserved.
-//  With help from: https://gist.github.com/plapier/f8e1dde1b1624dfbb3e4
-//
+// 实用方法
+class Utils {
+    
+    // 禁止重复运行
+    static func preventMultiRunning() {
+        // 获取自己的 BundleId
+        let mainBundleID = Bundle.main.bundleIdentifier!
+        // 如果检测到在运行, 则自杀
+        if NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID).count > 1 {
+            NSApp.terminate(nil)
+        }
+    }
+    
+}
+
+// 管理开机启动项
+// 来源: https://gist.github.com/plapier/f8e1dde1b1624dfbb3e4
 @available(*, deprecated, message:"LSSharedFileList will deprecated in feature.")
 class LaunchStarter {
     
@@ -60,7 +71,7 @@ class LaunchStarter {
             LSSharedFileListInsertItemURL(loginItemsRef, itemReferences.lastReference, nil, nil, appUrl, nil, nil)
         }
     }
-    
+
     // 从LoginItems移除
     static func disableLaunchAtStartup() {
         let itemReferences = LaunchStarter.itemReferencesInLoginItems()
@@ -70,4 +81,5 @@ class LaunchStarter {
             }
         }
     }
+    
 }
