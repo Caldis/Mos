@@ -1,5 +1,5 @@
 //
-//  PreferencesIgnoreViewController.swift
+//  PreferencesExceptionViewController.swift
 //  Mos
 //  例外应用界面
 //  Created by Caldis on 2017/1/29.
@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class PreferencesIgnoreViewController: NSViewController {
+class PreferencesExceptionViewController: NSViewController {
     
     // 白名单CheckBox
     @IBOutlet weak var whiteListModeCheckBox: NSButton!
@@ -59,11 +59,11 @@ class PreferencesIgnoreViewController: NSViewController {
         openPanel.allowsMultipleSelection = false
         // 允许的文件类型
         openPanel.allowedFileTypes = ["app", "App", "APP"]
-        // 打开文件选择窗口并读取文件添加到 ignoredApplications
+        // 打开文件选择窗口并读取文件添加到 ExceptionalApplications 列表中
         openPanel.beginSheetModal(for: PreferencesWindowController.preferenceWindowRef, completionHandler: {
             result in
                 if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
-                    // 根据路径获取application信息并保存到ignoredApplications列表中
+                    // 根据路径获取 application 信息并保存到 ExceptionalApplications 列表中
                     let applicationUrl = String(describing: openPanel.url!)
                     let applicationPath = openPanel.url!.path
                     let applicationIcon = NSWorkspace.shared.icon(forFile: applicationPath)
@@ -105,7 +105,7 @@ class PreferencesIgnoreViewController: NSViewController {
 
 
 
-extension PreferencesIgnoreViewController: NSTableViewDataSource {
+extension PreferencesExceptionViewController: NSTableViewDataSource {
     
     // 行数
     func numberOfRows(in tableView: NSTableView) -> Int {
@@ -116,7 +116,7 @@ extension PreferencesIgnoreViewController: NSTableViewDataSource {
 
 
 
-extension PreferencesIgnoreViewController: NSTableViewDelegate {
+extension PreferencesExceptionViewController: NSTableViewDelegate {
     
     // 每一列在Storybroad中的名字
     fileprivate enum CellIdentifiers {

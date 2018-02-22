@@ -87,7 +87,7 @@ class ScrollMonitorViewController: NSViewController, ChartViewDelegate {
     // 开始监听
     func startMonitorScrollEvent() {
         // 开始截取事件 (ScrollWheelEventMonitorUpdate)
-        eventTap = ScrollCore.startCapture(event: mask, to: eventCallBack, at: .cgSessionEventTap, where: .tailAppendEventTap, for: .listenOnly)
+        eventTap = ScrollCore.shared.startCapture(event: mask, to: eventCallBack, at: .cgSessionEventTap, where: .tailAppendEventTap, for: .listenOnly)
         // 开始监听事件变更 (ScrollWheelEventMonitorUpdate和ScrollWheelEventMonitorRecoder)
         NotificationCenter.default.addObserver(self, selector: #selector(updateMonitorData), name:NSNotification.Name(rawValue: "ScrollWheelEventMonitorUpdate"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(recoderScrollEventData), name:NSNotification.Name(rawValue: "ScrollWheelEventMonitorRecoder"), object: nil)

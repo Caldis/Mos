@@ -11,7 +11,7 @@ import Cocoa
 class Interpolation: NSObject {
     
     class func lerp(src: Double, dest: Double) -> Double {
-        return (dest - src) * Options.shared.current.advanced.lerp
+        return (dest - src) * Options.shared.current.advanced.transition
     }
     
 }

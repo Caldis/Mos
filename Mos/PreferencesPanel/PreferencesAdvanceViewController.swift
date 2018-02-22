@@ -10,6 +10,9 @@ import Cocoa
 
 class PreferencesAdvanceViewController: NSViewController {
     
+    @IBOutlet weak var scrollSpeedSlider: NSSlider!
+    @IBOutlet weak var scrollSpeedLabel: NSTextField!
+    @IBOutlet weak var scrollSpeedStepper: NSStepper!
     @IBOutlet weak var scrollTransitionSlider: NSSlider!
     @IBOutlet weak var scrollTransitionLabel: NSTextField!
     @IBOutlet weak var scrollTransitionStepper: NSStepper!
@@ -17,12 +20,22 @@ class PreferencesAdvanceViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // 恢复设置
-        scrollTransitionSlider.doubleValue = Options.shared.current.advanced.lerp
-        scrollTransitionLabel.stringValue = String(format: "%.2f", Options.shared.current.advanced.lerp)
-        scrollTransitionStepper.doubleValue = Options.shared.current.advanced.lerp
+        syncViewWithOptions()
     }
     
-    // 过渡设置
+    // 速度
+    @IBAction func scrollSpeedSliderChange(_ sender: NSSlider) {
+        setScrollSpeed(value: sender.doubleValue)
+    }
+    @IBAction func scrollSpeedStepperChange(_ sender: NSStepper) {
+        setScrollSpeed(value: sender.doubleValue)
+    }
+    func setScrollSpeed(value: Double) {
+        Options.shared.current.advanced.speed = value
+        syncViewWithOptions()
+    }
+    
+    // 过渡
     @IBAction func scrollTransitionSliderChange(_ sender: NSSlider) {
         setScrollTransition(value: sender.doubleValue)
     }
@@ -30,21 +43,28 @@ class PreferencesAdvanceViewController: NSViewController {
         setScrollTransition(value: sender.doubleValue)
     }
     func setScrollTransition(value: Double) {
-        // 修改Slider
-        scrollTransitionSlider.doubleValue = value
-        // 修改Stepper
-        scrollTransitionStepper.doubleValue = value
-        // 修改文字
-        scrollTransitionLabel.stringValue = String(format: "%.2f", value)
-        // 修改实际参数
-        Options.shared.current.advanced.lerp = value
+        Options.shared.current.advanced.transition = value
+        syncViewWithOptions()
     }
     
     // 重置
-    @IBAction func resetAllToDefaultClick(_ sender: NSButton) {
-        scrollTransitionSlider.doubleValue = Options.DEFAULT_OPTIONS.advanced.lerp
-        scrollTransitionStepper.doubleValue = Options.DEFAULT_OPTIONS.advanced.lerp
-        scrollTransitionLabel.stringValue = String(format: "%.2f", Options.DEFAULT_OPTIONS.advanced.lerp)
-        setScrollTransition(value: Options.DEFAULT_OPTIONS.advanced.lerp)
+    @IBAction func resetToDefaultClick(_ sender: NSButton) {
+        Options.shared.current.advanced = Options.DEFAULT_OPTIONS.advanced
+        syncViewWithOptions()
     }
+    
+    // 同步界面与设置参数
+    func syncViewWithOptions() {
+        // 速度
+        let speed = Options.shared.current.advanced.speed
+        scrollSpeedSlider.doubleValue = speed
+        scrollSpeedStepper.doubleValue = speed
+        scrollSpeedLabel.stringValue = String(format: "%.2f", speed)
+        // 过渡
+        let transition = Options.shared.current.advanced.transition
+        scrollTransitionSlider.doubleValue = transition
+        scrollTransitionStepper.doubleValue = transition
+        scrollTransitionLabel.stringValue = String(format: "%.2f", transition)
+    }
+    
 }

@@ -19,7 +19,7 @@ class Options {
         // 基础
         basic: ( smooth: true, reverse: true, autoLaunch: false ),
         // 高级
-        advanced: ( lerp: 0.14 ),
+        advanced: ( speed: 4.0, transition: 0.14 ),
         // 例外
         exception: ( whitelist: false, applications: [ExceptionalApplication](), applicationsDict: [String: ExceptionalApplication]() )
     )
@@ -36,15 +36,15 @@ class Options {
         }
     }
     
-    // 读取进行标识, 防止冲突
-    private var readingOptions = false
+    // 读取锁, 防止冲突
+    private var readingOptionsLock = false
     // JSON 编解码工具
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
     
     // 从 UserDefaults 中读取到 currentOptions
     func readOptions() {
-        readingOptions = true
+        readingOptionsLock = true
         // 配置项如果不存在则尝试用当前设置(默认设置)保存一次
         if UserDefaults.standard.object(forKey: "optionsExist") == nil { saveOptions() }
         // 基础
@@ -52,17 +52,18 @@ class Options {
         current.basic.reverse = UserDefaults.standard.bool(forKey: "reverse")
         current.basic.autoLaunch = UserDefaults.standard.bool(forKey: "autoLaunch")
         // 高级
-        current.advanced.lerp = UserDefaults.standard.double(forKey: "lerp")
+        current.advanced.speed = UserDefaults.standard.double(forKey: "speed")
+        current.advanced.transition = UserDefaults.standard.double(forKey: "transition")
         // 例外
         current.exception.whitelist = UserDefaults.standard.bool(forKey: "whitelist")
         current.exception.applications = try! decoder.decode(Array.self, from: UserDefaults.standard.value(forKey: "applications") as! Data) as [ExceptionalApplication]
         current.exception.applicationsDict = generateApplicationsDict()
-        readingOptions = false
+        readingOptionsLock = false
     }
     
     // 写入到 UserDefaults
     func saveOptions() {
-        if !readingOptions {
+        if !readingOptionsLock {
             // 标识配置项存在
             UserDefaults.standard.set("optionsExist", forKey:"optionsExist")
             // 基础
@@ -70,7 +71,8 @@ class Options {
             UserDefaults.standard.set(current.basic.reverse, forKey:"reverse")
             UserDefaults.standard.set(current.basic.autoLaunch, forKey:"autoLaunch")
             // 高级
-            UserDefaults.standard.set(current.advanced.lerp, forKey:"lerp")
+            UserDefaults.standard.set(current.advanced.speed, forKey:"speed")
+            UserDefaults.standard.set(current.advanced.transition, forKey:"transition")
             // 例外
             UserDefaults.standard.set(current.exception.whitelist, forKey:"whitelist")
             UserDefaults.standard.set(try! encoder.encode(current.exception.applications), forKey: "applications")

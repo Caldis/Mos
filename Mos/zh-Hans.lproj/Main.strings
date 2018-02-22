@@ -332,7 +332,7 @@
 /* Class = "NSMenuItem"; title = "Use Default"; ObjectID = "agt-UL-0e3"; */
 "agt-UL-0e3.title" = "Use Default";
 
-/* Class = "NSViewController"; title = "Ignore"; ObjectID = "bga-wG-iim"; */
+/* Class = "NSViewController"; title = "Exception"; ObjectID = "bga-wG-iim"; */
 "bga-wG-iim.title" = "例外";
 
 /* Class = "NSMenuItem"; title = "Show Colors"; ObjectID = "bgn-CT-cEk"; */

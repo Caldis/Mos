@@ -154,7 +154,7 @@
                     <tabViewItems>
                         <tabViewItem identifier="general" image="PreferencesGeneral" id="Qwc-OE-zHR"/>
                         <tabViewItem identifier="advanced" image="PreferencesAdvanced" id="P9R-tX-qfW"/>
-                        <tabViewItem identifier="ignore" image="PreferencesIgnore" id="s3Q-bF-sSR"/>
+                        <tabViewItem identifier="exception" image="PreferencesException" id="s3Q-bF-sSR"/>
                         <tabViewItem identifier="updates" image="PreferencesUpdatas" id="1sm-Qq-6GS"/>
                         <tabViewItem identifier="about" image="PreferencesAbout" id="MrA-I8-n0Z"/>
                     </tabViewItems>
@@ -279,10 +279,10 @@
             </objects>
             <point key="canvasLocation" x="446" y="1206.5"/>
         </scene>
-        <!--Ignore-->
+        <!--Exception-->
         <scene sceneID="UqT-28-MT6">
             <objects>
-                <viewController title="Ignore" storyboardIdentifier="ignore" id="bga-wG-iim" customClass="PreferencesIgnoreViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Exception" storyboardIdentifier="exception" id="bga-wG-iim" userLabel="Exception" customClass="PreferencesExceptionViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="NAU-na-Vke">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -579,7 +579,7 @@
                 <customObject id="T8g-3J-WxE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <viewController title="Advanced" storyboardIdentifier="advanced" id="iW5-CD-5OC" customClass="PreferencesAdvanceViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="cc6-G4-pCI">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="106"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="161"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f4W-iU-YEd">
@@ -591,12 +591,21 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dZJ-RH-WIh">
+                                <rect key="frame" x="30" y="122" width="120" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Speed:" id="wck-ay-cL9">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Z34-gx-WqH" userLabel="Scroll Transition Slider">
                                 <rect key="frame" x="166" y="69" width="211" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <sliderCell key="cell" state="on" alignment="left" minValue="0.01" maxValue="1" doubleValue="0.14000000000000001" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="AcR-3v-Dqn"/>
                                 <connections>
-                                    <action selector="scrollTransitionSliderChange:" target="iW5-CD-5OC" id="GIf-Gy-qS9"/>
+                                    <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="GIf-Gy-qS9"/>
                                 </connections>
                             </slider>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sm0-hQ-Q0F" userLabel="Scroll Transition Label">
@@ -608,12 +617,29 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zun-ec-N5n" userLabel="Scroll Transition Label">
+                                <rect key="frame" x="381" y="123" width="30" height="14"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="4.0" id="hpx-jb-TgT">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6m-U6-lbc" userLabel="Scroll Transition Stepper">
                                 <rect key="frame" x="414" y="64" width="19" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="0.01" maxValue="1" doubleValue="0.14000000000000001" id="zlB-ur-whi"/>
                                 <connections>
-                                    <action selector="scrollTransitionStepperChange:" target="iW5-CD-5OC" id="RJa-DV-YOK"/>
+                                    <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="RJa-DV-YOK"/>
+                                </connections>
+                            </stepper>
+                            <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PrV-cR-CdD" userLabel="Scroll Transition Stepper">
+                                <rect key="frame" x="414" y="116" width="19" height="27"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="10" doubleValue="4" id="THS-S1-vhe"/>
+                                <connections>
+                                    <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="vis-B2-cJb"/>
                                 </connections>
                             </stepper>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kft-Xf-Btl">
@@ -625,6 +651,23 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZC4-NK-TQE">
+                                <rect key="frame" x="166" y="97" width="219" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Control the speed of scrollng." id="PK6-dT-z93">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CyT-FH-1xX">
+                                <rect key="frame" x="166" y="120" width="211" height="19"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="10" doubleValue="4" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="fds-F7-fCs"/>
+                                <connections>
+                                    <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="CJW-4q-l1W"/>
+                                </connections>
+                            </slider>
                             <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JW0-jn-P0t">
                                 <rect key="frame" x="20" y="19" width="410" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -633,19 +676,22 @@
                                     <font key="font" metaFont="cellTitle"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="resetAllToDefaultClick:" target="iW5-CD-5OC" id="JN4-aj-ZjR"/>
+                                    <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="JN4-aj-ZjR"/>
                                 </connections>
                             </button>
                         </subviews>
                     </view>
                     <connections>
+                        <outlet property="scrollSpeedLabel" destination="zun-ec-N5n" id="JD6-6p-OAc"/>
+                        <outlet property="scrollSpeedSlider" destination="CyT-FH-1xX" id="vTI-ZD-XDr"/>
+                        <outlet property="scrollSpeedStepper" destination="PrV-cR-CdD" id="xZO-GM-Dz0"/>
                         <outlet property="scrollTransitionLabel" destination="sm0-hQ-Q0F" id="gwG-ZR-wK9"/>
                         <outlet property="scrollTransitionSlider" destination="Z34-gx-WqH" id="Jdm-Ba-CZl"/>
                         <outlet property="scrollTransitionStepper" destination="u6m-U6-lbc" id="ryB-lI-P95"/>
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="947" y="1168"/>
+            <point key="canvasLocation" x="947" y="1195.5"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">
@@ -1073,8 +1119,8 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
         <image name="PaypalLogo" width="238" height="58"/>
         <image name="PreferencesAbout" width="500" height="500"/>
         <image name="PreferencesAdvanced" width="500" height="500"/>
+        <image name="PreferencesException" width="500" height="500"/>
         <image name="PreferencesGeneral" width="500" height="500"/>
-        <image name="PreferencesIgnore" width="500" height="500"/>
         <image name="PreferencesUpdatas" width="500" height="500"/>
         <image name="WechatpayLogo" width="309" height="80"/>
         <image name="WechatpayQR" width="473" height="473"/>

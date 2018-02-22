@@ -16,7 +16,7 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     // 加载前
     override func windowDidLoad() {
         super.windowDidLoad()
-        // 暴露 preferenceWindow 的引用 (用于 IgnoreView 中的 beginSheetModalForWindow 方法)
+        // 暴露 preferenceWindow 的引用 (用于 ExceptionView 中的 beginSheetModalForWindow 方法)
         PreferencesWindowController.preferenceWindowRef = preferenceWindow
         // 实现NSWindowDelegate
         window?.delegate = self

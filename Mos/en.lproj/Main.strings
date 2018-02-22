@@ -332,8 +332,8 @@
 /* Class = "NSMenuItem"; title = "Use Default"; ObjectID = "agt-UL-0e3"; */
 "agt-UL-0e3.title" = "Use Default";
 
-/* Class = "NSViewController"; title = "Ignore"; ObjectID = "bga-wG-iim"; */
-"bga-wG-iim.title" = "Ignore";
+/* Class = "NSViewController"; title = "Exception"; ObjectID = "bga-wG-iim"; */
+"bga-wG-iim.title" = "Exception";
 
 /* Class = "NSMenuItem"; title = "Show Colors"; ObjectID = "bgn-CT-cEk"; */
 "bgn-CT-cEk.title" = "Show Colors";

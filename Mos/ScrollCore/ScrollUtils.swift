@@ -14,16 +14,52 @@ class ScrollUtils {
     static let shared = ScrollUtils()
     init() { print("Class 'ScrollUtils' is a singleton, use the 'ScrollUtils.shared' to access it.") }
     
+    // 获取事件目标 BundleId
+    private var lastEventTargetPID:pid_t = 1     // 目标进程 PID (先前)
+    private var eventTargetPID:pid_t = 1         // 事件的目标进程 PID (当前)
+    private var eventTargetBID:String!
+    // 事件的目标进程 BID (当前)
+    // 从Pid获取进程名称
+    private func getApplicationBundleIdFrom(pid: pid_t) -> String? {
+        // 更新列表
+        let runningApps = NSWorkspace.shared.runningApplications
+        if let matchApp = runningApps.filter({$0.processIdentifier == pid}).first {
+            // 如果找到bundleId则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
+            if let bundleId = matchApp.bundleIdentifier {
+                return bundleId as String?
+            } else {
+                let ppid = ProcessUtils.getParentPid(from: matchApp.processIdentifier)
+                return ppid==1 ? nil : getApplicationBundleIdFrom(pid: ppid)
+            }
+        } else {
+            return nil
+        }
+    }
+    // 获取当前事件目标 BundleId
+    func getCurrentEventTargetBundleId(from event: CGEvent) -> String? {
+        // 获取光标当前窗口信息, 用于在某些窗口中禁用, 更新每次的 PID
+        lastEventTargetPID = eventTargetPID
+        eventTargetPID = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
+        // 如果目标PID有变化, 则重新获取一次窗口名字, 更新到 eventTargetName
+        if lastEventTargetPID != eventTargetPID {
+            if let bundleId = getApplicationBundleIdFrom(pid: eventTargetPID) {
+                eventTargetBID = bundleId
+                return eventTargetBID
+            }
+        }
+        return nil
+    }
+    
     // 判断指定的轴数据是否存在, 作为处理判断依据
-    func axisDataIsExistIn(_ scrollFix: Int64, _ scrollPt: Double, _ scrollFixPt: Double) -> (data: Double, isFixed: Bool)? {
+    func axisDataIsExistIn(_ scrollFix: Int64, _ scrollPt: Double, _ scrollFixPt: Double) -> (value: Double, isFixed: Bool)? {
         if scrollPt != 0.0 {
-            return (data: scrollPt, isFixed: false)
+            return (value: scrollPt, isFixed: false)
         }
         if scrollFixPt != 0.0 {
-            return (data: scrollFixPt, isFixed: true)
+            return (value: scrollFixPt, isFixed: true)
         }
         if scrollFix != 0 {
-            return (data: Double(scrollFix), isFixed: true)
+            return (value: Double(scrollFix), isFixed: true)
         }
         return nil
     }
@@ -42,23 +78,6 @@ class ScrollUtils {
     }
     func isMouse(of event: CGEvent) -> Bool {
         return !isTouchPad(of: event)
-    }
-    
-    // 从Pid获取进程名称
-    func getApplicationBundleIdFrom(pid: pid_t) -> String? {
-        // 更新列表
-        let runningApps = NSWorkspace.shared.runningApplications
-        if let matchApp = runningApps.filter({$0.processIdentifier == pid}).first {
-            // 如果找到bundleId则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
-            if let bundleId = matchApp.bundleIdentifier {
-                return bundleId as String?
-            } else {
-                let ppid = ProcessUtils.getParentPid(from: matchApp.processIdentifier)
-                return ppid==1 ? nil : getApplicationBundleIdFrom(pid: ppid)
-            }
-        } else {
-            return nil
-        }
     }
     
     // 判断 LaunchPad 是否激活
