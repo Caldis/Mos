@@ -449,8 +449,8 @@
 /* Class = "NSMenuItem"; title = "Show Toolbar"; ObjectID = "snW-S8-Cw5"; */
 "snW-S8-Cw5.title" = "Show Toolbar";
 
-/* Class = "NSTextFieldCell"; title = "Speed Setting:"; ObjectID = "suV-WY-rbw"; */
-"suV-WY-rbw.title" = "最大速度:";
+/* Class = "NSTextFieldCell"; title = "Duration: "; ObjectID = "suV-WY-rbw"; */
+"suV-WY-rbw.title" = "持续时间";
 
 /* Class = "NSMenuItem"; title = "Data Detectors"; ObjectID = "tRr-pd-1PS"; */
 "tRr-pd-1PS.title" = "Data Detectors";
@@ -486,7 +486,7 @@
 "vmV-6d-7jI.title" = "Make Upper Case";
 
 /* Class = "NSTextFieldCell"; title = "Control the maxium scroll speed."; ObjectID = "vmk-zZ-ifN"; */
-"vmk-zZ-ifN.title" = "控制滚动的速度";
+"vmk-zZ-ifN.title" = "控制滚动的缓动动画持续时间";
 
 /* Class = "NSMenu"; title = "Ligatures"; ObjectID = "w0m-vy-SC9"; */
 "w0m-vy-SC9.title" = "Ligatures";
@@ -565,3 +565,6 @@
 
 /* Class = "NSTextFieldCell"; title = "Peak:"; ObjectID = "1RC-aL-R3D"; */
 "1RC-aL-R3D.title" = "控制插值曲线相对于持续时间的峰值位置:";
+
+"wck-ay-cL9.title" = "速度增益";
+"PK6-dT-z93.title" = "控制滚动的跟踪速度";

@@ -1,5 +1,5 @@
 //
-//  ScrollMonitorWindowController.swift
+//  MonitorWindowController.swift
 //  Mos
 //  滚动监控界面的容器 Window
 //  Created by Caldis on 2017/1/15.
@@ -8,15 +8,15 @@
 
 import Cocoa
 
-class ScrollMonitorWindowController: NSWindowController, NSWindowDelegate {
+class MonitorWindowController: NSWindowController, NSWindowDelegate {
     
     static var scrollMonitorWindowRef:NSWindow!
     @IBOutlet weak var scrollMonitorWindow: NSWindow!
     
     override func windowDidLoad() {
         super.windowDidLoad()
-        // 共享一下scrollMonitorWindow的引用
-        ScrollMonitorWindowController.scrollMonitorWindowRef = scrollMonitorWindow
+        // 共享一下 MonitorWindow 的引用
+        MonitorWindowController.scrollMonitorWindowRef = scrollMonitorWindow
         // 实现NSWindowDelegate
         window?.delegate = self
         // 隐藏标题栏

@@ -11,10 +11,11 @@
 
 @implementation MouseEvent
 
+// 处理鼠标事件的方向
 // 创建一个鼠标滚轮事件. 并直接发送到 kCGSessionEventTap 层
-// CGWheelCount type = 2; // 事件包含的轴数量, 1 for Y or X only, 2 for Y-X, 3 for Y-X-Z
-// int32_t xScroll = −1;  // Negative for right
-// int32_t yScroll = −1;  // Negative for down
+// type: 事件包含的轴数量, 1 for Y or X only, 2 for Y-X, 3 for Y-X-Z
+// yScroll: y 轴数据
+// xScroll: x 轴数据
 +(void)scroll:(uint32_t)type yScroll:(int32_t)yScroll xScroll:(int32_t)xScroll {
     // 创建事件
     CGEventRef event = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitPixel, type, yScroll, xScroll);

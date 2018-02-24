@@ -53,7 +53,7 @@ class StatusMenuController: NSObject {
             NSApp.activate(ignoringOtherApps: true)
         } else {
             // 如果没有显示, 则从 StoryBroad 获取一个实例
-            StatusMenuController.scrollMonitorWindowController = instantiateWindowController(with: "ScrollMonitorWindowController") as? ScrollMonitorWindowController
+            StatusMenuController.scrollMonitorWindowController = instantiateWindowController(with: "ScrollMonitorWindowController") as? MonitorWindowController
             StatusMenuController.scrollMonitorWindowController?.window?.makeKeyAndOrderFront(self)
             showWindowWithTitle(StatusMenuController.scrollMonitorWindowController!, title: ScrollMonitorWindowTitle)
             StatusMenuController.scrollMonitorWindowIsOpen = true

@@ -16,22 +16,32 @@ class Options {
     
     // 默认设置
     static let DEFAULT_OPTIONS = (
+        // 常量
+        const: ( fps: 60.0 ),
         // 基础
         basic: ( smooth: true, reverse: true, autoLaunch: false ),
         // 高级
-        advanced: ( speed: 4.0, transition: 0.14 ),
+        advanced: ( speed: 4.00, duration: 1.50 ),
         // 例外
         exception: ( whitelist: false, applications: [ExceptionalApplication](), applicationsDict: [String: ExceptionalApplication]() )
     )
     // 当前设置
     var current = DEFAULT_OPTIONS {
-        // 更改后
+        // 更改后应用
         didSet {
+            // 设置自启
+            if(oldValue.basic.autoLaunch != current.basic.autoLaunch) {
+                if current.basic.autoLaunch {
+                    LaunchStarter.enableLaunchAtStartup()
+                } else {
+                    LaunchStarter.disableLaunchAtStartup()
+                }
+            }
             // 更新 applicationsDict
             if(oldValue.exception.applications.count != current.exception.applications.count) {
                 current.exception.applicationsDict = generateApplicationsDict()
             }
-            // 自动保存到 UserDefaults
+            // 保存到 UserDefaults
             saveOptions()
         }
     }
@@ -53,7 +63,7 @@ class Options {
         current.basic.autoLaunch = UserDefaults.standard.bool(forKey: "autoLaunch")
         // 高级
         current.advanced.speed = UserDefaults.standard.double(forKey: "speed")
-        current.advanced.transition = UserDefaults.standard.double(forKey: "transition")
+        current.advanced.duration = UserDefaults.standard.double(forKey: "duration")
         // 例外
         current.exception.whitelist = UserDefaults.standard.bool(forKey: "whitelist")
         current.exception.applications = try! decoder.decode(Array.self, from: UserDefaults.standard.value(forKey: "applications") as! Data) as [ExceptionalApplication]
@@ -72,7 +82,7 @@ class Options {
             UserDefaults.standard.set(current.basic.autoLaunch, forKey:"autoLaunch")
             // 高级
             UserDefaults.standard.set(current.advanced.speed, forKey:"speed")
-            UserDefaults.standard.set(current.advanced.transition, forKey:"transition")
+            UserDefaults.standard.set(current.advanced.duration, forKey:"duration")
             // 例外
             UserDefaults.standard.set(current.exception.whitelist, forKey:"whitelist")
             UserDefaults.standard.set(try! encoder.encode(current.exception.applications), forKey: "applications")

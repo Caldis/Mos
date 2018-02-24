@@ -23,19 +23,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     // 运行后启动处理
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        ScrollCore.shared.startHandling()
+        ScrollCore.shared.startHandlingScroll()
     }
     // 关闭前停止处理
     func applicationWillTerminate(_ aNotification: Notification) {
-        ScrollCore.shared.endHandling()
+        ScrollCore.shared.endHandlingScroll()
     }
     
     // 在切换用户时停止处理
     @objc func sessionDidActive(notification:NSNotification){
-         ScrollCore.shared.startHandling()
+         ScrollCore.shared.startHandlingScroll()
     }
     @objc func sessionDidResign(notification:NSNotification){
-         ScrollCore.shared.endHandling()
+         ScrollCore.shared.endHandlingScroll()
     }
     
 }

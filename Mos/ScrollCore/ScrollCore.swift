@@ -14,8 +14,8 @@ class ScrollCore {
     static let shared = ScrollCore()
     init() { print("Class 'ScrollCore' is a singleton, use the 'ScrollCore.shared' to access it.") }
     
-    // 处理鼠标事件的方向
-    let mousePos = ( Y: UInt32(1), X: UInt32(1), YX: UInt32(2), YXZ: UInt32(3) )
+    // 鼠标事件轴
+    let axis = ( Y: UInt32(1), X: UInt32(1), YX: UInt32(2), YXZ: UInt32(3) )
     // 滚动数据
     var scrollPool = ( y: 0.0, x: 0.0 )  // 滚动数据池
     var scrollCurr = ( y: 0.0, x: 0.0 )  // 当前滚动 (最新一次的数据)
@@ -56,14 +56,14 @@ class ScrollCore {
             x: scrollCurr.x + scrollPulse.x
         )
         // 发送滚动结果
-        MouseEvent.scroll(mousePos.YX, yScroll: Int32(scrollPulse.y), xScroll: Int32(scrollPulse.x))
-        // 根据处理结果选择是否需要迭代循环
-        if abs(scrollPool.x-scrollCurr.x) <= 2 && abs(scrollPool.y-scrollCurr.y) <= 2 {
+        MouseEvent.scroll(axis.YX, yScroll: Int32(scrollPulse.y), xScroll: Int32(scrollPulse.x))
+        // 如果临近目标则停止滚动
+        if abs(scrollPulse.y) <= 1 && abs(scrollPulse.x) <= 1 {
             disableScrollEventPoster()
         }
     }
     
-    // eventTap相关, 用于拦截以及获取系统的滚动事件
+    // eventTap 相关, 用于拦截以及获取系统的滚动事件
     // 拦截层句柄
     var eventTap:CFMachPort?
     // 拦截层掩码
@@ -208,14 +208,14 @@ class ScrollCore {
     
     // 入口函数
     // 启动滚动处理
-    func startHandling() {
+    func startHandlingScroll() {
         // 开始截取事件
         eventTap = startCapture(event: mask, to: eventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)
         // 初始化事件发送器
         initScrollEventPoster()
     }
     // 停止滚动处理
-    func endHandling() {
+    func endHandlingScroll() {
         // 停止事件发送器
         disableScrollEventPoster()
         // 停止截取事件

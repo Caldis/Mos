@@ -13,13 +13,13 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBOutlet weak var scrollSpeedSlider: NSSlider!
     @IBOutlet weak var scrollSpeedLabel: NSTextField!
     @IBOutlet weak var scrollSpeedStepper: NSStepper!
-    @IBOutlet weak var scrollTransitionSlider: NSSlider!
-    @IBOutlet weak var scrollTransitionLabel: NSTextField!
-    @IBOutlet weak var scrollTransitionStepper: NSStepper!
+    @IBOutlet weak var scrollDurationSlider: NSSlider!
+    @IBOutlet weak var scrollDurationLabel: NSTextField!
+    @IBOutlet weak var scrollDurationStepper: NSStepper!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // 恢复设置
+        // 读取设置
         syncViewWithOptions()
     }
     
@@ -36,14 +36,14 @@ class PreferencesAdvanceViewController: NSViewController {
     }
     
     // 过渡
-    @IBAction func scrollTransitionSliderChange(_ sender: NSSlider) {
-        setScrollTransition(value: sender.doubleValue)
+    @IBAction func scrollDurationSliderChange(_ sender: NSSlider) {
+        setScrollDuration(value: sender.doubleValue)
     }
-    @IBAction func scrollTransitionStepperChange(_ sender: NSStepper) {
-        setScrollTransition(value: sender.doubleValue)
+    @IBAction func scrollDurationStepperChange(_ sender: NSStepper) {
+        setScrollDuration(value: sender.doubleValue)
     }
-    func setScrollTransition(value: Double) {
-        Options.shared.current.advanced.transition = value
+    func setScrollDuration(value: Double) {
+        Options.shared.current.advanced.duration = value
         syncViewWithOptions()
     }
     
@@ -61,10 +61,10 @@ class PreferencesAdvanceViewController: NSViewController {
         scrollSpeedStepper.doubleValue = speed
         scrollSpeedLabel.stringValue = String(format: "%.2f", speed)
         // 过渡
-        let transition = Options.shared.current.advanced.transition
-        scrollTransitionSlider.doubleValue = transition
-        scrollTransitionStepper.doubleValue = transition
-        scrollTransitionLabel.stringValue = String(format: "%.2f", transition)
+        let duration = Options.shared.current.advanced.duration
+        scrollDurationSlider.doubleValue = duration
+        scrollDurationStepper.doubleValue = duration
+        scrollDurationLabel.stringValue = String(format: "%.2f", duration)
     }
     
 }

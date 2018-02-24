@@ -1,5 +1,5 @@
 //
-//  ScrollMonitorViewController.swift
+//  MonitorViewController.swift
 //  Mos
 //  滚动监控界面
 //  Created by Caldis on 2017/1/10.
@@ -10,7 +10,7 @@ import Foundation
 import Cocoa
 import Charts
 
-class ScrollMonitorViewController: NSViewController, ChartViewDelegate {
+class MonitorViewController: NSViewController, ChartViewDelegate {
     
     // 监听相关
     var eventTap:CFMachPort?
