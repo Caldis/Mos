@@ -28,8 +28,7 @@ class MonitorWindowController: NSWindowController, NSWindowDelegate {
     }
     
     func windowWillClose(_ notification: Notification) {
-        // 告诉StatusMenu可以打开新实例了
-        StatusMenuController.scrollMonitorWindowIsOpen = false
+        WindowManager.shared.hideWindow(withIdentifier: WindowManager.shared.identifier.monitorWindowController)
     }
     
 }

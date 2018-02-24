@@ -13,6 +13,10 @@
 		0B12EF57203AEC880058B169 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B12EF54203AEC7B0058B169 /* Charts.framework */; };
 		0B12EF58203AEC880058B169 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0B12EF54203AEC7B0058B169 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0B12EF5E203C7D650058B169 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF5D203C7D650058B169 /* Logger.swift */; };
+		0B6D3B6320419514004CC064 /* PopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B6220419514004CC064 /* PopoverViewController.swift */; };
+		0B6D3B6620419F0A004CC064 /* LaunchStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B6520419F0A004CC064 /* LaunchStarter.swift */; };
+		0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B672041A790004CC064 /* WindowManager.swift */; };
+		0B6D3B6A2041C348004CC064 /* ScrollEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B692041C348004CC064 /* ScrollEvent.swift */; };
 		22003C6E1E8555F0001220BC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22003C6D1E8555F0001220BC /* Utils.swift */; };
 		22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA31E25344E00E4BFBF /* AppDelegate.swift */; };
 		22142DA61E25344E00E4BFBF /* MonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* MonitorViewController.swift */; };
@@ -89,6 +93,10 @@
 		0B12EF4E203AEC7B0058B169 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = Libs/Charts/Charts.xcodeproj; sourceTree = "<group>"; };
 		0B12EF5D203C7D650058B169 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		0B6D3B6020409238004CC064 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
+		0B6D3B6220419514004CC064 /* PopoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverViewController.swift; sourceTree = "<group>"; };
+		0B6D3B6520419F0A004CC064 /* LaunchStarter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchStarter.swift; sourceTree = "<group>"; };
+		0B6D3B672041A790004CC064 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		0B6D3B692041C348004CC064 /* ScrollEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollEvent.swift; sourceTree = "<group>"; };
 		22003C6D1E8555F0001220BC /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22142DA31E25344E00E4BFBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -136,6 +144,7 @@
 			children = (
 				2291A8A21E2A5400004181B8 /* ScrollCore.swift */,
 				0B12EF1C203ADD230058B169 /* ScrollUtils.swift */,
+				0B6D3B692041C348004CC064 /* ScrollEvent.swift */,
 				0B12EF1E203ADFB10058B169 /* Interpolation.swift */,
 			);
 			path = ScrollCore;
@@ -227,6 +236,24 @@
 			path = Logger;
 			sourceTree = "<group>";
 		};
+		0B6D3B61204194BE004CC064 /* PopoverPanel */ = {
+			isa = PBXGroup;
+			children = (
+				0B6D3B6220419514004CC064 /* PopoverViewController.swift */,
+			);
+			path = PopoverPanel;
+			sourceTree = "<group>";
+		};
+		0B6D3B6420419EF5004CC064 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				22003C6D1E8555F0001220BC /* Utils.swift */,
+				0B6D3B6520419F0A004CC064 /* LaunchStarter.swift */,
+				0B6D3B672041A790004CC064 /* WindowManager.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		22142D971E25344E00E4BFBF = {
 			isa = PBXGroup;
 			children = (
@@ -249,12 +276,13 @@
 			isa = PBXGroup;
 			children = (
 				22142DA31E25344E00E4BFBF /* AppDelegate.swift */,
-				22003C6D1E8555F0001220BC /* Utils.swift */,
+				0B6D3B6420419EF5004CC064 /* Utils */,
 				0B12EF5C203C7D510058B169 /* Logger */,
 				0B12EF5B203C3D510058B169 /* Options */,
 				0B12EF1B203ADD0B0058B169 /* ScrollCore */,
 				0B12EF20203AE0E00058B169 /* MonitorPanel */,
 				0B12EF21203AE0F50058B169 /* PreferencesPanel */,
+				0B6D3B61204194BE004CC064 /* PopoverPanel */,
 				0B12EF27203AE2CA0058B169 /* StatusMenu */,
 				0B12EF26203AE25A0058B169 /* OCBridge */,
 				0B12EF28203AE2E00058B169 /* Localization */,
@@ -381,6 +409,7 @@
 			files = (
 				2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */,
 				2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */,
+				0B6D3B6A2041C348004CC064 /* ScrollEvent.swift in Sources */,
 				2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */,
 				22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */,
 				0B12EF5E203C7D650058B169 /* Logger.swift in Sources */,
@@ -389,17 +418,20 @@
 				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,
 				22816CFF1E2B31020020D6B1 /* MonitorWindowController.swift in Sources */,
 				221E5DFB1F4DE55B00AE17FA /* ProcessUtils.m in Sources */,
+				0B6D3B6620419F0A004CC064 /* LaunchStarter.swift in Sources */,
 				22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */,
 				22003C6E1E8555F0001220BC /* Utils.swift in Sources */,
 				22142DA61E25344E00E4BFBF /* MonitorViewController.swift in Sources */,
 				2278EE991E3DF770000AB25B /* PreferencesExceptionViewController.swift in Sources */,
 				22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
+				0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */,
 				0B12EF1A203AD9C80058B169 /* Options.swift in Sources */,
 				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
 				2278EE9D1E3DFAC8000AB25B /* ExceptionalApplication.swift in Sources */,
 				22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */,
 				0B12EF1D203ADD230058B169 /* ScrollUtils.swift in Sources */,
+				0B6D3B6320419514004CC064 /* PopoverViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

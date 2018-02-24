@@ -54,6 +54,7 @@ class Options {
     
     // 从 UserDefaults 中读取到 currentOptions
     func readOptions() {
+        // 锁定
         readingOptionsLock = true
         // 配置项如果不存在则尝试用当前设置(默认设置)保存一次
         if UserDefaults.standard.object(forKey: "optionsExist") == nil { saveOptions() }
@@ -68,6 +69,7 @@ class Options {
         current.exception.whitelist = UserDefaults.standard.bool(forKey: "whitelist")
         current.exception.applications = try! decoder.decode(Array.self, from: UserDefaults.standard.value(forKey: "applications") as! Data) as [ExceptionalApplication]
         current.exception.applicationsDict = generateApplicationsDict()
+        // 解锁
         readingOptionsLock = false
     }
     

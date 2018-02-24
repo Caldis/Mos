@@ -46,4 +46,5 @@ class PreferencesGeneralViewController: NSViewController {
         // 自启
         launchOnLoginCheckBox.state = NSControl.StateValue(rawValue: Options.shared.current.basic.autoLaunch ? 1 : 0)
     }
+    
 }

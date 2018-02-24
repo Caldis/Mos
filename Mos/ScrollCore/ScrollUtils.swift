@@ -50,20 +50,6 @@ class ScrollUtils {
         return nil
     }
     
-    // 判断指定的轴数据是否存在, 作为处理判断依据
-    func axisDataIsExistIn(_ scrollFix: Int64, _ scrollPt: Double, _ scrollFixPt: Double) -> (value: Double, isFixed: Bool)? {
-        if scrollPt != 0.0 {
-            return (value: scrollPt, isFixed: false)
-        }
-        if scrollFixPt != 0.0 {
-            return (value: scrollFixPt, isFixed: true)
-        }
-        if scrollFix != 0 {
-            return (value: Double(scrollFix), isFixed: true)
-        }
-        return nil
-    }
-    
     // 判断事件类型
     func isTouchPad(of event: CGEvent) -> Bool {
         // MomentumPhase 或 ScrollPhase任一不为零, 则为触控板

@@ -78,80 +78,53 @@ class ScrollCore {
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
         if ScrollUtils.shared.isMouse(of: event) {
 
-            // 获取目标窗口的 BundleId
+            // 获取目标窗口 BundleId
             let eventTargetBID = ScrollUtils.shared.getCurrentEventTargetBundleId(from: event)
             
-            // 获取列表中应用程序的设置信息
+            // 获取列表中应用程序的列外设置信息
             let exceptionalApplications = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: eventTargetBID)
             let enableReverse = ScrollUtils.shared.enableReverse(application: exceptionalApplications)
             let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications)
             
-            // 格式化滚动数据
-            var scrollFixY = Int64(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
-            var scrollFixX = Int64(event.getIntegerValueField(.scrollWheelEventDeltaAxis2))
-            var scrollPtY = event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)
-            var scrollPtX = event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)
-            var scrollFixPtY = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)
-            var scrollFixPtX = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2)
-            
-            // 处理事件
-            var scrollValue = ( Y: 0.0, X: 0.0 )
+            // 处理滚动事件
+            let scrollEventY = ScrollEvent(with: event, use: ScrollEvent.axis.Y)
+            let scrollEventX = ScrollEvent(with: event, use: ScrollEvent.axis.X)
             // Y轴
-            if var scrollY = ScrollUtils.shared.axisDataIsExistIn(scrollFixY, scrollPtY, scrollFixPtY) {
+            if scrollEventY.isUsable() {
                 // 是否翻转滚动
                 if enableReverse {
-                    event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: -scrollFixY)
-                    event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: -scrollPtY)
-                    event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: -scrollFixPtY)
-                    scrollY.value = -scrollY.value
+                    scrollEventY.reverse(axis: ScrollEvent.axis.Y)
                 }
                 // 是否平滑滚动
                 if enableSmooth {
                     // 禁止返回原始事件
                     returnOriginalEvent = false
-                    // 如果输入值为Fixed型则不处理; 如果为非Fixed类型且小于10则归一化为10
-                    if scrollY.isFixed {
-                        scrollValue.Y = scrollY.value
-                    } else {
-                        let absY = abs(scrollY.value)
-                        if 0.0<absY && absY<10.0 {
-                            scrollValue.Y = scrollY.value<0.0 ? -10.0 : 10.0
-                        } else {
-                            scrollValue.Y = scrollY.value
-                        }
+                    // 如果输入值为非 Fixed 类型, 且小于 10, 则归一化为 10
+                    if !scrollEventY.isFixedType() {
+                        scrollEventY.normalize(threshold: 10.0)
                     }
                 }
             }
             // X轴
-            if var scrollX = ScrollUtils.shared.axisDataIsExistIn(scrollFixX, scrollPtX, scrollFixPtX) {
+            if scrollEventX.isUsable() {
                 // 是否翻转滚动
                 if enableReverse {
-                    event.setIntegerValueField(.scrollWheelEventDeltaAxis2, value: -scrollFixX)
-                    event.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: -scrollPtX)
-                    event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: -scrollFixPtX)
-                    scrollX.value = -scrollX.value
+                    scrollEventX.reverse(axis: ScrollEvent.axis.X)
                 }
                 // 是否平滑滚动
                 if enableSmooth {
                     // 禁止返回原始事件
                     returnOriginalEvent = false
-                    // 如果输入值为Fixed型则不处理; 如果为非Fixed类型且小于10则归一化为10
-                    if scrollX.isFixed {
-                        scrollValue.X = scrollX.value
-                    } else {
-                        let absX = abs(scrollX.value)
-                        if 0.0<absX && absX<10.0 {
-                            scrollValue.X = scrollX.value<0.0 ? -10.0 : 10.0
-                        } else {
-                            scrollValue.X = scrollX.value
-                        }
+                    // 如果输入值为非 Fixed 类型, 且小于 10, 则归一化为 10
+                    if !scrollEventX.isFixedType() {
+                        scrollEventX.normalize(threshold: 10.0)
                     }
                 }
             }
             
-            // 启动一下事件
-            if (scrollValue.Y != 0.0 || scrollValue.X != 0.0) {
-                ScrollCore.shared.updateScrollPool(y: scrollValue.Y, x: scrollValue.X)
+            // 触发滚动事件推送
+            if (scrollEventY.isUsable() || scrollEventX.isUsable()) {
+                ScrollCore.shared.updateScrollPool(y: scrollEventY.getValue(), x: scrollEventX.getValue())
                 ScrollCore.shared.enableScrollEventPoster()
             }
         }

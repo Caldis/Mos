@@ -49,6 +49,8 @@ class PreferencesExceptionViewController: NSViewController {
     
     // 打开文件选择窗口
     func openFileSelectPanel() {
+        // 当前的容器窗口引用
+        let currentWindowController = WindowManager.shared.controller[WindowManager.shared.identifier.preferencesWindowController]!.window!
         let openPanel = NSOpenPanel()
         openPanel.directoryURL = NSURL.fileURL(withPath: "/application", isDirectory: true)
         // 禁止选择文件夹
@@ -60,7 +62,7 @@ class PreferencesExceptionViewController: NSViewController {
         // 允许的文件类型
         openPanel.allowedFileTypes = ["app", "App", "APP"]
         // 打开文件选择窗口并读取文件添加到 ExceptionalApplications 列表中
-        openPanel.beginSheetModal(for: PreferencesWindowController.preferenceWindowRef, completionHandler: {
+        openPanel.beginSheetModal(for: currentWindowController, completionHandler: {
             result in
                 if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
                     // 根据路径获取 application 信息并保存到 ExceptionalApplications 列表中

@@ -76,19 +76,19 @@
                         <menuItem title="Scroll Monitor" id="Ykd-J1-W5H">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
-                                <action selector="scrollWatcherClick:" target="IRm-4F-5BO" id="C5K-YP-d1G"/>
+                                <action selector="monitorClick:" target="IRm-4F-5BO" id="ePY-uc-I3e"/>
                             </connections>
                         </menuItem>
                         <menuItem title="Preferences" id="set-dB-WDd">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
-                                <action selector="preferencesClick:" target="IRm-4F-5BO" id="k3G-mF-YuZ"/>
+                                <action selector="preferencesClick:" target="IRm-4F-5BO" id="crl-tu-84D"/>
                             </connections>
                         </menuItem>
                         <menuItem title="Quit" id="uOM-2b-baP">
                             <modifierMask key="keyEquivalentModifierMask"/>
                             <connections>
-                                <action selector="quitButtonClick:" target="IRm-4F-5BO" id="gpA-XW-XU8"/>
+                                <action selector="quitClick:" target="IRm-4F-5BO" id="q5b-eH-h6P"/>
                             </connections>
                         </menuItem>
                     </items>
@@ -97,11 +97,24 @@
             </objects>
             <point key="canvasLocation" x="-191" y="-39"/>
         </scene>
+        <!--Popover View Controller-->
+        <scene sceneID="hBK-Pm-gdU">
+            <objects>
+                <viewController storyboardIdentifier="PopoverViewController" id="ngL-ST-NHI" customClass="PopoverViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="Fld-He-Y5d">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </view>
+                </viewController>
+                <customObject id="XVH-mY-nwL" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1344" y="243"/>
+        </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController storyboardIdentifier="ScrollMonitorWindowController" showSeguePresentationStyle="single" id="B8D-0N-5wS" customClass="MonitorWindowController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <window key="window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
+                <windowController storyboardIdentifier="MonitorWindowController" showSeguePresentationStyle="single" id="B8D-0N-5wS" customClass="MonitorWindowController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                    <window key="window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA" userLabel="Monitor Window">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
@@ -847,10 +860,10 @@
             </objects>
             <point key="canvasLocation" x="2520" y="1562"/>
         </scene>
-        <!--Scroll Monitor-->
+        <!--Monitor-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController title="Log" id="XfG-lQ-9wD" userLabel="Scroll Monitor" customClass="MonitorViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Log" id="XfG-lQ-9wD" userLabel="Monitor" customClass="MonitorViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="1138" height="413"/>
                         <autoresizingMask key="autoresizingMask"/>

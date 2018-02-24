@@ -1,38 +1,23 @@
 //
-//  Utils.swift
+//  LaunchStarter.swift
 //  Mos
-//  实用方法
-//  Created by Caldis on 2017/3/24.
-//  Copyright © 2017年 Caldis. All rights reserved.
+//  管理开机启动项
+//  Created by Caldis on 2018/2/24.
+//  Copyright © 2018年 Caldis. All rights reserved.
 //
 
 import Cocoa
-
-// 实用方法
-class Utils {
-    
-    // 禁止重复运行
-    static func preventMultiRunning() {
-        // 获取自己的 BundleId
-        let mainBundleID = Bundle.main.bundleIdentifier!
-        // 如果检测到在运行, 则自杀
-        if NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID).count > 1 {
-            NSApp.terminate(nil)
-        }
-    }
-    
-}
 
 // 管理开机启动项
 // 来源: https://gist.github.com/plapier/f8e1dde1b1624dfbb3e4
 @available(*, deprecated, message:"LSSharedFileList will deprecated in feature.")
 class LaunchStarter {
     
-    static func applicationIsInStartUpItems() -> Bool {
-        return (LaunchStarter.itemReferencesInLoginItems().existingReference != nil)
+    // 检测是否在开机启动项中
+    private class func applicationIsInStartUpItems() -> Bool {
+        return (itemReferencesInLoginItems().existingReference != nil)
     }
-    
-    static func itemReferencesInLoginItems() -> (existingReference: LSSharedFileListItem?, lastReference: LSSharedFileListItem?) {
+    private class func itemReferencesInLoginItems() -> (existingReference: LSSharedFileListItem?, lastReference: LSSharedFileListItem?) {
         let appURL = NSURL.fileURL(withPath: Bundle.main.bundlePath)
         if let loginItemsRef = LSSharedFileListCreate(nil, kLSSharedFileListSessionLoginItems.takeRetainedValue(), nil).takeRetainedValue() as LSSharedFileList? {
             let loginItems = LSSharedFileListCopySnapshot(loginItemsRef, nil).takeRetainedValue() as NSArray
@@ -52,9 +37,9 @@ class LaunchStarter {
         return (nil, nil)
     }
     
-    // 切换是否开机加入LoginItems
-    static func toggleLaunchAtStartup() {
-        let itemReferences = LaunchStarter.itemReferencesInLoginItems()
+    // 切换自启
+    class func toggleLaunchAtStartup() {
+        let itemReferences = itemReferencesInLoginItems()
         let shouldBeToggled = (itemReferences.existingReference == nil)
         if shouldBeToggled {
             LaunchStarter.enableLaunchAtStartup()
@@ -63,18 +48,18 @@ class LaunchStarter {
         }
     }
     
-    // 加入LoginItems
-    static func enableLaunchAtStartup() {
-        let itemReferences = LaunchStarter.itemReferencesInLoginItems()
+    // 启用自启 (加入 LoginItems)
+    class func enableLaunchAtStartup() {
+        let itemReferences = itemReferencesInLoginItems()
         if let loginItemsRef = LSSharedFileListCreate( nil, kLSSharedFileListSessionLoginItems.takeRetainedValue(), nil).takeRetainedValue() as LSSharedFileList? {
-         let appUrl = NSURL.fileURL(withPath: Bundle.main.bundlePath) as CFURL
+            let appUrl = NSURL.fileURL(withPath: Bundle.main.bundlePath) as CFURL
             LSSharedFileListInsertItemURL(loginItemsRef, itemReferences.lastReference, nil, nil, appUrl, nil, nil)
         }
     }
-
-    // 从LoginItems移除
-    static func disableLaunchAtStartup() {
-        let itemReferences = LaunchStarter.itemReferencesInLoginItems()
+    
+    // 禁止自启 (从 LoginItems 移除)
+    class func disableLaunchAtStartup() {
+        let itemReferences = itemReferencesInLoginItems()
         if let loginItemsRef = LSSharedFileListCreate( nil, kLSSharedFileListSessionLoginItems.takeRetainedValue(), nil).takeRetainedValue() as LSSharedFileList? {
             if let itemRef = itemReferences.existingReference {
                 LSSharedFileListItemRemove(loginItemsRef,itemRef);
