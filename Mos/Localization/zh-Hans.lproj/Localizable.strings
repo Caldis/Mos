@@ -1,0 +1,24 @@
+/* 
+  Localizable.strings
+  Mos
+  用于代码中的文本国际化
+  Created by Caldis on 2017/1/27.
+  Copyright © 2017年 Caldis. All rights reserved.
+*/
+
+// 基础
+"Ensure" = "确认";
+"Cancel" = "取消";
+"Version" = "版本";
+
+// 状态栏
+"Monitor" = "监控";
+"Preferences" = "设置";
+"Quit" = "退出";
+
+// 设置
+// 例外
+//"Selected application is a shortcut" = "所选择的应用是一个快捷方式"
+//"You need to select the source application to add to the exceptional list" = "您需要选择应用的本体才可添加到例外列表中"
+// 更新
+"Current Version" = "当前版本";

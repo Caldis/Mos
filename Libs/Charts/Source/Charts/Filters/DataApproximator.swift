@@ -10,6 +10,7 @@
 //
 
 import Foundation
+import CoreGraphics
 
 @objc(ChartDataApproximator)
 open class DataApproximator: NSObject
@@ -95,7 +96,7 @@ open class DataApproximator: NSObject
         } // else don't keep the point...
     }
     
-    fileprivate class Line
+    private class Line
     {
         var sxey: CGFloat
         var exsy: CGFloat

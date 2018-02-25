@@ -20,9 +20,6 @@
 /* Class = "NSMenuItem"; title = "Raise"; ObjectID = "2h7-ER-AoG"; */
 "2h7-ER-AoG.title" = "Raise";
 
-/* Class = "NSButtonCell"; title = "Reset to default"; ObjectID = "2ho-yL-X2k"; */
-"2ho-yL-X2k.title" = "恢复为预设值";
-
 /* Class = "NSMenuItem"; title = "Transformations"; ObjectID = "2oI-Rn-ZJC"; */
 "2oI-Rn-ZJC.title" = "Transformations";
 
@@ -53,20 +50,11 @@
 /* Class = "NSMenuItem"; title = "Copy Style"; ObjectID = "5Vv-lz-BsD"; */
 "5Vv-lz-BsD.title" = "Copy Style";
 
-/* Class = "NSTextFieldCell"; title = "Just some little job for mouse."; ObjectID = "5cx-xS-eRe"; */
-"5cx-xS-eRe.title" = "很惭愧，就做了一点微小的工作";
-
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "5ft-0j-oso"; */
 "5ft-0j-oso.title" = "Text Cell";
 
 /* Class = "NSMenuItem"; title = "About Mos"; ObjectID = "5kV-Vb-QxS"; */
 "5kV-Vb-QxS.title" = "About Mos";
-
-/* Class = "NSTextFieldCell"; title = "Current Version"; ObjectID = "5oM-oR-Dsq"; */
-"5oM-oR-Dsq.title" = "当前版本";
-
-/* Class = "NSButtonCell"; title = "Scroll Reverse"; ObjectID = "6FR-2r-rxl"; */
-"6FR-2r-rxl.title" = "反转滚动";
 
 /* Class = "NSMenuItem"; title = "Redo"; ObjectID = "6dh-zS-Vam"; */
 "6dh-zS-Vam.title" = "Redo";
@@ -77,17 +65,11 @@
 /* Class = "NSMenu"; title = "Writing Direction"; ObjectID = "8mr-sm-Yjd"; */
 "8mr-sm-Yjd.title" = "Writing Direction";
 
-/* Class = "NSButtonCell"; title = "GitHub"; ObjectID = "99M-8D-HLN"; */
-"99M-8D-HLN.title" = "GitHub";
-
 /* Class = "NSMenuItem"; title = "Substitutions"; ObjectID = "9ic-FL-obx"; */
 "9ic-FL-obx.title" = "Substitutions";
 
 /* Class = "NSMenuItem"; title = "Smart Copy/Paste"; ObjectID = "9yt-4B-nSM"; */
 "9yt-4B-nSM.title" = "Smart Copy/Paste";
-
-/* Class = "NSButtonCell"; title = "Donate"; ObjectID = "AM8-cj-DnH"; */
-"AM8-cj-DnH.title" = "请作者喝杯咖啡";
 
 /* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
 "AYu-sK-qS6.title" = "Main Menu";
@@ -107,12 +89,6 @@
 /* Class = "NSMenuItem"; title = "Spelling and Grammar"; ObjectID = "Dv1-io-Yv7"; */
 "Dv1-io-Yv7.title" = "Spelling and Grammar";
 
-/* Class = "NSViewController"; title = "Updates"; ObjectID = "EWu-DP-7Gj"; */
-"EWu-DP-7Gj.title" = "更新";
-
-/* Class = "NSMenu"; title = "Help"; ObjectID = "F2S-fz-NVQ"; */
-"F2S-fz-NVQ.title" = "帮助";
-
 /* Class = "NSMenuItem"; title = "Mos Help"; ObjectID = "FKE-Sm-Kum"; */
 "FKE-Sm-Kum.title" = "Mos Help";
 
@@ -121,9 +97,6 @@
 
 /* Class = "NSMenu"; title = "Substitutions"; ObjectID = "FeM-D8-WVr"; */
 "FeM-D8-WVr.title" = "Substitutions";
-
-/* Class = "NSTextFieldCell"; title = "Let the mouse wheel scroll smooth like a buttery."; ObjectID = "G8a-97-8Ey"; */
-"G8a-97-8Ey.title" = "让鼠标的滚动效果更佳平滑";
 
 /* Class = "NSMenuItem"; title = "Bold"; ObjectID = "GB9-OM-e27"; */
 "GB9-OM-e27.title" = "Bold";
@@ -143,9 +116,6 @@
 /* Class = "NSMenuItem"; title = "View"; ObjectID = "H8h-7b-M4v"; */
 "H8h-7b-M4v.title" = "View";
 
-/* Class = "NSTableColumn"; headerCell.title = " Not S"; ObjectID = "HDo-Iu-l7K"; */
-"HDo-Iu-l7K.headerCell.title" = "  No S";
-
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "HEV-nL-Tno"; */
 "HEV-nL-Tno.title" = "Text Cell";
 
@@ -163,12 +133,6 @@
 
 /* Class = "NSMenuItem"; title = "Open…"; ObjectID = "IAo-SY-fd9"; */
 "IAo-SY-fd9.title" = "Open…";
-
-/* Class = "NSTextFieldCell"; title = "Scroll Setting:"; ObjectID = "ILt-Gz-RiV"; */
-"ILt-Gz-RiV.title" = "滚动:";
-
-/* Class = "NSViewController"; title = "General"; ObjectID = "ITL-GD-CPd"; */
-"ITL-GD-CPd.title" = "一般";
 
 /* Class = "NSMenuItem"; title = "Justify"; ObjectID = "J5U-5w-g23"; */
 "J5U-5w-g23.title" = "Justify";
@@ -197,17 +161,11 @@
 /* Class = "NSMenuItem"; title = "Copy Ruler"; ObjectID = "MkV-Pr-PK5"; */
 "MkV-Pr-PK5.title" = "Copy Ruler";
 
-/* Class = "NSTextFieldCell"; title = "Check for updates:"; ObjectID = "N0S-yo-DTg"; */
-"N0S-yo-DTg.title" = "更新:";
-
 /* Class = "NSMenuItem"; title = "Services"; ObjectID = "NMo-om-nkz"; */
 "NMo-om-nkz.title" = "Services";
 
 /* Class = "NSMenuItem"; title = "\tDefault"; ObjectID = "Nop-cj-93Q"; */
 "Nop-cj-93Q.title" = "\tDefault";
-
-/* Class = "NSTextFieldCell"; title = "Not S: Not Smooth / Not R: Not Reverse"; ObjectID = "Nvh-BG-caL"; */
-"Nvh-BG-caL.title" = "No S: 禁用平滑滚动 / No R: 禁用反转滚动";
 
 /* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "OY7-WF-poV"; */
 "OY7-WF-poV.title" = "Minimize";
@@ -236,12 +194,6 @@
 /* Class = "NSMenuItem"; title = "\tRight to Left"; ObjectID = "RB4-Sm-HuC"; */
 "RB4-Sm-HuC.title" = "\tRight to Left";
 
-/* Class = "NSViewController"; title = "About"; ObjectID = "RfV-Ow-3mF"; */
-"RfV-Ow-3mF.title" = "关于";
-
-/* Class = "NSTextFieldCell"; title = "Exceptional Application list:"; ObjectID = "Rgu-cb-5lp"; */
-"Rgu-cb-5lp.title" = "例外的应用程序功能列表:";
-
 /* Class = "NSMenuItem"; title = "Superscript"; ObjectID = "Rqc-34-cIF"; */
 "Rqc-34-cIF.title" = "Superscript";
 
@@ -250,9 +202,6 @@
 
 /* Class = "NSMenuItem"; title = "Jump to Selection"; ObjectID = "S0p-oC-mLd"; */
 "S0p-oC-mLd.title" = "Jump to Selection";
-
-/* Class = "NSTextFieldCell"; title = "          Presenting the data on this window are extremely bad for scroll performance, keep close if not necessary."; ObjectID = "TUE-3v-CaJ"; */
-"TUE-3v-CaJ.title" = "          呈现该窗口的数据会极大地影响滚动性能, 如果非必要, 请勿保留此窗口";
 
 /* Class = "NSMenu"; title = "Window"; ObjectID = "Td7-aD-5lo"; */
 "Td7-aD-5lo.title" = "Window";
@@ -265,9 +214,6 @@
 
 /* Class = "NSMenuItem"; title = "Center"; ObjectID = "VIY-Ag-zcb"; */
 "VIY-Ag-zcb.title" = "Center";
-
-/* Class = "NSTextFieldCell"; title = "Reverse the mouse wheel scroll direction."; ObjectID = "VUb-ZM-hXo"; */
-"VUb-ZM-hXo.title" = "单独反转鼠标滚动的滚动方向";
 
 /* Class = "NSMenuItem"; title = "Hide Others"; ObjectID = "Vdr-fp-XzO"; */
 "Vdr-fp-XzO.title" = "Hide Others";
@@ -287,9 +233,6 @@
 /* Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "WeT-3V-zwk"; */
 "WeT-3V-zwk.title" = "Paste and Match Style";
 
-/* Class = "NSTextFieldCell"; title = "Control the time on scroll transition anim."; ObjectID = "X5f-kH-7lZ"; */
-"X5f-kH-7lZ.title" = "控制平滑滚动的缓动动画时间";
-
 /* Class = "NSViewController"; title = "Log"; ObjectID = "XfG-lQ-9wD"; */
 "XfG-lQ-9wD.title" = "Log";
 
@@ -305,9 +248,6 @@
 /* Class = "NSMenuItem"; title = "\tDefault"; ObjectID = "YGs-j5-SAR"; */
 "YGs-j5-SAR.title" = "\tDefault";
 
-/* Class = "NSMenuItem"; title = "Scroll Monitor"; ObjectID = "Ykd-J1-W5H"; */
-"Ykd-J1-W5H.title" = "滚动监控";
-
 /* Class = "NSMenuItem"; title = "Start Speaking"; ObjectID = "Ynk-f8-cLZ"; */
 "Ynk-f8-cLZ.title" = "Start Speaking";
 
@@ -316,9 +256,6 @@
 
 /* Class = "NSMenuItem"; title = "Paragraph"; ObjectID = "ZvO-Gk-QUH"; */
 "ZvO-Gk-QUH.title" = "Paragraph";
-
-/* Class = "NSButtonCell"; title = "Donate by paypal"; ObjectID = "aPi-cE-maK"; */
-"aPi-cE-maK.title" = "通过 Paypal 捐赠";
 
 /* Class = "NSMenuItem"; title = "Print…"; ObjectID = "aTl-1u-JFS"; */
 "aTl-1u-JFS.title" = "Print…";
@@ -331,9 +268,6 @@
 
 /* Class = "NSMenuItem"; title = "Use Default"; ObjectID = "agt-UL-0e3"; */
 "agt-UL-0e3.title" = "Use Default";
-
-/* Class = "NSViewController"; title = "Ignore"; ObjectID = "bga-wG-iim"; */
-"bga-wG-iim.title" = "例外";
 
 /* Class = "NSMenuItem"; title = "Show Colors"; ObjectID = "bgn-CT-cEk"; */
 "bgn-CT-cEk.title" = "Show Colors";
@@ -386,9 +320,6 @@
 /* Class = "NSMenuItem"; title = "Smaller"; ObjectID = "i1d-Er-qST"; */
 "i1d-Er-qST.title" = "Smaller";
 
-/* Class = "NSViewController"; title = "Advanced"; ObjectID = "iW5-CD-5OC"; */
-"iW5-CD-5OC.title" = "高级";
-
 /* Class = "NSMenu"; title = "Baseline"; ObjectID = "ijk-EB-dga"; */
 "ijk-EB-dga.title" = "Baseline";
 
@@ -403,9 +334,6 @@
 
 /* Class = "NSMenuItem"; title = "Show Sidebar"; ObjectID = "kIP-vf-haE"; */
 "kIP-vf-haE.title" = "Show Sidebar";
-
-/* Class = "NSButtonCell"; title = "Check Now"; ObjectID = "lp3-Dc-zRt"; */
-"lp3-Dc-zRt.title" = "立即检查";
 
 /* Class = "NSMenuItem"; title = "Check Grammar With Spelling"; ObjectID = "mK6-2p-4JG"; */
 "mK6-2p-4JG.title" = "Check Grammar With Spelling";
@@ -434,23 +362,14 @@
 /* Class = "NSMenuItem"; title = "Check Spelling While Typing"; ObjectID = "rbD-Rh-wIN"; */
 "rbD-Rh-wIN.title" = "Check Spelling While Typing";
 
-/* Class = "NSTableColumn"; headerCell.title = " Not R"; ObjectID = "rd0-ca-ufI"; */
-"rd0-ca-ufI.headerCell.title" = "  No R";
-
 /* Class = "NSMenuItem"; title = "Smart Dashes"; ObjectID = "rgM-f4-ycn"; */
 "rgM-f4-ycn.title" = "Smart Dashes";
 
 /* Class = "NSTextFieldCell"; title = "480"; ObjectID = "rzC-bb-p1R"; */
 "rzC-bb-p1R.title" = "480";
 
-/* Class = "NSMenuItem"; title = "Preferences"; ObjectID = "set-dB-WDd"; */
-"set-dB-WDd.title" = "偏好设置";
-
 /* Class = "NSMenuItem"; title = "Show Toolbar"; ObjectID = "snW-S8-Cw5"; */
 "snW-S8-Cw5.title" = "Show Toolbar";
-
-/* Class = "NSTextFieldCell"; title = "Speed Setting:"; ObjectID = "suV-WY-rbw"; */
-"suV-WY-rbw.title" = "最大速度:";
 
 /* Class = "NSMenuItem"; title = "Data Detectors"; ObjectID = "tRr-pd-1PS"; */
 "tRr-pd-1PS.title" = "Data Detectors";
@@ -461,17 +380,11 @@
 /* Class = "NSMenu"; title = "Kern"; ObjectID = "tlD-Oa-oAM"; */
 "tlD-Oa-oAM.title" = "Kern";
 
-/* Class = "NSMenuItem"; title = "Quit"; ObjectID = "uOM-2b-baP"; */
-"uOM-2b-baP.title" = "退出";
-
 /* Class = "NSMenu"; title = "Mos"; ObjectID = "uQy-DD-JDr"; */
 "uQy-DD-JDr.title" = "Mos";
 
 /* Class = "NSMenuItem"; title = "Cut"; ObjectID = "uRl-iY-unG"; */
 "uRl-iY-unG.title" = "Cut";
-
-/* Class = "NSTextFieldCell"; title = "Time Setting:"; ObjectID = "vEz-OS-QE8"; */
-"vEz-OS-QE8.title" = "持续时间:";
 
 /* Class = "NSMenuItem"; title = "Paste Style"; ObjectID = "vKC-jM-MkH"; */
 "vKC-jM-MkH.title" = "Paste Style";
@@ -485,17 +398,11 @@
 /* Class = "NSMenuItem"; title = "Make Upper Case"; ObjectID = "vmV-6d-7jI"; */
 "vmV-6d-7jI.title" = "Make Upper Case";
 
-/* Class = "NSTextFieldCell"; title = "Control the maxium scroll speed."; ObjectID = "vmk-zZ-ifN"; */
-"vmk-zZ-ifN.title" = "控制滚动的速度";
-
 /* Class = "NSMenu"; title = "Ligatures"; ObjectID = "w0m-vy-SC9"; */
 "w0m-vy-SC9.title" = "Ligatures";
 
 /* Class = "NSMenuItem"; title = "Align Right"; ObjectID = "wb2-vD-lq4"; */
 "wb2-vD-lq4.title" = "Align Right";
-
-/* Class = "NSButtonCell"; title = "Scroll Smooth"; ObjectID = "weE-be-TAy"; */
-"weE-be-TAy.title" = "平滑滚动";
 
 /* Class = "NSMenuItem"; title = "Help"; ObjectID = "wpr-3q-Mcd"; */
 "wpr-3q-Mcd.title" = "Help";
@@ -506,62 +413,60 @@
 /* Class = "NSMenuItem"; title = "Use All"; ObjectID = "xQD-1f-W4t"; */
 "xQD-1f-W4t.title" = "Use All";
 
-/* Class = "NSTableColumn"; headerCell.title = "Application"; ObjectID = "xfG-Cd-oIk"; */
-"xfG-Cd-oIk.headerCell.title" = "应用程序";
-
 /* Class = "NSMenuItem"; title = "Speech"; ObjectID = "xrE-MZ-jX0"; */
 "xrE-MZ-jX0.title" = "Speech";
-
-/* Class = "NSButtonCell"; title = "Home Page"; ObjectID = "yDf-dn-Mcz"; */
-"yDf-dn-Mcz.title" = "主页";
 
 /* Class = "NSMenuItem"; title = "Show Substitutions"; ObjectID = "z6F-FW-3nz"; */
 "z6F-FW-3nz.title" = "Show Substitutions";
 
-/* Class = "NSTextFieldCell"; title = "Recorder"; ObjectID = "efv-Gs-PYF"; */
-"efv-Gs-PYF.title" = "记录";
 
-/* Class = "NSTextFieldCell"; title = "The Scroll Monitor is ..."; ObjectID = "GgW-De-o8u"; */
-"GgW-De-o8u.title" = "滚动监视器是用于监控鼠标或触控板的滚动曲线的工具. 当您发现MOS在您使用某个鼠标时出现工作不正常时, 您可以录制一段您鼠标滚轮的滚动事件提交给我们以帮助我们更加方便地定位罕见的鼠标特性, 并推动我们不断改善MOS";
+// 状态栏
+"set-dB-WDd.title" = "设置";
+"Ykd-J1-W5H.title" = "监控";
+"uOM-2b-baP.title" = "退出";
 
-/* Class = "NSTextFieldCell"; title = "To feedback the issue..."; ObjectID = "xEL-d6-OKW"; */
-"xEL-d6-OKW.title" = "如果要反馈问题, 请跟随以下步骤: ";
+// 监控
+"TUE-3v-CaJ.title" = "          呈现该窗口的数据会极大地影响滚动性能, 如果非必要, 请勿保留此窗口";
 
-/* Class = "NSTextFieldCell"; title = "1. Click the ▶️ button on corner of the Scroll Monitor."; ObjectID = "IqW-Z5-ToN"; */
-"IqW-Z5-ToN.title" = "1. 点击滚动监视器右下的 ▶️ 按钮开始记录滚动事件";
-
-/* Class = "NSTextFieldCell"; title = "2. Repeat the issue scroll action."; ObjectID = "Nq1-es-wP6"; */
-"Nq1-es-wP6.title" = "2. 重复您发生问题的步骤";
-
-/* Class = "NSTextFieldCell"; title = "3. Click the ⏹ to stop record, and save the log files."; ObjectID = "qyu-4j-edC"; */
-"qyu-4j-edC.title" = "3. 点击 ⏹ 按钮停止记录, 然后保存记录文件";
-
-/* Class = "NSTextFieldCell"; title = "4. Give us your feedback here: "; ObjectID = "dAp-hk-dXG"; */
-"dAp-hk-dXG.title" = "4. 在这里提交你的问题: ";
-
-/* Class = "NSTextFieldCell"; title = "5. Describle your issue, do..."; ObjectID = "hnM-2T-1QS"; */
-"hnM-2T-1QS.title" = "5. 在issue帖子中描述您的问题, 也别忘了附上您刚刚保存的鼠标记录文件. (直接拖拽到文本框内即可上传文件)";
-
-/* Class = "NSTextFieldCell"; title = "We hope to listen your voice, please feedback if you get any issue."; ObjectID = "eYe-7m-IC2"; */
-"eYe-7m-IC2.title" = "我们非常期望听到您的反馈, 欢迎随时联系我们";
-
-/* Class = "NSTextFieldCell"; title = "Other Setting:"; ObjectID = "8sv-2I-VeW"; */
+// 设置
+// 基础
+"ITL-GD-CPd.title" = "基础";
+"ILt-Gz-RiV.title" = "滚动:";
+"weE-be-TAy.title" = "平滑滚动";
+"G8a-97-8Ey.title" = "让鼠标的滚动效果更佳平滑";
+"6FR-2r-rxl.title" = "反转滚动";
+"VUb-ZM-hXo.title" = "单独反转鼠标滚动的滚动方向";
 "8sv-2I-VeW.title" = "其他:";
-
-/* Class = "NSButtonCell"; title = "Launch on Login"; ObjectID = "HZF-2o-Mrh"; */
 "HZF-2o-Mrh.title" = "开机启动";
-
-/* Class = "NSTextFieldCell"; title = "Auto launch MOS on your MacOS login."; ObjectID = "wY5-9W-iNv"; */
 "wY5-9W-iNv.title" = "在系统登录时自动运行MOS";
-
-/* Class = "NSButtonCell"; title = "White List Mode"; ObjectID = "Ksp-g1-48g"; */
-"Ksp-g1-48g.title" = "设为白名单模式";
-
-/* Class = "NSTextFieldCell"; title = "The white List Mode will only ..."; ObjectID = "v26-RK-BtL"; */
-"v26-RK-BtL.title" = "设为白名单模式后, Mos 仅对包含在下方的例外应用列表中启用, 未包含在内的则不受影响";
-
-/* Class = "NSTextFieldCell"; title = "Peak:"; ObjectID = "Hwu-eX-4yv"; */
-"Hwu-eX-4yv.title" = "峰值位置:";
-
-/* Class = "NSTextFieldCell"; title = "Peak:"; ObjectID = "1RC-aL-R3D"; */
-"1RC-aL-R3D.title" = "控制插值曲线相对于持续时间的峰值位置:";
+// 高级
+"iW5-CD-5OC.title" = "高级";
+"YE2-UH-9Ku.title" = "最短步长";
+"3Xk-SU-gqO.title" = "控制单次滚动的最短距离";
+"wck-ay-cL9.title" = "速度增益";
+"PK6-dT-z93.title" = "控制持续滚动的跟踪速度增益";
+"suV-WY-rbw.title" = "持续时间:";
+"vmk-zZ-ifN.title" = "控制滚动的缓动动画持续时间";
+"2ho-yL-X2k.title" = "恢复为预设值";
+// 例外
+"bga-wG-iim.title" = "例外";
+"Rgu-cb-5lp.title" = "例外的应用程序功能列表:";
+"Ksp-g1-48g.title" = "白名单模式";
+"v26-RK-BtL.title" = "启用白名单模式后, Mos 仅对包含在列表中的应用启用, 未包含在内的则不受影响";
+"HDo-Iu-l7K.headerCell.title" = "平滑";
+"rd0-ca-ufI.headerCell.title" = "反转";
+"xfG-Cd-oIk.headerCell.title" = " 应用程序";
+"Nvh-BG-caL.title" = "No S: 禁用平滑滚动 / No R: 禁用反转滚动";
+// 更新
+"EWu-DP-7Gj.title" = "更新";
+"N0S-yo-DTg.title" = "检查更新:";
+"lp3-Dc-zRt.title" = "获取新版本";
+"5oM-oR-Dsq.title" = "当前版本";
+// 关于
+"RfV-Ow-3mF.title" = "关于";
+"5cx-xS-eRe.title" = "很惭愧，就做了一点微小的工作";
+"yDf-dn-Mcz.title" = "主页";
+"99M-8D-HLN.title" = "GitHub";
+"AM8-cj-DnH.title" = "请作者喝杯咖啡";
+"aPi-cE-maK.title" = "通过 Paypal 捐赠";
+"F2S-fz-NVQ.title" = "帮助";

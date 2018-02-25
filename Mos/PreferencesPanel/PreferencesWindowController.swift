@@ -1,0 +1,27 @@
+//
+//  PreferencesWindowController.swift
+//  Mos
+//  偏好设置面板容器 Window
+//  Created by Caldis on 2017/1/15.
+//  Copyright © 2017年 Caldis. All rights reserved.
+//
+
+import Cocoa
+
+class PreferencesWindowController: NSWindowController, NSWindowDelegate {
+    
+    @IBOutlet weak var preferenceWindow: NSWindow!
+    
+    // 加载前
+    override func windowDidLoad() {
+        super.windowDidLoad()
+        // 插入 NSToolbarFlexibleSpaceItem 到 index 位置 3 作为分隔符 (这里的 NSToolbarFlexibleSpaceItem 必须要出现在窗口的 toolbar 的 allow items 列表内)
+        window?.toolbar?.insertItem(withItemIdentifier: NSToolbarItem.Identifier(rawValue: "NSToolbarFlexibleSpaceItem"), at: 3)
+    }
+    
+    // 关闭前
+    func windowWillClose(_ notification: Notification) {
+        WindowManager.shared.hideWindow(withIdentifier: WindowManager.shared.identifier.preferencesWindowController)
+    }
+    
+}
