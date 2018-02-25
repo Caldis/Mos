@@ -25,7 +25,7 @@ class ScrollCore {
     
     // 更新滚动数据池
     func updateScrollPool(y: Double, x: Double) {
-        let speed = Options.shared.current.advanced.speed
+        let speed = Options.shared.advanced.speed
         // 更新 Y 轴数据
         if y*scrollDelta.y > 0 {
             scrollPool.y += speed * y
@@ -45,12 +45,12 @@ class ScrollCore {
 
     // 处理滚动事件
     func handleScroll() {
-        // 计算线性插值
+        // 计算插值
         let scrollPulse = (
             y: Interpolation.lerp(src: scrollCurr.y, dest: scrollPool.y),
             x: Interpolation.lerp(src: scrollCurr.x, dest: scrollPool.x)
         )
-        // 更新当前滚动位置
+        // 更新滚动位置
         scrollCurr = (
             y: scrollCurr.y + scrollPulse.y,
             x: scrollCurr.x + scrollPulse.x
@@ -77,7 +77,7 @@ class ScrollCore {
         // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入)
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
         if ScrollUtils.shared.isMouse(of: event) {
-
+            
             // 获取目标窗口 BundleId
             let eventTargetBID = ScrollUtils.shared.getCurrentEventTargetBundleId(from: event)
             
@@ -99,9 +99,9 @@ class ScrollCore {
                 if enableSmooth {
                     // 禁止返回原始事件
                     returnOriginalEvent = false
-                    // 如果输入值为非 Fixed 类型, 且小于 10, 则归一化为 10
+                    // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
                     if !scrollEventY.isFixedType() {
-                        scrollEventY.normalize(threshold: 10.0)
+                        scrollEventY.normalize(threshold: Options.shared.advanced.step)
                     }
                 }
             }
@@ -115,15 +115,15 @@ class ScrollCore {
                 if enableSmooth {
                     // 禁止返回原始事件
                     returnOriginalEvent = false
-                    // 如果输入值为非 Fixed 类型, 且小于 10, 则归一化为 10
+                    // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
                     if !scrollEventX.isFixedType() {
-                        scrollEventX.normalize(threshold: 10.0)
+                        scrollEventX.normalize(threshold: Options.shared.advanced.step)
                     }
                 }
             }
             
             // 触发滚动事件推送
-            if (scrollEventY.isUsable() || scrollEventX.isUsable()) {
+            if (enableSmooth) {
                 ScrollCore.shared.updateScrollPool(y: scrollEventY.getValue(), x: scrollEventX.getValue())
                 ScrollCore.shared.enableScrollEventPoster()
             }

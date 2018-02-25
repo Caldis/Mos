@@ -10,13 +10,10 @@ import Cocoa
 
 class Interpolation: NSObject {
     
-    // Bacic property
-    private let step = Options.shared.current.const.fps * Options.shared.current.advanced.duration
-    
     // Liner Interpolation
     class func lerp(src: Double, dest: Double) -> Double {
         let x = dest - src
-        return x * 0.12 // 1 / Options.shared.current.advanced.duration * 5
+        return x * Options.shared.advanced.durationTransition
     }
     
     // SmoothStep (2rd-order equation)

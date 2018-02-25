@@ -16,8 +16,8 @@ class ScrollUtils {
     
     // 获取事件目标 BundleId
     private var lastEventTargetPID:pid_t = 1     // 目标进程 PID (先前)
-    private var eventTargetPID:pid_t = 1         // 事件的目标进程 PID (当前)
-    private var eventTargetBID:String!
+    private var currEventTargetPID:pid_t = 1     // 事件的目标进程 PID (当前)
+    private var currEventTargetBID:String!
     // 事件的目标进程 BID (当前)
     // 从Pid获取进程名称
     private func getApplicationBundleIdFrom(pid: pid_t) -> String? {
@@ -36,18 +36,19 @@ class ScrollUtils {
         }
     }
     // 获取当前事件目标 BundleId
-    func getCurrentEventTargetBundleId(from event: CGEvent) -> String? {
-        // 获取光标当前窗口信息, 用于在某些窗口中禁用, 更新每次的 PID
-        lastEventTargetPID = eventTargetPID
-        eventTargetPID = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
-        // 如果目标PID有变化, 则重新获取一次窗口名字, 更新到 eventTargetName
-        if lastEventTargetPID != eventTargetPID {
-            if let bundleId = getApplicationBundleIdFrom(pid: eventTargetPID) {
-                eventTargetBID = bundleId
-                return eventTargetBID
+    func getCurrentEventTargetBundleId(from event: CGEvent) -> String {
+        // 保存上次 PID
+        lastEventTargetPID = currEventTargetPID
+        // 更新当前 PID
+        currEventTargetPID = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
+        // 如果目标 PID 变化, 则重新获取一次窗口 BID (更新 BID 消耗较高)
+        if lastEventTargetPID != currEventTargetPID {
+            if let bundleId = getApplicationBundleIdFrom(pid: currEventTargetPID) {
+                currEventTargetBID = bundleId
+                return currEventTargetBID
             }
         }
-        return nil
+        return currEventTargetBID
     }
     
     // 判断事件类型
@@ -69,7 +70,7 @@ class ScrollUtils {
     // 判断 LaunchPad 是否激活
     var launchpadActiveCache = false
     var launchpadLastDetectTime = 0.0
-    func launchpadIsActive() -> Bool {
+    private func launchpadIsActive() -> Bool {
         // 如果距离上次检测时间大于500ms, 则重新检测一遍, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - self.missioncontrolLastDetectTime > 0.5 {
@@ -89,11 +90,11 @@ class ScrollUtils {
             return self.launchpadActiveCache
         }
     }
-    
+
     // 判断 MissionControl 是否激活
     var missioncontrolActiveCache = false
     var missioncontrolLastDetectTime = 0.0
-    func missioncontrolIsActive() -> Bool {
+    private func missioncontrolIsActive() -> Bool {
         // 如果距离上次检测时间大于500ms, 则重新检测一遍, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - missioncontrolLastDetectTime > 0.5 {
@@ -119,28 +120,24 @@ class ScrollUtils {
     // 从 exceptionalApplications 中取回符合传入的 bundleId 的 ExceptionalApplication 对象
     func applicationInExceptionalApplications(bundleId: String?) -> ExceptionalApplication? {
         if let targetBundleId = bundleId {
-            return Options.shared.current.exception.applicationsDict[targetBundleId] ?? nil
+            return Options.shared.exception.applicationsDict[targetBundleId] ?? nil
         }
         return nil
     }
     
     // 判断 ExceptionalApplication 是否需要平滑滚动
-    func applicationNeedSmooth(application: ExceptionalApplication?) -> Bool {
+    private func applicationNeedSmooth(application: ExceptionalApplication) -> Bool {
         // 针对 Launchpad 和 MissionControl 特殊处理, 不论是否在列表内均禁用平滑
         if launchpadIsActive() || missioncontrolIsActive() {
             return false
         }
         // 一般 App
-        if let target = application {
-            return target.smooth
-        }
-        return false
+        return application.smooth
     }
-
-    // 判断 ExceptionalApplication 是否需要翻转滚动
-    func applicationNeedReverse(application: ExceptionalApplication?) -> Bool {
+    // 判断 ExceptionalApplication 是否需要翻转
+    private func applicationNeedReverse(application: ExceptionalApplication) -> Bool {
         // 例外应用列表(Dict)
-        let applicationsDict = Options.shared.current.exception.applicationsDict
+        let applicationsDict = Options.shared.exception.applicationsDict
         // 针对 Launchpad 和 MissionControl 特殊处理
         if launchpadIsActive() || missioncontrolIsActive() {
             if let launchpad = applicationsDict["com.apple.launchpad.launcher"] {
@@ -151,40 +148,28 @@ class ScrollUtils {
             }
         }
         // 一般 App
-        if let target = application {
-            return target.reverse
-        }
-        return false
+        return application.reverse
     }
-    
+
     // 是否启用平滑
     func enableSmooth(application: ExceptionalApplication?) -> Bool {
-        if Options.shared.current.basic.smooth {
-            if Options.shared.current.exception.whitelist {
-                if application != nil {
-                    return applicationNeedSmooth(application: application)
-                } else {
-                    return false
-                }
+        if Options.shared.basic.smooth {
+            if let target = application {
+                return applicationNeedSmooth(application: target)
             } else {
-                return true
+                return !Options.shared.exception.whitelist
             }
         } else {
             return false
         }
     }
-    
-    // 是否全局启用翻转
+    // 是否启用翻转
     func enableReverse(application: ExceptionalApplication?) -> Bool {
-        if Options.shared.current.basic.reverse {
-            if Options.shared.current.exception.whitelist {
-                if application != nil {
-                    return applicationNeedReverse(application: application)
-                } else {
-                    return false
-                }
+        if Options.shared.basic.reverse {
+            if let target = application {
+                return applicationNeedReverse(application: target)
             } else {
-                return true
+                return !Options.shared.exception.whitelist
             }
         } else {
             return false

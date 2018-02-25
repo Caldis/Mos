@@ -10,6 +10,9 @@ import Cocoa
 
 class PreferencesAdvanceViewController: NSViewController {
     
+    @IBOutlet weak var scrollStepSlider: NSSlider!
+    @IBOutlet weak var scrollStepLabel: NSTextField!
+    @IBOutlet weak var scrollStepStepper: NSStepper!
     @IBOutlet weak var scrollSpeedSlider: NSSlider!
     @IBOutlet weak var scrollSpeedLabel: NSTextField!
     @IBOutlet weak var scrollSpeedStepper: NSStepper!
@@ -23,6 +26,18 @@ class PreferencesAdvanceViewController: NSViewController {
         syncViewWithOptions()
     }
     
+    // 步长
+    @IBAction func scrollStepSliderChange(_ sender: NSSlider) {
+        setScrollStep(value: sender.doubleValue)
+    }
+    @IBAction func scrollStepStepperChange(_ sender: NSStepper) {
+        setScrollStep(value: sender.doubleValue)
+    }
+    func setScrollStep(value: Double) {
+        Options.shared.advanced.step = value
+        syncViewWithOptions()
+    }
+    
     // 速度
     @IBAction func scrollSpeedSliderChange(_ sender: NSSlider) {
         setScrollSpeed(value: sender.doubleValue)
@@ -31,7 +46,7 @@ class PreferencesAdvanceViewController: NSViewController {
         setScrollSpeed(value: sender.doubleValue)
     }
     func setScrollSpeed(value: Double) {
-        Options.shared.current.advanced.speed = value
+        Options.shared.advanced.speed = value
         syncViewWithOptions()
     }
     
@@ -43,25 +58,30 @@ class PreferencesAdvanceViewController: NSViewController {
         setScrollDuration(value: sender.doubleValue)
     }
     func setScrollDuration(value: Double) {
-        Options.shared.current.advanced.duration = value
+        Options.shared.advanced.duration = value
         syncViewWithOptions()
     }
     
     // 重置
     @IBAction func resetToDefaultClick(_ sender: NSButton) {
-        Options.shared.current.advanced = Options.DEFAULT_OPTIONS.advanced
+        Options.shared.advanced = Options.DEFAULT_OPTIONS.advanced
         syncViewWithOptions()
     }
     
-    // 同步界面与设置参数
+    // 同步界面与设置
     func syncViewWithOptions() {
+        // 步长
+        let step = Options.shared.advanced.step
+        scrollStepStepper.doubleValue = step
+        scrollStepStepper.doubleValue = step
+        scrollStepLabel.stringValue = String(format: "%.2f", step)
         // 速度
-        let speed = Options.shared.current.advanced.speed
+        let speed = Options.shared.advanced.speed
         scrollSpeedSlider.doubleValue = speed
         scrollSpeedStepper.doubleValue = speed
         scrollSpeedLabel.stringValue = String(format: "%.2f", speed)
         // 过渡
-        let duration = Options.shared.current.advanced.duration
+        let duration = Options.shared.advanced.duration
         scrollDurationSlider.doubleValue = duration
         scrollDurationStepper.doubleValue = duration
         scrollDurationLabel.stringValue = String(format: "%.2f", duration)

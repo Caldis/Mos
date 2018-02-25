@@ -14,7 +14,6 @@
 @interface MouseEvent : NSObject
 
 +(void)scroll:(uint32_t)wheelCount yScroll:(int32_t)yScroll xScroll:(int32_t)xScroll;
-+(NSDictionary*)getWindowDataFrom:(CGEventRef)event;
 
 @end
 

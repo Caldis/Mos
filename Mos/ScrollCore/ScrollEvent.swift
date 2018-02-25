@@ -23,7 +23,7 @@ class ScrollEvent {
     private var fixed = false
     // 滚动数据数据是否可用
     private var usable = false
-    // 格式化的滚动数据
+    // 可用的滚动数据
     private var usableValue = 0.0
     
     // 初始化
@@ -73,7 +73,7 @@ class ScrollEvent {
     // 归一化数据
     func normalize(threshold: Double) {
         let absValue = abs(usableValue)
-        if threshold<absValue && absValue<threshold {
+        if 0.0<absValue && absValue<threshold {
             usableValue = usableValue<0.0 ? -threshold : threshold
         }
     }

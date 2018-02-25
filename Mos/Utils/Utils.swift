@@ -21,4 +21,14 @@ class Utils {
         }
     }
     
+    // 弹出提示框
+    class func showAlert(title: String, description: String, alertStyle: NSAlert.Style) {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = description
+        alert.alertStyle = alertStyle
+        alert.addButton(withTitle: i18n.ensure)
+        alert.runModal()
+    }
+    
 }

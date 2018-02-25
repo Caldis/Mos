@@ -23,28 +23,28 @@ class PreferencesGeneralViewController: NSViewController {
     
     // 平滑
     @IBAction func scrollSmoothClick(_ sender: NSButton) {
-        Options.shared.current.basic.smooth = sender.state.rawValue==0 ? false : true
+        Options.shared.basic.smooth = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     // 翻转
     @IBAction func scrollReverseClick(_ sender: NSButton) {
-        Options.shared.current.basic.reverse = sender.state.rawValue==0 ? false : true
+        Options.shared.basic.reverse = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     // 自启
     @IBAction func launchOnLoginClick(_ sender: NSButton) {
-        Options.shared.current.basic.autoLaunch = sender.state.rawValue==0 ? false : true
+        Options.shared.basic.autoLaunch = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     
-    // 同步界面与设置参数
+    // 同步界面与设置
     func syncViewWithOptions() {
         // 平滑
-        scrollSmoothCheckBox.state = NSControl.StateValue(rawValue: Options.shared.current.basic.smooth ? 1 : 0)
+        scrollSmoothCheckBox.state = NSControl.StateValue(rawValue: Options.shared.basic.smooth ? 1 : 0)
         // 翻转
-        scrollReverseCheckBox.state = NSControl.StateValue(rawValue: Options.shared.current.basic.reverse ? 1 : 0)
+        scrollReverseCheckBox.state = NSControl.StateValue(rawValue: Options.shared.basic.reverse ? 1 : 0)
         // 自启
-        launchOnLoginCheckBox.state = NSControl.StateValue(rawValue: Options.shared.current.basic.autoLaunch ? 1 : 0)
+        launchOnLoginCheckBox.state = NSControl.StateValue(rawValue: Options.shared.basic.autoLaunch ? 1 : 0)
     }
     
 }

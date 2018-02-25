@@ -10,40 +10,35 @@ import Cocoa
 
 class PreferencesExceptionViewController: NSViewController {
     
-    // 白名单CheckBox
-    @IBOutlet weak var whiteListModeCheckBox: NSButton!
-    // 表格, 表格底部工具栏
+    // 白名单
+    @IBOutlet weak var whitelistModeCheckBox: NSButton!
+    // 表格及工具栏
     @IBOutlet weak var tableView: NSTableView!
     @IBOutlet weak var tableViewToolBar: NSSegmentedControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // 恢复一下设置
-        whiteListModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.current.exception.whitelist ? 1 : 0)
+        // 读取设置
+        syncViewWithOptions()
     }
     
-    // 是否启用白名单模式
+    // 白名单模式
     @IBAction func whiteListModeClick(_ sender: NSButton) {
-        if sender.state.rawValue == 0 {
-            Options.shared.current.exception.whitelist = false
-        } else {
-            Options.shared.current.exception.whitelist = true
-        }
-        // 保存设置
-        UserDefaults.standard.set(Options.shared.current.exception.whitelist ? "true" : "false", forKey:"whiteListMode")
+        Options.shared.exception.whitelist = sender.state.rawValue==0 ? false : true
+        syncViewWithOptions()
     }
     
-    // 列表底部的工具栏
+    // 列表底部工具栏
     @IBAction func tableViewToolBarClick(_ sender: NSSegmentedControl) {
-        // 添加按钮
+        // 添加
         if sender.selectedSegment == 0 {
             openFileSelectPanel()
         }
-        // 删除按钮
+        // 删除
         if sender.selectedSegment == 1 {
             deleteTableViewSelectedRow()
         }
-        // 重新load一次数据
+        // 重新加载
         tableView.reloadData()
     }
     
@@ -52,10 +47,11 @@ class PreferencesExceptionViewController: NSViewController {
         // 当前的容器窗口引用
         let currentWindowController = WindowManager.shared.controller[WindowManager.shared.identifier.preferencesWindowController]!.window!
         let openPanel = NSOpenPanel()
+        // 默认打开的目录 (/application)
         openPanel.directoryURL = NSURL.fileURL(withPath: "/application", isDirectory: true)
         // 禁止选择文件夹
         openPanel.canChooseDirectories = false
-        // 能选择文件
+        // 允许选择文件
         openPanel.canChooseFiles = true
         // 不允许复数选择
         openPanel.allowsMultipleSelection = false
@@ -66,100 +62,92 @@ class PreferencesExceptionViewController: NSViewController {
             result in
                 if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
                     // 根据路径获取 application 信息并保存到 ExceptionalApplications 列表中
-                    let applicationUrl = String(describing: openPanel.url!)
                     let applicationPath = openPanel.url!.path
-                    let applicationIcon = NSWorkspace.shared.icon(forFile: applicationPath)
-                    let applicationName = FileManager().displayName(atPath: applicationUrl).removingPercentEncoding!
+                    let applicationName = FileManager().displayName(atPath: String(describing: openPanel.url!)).removingPercentEncoding!
                     if let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
-                        let application = ExceptionalApplication(smooth: true, reverse: true, title: applicationName, bundleId: applicationBundleId)
-                        Options.shared.current.exception.applicationsDict[applicationBundleId] = application
+                        let application = ExceptionalApplication(smooth: true, reverse: true, path: applicationPath, title: applicationName, bundleId: applicationBundleId)
+                        Options.shared.exception.applications.append(application)
                         self.tableView.reloadData()
                     } else {
-                        // Todo: 对于没有bundleId的应用可能是快捷方式, 给个提示
-                        print("Just a shortcut")
+                        // 对于没有 bundleId 的应用可能是快捷方式, 给予提示
                     }
                 }
         })
     }
-    
-    // 删除 TableView 选定的行
+    // 删除选定行
     func deleteTableViewSelectedRow() {
-        // 防止点击过快
+        // 确保有选中特定行
         if tableView.selectedRow != -1 {
-            Options.shared.current.exception.applications.remove(at: tableView.selectedRow)
+            Options.shared.exception.applications.remove(at: tableView.selectedRow)
         }
     }
     
-    // smooth 列的 checkbox 被点击, 设置对应行的信息
-    @objc func smoothClick(_ sender: NSButton!) {
+    // 点击平滑
+    @objc func smoothCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.current.exception.applications[row].smooth = state.rawValue==1 ? true : false
+        Options.shared.exception.applications[row].smooth = state.rawValue==1 ? true : false
     }
-    // reverse 列的 checkbox 被点击, 设置对应行的信息
-    @objc func reverseClick(_ sender: NSButton!) {
+    // 点击反转
+    @objc func reverseCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.current.exception.applications[row].reverse = state.rawValue==1 ? true : false
+        Options.shared.exception.applications[row].reverse = state.rawValue==1 ? true : false
+    }
+    
+    // 同步界面与设置参数
+    func syncViewWithOptions() {
+        // 白名单
+        whitelistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.exception.whitelist ? 1 : 0)
     }
     
 }
 
-
-
-extension PreferencesExceptionViewController: NSTableViewDataSource {
-    
-    // 行数
-    func numberOfRows(in tableView: NSTableView) -> Int {
-        return Options.shared.current.exception.applications.count
-    }
-    
-}
-
-
-
+// 表格内容
 extension PreferencesExceptionViewController: NSTableViewDelegate {
     
-    // 每一列在Storybroad中的名字
+    // 每一列在 Storybroad 中的 identifier
     fileprivate enum CellIdentifiers {
         static let smoothCell = "smoothCell"
         static let reverseCell = "reverseCell"
         static let applicationCell = "applicationCell"
     }
     
-    // 构建table数据
+    // 构建表格数据 (循环生成行)
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
-        // 如果对应列没有设置identifier直接返回空
+        // 如果对应列没有设置 Identifier 直接返回空
         guard let tableColumnIdentifier = tableColumn?.identifier else {
             return nil
         }
         
-        // 生成每个Cell
+        // 生成每行的 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
-            let rowItem = Options.shared.current.exception.applications[row]
-            // smooth 列
+            // 应用数据
+            let application = Options.shared.exception.applications[row]
+            let applicationIcon = NSWorkspace.shared.icon(forFile: application.path)
+            // 平滑
             if tableColumnIdentifier.rawValue == CellIdentifiers.smoothCell {
                 let checkBox = cell.nextKeyView as! NSButton
                 checkBox.tag = row
                 checkBox.target = self
-                checkBox.action = #selector(smoothClick(_:))
-                checkBox.state = NSControl.StateValue(rawValue: rowItem.smooth==true ? 1 : 0)
+                checkBox.action = #selector(smoothCheckBoxClick)
+                checkBox.state = NSControl.StateValue(rawValue: application.smooth==true ? 1 : 0)
                 return cell
             }
-            // reverse 列
+            // 反转
             if tableColumnIdentifier.rawValue == CellIdentifiers.reverseCell {
                 let checkBox = cell.nextKeyView as! NSButton
                 checkBox.tag = row
                 checkBox.target = self
-                checkBox.action = #selector(reverseClick(_:))
-                checkBox.state = NSControl.StateValue(rawValue: rowItem.reverse==true ? 1 : 0)
+                checkBox.action = #selector(reverseCheckBoxClick)
+                checkBox.state = NSControl.StateValue(rawValue: application.reverse==true ? 1 : 0)
                 return cell
             }
-            // application 列
+            // 应用
             if tableColumnIdentifier.rawValue == CellIdentifiers.applicationCell {
-//                cell.imageView?.image = rowItem.icon ?? nil
-                cell.textField?.stringValue = rowItem.title
+                cell.imageView?.image = applicationIcon
+                cell.textField?.stringValue = application.title
                 return cell
             }
         }
@@ -173,4 +161,12 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
         return 30
     }
     
+}
+
+// 表格数据源
+extension PreferencesExceptionViewController: NSTableViewDataSource {
+    // 行数
+    func numberOfRows(in tableView: NSTableView) -> Int {
+        return Options.shared.exception.applications.count
+    }
 }

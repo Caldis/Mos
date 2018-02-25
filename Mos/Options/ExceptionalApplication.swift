@@ -12,14 +12,14 @@ struct ExceptionalApplication:Codable {
     
     var smooth: Bool        // 平滑滚动
     var reverse: Bool       // 反向滚动
-//    var icon: NSURL?        // 应用程序图标(路径)
-    var title: String       // 应用程序名称
-    var bundleId: String    // 应用程序 BID
-    
-    init(smooth: Bool, reverse: Bool, title: String, bundleId: String) {
+    var path: String        // 程序路径
+    var title: String       // 程序名称
+    var bundleId: String    // 程序 bundleId
+
+    init(smooth: Bool, reverse: Bool, path: String, title: String, bundleId: String) {
         self.smooth = smooth
         self.reverse = reverse
-//        self.icon = icon
+        self.path = path
         self.title = title
         self.bundleId = bundleId
     }

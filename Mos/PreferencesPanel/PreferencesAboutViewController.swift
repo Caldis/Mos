@@ -24,14 +24,18 @@ class PreferencesAboutViewController: NSViewController {
         donateButton.attributedTitle = NSAttributedString(string: donateButton.title, attributes: [NSAttributedStringKey.foregroundColor : NSColor.white, NSAttributedStringKey.paragraphStyle : paragraphStyle])
     }
     
+    // 主页
     @IBAction func homepageButtonClick(_ sender: NSButton) {
         let homePageUrl = "http://mos.caldis.me"
         NSWorkspace.shared.open(URL(string:homePageUrl)!)
     }
+    // 项目
     @IBAction func githubButtonClick(_ sender: NSButton) {
         NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos")!)
     }
+    // 帮助
     @IBAction func helpButtonClick(_ sender: NSButton) {
         NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos/wiki")!)
     }
+    
 }
