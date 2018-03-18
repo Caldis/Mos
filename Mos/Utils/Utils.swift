@@ -21,14 +21,14 @@ class Utils {
         }
     }
     
-    // 弹出提示框
-    class func showAlert(title: String, description: String, alertStyle: NSAlert.Style) {
-        let alert = NSAlert()
-        alert.messageText = title
-        alert.informativeText = description
-        alert.alertStyle = alertStyle
-        alert.addButton(withTitle: i18n.ensure)
-        alert.runModal()
+    // 从 StoryBroad 获取一个特定 Controller 的实例
+    private static var storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+    class func instantiateControllerFromStoryboard<Controller>(withIdentifier identifier: String) -> Controller {
+        let id = NSStoryboard.SceneIdentifier(rawValue: identifier)
+        guard let viewController = storyboard.instantiateController(withIdentifier: id) as? Controller else {
+            fatalError("Can't find Controller: \(id)")
+        }
+        return viewController
     }
     
 }

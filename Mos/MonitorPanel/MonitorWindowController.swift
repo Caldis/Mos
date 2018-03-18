@@ -10,7 +10,7 @@ import Cocoa
 
 class MonitorWindowController: NSWindowController, NSWindowDelegate {
     
-    static var scrollMonitorWindowRef:NSWindow!
+    @IBOutlet weak var monitorWindow: NSWindow!
     
     override func windowDidLoad() {
         super.windowDidLoad()

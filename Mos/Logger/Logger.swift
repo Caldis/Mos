@@ -11,7 +11,7 @@ import Cocoa
 class Logger {
     
     // 滚动相关信息
-    class func getScrollLog(of event: CGEvent) -> String {
+    class func getScrollLog(form event: CGEvent) -> String {
         return """
             Is using TouchPad: \(ScrollUtils.shared.isTouchPad(of: event))
             Fix Y: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis1))
@@ -24,7 +24,7 @@ class Logger {
     }
     
     // 处理进程相关信息
-    class func getScrollDetailLog(of event: CGEvent) -> String {
+    class func getScrollDetailLog(form event: CGEvent) -> String {
         // scrollWheelEventIsContinuous 采样精度(设为 1 时为像素级别)
         // scrollWheelEventScrollCount 加速度累计
         // scrollWheelEventMomentumPhase 根据触控板响应阶段改变
@@ -44,7 +44,7 @@ class Logger {
     }
     
     // 鼠标其他信息
-    class func getOtherLog(of event: CGEvent) -> String {
+    class func getOtherLog(form event: CGEvent) -> String {
         return """
             mouseEventNumber: \(event.getDoubleValueField(.mouseEventNumber))
             mouseEventClickState: \(event.getDoubleValueField(.mouseEventClickState))
@@ -60,7 +60,7 @@ class Logger {
     }
     
     // 处理进程相关信息
-    class func getProcessLog(of event: CGEvent) -> String {
+    class func getProcessLog(form event: CGEvent) -> String {
         return """
             eventTargetProcessSerialNumber: \(event.getDoubleValueField(.eventTargetProcessSerialNumber))
             eventTargetUnixProcessID: \(event.getDoubleValueField(.eventTargetUnixProcessID))
@@ -73,7 +73,7 @@ class Logger {
     }
     
     // tablet(画板) 相关信息
-    class func getTabletLog(of event: CGEvent) -> String {
+    class func getTabletLog(form event: CGEvent) -> String {
         return """
             tabletEventPointX: \(event.getDoubleValueField(.tabletEventPointX))
             tabletEventPointY: \(event.getDoubleValueField(.tabletEventPointY))
@@ -103,8 +103,8 @@ class Logger {
     }
     
     // 打印 Log
-    class func printLog(of event: CGEvent) {
-        print(self.getScrollLog(of: event))
+    class func printLog(form event: CGEvent) {
+        print(self.getScrollLog(form: event))
     }
     
 }

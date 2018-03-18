@@ -15,7 +15,8 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     // 加载前
     override func windowDidLoad() {
         super.windowDidLoad()
-        // 插入 NSToolbarFlexibleSpaceItem 到 index 位置 3 作为分隔符 (这里的 NSToolbarFlexibleSpaceItem 必须要出现在窗口的 toolbar 的 allow items 列表内)
+        // 插入 NSToolbarFlexibleSpaceItem 到 index 位置 3 作为分隔符
+        // 此处 NSToolbarFlexibleSpaceItem 必须包含在窗口的 toolbar 的 allow items 列表内
         window?.toolbar?.insertItem(withItemIdentifier: NSToolbarItem.Identifier(rawValue: "NSToolbarFlexibleSpaceItem"), at: 3)
     }
     

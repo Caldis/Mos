@@ -18,7 +18,7 @@ class Interpolation: NSObject {
     
     // SmoothStep (2rd-order equation)
     class func smoothStep2(src: Double, dest: Double) -> Double {
-        let x = src / (dest - src)
+        let x = (dest - src) / dest
         return x * x * (3 - 2 * x)
     }
     
