@@ -421,12 +421,12 @@
 
 
 // 状态栏
-"set-dB-WDd.title" = "设置";
-"Ykd-J1-W5H.title" = "监控";
-"uOM-2b-baP.title" = "退出";
+"YyO-zL-UWi.title" = "滚动监控";
+"3o8-XG-cbc.title" = "偏好设置";
+"Dlg-rn-Cds.title" = "退出";
 
 // 监控
-"TUE-3v-CaJ.title" = "          呈现该窗口的数据会极大地影响滚动性能, 如果非必要, 请勿保留此窗口";
+"TUE-3v-CaJ.title" = "          呈现该窗口的数据会影响滚动性能, 如果非必要, 请勿保留此窗口";
 
 // 设置
 // 基础

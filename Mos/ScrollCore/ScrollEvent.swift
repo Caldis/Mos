@@ -73,9 +73,7 @@ class ScrollEvent {
     // 归一化数据
     func normalize(threshold: Double) {
         let absValue = abs(usableValue)
-        if 0.0<absValue && absValue<threshold {
-            usableValue = usableValue<0.0 ? -threshold : threshold
-        }
+        usableValue = usableValue>0.0 ? max(absValue, threshold) : -max(absValue, threshold)
     }
     
     // 检查类型相关

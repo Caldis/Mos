@@ -17,7 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Options.shared.readOptions()
         // 禁止重复运行
         Utils.preventMultiRunning()
-        // 监听用户切换, 切换用户时停止运行
+        // 监听用户切换, 在切换用户 session 时停止运行
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(AppDelegate.sessionDidActive), name: NSWorkspace.sessionDidBecomeActiveNotification, object: nil)
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(AppDelegate.sessionDidResign), name: NSWorkspace.sessionDidResignActiveNotification, object: nil)
     }
@@ -37,5 +37,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func sessionDidResign(notification:NSNotification){
          ScrollCore.shared.endHandlingScroll()
     }
-    
+   
 }

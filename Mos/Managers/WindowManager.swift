@@ -14,19 +14,13 @@ class WindowManager {
     static let shared = WindowManager()
     init() { print("Class 'WindowManager' is a singleton, use the 'WindowManager.shared' to access it.") }
     
-    // 窗口标识
+    // Storybroad 标识
     let identifier = (
         monitorWindowController: "MonitorWindowController",
         preferencesWindowController: "PreferencesWindowController"
     )
-    // 窗口引用
+    // 窗口引用列表
     var controller = [String: NSWindowController]()
-    
-    // 从 StoryBroad 获取一个 Controller 的实例
-    private var storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
-    func instantiateControllerFromStoryboard<Controller>(withIdentifier identifier: String) -> Controller {
-        return storyboard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: identifier)) as! Controller
-    }
     
     // 显示对应 Identifier 的窗口
     func showWindow(withIdentifier identifier: String, withTitle title:String) {
@@ -36,7 +30,7 @@ class WindowManager {
             NSApp.activate(ignoringOtherApps: true)
         } else {
             // 如果没有显示, 则从 Storyboard 获取一个实例并保存到引用列表中
-            let windowController = instantiateControllerFromStoryboard(withIdentifier: identifier) as NSWindowController
+            let windowController = Utils.instantiateControllerFromStoryboard(withIdentifier: identifier) as NSWindowController
             controller[identifier] = windowController
             // 显示窗口
             windowController.window?.makeKeyAndOrderFront(self)

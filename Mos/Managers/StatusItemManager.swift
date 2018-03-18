@@ -1,30 +1,30 @@
 //
-//  StatusBarController.swift
+//  StatusItemManager.swift
 //  Mos
-//  状态栏
-//  Created by Caldis on 2017/1/15.
-//  Copyright © 2017年 Caldis. All rights reserved.
+//  管理状态栏图标以及初始化
+//  Created by Caldis on 2018/3/7.
+//  Copyright © 2018年 Caldis. All rights reserved.
 //
 
 import Cocoa
 
-class StatusMenuController: NSObject {
+class StatusItemManager: NSMenu {
     
-    // 状态栏相关
-    @IBOutlet weak var statusMenu: NSMenu!
+    // 系统状态栏引用
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     
     override func awakeFromNib() {
-        // 初始化状态栏
+        // 设置状态栏图标
         statusItem.image = #imageLiteral(resourceName: "StatusBarIcon")
-        statusItem.menu = statusMenu
+        // 设置状态栏菜单
+        statusItem.menu = self
     }
     
     // 监控
     @IBAction func monitorClick(_ sender: Any) {
         WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.monitorWindowController, withTitle: i18n.monitor)
     }
-    // 设置
+    // 偏好
     @IBAction func preferencesClick(_ sender: Any) {
         WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.preferencesWindowController, withTitle: i18n.preferences)
     }
@@ -32,5 +32,6 @@ class StatusMenuController: NSObject {
     @IBAction func quitClick(_ sender: Any) {
         NSApplication.shared.terminate(self)
     }
+    
     
 }

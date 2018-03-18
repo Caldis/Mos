@@ -18,7 +18,7 @@ class PreferencesTabViewController: NSTabViewController {
     override func viewWillAppear() {
         // 初始化 Controller 引用
         currentWindowController = WindowManager.shared.controller[WindowManager.shared.identifier.preferencesWindowController]!
-        currentTabViewController = WindowManager.shared.instantiateControllerFromStoryboard(withIdentifier: "general") as NSViewController
+        currentTabViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: "general") as NSViewController
         // 初始化窗口大小
         let currentWindowRect = currentWindowController!.window!.frame
         let generalSize = NSMakeRect(currentWindowRect.origin.x, currentWindowRect.origin.y, 450, 260)
@@ -30,7 +30,7 @@ class PreferencesTabViewController: NSTabViewController {
         if currentTabViewController != nil {
             // 切换 Tab, 根据选中不同的窗口来改变 Window 高度
             let nextTabViewControllerIdentifier = tabViewItem!.identifier as! String
-            let nextTabViewController = WindowManager.shared.instantiateControllerFromStoryboard(withIdentifier: nextTabViewControllerIdentifier) as NSViewController
+            let nextTabViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: nextTabViewControllerIdentifier) as NSViewController
             let currentWindowRect = currentWindowController!.window!.frame
             // 根据 View 的尺寸差计算大小 (同时移动窗口 PosY 和 Height 保持窗口基于左上角定位不变)
             let heightDiff = nextTabViewController.view.frame.height - currentTabViewController!.view.frame.height

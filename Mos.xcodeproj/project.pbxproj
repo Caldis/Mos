@@ -13,12 +13,13 @@
 		0B12EF57203AEC880058B169 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B12EF54203AEC7B0058B169 /* Charts.framework */; };
 		0B12EF58203AEC880058B169 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0B12EF54203AEC7B0058B169 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0B12EF5E203C7D650058B169 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF5D203C7D650058B169 /* Logger.swift */; };
-		0B6D3B6320419514004CC064 /* PopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B6220419514004CC064 /* PopoverViewController.swift */; };
 		0B6D3B6620419F0A004CC064 /* LaunchStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B6520419F0A004CC064 /* LaunchStarter.swift */; };
 		0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B672041A790004CC064 /* WindowManager.swift */; };
 		0B6D3B6A2041C348004CC064 /* ScrollEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B692041C348004CC064 /* ScrollEvent.swift */; };
 		0B6D3B6E20429254004CC064 /* WindowUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B6D20429254004CC064 /* WindowUtils.m */; };
 		0B6D3B702042BBCD004CC064 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B6F2042BBCD004CC064 /* Localizable.swift */; };
+		0B74C441205E386D00E3F942 /* Interception.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B74C440205E386D00E3F942 /* Interception.swift */; };
+		0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */; };
 		22003C6E1E8555F0001220BC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22003C6D1E8555F0001220BC /* Utils.swift */; };
 		22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA31E25344E00E4BFBF /* AppDelegate.swift */; };
 		22142DA61E25344E00E4BFBF /* MonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* MonitorViewController.swift */; };
@@ -33,7 +34,6 @@
 		2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */; };
 		228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */; };
 		22816CFF1E2B31020020D6B1 /* MonitorWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22816CFE1E2B31020020D6B1 /* MonitorWindowController.swift */; };
-		22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */; };
 		2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2291A8A21E2A5400004181B8 /* ScrollCore.swift */; };
 		22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */; };
 		22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */; };
@@ -94,13 +94,15 @@
 		0B12EF1E203ADFB10058B169 /* Interpolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpolation.swift; sourceTree = "<group>"; };
 		0B12EF4E203AEC7B0058B169 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = Libs/Charts/Charts.xcodeproj; sourceTree = "<group>"; };
 		0B12EF5D203C7D650058B169 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		0B6D3B6220419514004CC064 /* PopoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverViewController.swift; sourceTree = "<group>"; };
+		0B61F0C1204BCB160056C4C0 /* NSMenuUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSMenuUtils.h; sourceTree = "<group>"; };
 		0B6D3B6520419F0A004CC064 /* LaunchStarter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchStarter.swift; sourceTree = "<group>"; };
 		0B6D3B672041A790004CC064 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		0B6D3B692041C348004CC064 /* ScrollEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollEvent.swift; sourceTree = "<group>"; };
 		0B6D3B6C20429234004CC064 /* WindowUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowUtils.h; sourceTree = "<group>"; };
 		0B6D3B6D20429254004CC064 /* WindowUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WindowUtils.m; sourceTree = "<group>"; };
 		0B6D3B6F2042BBCD004CC064 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
+		0B74C440205E386D00E3F942 /* Interception.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interception.swift; sourceTree = "<group>"; };
+		0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemManager.swift; sourceTree = "<group>"; };
 		22003C6D1E8555F0001220BC /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22142DA31E25344E00E4BFBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -121,7 +123,6 @@
 		2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesGeneralViewController.swift; sourceTree = "<group>"; };
 		22816CFE1E2B31020020D6B1 /* MonitorWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MonitorWindowController.swift; sourceTree = "<group>"; };
-		22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
 		2291A8A21E2A5400004181B8 /* ScrollCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollCore.swift; sourceTree = "<group>"; };
 		22937B081E3B657600A45C1D /* PreferencesDonateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesDonateViewController.swift; sourceTree = "<group>"; };
 		2295D8251E40540200054A5C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
@@ -148,6 +149,7 @@
 				2291A8A21E2A5400004181B8 /* ScrollCore.swift */,
 				0B12EF1C203ADD230058B169 /* ScrollUtils.swift */,
 				0B6D3B692041C348004CC064 /* ScrollEvent.swift */,
+				0B74C440205E386D00E3F942 /* Interception.swift */,
 				0B12EF1E203ADFB10058B169 /* Interpolation.swift */,
 			);
 			path = ScrollCore;
@@ -187,16 +189,9 @@
 				0B6D3B6D20429254004CC064 /* WindowUtils.m */,
 				221E5DF71F4DE52400AE17FA /* ProcessUtils.h */,
 				221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */,
+				0B61F0C1204BCB160056C4C0 /* NSMenuUtils.h */,
 			);
 			path = OCBridge;
-			sourceTree = "<group>";
-		};
-		0B12EF27203AE2CA0058B169 /* StatusMenu */ = {
-			isa = PBXGroup;
-			children = (
-				22816D001E2B47FB0020D6B1 /* StatusMenuController.swift */,
-			);
-			path = StatusMenu;
 			sourceTree = "<group>";
 		};
 		0B12EF28203AE2E00058B169 /* Localization */ = {
@@ -242,22 +237,22 @@
 			path = Logger;
 			sourceTree = "<group>";
 		};
-		0B6D3B61204194BE004CC064 /* PopoverPanel */ = {
-			isa = PBXGroup;
-			children = (
-				0B6D3B6220419514004CC064 /* PopoverViewController.swift */,
-			);
-			path = PopoverPanel;
-			sourceTree = "<group>";
-		};
 		0B6D3B6420419EF5004CC064 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
 				22003C6D1E8555F0001220BC /* Utils.swift */,
 				0B6D3B6520419F0A004CC064 /* LaunchStarter.swift */,
-				0B6D3B672041A790004CC064 /* WindowManager.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		0B74C43D205E364A00E3F942 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				0B6D3B672041A790004CC064 /* WindowManager.swift */,
+				0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		22142D971E25344E00E4BFBF = {
@@ -283,13 +278,12 @@
 			children = (
 				22142DA31E25344E00E4BFBF /* AppDelegate.swift */,
 				0B6D3B6420419EF5004CC064 /* Utils */,
+				0B74C43D205E364A00E3F942 /* Managers */,
 				0B12EF5C203C7D510058B169 /* Logger */,
 				0B12EF5B203C3D510058B169 /* Options */,
 				0B12EF1B203ADD0B0058B169 /* ScrollCore */,
 				0B12EF20203AE0E00058B169 /* MonitorPanel */,
 				0B12EF21203AE0F50058B169 /* PreferencesPanel */,
-				0B6D3B61204194BE004CC064 /* PopoverPanel */,
-				0B12EF27203AE2CA0058B169 /* StatusMenu */,
 				0B12EF26203AE25A0058B169 /* OCBridge */,
 				0B12EF28203AE2E00058B169 /* Localization */,
 				22142DA91E25344E00E4BFBF /* Main.storyboard */,
@@ -421,6 +415,7 @@
 				226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */,
 				0B6D3B702042BBCD004CC064 /* Localizable.swift in Sources */,
 				0B12EF1F203ADFB10058B169 /* Interpolation.swift in Sources */,
+				0B74C441205E386D00E3F942 /* Interception.swift in Sources */,
 				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,
 				0B6D3B6E20429254004CC064 /* WindowUtils.m in Sources */,
 				22816CFF1E2B31020020D6B1 /* MonitorWindowController.swift in Sources */,
@@ -430,7 +425,7 @@
 				22003C6E1E8555F0001220BC /* Utils.swift in Sources */,
 				22142DA61E25344E00E4BFBF /* MonitorViewController.swift in Sources */,
 				2278EE991E3DF770000AB25B /* PreferencesExceptionViewController.swift in Sources */,
-				22816D011E2B47FB0020D6B1 /* StatusMenuController.swift in Sources */,
+				0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
 				0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */,
 				0B12EF1A203AD9C80058B169 /* Options.swift in Sources */,
@@ -438,7 +433,6 @@
 				2278EE9D1E3DFAC8000AB25B /* ExceptionalApplication.swift in Sources */,
 				22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */,
 				0B12EF1D203ADD230058B169 /* ScrollUtils.swift in Sources */,
-				0B6D3B6320419514004CC064 /* PopoverViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
