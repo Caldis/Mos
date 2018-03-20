@@ -34,10 +34,10 @@ class PreferencesTabViewController: NSTabViewController {
             let currentWindowRect = currentWindowController!.window!.frame
             // 根据 View 的尺寸差计算大小 (同时移动窗口 PosY 和 Height 保持窗口基于左上角定位不变)
             let heightDiff = nextTabViewController.view.frame.height - currentTabViewController!.view.frame.height
-            let newWindowPosY = currentWindowRect.origin.y - heightDiff
-            let newWindowHeight = currentWindowRect.height + heightDiff
-            let generalSize = NSMakeRect(currentWindowRect.origin.x, newWindowPosY, currentWindowRect.width, newWindowHeight)
-            currentWindowController!.window!.setFrame(generalSize, display: true, animate: true)
+            let nextWindowPosY = currentWindowRect.origin.y - heightDiff
+            let nextWindowHeight = currentWindowRect.height + heightDiff
+            let nextWindowSize = NSMakeRect(currentWindowRect.origin.x, nextWindowPosY, currentWindowRect.width, nextWindowHeight)
+            currentWindowController!.window!.setFrame(nextWindowSize, display: true, animate: true)
             // 更新当前的 tabViewController 引用
             currentTabViewController = nextTabViewController
         }
