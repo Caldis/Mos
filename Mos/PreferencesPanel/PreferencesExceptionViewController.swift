@@ -14,6 +14,7 @@ class PreferencesExceptionViewController: NSViewController {
     @IBOutlet weak var whitelistModeCheckBox: NSButton!
     // 表格及工具栏
     @IBOutlet weak var tableView: NSTableView!
+    @IBOutlet weak var tabviewNodataHint: NSView!
     @IBOutlet weak var tableViewToolBar: NSSegmentedControl!
     
     override func viewDidLoad() {
@@ -167,6 +168,8 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
 extension PreferencesExceptionViewController: NSTableViewDataSource {
     // 行数
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return Options.shared.exception.applications.count
+        let rows = Options.shared.exception.applications.count
+        tabviewNodataHint.animator().alphaValue = rows==0 ? 1 : 0
+        return rows
     }
 }

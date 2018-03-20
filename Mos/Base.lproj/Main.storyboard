@@ -752,18 +752,9 @@
                                 </tableHeaderView>
                             </scrollView>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="yml-hF-QvX">
-                                <rect key="frame" x="20" y="333" width="410" height="5"/>
+                                <rect key="frame" x="20" y="333" width="410" height="140"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
-                                <rect key="frame" x="18" y="347" width="414" height="14"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Exceptional Application list:" id="Rgu-cb-5lp">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                             <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FWV-z4-M2h">
                                 <rect key="frame" x="407" y="341" width="25" height="25"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -775,10 +766,10 @@
                                     <segue destination="o12-9v-Ej5" kind="popover" popoverAnchorView="FWV-z4-M2h" popoverBehavior="t" preferredEdge="maxY" id="1ja-Vq-zoO"/>
                                 </connections>
                             </button>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gnb-pe-ZN5">
-                                <rect key="frame" x="292" y="345" width="113" height="18"/>
+                            <button fixedFrame="YES" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gnb-pe-ZN5">
+                                <rect key="frame" x="291" y="345" width="113" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Whitelist Mode" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Ksp-g1-48g">
+                                <buttonCell key="cell" type="check" title="Whitelist Mode" bezelStyle="regularSquare" imagePosition="left" alignment="right" state="on" inset="2" id="Ksp-g1-48g">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -807,11 +798,54 @@
                                     <action selector="tableViewToolBarClick:" target="bga-wG-iim" id="9lQ-bp-R1c"/>
                                 </connections>
                             </segmentedControl>
+                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LTZ-IH-4Vy">
+                                <rect key="frame" x="32" y="112" width="385" height="133"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <subviews>
+                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4dv-oA-74E">
+                                        <rect key="frame" x="172" y="83" width="40" height="40"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="PreferencesListEmpty" id="d6i-r0-QAb"/>
+                                    </imageView>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OKC-Nf-egM">
+                                        <rect key="frame" x="18" y="10" width="349" height="38"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="You can apply a separate configuration to some programs by clicking the &quot;+&quot; on below" id="jaq-Cb-dKM">
+                                            <font key="font" metaFont="system" size="11"/>
+                                            <color key="textColor" name="windowFrameColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X1V-bX-pAw">
+                                        <rect key="frame" x="18" y="56" width="349" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="No One is Special" id="9fl-xB-j7H">
+                                            <font key="font" metaFont="systemBold"/>
+                                            <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                            </customView>
+                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="TlZ-r7-thf">
+                                <rect key="frame" x="20" y="333" width="410" height="5"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </box>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
+                                <rect key="frame" x="18" y="345" width="414" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Exceptional Applications:" id="Rgu-cb-5lp">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                     </view>
                     <connections>
                         <outlet property="tableView" destination="LmV-gi-3fE" id="GOb-17-dvX"/>
                         <outlet property="tableViewToolBar" destination="AQK-ih-gQD" id="hfd-VG-ezQ"/>
+                        <outlet property="tabviewNodataHint" destination="LTZ-IH-4Vy" id="DlB-dd-xPl"/>
                         <outlet property="whitelistModeCheckBox" destination="gnb-pe-ZN5" id="0Vr-XO-KI2"/>
                     </connections>
                 </viewController>
@@ -896,29 +930,20 @@
                 <customObject id="T8g-3J-WxE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <viewController title="Advanced" storyboardIdentifier="advanced" id="iW5-CD-5OC" customClass="PreferencesAdvanceViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="cc6-G4-pCI">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="210"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="215"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f4W-iU-YEd">
-                                <rect key="frame" x="30" y="72" width="120" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Duration:" id="suV-WY-rbw">
-                                    <font key="font" metaFont="system" size="14"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dZJ-RH-WIh">
-                                <rect key="frame" x="30" y="125" width="120" height="18"/>
+                                <rect key="frame" x="30" y="127" width="120" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Speed:" id="wck-ay-cL9">
-                                    <font key="font" metaFont="system" size="14"/>
+                                    <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Z34-gx-WqH" userLabel="Scroll Transition Slider">
-                                <rect key="frame" x="154" y="69" width="207" height="19"/>
+                                <rect key="frame" x="166" y="74" width="195" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="5" doubleValue="4.2999999999999998" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="AcR-3v-Dqn"/>
                                 <connections>
@@ -926,7 +951,7 @@
                                 </connections>
                             </slider>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sm0-hQ-Q0F" userLabel="Scroll Transition Label">
-                                <rect key="frame" x="365" y="71" width="40" height="14"/>
+                                <rect key="frame" x="365" y="76" width="40" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="4.30" id="UzC-zQ-cqg">
                                     <font key="font" metaFont="system" size="10"/>
@@ -935,7 +960,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zun-ec-N5n" userLabel="Scroll Transition Label">
-                                <rect key="frame" x="365" y="123" width="40" height="14"/>
+                                <rect key="frame" x="365" y="128" width="40" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="3.00" id="hpx-jb-TgT">
                                     <font key="font" metaFont="system" size="10"/>
@@ -944,7 +969,7 @@
                                 </textFieldCell>
                             </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6m-U6-lbc" userLabel="Scroll Transition Stepper">
-                                <rect key="frame" x="408" y="65" width="19" height="27"/>
+                                <rect key="frame" x="408" y="70" width="19" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="5" doubleValue="4.2999999999999998" id="zlB-ur-whi"/>
                                 <connections>
@@ -952,7 +977,7 @@
                                 </connections>
                             </stepper>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PrV-cR-CdD" userLabel="Scroll Transition Stepper">
-                                <rect key="frame" x="408" y="118" width="19" height="27"/>
+                                <rect key="frame" x="408" y="123" width="19" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="10" doubleValue="3" id="THS-S1-vhe"/>
                                 <connections>
@@ -960,7 +985,7 @@
                                 </connections>
                             </stepper>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kft-Xf-Btl">
-                                <rect key="frame" x="154" y="46" width="270" height="17"/>
+                                <rect key="frame" x="166" y="51" width="258" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="The duration of scroll animation" id="vmk-zZ-ifN">
                                     <font key="font" metaFont="smallSystem"/>
@@ -969,7 +994,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZC4-NK-TQE">
-                                <rect key="frame" x="154" y="98" width="272" height="17"/>
+                                <rect key="frame" x="166" y="103" width="260" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="The speed gain of scrollng." id="PK6-dT-z93">
                                     <font key="font" metaFont="smallSystem"/>
@@ -978,7 +1003,7 @@
                                 </textFieldCell>
                             </textField>
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CyT-FH-1xX">
-                                <rect key="frame" x="154" y="121" width="207" height="19"/>
+                                <rect key="frame" x="166" y="126" width="195" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="10" doubleValue="3" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="fds-F7-fCs"/>
                                 <connections>
@@ -986,16 +1011,16 @@
                                 </connections>
                             </slider>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Il6-cC-3q4">
-                                <rect key="frame" x="30" y="172" width="120" height="18"/>
+                                <rect key="frame" x="30" y="177" width="120" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Step:" id="YE2-UH-9Ku">
-                                    <font key="font" metaFont="system" size="14"/>
+                                    <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IuS-8L-Bk0" userLabel="Scroll Transition Label">
-                                <rect key="frame" x="365" y="171" width="40" height="14"/>
+                                <rect key="frame" x="365" y="176" width="40" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="25.00" id="vI7-7F-n9Z">
                                     <font key="font" metaFont="system" size="10"/>
@@ -1004,15 +1029,15 @@
                                 </textFieldCell>
                             </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nQq-8N-9JP" userLabel="Scroll Transition Stepper">
-                                <rect key="frame" x="408" y="165" width="19" height="27"/>
+                                <rect key="frame" x="408" y="170" width="19" height="27"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <stepperCell key="cell" continuous="YES" alignment="left" minValue="1" maxValue="100" doubleValue="25" id="19D-7K-6Gf"/>
+                                <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="100" doubleValue="25" id="19D-7K-6Gf"/>
                                 <connections>
                                     <action selector="scrollStepStepperChange:" target="iW5-CD-5OC" id="COv-XQ-VfG"/>
                                 </connections>
                             </stepper>
                             <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0b7-sS-bB6">
-                                <rect key="frame" x="154" y="169" width="207" height="19"/>
+                                <rect key="frame" x="166" y="174" width="195" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <sliderCell key="cell" alignment="left" minValue="1" maxValue="100" doubleValue="25" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="11l-YU-D95"/>
                                 <connections>
@@ -1020,7 +1045,7 @@
                                 </connections>
                             </slider>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ba8-N5-4dL">
-                                <rect key="frame" x="154" y="146" width="272" height="17"/>
+                                <rect key="frame" x="166" y="151" width="260" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="The minium scroll distance." id="3Xk-SU-gqO">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1039,6 +1064,15 @@
                                     <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="JN4-aj-ZjR"/>
                                 </connections>
                             </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f4W-iU-YEd">
+                                <rect key="frame" x="30" y="75" width="120" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Duration:" id="suV-WY-rbw">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                     </view>
                     <connections>
@@ -1055,7 +1089,7 @@
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="947" y="1220"/>
+            <point key="canvasLocation" x="950" y="1223"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">
@@ -1065,7 +1099,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="450" height="128"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <visualEffectView autoresizesSubviews="NO" canDrawConcurrently="YES" fixedFrame="YES" blendingMode="behindWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="Kdo-BP-USk">
+                            <visualEffectView autoresizesSubviews="NO" canDrawConcurrently="YES" fixedFrame="YES" blendingMode="behindWindow" material="dark" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Kdo-BP-USk">
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="45"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
@@ -1491,6 +1525,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
         <image name="PreferencesAdvanced" width="500" height="500"/>
         <image name="PreferencesException" width="500" height="500"/>
         <image name="PreferencesGeneral" width="500" height="500"/>
+        <image name="PreferencesListEmpty" width="896" height="896"/>
         <image name="PreferencesUpdatas" width="500" height="500"/>
         <image name="WechatpayLogo" width="309" height="80"/>
         <image name="WechatpayQR" width="473" height="473"/>
