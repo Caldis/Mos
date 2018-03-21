@@ -17,10 +17,11 @@ class ScrollCore {
     // 鼠标事件轴
     let axis = ( Y: UInt32(1), X: UInt32(1), YX: UInt32(2), YXZ: UInt32(3) )
     // 滚动数据
-    var scrollFrom   = ( y: 0.0, x: 0.0 )  // 当前滚动距离
     var scrollCurr   = ( y: 0.0, x: 0.0 )  // 当前滚动距离
     var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
-    var scrollDelta  = ( y: 0.0, x: 0.0 )  // 滚动方向
+    var scrollDelta  = ( y: 0.0, x: 0.0 )  // 滚动方向记录
+    // 滚动数值滤波器, 用于去除滚动的起始抖动
+    var scrollFilter = ScrollFilter()
     // 事件发送器
     var scrollEventPoster: CVDisplayLink?
     
@@ -36,11 +37,17 @@ class ScrollCore {
             y: scrollCurr.y + scrollPulse.y,
             x: scrollCurr.x + scrollPulse.x
         )
-        // 发送滚动结果
-        MouseEvent.scroll(axis.YX, yScroll: Int32(scrollPulse.y), xScroll: Int32(scrollPulse.x))
-        // 如果临近目标距离小于精确度门限则停止滚动
-        if abs(scrollPulse.y)<=Options.shared.advanced.precision && abs(scrollPulse.x)<=Options.shared.advanced.precision {
-            disableScrollEventPoster()
+        // 对峰值进行滤波
+        scrollFilter.update(with: scrollPulse)
+        if scrollFilter.onRunningState() {
+            let filteredValue = scrollFilter.value()
+            // 发送滚动结果
+            MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.y), xScroll: Int32(filteredValue.x))
+            // 如果临近目标距离小于精确度门限则停止滚动
+            if abs(scrollPulse.y)<=Options.shared.advanced.precision && abs(scrollPulse.x)<=Options.shared.advanced.precision {
+                disableScrollEventPoster()
+                scrollFilter.clean()
+            }
         }
     }
     
