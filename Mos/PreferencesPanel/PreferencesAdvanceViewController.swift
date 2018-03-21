@@ -72,7 +72,7 @@ class PreferencesAdvanceViewController: NSViewController {
     func syncViewWithOptions() {
         // 步长
         let step = Options.shared.advanced.step
-        scrollStepStepper.doubleValue = step
+        scrollStepSlider.doubleValue = step
         scrollStepStepper.doubleValue = step
         scrollStepLabel.stringValue = String(format: "%.2f", step)
         // 速度
