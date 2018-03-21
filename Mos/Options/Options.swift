@@ -25,8 +25,8 @@ class Options {
         // 高级
         advanced: (
             step: 25.0,
-            speed: 3.00,
-            duration: 4.30, durationTransition: 0.17,
+            speed: 4.00,
+            duration: 3.75, durationTransition: 0.52,
             precision: 1.00
         ),
         // 例外
