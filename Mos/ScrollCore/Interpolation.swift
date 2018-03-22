@@ -16,13 +16,13 @@ class Interpolation: NSObject {
         return x * Options.shared.advanced.durationTransition
     }
     
-    // SmoothStep (2rd-order equation)
+    // SmoothStep (Need clamp 0-1) (2rd-order equation)
     class func smoothStep2(src: Double, dest: Double) -> Double {
         let x = (dest - src) / dest
         return x * x * (3 - 2 * x)
     }
     
-    // SmoothStep (3rd-order equation)
+    // SmoothStep (Need clamp 0-1) (3rd-order equation)
     class func smoothStep3(src: Double, dest: Double) -> Double {
         let x = (dest - src) / dest
         return x * x * x * (x * (x * 6 - 15) + 10)

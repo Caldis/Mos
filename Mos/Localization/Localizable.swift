@@ -19,11 +19,9 @@ class i18n {
     static let monitor = NSLocalizedString("Monitor", comment: "")
     static let preferences = NSLocalizedString("Preferences", comment: "")
     static let quit = NSLocalizedString("Quit", comment: "")
+    static let hideIcons = NSLocalizedString("Hide Icons", comment: "")
     
-    // 设置
-    // 例外
-//    static let shortcutTitle = NSLocalizedString("Selected application is a shortcut", comment: "")
-//    static let shortcutDescription = NSLocalizedString("You need to select the source application to add to the exceptional list", comment: "")
+    // 偏好设置
     // 更新
     static let currentVersion = NSLocalizedString("Current Version", comment: "")
     

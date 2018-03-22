@@ -13,28 +13,6 @@
             <objects>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Mos" customModuleProvider="target"/>
-                <menu id="Pzn-sj-FzX" customClass="StatusItemManager" customModule="Mos" customModuleProvider="target">
-                    <items>
-                        <menuItem title="Mointor" id="YyO-zL-UWi">
-                            <modifierMask key="keyEquivalentModifierMask"/>
-                            <connections>
-                                <action selector="monitorClick:" target="Pzn-sj-FzX" id="r2s-1p-U3j"/>
-                            </connections>
-                        </menuItem>
-                        <menuItem title="Preferences" id="3o8-XG-cbc">
-                            <modifierMask key="keyEquivalentModifierMask"/>
-                            <connections>
-                                <action selector="preferencesClick:" target="Pzn-sj-FzX" id="dtk-Gd-QJn"/>
-                            </connections>
-                        </menuItem>
-                        <menuItem title="Quit" id="Dlg-rn-Cds">
-                            <modifierMask key="keyEquivalentModifierMask"/>
-                            <connections>
-                                <action selector="quitClick:" target="Pzn-sj-FzX" id="5ad-Na-a00"/>
-                            </connections>
-                        </menuItem>
-                    </items>
-                </menu>
                 <application id="hnw-xV-0zn" sceneMemberID="viewController">
                     <menu key="mainMenu" title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
                         <items>
@@ -419,6 +397,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
+                <customObject id="tYq-jF-nNM" customClass="StatusItemManager" customModule="Mos" customModuleProvider="target"/>
             </objects>
             <point key="canvasLocation" x="-176" y="-36"/>
         </scene>
@@ -1512,6 +1491,58 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-191" y="785"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="ujB-8R-PQE">
+            <objects>
+                <viewController id="ZWW-IY-ZAR" sceneMemberID="viewController">
+                    <view key="view" id="XDT-R3-lZY">
+                        <rect key="frame" x="0.0" y="0.0" width="463" height="151"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Mx-qs-a4Z">
+                                <rect key="frame" x="28" y="107" width="417" height="24"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Hide the MOS status bar icon" id="3MR-Pl-R3K">
+                                    <font key="font" metaFont="systemBold" size="18"/>
+                                    <color key="textColor" red="0.21056059485628981" green="0.22562385101391488" blue="0.23107593911917101" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d0b-0g-pt9">
+                                <rect key="frame" x="64" y="65" width="368" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Even after the icon is hidden, MOS will scroll smoothly for you in the background." id="AoB-55-Mdj">
+                                    <font key="font" metaFont="systemBold" size="11"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xyi-Jj-nCP">
+                                <rect key="frame" x="28" y="70" width="32" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="🔖" id="d0y-Mg-B44">
+                                    <font key="font" size="20" name=".AppleColorEmojiUI"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y40-nU-N1S">
+                                <rect key="frame" x="28" y="20" width="404" height="42"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="SFV-kk-xcD">
+                                    <font key="font" metaFont="system" size="11"/>
+                                    <string key="title">Once you hide the MOS status bar icon, you cannot modify any scrolling settings. If you want to re-display the icon, click on the MOS icon again when MOS is running in the background.</string>
+                                    <color key="textColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </viewController>
+                <customObject id="6VS-2P-gtR" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-544.5" y="1164.5"/>
         </scene>
     </scenes>
     <resources>

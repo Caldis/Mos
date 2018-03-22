@@ -8,30 +8,62 @@
 
 import Cocoa
 
-class StatusItemManager: NSMenu {
+class StatusItemManager: NSMenu, NSMenuDelegate {
     
-    // 系统状态栏引用
+    // 状态栏引用
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     
     override func awakeFromNib() {
-        // 设置状态栏图标
+        // 设置图标
         statusItem.image = #imageLiteral(resourceName: "StatusBarIcon")
-        // 设置状态栏菜单
+        // 设置菜单代理
         statusItem.menu = self
+        statusItem.menu?.delegate = self
+    }
+    
+    // 打开菜单时监控
+    // 若按下按键 Option 时显示额外的菜单栏
+    func menuWillOpen(_ menu: NSMenu) {
+        if let event = NSApp.currentEvent {
+            if event.modifierFlags.contains(.option) {
+                buildOptionMenu()
+            } else {
+                buildNormalMenu()
+            }
+        }
+    }
+    
+    @objc func buildNormalMenu() {
+        if let menu = statusItem.menu {
+            menu.removeAllItems()
+            menu.addItem(withTitle: i18n.monitor, action: #selector(monitorClick), keyEquivalent: "").target = self
+            menu.addItem(withTitle: i18n.preferences, action: #selector(preferencesClick), keyEquivalent: "").target = self
+            menu.addItem(withTitle: i18n.quit, action: #selector(quitClick), keyEquivalent: "").target = self
+        }
+    }
+    @objc func buildOptionMenu() {
+        if let menu = statusItem.menu {
+            menu.removeAllItems()
+            menu.addItem(withTitle: i18n.hideIcons, action: #selector(hideIcons), keyEquivalent: "").target = self
+        }
     }
     
     // 监控
-    @IBAction func monitorClick(_ sender: Any) {
+    @objc func monitorClick() {
         WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.monitorWindowController, withTitle: i18n.monitor)
     }
     // 偏好
-    @IBAction func preferencesClick(_ sender: Any) {
+    @objc func preferencesClick() {
         WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.preferencesWindowController, withTitle: i18n.preferences)
     }
     // 退出
-    @IBAction func quitClick(_ sender: Any) {
+    @objc func quitClick() {
         NSApplication.shared.terminate(self)
     }
     
+    // 隐藏
+    @objc func hideIcons() {
+        
+    }
     
 }
