@@ -14,12 +14,6 @@ class MonitorWindowController: NSWindowController, NSWindowDelegate {
     
     override func windowDidLoad() {
         super.windowDidLoad()
-        // 隐藏标题栏
-        if let window = self.window {
-            window.titleVisibility = .hidden
-            window.titlebarAppearsTransparent = true
-            window.styleMask.insert(NSWindow.StyleMask.fullSizeContentView)
-        }
     }
     
     func windowWillClose(_ notification: Notification) {

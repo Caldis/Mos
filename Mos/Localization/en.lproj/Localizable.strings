@@ -18,10 +18,8 @@
 "Hide Icon" = "隐藏图标";
 
 // 推送
-"Mos is running in the background" = "Mos 正在后台运行中";
-"Mos's status bar icon is hidden" = "Mos 的图标已经被隐藏";
-"Got it" = "我了解了";
-"Show it" = "显示图标";
+"Got it" = "我了解了"
+"Show it" = "显示图标"
 
 // 偏好设置
 "Current Version" = "当前版本";

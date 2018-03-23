@@ -17,7 +17,8 @@ class WindowManager {
     // Storybroad 标识
     let identifier = (
         monitorWindowController: "MonitorWindowController",
-        preferencesWindowController: "PreferencesWindowController"
+        preferencesWindowController: "PreferencesWindowController",
+        hideStatusItemWindowController: "HideStatusItemWindowController"
     )
     // 窗口引用列表
     var controller = [String: NSWindowController]()
@@ -41,7 +42,10 @@ class WindowManager {
     }
     // 关闭对应 Identifier 的窗口
     func hideWindow(withIdentifier identifier: String) {
-        controller[identifier] = nil
+        if let windowController = controller[identifier] {
+            controller[identifier] = nil
+            windowController.close()
+        }
     }
     
 }

@@ -33,9 +33,15 @@ class Options {
         exception: (
             whitelist: false,
             applications: [ExceptionalApplication](), applicationsDict: [String: ExceptionalApplication]()
+        ),
+        // 其他
+        others: (
+            hideStatusItem: false,
+            detectShift: false
         )
     )
     // 当前设置
+    // 基础
     var basic = DEFAULT_OPTIONS.basic {
         didSet {
             // 设置自启
@@ -50,6 +56,7 @@ class Options {
             saveOptions()
         }
     }
+    // 高级
     var advanced = DEFAULT_OPTIONS.advanced {
         didSet {
             // 更新 durationTransition
@@ -60,10 +67,26 @@ class Options {
             saveOptions()
         }
     }
+    // 例外
     var exception = DEFAULT_OPTIONS.exception {
         didSet {
             // 更新 applicationsDict
             exception.applicationsDict = generateApplicationsDict(with: exception.applications)
+            // 保存到 UserDefaults
+            saveOptions()
+        }
+    }
+    // 其他
+    var others = DEFAULT_OPTIONS.others {
+        didSet {
+            // 隐藏图标
+            if(oldValue.hideStatusItem != others.hideStatusItem) {
+                if others.hideStatusItem {
+                    StatusItemManager.hideStatusItem()
+                } else {
+                    StatusItemManager.showStatusItem()
+                }
+            }
             // 保存到 UserDefaults
             saveOptions()
         }
@@ -95,6 +118,8 @@ class Options {
         exception.whitelist = UserDefaults.standard.bool(forKey: "whitelist")
         exception.applications = try! decoder.decode(Array.self, from: UserDefaults.standard.value(forKey: "applications") as! Data) as [ExceptionalApplication]
         exception.applicationsDict = generateApplicationsDict(with: exception.applications)
+        // 其他
+        others.hideStatusItem = UserDefaults.standard.bool(forKey: "hideStatusItem")
         // 解锁
         readingOptionsLock = false
     }
@@ -116,6 +141,8 @@ class Options {
             // 例外
             UserDefaults.standard.set(exception.whitelist, forKey:"whitelist")
             UserDefaults.standard.set(try! encoder.encode(exception.applications), forKey: "applications")
+            // 其他
+            UserDefaults.standard.set(others.hideStatusItem, forKey:"hideStatusItem")
         }
     }
     

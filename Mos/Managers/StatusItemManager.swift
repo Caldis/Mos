@@ -11,14 +11,24 @@ import Cocoa
 class StatusItemManager: NSMenu, NSMenuDelegate {
     
     // 状态栏引用
-    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    static let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    let item = StatusItemManager.statusItem
     
     override func awakeFromNib() {
         // 设置图标
-        statusItem.image = #imageLiteral(resourceName: "StatusBarIcon")
+        item.image = #imageLiteral(resourceName: "StatusBarIcon")
         // 设置菜单代理
-        statusItem.menu = self
-        statusItem.menu?.delegate = self
+        item.menu = self
+        item.menu?.delegate = self
+    }
+    
+    // 显示菜单
+    class func showStatusItem() {
+        StatusItemManager.statusItem.length = NSStatusItem.variableLength
+    }
+    // 隐藏菜单
+    class func hideStatusItem() {
+        StatusItemManager.statusItem.length = 0.0
     }
     
     // 打开菜单时监控
@@ -34,7 +44,7 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
     }
     
     @objc func buildNormalMenu() {
-        if let menu = statusItem.menu {
+        if let menu = item.menu {
             menu.removeAllItems()
             menu.addItem(withTitle: i18n.monitor, action: #selector(monitorClick), keyEquivalent: "").target = self
             menu.addItem(withTitle: i18n.preferences, action: #selector(preferencesClick), keyEquivalent: "").target = self
@@ -42,15 +52,15 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
         }
     }
     @objc func buildOptionMenu() {
-        if let menu = statusItem.menu {
+        if let menu = item.menu {
             menu.removeAllItems()
-            menu.addItem(withTitle: i18n.hideIcons, action: #selector(hideIcons), keyEquivalent: "").target = self
+            menu.addItem(withTitle: i18n.hideIcon, action: #selector(hideStatusItem), keyEquivalent: "").target = self
         }
     }
     
     // 监控
     @objc func monitorClick() {
-        WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.monitorWindowController, withTitle: i18n.monitor)
+        WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.monitorWindowController, withTitle: "")
     }
     // 偏好
     @objc func preferencesClick() {
@@ -62,8 +72,8 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
     }
     
     // 隐藏
-    @objc func hideIcons() {
-        
+    @objc func hideStatusItem() {
+        WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.hideStatusItemWindowController, withTitle: "")
     }
     
 }

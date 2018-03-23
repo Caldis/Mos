@@ -12,7 +12,6 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     
     @IBOutlet weak var preferenceWindow: NSWindow!
     
-    // 加载前
     override func windowDidLoad() {
         super.windowDidLoad()
         // 插入 NSToolbarFlexibleSpaceItem 到 index 位置 3 作为分隔符
@@ -20,7 +19,6 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
         window?.toolbar?.insertItem(withItemIdentifier: NSToolbarItem.Identifier(rawValue: "NSToolbarFlexibleSpaceItem"), at: 3)
     }
     
-    // 关闭前
     func windowWillClose(_ notification: Notification) {
         WindowManager.shared.hideWindow(withIdentifier: WindowManager.shared.identifier.preferencesWindowController)
     }

@@ -19,10 +19,15 @@ class i18n {
     static let monitor = NSLocalizedString("Monitor", comment: "")
     static let preferences = NSLocalizedString("Preferences", comment: "")
     static let quit = NSLocalizedString("Quit", comment: "")
-    static let hideIcons = NSLocalizedString("Hide Icons", comment: "")
+    static let hideIcon = NSLocalizedString("Hide Icon", comment: "")
+    
+    // 推送
+    static let mosIsRunningInThebackground = NSLocalizedString("Mos is running in the background", comment: "")
+    static let mosStatusBarIconIsHidden = NSLocalizedString("Mos's status bar icon is hidden", comment: "")
+    static let gotIt = NSLocalizedString("Got it", comment: "")
+    static let showIt = NSLocalizedString("Show it", comment: "")
     
     // 偏好设置
-    // 更新
     static let currentVersion = NSLocalizedString("Current Version", comment: "")
     
 }

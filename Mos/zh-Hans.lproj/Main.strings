@@ -51,3 +51,10 @@
 "AM8-cj-DnH.title" = "请作者喝杯咖啡";
 "aPi-cE-maK.title" = "通过 Paypal 捐赠";
 "F2S-fz-NVQ.title" = "帮助";
+
+// 隐藏
+"WNd-iN-aAG.title" = "隐藏位于状态栏的图标";
+"hDs-Yh-11x.title" = "不过, 即便 MOS 的状态栏图标被隐藏, 它依然会在后台不断地为你平滑鼠标滚动";
+"zAs-CP-Wpw.title" = "一旦你隐藏了状态栏图标, 所有设置便无法被修改. 如果你想再次令位于状态栏的图标显示, 请使用活动监视器结束 MOS 的进程, 再重新运行, 并点击通知中出现的 '显示图标' 按钮";
+"ueB-gF-VZ8.title" = "取消";
+"hhO-Gh-ldE.title" = "我要隐藏状态栏的图标";
