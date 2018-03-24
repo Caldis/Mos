@@ -1,12 +1,27 @@
-/* 
+/*
   Localizable.strings
   Mos
-
-  Created by Cb on 2017/1/27.
-  Copyright © 2017年 Cb. All rights reserved.
+  In-code text internationalization
+  Created by Caldis on 2018/3/24.
+  Copyright © 2018年 Caldis. All rights reserved.
 */
 
+// Global
+"Ensure" = "Ensure";
+"Cancel" = "Cancel";
 "Version" = "Version";
+
+// Status Bar Icon Menu
+"Scroll Monitor" = " Scroll Monitor";
+"Preferences" = " Preferences";
+"Quit" = "Quit";
+"Hide Icon" = "Hide Icon";
+
+// Notifaction
+"Mos is running in the background" = "Mos is running in the background";
+"Mos's status bar icon is hidden" = "Mos's status bar icon is hidden";
+"Got it" = "Got it";
+"Show it" = "Show it";
+
+// Preferences
 "Current Version" = "Current Version";
-"Scroll Monitor" = "Scroll Monitor";
-"Preferences" = "Preferences";

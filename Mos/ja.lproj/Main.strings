@@ -1,0 +1,60 @@
+/*
+  Localizable.strings
+  Mos
+  Storybroad text internationalization
+  Created by Caldis on 2018/3/24.
+  Copyright © 2018年 Caldis. All rights reserved.
+*/
+
+// Mointor
+"TUE-3v-CaJ.title" = "          Rendering this chart will affect the scrolling performance, keep close if not necessary.";
+
+// PreferencesWindow
+// General
+"ITL-GD-CPd.title" = "General";
+"ILt-Gz-RiV.title" = "Scroll:";
+"weE-be-TAy.title" = "Smooth Scrolling";
+"G8a-97-8Ey.title" = "Let the mouse wheel scroll like a buttery.";
+"6FR-2r-rxl.title" = "Scroll Reverse";
+"VUb-ZM-hXo.title" = "Reverse the mouse wheel scroll direction.";
+"8sv-2I-VeW.title" = "Other Setting:";
+"HZF-2o-Mrh.title" = "Launch on Login";
+"wY5-9W-iNv.title" = "Automaticly launch on MacOS login.";
+// Advanced
+"iW5-CD-5OC.title" = "Advanced";
+"YE2-UH-9Ku.title" = "Step:";
+"3Xk-SU-gqO.title" = "The minium scroll distance.";
+"wck-ay-cL9.title" = "Speed:";
+"PK6-dT-z93.title" = "The speed gain of scrollng.";
+"suV-WY-rbw.title" = "Duration:";
+"vmk-zZ-ifN.title" = "The duration of scroll animation";
+"2ho-yL-X2k.title" = "Reset to default";
+// Exception
+"bga-wG-iim.title" = "Exception";
+"Rgu-cb-5lp.title" = "Exceptional Applications:";
+"Ksp-g1-48g.title" = "Whitelist Mode";
+"v26-RK-BtL.title" = "The whitelist mode will make Mos only apply to applications within the exception list.";
+"HDo-Iu-l7K.headerCell.title" = "Smooth";
+"rd0-ca-ufI.headerCell.title" = "Reverse";
+"xfG-Cd-oIk.headerCell.title" = " Application";
+"9fl-xB-j7H.title" = "No One is Special";
+"jaq-Cb-dKM.title" = "You can apply a separate configuration to some programs by clicking the \'+\' on below";
+// Updates
+"EWu-DP-7Gj.title" = "Updates";
+"N0S-yo-DTg.title" = "Check for updates:";
+"lp3-Dc-zRt.title" = "Check Now";
+"5oM-oR-Dsq.title" = "Current Version";
+// About
+"RfV-Ow-3mF.title" = "About";
+"5cx-xS-eRe.title" = "Just some little job for your mouse.";
+"yDf-dn-Mcz.title" = "Home Page";
+"99M-8D-HLN.title" = "GitHub";
+"AM8-cj-DnH.title" = "Buy author a cup of coffee";
+"aPi-cE-maK.title" = "Donate by paypal";
+
+// HideStatusItemWindow
+"WNd-iN-aAG.title" = "Hide the status bar icon";
+"hDs-Yh-11x.title" = "Still, even after the icon is hidden, Mos continues to help your mouse scroll smoothly in the background.";
+"zAs-CP-Wpw.title" = "Once you hide the icon, you cannot modify any scrolling settings. If you want to re-display it, using activity mointor to close the Mos and run again, then, click on the notification's \'Show it\' button.";
+"ueB-gF-VZ8.title" = "Cancel";
+"hhO-Gh-ldE.title" = "Hide the status bar icon";

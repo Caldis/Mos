@@ -116,10 +116,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="450" height="183"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
+                            <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="cTI-tF-fDg">
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="183"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </visualEffectView>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xh5-Hi-00d">
                                 <rect key="frame" x="166" y="145" width="130" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Scroll Smooth" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="weE-be-TAy">
+                                <buttonCell key="cell" type="check" title="Smooth Scrolling" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="weE-be-TAy">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -161,7 +165,7 @@
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J2s-3N-vK7">
                                 <rect key="frame" x="166" y="122" width="261" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Let the mouse wheel scroll smooth like a buttery." id="G8a-97-8Ey">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Let the mouse wheel scroll like a buttery." id="G8a-97-8Ey">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -214,6 +218,21 @@
                         <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
+                            <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="jc3-9p-Bfo">
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <subviews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
+                                        <rect key="frame" x="18" y="347" width="184" height="14"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Exceptional Applications:" id="Rgu-cb-5lp">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                            </visualEffectView>
                             <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="32" horizontalPageScroll="10" verticalLineScroll="32" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2dP-HG-cdi">
                                 <rect key="frame" x="20" y="40" width="410" height="296"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -352,10 +371,6 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableHeaderView>
                             </scrollView>
-                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="yml-hF-QvX">
-                                <rect key="frame" x="20" y="333" width="410" height="5"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </box>
                             <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FWV-z4-M2h">
                                 <rect key="frame" x="407" y="341" width="25" height="25"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -411,7 +426,7 @@
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OKC-Nf-egM">
                                         <rect key="frame" x="18" y="10" width="349" height="38"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="You can apply a separate configuration to some programs by clicking the &quot;+&quot; on below" id="jaq-Cb-dKM">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="You can apply a separate configuration to some programs by clicking the '+' on below" id="jaq-Cb-dKM">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="windowFrameColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -432,15 +447,6 @@
                                 <rect key="frame" x="20" y="333" width="410" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
-                                <rect key="frame" x="18" y="345" width="184" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Exceptional Applications:" id="Rgu-cb-5lp">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                         </subviews>
                     </view>
                     <connections>
@@ -465,7 +471,7 @@
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KGW-PK-8DX">
                                 <rect key="frame" x="-2" y="7" width="473" height="13"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="The whitelist mode will make MOS only apply to applications within the exception list." id="v26-RK-BtL">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="The whitelist mode will make Mos only apply to applications within the exception list." id="v26-RK-BtL">
                                     <font key="font" metaFont="system" size="10"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -486,6 +492,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="450" height="82"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
+                            <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="VHb-La-sVZ">
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="82"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </visualEffectView>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u0P-u6-9Am">
                                 <rect key="frame" x="29" y="45" width="120" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -534,6 +544,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="450" height="215"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
+                            <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="ZtV-fK-bvl">
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="215"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </visualEffectView>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dZJ-RH-WIh">
                                 <rect key="frame" x="30" y="127" width="120" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -699,7 +713,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="450" height="128"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <visualEffectView autoresizesSubviews="NO" canDrawConcurrently="YES" fixedFrame="YES" blendingMode="behindWindow" material="dark" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="Kdo-BP-USk">
+                            <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="YL0-R0-moU">
+                                <rect key="frame" x="0.0" y="45" width="450" height="83"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </visualEffectView>
+                            <visualEffectView autoresizesSubviews="NO" canDrawConcurrently="YES" fixedFrame="YES" blendingMode="behindWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="Kdo-BP-USk">
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="45"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
@@ -743,7 +761,7 @@
                                             <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="38d-cH-Mcc">
                                                 <rect key="frame" x="209" y="12" width="188" height="19"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                <buttonCell key="cell" type="roundRect" title="Buy author a cup of coffee" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="AM8-cj-DnH">
+                                                <buttonCell key="cell" type="roundRect" title="Buy author a cup of coffee ☕️" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="AM8-cj-DnH">
                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                     <font key="font" metaFont="cellTitle"/>
                                                 </buttonCell>
@@ -756,9 +774,9 @@
                                 </subviews>
                             </visualEffectView>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S8y-Am-MEW">
-                                <rect key="frame" x="18" y="45" width="147" height="84"/>
+                                <rect key="frame" x="18" y="45" width="126" height="84"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="MOS" id="2AK-Pu-mot">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Mos" id="2AK-Pu-mot">
                                     <font key="font" metaFont="systemThin" size="70"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -767,7 +785,7 @@
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uMH-2l-9yi">
                                 <rect key="frame" x="169" y="60" width="273" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Just some little job for mouse." id="5cx-xS-eRe">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Just some little job for your mouse." id="5cx-xS-eRe">
                                     <font key="font" metaFont="systemLight" size="11"/>
                                     <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1154,7 +1172,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A4R-LD-dLE">
                                 <rect key="frame" x="79" y="107" width="345" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="But, even after the icon is hidden, MOS will scroll smoothly for you in the background." id="hDs-Yh-11x">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Still, even after the icon is hidden, Mos continues to help your mouse scroll smoothly in the background." id="hDs-Yh-11x">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1165,7 +1183,7 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="zAs-CP-Wpw">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Once you hide the icon, you cannot modify any scrolling settings. If you want to re-display it, using activity mointor to close the MOS and run again, then, click on the notification's "Show it" button.</string>
+                                    <string key="title">Once you hide the icon, you cannot modify any scrolling settings. If you want to re-display it, using activity mointor to close the Mos and run again, then, click on the notification's "Show it" button.</string>
                                     <color key="textColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>

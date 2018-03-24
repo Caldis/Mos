@@ -1,12 +1,27 @@
 /* 
   Localizable.strings
   Mos
-
-  Created by Cb on 2017/1/27.
-  Copyright © 2017年 Cb. All rights reserved.
+  In-code text internationalization
+  Created by Caldis on 2018/3/24.
+  Copyright © 2018年 Caldis. All rights reserved.
 */
 
-"Version" = "Version";
-"Current Version" = "Current Version";
-"Scroll Monitor" = "Scroll Monitor";
-"Preferences" = "Preferences";
+// Global
+"Ensure" = "確認";
+"Cancel" = "取消";
+"Version" = "版本";
+
+// Status Bar Icon Menu
+"Scroll Monitor" = " 滾動監視";
+"Preferences" = " 偏好設置";
+"Quit" = "退出";
+"Hide Icon" = "隱藏圖示";
+
+// Notifaction
+"Mos is running in the background" = "Mos 正在後台執行中";
+"Mos's status bar icon is hidden" = "Mos 的圖示已被隱藏";
+"Got it" = "我已了解";
+"Show it" = "顯示圖標";
+
+// Preferences
+"Current Version" = "當前版本";

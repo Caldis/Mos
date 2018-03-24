@@ -1,25 +1,27 @@
 /* 
   Localizable.strings
   Mos
-  代码文本国际化
+  In-code text internationalization
   Created by Caldis on 2017/1/27.
   Copyright © 2017年 Caldis. All rights reserved.
 */
 
-// 基础
-"Ensure" = "确认";
-"Cancel" = "取消";
-"Version" = "版本";
+// Global
+"Ensure" = "Ensure";
+"Cancel" = "Cancel";
+"Version" = "Version";
 
-// 状态栏
-"Monitor" = "滚动监控";
-"Preferences" = "偏好设置";
-"Quit" = "退出";
-"Hide Icon" = "隐藏图标";
+// Status Bar Icon Menu
+"Scroll Monitor" = " Scroll Monitor";
+"Preferences" = " Preferences";
+"Quit" = "Quit";
+"Hide Icon" = "Hide Icon";
 
-// 推送
-"Got it" = "我了解了"
-"Show it" = "显示图标"
+// Notifaction
+"Mos is running in the background" = "Mos is running in the background";
+"Mos's status bar icon is hidden" = "Mos's status bar icon is hidden";
+"Got it" = "Got it";
+"Show it" = "Show it";
 
-// 偏好设置
-"Current Version" = "当前版本";
+// Preferences
+"Current Version" = "Current Version";

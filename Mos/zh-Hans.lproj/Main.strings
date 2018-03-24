@@ -1,60 +1,60 @@
+/*
+  Localizable.strings
+  Mos
+  Storybroad text internationalization
+  Created by Caldis on 2017/1/27.
+  Copyright © 2017年 Caldis. All rights reserved.
+*/
 
-// 状态栏
-"YyO-zL-UWi.title" = "滚动监控";
-"3o8-XG-cbc.title" = "偏好设置";
-"Dlg-rn-Cds.title" = "退出";
-
-// 监控
+// Mointor
 "TUE-3v-CaJ.title" = "          呈现该窗口的数据会影响滚动性能, 如果非必要, 请勿保留此窗口";
 
-// 设置
-// 基础
+// PreferencesWindow
+// General
 "ITL-GD-CPd.title" = "基础";
 "ILt-Gz-RiV.title" = "滚动:";
 "weE-be-TAy.title" = "平滑滚动";
 "G8a-97-8Ey.title" = "让鼠标的滚动效果更佳平滑";
-"6FR-2r-rxl.title" = "反转滚动";
-"VUb-ZM-hXo.title" = "单独反转鼠标滚动的滚动方向";
+"6FR-2r-rxl.title" = "翻转方向";
+"VUb-ZM-hXo.title" = "单独翻转鼠标滚动的滚动方向";
 "8sv-2I-VeW.title" = "其他:";
 "HZF-2o-Mrh.title" = "开机启动";
-"wY5-9W-iNv.title" = "在系统登录时自动运行MOS";
-// 高级
+"wY5-9W-iNv.title" = "在系统登录时自动运行";
+// Advanced
 "iW5-CD-5OC.title" = "高级";
 "YE2-UH-9Ku.title" = "最短步长:";
 "3Xk-SU-gqO.title" = "控制单次滚动的最短距离";
 "wck-ay-cL9.title" = "速度增益:";
 "PK6-dT-z93.title" = "控制持续滚动的跟踪速度增益";
 "suV-WY-rbw.title" = "持续时间:";
-"vmk-zZ-ifN.title" = "控制滚动的缓动动画持续时间";
+"vmk-zZ-ifN.title" = "控制滚动的缓动持续时间";
 "2ho-yL-X2k.title" = "恢复为预设值";
-// 例外
+// Exception
 "bga-wG-iim.title" = "例外";
 "Rgu-cb-5lp.title" = "例外的应用程序:";
 "Ksp-g1-48g.title" = "白名单模式";
-"v26-RK-BtL.title" = "启用白名单模式后, Mos 仅会对包含在例外应用程序列表内的对于程序启用, 未包含在内则不受影响";
+"v26-RK-BtL.title" = "启用白名单模式后, Mos 仅会对包含在下方列表内的程序启用, 其他的则不受任何影响";
 "HDo-Iu-l7K.headerCell.title" = "平滑";
 "rd0-ca-ufI.headerCell.title" = "反转";
 "xfG-Cd-oIk.headerCell.title" = " 应用程序";
 "9fl-xB-j7H.title" = "没有任何应用程序遭到不平等对待";
 "jaq-Cb-dKM.title" = "你可以通过点击下方的 \"+\" 来添加一个应用程序以设置其滚动行为";
-"Nvh-BG-caL.title" = "No S: 禁用平滑滚动 / No R: 禁用反转滚动";
-// 更新
+// Updates
 "EWu-DP-7Gj.title" = "更新";
 "N0S-yo-DTg.title" = "检查更新:";
 "lp3-Dc-zRt.title" = "获取新版本";
 "5oM-oR-Dsq.title" = "当前版本";
-// 关于
+// About
 "RfV-Ow-3mF.title" = "关于";
 "5cx-xS-eRe.title" = "很惭愧，就做了一点微小的工作";
 "yDf-dn-Mcz.title" = "主页";
 "99M-8D-HLN.title" = "GitHub";
 "AM8-cj-DnH.title" = "请作者喝杯咖啡";
 "aPi-cE-maK.title" = "通过 Paypal 捐赠";
-"F2S-fz-NVQ.title" = "帮助";
 
-// 隐藏
+// HideStatusItemWindow
 "WNd-iN-aAG.title" = "隐藏位于状态栏的图标";
-"hDs-Yh-11x.title" = "不过, 即便 MOS 的状态栏图标被隐藏, 它依然会在后台不断地为你平滑鼠标滚动";
-"zAs-CP-Wpw.title" = "一旦你隐藏了状态栏图标, 所有设置便无法被修改. 如果你想再次令位于状态栏的图标显示, 请使用活动监视器结束 MOS 的进程, 再重新运行, 并点击通知中出现的 '显示图标' 按钮";
+"hDs-Yh-11x.title" = "不过, 即便 Mos 的状态栏图标被隐藏, 它依然会在后台不断地为你平滑鼠标滚动";
+"zAs-CP-Wpw.title" = "一旦你隐藏了状态栏图标, 所有设置便无法被修改. 如果你想再次令位于状态栏的图标显示, 请使用活动监视器发关闭 Mos, 再重新运行, 并点击通知中出现的 '显示图标' 按钮";
 "ueB-gF-VZ8.title" = "取消";
 "hhO-Gh-ldE.title" = "我要隐藏状态栏的图标";

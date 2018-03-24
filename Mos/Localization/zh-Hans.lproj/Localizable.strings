@@ -1,27 +1,27 @@
-/* 
+/*
   Localizable.strings
   Mos
-  代码文本国际化
+  In-code text internationalization
   Created by Caldis on 2017/1/27.
   Copyright © 2017年 Caldis. All rights reserved.
 */
 
-// 基础
+// Global
 "Ensure" = "确认";
 "Cancel" = "取消";
 "Version" = "版本";
 
-// 状态栏
-"Monitor" = "滚动监控";
-"Preferences" = "偏好设置";
+// Status Bar Icon Menu
+"Scroll Monitor" = " 滚动监控";
+"Preferences" = " 偏好设置";
 "Quit" = "退出";
 "Hide Icon" = "隐藏图标";
 
-// 推送
+// Notifaction
 "Mos is running in the background" = "Mos 正在后台运行中";
 "Mos's status bar icon is hidden" = "Mos 的图标已经被隐藏";
 "Got it" = "我了解了";
 "Show it" = "显示图标";
 
-// 偏好设置
+// Preferences
 "Current Version" = "当前版本";

@@ -92,6 +92,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B0D5B5A2066195A0077C2AC /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
+		0B0D5B5C206619680077C2AC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
+		0B0D5B5D2066197B0077C2AC /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		0B0D5B5E2066197E0077C2AC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		0B0D5B60206630E80077C2AC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
+		0B0D5B61206630EE0077C2AC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0B12EF19203AD9C80058B169 /* Options.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
 		0B12EF1C203ADD230058B169 /* ScrollUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollUtils.swift; sourceTree = "<group>"; };
 		0B12EF1E203ADFB10058B169 /* Interpolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpolation.swift; sourceTree = "<group>"; };
@@ -371,6 +377,9 @@
 			knownRegions = (
 				Base,
 				"zh-Hans",
+				ja,
+				"zh-Hant",
+				en,
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			productRefGroup = 22142DA11E25344E00E4BFBF /* Products */;
@@ -472,6 +481,9 @@
 			children = (
 				22142DAA1E25344E00E4BFBF /* Base */,
 				2295D8251E40540200054A5C /* zh-Hans */,
+				0B0D5B5A2066195A0077C2AC /* ja */,
+				0B0D5B5C206619680077C2AC /* zh-Hant */,
+				0B0D5B60206630E80077C2AC /* en */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -480,6 +492,9 @@
 			isa = PBXVariantGroup;
 			children = (
 				2225F8EB1E3B1A610020DD22 /* zh-Hans */,
+				0B0D5B5D2066197B0077C2AC /* ja */,
+				0B0D5B5E2066197E0077C2AC /* zh-Hant */,
+				0B0D5B61206630EE0077C2AC /* en */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

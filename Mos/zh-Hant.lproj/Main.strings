@@ -1,0 +1,60 @@
+/*
+  Localizable.strings
+  Mos
+  Storybroad text internationalization
+  Created by Caldis on 2018/3/24.
+  Copyright © 2018年 Caldis. All rights reserved.
+*/
+
+// Mointor
+"TUE-3v-CaJ.title" = "          呈現該窗口的數據會影響滾動性能, 如果非必要, 請勿保留此窗口";
+
+// PreferencesWindow
+// General
+"ITL-GD-CPd.title" = "基礎";
+"ILt-Gz-RiV.title" = "滾動:";
+"weE-be-TAy.title" = "平滑滾動";
+"G8a-97-8Ey.title" = "讓鼠標的滾動效果絲般順滑";
+"6FR-2r-rxl.title" = "翻轉方向";
+"VUb-ZM-hXo.title" = "單獨翻轉鼠標滾輪的滾動方向";
+"8sv-2I-VeW.title" = "其他:";
+"HZF-2o-Mrh.title" = "開機啟動";
+"wY5-9W-iNv.title" = "在系統登錄時自動執行";
+// Advanced
+"iW5-CD-5OC.title" = "高級";
+"YE2-UH-9Ku.title" = "最短步長:";
+"3Xk-SU-gqO.title" = "控制單次滾動的最短距離";
+"wck-ay-cL9.title" = "速度增益:";
+"PK6-dT-z93.title" = "控制持續滾動的追蹤速度增益";
+"suV-WY-rbw.title" = "持續時間:";
+"vmk-zZ-ifN.title" = "控制滾動的緩動持續時間";
+"2ho-yL-X2k.title" = "恢復為預設值";
+// Exception
+"bga-wG-iim.title" = "例外";
+"Rgu-cb-5lp.title" = "例外的應用程序:";
+"Ksp-g1-48g.title" = "白名單模式";
+"v26-RK-BtL.title" = "啟用白名單模式后, Mos 僅會對包含在下方列表中的應用程序啟用, 其他的則不受任何影響";
+"HDo-Iu-l7K.headerCell.title" = "平滑";
+"rd0-ca-ufI.headerCell.title" = "翻轉";
+"xfG-Cd-oIk.headerCell.title" = " 應用程序";
+"9fl-xB-j7H.title" = "沒有任何應用程序遭到不公對待";
+"jaq-Cb-dKM.title" = "你可以通過點擊下方的 \"+\" 來添加一個應用程序以設置其滾動行為";
+// Updates
+"EWu-DP-7Gj.title" = "更新";
+"N0S-yo-DTg.title" = "檢查更新:";
+"lp3-Dc-zRt.title" = "獲取新版本";
+"5oM-oR-Dsq.title" = "當前版本";
+// About
+"RfV-Ow-3mF.title" = "關於";
+"5cx-xS-eRe.title" = "很慚愧, 就做了一點微小的工作";
+"yDf-dn-Mcz.title" = "主頁";
+"99M-8D-HLN.title" = "GitHub";
+"AM8-cj-DnH.title" = "請作者喝杯咖啡";
+"aPi-cE-maK.title" = "通過 Paypal 捐贈";
+
+// HideStatusItemWindow
+"WNd-iN-aAG.title" = "隱藏位於狀態欄的圖示";
+"hDs-Yh-11x.title" = "不過, 就算 Mos 的狀態欄圖標被隱藏, 它依然會在後台為你不斷為您平滑鼠標滾動";
+"zAs-CP-Wpw.title" = "一旦你隱藏了狀態欄圖示, 所有設置便無法被修改, 如果你想再次顯示位於狀態欄的圖示, 請使用活動監視器退出 Mos, 再重新開啟, 并點擊屏幕中通知的 '顯示圖示' 按鈕";
+"ueB-gF-VZ8.title" = "取消";
+"hhO-Gh-ldE.title" = "我要隱藏狀態欄圖示";
