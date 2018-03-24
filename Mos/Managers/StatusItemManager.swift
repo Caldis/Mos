@@ -47,7 +47,10 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
         if let menu = item.menu {
             menu.removeAllItems()
             menu.addItem(withTitle: i18n.monitor, action: #selector(monitorClick), keyEquivalent: "").target = self
+            menu.item(at: 0)?.image = #imageLiteral(resourceName: "MonitorLogo")
             menu.addItem(withTitle: i18n.preferences, action: #selector(preferencesClick), keyEquivalent: "").target = self
+            menu.item(at: 1)?.image = #imageLiteral(resourceName: "PreferencesLogo")
+            menu.addItem(NSMenuItem.separator())
             menu.addItem(withTitle: i18n.quit, action: #selector(quitClick), keyEquivalent: "").target = self
         }
     }
