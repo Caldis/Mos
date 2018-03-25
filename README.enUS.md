@@ -1,14 +1,14 @@
 <p align="center">
-  <a href="http://mos.u2sk.com/">
-    <img width="320" src="https://github.com/Caldis/Mos/blob/master/docs/Intro.png?raw=true">
+  <a href="http://mos.caldis.me/">
+    <img width="320" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/intro.png?raw=true">
   </a>
 </p>
 
 
 # Mos
 
-![Xcode 8.2+](https://img.shields.io/badge/Xcode-8.2%2B-blue.svg)
-![Swift 3.0+](https://img.shields.io/badge/Swift-3.0%2B-orange.svg)
+![Xcode 9.0+](https://img.shields.io/badge/Xcode-9.0%2B-blue.svg)
+![Swift 4.0+](https://img.shields.io/badge/Swift-4.0%2B-orange.svg)
 
 A simple tool to smooth and reverse your mouse scroll on MacOS, handy and free.
 
@@ -17,7 +17,7 @@ A simple tool to smooth and reverse your mouse scroll on MacOS, handy and free.
 
 ## Homepage
 
-http://mos.u2sk.com/
+http://mos.caldis.me/
 
 
 ## Features
@@ -27,22 +27,22 @@ http://mos.u2sk.com/
 - A mointor can render the scroll event.
 - Custom the scroll effect, the speed and easing effect.
 - Ignore list, black/white list mode.
-- Base on swift3.
+- Base on swift4.
 
 
 ## Screenshot
 
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/mointorEN.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/en/Mointor.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferencesGeneralEN.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/en/PreferencesGeneral.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferencesAdvancedEN.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/en/PreferencesAdvanced.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferencesIgnoredListEN.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/en/PreferencesExceptionFull.png?raw=true">
 </p>
 
 
@@ -80,6 +80,7 @@ Quit the app then relaunch the application.
 ## Thanks
 
 - [Charts](https://github.com/danielgindi/Charts)
+- [iconfont.cn](http://www.iconfont.cn)
 - [Smoothscroll-for-websites](https://github.com/galambalazs/smoothscroll-for-websites)
 
 

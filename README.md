@@ -1,14 +1,14 @@
 <p align="center">
-  <a href="http://mos.u2sk.com/">
-    <img width="320" src="https://github.com/Caldis/Mos/blob/master/docs/Intro.png?raw=true">
+  <a href="http://mos.caldis.me/">
+    <img width="320" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/intro.png?raw=true">
   </a>
 </p>
 
 
 # Mos
 
-![Xcode 8.2+](https://img.shields.io/badge/Xcode-8.2%2B-blue.svg)
-![Swift 3.0+](https://img.shields.io/badge/Swift-3.0%2B-orange.svg)
+![Xcode 9.0+](https://img.shields.io/badge/Xcode-9.0%2B-blue.svg)
+![Swift 4.0+](https://img.shields.io/badge/Swift-4.0%2B-orange.svg)
 
 一个用于在MacOS上平滑你的鼠标滚动效果的小工具, 让你的滚轮爽如触控板。
 
@@ -17,7 +17,7 @@
 
 ## 主页
 
-http://mos.u2sk.com/
+http://mos.caldis.me/
 
 
 ## 特性
@@ -26,23 +26,23 @@ http://mos.u2sk.com/
 - 支持分离触控板/鼠标事件, 单独翻转鼠标滚动方向。
 - 滚动曲线的自定义调整。
 - 支持区分应用处理, 黑/白名单系统。
-- 一个用于监控滚动事件的图形化呈现窗口。
-- 基于Swift3构建。
+- 用于监控滚动事件的图形化呈现窗口。
+- 基于 Swift4 构建。
 
 
 ## 截图
 
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/mointorCN.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/Mointor.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferencesGeneralCN.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/PreferencesGeneral.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferencesAdvancedCN.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/PreferencesAdvanced.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/preferencesIgnoredListCN.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/PreferencesExceptionFull.png?raw=true">
 </p>
 
 
@@ -79,6 +79,7 @@ $ brew cask reinstall mos
 
 ## 鸣谢
 - [Charts](https://github.com/danielgindi/Charts)
+- [iconfont.cn](http://www.iconfont.cn)
 - [Smoothscroll-for-websites](https://github.com/galambalazs/smoothscroll-for-websites)
 
 
