@@ -1,0 +1,89 @@
+.parallaxButton {
+  position: relative;
+  display: inline-block;
+  padding: 1.2em 4em;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  color: white;
+}
+.parallaxButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(-15deg, #2368ff, #a777e3);
+  /*background: linear-gradient(-15deg, #060606, #353535);*/
+  border-radius: 4px;
+  -webkit-transition: -webkit-box-shadow .5s ease, -webkit-transform .2s ease;
+  transition: -webkit-box-shadow .5s ease, -webkit-transform .2s ease;
+  transition: box-shadow .5s ease, transform .2s ease;
+  transition: box-shadow .5s ease, transform .2s ease, -webkit-box-shadow .5s ease, -webkit-transform .2s ease;
+  will-change: transform;
+  -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  -webkit-transform: translateY(var(--ty, 0)) rotateX(var(--rx, 0)) rotateY(var(--ry, 0)) translateZ(var(--tz, -12px));
+  transform: translateY(var(--ty, 0)) rotateX(var(--rx, 0)) rotateY(var(--ry, 0)) translateZ(var(--tz, -12px));
+}
+.parallaxButton:hover::before {
+  -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+/*.parallaxButton::after {*/
+  /*position: relative;*/
+  /*display: inline-block;*/
+  /*content: attr(data-title);*/
+  /*-webkit-transition: -webkit-transform .2s ease;*/
+  /*transition: -webkit-transform .2s ease;*/
+  /*transition: transform .2s ease;*/
+  /*transition: transform .2s ease, -webkit-transform .2s ease;*/
+  /*font-weight: bold;*/
+  /*font-size: 18px;*/
+  /*letter-spacing: .01em;*/
+  /*will-change: transform;*/
+  /*-webkit-transform: translateY(var(--ty, 0)) rotateX(var(--rx, 0)) rotateY(var(--ry, 0));*/
+  /*transform: translateY(var(--ty, 0)) rotateX(var(--rx, 0)) rotateY(var(--ry, 0));*/
+/*}*/
+
+
+/*Custom*/
+.parallaxButtonContainer {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: flex-start;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-transform: perspective(800px);
+    transform: perspective(800px);
+    margin-top: 20px;
+    opacity: 0.8;
+}
+.parallaxButtonContainer .parallaxButton {
+    margin-right: 20px;
+}
+.parallaxButton>span {
+  position: relative;
+  display: inline-block;
+  -webkit-transition: -webkit-transform .2s ease;
+  transition: -webkit-transform .2s ease;
+  transition: transform .2s ease;
+  transition: transform .2s ease, -webkit-transform .2s ease;
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: .01em;
+  will-change: transform;
+  -webkit-transform: translateY(var(--ty, 0)) rotateX(var(--rx, 0)) rotateY(var(--ry, 0));
+  transform: translateY(var(--ty, 0)) rotateX(var(--rx, 0)) rotateY(var(--ry, 0));
+}

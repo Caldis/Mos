@@ -1,0 +1,173 @@
+html, body {
+    height: 100%;
+}
+h1 {
+    font-size: 92px;
+}
+h3 {
+    font-size: 42px;
+}
+h4 {
+    font-size: 32px;
+}
+h6 {
+    font-size: 18px;
+}
+div {
+    box-sizing: border-box;
+}
+button {
+    font-size: 16px;
+    font-weight: 200;
+    box-sizing: border-box;
+    background-color: rgba(0,0,0,0);
+    border: 1px solid #666;
+    border-radius: 3px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all .3s;
+    outline:none;
+}
+button:hover {
+    color: white;
+    background-color: #999;
+}
+button:active {
+    color: white;
+    background-color: #666;
+}
+
+#mainContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+}
+
+
+
+
+#header {
+    padding: 0 30px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100px;
+}
+.appTitle {
+    width: 100px;
+    text-align: center;
+    height: 100%;
+}
+.titleText {
+    line-height: 100px;
+}
+.space {
+    flex-grow: 1;
+}
+.language {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 80px;
+    text-align: center;
+}
+
+
+
+
+#content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.contentWrapper {
+    text-align: center;
+}
+.introTitle {
+    padding-top: 30px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px;
+}
+.appLogo {
+    width: 256px;
+}
+.appName {
+    height: 50px;
+    margin-bottom: 4px
+}
+.logoHr {
+    display: inline-block;
+    width: 88px;
+    border-top: 2px solid #333;
+}
+.appDisc {
+    font-size: 12px;
+    color: #999;
+    margin: 15px auto 0;
+}
+.buttonContainer {
+    width: 100%;
+    text-align: center;
+}
+.infoContainer {
+    padding: 30px 0;
+    width: 100%;
+    text-align: center;
+}
+.info {
+    cursor: pointer;
+    user-select: none;
+    font-size: 12px;
+    color: #666;
+}
+.info:hover {
+    color: #999999;
+}
+.info:active {
+    color: #666;
+}
+.infoStar {
+    margin-top: 10px;
+    width: 100%;
+    height: 34px;
+}
+
+
+
+
+#footer {
+    width: 100%;
+    height: 50px;
+    padding: 0 30px;
+    display: flex;
+    flex-direction: row;
+}
+.contact {
+    display: inline-block;
+    width: 60px;
+    text-align: right;
+    color: #333;
+    height: 100%;
+    line-height: 50px;
+}
+.sp {
+    user-select: none;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    color: #333;
+    height: 100%;
+    line-height: 50px;
+}
+.issue {
+    display: inline-block;
+    width: 50px;
+    text-align: left;
+    color: #333;
+    height: 100%;
+    line-height: 50px;
+}

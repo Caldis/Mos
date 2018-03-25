@@ -1,0 +1,259 @@
+/*主体*/
+body {
+    overflow-x: hidden;
+}
+main>section {
+    box-sizing: border-box;
+    /*必须*/
+    position: relative;
+    padding-top: 90px;
+    width: 100%;
+}
+main>section:first-of-type {
+    height: 100vh;
+}
+/*各单元导航*/
+main>section>nav {
+    /*必须*/
+    position: absolute;
+    /*必须*/
+    top: 0; right: 0; bottom: 0; left: 0;
+    /*必须*/
+    clip: rect(auto, auto, auto, auto);
+}
+main>section>nav>div {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+main>section>nav>div>div {
+    max-width: 1440px;
+    height: 90px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0 calc(1440px * (1 / 24));
+}
+.logo {
+    pointer-events: all;
+    height: 90px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo img {
+    height: 45px;
+}
+.logo label {
+    cursor: pointer;
+    user-select: none;
+    margin-left: 15px;
+    line-height: 90px;
+    font-size: 32px;
+    font-weight: bold;
+    transition: all .1s ease-out;
+}
+.logo label:hover {
+    transform: scale(1.1);
+}
+.logo label:active {
+    transform: scale(1.0);
+}
+/*Github按钮*/
+.github {
+    transition: all .1s;
+}
+.github svg {
+    width: 24px;
+    height: 24px;
+    fill: #999;
+}
+.github:hover svg {
+    fill: #666;
+}
+.github:active svg {
+    fill: #333;
+}
+
+
+
+/*各区块*/
+.lendingSection {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.lendingSection>div {
+    margin: -90px auto 0;
+    max-width: 1400px;
+    padding: 0 100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.lendingSection .detail {
+    display: flex;
+    flex-direction: column;
+}
+.lendingSection .detail h1 {
+    font-size: 72px;
+}
+.lendingSection .slogan {
+    position: relative;
+}
+.lendingSection .slogan span {
+    position: absolute;
+    left: 130px;
+    top: 66px;
+}
+.lendingSection .detail h2 {
+
+}
+.lendingSection .detail .information {
+    color: #666;
+    margin-bottom: 15px;
+}
+.lendingSection .introImage {
+    flex-shrink: 0;
+    width: 40%;
+    min-width: 300px;
+    filter: drop-shadow(0 12px 7px rgba(0, 0, 0, 0.3));
+}
+.lendingSection .introImage img {
+    width: 100%;
+}
+.lendingSection #version {
+    margin-left: 20px;
+    font-size: 12px;
+    color: #666;
+}
+
+
+
+
+.detailSection {
+
+}
+.detailSection article {
+    margin: auto;
+    max-width: 1400px;
+    padding: 0 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.detailSection article>div {
+    width: 50%;
+    flex-shrink: 0;
+}
+.detailSection article>div h2{
+    font-size: 38px;
+    margin-bottom: 20px;
+}
+.detailSection article>div h3{
+    font-size: 16px;
+    color: #333;
+}
+.detailSection article>div.image:nth-child(even) {
+
+}
+.detailSection article>div.image:nth-child(odd) {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+
+
+.commentSection {
+    display: none;
+}
+
+
+
+
+.suggestionSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(170deg, #c5b7f0 0%, #40BAF5 97%);
+    padding-bottom: 90px;
+    color: white;
+    pointer-events: initial;
+}
+.suggestionSection>div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+.suggestionSection>div>img {
+    width: 50px;
+}
+.suggestionSection>div>h1 {
+    margin-left: 20px;
+    font-size: 48px;
+    pointer-events: none;
+}
+.suggestionSection .download {
+    transition: all .3s;
+}
+.suggestionSection .download:hover {
+    transform: scale3d(1.1, 1.1, 1);
+}
+.suggestionSection .download:active {
+    transform: scale3d(1, 1, 1);
+}
+.suggestionSection .download a {
+    background-color: white;
+    color: #77b9f0;
+    border-radius: 4px;
+    padding: .8em 2em;
+    cursor: pointer;
+    margin: 20px;
+    font-weight: bold;
+    font-size: 18px;
+    letter-spacing: .01em;
+    text-decoration: none;
+}
+
+
+
+.footer {
+    padding: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+.footer>div {
+    margin: 2px auto;
+}
+.footer a {
+    text-decoration: underline;
+    margin: 0 2px;
+    color: #333;
+    font-weight: bold;
+}
+.footer .github {
+    margin-top: 5px;
+}
+
+
+.navHide {
+    color: transparent;
+    background-color: transparent;
+}
+.navShow {
+    color: #333333;
+    background-color: #f2f3f5;
+    box-shadow: 0 0 10px #ccc;
+}
