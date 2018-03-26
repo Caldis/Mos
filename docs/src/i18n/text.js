@@ -73,8 +73,12 @@
             en: "Download Now"
         },
         version: {
-            zh: "版本 2.0.0, 要求 macOS 10.11 或更新版本",
-            en: "Version 2.0.0, requires macOS 10.11 or later"
+            zh: "版本 ",
+            en: "Version "
+        },
+        versionRequire: {
+            zh: ", 要求 macOS 10.11 或更新版本",
+            en: ", requires macOS 10.11 or later"
         }
     }
     // 国际化页面文字

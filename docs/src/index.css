@@ -1,7 +1,9 @@
 /*主体*/
 body {
-    opacity: 0;
     overflow-x: hidden;
+}
+main {
+    opacity: 0;
     animation: fadeIn;
     animation-delay: 1s;
     animation-duration: 1.5s;
@@ -17,30 +19,47 @@ main>section {
 main>section:first-of-type {
     height: 100vh;
 }
-/*各单元导航*/
-main>section>nav {
-    /*必须*/
-    position: absolute;
-    /*必须*/
-    top: 0; right: 0; bottom: 0; left: 0;
-    /*必须*/
-    clip: rect(auto, auto, auto, auto);
-}
-main>section>nav>div {
+/*导航*/
+header {
+    z-index: 1000;
+    box-sizing: border-box;
     position: fixed;
-    top: 0;
-    width: 100%;
-}
-main>section>nav>div>div {
-    max-width: 1440px;
-    height: 90px;
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin: 0 auto;
-    padding: 0 calc(1440px * (1 / 24));
+    flex-direction: row;
+    width: 100%;
+    height: 90px;
+    padding: 0 100px;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    background-color: rgba(255, 255, 255, 0.7);
+    border-bottom: 1px solid #e8e9ed;
 }
+/*各单元导航*/
+/*main>section>nav {*/
+    /*!*必须*!*/
+    /*position: absolute;*/
+    /*!*必须*!*/
+    /*top: 0; right: 0; bottom: 0; left: 0;*/
+    /*!*必须*!*/
+    /*clip: rect(auto, auto, auto, auto);*/
+/*}*/
+/*main>section>nav>div {*/
+    /*position: fixed;*/
+    /*top: 0;*/
+    /*width: 100%;*/
+/*}*/
+/*main>section>nav>div>div {*/
+    /*max-width: 1440px;*/
+    /*height: 90px;*/
+    /*display: flex;*/
+    /*flex-direction: row;*/
+    /*justify-content: space-between;*/
+    /*align-items: center;*/
+    /*margin: 0 auto;*/
+    /*padding: 0 calc(1440px * (1 / 24));*/
+/*}*/
 .logo {
     pointer-events: all;
     height: 90px;
@@ -69,7 +88,7 @@ main>section>nav>div>div {
 }
 /*Github按钮*/
 .github {
-    transition: all .1s;
+    transition: fill .1s;
 }
 .github svg {
     width: 24px;
@@ -111,10 +130,12 @@ main>section>nav>div>div {
 .lendingSection .slogan {
     position: relative;
 }
-.lendingSection .slogan span {
+.lendingSection .slogan .versionDetails {
     position: absolute;
-    left: 130px;
+    left: 145px;
     top: 66px;
+    font-size: 12px;
+    color: #666;
 }
 .lendingSection .detail h2 {
 
@@ -131,11 +152,6 @@ main>section>nav>div>div {
 }
 .lendingSection .introImage img {
     width: 100%;
-}
-.lendingSection #version {
-    margin-left: 20px;
-    font-size: 12px;
-    color: #666;
 }
 
 

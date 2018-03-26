@@ -23,33 +23,47 @@
 
 <body>
 
+    <header>
+        <h1 class="logo">
+            <label for="title">MOS</label>
+        </h1>
+        <a class="github" href="https://github.com/Caldis/Mos">
+            <div aria-label="Github" style="width: 24px; height: 24px;">
+                <svg focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.007 0C6.12 0 1.1 4.27.157 10.08c-.944 5.813 2.468 11.45 8.054 13.312.19.064.397.033.555-.084.16-.117.25-.304.244-.5v-2.042c-3.33.735-4.037-1.56-4.037-1.56-.22-.726-.694-1.35-1.334-1.756-1.096-.75.074-.735.074-.735.773.103 1.454.557 1.846 1.23.694 1.21 2.23 1.638 3.45.96.056-.61.327-1.178.766-1.605-2.67-.3-5.462-1.335-5.462-6.002-.02-1.193.42-2.35 1.23-3.226-.327-1.015-.27-2.116.166-3.09 0 0 1.006-.33 3.3 1.23 1.966-.538 4.04-.538 6.003 0 2.295-1.5 3.3-1.23 3.3-1.23.445 1.006.49 2.144.12 3.18.81.877 1.25 2.033 1.23 3.226 0 4.607-2.805 5.627-5.476 5.927.578.583.88 1.386.825 2.206v3.29c-.005.2.092.393.26.507.164.115.377.14.565.063 5.568-1.88 8.956-7.514 8.007-13.313C22.892 4.267 17.884.007 12.008 0z"></path></svg>
+            </div>
+        </a>
+    </header>
+
     <main>
 
         <section class="lendingSection">
-            <nav>
-                <div class="navHide">
-                    <div>
-                        <h1 class="logo">
-                            <label for="title">MOS</label>
-                        </h1>
-                    </div>
-                </div>
-            </nav>
             <div>
                 <div class="detail">
                     <div class="slogan">
                         <h1>Mos</h1>
-                        <span id="version">Version 2.0.0, requires macOS 10.11 or later</span>
+                        <span class="versionDetails">
+                            <span id="version">Version </span>
+                            <span id="githubVersion">-</span>
+                            <span id="versionRequire">, requires macOS 10.11 or later</span>
+                        </span>
                     </div>
                     <div class="information">
                         <h2 id="information" >A lightweight tool used to smooth scrolling and set scroll direction independently for your mouse on MacOS</h2>
                     </div>
                     <div class="download parallaxButtonContainer">
-                        <a href="https://github.com/Caldis/Mos/releases/download/2.0.0/Mos.Version.2.0.0.dmg" class="parallaxButton" data-title="Download Now">
+                        <a id="headDownload" href="#" class="parallaxButton" data-title="Download Now">
                             <span id="downloadNowButton">Download Now</span>
                         </a>
                         <a class="github-button" href="https://github.com/Caldis/Mos" data-icon="octicon-star" data-style="mega" data-count-href="/Caldis/Mos/stargazers" data-count-api="/repos/Caldis/Mos#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Caldis/Mos on GitHub">Star</a>
                     </div>
+
+                    <div class="atvImg">
+                        <img src="/src/atvimg/flattened-icon.jpg">
+
+                        <div class="atvImg-layer" data-img="/images/back.png"></div>
+                        <div class="atvImg-layer" data-img="/images/front.png"></div>
+                    </div>
+
                 </div>
                 <div class="introImage">
                     <img src="./resources/image/logo-big.png" alt="Mos">
@@ -58,21 +72,6 @@
         </section>
 
         <section class="detailSection">
-            <nav>
-                <div class="navShow">
-                    <div>
-                        <h1 class="logo">
-                            <img src="./resources/image/logo-small.png" alt="Mos">
-                            <label for="title">MOS</label>
-                        </h1>
-                        <a class="github" href="https://github.com/Caldis/Mos">
-                            <div aria-label="Github">
-                                <svg focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.007 0C6.12 0 1.1 4.27.157 10.08c-.944 5.813 2.468 11.45 8.054 13.312.19.064.397.033.555-.084.16-.117.25-.304.244-.5v-2.042c-3.33.735-4.037-1.56-4.037-1.56-.22-.726-.694-1.35-1.334-1.756-1.096-.75.074-.735.074-.735.773.103 1.454.557 1.846 1.23.694 1.21 2.23 1.638 3.45.96.056-.61.327-1.178.766-1.605-2.67-.3-5.462-1.335-5.462-6.002-.02-1.193.42-2.35 1.23-3.226-.327-1.015-.27-2.116.166-3.09 0 0 1.006-.33 3.3 1.23 1.966-.538 4.04-.538 6.003 0 2.295-1.5 3.3-1.23 3.3-1.23.445 1.006.49 2.144.12 3.18.81.877 1.25 2.033 1.23 3.226 0 4.607-2.805 5.627-5.476 5.927.578.583.88 1.386.825 2.206v3.29c-.005.2.092.393.26.507.164.115.377.14.565.063 5.568-1.88 8.956-7.514 8.007-13.313C22.892 4.267 17.884.007 12.008 0z"></path></svg>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </nav>
             <article>
                 <div class="text">
                     <div>
@@ -121,21 +120,6 @@
         </section>
 
         <section class="commentSection">
-            <nav>
-                <div class="navShow">
-                    <div>
-                        <h1 class="logo">
-                            <img src="./resources/image/logo-small.png" alt="Mos">
-                            <label for="title">MOS</label>
-                        </h1>
-                        <a class="github" href="https://github.com/Caldis/Mos">
-                            <div aria-label="Github">
-                                <svg focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.007 0C6.12 0 1.1 4.27.157 10.08c-.944 5.813 2.468 11.45 8.054 13.312.19.064.397.033.555-.084.16-.117.25-.304.244-.5v-2.042c-3.33.735-4.037-1.56-4.037-1.56-.22-.726-.694-1.35-1.334-1.756-1.096-.75.074-.735.074-.735.773.103 1.454.557 1.846 1.23.694 1.21 2.23 1.638 3.45.96.056-.61.327-1.178.766-1.605-2.67-.3-5.462-1.335-5.462-6.002-.02-1.193.42-2.35 1.23-3.226-.327-1.015-.27-2.116.166-3.09 0 0 1.006-.33 3.3 1.23 1.966-.538 4.04-.538 6.003 0 2.295-1.5 3.3-1.23 3.3-1.23.445 1.006.49 2.144.12 3.18.81.877 1.25 2.033 1.23 3.226 0 4.607-2.805 5.627-5.476 5.927.578.583.88 1.386.825 2.206v3.29c-.005.2.092.393.26.507.164.115.377.14.565.063 5.568-1.88 8.956-7.514 8.007-13.313C22.892 4.267 17.884.007 12.008 0z"></path></svg>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </nav>
             <div class="comment">
                 <div class="user">
                     <div class="avatar">
@@ -153,21 +137,6 @@
         </section>
 
         <section class="suggestionSection">
-            <nav>
-                <div class="navShow">
-                    <div>
-                        <h1 class="logo">
-                            <img src="./resources/image/logo-small.png" alt="Mos">
-                            <label for="title">MOS</label>
-                        </h1>
-                        <a class="github" href="https://github.com/Caldis/Mos">
-                            <div aria-label="Github">
-                                <svg focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.007 0C6.12 0 1.1 4.27.157 10.08c-.944 5.813 2.468 11.45 8.054 13.312.19.064.397.033.555-.084.16-.117.25-.304.244-.5v-2.042c-3.33.735-4.037-1.56-4.037-1.56-.22-.726-.694-1.35-1.334-1.756-1.096-.75.074-.735.074-.735.773.103 1.454.557 1.846 1.23.694 1.21 2.23 1.638 3.45.96.056-.61.327-1.178.766-1.605-2.67-.3-5.462-1.335-5.462-6.002-.02-1.193.42-2.35 1.23-3.226-.327-1.015-.27-2.116.166-3.09 0 0 1.006-.33 3.3 1.23 1.966-.538 4.04-.538 6.003 0 2.295-1.5 3.3-1.23 3.3-1.23.445 1.006.49 2.144.12 3.18.81.877 1.25 2.033 1.23 3.226 0 4.607-2.805 5.627-5.476 5.927.578.583.88 1.386.825 2.206v3.29c-.005.2.092.393.26.507.164.115.377.14.565.063 5.568-1.88 8.956-7.514 8.007-13.313C22.892 4.267 17.884.007 12.008 0z"></path></svg>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </nav>
             <div>
                 <h1 id="suggestionTitle">
                     So, what are you waiting for?
@@ -178,30 +147,31 @@
             </div>
         </section>
 
-        <section class="footer">
-            <div>
-                <h2>Mos</h2>
-            </div>
-            <div>
-                <span id="createBy" >Design & Create by </span>
-                <a href="https://github.com/Caldis">Caldis </a>
-                <span id="createAnd">, and all the</span>
-                <a id="contributors" href="https://github.com/Caldis/Mos/graphs/contributors">contributors</a>
-            </div>
-            <div>
-                <span id="poweredBy">Powered by </span>
-                <a href="https://developer.apple.com/swift/">Swift</a>
-            </div>
-            <div>
-                <span id="unique">For every pursuing MacOS users</span>
-            </div>
-            <a class="github" href="https://github.com/Caldis/Mos">
-                <div aria-label="Github">
-                    <svg focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.007 0C6.12 0 1.1 4.27.157 10.08c-.944 5.813 2.468 11.45 8.054 13.312.19.064.397.033.555-.084.16-.117.25-.304.244-.5v-2.042c-3.33.735-4.037-1.56-4.037-1.56-.22-.726-.694-1.35-1.334-1.756-1.096-.75.074-.735.074-.735.773.103 1.454.557 1.846 1.23.694 1.21 2.23 1.638 3.45.96.056-.61.327-1.178.766-1.605-2.67-.3-5.462-1.335-5.462-6.002-.02-1.193.42-2.35 1.23-3.226-.327-1.015-.27-2.116.166-3.09 0 0 1.006-.33 3.3 1.23 1.966-.538 4.04-.538 6.003 0 2.295-1.5 3.3-1.23 3.3-1.23.445 1.006.49 2.144.12 3.18.81.877 1.25 2.033 1.23 3.226 0 4.607-2.805 5.627-5.476 5.927.578.583.88 1.386.825 2.206v3.29c-.005.2.092.393.26.507.164.115.377.14.565.063 5.568-1.88 8.956-7.514 8.007-13.313C22.892 4.267 17.884.007 12.008 0z"></path></svg>
-                </div>
-            </a>
-        </section>
     </main>
+
+    <footer class="footer">
+        <div>
+            <h2>Mos</h2>
+        </div>
+        <div>
+            <span id="createBy" >Design & Create by </span>
+            <a href="https://github.com/Caldis">Caldis </a>
+            <span id="createAnd">, and all the</span>
+            <a id="contributors" href="https://github.com/Caldis/Mos/graphs/contributors">contributors</a>
+        </div>
+        <div>
+            <span id="poweredBy">Powered by </span>
+            <a href="https://developer.apple.com/swift/">Swift</a>
+        </div>
+        <div>
+            <span id="unique">For every pursuing MacOS users</span>
+        </div>
+        <a class="github" href="https://github.com/Caldis/Mos">
+            <div aria-label="Github" style="width: 24px; height: 24px;">
+                <svg focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.007 0C6.12 0 1.1 4.27.157 10.08c-.944 5.813 2.468 11.45 8.054 13.312.19.064.397.033.555-.084.16-.117.25-.304.244-.5v-2.042c-3.33.735-4.037-1.56-4.037-1.56-.22-.726-.694-1.35-1.334-1.756-1.096-.75.074-.735.074-.735.773.103 1.454.557 1.846 1.23.694 1.21 2.23 1.638 3.45.96.056-.61.327-1.178.766-1.605-2.67-.3-5.462-1.335-5.462-6.002-.02-1.193.42-2.35 1.23-3.226-.327-1.015-.27-2.116.166-3.09 0 0 1.006-.33 3.3 1.23 1.966-.538 4.04-.538 6.003 0 2.295-1.5 3.3-1.23 3.3-1.23.445 1.006.49 2.144.12 3.18.81.877 1.25 2.033 1.23 3.226 0 4.607-2.805 5.627-5.476 5.927.578.583.88 1.386.825 2.206v3.29c-.005.2.092.393.26.507.164.115.377.14.565.063 5.568-1.88 8.956-7.514 8.007-13.313C22.892 4.267 17.884.007 12.008 0z"></path></svg>
+            </div>
+        </a>
+    </footer>
 
 </body>
 
