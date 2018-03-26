@@ -56,6 +56,14 @@
             zh: "贡献者们",
             en: "contributors"
         },
+        and: {
+            zh: "以及",
+            en: "and"
+        },
+        members: {
+            zh: "所有社区成员们",
+            en: "social members"
+        },
         poweredBy: {
             zh: "自豪地采用 ",
             en: "Powered by "
