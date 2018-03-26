@@ -1,6 +1,11 @@
 /*主体*/
 body {
+    opacity: 0;
     overflow-x: hidden;
+    animation: fadeIn;
+    animation-delay: 1s;
+    animation-duration: 1.5s;
+    animation-fill-mode: forwards;
 }
 main>section {
     box-sizing: border-box;
@@ -256,4 +261,15 @@ main>section>nav>div>div {
     color: #333333;
     background-color: #f2f3f5;
     box-shadow: 0 0 10px #ccc;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
