@@ -100,10 +100,10 @@ class Options {
 
     // 从 UserDefaults 中读取到 currentOptions
     func readOptions() {
-        // 锁定
-        readingOptionsLock = true
         // 配置项如果不存在则尝试用当前设置(默认设置)保存一次
         if UserDefaults.standard.object(forKey: "optionsExist") == nil { saveOptions() }
+        // 锁定
+        readingOptionsLock = true
         // 基础
         basic.smooth = UserDefaults.standard.bool(forKey: "smooth")
         basic.reverse = UserDefaults.standard.bool(forKey: "reverse")
