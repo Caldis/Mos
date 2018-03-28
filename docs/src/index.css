@@ -1,8 +1,6 @@
 /*主体*/
-body {
-    overflow-x: hidden;
-}
 main {
+    overflow-x: hidden;
     opacity: 0;
     animation: fadeIn;
     animation-delay: 1s;
@@ -161,7 +159,6 @@ header {
 
 }
 .detailSection article {
-    /*overflow-x: hidden;*/
     margin: auto;
     max-width: 1400px;
     padding: 0 100px;
