@@ -22,7 +22,7 @@
 		0B6D3B702042BBCD004CC064 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B6F2042BBCD004CC064 /* Localizable.swift */; };
 		0B74C441205E386D00E3F942 /* Interception.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B74C440205E386D00E3F942 /* Interception.swift */; };
 		0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */; };
-		0BE4C93B20617C6E0001EA0E /* ScrollFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE4C93A20617C6E0001EA0E /* ScrollFilter.swift */; };
+		0BE4C93B20617C6E0001EA0E /* ScrollFiller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */; };
 		22003C6E1E8555F0001220BC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22003C6D1E8555F0001220BC /* Utils.swift */; };
 		22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA31E25344E00E4BFBF /* AppDelegate.swift */; };
 		22142DA61E25344E00E4BFBF /* MonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* MonitorViewController.swift */; };
@@ -114,7 +114,7 @@
 		0B6D3B6F2042BBCD004CC064 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		0B74C440205E386D00E3F942 /* Interception.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interception.swift; sourceTree = "<group>"; };
 		0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemManager.swift; sourceTree = "<group>"; };
-		0BE4C93A20617C6E0001EA0E /* ScrollFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollFilter.swift; sourceTree = "<group>"; };
+		0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollFiller.swift; sourceTree = "<group>"; };
 		22003C6D1E8555F0001220BC /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22142DA31E25344E00E4BFBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -160,7 +160,7 @@
 			children = (
 				2291A8A21E2A5400004181B8 /* ScrollCore.swift */,
 				0B12EF1C203ADD230058B169 /* ScrollUtils.swift */,
-				0BE4C93A20617C6E0001EA0E /* ScrollFilter.swift */,
+				0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */,
 				0B6D3B692041C348004CC064 /* ScrollEvent.swift */,
 				0B74C440205E386D00E3F942 /* Interception.swift */,
 				0B12EF1E203ADFB10058B169 /* Interpolation.swift */,
@@ -453,7 +453,7 @@
 				2278EE991E3DF770000AB25B /* PreferencesExceptionViewController.swift in Sources */,
 				0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
-				0BE4C93B20617C6E0001EA0E /* ScrollFilter.swift in Sources */,
+				0BE4C93B20617C6E0001EA0E /* ScrollFiller.swift in Sources */,
 				0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */,
 				0B43379E2065418700EEB281 /* HideStatusItemWindowController.swift in Sources */,
 				0B4337A0206541F200EEB281 /* HideStatusItemViewController.swift in Sources */,
