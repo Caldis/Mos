@@ -161,7 +161,7 @@ header {
 
 }
 .detailSection article {
-    overflow-x: hidden;
+    /*overflow-x: hidden;*/
     margin: auto;
     max-width: 1400px;
     padding: 0 100px;
