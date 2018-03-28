@@ -16,7 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         // 设置通知中心代理
         NSUserNotificationCenter.default.delegate = self
         // 禁止重复运行
-        Utils.preventMultiRunning()
+        Utils.preventMultiRunning(killExist: true)
         // 读取用户设置
         Options.shared.readOptions()
         // 提示用户状态栏图标已隐藏

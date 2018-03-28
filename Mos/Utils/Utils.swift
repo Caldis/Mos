@@ -11,13 +11,18 @@ import Cocoa
 // 实用方法
 class Utils {
     
-    // 禁止重复运行
-    class func preventMultiRunning() {
+    // 禁止重复运行, 传入参数 kill 则杀掉已有进程, 否则自杀
+    class func preventMultiRunning(killExist kill: Bool = false) {
         // 获取自己的 BundleId
         let mainBundleID = Bundle.main.bundleIdentifier!
-        // 如果检测到在运行, 则自杀
+        // 如果检测到在运行
         if NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID).count > 1 {
-            NSApp.terminate(nil)
+            if kill {
+                let runningInst = NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID)[0]
+                runningInst.terminate()
+            } else {
+                NSApp.terminate(nil)
+            }
         }
     }
     
