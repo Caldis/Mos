@@ -8,7 +8,7 @@
 
 import Cocoa
 
-struct ExceptionalApplication:Codable {
+struct ExceptionalApplication: Codable {
     
     var smooth: Bool        // 平滑滚动
     var reverse: Bool       // 反向滚动
