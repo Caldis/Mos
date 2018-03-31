@@ -1,3 +1,10 @@
+.mainColor {
+    color: #333333;
+    background: -webkit-linear-gradient(#a4a4a4, #020202);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 /*主体*/
 main {
     overflow-x: hidden;
