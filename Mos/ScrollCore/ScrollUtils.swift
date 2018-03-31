@@ -75,7 +75,7 @@ class ScrollUtils {
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - self.missioncontrolLastDetectTime > 0.5 {
             self.missioncontrolLastDetectTime = nowTime
-            let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]!
+            let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]?
             for windowInfo in windowInfoList! {
                 let windowName = windowInfo[kCGWindowName]!
                 if windowName != nil && windowName as! String == "LPSpringboard" {
@@ -99,7 +99,7 @@ class ScrollUtils {
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - missioncontrolLastDetectTime > 0.5 {
             missioncontrolLastDetectTime = nowTime
-            let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]!
+            let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]?
             for windowInfo in windowInfoList! {
                 let windowOwnerName = windowInfo[kCGWindowOwnerName]!
                 if windowOwnerName != nil && windowOwnerName as! String == "Dock" {
@@ -127,33 +127,20 @@ class ScrollUtils {
     
     // 判断 ExceptionalApplication 是否需要平滑滚动
     private func applicationNeedSmooth(application: ExceptionalApplication) -> Bool {
-        // 针对 Launchpad 和 MissionControl 特殊处理, 不论是否在列表内均禁用平滑
-        if launchpadIsActive() || missioncontrolIsActive() {
-            return false
-        }
-        // 一般 App
         return application.smooth
     }
     // 判断 ExceptionalApplication 是否需要翻转
     private func applicationNeedReverse(application: ExceptionalApplication) -> Bool {
-        // 例外应用列表(Dict)
-        let applicationsDict = Options.shared.exception.applicationsDict
-        // 针对 Launchpad 和 MissionControl 特殊处理
-        if launchpadIsActive() || missioncontrolIsActive() {
-            if let launchpad = applicationsDict["com.apple.launchpad.launcher"] {
-                return launchpad.reverse
-            }
-            if let missionControl = applicationsDict["com.apple.exposelauncher"] {
-                return missionControl.reverse
-            }
-        }
-        // 一般 App
         return application.reverse
     }
 
     // 是否启用平滑
     func enableSmooth(application: ExceptionalApplication?) -> Bool {
         if Options.shared.basic.smooth {
+            // 针对 Launchpad 特殊处理, 不论是否在列表内均禁用平滑
+            if launchpadIsActive() {
+                return false
+            }
             if let target = application {
                 return applicationNeedSmooth(application: target)
             } else {
@@ -166,6 +153,14 @@ class ScrollUtils {
     // 是否启用翻转
     func enableReverse(application: ExceptionalApplication?) -> Bool {
         if Options.shared.basic.reverse {
+            // 例外应用列表(Dict)
+            let applicationsDict = Options.shared.exception.applicationsDict
+            // 针对 Launchpad 特殊处理
+            if launchpadIsActive() {
+                if let launchpad = applicationsDict["com.apple.launchpad.launcher"] {
+                    return launchpad.reverse
+                }
+            }
             if let target = application {
                 return applicationNeedReverse(application: target)
             } else {
