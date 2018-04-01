@@ -36,9 +36,10 @@ class ScrollFiller {
     // 填平凹点
     private func fill(in array: [Double], to nextValue: Double) -> [Double] {
         let first = array.first!
-        let diff = nextValue-first
+        let diff = nextValue - first
         // length = 4
-        // 1, 1.02, 1.05, 1.08, 2
+        // 1 -> 2
+        // [1, 1.2, 1.5, 1.8] -> 2
         return [first, first+0.2*diff, first+0.5*diff, first+0.8*diff]
     }
     
