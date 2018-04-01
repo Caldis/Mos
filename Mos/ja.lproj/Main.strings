@@ -29,6 +29,14 @@
 "suV-WY-rbw.title" = "Duration:";
 "vmk-zZ-ifN.title" = "The duration of scroll animation";
 "2ho-yL-X2k.title" = "Reset to default";
+// Hotkey
+"BX2-mo-Jji.title" = "Hotkey";
+"PPO-3D-O52.title" = "Shift Key:";
+"fAG-dd-7DB.title" = "Transform the vertical scroll to horizon";
+"T9H-0M-Z8b.title" = "Block Key:";
+"r7u-uq-Kk6.title" = "Temporarily block the smoothing of the scroll";
+"ADH-v6-aXQ.title" = "Disable";
+"xIT-xO-5uG.title" = "Disable";
 // Exception
 "bga-wG-iim.title" = "Exception";
 "Rgu-cb-5lp.title" = "Exceptional Applications:";

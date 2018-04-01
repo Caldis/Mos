@@ -20,42 +20,39 @@ class ScrollCore {
     var scrollCurr   = ( y: 0.0, x: 0.0 )  // 当前滚动距离
     var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
     var scrollDelta  = ( y: 0.0, x: 0.0 )  // 滚动方向记录
+    // 热键数据
+    var shiftScroll = false
+    var blockSmooth = false
     // 滚动数值滤波器, 用于去除滚动的起始抖动
     var scrollFiller = ScrollFiller()
     // 事件发送器
     var scrollEventPoster: CVDisplayLink?
+    // 拦截层
+    var scrollEventTap:CFMachPort?
+    var hotkeyEventTap:CFMachPort?
+    // 拦截掩码
+    let scrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
+    let hotkeyEventMask = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
     
-    // 处理滚动事件
-    func handleScroll() {
-        // 计算插值
-        let scrollPulse = (
-            y: Interpolation.lerp(src: scrollCurr.y, dest: scrollBuffer.y),
-            x: Interpolation.lerp(src: scrollCurr.x, dest: scrollBuffer.x)
-        )
-        // 更新滚动位置
-        scrollCurr = (
-            y: scrollCurr.y + scrollPulse.y,
-            x: scrollCurr.x + scrollPulse.x
-        )
-        // 填充凹点
-        scrollFiller.fillIn(with: scrollPulse)
-        let filteredValue = scrollFiller.value()
-        // 发送滚动结果
-        MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.y), xScroll: Int32(filteredValue.x))
-        // 如果临近目标距离小于精确度门限则停止滚动
-        if abs(scrollPulse.y)<=Options.shared.advanced.precision && abs(scrollPulse.x)<=Options.shared.advanced.precision {
-            disableScrollEventPoster()
-            scrollFiller.clean()
-        }
+    // 启动滚动处理
+    func startHandlingScroll() {
+        // 开始截取事件
+        scrollEventTap = Interception.start(event: scrollEventMask, to: scrollEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)
+        hotkeyEventTap = Interception.start(event: hotkeyEventMask, to: hotkeyEventCallBack, at: .cgAnnotatedSessionEventTap, where: .tailAppendEventTap, for: .listenOnly)
+        // 初始化滚动事件发送器
+        initScrollEventPoster()
+    }
+    // 停止滚动处理
+    func endHandlingScroll() {
+        // 停止发送滚动事件
+        disableScrollEventPoster()
+        // 停止截取事件
+        Interception.stop(tap: scrollEventTap)
+        Interception.stop(tap: hotkeyEventTap)
     }
     
-    // eventTap 相关, 用于拦截以及获取系统的滚动事件
-    // 拦截层句柄
-    var eventTap:CFMachPort?
-    // 拦截层掩码
-    let mask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
-    // 拦截层处理函数
-    let eventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+    // 滚动处理函数
+    let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 是否返回原始事件 (不启用平滑时)
         var returnOriginalEvent = true
         // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入)
@@ -65,8 +62,10 @@ class ScrollCore {
             let eventTargetBID = ScrollUtils.shared.getCurrentEventTargetBundleId(from: event)
             // 获取列表中应用程序的列外设置信息
             let exceptionalApplications = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: eventTargetBID)
+            // 是否翻转
             let enableReverse = ScrollUtils.shared.enableReverse(application: exceptionalApplications)
-            let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications)
+            // 是否平滑
+            let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications) && !ScrollCore.shared.blockSmooth
             // 处理滚动事件
             let scrollEventY = ScrollEvent(with: event, use: ScrollEvent.axis.Y)
             let scrollEventX = ScrollEvent(with: event, use: ScrollEvent.axis.X)
@@ -103,7 +102,7 @@ class ScrollCore {
                 }
             }
             // 触发滚动事件推送
-            if (enableSmooth) {
+            if enableSmooth {
                 ScrollCore.shared.updateScrollBuffer(y: scrollEventY.getValue(), x: scrollEventX.getValue())
                 ScrollCore.shared.enableScrollEventPoster()
             }
@@ -116,8 +115,21 @@ class ScrollCore {
         }
     }
     
-    
-    // 更新滚动缓冲区
+    // 热键处理函数
+    let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        var shiftKey = Options.shared.hotkey.shift
+        var disableKey = Options.shared.hotkey.block
+        var keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        if shiftKey != 0 && keyCode == shiftKey {
+            ScrollCore.shared.shiftScroll = !ScrollCore.shared.shiftScroll
+        }
+        if disableKey != 0 && keyCode == disableKey {
+            ScrollCore.shared.blockSmooth = !ScrollCore.shared.blockSmooth
+        }
+        return Unmanaged.passRetained(event)
+    }
+        
+    // 鼠标数据输入
     func updateScrollBuffer(y: Double, x: Double) {
         let speed = Options.shared.advanced.speed
         // 更新 Y 轴数据
@@ -137,9 +149,8 @@ class ScrollCore {
         scrollDelta = ( y: y, x: x )
     }
     
-    
-    // CVDisplayLink 相关, 用于推送插值后的滚动事件
-    // 初始化
+    // 鼠标插值数据输出
+    // 初始化 CVDisplayLink
     func initScrollEventPoster() {
         // 新建一个 CVDisplayLinkSetOutputCallback 来执行循环
         CVDisplayLinkCreateWithActiveCGDisplays(&scrollEventPoster)
@@ -160,20 +171,32 @@ class ScrollCore {
             CVDisplayLinkStop(poster)
         }
     }
-    
-    // 启动滚动处理
-    func startHandlingScroll() {
-        // 开始截取事件
-        eventTap = Interception.start(event: mask, to: eventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)
-        // 初始化滚动事件发送器
-        initScrollEventPoster()
-    }
-    // 停止滚动处理
-    func endHandlingScroll() {
-        // 停止发送滚动事件
-        disableScrollEventPoster()
-        // 停止截取事件
-        Interception.stop(tap: eventTap)
+    // 处理滚动事件
+    func handleScroll() {
+        // 计算插值
+        let scrollPulse = (
+            y: Interpolation.lerp(src: scrollCurr.y, dest: scrollBuffer.y),
+            x: Interpolation.lerp(src: scrollCurr.x, dest: scrollBuffer.x)
+        )
+        // 更新滚动位置
+        scrollCurr = (
+            y: scrollCurr.y + scrollPulse.y,
+            x: scrollCurr.x + scrollPulse.x
+        )
+        // 填充凹点
+        scrollFiller.fillIn(with: scrollPulse)
+        let filteredValue = scrollFiller.value()
+        // 发送滚动结果
+        if shiftScroll {
+            MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.x), xScroll: Int32(filteredValue.y))
+        } else {
+            MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.y), xScroll: Int32(filteredValue.x))
+        }
+        // 如果临近目标距离小于精确度门限则停止滚动
+        if abs(scrollPulse.y)<=Options.shared.advanced.precision && abs(scrollPulse.x)<=Options.shared.advanced.precision {
+            disableScrollEventPoster()
+            scrollFiller.clean()
+        }
     }
     
 }

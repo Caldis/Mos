@@ -24,10 +24,17 @@ class Options {
         ),
         // 高级
         advanced: (
+            axisY: true,
+            axisX: false,
             step: 25.0,
             speed: 4.00,
             duration: 3.75, durationTransition: 0.52,
             precision: 1.00
+        ),
+        // 热键
+        hotkey: (
+            shift: 56,
+            block: 55
         ),
         // 例外
         exception: (
@@ -37,7 +44,7 @@ class Options {
         // 其他
         others: (
             hideStatusItem: false,
-            detectShift: false
+            letOthersNotAlone: true
         )
     )
     // 当前设置
@@ -63,6 +70,13 @@ class Options {
             if(oldValue.duration != advanced.duration) {
                 advanced.durationTransition = generateDurationTransition(with: advanced.duration)
             }
+            // 保存到 UserDefaults
+            saveOptions()
+        }
+    }
+    // 热键
+    var hotkey = DEFAULT_OPTIONS.hotkey {
+        didSet {
             // 保存到 UserDefaults
             saveOptions()
         }
@@ -109,11 +123,16 @@ class Options {
         basic.reverse = UserDefaults.standard.bool(forKey: "reverse")
         basic.autoLaunch = UserDefaults.standard.bool(forKey: "autoLaunch")
         // 高级
+        advanced.axisY = UserDefaults.standard.bool(forKey: "axisY")
+        advanced.axisX = UserDefaults.standard.bool(forKey: "axisX")
         advanced.step = UserDefaults.standard.double(forKey: "step")
         advanced.speed = UserDefaults.standard.double(forKey: "speed")
         advanced.duration = UserDefaults.standard.double(forKey: "duration")
         advanced.durationTransition = generateDurationTransition(with: advanced.duration)
         advanced.precision = UserDefaults.standard.double(forKey: "precision")
+        // 热键
+        hotkey.shift = UserDefaults.standard.integer(forKey: "shift")
+        hotkey.block = UserDefaults.standard.integer(forKey: "block")
         // 例外
         exception.whitelist = UserDefaults.standard.bool(forKey: "whitelist")
         exception.applications = try! decoder.decode(Array.self, from: UserDefaults.standard.value(forKey: "applications") as! Data) as [ExceptionalApplication]
@@ -134,10 +153,15 @@ class Options {
             UserDefaults.standard.set(basic.reverse, forKey:"reverse")
             UserDefaults.standard.set(basic.autoLaunch, forKey:"autoLaunch")
             // 高级
+            UserDefaults.standard.set(advanced.axisY, forKey:"axisY")
+            UserDefaults.standard.set(advanced.axisX, forKey:"axisX")
             UserDefaults.standard.set(advanced.step, forKey:"step")
             UserDefaults.standard.set(advanced.speed, forKey:"speed")
             UserDefaults.standard.set(advanced.duration, forKey:"duration")
             UserDefaults.standard.set(advanced.precision, forKey:"precision")
+            // 热键
+            UserDefaults.standard.set(hotkey.shift, forKey:"shift")
+            UserDefaults.standard.set(hotkey.block, forKey:"block")
             // 例外
             UserDefaults.standard.set(exception.whitelist, forKey:"whitelist")
             UserDefaults.standard.set(try! encoder.encode(exception.applications), forKey: "applications")

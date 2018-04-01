@@ -29,6 +29,14 @@
 "suV-WY-rbw.title" = "持续时间:";
 "vmk-zZ-ifN.title" = "控制滚动的缓动持续时间";
 "2ho-yL-X2k.title" = "恢复为预设值";
+// Hotkey
+"BX2-mo-Jji.title" = "热键";
+"PPO-3D-O52.title" = "转换键:";
+"fAG-dd-7DB.title" = "按下时将垂直方向的滚动转换为水平方向";
+"T9H-0M-Z8b.title" = "禁用键:";
+"r7u-uq-Kk6.title" = "按下时禁用平滑滚动";
+"ADH-v6-aXQ.title" = "不使用";
+"xIT-xO-5uG.title" = "不使用";
 // Exception
 "bga-wG-iim.title" = "例外";
 "Rgu-cb-5lp.title" = "例外的应用程序:";

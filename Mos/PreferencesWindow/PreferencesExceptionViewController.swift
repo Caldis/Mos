@@ -66,7 +66,7 @@ class PreferencesExceptionViewController: NSViewController {
                     let applicationPath = openPanel.url!.path
                     let applicationName = FileManager().displayName(atPath: String(describing: openPanel.url!)).removingPercentEncoding!
                     if let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
-                        let application = ExceptionalApplication(smooth: true, reverse: true, path: applicationPath, title: applicationName, bundleId: applicationBundleId)
+                        let application = ExceptionalApplication(path: applicationPath, title: applicationName, bundleId: applicationBundleId)
                         Options.shared.exception.applications.append(application)
                         self.tableView.reloadData()
                     } else {
