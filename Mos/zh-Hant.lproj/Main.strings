@@ -7,50 +7,48 @@
 */
 
 // Mointor
-"TUE-3v-CaJ.title" = "          呈現該窗口的數據會影響滾動性能, 如果非必要, 請勿保留此窗口";
+"TUE-3v-CaJ.title" = "          呈現該窗口的數據會影響捲動性能, 如果非必要, 請勿保留此窗口";
 
 // PreferencesWindow
 // General
 "ITL-GD-CPd.title" = "基礎";
-"ILt-Gz-RiV.title" = "滾動:";
-"weE-be-TAy.title" = "平滑滾動";
-"G8a-97-8Ey.title" = "讓鼠標的滾動效果絲般順滑";
+"ILt-Gz-RiV.title" = "捲動:";
+"weE-be-TAy.title" = "平滑捲動";
+"G8a-97-8Ey.title" = "讓滑鼠的捲動效果絲般順滑";
 "6FR-2r-rxl.title" = "翻轉方向";
-"VUb-ZM-hXo.title" = "單獨翻轉鼠標滾輪的滾動方向";
+"VUb-ZM-hXo.title" = "單獨翻轉滑鼠滾輪的捲動方向";
 "8sv-2I-VeW.title" = "其他:";
 "HZF-2o-Mrh.title" = "開機啟動";
 "wY5-9W-iNv.title" = "在系統登錄時自動執行";
 // Advanced
 "iW5-CD-5OC.title" = "高級";
+"NAp-3R-e8q.title" = "轉換鍵:";
+"lzC-ub-pqJ.title" = "暫時性將垂直方向捲動轉換為水平方向";
+"akk-dX-tW4.title" = "禁用鍵:";
+"62p-76-okJ.title" = "暫時性地禁用平滑捲動";
+"bcp-Xx-rdX.title" = "停用";
+"DXO-Xo-tJd.title" = "停用";
 "YE2-UH-9Ku.title" = "最短步長:";
-"3Xk-SU-gqO.title" = "控制單次滾動的最短距離";
+"3Xk-SU-gqO.title" = "控制單次捲動的最短距離";
 "wck-ay-cL9.title" = "速度增益:";
-"PK6-dT-z93.title" = "控制持續滾動的追蹤速度增益";
+"PK6-dT-z93.title" = "控制持續捲動的追蹤速度增益";
 "suV-WY-rbw.title" = "持續時間:";
-"vmk-zZ-ifN.title" = "控制滾動的緩動持續時間";
+"vmk-zZ-ifN.title" = "控制捲動的緩動持續時間";
 "2ho-yL-X2k.title" = "恢復為預設值";
-// Hotkey
-"BX2-mo-Jji.title" = "熱鍵";
-"PPO-3D-O52.title" = "轉換鍵:";
-"fAG-dd-7DB.title" = "暫時性將垂直方向滾動轉換為水平方向";
-"T9H-0M-Z8b.title" = "禁用鍵:";
-"r7u-uq-Kk6.title" = "暫時性地禁用平滑滾動";
-"ADH-v6-aXQ.title" = "停用";
-"xIT-xO-5uG.title" = "停用";
 // Exception
 "bga-wG-iim.title" = "例外";
-"Rgu-cb-5lp.title" = "例外的應用程序:";
+"Rgu-cb-5lp.title" = "例外的應用程式:";
 "Ksp-g1-48g.title" = "白名單模式";
-"v26-RK-BtL.title" = "啟用白名單模式后, Mos 僅會對包含在下方列表中的應用程序啟用, 其他的則不受任何影響";
+"v26-RK-BtL.title" = "啟用白名單模式后, Mos 僅會對包含在下方列表中的應用程式啟用, 其他的則不受任何影響";
 "HDo-Iu-l7K.headerCell.title" = "平滑";
 "rd0-ca-ufI.headerCell.title" = "翻轉";
-"xfG-Cd-oIk.headerCell.title" = " 應用程序";
-"9fl-xB-j7H.title" = "沒有任何應用程序遭到不公對待";
-"jaq-Cb-dKM.title" = "你可以通過點擊下方的 \"+\" 來添加一個應用程序以設置其滾動行為";
+"xfG-Cd-oIk.headerCell.title" = " 應用程式";
+"9fl-xB-j7H.title" = "沒有任何應用程式遭到不公對待";
+"jaq-Cb-dKM.title" = "你可以通過點擊下方的 \"+\" 來添加一個應用程式以設置其捲動行為";
 // Updates
 "EWu-DP-7Gj.title" = "更新";
 "N0S-yo-DTg.title" = "檢查更新:";
-"lp3-Dc-zRt.title" = "獲取新版本";
+"lp3-Dc-zRt.title" = "獲得新版本";
 "5oM-oR-Dsq.title" = "當前版本";
 // About
 "RfV-Ow-3mF.title" = "關於";
@@ -62,7 +60,7 @@
 
 // HideStatusItemWindow
 "WNd-iN-aAG.title" = "隱藏位於狀態欄的圖示";
-"hDs-Yh-11x.title" = "不過, 就算 Mos 的狀態欄圖標被隱藏, 它依然會在後台為你不斷為您平滑鼠標滾動";
-"zAs-CP-Wpw.title" = "一旦你隱藏了狀態欄圖示, 所有設置便無法被修改, 如果你想再次顯示位於狀態欄的圖示, 請使用活動監視器退出 Mos, 再重新開啟, 并點擊屏幕中通知的 '顯示圖示' 按鈕";
+"hDs-Yh-11x.title" = "不過, 就算 Mos 的狀態欄圖標被隱藏, 它依然會在後台為你不斷為您平滑滑鼠的捲動";
+"zAs-CP-Wpw.title" = "一旦你隱藏了狀態欄圖示, 偏好設置便無法打開, 如果你想再次顯示被隱藏的圖示, 請使用活動監視器關閉 Mos, 再重新開啟, 并點擊屏幕中通知的 '顯示圖示' 按鈕";
 "ueB-gF-VZ8.title" = "取消";
 "hhO-Gh-ldE.title" = "我要隱藏狀態欄圖示";

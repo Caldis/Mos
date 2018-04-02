@@ -21,7 +21,7 @@ class PreferencesTabViewController: NSTabViewController {
         currentTabViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: "general") as NSViewController
         // 初始化窗口大小
         let currentWindowRect = currentWindowController!.window!.frame
-        let generalSize = NSMakeRect(currentWindowRect.origin.x, currentWindowRect.origin.y, 450, 260)
+        let generalSize = NSMakeRect(currentWindowRect.origin.x, currentWindowRect.origin.y, 450, 265)
         currentWindowController!.window!.setFrame(generalSize, display: true, animate: true)
     }
     

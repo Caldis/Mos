@@ -10,7 +10,6 @@ import Cocoa
 
 class PreferencesGeneralViewController: NSViewController {
     
-    // Checkbox
     @IBOutlet weak var scrollSmoothCheckBox: NSButton!
     @IBOutlet weak var scrollReverseCheckBox: NSButton!
     @IBOutlet weak var launchOnLoginCheckBox: NSButton!
@@ -26,11 +25,13 @@ class PreferencesGeneralViewController: NSViewController {
         Options.shared.basic.smooth = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
+    
     // 翻转
     @IBAction func scrollReverseClick(_ sender: NSButton) {
         Options.shared.basic.reverse = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
+    
     // 自启
     @IBAction func launchOnLoginClick(_ sender: NSButton) {
         Options.shared.basic.autoLaunch = sender.state.rawValue==0 ? false : true

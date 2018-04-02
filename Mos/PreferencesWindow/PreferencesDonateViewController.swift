@@ -20,4 +20,5 @@ class PreferencesDonateViewController: NSViewController {
             NSWorkspace.shared.open(url)
         }
     }
+    
 }

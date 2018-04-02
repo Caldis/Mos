@@ -22,6 +22,12 @@
 "wY5-9W-iNv.title" = "Automaticly launch on MacOS login.";
 // Advanced
 "iW5-CD-5OC.title" = "Advanced";
+"NAp-3R-e8q.title" = "Shift Key:";
+"lzC-ub-pqJ.title" = "Transform the vertical scroll to horizon";
+"akk-dX-tW4.title" = "Block Key:";
+"62p-76-okJ.title" = "Temporarily block the smoothing of the scroll";
+"bcp-Xx-rdX.title" = "Disable";
+"DXO-Xo-tJd.title" = "Disable";
 "YE2-UH-9Ku.title" = "Step:";
 "3Xk-SU-gqO.title" = "The minium scroll distance.";
 "wck-ay-cL9.title" = "Speed:";
@@ -29,14 +35,6 @@
 "suV-WY-rbw.title" = "Duration:";
 "vmk-zZ-ifN.title" = "The duration of scroll animation";
 "2ho-yL-X2k.title" = "Reset to default";
-// Hotkey
-"BX2-mo-Jji.title" = "Hotkey";
-"PPO-3D-O52.title" = "Shift Key:";
-"fAG-dd-7DB.title" = "Transform the vertical scroll to horizon";
-"T9H-0M-Z8b.title" = "Block Key:";
-"r7u-uq-Kk6.title" = "Temporarily block the smoothing of the scroll";
-"ADH-v6-aXQ.title" = "Disable";
-"xIT-xO-5uG.title" = "Disable";
 // Exception
 "bga-wG-iim.title" = "Exception";
 "Rgu-cb-5lp.title" = "Exceptional Applications:";
@@ -63,6 +61,6 @@
 // HideStatusItemWindow
 "WNd-iN-aAG.title" = "Hide the status bar icon";
 "hDs-Yh-11x.title" = "Still, even after the icon is hidden, Mos continues to help your mouse scroll smoothly in the background.";
-"zAs-CP-Wpw.title" = "Once you hide the icon, you cannot modify any scrolling settings. If you want to re-display it, using activity mointor to close the Mos and run again, then, click on the notification's \'Show it\' button.";
+"zAs-CP-Wpw.title" = "Once you hide the icon, you cannot access preferences panel. If you want to re-display it, using activity mointor to close the Mos and run again, then, click on the notification's \'Show it\' button.";
 "ueB-gF-VZ8.title" = "Cancel";
 "hhO-Gh-ldE.title" = "Hide the status bar icon";

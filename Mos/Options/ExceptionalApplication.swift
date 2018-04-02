@@ -43,8 +43,8 @@ struct ExceptionalApplication: Codable {
         self.duration = Options.DEFAULT_OPTIONS.advanced.duration
         self.durationTransition = Options.DEFAULT_OPTIONS.advanced.durationTransition
         // 热键
-        self.shift = Options.DEFAULT_OPTIONS.hotkey.shift
-        self.block = Options.DEFAULT_OPTIONS.hotkey.block
+        self.shift = Options.DEFAULT_OPTIONS.advanced.shift
+        self.block = Options.DEFAULT_OPTIONS.advanced.block
     }
     
 }

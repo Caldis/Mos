@@ -21,7 +21,6 @@
 		0B74C441205E386D00E3F942 /* Interception.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B74C440205E386D00E3F942 /* Interception.swift */; };
 		0B8E494E206FEFD80099CB59 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8E494B206FEFC80099CB59 /* Charts.framework */; };
 		0B8E494F206FEFD80099CB59 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8E494B206FEFC80099CB59 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		0B8E4953207096690099CB59 /* PreferencesHotkeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8E4952207096690099CB59 /* PreferencesHotkeyViewController.swift */; };
 		0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */; };
 		0BE4C93B20617C6E0001EA0E /* ScrollFiller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */; };
 		22003C6E1E8555F0001220BC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22003C6D1E8555F0001220BC /* Utils.swift */; };
@@ -114,7 +113,6 @@
 		0B6D3B6F2042BBCD004CC064 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		0B74C440205E386D00E3F942 /* Interception.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interception.swift; sourceTree = "<group>"; };
 		0B8E4945206FEFC80099CB59 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = Libs/Charts/Charts.xcodeproj; sourceTree = "<group>"; };
-		0B8E4952207096690099CB59 /* PreferencesHotkeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesHotkeyViewController.swift; sourceTree = "<group>"; };
 		0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemManager.swift; sourceTree = "<group>"; };
 		0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollFiller.swift; sourceTree = "<group>"; };
 		22003C6D1E8555F0001220BC /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -186,7 +184,6 @@
 				22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */,
 				22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */,
 				2278EE981E3DF770000AB25B /* PreferencesExceptionViewController.swift */,
-				0B8E4952207096690099CB59 /* PreferencesHotkeyViewController.swift */,
 				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
 				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
 				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
@@ -439,7 +436,6 @@
 				2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */,
 				0B6D3B6A2041C348004CC064 /* ScrollEvent.swift in Sources */,
 				2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */,
-				0B8E4953207096690099CB59 /* PreferencesHotkeyViewController.swift in Sources */,
 				22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */,
 				0B12EF5E203C7D650058B169 /* Logger.swift in Sources */,
 				226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */,

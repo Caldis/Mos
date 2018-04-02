@@ -29,8 +29,7 @@
                 <windowController storyboardIdentifier="MonitorWindowController" showSeguePresentationStyle="single" id="B8D-0N-5wS" customClass="MonitorWindowController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" visibleAtLaunch="NO" animationBehavior="default" titlebarAppearsTransparent="YES" id="IQv-IB-iLA" userLabel="Monitor Window">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
-                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="196" y="239" width="480" height="271"/>
+                        <rect key="contentRect" x="0.0" y="0.0" width="480" height="271"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
                         <connections>
                             <outlet property="delegate" destination="B8D-0N-5wS" id="tcQ-Cv-MfP"/>
@@ -51,7 +50,7 @@
                 <windowController storyboardIdentifier="PreferencesWindowController" showSeguePresentationStyle="single" id="7TR-R5-fGE" customClass="PreferencesWindowController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <window key="window" title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" id="cvF-hf-KVW">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
-                        <rect key="contentRect" x="13" y="1373" width="450" height="270"/>
+                        <rect key="contentRect" x="13" y="0.0" width="450" height="270"/>
                         <rect key="screenRect" x="-412" y="1050" width="2560" height="1080"/>
                         <toolbar key="toolbar" implicitIdentifier="3A8E6D95-AED6-4F18-A36A-90CA4DB7BF32" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="3Kg-EP-UWe">
                             <allowedToolbarItems>
@@ -81,7 +80,6 @@
                     <tabViewItems>
                         <tabViewItem identifier="general" image="PreferencesGeneral" id="Qwc-OE-zHR"/>
                         <tabViewItem identifier="advanced" image="PreferencesAdvanced" id="P9R-tX-qfW"/>
-                        <tabViewItem identifier="hotkey" image="PreferencesHotkey" id="Ybg-7q-p1o"/>
                         <tabViewItem identifier="exception" image="PreferencesException" id="s3Q-bF-sSR"/>
                         <tabViewItem identifier="updates" image="PreferencesUpdatas" id="1sm-Qq-6GS"/>
                         <tabViewItem identifier="about" image="PreferencesAbout" id="MrA-I8-n0Z"/>
@@ -99,7 +97,6 @@
                         <outlet property="tabView" destination="sxC-q7-Qs6" id="CNF-oh-eK6"/>
                         <segue destination="ITL-GD-CPd" kind="relationship" relationship="tabItems" id="z3c-tg-aDc"/>
                         <segue destination="iW5-CD-5OC" kind="relationship" relationship="tabItems" id="GA4-xY-65w"/>
-                        <segue destination="BX2-mo-Jji" kind="relationship" relationship="tabItems" id="zgD-uV-MwD"/>
                         <segue destination="bga-wG-iim" kind="relationship" relationship="tabItems" id="kwS-lJ-OG9"/>
                         <segue destination="EWu-DP-7Gj" kind="relationship" relationship="tabItems" id="gsT-c8-cJ3"/>
                         <segue destination="RfV-Ow-3mF" kind="relationship" relationship="tabItems" id="djr-7D-XVN"/>
@@ -114,91 +111,97 @@
             <objects>
                 <viewController title="General" storyboardIdentifier="general" showSeguePresentationStyle="single" id="ITL-GD-CPd" customClass="PreferencesGeneralViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="FVX-bT-5h2">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="183"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="191"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="cTI-tF-fDg">
-                                <rect key="frame" x="0.0" y="0.0" width="450" height="183"/>
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="191"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <subviews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uce-5T-Uvc">
+                                        <rect key="frame" x="30" y="154" width="120" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Scroll Setting:" id="ILt-Gz-RiV">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xh5-Hi-00d">
+                                        <rect key="frame" x="166" y="153" width="130" height="18"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="check" title="Smooth Scrolling" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="weE-be-TAy">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="scrollSmoothClick:" target="ITL-GD-CPd" id="TFy-3R-76A"/>
+                                        </connections>
+                                    </button>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J2s-3N-vK7">
+                                        <rect key="frame" x="166" y="130" width="266" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Let the mouse wheel scroll like a buttery." id="G8a-97-8Ey">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4ys-FQ-Ez6">
+                                        <rect key="frame" x="166" y="106" width="130" height="18"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="check" title="Scroll Reverse" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="6FR-2r-rxl">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="scrollReverseClick:" target="ITL-GD-CPd" id="Lha-Po-zWt"/>
+                                        </connections>
+                                    </button>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qbC-OJ-7HS">
+                                        <rect key="frame" x="166" y="83" width="266" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Reverse the mouse wheel scroll direction." id="VUb-ZM-hXo">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="DeC-IR-Vwk">
+                                        <rect key="frame" x="20" y="71" width="410" height="5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    </box>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YDA-cP-xvj">
+                                        <rect key="frame" x="30" y="43" width="120" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Other Setting:" id="8sv-2I-VeW">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f7l-dp-PUc">
+                                        <rect key="frame" x="166" y="43" width="130" height="18"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="check" title="Launch on Login" bezelStyle="regularSquare" imagePosition="left" inset="2" id="HZF-2o-Mrh">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="launchOnLoginClick:" target="ITL-GD-CPd" id="Qpy-su-UHF"/>
+                                        </connections>
+                                    </button>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZaA-rA-uF7">
+                                        <rect key="frame" x="166" y="20" width="266" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Automaticly launch on MacOS login." id="wY5-9W-iNv">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
                             </visualEffectView>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uce-5T-Uvc">
-                                <rect key="frame" x="30" y="146" width="120" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Scroll Setting:" id="ILt-Gz-RiV">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xh5-Hi-00d">
-                                <rect key="frame" x="166" y="145" width="130" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Smooth Scrolling" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="weE-be-TAy">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="scrollSmoothClick:" target="ITL-GD-CPd" id="TFy-3R-76A"/>
-                                </connections>
-                            </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="J2s-3N-vK7">
-                                <rect key="frame" x="166" y="122" width="260" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Let the mouse wheel scroll like a buttery." id="G8a-97-8Ey">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4ys-FQ-Ez6">
-                                <rect key="frame" x="166" y="98" width="130" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Scroll Reverse" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="6FR-2r-rxl">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="scrollReverseClick:" target="ITL-GD-CPd" id="Lha-Po-zWt"/>
-                                </connections>
-                            </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qbC-OJ-7HS">
-                                <rect key="frame" x="166" y="75" width="260" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Reverse the mouse wheel scroll direction." id="VUb-ZM-hXo">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YDA-cP-xvj">
-                                <rect key="frame" x="30" y="43" width="120" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Other Setting:" id="8sv-2I-VeW">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="f7l-dp-PUc">
-                                <rect key="frame" x="166" y="43" width="130" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Launch on Login" bezelStyle="regularSquare" imagePosition="left" inset="2" id="HZF-2o-Mrh">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="launchOnLoginClick:" target="ITL-GD-CPd" id="Qpy-su-UHF"/>
-                                </connections>
-                            </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZaA-rA-uF7">
-                                <rect key="frame" x="166" y="20" width="260" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Automaticly launch on MacOS login." id="wY5-9W-iNv">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                         </subviews>
                     </view>
                     <connections>
@@ -209,7 +212,7 @@
                 </viewController>
                 <customObject id="KsC-af-ap0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="446" y="1206.5"/>
+            <point key="canvasLocation" x="446" y="1210.5"/>
         </scene>
         <!--Exception-->
         <scene sceneID="UqT-28-MT6">
@@ -459,7 +462,7 @@
                 </viewController>
                 <customObject id="l11-a0-4Xa" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1962" y="1306"/>
+            <point key="canvasLocation" x="1460" y="1305.5"/>
         </scene>
         <!--Exception whitelist hint-->
         <scene sceneID="57E-oo-PEW">
@@ -483,7 +486,7 @@
                 </viewController>
                 <customObject id="ZNV-FD-bQh" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1963" y="1705"/>
+            <point key="canvasLocation" x="1461" y="1665"/>
         </scene>
         <!--Updates-->
         <scene sceneID="VTW-lQ-Mfk">
@@ -534,7 +537,7 @@
                 </viewController>
                 <customObject id="Tfe-PH-zhM" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2454" y="1156"/>
+            <point key="canvasLocation" x="1954" y="1156"/>
         </scene>
         <!--Advanced-->
         <scene sceneID="Fd7-iR-8pW">
@@ -542,15 +545,117 @@
                 <customObject id="T8g-3J-WxE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <viewController title="Advanced" storyboardIdentifier="advanced" id="iW5-CD-5OC" customClass="PreferencesAdvanceViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="cc6-G4-pCI">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="215"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="348"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="ZtV-fK-bvl">
-                                <rect key="frame" x="0.0" y="0.0" width="450" height="215"/>
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="348"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="skV-rX-9Wc">
+                                        <rect key="frame" x="30" y="311" width="120" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Shift Key:" id="NAp-3R-e8q">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5kn-VP-NCd">
+                                        <rect key="frame" x="166" y="304" width="125" height="26"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <popUpButtonCell key="cell" type="push" title="⇧ Shift" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cuF-bC-ltS" id="0Bo-1u-AyX">
+                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="menu"/>
+                                            <menu key="menu" id="qyg-KQ-B8g">
+                                                <items>
+                                                    <menuItem title="Disable" id="bcp-Xx-rdX">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem isSeparatorItem="YES" id="98J-9S-tqC"/>
+                                                    <menuItem title="⌃ Control" id="Au8-gj-nFA">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="⌥ Option" id="V7a-5M-4hH">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="⌘ Command" id="PCB-gw-VZO">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="⇧ Shift" state="on" id="cuF-bC-ltS">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                        <connections>
+                                            <action selector="shiftKeyPopUpButtonChange:" target="iW5-CD-5OC" id="kHV-w0-cAz"/>
+                                        </connections>
+                                    </popUpButton>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2DV-rE-1uY">
+                                        <rect key="frame" x="166" y="282" width="260" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Transform the vertical scroll to horizon" id="lzC-ub-pqJ">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G6r-UC-qnp">
+                                        <rect key="frame" x="30" y="257" width="120" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Block Key:" id="akk-dX-tW4">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VQt-R8-WLM">
+                                        <rect key="frame" x="166" y="250" width="125" height="26"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <popUpButtonCell key="cell" type="push" title="⌘ Command" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="WrA-K8-Ran" id="sRN-Pz-npk">
+                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="menu"/>
+                                            <menu key="menu" id="GYD-c6-9BP">
+                                                <items>
+                                                    <menuItem title="Disable" id="DXO-Xo-tJd">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem isSeparatorItem="YES" id="BUT-f5-TK3"/>
+                                                    <menuItem title="⌃ Control" id="FDp-iH-VjP">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="⌥ Option" id="Aiz-SX-xsF">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="⌘ Command" state="on" id="WrA-K8-Ran">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="⇧ Shift" id="H5T-Zw-IoB">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                        <connections>
+                                            <action selector="disableKeyPopUpButtonChange:" target="iW5-CD-5OC" id="n9r-FY-hOv"/>
+                                        </connections>
+                                    </popUpButton>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NBK-SY-WpZ">
+                                        <rect key="frame" x="166" y="228" width="260" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Temporarily block the smoothing of the scroll" id="62p-76-okJ">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="uzE-ef-8pE">
+                                        <rect key="frame" x="20" y="213" width="410" height="5"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    </box>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Il6-cC-3q4">
-                                        <rect key="frame" x="30" y="177" width="120" height="18"/>
+                                        <rect key="frame" x="30" y="182" width="120" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Step:" id="YE2-UH-9Ku">
                                             <font key="font" metaFont="system"/>
@@ -559,7 +664,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0b7-sS-bB6">
-                                        <rect key="frame" x="166" y="174" width="195" height="19"/>
+                                        <rect key="frame" x="166" y="180" width="190" height="19"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <sliderCell key="cell" alignment="left" minValue="10" maxValue="100" doubleValue="25" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="11l-YU-D95"/>
                                         <connections>
@@ -567,7 +672,7 @@
                                         </connections>
                                     </slider>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IuS-8L-Bk0" userLabel="Scroll Transition Label">
-                                        <rect key="frame" x="365" y="176" width="40" height="14"/>
+                                        <rect key="frame" x="361" y="183" width="40" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="25.00" id="vI7-7F-n9Z">
                                             <font key="font" metaFont="system" size="10"/>
@@ -576,7 +681,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nQq-8N-9JP" userLabel="Scroll Transition Stepper">
-                                        <rect key="frame" x="408" y="170" width="19" height="27"/>
+                                        <rect key="frame" x="404" y="177" width="19" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="10" maxValue="100" doubleValue="25" id="19D-7K-6Gf"/>
                                         <connections>
@@ -584,7 +689,7 @@
                                         </connections>
                                     </stepper>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ba8-N5-4dL">
-                                        <rect key="frame" x="166" y="151" width="260" height="17"/>
+                                        <rect key="frame" x="166" y="157" width="266" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="The minium scroll distance." id="3Xk-SU-gqO">
                                             <font key="font" metaFont="smallSystem"/>
@@ -593,7 +698,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dZJ-RH-WIh">
-                                        <rect key="frame" x="30" y="127" width="120" height="18"/>
+                                        <rect key="frame" x="30" y="128" width="120" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Speed:" id="wck-ay-cL9">
                                             <font key="font" metaFont="system"/>
@@ -602,7 +707,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CyT-FH-1xX">
-                                        <rect key="frame" x="166" y="126" width="195" height="19"/>
+                                        <rect key="frame" x="166" y="126" width="190" height="19"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="10" doubleValue="4" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="fds-F7-fCs"/>
                                         <connections>
@@ -610,7 +715,7 @@
                                         </connections>
                                     </slider>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zun-ec-N5n" userLabel="Scroll Transition Label">
-                                        <rect key="frame" x="365" y="128" width="40" height="14"/>
+                                        <rect key="frame" x="361" y="128" width="40" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="4.00" id="hpx-jb-TgT">
                                             <font key="font" metaFont="system" size="10"/>
@@ -619,7 +724,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PrV-cR-CdD" userLabel="Scroll Transition Stepper">
-                                        <rect key="frame" x="408" y="123" width="19" height="27"/>
+                                        <rect key="frame" x="404" y="124" width="19" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="10" doubleValue="4" id="THS-S1-vhe"/>
                                         <connections>
@@ -627,7 +732,7 @@
                                         </connections>
                                     </stepper>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZC4-NK-TQE">
-                                        <rect key="frame" x="166" y="103" width="260" height="17"/>
+                                        <rect key="frame" x="166" y="103" width="266" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="The speed gain of scrollng." id="PK6-dT-z93">
                                             <font key="font" metaFont="smallSystem"/>
@@ -645,7 +750,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Z34-gx-WqH" userLabel="Scroll Transition Slider">
-                                        <rect key="frame" x="166" y="74" width="195" height="19"/>
+                                        <rect key="frame" x="166" y="74" width="190" height="19"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="5" doubleValue="3.75" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="AcR-3v-Dqn"/>
                                         <connections>
@@ -653,7 +758,7 @@
                                         </connections>
                                     </slider>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sm0-hQ-Q0F" userLabel="Scroll Transition Label">
-                                        <rect key="frame" x="365" y="76" width="40" height="14"/>
+                                        <rect key="frame" x="361" y="76" width="40" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="3.75" id="UzC-zQ-cqg">
                                             <font key="font" metaFont="system" size="10"/>
@@ -662,7 +767,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6m-U6-lbc" userLabel="Scroll Transition Stepper">
-                                        <rect key="frame" x="408" y="70" width="19" height="27"/>
+                                        <rect key="frame" x="404" y="70" width="19" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="5" doubleValue="3.75" id="zlB-ur-whi"/>
                                         <connections>
@@ -670,7 +775,7 @@
                                         </connections>
                                     </stepper>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kft-Xf-Btl">
-                                        <rect key="frame" x="166" y="51" width="258" height="17"/>
+                                        <rect key="frame" x="166" y="51" width="266" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="The duration of scroll animation" id="vmk-zZ-ifN">
                                             <font key="font" metaFont="smallSystem"/>
@@ -679,7 +784,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JW0-jn-P0t">
-                                        <rect key="frame" x="27" y="19" width="397" height="19"/>
+                                        <rect key="frame" x="20" y="19" width="410" height="19"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="roundRect" title="Reset to default" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="2ho-yL-X2k">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -694,6 +799,7 @@
                         </subviews>
                     </view>
                     <connections>
+                        <outlet property="disableKeyPopUpButton" destination="VQt-R8-WLM" id="JGA-Pp-N7p"/>
                         <outlet property="scrollDurationLabel" destination="sm0-hQ-Q0F" id="gwG-ZR-wK9"/>
                         <outlet property="scrollDurationSlider" destination="Z34-gx-WqH" id="Jdm-Ba-CZl"/>
                         <outlet property="scrollDurationStepper" destination="u6m-U6-lbc" id="ryB-lI-P95"/>
@@ -703,10 +809,11 @@
                         <outlet property="scrollStepLabel" destination="IuS-8L-Bk0" id="a5U-Bx-1fF"/>
                         <outlet property="scrollStepSlider" destination="0b7-sS-bB6" id="t2X-m4-feu"/>
                         <outlet property="scrollStepStepper" destination="nQq-8N-9JP" id="0YD-yk-cin"/>
+                        <outlet property="shiftKeyPopUpButton" destination="5kn-VP-NCd" id="tvA-QZ-93o"/>
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="950" y="1222.5"/>
+            <point key="canvasLocation" x="950" y="1289"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">
@@ -734,7 +841,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Just some little job for your mouse." id="5cx-xS-eRe">
                                             <font key="font" metaFont="systemLight" size="11"/>
-                                            <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
@@ -806,7 +913,7 @@
                 </viewController>
                 <customObject id="r6n-Nn-xNW" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2948" y="1179"/>
+            <point key="canvasLocation" x="2455" y="1179"/>
         </scene>
         <!--Preferences Donate View Controller-->
         <scene sceneID="YcU-UJ-LwR">
@@ -857,7 +964,7 @@
                 </viewController>
                 <customObject id="HME-8h-VSk" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2949" y="1715"/>
+            <point key="canvasLocation" x="2456" y="1569"/>
         </scene>
         <!--Monitor-->
         <scene sceneID="hIz-AP-VOD">
@@ -1234,129 +1341,6 @@ Gw
             </objects>
             <point key="canvasLocation" x="-191" y="1627"/>
         </scene>
-        <!--Hotkey-->
-        <scene sceneID="wPc-m6-Pca">
-            <objects>
-                <viewController title="Hotkey" storyboardIdentifier="hotkey" id="BX2-mo-Jji" customClass="PreferencesHotkeyViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="RSz-Av-icZ">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="140"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <subviews>
-                            <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="T5x-Ge-4vr">
-                                <rect key="frame" x="0.0" y="0.0" width="450" height="140"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <subviews>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bEi-f8-7oM">
-                                        <rect key="frame" x="30" y="103" width="120" height="17"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Shift Key:" id="PPO-3D-O52">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eAI-sk-15E">
-                                        <rect key="frame" x="166" y="96" width="125" height="26"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="push" title="⇧ Shift" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="qJo-hL-9Dg" id="Gix-BR-nkQ">
-                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="menu"/>
-                                            <menu key="menu" id="cfu-5n-5xi">
-                                                <items>
-                                                    <menuItem title="Disable" id="ADH-v6-aXQ">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                    <menuItem isSeparatorItem="YES" id="GTL-9X-Nr8"/>
-                                                    <menuItem title="⌃ Control" id="0dS-OK-ao8">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                    <menuItem title="⌥ Option" id="ldR-Ym-QOl">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                    <menuItem title="⌘ Command" id="bvy-He-YVe">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                    <menuItem title="⇧ Shift" state="on" id="qJo-hL-9Dg">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                </items>
-                                            </menu>
-                                        </popUpButtonCell>
-                                        <connections>
-                                            <action selector="shiftKeyPopUpButtonChange:" target="BX2-mo-Jji" id="BlC-hJ-VZp"/>
-                                        </connections>
-                                    </popUpButton>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qgd-gP-SfU">
-                                        <rect key="frame" x="166" y="74" width="260" height="17"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Transform the vertical scroll to horizon" id="fAG-dd-7DB">
-                                            <font key="font" metaFont="smallSystem"/>
-                                            <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="t0P-v1-ykY">
-                                        <rect key="frame" x="30" y="49" width="120" height="17"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Block Key:" id="T9H-0M-Z8b">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LsN-JF-1sw">
-                                        <rect key="frame" x="166" y="42" width="125" height="26"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="push" title="⌘ Command" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="IFk-qs-42R" id="yQs-Aa-Cc0">
-                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="menu"/>
-                                            <menu key="menu" id="0Te-6Q-7wt">
-                                                <items>
-                                                    <menuItem title="Disable" id="xIT-xO-5uG">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                    <menuItem isSeparatorItem="YES" id="p5x-I6-shZ"/>
-                                                    <menuItem title="⌃ Control" id="aMd-2F-Ady">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                    <menuItem title="⌥ Option" id="p5c-s9-Gr1">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                    <menuItem title="⌘ Command" state="on" id="IFk-qs-42R">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                    <menuItem title="⇧ Shift" id="Ogt-v8-x5D">
-                                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                                    </menuItem>
-                                                </items>
-                                            </menu>
-                                        </popUpButtonCell>
-                                        <connections>
-                                            <action selector="disableKeyPopUpButtonChange:" target="BX2-mo-Jji" id="OBK-Gx-8Lw"/>
-                                        </connections>
-                                    </popUpButton>
-                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xd4-DS-UUx">
-                                        <rect key="frame" x="166" y="20" width="260" height="17"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Temporarily block the smoothing of the scroll" id="r7u-uq-Kk6">
-                                            <font key="font" metaFont="smallSystem"/>
-                                            <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                </subviews>
-                            </visualEffectView>
-                        </subviews>
-                    </view>
-                    <connections>
-                        <outlet property="disableKeyPopUpButton" destination="LsN-JF-1sw" id="Aaw-mb-03H"/>
-                        <outlet property="shiftKeyPopUpButton" destination="eAI-sk-15E" id="Zws-3F-NE2"/>
-                    </connections>
-                </viewController>
-                <customObject id="Gt0-zY-G0k" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1444" y="1185"/>
-        </scene>
     </scenes>
     <resources>
         <image name="AlipayLogo" width="250" height="93"/>
@@ -1369,7 +1353,6 @@ Gw
         <image name="PreferencesAdvanced" width="500" height="500"/>
         <image name="PreferencesException" width="500" height="500"/>
         <image name="PreferencesGeneral" width="500" height="500"/>
-        <image name="PreferencesHotkey" width="200" height="200"/>
         <image name="PreferencesListEmpty" width="896" height="896"/>
         <image name="PreferencesUpdatas" width="500" height="500"/>
         <image name="WechatpayLogo" width="309" height="80"/>
