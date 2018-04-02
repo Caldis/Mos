@@ -117,14 +117,15 @@ class ScrollCore {
     
     // 热键处理函数
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        var shiftKey = Options.shared.hotkey.shift
-        var disableKey = Options.shared.hotkey.block
+        var shiftKey = Options.shared.advanced.shift
+        var disableKey = Options.shared.advanced.block
         var keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         if shiftKey != 0 && keyCode == shiftKey {
             ScrollCore.shared.shiftScroll = !ScrollCore.shared.shiftScroll
         }
         if disableKey != 0 && keyCode == disableKey {
             ScrollCore.shared.blockSmooth = !ScrollCore.shared.blockSmooth
+            ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
         }
         return Unmanaged.passRetained(event)
     }
