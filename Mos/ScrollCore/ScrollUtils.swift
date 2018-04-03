@@ -19,12 +19,12 @@ class ScrollUtils {
     private var currEventTargetPID:pid_t = 1     // 事件的目标进程 PID (当前)
     private var currEventTargetBID:String!
     // 事件的目标进程 BID (当前)
-    // 从Pid获取进程名称
+    // 从 PID 获取进程名称
     private func getApplicationBundleIdFrom(pid: pid_t) -> String? {
         // 更新列表
         let runningApps = NSWorkspace.shared.runningApplications
         if let matchApp = runningApps.filter({$0.processIdentifier == pid}).first {
-            // 如果找到bundleId则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
+            // 如果找到 bundleId 则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
             if let bundleId = matchApp.bundleIdentifier {
                 return bundleId as String?
             } else {
@@ -53,8 +53,9 @@ class ScrollUtils {
     
     // 判断事件类型
     func isTouchPad(of event: CGEvent) -> Bool {
-        // MomentumPhase 或 ScrollPhase任一不为零, 则为触控板
-        if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
+        // MomentumPhase 或 ScrollPhase 任一不为零, 则为触控板
+        if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) ||
+           (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
             return true
         }
         // 累计加速度
@@ -71,7 +72,7 @@ class ScrollUtils {
     var launchpadActiveCache = false
     var launchpadLastDetectTime = 0.0
     private func launchpadIsActive() -> Bool {
-        // 如果距离上次检测时间大于500ms, 则重新检测一遍, 否则直接返回上次的结果
+        // 如果距离上次检测时间大于 500ms, 则重新检测一遍, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - self.missioncontrolLastDetectTime > 0.5 {
             self.missioncontrolLastDetectTime = nowTime
@@ -95,7 +96,7 @@ class ScrollUtils {
     var missioncontrolActiveCache = false
     var missioncontrolLastDetectTime = 0.0
     private func missioncontrolIsActive() -> Bool {
-        // 如果距离上次检测时间大于500ms, 则重新检测一遍, 否则直接返回上次的结果
+        // 如果距离上次检测时间大于 500ms, 则重新检测一遍, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - missioncontrolLastDetectTime > 0.5 {
             missioncontrolLastDetectTime = nowTime
