@@ -469,11 +469,11 @@
             <objects>
                 <viewController id="o12-9v-Ej5" userLabel="Exception whitelist hint" sceneMemberID="viewController">
                     <view key="view" id="wdx-Jb-jwG">
-                        <rect key="frame" x="0.0" y="0.0" width="469" height="28"/>
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="28"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KGW-PK-8DX">
-                                <rect key="frame" x="-2" y="7" width="473" height="13"/>
+                                <rect key="frame" x="-2" y="7" width="444" height="13"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="The whitelist mode will make Mos only apply to applications within the exception list." id="v26-RK-BtL">
                                     <font key="font" metaFont="system" size="10"/>
@@ -486,7 +486,7 @@
                 </viewController>
                 <customObject id="ZNV-FD-bQh" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1461" y="1665"/>
+            <point key="canvasLocation" x="1460" y="1667"/>
         </scene>
         <!--Updates-->
         <scene sceneID="VTW-lQ-Mfk">
@@ -564,12 +564,12 @@
                                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5kn-VP-NCd">
                                         <rect key="frame" x="166" y="304" width="125" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="push" title="⇧ Shift" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cuF-bC-ltS" id="0Bo-1u-AyX">
+                                        <popUpButtonCell key="cell" type="push" title="Disable" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="bcp-Xx-rdX" id="0Bo-1u-AyX">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
                                             <menu key="menu" id="qyg-KQ-B8g">
                                                 <items>
-                                                    <menuItem title="Disable" id="bcp-Xx-rdX">
+                                                    <menuItem title="Disable" state="on" id="bcp-Xx-rdX">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
                                                     <menuItem isSeparatorItem="YES" id="98J-9S-tqC"/>
@@ -582,7 +582,7 @@
                                                     <menuItem title="⌘ Command" id="PCB-gw-VZO">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
-                                                    <menuItem title="⇧ Shift" state="on" id="cuF-bC-ltS">
+                                                    <menuItem title="⇧ Shift" id="cuF-bC-ltS">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
                                                 </items>
@@ -595,7 +595,7 @@
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2DV-rE-1uY">
                                         <rect key="frame" x="166" y="282" width="260" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Transform the vertical scroll to horizon" id="lzC-ub-pqJ">
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Transform the vertical scroll to horizontal" id="lzC-ub-pqJ">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -613,12 +613,12 @@
                                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VQt-R8-WLM">
                                         <rect key="frame" x="166" y="250" width="125" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="push" title="⌘ Command" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="WrA-K8-Ran" id="sRN-Pz-npk">
+                                        <popUpButtonCell key="cell" type="push" title="Disable" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="DXO-Xo-tJd" id="sRN-Pz-npk">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
                                             <menu key="menu" id="GYD-c6-9BP">
                                                 <items>
-                                                    <menuItem title="Disable" id="DXO-Xo-tJd">
+                                                    <menuItem title="Disable" state="on" id="DXO-Xo-tJd">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
                                                     <menuItem isSeparatorItem="YES" id="BUT-f5-TK3"/>
@@ -628,7 +628,7 @@
                                                     <menuItem title="⌥ Option" id="Aiz-SX-xsF">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
-                                                    <menuItem title="⌘ Command" state="on" id="WrA-K8-Ran">
+                                                    <menuItem title="⌘ Command" id="WrA-K8-Ran">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
                                                     <menuItem title="⇧ Shift" id="H5T-Zw-IoB">
@@ -697,6 +697,39 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JW0-jn-P0t">
+                                        <rect key="frame" x="20" y="19" width="410" height="19"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="roundRect" title="Reset to default" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="2ho-yL-X2k">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="cellTitle"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="JN4-aj-ZjR"/>
+                                        </connections>
+                                    </button>
+                                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LOh-zM-VkQ">
+                                        <rect key="frame" x="298" y="304" width="25" height="25"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="L80-5r-i5O">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <segue destination="rZQ-L6-MfX" kind="popover" popoverAnchorView="LOh-zM-VkQ" popoverBehavior="t" preferredEdge="maxY" id="EdS-RO-nri"/>
+                                        </connections>
+                                    </button>
+                                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5om-pZ-VPE">
+                                        <rect key="frame" x="298" y="250" width="25" height="25"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gbM-o6-A8F">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <segue destination="mUR-85-jNE" kind="popover" popoverAnchorView="5om-pZ-VPE" popoverBehavior="t" preferredEdge="maxY" id="ipA-fn-0Dd"/>
+                                        </connections>
+                                    </button>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dZJ-RH-WIh">
                                         <rect key="frame" x="30" y="128" width="120" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -783,17 +816,6 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JW0-jn-P0t">
-                                        <rect key="frame" x="20" y="19" width="410" height="19"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="roundRect" title="Reset to default" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="2ho-yL-X2k">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="cellTitle"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="JN4-aj-ZjR"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                             </visualEffectView>
                         </subviews>
@@ -814,6 +836,57 @@
                 </viewController>
             </objects>
             <point key="canvasLocation" x="950" y="1289"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="HUI-s8-Wcw">
+            <objects>
+                <viewController id="rZQ-L6-MfX" sceneMemberID="viewController">
+                    <view key="view" id="5qc-wh-CDm">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="108"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Ak-o4-gKn">
+                                <rect key="frame" x="15" y="15" width="420" height="78"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="7pf-2u-3fF">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <string key="title">For some mice, when you press Shift, the mouse's corresponding driver automatically transforms the scroll direction (such as Logitech Options), you can see this change in the scroll monitor, and this behavior of the driver conflicts with this function. Causes the scroll direction to not be transformed correctly.
+You do not need to set this option unless you need a scroll direction other than the Shift key.</string>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </viewController>
+                <customObject id="Ijc-MX-nZ9" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="670" y="1707"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="79I-rH-ZaI">
+            <objects>
+                <viewController id="mUR-85-jNE" sceneMemberID="viewController">
+                    <view key="view" id="Adm-9b-xST">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="82"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yCQ-Q7-bhR">
+                                <rect key="frame" x="15" y="15" width="420" height="52"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="bAe-Zc-5SS">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <string key="title">In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume or zooming the document, etc.), and smooth scrolling may cause some interference to the operation. You can set a block key to perform such operations. Temporarily blocking the smoothing of the scroll.</string>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </viewController>
+                <customObject id="9YO-Hc-WUu" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="975" y="1886"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">
@@ -1205,8 +1278,22 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HFp-Td-Ujc">
+                                        <rect key="frame" x="1084" y="9" width="72" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="60" id="frG-6X-sJy"/>
+                                        </constraints>
+                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Refresh" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pDT-FT-rU3">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="refreshChart:" target="XfG-lQ-9wD" id="feT-Ga-SeJ"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="413" id="2AG-cR-IqL"/>
                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="bb8-Rh-HpB" secondAttribute="trailing" constant="20" symbolic="YES" id="2Kb-Zv-hDK"/>
                                     <constraint firstItem="bhk-ID-ins" firstAttribute="top" secondItem="5GB-25-6Oj" secondAttribute="bottom" constant="8" id="Go2-89-SZ4"/>
                                     <constraint firstItem="bb8-Rh-HpB" firstAttribute="leading" secondItem="mt4-oP-Qe0" secondAttribute="leading" id="J7X-9z-hcV"/>
@@ -1217,8 +1304,11 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
                                     <constraint firstAttribute="bottom" secondItem="Was-VF-M63" secondAttribute="bottom" constant="20" id="QLR-Gq-ytE"/>
                                     <constraint firstAttribute="trailing" secondItem="5GB-25-6Oj" secondAttribute="trailing" constant="20" id="SVH-Rs-Oah"/>
                                     <constraint firstItem="Was-VF-M63" firstAttribute="top" secondItem="bhk-ID-ins" secondAttribute="bottom" constant="7" id="SdZ-Va-g0x"/>
+                                    <constraint firstItem="HFp-Td-Ujc" firstAttribute="centerY" secondItem="bb8-Rh-HpB" secondAttribute="centerY" id="ajS-pw-p1H"/>
+                                    <constraint firstItem="HFp-Td-Ujc" firstAttribute="trailing" secondItem="bhk-ID-ins" secondAttribute="trailing" id="h4M-i6-Biu"/>
                                     <constraint firstItem="5GB-25-6Oj" firstAttribute="top" secondItem="mt4-oP-Qe0" secondAttribute="top" constant="35" id="hsP-hi-y4I"/>
                                     <constraint firstAttribute="bottom" secondItem="bb8-Rh-HpB" secondAttribute="bottom" constant="20" id="ndF-vW-fM4"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="1170" id="rrD-cr-lLO"/>
                                     <constraint firstItem="bb8-Rh-HpB" firstAttribute="top" secondItem="bhk-ID-ins" secondAttribute="bottom" constant="7" id="sfF-iv-fnm"/>
                                     <constraint firstItem="5GB-25-6Oj" firstAttribute="leading" secondItem="mt4-oP-Qe0" secondAttribute="leading" constant="20" id="tug-1q-o4c"/>
                                 </constraints>
@@ -1355,6 +1445,7 @@ Gw
         <image name="PreferencesGeneral" width="500" height="500"/>
         <image name="PreferencesListEmpty" width="896" height="896"/>
         <image name="PreferencesUpdatas" width="500" height="500"/>
+        <image name="Refresh" width="200" height="191"/>
         <image name="WechatpayLogo" width="309" height="80"/>
         <image name="WechatpayQR" width="473" height="473"/>
     </resources>

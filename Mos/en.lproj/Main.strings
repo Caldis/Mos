@@ -23,7 +23,7 @@
 // Advanced
 "iW5-CD-5OC.title" = "Advanced";
 "NAp-3R-e8q.title" = "Shift Key:";
-"lzC-ub-pqJ.title" = "Transform the vertical scroll to horizon";
+"lzC-ub-pqJ.title" = "Transform the vertical scroll to horizontal";
 "akk-dX-tW4.title" = "Block Key:";
 "62p-76-okJ.title" = "Temporarily block the smoothing of the scroll";
 "bcp-Xx-rdX.title" = "Disable";
@@ -35,6 +35,8 @@
 "suV-WY-rbw.title" = "Duration:";
 "vmk-zZ-ifN.title" = "The duration of scroll animation";
 "2ho-yL-X2k.title" = "Reset to default";
+"7pf-2u-3fF.title" = "For some mice, when you press Shift, the mouse's corresponding driver automatically transforms the scroll direction (such as Logitech Options), you can see this change in the scroll monitor, and this behavior of the driver conflicts with this function. Causes the scroll direction to not be transformed correctly.\nYou do not need to set this option unless you need a scroll direction other than the Shift key.";
+"bAe-Zc-5SS.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume or zooming the document, etc.), and smooth scrolling may cause some interference to the operation. You can set a block key to perform such operations. Temporarily blocking the smoothing of the scroll.";
 // Exception
 "bga-wG-iim.title" = "Exception";
 "Rgu-cb-5lp.title" = "Exceptional Applications:";
