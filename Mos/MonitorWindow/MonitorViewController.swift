@@ -47,22 +47,34 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     
     // 图表
     func initCharts() {
+        // 定义颜色
+        let green = NSUIColor(red: 96.0/255.0, green: 198.0/255.0, blue: 85.0/255.0, alpha: 1.0)
+        let yellow = NSUIColor(red: 246.0/255.0, green: 191.0/255.0, blue: 79.0/255.0, alpha: 1.0)
         // 设置代理
         lineChart.delegate = self
         // 初始化图表数据
         lineChartCount = 0.0
-        let dataSet = LineChartDataSet(values: [ChartDataEntry(x: 0.0, y: 0.0)], label: "ScrollData")
-        lineChart.data = LineChartData(dataSets: [dataSet])
+        // 设置数据集
+        let verticalData = LineChartDataSet(values: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Vertical")
+        verticalData.valueTextColor = NSUIColor.white
+        verticalData.colors = [green]
+        verticalData.circleRadius = 1.5
+        verticalData.circleColors = [green]
+        let horizontalData = LineChartDataSet(values: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Horizontal")
+        horizontalData.valueTextColor = NSUIColor.white
+        horizontalData.colors = [yellow]
+        horizontalData.circleRadius = 1.5
+        horizontalData.circleColors = [yellow]
+        lineChart.data = LineChartData(dataSets: [verticalData, horizontalData])
+        // 设置图表样式
+        lineChart.noDataTextColor = NSUIColor.white
         lineChart.chartDescription?.text = ""
         lineChart.legend.textColor = NSUIColor.white
         lineChart.xAxis.labelTextColor = NSUIColor.white
         lineChart.leftAxis.labelTextColor = NSUIColor.white
         lineChart.rightAxis.labelTextColor = NSUIColor.white
-        // 设置图表样式
-        dataSet.valueTextColor = NSUIColor.white
-        dataSet.colors = [NSUIColor.white]
-        dataSet.circleRadius = 1.5
-        dataSet.circleColors = [NSUIColor.white]
+        lineChart.drawBordersEnabled = true
+        lineChart.borderColor = NSUIColor.gray
     }
     // 初始化监听
     func initObserver() {
@@ -70,7 +82,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(updateMonitorData), name:NSNotification.Name(rawValue: "ScrollEvent"), object: nil)
         // 开始截取事件
-        eventTap = Interception.start(event: mask, to: eventCallBack, at: .cgSessionEventTap, where: .tailAppendEventTap, for: .listenOnly)
+        eventTap = Interception.start(event: mask, to: eventCallBack, at: .cgAnnotatedSessionEventTap, where: .tailAppendEventTap, for: .listenOnly)
     }
     func uninitObserver() {
         // 停止截取
@@ -83,24 +95,23 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     @objc private func updateMonitorData(notification: NSNotification) {
         let event = notification.object as! CGEvent
         // 更新图表数据
-        updateChartView(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1))
-        // 设置log数据
-        updateLogView(Logger.getScrollLog(form: event), Logger.getScrollDetailLog(form: event), Logger.getProcessLog(form: event), Logger.getOtherLog(form: event))
-    }
-    // 更新Chart区域
-    func updateChartView(x: Double, y: Double) {
-        lineChart.data?.addEntry(ChartDataEntry(x: x, y: y), dataSetIndex: 0)
-        lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 100.0)
-        lineChart.moveViewToX(x)
-        lineChart.notifyDataSetChanged()
-        lineChartCount += 1.0
-    }
-    // 更新Log区域
-    func updateLogView(_ scrollLog: String?, _ scrollDetailLog: String?, _ scrollProcessLog: String?, _ scrollOtherLog: String?) {
-        scrollLogTextField.string = scrollLog!
-        scrollDetailLogTextField.string = scrollDetailLog!
-        processLogTextField.string = scrollProcessLog!
-        otherLogTextField.string = scrollOtherLog!
+        if let data = lineChart.data {
+            data.addEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)), dataSetIndex: 0)
+            data.addEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)), dataSetIndex: 1)
+            lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 100.0)
+            lineChart.moveViewToX(lineChartCount)
+            lineChart.notifyDataSetChanged()
+            lineChartCount += 1.0
+        }
+        // 更新Log区域
+        scrollLogTextField.string = Logger.getScrollLog(form: event)
+        scrollDetailLogTextField.string = Logger.getScrollDetailLog(form: event)
+        processLogTextField.string = Logger.getProcessLog(form: event)
+        otherLogTextField.string = Logger.getOtherLog(form: event)
     }
     
+    // 刷新图表
+    @IBAction func refreshChart(_ sender: Any) {
+        initCharts()
+    }
 }
