@@ -24,8 +24,8 @@ class Options {
         ),
         // 高级
         advanced: (
-            shift: 56,
-            block: 55,
+            shift: 0,
+            block: 0,
             step: 25.0,
             speed: 4.00,
             duration: 3.75, durationTransition: 0.52,
