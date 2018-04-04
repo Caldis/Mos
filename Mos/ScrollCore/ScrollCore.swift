@@ -38,7 +38,7 @@ class ScrollCore {
     func startHandlingScroll() {
         // 开始截取事件
         scrollEventTap = Interception.start(event: scrollEventMask, to: scrollEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)
-        hotkeyEventTap = Interception.start(event: hotkeyEventMask, to: hotkeyEventCallBack, at: .cgAnnotatedSessionEventTap, where: .tailAppendEventTap, for: .listenOnly)
+        hotkeyEventTap = Interception.start(event: hotkeyEventMask, to: hotkeyEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .listenOnly)
         // 初始化滚动事件发送器
         initScrollEventPoster()
     }
@@ -58,10 +58,11 @@ class ScrollCore {
         // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入)
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
         if ScrollUtils.shared.isMouse(of: event) {
+            
             // 获取目标窗口 BundleId
-            let eventTargetBID = ScrollUtils.shared.getCurrentEventTargetBundleId(from: event)
+            let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation()
             // 获取列表中应用程序的列外设置信息
-            let exceptionalApplications = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: eventTargetBID)
+            let exceptionalApplications = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
             // 是否翻转
             let enableReverse = ScrollUtils.shared.enableReverse(application: exceptionalApplications)
             // 是否平滑
