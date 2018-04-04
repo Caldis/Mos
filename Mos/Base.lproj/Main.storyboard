@@ -219,15 +219,15 @@
             <objects>
                 <viewController title="Exception" storyboardIdentifier="exception" id="bga-wG-iim" userLabel="Exception" customClass="PreferencesExceptionViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="NAU-na-Vke">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="407"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="jc3-9p-Bfo">
-                                <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="407"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
-                                        <rect key="frame" x="18" y="347" width="184" height="14"/>
+                                        <rect key="frame" x="18" y="373" width="184" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Exceptional Applications:" id="Rgu-cb-5lp">
                                             <font key="font" metaFont="smallSystem"/>
@@ -235,10 +235,19 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m7R-3Y-NDp">
+                                        <rect key="frame" x="18" y="20" width="414" height="13"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Only takes effect when the window of application is activated." id="1o8-Pv-LAu">
+                                            <font key="font" metaFont="system" size="10"/>
+                                            <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="0.84999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
                                 </subviews>
                             </visualEffectView>
                             <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="32" horizontalPageScroll="10" verticalLineScroll="32" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2dP-HG-cdi">
-                                <rect key="frame" x="20" y="40" width="410" height="296"/>
+                                <rect key="frame" x="20" y="66" width="410" height="296"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <clipView key="contentView" ambiguous="YES" id="bif-Bv-tOQ">
                                     <rect key="frame" x="1" y="0.0" width="408" height="295"/>
@@ -376,7 +385,7 @@
                                 </tableHeaderView>
                             </scrollView>
                             <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FWV-z4-M2h">
-                                <rect key="frame" x="407" y="341" width="25" height="25"/>
+                                <rect key="frame" x="407" y="367" width="25" height="25"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="lbW-Vn-frs">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -387,7 +396,7 @@
                                 </connections>
                             </button>
                             <button fixedFrame="YES" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gnb-pe-ZN5">
-                                <rect key="frame" x="291" y="345" width="113" height="18"/>
+                                <rect key="frame" x="291" y="371" width="113" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Whitelist Mode" bezelStyle="regularSquare" imagePosition="left" alignment="right" state="on" inset="2" id="Ksp-g1-48g">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -398,7 +407,7 @@
                                 </connections>
                             </button>
                             <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AQK-ih-gQD">
-                                <rect key="frame" x="20" y="19" width="410" height="23"/>
+                                <rect key="frame" x="20" y="45" width="410" height="23"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="momentary" id="wuZ-GY-2Ba">
                                     <font key="font" metaFont="system"/>
@@ -419,7 +428,7 @@
                                 </connections>
                             </segmentedControl>
                             <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LTZ-IH-4Vy">
-                                <rect key="frame" x="32" y="112" width="385" height="133"/>
+                                <rect key="frame" x="32" y="138" width="385" height="133"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4dv-oA-74E">
@@ -448,7 +457,7 @@
                                 </subviews>
                             </customView>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="TlZ-r7-thf">
-                                <rect key="frame" x="20" y="333" width="410" height="5"/>
+                                <rect key="frame" x="20" y="359" width="410" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
                         </subviews>
@@ -462,7 +471,7 @@
                 </viewController>
                 <customObject id="l11-a0-4Xa" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1460" y="1305.5"/>
+            <point key="canvasLocation" x="1460" y="1318.5"/>
         </scene>
         <!--Exception whitelist hint-->
         <scene sceneID="57E-oo-PEW">
@@ -708,17 +717,6 @@
                                             <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="JN4-aj-ZjR"/>
                                         </connections>
                                     </button>
-                                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LOh-zM-VkQ">
-                                        <rect key="frame" x="298" y="304" width="25" height="25"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="L80-5r-i5O">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <segue destination="rZQ-L6-MfX" kind="popover" popoverAnchorView="LOh-zM-VkQ" popoverBehavior="t" preferredEdge="maxY" id="EdS-RO-nri"/>
-                                        </connections>
-                                    </button>
                                     <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5om-pZ-VPE">
                                         <rect key="frame" x="298" y="250" width="25" height="25"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -838,32 +836,6 @@
             <point key="canvasLocation" x="950" y="1289"/>
         </scene>
         <!--View Controller-->
-        <scene sceneID="HUI-s8-Wcw">
-            <objects>
-                <viewController id="rZQ-L6-MfX" sceneMemberID="viewController">
-                    <view key="view" id="5qc-wh-CDm">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="108"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5Ak-o4-gKn">
-                                <rect key="frame" x="15" y="15" width="420" height="78"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="7pf-2u-3fF">
-                                    <font key="font" metaFont="system" size="10"/>
-                                    <string key="title">For some mice, when you press Shift, the mouse's corresponding driver automatically transforms the scroll direction (such as Logitech Options), you can see this change in the scroll monitor, and this behavior of the driver conflicts with this function. Causes the scroll direction to not be transformed correctly.
-You do not need to set this option unless you need a scroll direction other than the Shift key.</string>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                    </view>
-                </viewController>
-                <customObject id="Ijc-MX-nZ9" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="670" y="1707"/>
-        </scene>
-        <!--View Controller-->
         <scene sceneID="79I-rH-ZaI">
             <objects>
                 <viewController id="mUR-85-jNE" sceneMemberID="viewController">
@@ -886,7 +858,7 @@ You do not need to set this option unless you need a scroll direction other than
                 </viewController>
                 <customObject id="9YO-Hc-WUu" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="975" y="1886"/>
+            <point key="canvasLocation" x="950" y="1694"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">

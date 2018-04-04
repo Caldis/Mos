@@ -35,7 +35,6 @@
 "suV-WY-rbw.title" = "Duration:";
 "vmk-zZ-ifN.title" = "The duration of scroll animation";
 "2ho-yL-X2k.title" = "Reset to default";
-"7pf-2u-3fF.title" = "For some mice, when you press Shift, the mouse's corresponding driver automatically transforms the scroll direction (such as Logitech Options), you can see this change in the scroll monitor, and this behavior of the driver conflicts with this function. Causes the scroll direction to not be transformed correctly.\nYou do not need to set this option unless you need a scroll direction other than the Shift key.";
 "bAe-Zc-5SS.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume or zooming the document, etc.), and smooth scrolling may cause some interference to the operation. You can set a block key to perform such operations. Temporarily blocking the smoothing of the scroll.";
 // Exception
 "bga-wG-iim.title" = "Exception";
@@ -47,6 +46,7 @@
 "xfG-Cd-oIk.headerCell.title" = " Application";
 "9fl-xB-j7H.title" = "No One is Special";
 "jaq-Cb-dKM.title" = "You can apply a separate configuration to some programs by clicking the \'+\' on below";
+"1o8-Pv-LAu.title" = "Only takes effect when the window of application is activated.";
 // Updates
 "EWu-DP-7Gj.title" = "Updates";
 "N0S-yo-DTg.title" = "Check for updates:";
