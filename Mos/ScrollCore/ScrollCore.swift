@@ -189,7 +189,13 @@ class ScrollCore {
         let filteredValue = scrollFiller.value()
         // 发送滚动结果
         if shiftScroll {
-            MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.x), xScroll: Int32(filteredValue.y))
+            // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向, 此处针对这类转换进行判断
+            // 如果检测到按下 Shift 后 x 已经不为 0, 则不做交换处理, 如果依然为 0, 则交换 x y
+            if filteredValue.x != 0.0 && filteredValue.y == 0.0 {
+                MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.y), xScroll: Int32(filteredValue.x))
+            } else {
+                MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.x), xScroll: Int32(filteredValue.y))
+            }
         } else {
             MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.y), xScroll: Int32(filteredValue.x))
         }
