@@ -35,7 +35,7 @@
 "suV-WY-rbw.title" = "持續時間:";
 "vmk-zZ-ifN.title" = "控制捲動的緩動持續時間";
 "2ho-yL-X2k.title" = "恢復為預設值";
-"bAe-Zc-5SS.title" = "在某些應用程式中, 捲動滾輪有時會用於執行某些較為精確的調節操作 (例如調節音量或縮放文檔), 此時平滑滾動的插值處理會對精確的操作造成不必要的干擾\n你可以指定一個特定的按鍵作為禁用鍵, 以在進行此類操作時可以暫時性地禁用對滑鼠滾輪的平滑捲動處理";
+"bAe-Zc-5SS.title" = "在某些應用程式中, 捲動滾輪有時會用於執行某些較為精確的調節操作 (例如調節音量或縮放文檔), 此時平滑捲動的插值處理會對精確的操作造成不必要的干擾\n你可以指定一個特定的按鍵作為禁用鍵, 以在進行此類操作時可以暫時性地禁用對滑鼠滾輪的平滑捲動處理";
 // Exception
 "bga-wG-iim.title" = "例外";
 "Rgu-cb-5lp.title" = "例外的應用程式:";
@@ -57,7 +57,7 @@
 "5cx-xS-eRe.title" = "很慚愧, 就做了一點微小的工作";
 "yDf-dn-Mcz.title" = "主頁";
 "99M-8D-HLN.title" = "GitHub";
-"AM8-cj-DnH.title" = "請作者喝杯咖啡";
+"AM8-cj-DnH.title" = "請作者飲番杯";
 "aPi-cE-maK.title" = "通過 Paypal 捐贈";
 
 // HideStatusItemWindow
