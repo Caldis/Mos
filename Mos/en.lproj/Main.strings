@@ -35,7 +35,6 @@
 "suV-WY-rbw.title" = "Duration:";
 "vmk-zZ-ifN.title" = "The duration of scroll animation";
 "2ho-yL-X2k.title" = "Reset to default";
-"dvz-w1-VRq.title" = "For some mice (such as Logitech), the driver will perform extra scroll direction processing when pressing the Shift key of the keyboard, and Mos has no right to modify. For such devices, even if you set a key other than Shift key to convert The Shift key will still be used to change the scroll direction.";
 "bAe-Zc-5SS.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume or zooming the document, etc.), and smooth scrolling may cause some interference to the operation. You can set a block key to perform such operations. Temporarily blocking the smoothing of the scroll.";
 // Exception
 "bga-wG-iim.title" = "Exception";

@@ -16,10 +16,11 @@ class Utils {
         59, // control
         58, // option
         55, // command
-        56, // shiftLeft
+        56, // shiftLeft (60 is shiftRight)
     ]
     
-    // 禁止重复运行, 传入参数 kill 则杀掉已有进程, 否则自杀
+    // 禁止重复运行
+    // killExist = true 则杀掉已有进程, 否则自杀
     class func preventMultiRunning(killExist kill: Bool = false) {
         // 获取自己的 BundleId
         let mainBundleID = Bundle.main.bundleIdentifier!
