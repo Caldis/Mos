@@ -120,9 +120,13 @@ class ScrollCore {
         var shiftKey = Options.shared.advanced.shift
         var disableKey = Options.shared.advanced.block
         var keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        // 右 Shift 转换为左 Shift
+        if keyCode==60 { keyCode=56 }
+        // 判断转换键
         if shiftKey != 0 && keyCode == shiftKey {
             ScrollCore.shared.shiftScroll = !ScrollCore.shared.shiftScroll
         }
+        // 判断禁用键
         if disableKey != 0 && keyCode == disableKey {
             ScrollCore.shared.blockSmooth = !ScrollCore.shared.blockSmooth
             ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
@@ -172,6 +176,22 @@ class ScrollCore {
             CVDisplayLinkStop(poster)
         }
     }
+    
+    // 根据需要变换滚动方向
+    func weapScrollWhenShifting(y: Double, x: Double, shifting: Bool) -> (y: Double, x: Double) {
+        // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向, 此处针对这类转换进行判断
+        // 如果检测到按下 Shift 后 x 已经不为 0, 则不做交换处理, 如果依然为 0, 则交换 x y
+        if shifting {
+            if x != 0.0 && y == 0.0 {
+                return (y: y, x: x)
+            } else {
+                return (y: x, x: y)
+            }
+        } else {
+            return (y: y, x: x)
+        }
+    }
+    
     // 处理滚动事件
     func handleScroll() {
         // 计算插值
@@ -187,18 +207,10 @@ class ScrollCore {
         // 填充凹点
         scrollFiller.fillIn(with: scrollPulse)
         let filteredValue = scrollFiller.value()
+        // 变换滚动结果
+        let swapedValue = weapScrollWhenShifting(y: filteredValue.y, x: filteredValue.x, shifting: shiftScroll)
         // 发送滚动结果
-        if shiftScroll {
-            // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向, 此处针对这类转换进行判断
-            // 如果检测到按下 Shift 后 x 已经不为 0, 则不做交换处理, 如果依然为 0, 则交换 x y
-            if filteredValue.x != 0.0 && filteredValue.y == 0.0 {
-                MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.y), xScroll: Int32(filteredValue.x))
-            } else {
-                MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.x), xScroll: Int32(filteredValue.y))
-            }
-        } else {
-            MouseEvent.scroll(axis.YX, yScroll: Int32(filteredValue.y), xScroll: Int32(filteredValue.x))
-        }
+        MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
         // 如果临近目标距离小于精确度门限则停止滚动
         if abs(scrollPulse.y)<=Options.shared.advanced.precision && abs(scrollPulse.x)<=Options.shared.advanced.precision {
             disableScrollEventPoster()

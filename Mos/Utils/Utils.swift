@@ -16,7 +16,7 @@ class Utils {
         59, // control
         58, // option
         55, // command
-        56, // shift
+        56, // shiftLeft
     ]
     
     // 禁止重复运行, 传入参数 kill 则杀掉已有进程, 否则自杀
