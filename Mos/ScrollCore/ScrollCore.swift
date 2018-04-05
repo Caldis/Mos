@@ -58,7 +58,6 @@ class ScrollCore {
         // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入)
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
         if ScrollUtils.shared.isMouse(of: event) {
-            
             // 获取目标窗口 BundleId
             let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation()
             // 获取列表中应用程序的列外设置信息
