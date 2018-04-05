@@ -223,14 +223,14 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="jc3-9p-Bfo">
-                                <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
+                                <rect key="frame" x="0.0" y="-27" width="450" height="408"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UmZ-aT-YrM">
-                                        <rect key="frame" x="18" y="347" width="184" height="14"/>
+                                        <rect key="frame" x="18" y="373" width="184" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Exceptional Applications:" id="Rgu-cb-5lp">
-                                            <font key="font" metaFont="smallSystem"/>
+                                            <font key="font" metaFont="system"/>
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
@@ -397,6 +397,10 @@
                                     <action selector="whiteListModeClick:" target="bga-wG-iim" id="tEA-xE-VhI"/>
                                 </connections>
                             </button>
+                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="TlZ-r7-thf">
+                                <rect key="frame" x="20" y="333" width="410" height="5"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </box>
                             <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AQK-ih-gQD">
                                 <rect key="frame" x="20" y="19" width="410" height="23"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -447,16 +451,54 @@
                                     </textField>
                                 </subviews>
                             </customView>
-                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="TlZ-r7-thf">
-                                <rect key="frame" x="20" y="333" width="410" height="5"/>
+                            <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="R53-lk-pJy">
+                                <rect key="frame" x="0.0" y="0.0" width="450" height="381"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </box>
+                                <subviews>
+                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="moF-8H-ePn">
+                                        <rect key="frame" x="201" y="246" width="48" height="48"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="PreferencesNeedAccessibility" id="pXN-oe-hAu"/>
+                                    </imageView>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eFY-ZF-CYC">
+                                        <rect key="frame" x="51" y="207" width="349" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Need to using Accessibility features" id="I5j-Bv-Aiy">
+                                            <font key="font" metaFont="systemBold"/>
+                                            <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Xa-wh-s3X">
+                                        <rect key="frame" x="60" y="157" width="331" height="42"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="FU4-wI-K8f">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">To identify the exception application, we need to dynamically obtain the window information. Therefore, we need to gain access to your accessibility first.</string>
+                                            <color key="textColor" name="windowFrameColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vxb-Ll-oQM">
+                                        <rect key="frame" x="132" y="116" width="187" height="19"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="roundRect" title="Allow to use accessibility" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Pw5-2q-7Fa">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system" size="11"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="allowAccessibilityClick:" target="bga-wG-iim" id="iT5-ue-dUc"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </visualEffectView>
                         </subviews>
                     </view>
                     <connections>
+                        <outlet property="noDataHint" destination="LTZ-IH-4Vy" id="DlB-dd-xPl"/>
+                        <outlet property="noPromissionHint" destination="R53-lk-pJy" id="MU1-gz-xYW"/>
                         <outlet property="tableView" destination="LmV-gi-3fE" id="GOb-17-dvX"/>
                         <outlet property="tableViewToolBar" destination="AQK-ih-gQD" id="hfd-VG-ezQ"/>
-                        <outlet property="tabviewNodataHint" destination="LTZ-IH-4Vy" id="DlB-dd-xPl"/>
                         <outlet property="whitelistModeCheckBox" destination="gnb-pe-ZN5" id="0Vr-XO-KI2"/>
                     </connections>
                 </viewController>
@@ -702,7 +744,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <buttonCell key="cell" type="roundRect" title="Reset to default" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="2ho-yL-X2k">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="cellTitle"/>
+                                            <font key="font" metaFont="system" size="11"/>
                                         </buttonCell>
                                         <connections>
                                             <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="JN4-aj-ZjR"/>
@@ -1010,7 +1052,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="1170" height="413"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <visualEffectView appearanceType="vibrantDark" blendingMode="behindWindow" material="appearanceBased" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="mt4-oP-Qe0">
+                            <visualEffectView appearanceType="vibrantDark" blendingMode="behindWindow" material="ultraDark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="mt4-oP-Qe0">
                                 <rect key="frame" x="0.0" y="0.0" width="1170" height="413"/>
                                 <subviews>
                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="5GB-25-6Oj" customClass="LineChartView" customModule="Charts">
@@ -1407,6 +1449,7 @@ Gw
         <image name="PreferencesException" width="500" height="500"/>
         <image name="PreferencesGeneral" width="500" height="500"/>
         <image name="PreferencesListEmpty" width="896" height="896"/>
+        <image name="PreferencesNeedAccessibility" width="863" height="896"/>
         <image name="PreferencesUpdatas" width="500" height="500"/>
         <image name="Refresh" width="200" height="191"/>
         <image name="WechatpayLogo" width="309" height="80"/>

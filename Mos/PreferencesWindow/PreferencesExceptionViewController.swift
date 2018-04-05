@@ -14,13 +14,51 @@ class PreferencesExceptionViewController: NSViewController {
     @IBOutlet weak var whitelistModeCheckBox: NSButton!
     // 表格及工具栏
     @IBOutlet weak var tableView: NSTableView!
-    @IBOutlet weak var tabviewNodataHint: NSView!
     @IBOutlet weak var tableViewToolBar: NSSegmentedControl!
+    // 提示层
+    @IBOutlet weak var noDataHint: NSView!
+    @IBOutlet weak var noPromissionHint: NSVisualEffectView!
+    // 检查授权定时器
+    var checkAccessibilityTimer: Timer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // 读取设置
         syncViewWithOptions()
+    }
+    override func viewWillAppear() {
+        // 检查表格数据
+        checkListHasData(animate: false)
+        // 检查辅助功能授权
+        checkAccessibility(animate: false)
+        checkAccessibilityTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(checkAccessibility), userInfo: nil, repeats: true)
+    }
+    override func viewWillDisappear() {
+        // 移除定时
+        checkAccessibilityTimer.invalidate()
+    }
+    
+    // 辅助功能授权
+    @IBAction func allowAccessibilityClick(_ sender: NSButton) {
+        Utils.requirePermissions()
+    }
+    @objc func checkAccessibility(animate: Bool = true) {
+        let authorized = Utils.isHadAccessibilityPermissions()
+        if animate {
+            noPromissionHint.animator().alphaValue = authorized ? 0 : 1
+        } else {
+            noPromissionHint.isHidden = authorized
+        }
+    }
+    
+    // 检查表格数据
+    func checkListHasData(animate: Bool = true) {
+        let hasData = Options.shared.exception.applications.count != 0
+        if animate {
+            noDataHint.animator().alphaValue = hasData ? 0 : 1
+        } else {
+            noDataHint.isHidden = hasData
+        }
     }
     
     // 白名单模式
@@ -166,10 +204,12 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
 
 // 表格数据源
 extension PreferencesExceptionViewController: NSTableViewDataSource {
+    
     // 行数
     func numberOfRows(in tableView: NSTableView) -> Int {
         let rows = Options.shared.exception.applications.count
-        tabviewNodataHint.animator().alphaValue = rows==0 ? 1 : 0
+        checkListHasData()
         return rows
     }
+    
 }
