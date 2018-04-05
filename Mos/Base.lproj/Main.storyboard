@@ -805,6 +805,17 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
+                                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dOm-a3-o2S">
+                                        <rect key="frame" x="298" y="304" width="25" height="25"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cMY-Fn-9Ks">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <segue destination="JLR-x9-f57" kind="popover" popoverAnchorView="dOm-a3-o2S" popoverBehavior="t" preferredEdge="maxY" id="CJv-rQ-Uxg"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </visualEffectView>
                         </subviews>
@@ -825,6 +836,31 @@
                 </viewController>
             </objects>
             <point key="canvasLocation" x="950" y="1289"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="4Ju-E8-amo">
+            <objects>
+                <viewController id="JLR-x9-f57" sceneMemberID="viewController">
+                    <view key="view" id="gyJ-3u-mg6">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="82"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TFC-uQ-lOg">
+                                <rect key="frame" x="15" y="15" width="403" height="52"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="dvz-w1-VRq">
+                                    <font key="font" metaFont="system" size="10"/>
+                                    <string key="title">For some mice (such as Logitech), the driver will perform extra scroll direction processing when pressing the Shift key of the keyboard, and Mos has no right to modify. For such devices, even if you set a key other than Shift key to convert The Shift key will still be used to change the scroll direction.</string>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </viewController>
+                <customObject id="8Uf-c4-RSj" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="633" y="1694"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="79I-rH-ZaI">
@@ -849,7 +885,7 @@
                 </viewController>
                 <customObject id="9YO-Hc-WUu" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="950" y="1694"/>
+            <point key="canvasLocation" x="1124" y="1803"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">
