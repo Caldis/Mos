@@ -21,6 +21,8 @@
 		0B74C441205E386D00E3F942 /* Interception.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B74C440205E386D00E3F942 /* Interception.swift */; };
 		0B8E494E206FEFD80099CB59 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8E494B206FEFC80099CB59 /* Charts.framework */; };
 		0B8E494F206FEFD80099CB59 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8E494B206FEFC80099CB59 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		0BB3F8D120774A6B00F61F18 /* LoginServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BB3F8D020774A5500F61F18 /* LoginServiceKit.framework */; };
+		0BB3F8D220774A6B00F61F18 /* LoginServiceKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0BB3F8D020774A5500F61F18 /* LoginServiceKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */; };
 		0BE4C93B20617C6E0001EA0E /* ScrollFiller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */; };
 		22003C6E1E8555F0001220BC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22003C6D1E8555F0001220BC /* Utils.swift */; };
@@ -66,6 +68,20 @@
 			remoteGlobalIDString = A58A4ED274A941CA248EA921;
 			remoteInfo = Charts;
 		};
+		0BB3F8CF20774A5500F61F18 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0BB3F8CA20774A5500F61F18 /* LoginServiceKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FA2FEEDB1CB3F76D00F3A456;
+			remoteInfo = LoginServiceKit;
+		};
+		0BB3F8D320774A6B00F61F18 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0BB3F8CA20774A5500F61F18 /* LoginServiceKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FA2FEEDA1CB3F76D00F3A456;
+			remoteInfo = LoginServiceKit;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -85,6 +101,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				0B8E494F206FEFD80099CB59 /* Charts.framework in Embed Frameworks */,
+				0BB3F8D220774A6B00F61F18 /* LoginServiceKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -113,6 +130,7 @@
 		0B6D3B6F2042BBCD004CC064 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		0B74C440205E386D00E3F942 /* Interception.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interception.swift; sourceTree = "<group>"; };
 		0B8E4945206FEFC80099CB59 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = Libs/Charts/Charts.xcodeproj; sourceTree = "<group>"; };
+		0BB3F8CA20774A5500F61F18 /* LoginServiceKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LoginServiceKit.xcodeproj; path = Libs/LoginServiceKit/LoginServiceKit.xcodeproj; sourceTree = "<group>"; };
 		0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemManager.swift; sourceTree = "<group>"; };
 		0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollFiller.swift; sourceTree = "<group>"; };
 		22003C6D1E8555F0001220BC /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -149,6 +167,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0B8E494E206FEFD80099CB59 /* Charts.framework in Frameworks */,
+				0BB3F8D120774A6B00F61F18 /* LoginServiceKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,6 +239,7 @@
 			isa = PBXGroup;
 			children = (
 				0B8E4945206FEFC80099CB59 /* Charts.xcodeproj */,
+				0BB3F8CA20774A5500F61F18 /* LoginServiceKit.xcodeproj */,
 			);
 			name = Libs;
 			sourceTree = "<group>";
@@ -273,6 +293,14 @@
 			children = (
 				0B8E494B206FEFC80099CB59 /* Charts.framework */,
 				0B8E494D206FEFC80099CB59 /* ChartsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0BB3F8CB20774A5500F61F18 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0BB3F8D020774A5500F61F18 /* LoginServiceKit.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -341,6 +369,7 @@
 			);
 			dependencies = (
 				0B8E4951206FEFD80099CB59 /* PBXTargetDependency */,
+				0BB3F8D420774A6B00F61F18 /* PBXTargetDependency */,
 			);
 			name = Mos;
 			productName = Mos;
@@ -353,7 +382,7 @@
 		22142D981E25344E00E4BFBF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0820;
+				LastSwiftUpdateCheck = 0930;
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = Caldis;
 				TargetAttributes = {
@@ -389,6 +418,10 @@
 					ProductGroup = 0B8E4946206FEFC80099CB59 /* Products */;
 					ProjectRef = 0B8E4945206FEFC80099CB59 /* Charts.xcodeproj */;
 				},
+				{
+					ProductGroup = 0BB3F8CB20774A5500F61F18 /* Products */;
+					ProjectRef = 0BB3F8CA20774A5500F61F18 /* LoginServiceKit.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -410,6 +443,13 @@
 			fileType = wrapper.cfbundle;
 			path = ChartsTests.xctest;
 			remoteRef = 0B8E494C206FEFC80099CB59 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0BB3F8D020774A5500F61F18 /* LoginServiceKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = LoginServiceKit.framework;
+			remoteRef = 0BB3F8CF20774A5500F61F18 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -472,6 +512,11 @@
 			isa = PBXTargetDependency;
 			name = Charts;
 			targetProxy = 0B8E4950206FEFD80099CB59 /* PBXContainerItemProxy */;
+		};
+		0BB3F8D420774A6B00F61F18 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LoginServiceKit;
+			targetProxy = 0BB3F8D320774A6B00F61F18 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
