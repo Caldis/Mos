@@ -77,7 +77,7 @@ public extension LoginServiceKit {
 
         let loginItemsListSnapshot: NSArray = LSSharedFileListCopySnapshot(loginItemList, nil).takeRetainedValue()
         let loginItems = loginItemsListSnapshot as? [LSSharedFileListItem]
-        LSSharedFileListInsertItemURL(loginItemList, loginItems?.last ?? kLSSharedFileListItemBeforeFirst.takeRetainedValue(), nil, nil, url as CFURL!, nil, nil)
+        LSSharedFileListInsertItemURL(loginItemList, loginItems?.last ?? kLSSharedFileListItemBeforeFirst.takeRetainedValue(), nil, nil, url as CFURL?, nil, nil)
     }
 
     public static func removeLoginItems(at path: String) {
