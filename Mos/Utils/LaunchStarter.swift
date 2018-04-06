@@ -9,7 +9,6 @@
 import Cocoa
 import LoginServiceKit
 
-// 管理开机启动项
 class LaunchStarter {
     
     // 切换自启

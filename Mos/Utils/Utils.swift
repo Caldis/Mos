@@ -22,7 +22,7 @@ class Utils {
     // 禁止重复运行
     // killExist = true 则杀掉已有进程, 否则自杀
     class func preventMultiRunning(killExist kill: Bool = false) {
-        // 获取自己的 BundleId
+        // 自己的 BundleId
         let mainBundleID = Bundle.main.bundleIdentifier!
         // 如果检测到在运行
         if NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID).count > 1 {
@@ -36,7 +36,7 @@ class Utils {
     }
     
     // 结束已有进程并尝试显示状态栏图标
-    class func runForShowStatusItem () {
+    class func runForShowStatusItem() {
         // 获取自己的 BundleId
         let mainBundleID = Bundle.main.bundleIdentifier!
         // 如果检测到在运行, 则尝试结束进程, 并显示状态栏图标, 否则自杀
