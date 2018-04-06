@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import ServiceManagement
 
 class Options {
     
@@ -48,11 +49,7 @@ class Options {
         didSet {
             // 设置自启
             if(oldValue.autoLaunch != basic.autoLaunch) {
-                if basic.autoLaunch {
-                    LaunchStarter.enableLaunchAtStartup()
-                } else {
-                    LaunchStarter.disableLaunchAtStartup()
-                }
+                LaunchStarter.launchAtStartup(on: basic.autoLaunch)
             }
             // 保存到 UserDefaults
             saveOptions()
