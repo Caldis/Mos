@@ -80,10 +80,13 @@ $ brew cask reinstall mos
 ## 鸣谢
 - [Charts](https://github.com/danielgindi/Charts)
 - [iconfont.cn](http://www.iconfont.cn)
+- [LoginServiceKit](https://github.com/Clipy/LoginServiceKit)
 - [Smoothscroll-for-websites](https://github.com/galambalazs/smoothscroll-for-websites)
 
 
 ## 贡献
+
+如果您觉得 Mos 的本地化做的有任何不妥之处, 欢迎您提交任何关于文本修改的意见, 您可以通过提交 Github Issue 的方式告诉我们, 如果您善于编码, 我们非常欢迎您提交一个 PR !
 
 我们欢迎任何形式的贡献，有任何建议或意见您可以给我们 [提问](https://github.com/Caldis/Mos/issues)。
 

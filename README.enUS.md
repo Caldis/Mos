@@ -81,10 +81,13 @@ Quit the app then relaunch the application.
 
 - [Charts](https://github.com/danielgindi/Charts)
 - [iconfont.cn](http://www.iconfont.cn)
+- [LoginServiceKit](https://github.com/Clipy/LoginServiceKit)
 - [Smoothscroll-for-websites](https://github.com/galambalazs/smoothscroll-for-websites)
 
 
 ## Contributing
+
+If you feel that there is anything wrong with the localization of Mos, you are welcome to submit any comments on the text modification. You can tell us by submitting the [GitHub issues](https://github.com/Caldis/Mos/issues). If you are good at coding, please submit a PR directly!
 
 We welcome all contributions. You can submit any ideas or issue as [GitHub issues](https://github.com/Caldis/Mos/issues). Have a good time! :)
 

@@ -1,3 +1,77 @@
+# [2.2.0](https://github.com/Caldis/Mos/releases/tag/2.2.0)
+
+真帅
+
+![p2515058700](https://user-images.githubusercontent.com/3529490/38407226-37cf67cc-39ab-11e8-9c9a-20368beec006.jpg)
+
+
+## 新功能
+
+你现在可以为 "变换方向", "禁用平滑" 分别设定一个热键, 当按下热键时, 相应的操作将会被触发
+你可以在高级设置界面找到这个选项
+- https://github.com/Caldis/Mos/issues/33
+- https://github.com/Caldis/Mos/issues/15
+
+滚动监控界面现在可以同时呈现水平与垂直方向的数据
+
+滚动监控界面增加了图表的重置按钮, 点击即可清空图表数据
+
+## 优化
+
+更新了 Chart 库的版本
+
+优化了开始滚动时的加速效果
+
+优化了繁体中文的部分翻译文本
+
+优化了滚动监控界面的样式与执行效率
+
+优化了例外应用的侦测逻辑
+- 我们重写了侦测例外程序的逻辑, 目前基于指针坐标侦测对应坐标的窗口信息. 因此现在, 无需目标窗口处于激活状态也可正常侦测到对应的例外程序了. 
+但是相应地, 由于侦测过程中使用到了更高级的系统 API [(AXUIElement)](https://developer.apple.com/documentation/applicationservices/axuielement.h). 因此, 你需要先授权 Mos 访问辅助功能的权限, 例外程序才能被启用. 当你进入设置界面的 "例外" 选项卡时, 你会看到相应的提示与引导帮助.
+
+## 修正
+
+修复了启动台中平滑滚动影响翻页的问题
+
+修复了取消勾选界面上的 "开机启动" 时无法正确从用户登录项中移除的问题
+- 使用了 https://github.com/Clipy/LoginServiceKit
+
+---
+
+## New Feature
+
+You can now set a hotkey for "change direction" and "disable smoothing" respectively. When the hotkey is pressed, the corresponding operation will be triggered.
+You can find this option in the advanced settings interface
+- https://github.com/Caldis/Mos/issues/33
+- https://github.com/Caldis/Mos/issues/15
+
+The scrolling monitoring interface can now present horizontal and vertical data simultaneously
+
+The scroll monitoring interface adds a reset button to the chart. Click to clear the chart data
+
+## Enhance
+
+Updated the version of the Chart library
+
+Optimized the acceleration effect when starting scrolling
+
+Partially translated text in Traditional Chinese is optimized
+
+Optimize the style and execution efficiency of the scroll monitor interface
+
+Optimized exception detection logic
+- We have rewritten the logic to detect exceptions, currently based on the pointer coordinates to detect the corresponding window information. So now, the corresponding exception program can be normally detected without the target window active.
+However, due to the use of the more advanced system API [(AXUIElement)](https://developer.apple.com/documentation/applicationservices/axuielement.h) in the detection process, you need to authorize Mos to access the Accessibility first. The permission of the function, the exception procedure can be enabled. When you enter the "Exceptions" tab of the settings screen, you will see the corresponding prompt and guide help.
+
+## Fixed
+
+Fixed issue with starting smooth scrolling in Taiwan
+
+Fixed an issue that could not be properly removed from user login items when unchecking "Startup" on the interface
+- Power by https://github.com/Clipy/LoginServiceKit
+
+
 # [2.0.0](https://github.com/Caldis/Mos/releases/tag/2.0.0)
 
 各位猎人们, 2.0 版本来啦 !
