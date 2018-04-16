@@ -29,7 +29,7 @@ class Options {
             block: 55,
             step: 25.0,
             speed: 4.00,
-            duration: 3.75, durationTransition: 0.52,
+            duration: 3.90, durationTransition: 0.4375,
             precision: 1.00
         ),
         // 例外
