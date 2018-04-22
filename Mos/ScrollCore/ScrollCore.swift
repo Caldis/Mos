@@ -23,7 +23,7 @@ class ScrollCore {
     // 热键数据
     var shiftScroll = false
     var blockSmooth = false
-    // 滚动数值滤波器, 用于去除滚动的起始抖动
+    // 滚动数值滤波, 用于去除滚动的起始抖动
     var scrollFiller = ScrollFiller()
     // 事件发送器
     var scrollEventPoster: CVDisplayLink?
@@ -177,21 +177,17 @@ class ScrollCore {
         }
     }
     
-    // 将方向统一为纵向
-    // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向为横向, 此处针对这类转换进行归一化处理
-    func clampToVertical(y: Double, x: Double) -> (y: Double, x: Double) {
-        // 前一次的插值会导致结果值一直不为 0
-        // 这里取阈值判断, 只需要结果绝对值大于1, 则认为有值
-        if abs(x) > 1.0 {
-            return (y: x, x: 0.0)
-        } else {
-            return (y: y, x: 0.0)
-        }
-    }
     // 根据需要变换滚动方向
     func weapScrollWhenShifting(y: Double, x: Double, shifting: Bool) -> (y: Double, x: Double) {
+        // 如果按下 Shift, 则始终将滚动转为横向
         if shifting {
-            return (y: x, x: y)
+            // 判断哪个轴有值, 有值则赋给 X
+            // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向为横向, 此处针对这类转换进行归一化处理
+            if y != 0.0 {
+                return (y: x, x: y)
+            } else {
+                return (y: y, x: x)
+            }
         } else {
             return (y: y, x: x)
         }
@@ -211,10 +207,8 @@ class ScrollCore {
         // 填充凹点
         scrollFiller.fillIn(with: scrollPulse)
         let filteredValue = scrollFiller.value()
-        // 将方向统一为纵向
-        let clampedValue = clampToVertical(y: filteredValue.y, x: filteredValue.x)
         // 变换滚动结果
-        let swapedValue = weapScrollWhenShifting(y: clampedValue.y, x: clampedValue.x, shifting: shiftScroll)
+        let swapedValue = weapScrollWhenShifting(y: filteredValue.y, x: filteredValue.x, shifting: shiftScroll)
         // 发送滚动结果
         MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
         // 如果临近目标距离小于精确度门限则停止滚动
