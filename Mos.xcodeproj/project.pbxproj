@@ -54,13 +54,6 @@
 			remoteGlobalIDString = 65AD9E95D9ED4DC0BD73A743;
 			remoteInfo = Charts;
 		};
-		0B8E494C206FEFC80099CB59 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0B8E4945206FEFC80099CB59 /* Charts.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1CBBC58C6CE1EBEE9852CE41;
-			remoteInfo = ChartsTests;
-		};
 		0B8E4950206FEFD80099CB59 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0B8E4945206FEFC80099CB59 /* Charts.xcodeproj */;
@@ -292,7 +285,6 @@
 			isa = PBXGroup;
 			children = (
 				0B8E494B206FEFC80099CB59 /* Charts.framework */,
-				0B8E494D206FEFC80099CB59 /* ChartsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -436,13 +428,6 @@
 			fileType = wrapper.framework;
 			path = Charts.framework;
 			remoteRef = 0B8E494A206FEFC80099CB59 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0B8E494D206FEFC80099CB59 /* ChartsTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = ChartsTests.xctest;
-			remoteRef = 0B8E494C206FEFC80099CB59 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0BB3F8D020774A5500F61F18 /* LoginServiceKit.framework */ = {
