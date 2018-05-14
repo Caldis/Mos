@@ -1,4 +1,4 @@
-/* 
+/*
   Localizable.strings
   Mos
   In-code text internationalization
@@ -17,9 +17,9 @@
 "Quit" = "退出";
 "Hide Icon" = "隱藏圖示";
 
-// Notifaction
+// Notification
 "Mos is running in the background" = "Mos 正在後台執行中";
-"Mos's status bar icon is hidden" = "Mos 的圖示已被隱藏";
+"Mos' status bar icon is hidden" = "Mos 的圖示已被隱藏";
 "Got it" = "我已了解";
 "Show it" = "顯示圖標";
 

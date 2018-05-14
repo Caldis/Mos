@@ -1,4 +1,4 @@
-/* 
+/*
   Localizable.strings
   Mos
   In-code text internationalization
@@ -17,9 +17,9 @@
 "Quit" = "Quit";
 "Hide Icon" = "Hide Icon";
 
-// Notifaction
+// Notification
 "Mos is running in the background" = "Mos is running in the background";
-"Mos's status bar icon is hidden" = "Mos's status bar icon is hidden";
+"Mos' status bar icon is hidden" = "Mos' status bar icon is hidden";
 "Got it" = "Got it";
 "Show it" = "Show it";
 
