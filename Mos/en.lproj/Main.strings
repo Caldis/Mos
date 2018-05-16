@@ -7,48 +7,48 @@
 */
 
 // Mointor
-"TUE-3v-CaJ.title" = "          Rendering this chart will affect the scrolling performance, keep close if not necessary.";
+"TUE-3v-CaJ.title" = "          Rendering this chart will affect scrolling performance. Close the window when not in use.";
 
 // PreferencesWindow
 // General
 "ITL-GD-CPd.title" = "General";
 "ILt-Gz-RiV.title" = "Scroll:";
 "weE-be-TAy.title" = "Smooth Scrolling";
-"G8a-97-8Ey.title" = "Let the mouse wheel scroll like a buttery.";
+"G8a-97-8Ey.title" = "Let the mouse wheel scroll smoothly like butter";
 "6FR-2r-rxl.title" = "Scroll Reverse";
-"VUb-ZM-hXo.title" = "Reverse the mouse wheel scroll direction.";
-"8sv-2I-VeW.title" = "Other Setting:";
+"VUb-ZM-hXo.title" = "Reverse the mouse wheel scroll direction";
+"8sv-2I-VeW.title" = "Miscellaneous:";
 "HZF-2o-Mrh.title" = "Launch on Login";
-"wY5-9W-iNv.title" = "Automaticly launch on MacOS login.";
+"wY5-9W-iNv.title" = "Automatically launch app on login";
 // Advanced
 "iW5-CD-5OC.title" = "Advanced";
-"NAp-3R-e8q.title" = "Shift Key:";
-"lzC-ub-pqJ.title" = "Transform the vertical scroll to horizontal";
+"NAp-3R-e8q.title" = "Toggle Key:";
+"lzC-ub-pqJ.title" = "Change vertical scrolling to horizontal scrolling";
 "akk-dX-tW4.title" = "Block Key:";
-"62p-76-okJ.title" = "Temporarily block the smoothing of the scroll";
+"62p-76-okJ.title" = "Temporarily block smooth scrolling";
 "bcp-Xx-rdX.title" = "Disable";
 "DXO-Xo-tJd.title" = "Disable";
 "YE2-UH-9Ku.title" = "Step:";
-"3Xk-SU-gqO.title" = "The minium scroll distance.";
+"3Xk-SU-gqO.title" = "Sets the minimum scroll distance";
 "wck-ay-cL9.title" = "Speed:";
-"PK6-dT-z93.title" = "The speed gain of scrollng.";
+"PK6-dT-z93.title" = "Sets scrolling acceleration";
 "suV-WY-rbw.title" = "Duration:";
-"vmk-zZ-ifN.title" = "The duration of scroll animation";
-"2ho-yL-X2k.title" = "Reset to default";
-"bAe-Zc-5SS.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume or zooming the document, etc.), and smooth scrolling may cause some interference to the operation. You can set a block key to perform such operations. Temporarily blocking the smoothing of the scroll.";
+"vmk-zZ-ifN.title" = "Sets the duration of the scroll animation";
+"2ho-yL-X2k.title" = "Reset to defaults";
+"bAe-Zc-5SS.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
 // Exception
-"I5j-Bv-Aiy.title" = "Need to using Accessibility features";
-"FU4-wI-K8f.title" = "To identify the exception application, we need to dynamically obtain the window information. Therefore, please allow us access to your accessibility feature.";
+"I5j-Bv-Aiy.title" = "Needs access to Accessibility feature";
+"FU4-wI-K8f.title" = "In order to custom the scroll behavior in certain applications, please allow access to Accessibility feature.";
 "Pw5-2q-7Fa.title" = "Allow to use accessibility";
 "bga-wG-iim.title" = "Exception";
-"Rgu-cb-5lp.title" = "Exceptional Applications:";
+"Rgu-cb-5lp.title" = "Customize per Application:";
 "Ksp-g1-48g.title" = "Whitelist Mode";
-"v26-RK-BtL.title" = "The whitelist mode will make Mos only apply to applications within the exception list.";
+"v26-RK-BtL.title" = "The whitelist mode will make Mos only apply to apps within the exception list.";
 "HDo-Iu-l7K.headerCell.title" = "Smooth";
 "rd0-ca-ufI.headerCell.title" = "Reverse";
-"xfG-Cd-oIk.headerCell.title" = " Application";
+"xfG-Cd-oIk.headerCell.title" = "Application";
 "9fl-xB-j7H.title" = "No One is Special";
-"jaq-Cb-dKM.title" = "You can apply a separate configuration to some programs by clicking the \'+\' on below";
+"jaq-Cb-dKM.title" = "You can apply a separate configuration to some apps by clicking the \'+\' button below";
 // Updates
 "EWu-DP-7Gj.title" = "Updates";
 "N0S-yo-DTg.title" = "Check for updates:";
@@ -60,11 +60,11 @@
 "yDf-dn-Mcz.title" = "Home Page";
 "99M-8D-HLN.title" = "GitHub";
 "AM8-cj-DnH.title" = "Buy author a cup of coffee";
-"aPi-cE-maK.title" = "Donate by paypal";
+"aPi-cE-maK.title" = "Donate using PayPal";
 
 // HideStatusItemWindow
 "WNd-iN-aAG.title" = "Hide the status bar icon";
-"hDs-Yh-11x.title" = "Still, even after the icon is hidden, Mos continues to help your mouse scroll smoothly in the background.";
-"zAs-CP-Wpw.title" = "Once you hide the icon, you cannot access preferences panel. If you want to re-display it, using activity mointor to close the Mos and run again, then, click on the notification's \'Show it\' button.";
+"hDs-Yh-11x.title" = "Mos will continue to work in the background without the status bar icon.";
+"zAs-CP-Wpw.title" = "Once you hide the icon you will not be able to access Mos' preferences. If you want to re-display it, use Activity Mointor to close the Mos app then run Mos again. Then, click on the notification's \'Show it\' button.";
 "ueB-gF-VZ8.title" = "Cancel";
 "hhO-Gh-ldE.title" = "Hide the status bar icon";

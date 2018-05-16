@@ -17,9 +17,9 @@
 "Quit" = "退出";
 "Hide Icon" = "隐藏图标";
 
-// Notifaction
+// Notification
 "Mos is running in the background" = "Mos 正在后台运行中";
-"Mos's status bar icon is hidden" = "Mos 的图标已经被隐藏";
+"Mos' status bar icon is hidden" = "Mos 的图标已经被隐藏";
 "Got it" = "我了解了";
 "Show it" = "显示图标";
 
