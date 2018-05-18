@@ -37,8 +37,8 @@
 "2ho-yL-X2k.title" = "Reset to defaults";
 "bAe-Zc-5SS.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
 // Exception
-"I5j-Bv-Aiy.title" = "Needs access to Accessibility feature";
-"FU4-wI-K8f.title" = "In order to custom the scroll behavior in certain applications, please allow access to Accessibility feature.";
+"I5j-Bv-Aiy.title" = "Needs access to Accessibility controls";
+"FU4-wI-K8f.title" = "In order to customize the scroll behavior for certain applications, please allow Mos to have rights to Accessibility.";
 "Pw5-2q-7Fa.title" = "Allow to use accessibility";
 "bga-wG-iim.title" = "Exception";
 "Rgu-cb-5lp.title" = "Customize per Application:";
