@@ -1121,8 +1121,63 @@ FixPt X: 0.0</string>
                                                                 <fragment>
                                                                     <string key="content">scrollWheelEventInstantMouser: 0.0
 scrollWheelEventIsContinuous: 0.0
-scrollWheelEventMomentumPhase: 0.0
-scrollWheelEventScrollCount: 0.0
+</string>
+                                                                    <attributes>
+                                                                        <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                        <font key="NSFont" size="11" name="HelveticaNeue"/>
+                                                                        <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO"/>
+                                                                    </attributes>
+                                                                </fragment>
+                                                                <fragment>
+                                                                    <string key="content">scrollWheelEventScrollCount: 0.0
+</string>
+                                                                    <attributes>
+                                                                        <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                        <font key="NSFont" size="11" name="HelveticaNeue"/>
+                                                                        <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO">
+                                                                            <tabStops>
+                                                                                <textTab alignment="left" location="28">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="56">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="84">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="112">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="140">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="168">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="196">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="224">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="252">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="280">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="308">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                                <textTab alignment="left" location="336">
+                                                                                    <options/>
+                                                                                </textTab>
+                                                                            </tabStops>
+                                                                        </paragraphStyle>
+                                                                    </attributes>
+                                                                </fragment>
+                                                                <fragment>
+                                                                    <string key="content">scrollWheelEventMomentumPhase: 0.0
 scrollWheelEventScrollPhase: 0.0</string>
                                                                     <attributes>
                                                                         <color key="NSColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
