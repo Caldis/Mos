@@ -36,67 +36,67 @@ class ScrollCore {
     let hotkeyEventMask = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
     
     // 滚动处理函数
-    let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        // 是否返回原始事件 (不启用平滑时)
-        var returnOriginalEvent = true
-        // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入)
-        // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
-        if ScrollUtils.shared.isMouse(of: event) {
-            // 获取目标窗口 BundleId
-            let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation()
-            // 获取列表中应用程序的列外设置信息
-            let exceptionalApplications = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
-            // 是否翻转
-            let enableReverse = ScrollUtils.shared.enableReverse(application: exceptionalApplications)
-            // 是否平滑
-            let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications) && !ScrollCore.shared.blockSmooth
-            // 处理滚动事件
-            let scrollEventY = ScrollEvent(with: event, use: ScrollEvent.axis.Y)
-            let scrollEventX = ScrollEvent(with: event, use: ScrollEvent.axis.X)
-            // Y轴
-            if scrollEventY.isUsable() {
-                // 是否翻转滚动
-                if enableReverse {
-                    scrollEventY.reverse(axis: ScrollEvent.axis.Y)
-                }
-                // 是否平滑滚动
-                if enableSmooth {
-                    // 禁止返回原始事件
-                    returnOriginalEvent = false
-                    // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
-                    if !scrollEventY.isFixedType() {
-                        scrollEventY.normalize(threshold: Options.shared.advanced.step)
+    let scrollEventCallBack: CGEventTapCallBack = {
+        (proxy, type, event, refcon) in
+            // 是否返回原始事件 (不启用平滑时)
+            var returnOriginalEvent = true
+            // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入)
+            // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
+            if ScrollUtils.shared.isMouse(of: event) {
+                // 获取目标窗口 BundleId
+                let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation()
+                // 获取列表中应用程序的列外设置信息
+                let exceptionalApplications = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
+                // 是否翻转
+                let enableReverse = ScrollUtils.shared.enableReverse(application: exceptionalApplications)
+                // 是否平滑
+                let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications) && !ScrollCore.shared.blockSmooth
+                // 处理滚动事件
+                let scrollEvent = ScrollEvent(with: event)
+                // Y轴
+                if scrollEvent.Y.usable {
+                    // 是否翻转滚动
+                    if enableReverse {
+                        ScrollEventUtils.reverseY(scrollEvent)
+                    }
+                    // 是否平滑滚动
+                    if enableSmooth {
+                        // 禁止返回原始事件
+                        returnOriginalEvent = false
+                        // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
+                        if !scrollEvent.Y.fixed {
+                            ScrollEventUtils.normalizeY(scrollEvent, Options.shared.advanced.step)
+                        }
                     }
                 }
-            }
-            // X轴
-            if scrollEventX.isUsable() {
-                // 是否翻转滚动
-                if enableReverse {
-                    scrollEventX.reverse(axis: ScrollEvent.axis.X)
-                }
-                // 是否平滑滚动
-                if enableSmooth {
-                    // 禁止返回原始事件
-                    returnOriginalEvent = false
-                    // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
-                    if !scrollEventX.isFixedType() {
-                        scrollEventX.normalize(threshold: Options.shared.advanced.step)
+                // X轴
+                if scrollEvent.X.usable {
+                    // 是否翻转滚动
+                    if enableReverse {
+                        ScrollEventUtils.reverseX(scrollEvent)
+                    }
+                    // 是否平滑滚动
+                    if enableSmooth {
+                        // 禁止返回原始事件
+                        returnOriginalEvent = false
+                        // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
+                        if !scrollEvent.X.fixed {
+                            ScrollEventUtils.normalizeX(scrollEvent, Options.shared.advanced.step)
+                        }
                     }
                 }
+                // 触发滚动事件推送
+                if enableSmooth {
+                    ScrollCore.shared.updateScrollBuffer(y: scrollEvent.Y.usableValue, x: scrollEvent.X.usableValue)
+                    ScrollCore.shared.enableScrollEventPoster()
+                }
             }
-            // 触发滚动事件推送
-            if enableSmooth {
-                ScrollCore.shared.updateScrollBuffer(y: scrollEventY.getValue(), x: scrollEventX.getValue())
-                ScrollCore.shared.enableScrollEventPoster()
+            // 返回事件对象
+            if returnOriginalEvent {
+                return Unmanaged.passRetained(event)
+            } else {
+                return nil
             }
-        }
-        // 返回事件对象
-        if returnOriginalEvent {
-            return Unmanaged.passRetained(event)
-        } else {
-            return nil
-        }
     }
     
     // 热键处理函数
