@@ -35,7 +35,7 @@ class ScrollCore {
     let scrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
     let hotkeyEventMask = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
     
-    // 滚动处理函数
+    // 滚动处理
     let scrollEventCallBack: CGEventTapCallBack = {
         (proxy, type, event, refcon) in
             // 是否返回原始事件 (不启用平滑时)
@@ -50,7 +50,7 @@ class ScrollCore {
                 // 是否翻转
                 let enableReverse = ScrollUtils.shared.enableReverse(application: exceptionalApplications)
                 // 是否平滑
-                let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications) && !ScrollCore.shared.blockSmooth
+                let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications)
                 // 处理滚动事件
                 let scrollEvent = ScrollEvent(with: event)
                 // Y轴
@@ -99,7 +99,7 @@ class ScrollCore {
             }
     }
     
-    // 热键处理函数
+    // 热键处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         var shiftKey = Options.shared.advanced.shift
         var disableKey = Options.shared.advanced.block
@@ -225,9 +225,8 @@ class ScrollCore {
             y: scrollCurr.y + scrollPulse.y,
             x: scrollCurr.x + scrollPulse.x
         )
-        // 填充凹点
-        scrollFiller.fillIn(with: scrollPulse)
-        let filteredValue = scrollFiller.value()
+        // 填入 scrollFiller, 并获取值
+        let filteredValue = scrollFiller.fillIn(with: scrollPulse)
         // 变换滚动结果
         let swapedValue = weapScrollWhenShifting(y: filteredValue.y, x: filteredValue.x, shifting: shiftScroll)
         // 发送滚动结果

@@ -56,15 +56,16 @@ class ScrollUtils {
     // 原理: 获取指针坐标下的 AXUIElement 信息, 从而获取 BundleID
     // 来自: https://stackoverflow.com/questions/27584963/get-window-values-under-mouse
     // 已知问题: 外置屏幕获取到的 PID 有大约 30PX 在垂直方向上的偏移, 但内置屏幕无此问题
+    // 已知问题: 效率低下，影响首次滚动性能
     let systemWideElement = AXUIElementCreateSystemWide()
     var bundleIdCache:String? = nil
     var bundleIdDetectTime = 0.0
     var mouseLocationCache = NSPoint(x: 0.0, y: 0.0)
     func getBundleIdFromMouseLocation() -> String? {
         let location = NSEvent.mouseLocation
-        // 如果距离上次检测时间大于 1000ms, 则重新检测一遍, 否则直接返回上次的结果
+        // 如果距离上次检测时间大于 1000ms, 且鼠标移动大于阈值, 则重新检测一遍, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
-        if nowTime-self.bundleIdDetectTime>1.0 || !mouseStayStill(location, mouseLocationCache) || bundleIdCache==nil {
+        if nowTime-self.bundleIdDetectTime>1.0 && (!mouseStayStill(location, mouseLocationCache) || bundleIdCache==nil) {
             let pointAsCGPoint = carbonScreenPointFromCocoaScreenPoint(mouseLocation: location)
             var element: AXUIElement?
             if AXUIElementCopyElementAtPosition(systemWideElement, Float(pointAsCGPoint.x), Float(pointAsCGPoint.y), &element ) == .success {
@@ -97,10 +98,10 @@ class ScrollUtils {
         AXUIElementGetPid(element, &pid)
         return pid
     }
-    // 确定鼠标在一定范围内 (20) (取整比较)
-    let limit = 20
+    // 确定鼠标在一定范围内 (20PX)
+    let limit:CGFloat = 20
     private func mouseStayStill(_ a: CGPoint, _ b: CGPoint) -> Bool {
-        return abs(Int(a.x)-Int(b.x))<limit && abs(Int(a.y)-Int(b.y))<limit
+        return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2)) < limit
     }
     
     // 判断事件类型
@@ -109,7 +110,7 @@ class ScrollUtils {
         if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
             return true
         }
-        // 累计加速度
+        // 累计加速度不为零, 则为触控板
         if event.getDoubleValueField(.scrollWheelEventScrollCount) != 0.0 {
             return true
         }
@@ -182,7 +183,7 @@ class ScrollUtils {
 
     // 是否启用平滑
     func enableSmooth(application: ExceptionalApplication?) -> Bool {
-        if Options.shared.basic.smooth {
+        if Options.shared.basic.smooth && !ScrollCore.shared.blockSmooth {
             // 针对 Launchpad 特殊处理, 不论是否在列表内均禁用平滑
             if launchpadIsActive() {
                 return false
