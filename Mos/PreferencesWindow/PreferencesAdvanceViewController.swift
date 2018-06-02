@@ -13,13 +13,13 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBOutlet weak var shiftKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var disableKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var scrollStepSlider: NSSlider!
-    @IBOutlet weak var scrollStepLabel: NSTextField!
+    @IBOutlet weak var scrollStepInput: NSTextField!
     @IBOutlet weak var scrollStepStepper: NSStepper!
     @IBOutlet weak var scrollSpeedSlider: NSSlider!
-    @IBOutlet weak var scrollSpeedLabel: NSTextField!
+    @IBOutlet weak var scrollSpeedInput: NSTextField!
     @IBOutlet weak var scrollSpeedStepper: NSStepper!
     @IBOutlet weak var scrollDurationSlider: NSSlider!
-    @IBOutlet weak var scrollDurationLabel: NSTextField!
+    @IBOutlet weak var scrollDurationInput: NSTextField!
     @IBOutlet weak var scrollDurationStepper: NSStepper!
     
     override func viewDidLoad() {
@@ -44,6 +44,9 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBAction func scrollStepSliderChange(_ sender: NSSlider) {
         setScrollStep(value: sender.doubleValue)
     }
+    @IBAction func scrollStepInputChange(_ sender: NSTextField) {
+        setScrollStep(value: sender.doubleValue)
+    }
     @IBAction func scrollStepStepperChange(_ sender: NSStepper) {
         setScrollStep(value: sender.doubleValue)
     }
@@ -56,6 +59,9 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBAction func scrollSpeedSliderChange(_ sender: NSSlider) {
         setScrollSpeed(value: sender.doubleValue)
     }
+    @IBAction func scrollSpeedInputChange(_ sender: NSTextField) {
+        setScrollSpeed(value: sender.doubleValue)
+    }
     @IBAction func scrollSpeedStepperChange(_ sender: NSStepper) {
         setScrollSpeed(value: sender.doubleValue)
     }
@@ -66,6 +72,9 @@ class PreferencesAdvanceViewController: NSViewController {
     
     // 过渡
     @IBAction func scrollDurationSliderChange(_ sender: NSSlider) {
+        setScrollDuration(value: sender.doubleValue)
+    }
+    @IBAction func scrollDurationInputChange(_ sender: NSTextField) {
         setScrollDuration(value: sender.doubleValue)
     }
     @IBAction func scrollDurationStepperChange(_ sender: NSStepper) {
@@ -100,17 +109,17 @@ class PreferencesAdvanceViewController: NSViewController {
         let step = Options.shared.advanced.step
         scrollStepSlider.doubleValue = step
         scrollStepStepper.doubleValue = step
-        scrollStepLabel.stringValue = String(format: "%.2f", step)
+        scrollStepInput.stringValue = String(format: "%.2f", step)
         // 速度
         let speed = Options.shared.advanced.speed
         scrollSpeedSlider.doubleValue = speed
         scrollSpeedStepper.doubleValue = speed
-        scrollSpeedLabel.stringValue = String(format: "%.2f", speed)
+        scrollSpeedInput.stringValue = String(format: "%.2f", speed)
         // 过渡
         let duration = Options.shared.advanced.duration
         scrollDurationSlider.doubleValue = duration
         scrollDurationStepper.doubleValue = duration
-        scrollDurationLabel.stringValue = String(format: "%.2f", duration)
+        scrollDurationInput.stringValue = String(format: "%.2f", duration)
     }
     
 }
