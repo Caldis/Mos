@@ -123,7 +123,7 @@ class ScrollUtils {
     // 判断 LaunchPad 是否激活
     var launchpadActiveCache = false
     var launchpadLastDetectTime = 0.0
-    private func launchpadIsActive() -> Bool {
+    private func isLaunchpadActive() -> Bool {
         // 如果距离上次检测时间大于 1000ms, 则重新检测一遍, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - launchpadLastDetectTime > 1.0 {
@@ -144,7 +144,7 @@ class ScrollUtils {
     // 判断 MissionControl 是否激活
     var missioncontrolActiveCache = false
     var missioncontrolLastDetectTime = 0.0
-    private func missioncontrolIsActive() -> Bool {
+    private func isMissioncontrolActive() -> Bool {
         // 如果距离上次检测时间大于 1000ms, 则重新检测一遍, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - missioncontrolLastDetectTime > 1.0 {
@@ -185,7 +185,7 @@ class ScrollUtils {
     func enableSmooth(application: ExceptionalApplication?) -> Bool {
         if Options.shared.basic.smooth && !ScrollCore.shared.blockSmooth {
             // 针对 Launchpad 特殊处理, 不论是否在列表内均禁用平滑
-            if launchpadIsActive() {
+            if isLaunchpadActive() {
                 return false
             }
             if let target = application {
@@ -203,7 +203,7 @@ class ScrollUtils {
             // 例外应用列表(Dict)
             let applicationsDict = Options.shared.exception.applicationsDict
             // 针对 Launchpad 特殊处理
-            if launchpadIsActive() {
+            if isLaunchpadActive() {
                 if let launchpad = applicationsDict["com.apple.launchpad.launcher"] {
                     return launchpad.reverse
                 }
