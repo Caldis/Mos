@@ -27,9 +27,9 @@ class Options {
         advanced: (
             shift: 56,
             block: 55,
-            step: 25.0,
+            step: 35.0,
             speed: 4.00,
-            duration: 3.90, durationTransition: 0.4375,
+            duration: 4.00, durationTransition: 0.1230,
             precision: 1.00
         ),
         // 例外
