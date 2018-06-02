@@ -39,13 +39,15 @@ class WindowManager {
             windowController.showWindow(self)
             NSApp.activate(ignoringOtherApps: true)
         }
+        // 显示 Dock 图标
+        Utils.showDockIcon()
     }
     // 关闭对应 Identifier 的窗口
     func hideWindow(withIdentifier identifier: String) {
-        if let windowController = controller[identifier] {
-            controller[identifier] = nil
-            windowController.close()
-        }
+        // 隐藏 Dock 图标
+        Utils.hideDockIcon()
+        // 销毁窗口实例
+        controller.removeValue(forKey: identifier)
     }
     
 }

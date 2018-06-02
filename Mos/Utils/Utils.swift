@@ -95,4 +95,26 @@ class Utils {
         }
     }
     
+    // Dock 图标控制
+    static var isDockIconVisible = false
+    class func showDockIcon() {
+        if !Utils.isDockIconVisible {
+            NSApp.setActivationPolicy(NSApplication.ActivationPolicy.regular)
+            isDockIconVisible = true
+        }
+    }
+    class func hideDockIcon() {
+        if WindowManager.shared.controller.count == 1 {
+            NSApp.setActivationPolicy(NSApplication.ActivationPolicy.accessory)
+            isDockIconVisible = false
+        }
+    }
+    class func toggleDockIcon() {
+        if isDockIconVisible {
+            hideDockIcon()
+        } else {
+            showDockIcon()
+        }
+    }
+    
 }
