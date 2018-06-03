@@ -168,7 +168,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="DeC-IR-Vwk">
-                                        <rect key="frame" x="20" y="71" width="410" height="128"/>
+                                        <rect key="frame" x="20" y="71" width="410" height="5"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     </box>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YDA-cP-xvj">
