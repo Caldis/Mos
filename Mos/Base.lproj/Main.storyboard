@@ -168,7 +168,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="DeC-IR-Vwk">
-                                        <rect key="frame" x="20" y="71" width="410" height="5"/>
+                                        <rect key="frame" x="20" y="71" width="410" height="128"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     </box>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YDA-cP-xvj">
@@ -398,7 +398,7 @@
                                 </connections>
                             </button>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="TlZ-r7-thf">
-                                <rect key="frame" x="20" y="333" width="410" height="4"/>
+                                <rect key="frame" x="20" y="333" width="410" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
                             <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AQK-ih-gQD">
@@ -723,7 +723,7 @@
                                                 <real key="minimum" value="10"/>
                                                 <real key="maximum" value="100"/>
                                             </numberFormatter>
-                                            <font key="font" metaFont="system" size="9"/>
+                                            <font key="font" metaFont="miniSystem"/>
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
@@ -748,17 +748,6 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5om-pZ-VPE">
-                                        <rect key="frame" x="298" y="250" width="25" height="25"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gbM-o6-A8F">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <segue destination="mUR-85-jNE" kind="popover" popoverAnchorView="5om-pZ-VPE" popoverBehavior="t" preferredEdge="maxY" id="ipA-fn-0Dd"/>
-                                        </connections>
-                                    </button>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dZJ-RH-WIh">
                                         <rect key="frame" x="30" y="128" width="120" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -771,7 +760,7 @@
                                     <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CyT-FH-1xX">
                                         <rect key="frame" x="166" y="126" width="174" height="19"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="10" doubleValue="4" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="fds-F7-fCs"/>
+                                        <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="10" doubleValue="3" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="fds-F7-fCs"/>
                                         <connections>
                                             <action selector="scrollSpeedSliderChange:" target="iW5-CD-5OC" id="Ngz-wS-NXh"/>
                                         </connections>
@@ -779,7 +768,7 @@
                                     <textField verticalHuggingPriority="750" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZJI-62-qC7" userLabel="Scroll Speed Input">
                                         <rect key="frame" x="346" y="126" width="60" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="4.00" placeholderString="1 - 10" usesSingleLineMode="YES" bezelStyle="round" id="0fX-iZ-mvz">
+                                        <textFieldCell key="cell" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="3.00" placeholderString="1 - 10" usesSingleLineMode="YES" bezelStyle="round" id="0fX-iZ-mvz">
                                             <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="#,##0.00" negativeFormat="-#,##0.00" thousandSeparator="," id="5Mk-M2-eHf">
                                                 <textAttributesForNegativeValues/>
                                                 <attributedString key="attributedStringForNil"/>
@@ -788,7 +777,7 @@
                                                 <real key="minimum" value="1"/>
                                                 <real key="maximum" value="10"/>
                                             </numberFormatter>
-                                            <font key="font" metaFont="system" size="9"/>
+                                            <font key="font" metaFont="miniSystem"/>
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
@@ -799,7 +788,7 @@
                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PrV-cR-CdD" userLabel="Scroll Speed Stepper">
                                         <rect key="frame" x="404" y="124" width="19" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="10" doubleValue="4" id="THS-S1-vhe"/>
+                                        <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="10" doubleValue="3" id="THS-S1-vhe"/>
                                         <connections>
                                             <action selector="scrollSpeedStepperChange:" target="iW5-CD-5OC" id="vsC-mx-mzq"/>
                                         </connections>
@@ -825,7 +814,7 @@
                                     <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Z34-gx-WqH" userLabel="Scroll Duration Slider">
                                         <rect key="frame" x="166" y="74" width="174" height="19"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="5" doubleValue="4" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="AcR-3v-Dqn"/>
+                                        <sliderCell key="cell" state="on" alignment="left" minValue="1" maxValue="5" doubleValue="3.8999999999999999" tickMarkPosition="above" allowsTickMarkValuesOnly="YES" sliderType="linear" id="AcR-3v-Dqn"/>
                                         <connections>
                                             <action selector="scrollDurationSliderChange:" target="iW5-CD-5OC" id="4sw-gj-ai3"/>
                                         </connections>
@@ -833,13 +822,13 @@
                                     <textField verticalHuggingPriority="750" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3gZ-fV-W77" userLabel="Scroll Duration Input">
                                         <rect key="frame" x="346" y="72" width="60" height="22"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="4.00" placeholderString="1 - 5" usesSingleLineMode="YES" bezelStyle="round" id="AAA-VY-FL2">
+                                        <textFieldCell key="cell" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="3.90" placeholderString="1 - 5" usesSingleLineMode="YES" bezelStyle="round" id="AAA-VY-FL2">
                                             <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="#,##0.00" negativeFormat="-#,##0.00" thousandSeparator="," id="epS-24-jD2">
                                                 <attributedString key="attributedStringForZero"/>
                                                 <real key="minimum" value="1"/>
                                                 <real key="maximum" value="5"/>
                                             </numberFormatter>
-                                            <font key="font" metaFont="system" size="9"/>
+                                            <font key="font" metaFont="miniSystem"/>
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
@@ -850,7 +839,7 @@
                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u6m-U6-lbc" userLabel="Scroll Duration Stepper">
                                         <rect key="frame" x="404" y="70" width="19" height="27"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="5" doubleValue="4" id="zlB-ur-whi"/>
+                                        <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="5" doubleValue="3.8999999999999999" id="zlB-ur-whi"/>
                                         <connections>
                                             <action selector="scrollDurationStepperChange:" target="iW5-CD-5OC" id="IpN-aQ-ZiG"/>
                                         </connections>
@@ -873,6 +862,17 @@
                                         </buttonCell>
                                         <connections>
                                             <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="JN4-aj-ZjR"/>
+                                        </connections>
+                                    </button>
+                                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5om-pZ-VPE">
+                                        <rect key="frame" x="298" y="251" width="25" height="25"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gbM-o6-A8F">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <segue destination="mUR-85-jNE" kind="popover" popoverAnchorView="5om-pZ-VPE" popoverBehavior="t" preferredEdge="maxY" id="ipA-fn-0Dd"/>
                                         </connections>
                                     </button>
                                 </subviews>

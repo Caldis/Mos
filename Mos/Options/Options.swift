@@ -28,8 +28,8 @@ class Options {
             shift: 56,
             block: 55,
             step: 35.0,
-            speed: 4.00,
-            duration: 4.00, durationTransition: 0.1230,
+            speed: 3.00,
+            duration: 3.90, durationTransition: 0.1340,
             precision: 1.00
         ),
         // 例外
