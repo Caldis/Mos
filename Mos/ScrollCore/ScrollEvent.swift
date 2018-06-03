@@ -108,18 +108,17 @@ class ScrollEventUtils {
             return {
                 (scrollEvent: ScrollEvent, threshold: Double) in
                     let usableValue = scrollEvent.Y.usableValue
-                    let absUsableValue = abs(usableValue)
-                    scrollEvent.Y.usableValue = usableValue>0.0 ? max(absUsableValue, threshold) : -max(absUsableValue, threshold)
+                    scrollEvent.Y.usableValue = usableValue>0.0 ? max(usableValue.magnitude, threshold) : -max(usableValue.magnitude, threshold)
             }
         } else {
             return {
                 (scrollEvent: ScrollEvent, threshold: Double) in
                     let usableValue = scrollEvent.X.usableValue
-                    let absUsableValue = abs(usableValue)
-                    scrollEvent.X.usableValue = usableValue>0.0 ? max(absUsableValue, threshold) : -max(absUsableValue, threshold)
+                    scrollEvent.X.usableValue = usableValue>0.0 ? max(usableValue.magnitude, threshold) : -max(usableValue.magnitude, threshold)
             }
         }
     }
     static let normalizeX = normalize(axis: axisType.X)
     static let normalizeY = normalize(axis: axisType.Y)
+    
 }

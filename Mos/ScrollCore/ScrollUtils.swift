@@ -16,6 +16,13 @@ class ScrollUtils {
     
     // 从 PID 获取进程名称
     private func getApplicationBundleIdFrom(pid: pid_t) -> String? {
+        if let runningApps = NSRunningApplication.init(processIdentifier: pid) {
+            return runningApps.bundleIdentifier
+        } else {
+            return nil
+        }
+    }
+    private func oldGetApplicationBundleIdFrom(pid: pid_t) -> String? {
         // 更新列表
         let runningApps = NSWorkspace.shared.runningApplications
         if let matchApp = runningApps.filter({$0.processIdentifier == pid}).first {
@@ -31,18 +38,18 @@ class ScrollUtils {
         }
     }
     
-    // 从 CGEvent 中获取事件目标的 BundleId
+    // 从 CGEvent 中携带的 PID 获取目标窗口的 BundleId
     // 已知问题: 如果鼠标滚轮事件由 cghidEventTap 层截取, 则获取到的目标窗口 PID 为当前的激活窗口, 而不是悬停窗口
     private var lastEventTargetPID:pid_t = 1     // 目标进程 PID (先前)
     private var currEventTargetPID:pid_t = 1     // 事件的目标进程 PID (当前)
-    private var currEventTargetBID:String!       // 事件的目标进程 BID (当前)
-    func getCurrentEventTargetBundleId(from event: CGEvent) -> String {
+    private var currEventTargetBID:String?       // 事件的目标进程 BID (当前)
+    func getCurrentEventTargetBundleId(from event: CGEvent) -> String? {
         // 保存上次 PID
         lastEventTargetPID = currEventTargetPID
         // 更新当前 PID
         currEventTargetPID = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
         // 使用 PID 获取 BID
-        // 如果目标 PID 变化, 则重新获取一次窗口 BID (更新 BID 消耗较高)
+        // 如果目标 PID 变化, 则重新获取一次窗口 BID (查找 BID 效率较低)
         if lastEventTargetPID != currEventTargetPID {
             if let bundleId = getApplicationBundleIdFrom(pid: currEventTargetPID) {
                 currEventTargetBID = bundleId
@@ -51,8 +58,11 @@ class ScrollUtils {
         }
         return currEventTargetBID
     }
+    func getCurrentEventTargetBundleIdFromCache() -> String? {
+        return currEventTargetBID
+    }
     
-    // 获取指针悬停位置的窗口 BundleId
+    // 从指针悬停位置获取窗口 BundleId
     // 原理: 获取指针坐标下的 AXUIElement 信息, 从而获取 BundleID
     // 来自: https://stackoverflow.com/questions/27584963/get-window-values-under-mouse
     // 已知问题: 外置屏幕获取到的 PID 有大约 30PX 在垂直方向上的偏移, 但内置屏幕无此问题

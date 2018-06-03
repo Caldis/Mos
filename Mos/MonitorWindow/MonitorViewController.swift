@@ -82,7 +82,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(updateMonitorData), name:NSNotification.Name(rawValue: "ScrollEvent"), object: nil)
         // 开始截取事件
-        eventTap = Interception.start(event: mask, to: eventCallBack, at: .cgAnnotatedSessionEventTap, where: .tailAppendEventTap, for: .listenOnly)
+        eventTap = Interception.start(event: mask, handleBy: eventCallBack, at: .cgAnnotatedSessionEventTap, where: .tailAppendEventTap, for: .listenOnly)
     }
     func uninitObserver() {
         // 停止截取

@@ -28,16 +28,15 @@ class ScrollCore {
     // 事件发送器
     var scrollEventPoster: CVDisplayLink?
     // 拦截层
-    var scrollEventTap:CFMachPort?
-    var hotkeyEventTap:CFMachPort?
+    var scrollEventTap: CFMachPort?
+    var hotkeyEventTap: CFMachPort?
     var tapKeeperTimer: Timer?
     // 拦截掩码
     let scrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
     let hotkeyEventMask = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
     
     // 滚动处理
-    let scrollEventCallBack: CGEventTapCallBack = {
-        (proxy, type, event, refcon) in
+    let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
             // 是否返回原始事件 (不启用平滑时)
             var returnOriginalEvent = true
             // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入)
@@ -115,15 +114,15 @@ class ScrollCore {
             ScrollCore.shared.blockSmooth = !ScrollCore.shared.blockSmooth
             ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
         }
-        return Unmanaged.passRetained(event)
+        return nil
     }
     
     
     // 启动滚动处理
     func startHandlingScroll() {
         // 开始截取事件
-        scrollEventTap = Interception.start(event: scrollEventMask, to: scrollEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)
-        hotkeyEventTap = Interception.start(event: hotkeyEventMask, to: hotkeyEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .listenOnly)
+        scrollEventTap = Interception.start(event: scrollEventMask, handleBy: scrollEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)
+        hotkeyEventTap = Interception.start(event: hotkeyEventMask, handleBy: hotkeyEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .listenOnly)
         // 初始化滚动事件发送器
         initScrollEventPoster()
         // 初始化守护进程
@@ -133,11 +132,11 @@ class ScrollCore {
     func endHandlingScroll() {
         // 停止守护进程
         tapKeeperTimer?.invalidate()
-        // 停止发送滚动事件
+        // 停止滚动事件发送器
         disableScrollEventPoster()
         // 停止截取事件
-        Interception.stop(tap: scrollEventTap)
         Interception.stop(tap: hotkeyEventTap)
+        Interception.stop(tap: scrollEventTap)
     }
     // 守护进程
     // 在某些高压环境下 eventTap 会挂掉
@@ -166,7 +165,7 @@ class ScrollCore {
             scrollCurr.y = 0.0
         }
         // 更新 X 轴数据
-        if x*scrollDelta.x>0 {
+        if x*scrollDelta.x > 0 {
             scrollBuffer.x += speed * x
         } else {
             scrollBuffer.x = speed * x
@@ -232,7 +231,7 @@ class ScrollCore {
         // 发送滚动结果
         MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
         // 如果临近目标距离小于精确度门限则停止滚动
-        if abs(scrollPulse.y)<=Options.shared.advanced.precision && abs(scrollPulse.x)<=Options.shared.advanced.precision {
+        if scrollPulse.y.magnitude<=Options.shared.advanced.precision && scrollPulse.x.magnitude<=Options.shared.advanced.precision {
             disableScrollEventPoster()
             scrollFiller.clean()
         }
