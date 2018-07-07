@@ -67,7 +67,7 @@ class Utils {
     }
     
     // 从 StoryBroad 获取一个特定 Controller 的实例
-    private static var storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+    private static let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
     class func instantiateControllerFromStoryboard<Controller>(withIdentifier identifier: String) -> Controller {
         let id = NSStoryboard.SceneIdentifier(rawValue: identifier)
         guard let controller = storyboard.instantiateController(withIdentifier: id) as? Controller else {

@@ -28,8 +28,8 @@ class ScrollCore {
     // 事件发送器
     var scrollEventPoster: CVDisplayLink?
     // 拦截层
-    var scrollEventTap: CFMachPort?
-    var hotkeyEventTap: CFMachPort?
+    var scrollEventInterception: InterceptionRef?
+    var hotkeyEventInterception: InterceptionRef?
     var tapKeeperTimer: Timer?
     // 拦截掩码
     let scrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
@@ -37,65 +37,65 @@ class ScrollCore {
     
     // 滚动处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-            // 是否返回原始事件 (不启用平滑时)
-            var returnOriginalEvent = true
-            // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入)
-            // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
-            if ScrollUtils.shared.isMouse(of: event) {
-                // 获取目标窗口 BundleId
-                let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation()
-                // 获取列表中应用程序的列外设置信息
-                let exceptionalApplications = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
-                // 是否翻转
-                let enableReverse = ScrollUtils.shared.enableReverse(application: exceptionalApplications)
-                // 是否平滑
-                let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications)
-                // 处理滚动事件
-                let scrollEvent = ScrollEvent(with: event)
-                // Y轴
-                if scrollEvent.Y.usable {
-                    // 是否翻转滚动
-                    if enableReverse {
-                        ScrollEventUtils.reverseY(scrollEvent)
-                    }
-                    // 是否平滑滚动
-                    if enableSmooth {
-                        // 禁止返回原始事件
-                        returnOriginalEvent = false
-                        // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
-                        if !scrollEvent.Y.fixed {
-                            ScrollEventUtils.normalizeY(scrollEvent, Options.shared.advanced.step)
-                        }
-                    }
+        // 是否返回原始事件 (不启用平滑时)
+        var returnOriginalEvent = true
+        // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入)
+        // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
+        if ScrollUtils.shared.isMouse(of: event) {
+            // 获取目标窗口 BundleId
+            let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation()
+            // 获取列表中应用程序的列外设置信息
+            let exceptionalApplications = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
+            // 是否翻转
+            let enableReverse = ScrollUtils.shared.enableReverse(application: exceptionalApplications)
+            // 是否平滑
+            let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications)
+            // 处理滚动事件
+            let scrollEvent = ScrollEvent(with: event)
+            // Y轴
+            if scrollEvent.Y.usable {
+                // 是否翻转滚动
+                if enableReverse {
+                    ScrollEventUtils.reverseY(scrollEvent)
                 }
-                // X轴
-                if scrollEvent.X.usable {
-                    // 是否翻转滚动
-                    if enableReverse {
-                        ScrollEventUtils.reverseX(scrollEvent)
-                    }
-                    // 是否平滑滚动
-                    if enableSmooth {
-                        // 禁止返回原始事件
-                        returnOriginalEvent = false
-                        // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
-                        if !scrollEvent.X.fixed {
-                            ScrollEventUtils.normalizeX(scrollEvent, Options.shared.advanced.step)
-                        }
-                    }
-                }
-                // 触发滚动事件推送
+                // 是否平滑滚动
                 if enableSmooth {
-                    ScrollCore.shared.updateScrollBuffer(y: scrollEvent.Y.usableValue, x: scrollEvent.X.usableValue)
-                    ScrollCore.shared.enableScrollEventPoster()
+                    // 禁止返回原始事件
+                    returnOriginalEvent = false
+                    // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
+                    if !scrollEvent.Y.fixed {
+                        ScrollEventUtils.normalizeY(scrollEvent, Options.shared.advanced.step)
+                    }
                 }
             }
-            // 返回事件对象
-            if returnOriginalEvent {
-                return Unmanaged.passRetained(event)
-            } else {
-                return nil
+            // X轴
+            if scrollEvent.X.usable {
+                // 是否翻转滚动
+                if enableReverse {
+                    ScrollEventUtils.reverseX(scrollEvent)
+                }
+                // 是否平滑滚动
+                if enableSmooth {
+                    // 禁止返回原始事件
+                    returnOriginalEvent = false
+                    // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
+                    if !scrollEvent.X.fixed {
+                        ScrollEventUtils.normalizeX(scrollEvent, Options.shared.advanced.step)
+                    }
+                }
             }
+            // 触发滚动事件推送
+            if enableSmooth {
+                ScrollCore.shared.updateScrollBuffer(y: scrollEvent.Y.usableValue, x: scrollEvent.X.usableValue)
+                ScrollCore.shared.enableScrollEventPoster()
+            }
+        }
+        // 返回事件对象
+        if returnOriginalEvent {
+            return Unmanaged.passUnretained(event)
+        } else {
+            return nil
+        }
     }
     
     // 热键处理
@@ -121,8 +121,8 @@ class ScrollCore {
     // 启动滚动处理
     func startHandlingScroll() {
         // 开始截取事件
-        scrollEventTap = Interception.start(event: scrollEventMask, handleBy: scrollEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)
-        hotkeyEventTap = Interception.start(event: hotkeyEventMask, handleBy: hotkeyEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .listenOnly)
+        scrollEventInterception = Interception.start(event: scrollEventMask, handleBy: scrollEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)
+        hotkeyEventInterception = Interception.start(event: hotkeyEventMask, handleBy: hotkeyEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .listenOnly)
         // 初始化滚动事件发送器
         initScrollEventPoster()
         // 初始化守护进程
@@ -135,21 +135,25 @@ class ScrollCore {
         // 停止滚动事件发送器
         disableScrollEventPoster()
         // 停止截取事件
-        Interception.stop(tap: hotkeyEventTap)
-        Interception.stop(tap: scrollEventTap)
+        Interception.stop(scrollEventInterception)
+        Interception.stop(hotkeyEventInterception)
     }
     // 守护进程
     // 在某些高压环境下 eventTap 会挂掉
     // 使用守护进程监控, 如果挂掉就重启, 监控周期 2S, 对CPU基本无占用
     @objc func tapKeeper() {
-        if let tap = scrollEventTap {
-            if !CGEvent.tapIsEnabled(tap: tap) {
-                CGEvent.tapEnable(tap: tap, enable: true)
+        if let ref = scrollEventInterception {
+            if let tap = ref.eventTap {
+                if !CGEvent.tapIsEnabled(tap: tap) {
+                    CGEvent.tapEnable(tap: tap, enable: true)
+                }
             }
         }
-        if let tap = hotkeyEventTap {
-            if !CGEvent.tapIsEnabled(tap: tap) {
-                CGEvent.tapEnable(tap: tap, enable: true)
+        if let ref = hotkeyEventInterception {
+            if let tap = ref.eventTap {
+                if !CGEvent.tapIsEnabled(tap: tap) {
+                    CGEvent.tapEnable(tap: tap, enable: true)
+                }
             }
         }
     }

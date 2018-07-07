@@ -8,25 +8,39 @@
 
 import Foundation
 
+struct InterceptionRef {
+    var eventTap: CFMachPort?
+    var runLoopSource: CFRunLoopSource?
+}
+
 class Interception {
     
     // 开始截取
-    class func start(event mask: CGEventMask, handleBy eventHandler: @escaping CGEventTapCallBack, at eventTap: CGEventTapLocation, where eventPlace: CGEventTapPlacement, for behaver: CGEventTapOptions) -> CFMachPort {
+    class func start(event mask: CGEventMask, handleBy eventHandler: @escaping CGEventTapCallBack, at eventTap: CGEventTapLocation, where eventPlace: CGEventTapPlacement, for behaver: CGEventTapOptions) -> InterceptionRef {
         guard let eventTap = CGEvent.tapCreate(tap: eventTap, place: eventPlace, options: behaver, eventsOfInterest: mask, callback: eventHandler, userInfo: nil) else {
             fatalError("Failed to create event tap")
         }
         let runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0)
         CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
         CGEvent.tapEnable(tap: eventTap, enable: true)
-        return eventTap
+        return InterceptionRef(eventTap: eventTap, runLoopSource: runLoopSource)
     }
     
     // 停止截取
-    class func stop(tap: CFMachPort?) {
-        if let eventTap = tap {
-            CGEvent.tapEnable(tap: eventTap, enable: false)
+    class func stop(_ interceptionRef: InterceptionRef?) {
+        if let ref = interceptionRef {
+            if let eventTap = ref.eventTap {
+                CGEvent.tapEnable(tap: eventTap, enable: false)
+            } else {
+                fatalError("Failed to disable eventTap")
+            }
+            if let runLoopSource = ref.runLoopSource {
+                CFRunLoopRemoveSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes);
+            } else {
+                fatalError("Failed to stop runLoopSource")
+            }
         } else {
-            fatalError("Failed to disable eventTap")
+            fatalError("Failed to stop Interception")
         }
     }
     

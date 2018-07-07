@@ -25,12 +25,13 @@ class WindowManager {
     
     // 显示对应 Identifier 的窗口
     func showWindow(withIdentifier identifier: String, withTitle title:String) {
-        // 判断窗口是否打开
-        if controller[identifier] != nil {
-            // 如果已经显示了, 就前置显示
+        // 判断窗口引用是否存在
+        if let window = controller[identifier] {
+            // 如果存在, 打开窗口并前置显示
+            window.showWindow(nil)
             NSApp.activate(ignoringOtherApps: true)
         } else {
-            // 如果没有显示, 则从 Storyboard 获取一个实例并保存到引用列表中
+            // 如果不存在, 则从 Storyboard 获取一个实例并保存到引用列表中
             let windowController = Utils.instantiateControllerFromStoryboard(withIdentifier: identifier) as NSWindowController
             controller[identifier] = windowController
             // 显示窗口

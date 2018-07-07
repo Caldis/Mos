@@ -14,7 +14,6 @@ class PreferencesTabViewController: NSTabViewController {
     var currentWindowController: NSWindowController?
     var currentTabViewController: NSViewController?
     
-    // 显示前
     override func viewWillAppear() {
         // 初始化 Controller 引用
         currentWindowController = WindowManager.shared.controller[WindowManager.shared.identifier.preferencesWindowController]!
@@ -23,6 +22,11 @@ class PreferencesTabViewController: NSTabViewController {
         let currentWindowRect = currentWindowController!.window!.frame
         let generalSize = NSMakeRect(currentWindowRect.origin.x, currentWindowRect.origin.y, 450, 265)
         currentWindowController!.window!.setFrame(generalSize, display: true, animate: true)
+    }
+    
+    override func viewWillDisappear() {
+        currentWindowController = nil
+        currentTabViewController = nil
     }
     
     // 点击 Tabview 上的 toolbar 类型按钮时动态设置窗口大小/高度

@@ -23,6 +23,9 @@
     CGEventSetIntegerValueField(event, kCGScrollWheelEventIsContinuous, 1);
     // 发送事件
     CGEventPost(kCGSessionEventTap, event);
+    // 释放
+    // https://github.com/Caldis/Mos/issues/85
+    CFRelease(event);
 }
 
 @end
