@@ -17,7 +17,6 @@ class PreferencesExceptionViewController: NSViewController {
     @IBOutlet weak var tableViewToolBar: NSSegmentedControl!
     // 提示层
     @IBOutlet weak var noDataHint: NSView!
-    @IBOutlet weak var noPromissionHint: NSVisualEffectView!
     // 检查授权定时器
     var checkAccessibilityTimer: Timer!
     
@@ -29,26 +28,6 @@ class PreferencesExceptionViewController: NSViewController {
     override func viewWillAppear() {
         // 检查表格数据
         checkListHasData(animate: false)
-        // 检查辅助功能授权
-        checkAccessibility(animate: false)
-        checkAccessibilityTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(checkAccessibility), userInfo: nil, repeats: true)
-    }
-    override func viewWillDisappear() {
-        // 移除定时
-        checkAccessibilityTimer.invalidate()
-    }
-    
-    // 辅助功能授权
-    @IBAction func allowAccessibilityClick(_ sender: NSButton) {
-        Utils.requirePermissions()
-    }
-    @objc func checkAccessibility(animate: Bool = true) {
-        let authorized = Utils.isHadAccessibilityPermissions()
-        if animate {
-            noPromissionHint.animator().alphaValue = authorized ? 0 : 1
-        } else {
-            noPromissionHint.isHidden = authorized
-        }
     }
     
     // 检查表格数据

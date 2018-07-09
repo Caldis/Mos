@@ -13,8 +13,11 @@ class i18n {
     static let ensure = NSLocalizedString("Ensure", comment: "")
     static let cancel = NSLocalizedString("Cancel", comment: "")
     static let version = NSLocalizedString("Version", comment: "")
+    static let done = NSLocalizedString("Done", comment: "")
+    static let error = NSLocalizedString("Error", comment: "")
 
     // Status Bar Icon Menu
+    static let needsAccessToAccessibilityControls = NSLocalizedString("Needs access to Accessibility controls", comment: "")
     static let monitor = NSLocalizedString("Scroll Monitor", comment: "")
     static let preferences = NSLocalizedString("Preferences", comment: "")
     static let quit = NSLocalizedString("Quit", comment: "")
@@ -28,5 +31,9 @@ class i18n {
 
     // Preferences
     static let currentVersion = NSLocalizedString("Current Version", comment: "")
+    
+    // Welcome Window
+    static let allowToAccess = NSLocalizedString("Allow to access", comment: "")
+    static let beginSmooth = NSLocalizedString("Begin smooth", comment: "")
 
 }

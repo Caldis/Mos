@@ -22,7 +22,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     @IBOutlet var otherLogTextField: NSTextView!
     
     // 监听相关
-    var interceptionRef:InterceptionRef?
+    var interceptorRef:InterceptorRef?
     let mask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
     let eventCallBack: CGEventTapCallBack = {
         (proxy, type, event, refcon) in
@@ -82,11 +82,11 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(updateMonitorData), name:NSNotification.Name(rawValue: "ScrollEvent"), object: nil)
         // 开始截取事件
-        interceptionRef = Interception.start(event: mask, handleBy: eventCallBack, at: .cgAnnotatedSessionEventTap, where: .tailAppendEventTap, for: .listenOnly)
+        interceptorRef = Interceptor.start(event: mask, handleBy: eventCallBack, at: .cgAnnotatedSessionEventTap, to: .tailAppendEventTap, for: .listenOnly)
     }
     func uninitObserver() {
         // 停止截取
-        Interception.stop(interceptionRef)
+        Interceptor.stop(interceptorRef)
         // 停止监听
         NotificationCenter.default.removeObserver(self)
     }

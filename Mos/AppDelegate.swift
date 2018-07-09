@@ -10,7 +10,7 @@ import Cocoa
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
-    
+
     // 运行前预处理
     func applicationWillFinishLaunching(_ notification: Notification) {
         // 设置通知中心代理
@@ -25,16 +25,38 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(AppDelegate.sessionDidActive), name: NSWorkspace.sessionDidBecomeActiveNotification, object: nil)
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(AppDelegate.sessionDidResign), name: NSWorkspace.sessionDidResignActiveNotification, object: nil)
     }
-    // 运行后启动处理
+    // 运行后启动滚动处理
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        ScrollCore.shared.startHandlingScroll()
+        if Utils.isHadAccessibilityPermissions() {
+            // 如果应用已在辅助权限列表内, 则启动应用处理
+            ScrollCore.shared.startHandlingScroll()
+        } else {
+            // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
+            WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.welcomeWindowController, withTitle: "")
+            // 启动定时器检测权限, 当拥有授权时启动滚动处理
+            Timer.scheduledTimer(
+                timeInterval: 2.0,
+                target: self,
+                selector: #selector(accessibilityPermissionsChecker(_:)),
+                userInfo: nil,
+                repeats: true
+            )
+        }
     }
-    // 关闭前停止处理
+    // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
         ScrollCore.shared.endHandlingScroll()
     }
+    // 检查是否有访问 accessibility 权限, 如果有则启动滚动处理
+    // 10.14下若无权限会直接在创建 eventTap 时报错
+    @objc func accessibilityPermissionsChecker(_ timer: Timer) {
+        if AXIsProcessTrusted() {
+            timer.invalidate()
+             ScrollCore.shared.startHandlingScroll()
+        }
+    }
     
-    // 在切换用户时停止处理
+    // 在切换用户时停止滚动处理
     @objc func sessionDidActive(notification:NSNotification){
          ScrollCore.shared.startHandlingScroll()
     }

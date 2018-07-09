@@ -61,10 +61,26 @@
 "99M-8D-HLN.title" = "GitHub";
 "AM8-cj-DnH.title" = "Buy author a cup of coffee";
 "aPi-cE-maK.title" = "Donate using PayPal";
+"FIh-fA-18k.title" = "Welcome Window";
+"265-WS-XEd.title" = "The Contributors";
+"ZJY-Yg-Qev.title" = "Contributors";
+"Lhz-x5-X0I.title" = "Translation";
+"GWm-aK-UoV.title" = "Contributors List";
 
 // HideStatusItemWindow
 "WNd-iN-aAG.title" = "Hide the status bar icon";
-"hDs-Yh-11x.title" = "Mos will continue to work in the background without the status bar icon.";
+"hDs-Yh-11x.title" = "But Mos will continue to work in the background without the status bar icon.";
 "zAs-CP-Wpw.title" = "Once you hide the icon you will not be able to access Mos' preferences. If you want to re-display it, use Activity Mointor to close the Mos app then run Mos again. Then, click on the notification's \'Show it\' button.";
 "ueB-gF-VZ8.title" = "Cancel";
-"hhO-Gh-ldE.title" = "Hide the status bar icon";
+"hhO-Gh-ldE.title" = "Still hide the status bar icon";
+
+// WelcomeWindow
+"SLb-UR-lz1.title" = "Welcome to Mos";
+"Lhk-Nd-CdT.title" = "Before we smooth your mouse";
+"7o8-5p-CQX.title" = "Just few thing you need to tweak";
+"VsZ-Yn-TgJ.title" = "Turn off the other smooth scrolling Application or Extensions";
+"u7p-zc-ERS.title" = "Scientists have proven that running on multiple smooth scrolling application at the same time will lead to undescribed consequences. Please close the other, or disable the smooth function of it. Such as the smooth scrolling on Logitech Options or SmoothScroll extension on Chrome.";
+"3QI-xO-wPK.title" = "Allow Mos access to Accessibility controls";
+"7bu-fM-Bjm.title" = "The greater the power, the greater the responsibility. To smooth your mouse scrolling, Mos needs to create an intermediate layer between the mouse and your system to optimize your mouse. So we need to access to accessibility controls to get this power.";
+"qGs-TM-PTM.title" = "Limited by MacOS, you may need to reauthorization when Mos updated. If the entries already exists, please delete and re-add.";
+"V9n-HF-Vw9.title" = "Begin Smooth";

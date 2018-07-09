@@ -1,5 +1,5 @@
 //
-//  Interpolation.swift
+//  Interpolator.swift
 //  Mos
 //  插值函数集
 //  Created by Caldis on 2018/2/19.
@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class Interpolation: NSObject {
+class Interpolator: NSObject {
     
     // Liner Interpolation
     class func lerp(src: Double, dest: Double) -> Double {

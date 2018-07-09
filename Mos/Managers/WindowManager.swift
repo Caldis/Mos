@@ -14,8 +14,9 @@ class WindowManager {
     static let shared = WindowManager()
     init() { print("Class 'WindowManager' is a singleton, use the 'WindowManager.shared' to access it.") }
     
-    // Storybroad 标识
+    // Storybroad 标识, 此处与 Storybroad 中的 WindowController 的 Storybroad ID 对应, 也就是 identifier
     let identifier = (
+        welcomeWindowController: "WelcomeWindowController",
         monitorWindowController: "MonitorWindowController",
         preferencesWindowController: "PreferencesWindowController",
         hideStatusItemWindowController: "HideStatusItemWindowController"
@@ -24,7 +25,7 @@ class WindowManager {
     var controller = [String: NSWindowController]()
     
     // 显示对应 Identifier 的窗口
-    func showWindow(withIdentifier identifier: String, withTitle title:String) {
+    func showWindow(withIdentifier identifier: String, withTitle title: String) {
         // 判断窗口引用是否存在
         if let window = controller[identifier] {
             // 如果存在, 打开窗口并前置显示

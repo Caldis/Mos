@@ -37,5 +37,9 @@ class PreferencesAboutViewController: NSViewController {
     @IBAction func helpButtonClick(_ sender: NSButton) {
         NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos/wiki")!)
     }
+    // 欢迎
+    @IBAction func welcomeWindowButtonClick(_ sender: NSButton) {
+        WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.welcomeWindowController, withTitle: "")
+    }
     
 }

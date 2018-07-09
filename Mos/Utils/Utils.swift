@@ -80,19 +80,13 @@ class Utils {
     // 来源: http://see.sl088.com/wiki/Mac%E5%BC%80%E5%8F%91_%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E6%9D%83%E9%99%90
     // 查询是否有辅助功能权限
     class func isHadAccessibilityPermissions() -> Bool{
-        let trusted = kAXTrustedCheckOptionPrompt.takeUnretainedValue()
-        let privOptions = [trusted: false] as CFDictionary
-        let accessEnabled = AXIsProcessTrustedWithOptions(privOptions)
-        return accessEnabled
+        return AXIsProcessTrusted()
     }
     // 申请辅助功能权限
-    class func requirePermissions() {
+    class func requireAccessibilityPermissions() {
         let trusted = kAXTrustedCheckOptionPrompt.takeUnretainedValue()
         let privOptions = [trusted: true] as CFDictionary
-        let accessEnabled = AXIsProcessTrustedWithOptions(privOptions)
-        if !accessEnabled {
-            AXIsProcessTrustedWithOptions(privOptions)
-        }
+        AXIsProcessTrustedWithOptions(privOptions)
     }
     
     // Dock 图标控制

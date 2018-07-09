@@ -32,13 +32,18 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
     }
     
     // 打开菜单时监控
+    // 当没有获取到访问权限时, 菜单栏变为对应提示
     // 若按下按键 Option 时显示额外的菜单栏
     func menuWillOpen(_ menu: NSMenu) {
         if let event = NSApp.currentEvent {
-            if event.modifierFlags.contains(.option) {
-                buildOptionMenu()
+            if AXIsProcessTrusted() {
+                if event.modifierFlags.contains(.option) {
+                    buildOptionMenu()
+                } else {
+                    buildNormalMenu()
+                }
             } else {
-                buildNormalMenu()
+                buildDisabledMenu()
             }
         }
     }
@@ -52,6 +57,12 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
             menu.item(at: 1)?.image = #imageLiteral(resourceName: "PreferencesLogo")
             menu.addItem(NSMenuItem.separator())
             menu.addItem(withTitle: i18n.quit, action: #selector(quitClick), keyEquivalent: "").target = self
+        }
+    }
+    @objc func buildDisabledMenu() {
+        if let menu = item.menu {
+            menu.removeAllItems()
+            menu.addItem(withTitle: i18n.needsAccessToAccessibilityControls, action: nil, keyEquivalent: "").target = self
         }
     }
     @objc func buildOptionMenu() {

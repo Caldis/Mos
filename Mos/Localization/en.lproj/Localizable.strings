@@ -10,8 +10,11 @@
 "Ensure" = "Ensure";
 "Cancel" = "Cancel";
 "Version" = "Version";
+"Done" = "Done";
+"Error" = "Error";
 
 // Status Bar Icon Menu
+"Needs access to Accessibility controls" = "Needs access to Accessibility controls";
 "Scroll Monitor" = " Scroll Monitor";
 "Preferences" = " Preferences";
 "Quit" = "Quit";
@@ -25,3 +28,7 @@
 
 // Preferences
 "Current Version" = "Current Version";
+
+// Welcome Window
+"Allow to access" = "Allow to access";
+"Begin smooth" = "Begin smooth";

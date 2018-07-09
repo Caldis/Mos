@@ -28,8 +28,8 @@ class ScrollCore {
     // 事件发送器
     var scrollEventPoster: CVDisplayLink?
     // 拦截层
-    var scrollEventInterception: InterceptionRef?
-    var hotkeyEventInterception: InterceptionRef?
+    var scrollEventInterceptor: InterceptorRef?
+    var hotkeyEventInterceptor: InterceptorRef?
     var tapKeeperTimer: Timer?
     // 拦截掩码
     let scrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
@@ -121,12 +121,30 @@ class ScrollCore {
     // 启动滚动处理
     func startHandlingScroll() {
         // 开始截取事件
-        scrollEventInterception = Interception.start(event: scrollEventMask, handleBy: scrollEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .defaultTap)
-        hotkeyEventInterception = Interception.start(event: hotkeyEventMask, handleBy: hotkeyEventCallBack, at: .cghidEventTap, where: .tailAppendEventTap, for: .listenOnly)
+        scrollEventInterceptor = Interceptor.start(
+            event: scrollEventMask,
+            handleBy: scrollEventCallBack,
+            at: .cghidEventTap,
+            to: .tailAppendEventTap,
+            for: .defaultTap
+        )
+        hotkeyEventInterceptor = Interceptor.start(
+            event: hotkeyEventMask,
+            handleBy: hotkeyEventCallBack,
+            at: .cghidEventTap,
+            to: .tailAppendEventTap,
+            for: .listenOnly
+        )
         // 初始化滚动事件发送器
         initScrollEventPoster()
         // 初始化守护进程
-        tapKeeperTimer = Timer.scheduledTimer(timeInterval: 2, target:self,selector: #selector(tapKeeper), userInfo:nil,repeats:true)
+        tapKeeperTimer = Timer.scheduledTimer(
+            timeInterval: 2.0,
+            target: self,
+            selector: #selector(tapKeeper),
+            userInfo: nil,
+            repeats: true
+        )
     }
     // 停止滚动处理
     func endHandlingScroll() {
@@ -135,21 +153,21 @@ class ScrollCore {
         // 停止滚动事件发送器
         disableScrollEventPoster()
         // 停止截取事件
-        Interception.stop(scrollEventInterception)
-        Interception.stop(hotkeyEventInterception)
+        Interceptor.stop(scrollEventInterceptor)
+        Interceptor.stop(hotkeyEventInterceptor)
     }
     // 守护进程
     // 在某些高压环境下 eventTap 会挂掉
     // 使用守护进程监控, 如果挂掉就重启, 监控周期 2S, 对CPU基本无占用
     @objc func tapKeeper() {
-        if let ref = scrollEventInterception {
+        if let ref = scrollEventInterceptor {
             if let tap = ref.eventTap {
                 if !CGEvent.tapIsEnabled(tap: tap) {
                     CGEvent.tapEnable(tap: tap, enable: true)
                 }
             }
         }
-        if let ref = hotkeyEventInterception {
+        if let ref = hotkeyEventInterceptor {
             if let tap = ref.eventTap {
                 if !CGEvent.tapIsEnabled(tap: tap) {
                     CGEvent.tapEnable(tap: tap, enable: true)
@@ -220,8 +238,8 @@ class ScrollCore {
     func handleScroll() {
         // 计算插值
         let scrollPulse = (
-            y: Interpolation.lerp(src: scrollCurr.y, dest: scrollBuffer.y),
-            x: Interpolation.lerp(src: scrollCurr.x, dest: scrollBuffer.x)
+            y: Interpolator.lerp(src: scrollCurr.y, dest: scrollBuffer.y),
+            x: Interpolator.lerp(src: scrollCurr.x, dest: scrollBuffer.x)
         )
         // 更新滚动位置
         scrollCurr = (

@@ -61,6 +61,11 @@
 "99M-8D-HLN.title" = "GitHub";
 "AM8-cj-DnH.title" = "請作者飲番杯";
 "aPi-cE-maK.title" = "通過 Paypal 捐贈";
+"FIh-fA-18k.title" = "歡迎界面";
+"265-WS-XEd.title" = "貢獻者們";
+"ZJY-Yg-Qev.title" = "貢獻者們";
+"Lhz-x5-X0I.title" = "譯者";
+"GWm-aK-UoV.title" = "貢獻者名目";
 
 // HideStatusItemWindow
 "WNd-iN-aAG.title" = "隱藏位於狀態欄的圖示";
@@ -68,3 +73,14 @@
 "zAs-CP-Wpw.title" = "一旦你隱藏了狀態欄圖示, 偏好設置便無法打開, 如果你想再次顯示被隱藏的圖示, 請使用活動監視器關閉 Mos, 再重新開啟, 并點擊屏幕中通知的 '顯示圖示' 按鈕";
 "ueB-gF-VZ8.title" = "取消";
 "hhO-Gh-ldE.title" = "我要隱藏狀態欄圖示";
+
+// WelcomeWindow
+"SLb-UR-lz1.title" = "歡迎使用 Mos";
+"Lhk-Nd-CdT.title" = "在平滑你的鼠標滾動之前";
+"7o8-5p-CQX.title" = "你還需要進行一些額外的檢查和設置";
+"VsZ-Yn-TgJ.title" = "關閉其他鼠標滾動平滑的應用或擴展";
+"u7p-zc-ERS.title" = "科學家已經證實, 同時運行多個平滑滾動的軟件將會導致某些不可預測的後果或沖突, 還會徒增電力消耗. 在使用 Mos 之前, 請關閉其他同類平滑軟件或瀏覽器插件. 例如 Logitech Options 中的鼠標平滑滾動功能, 或是 Chrome 瀏覽器中的 SmoothScroll 擴展";
+"3QI-xO-wPK.title" = "允許 Mos 訪問輔助功能";
+"7bu-fM-Bjm.title" = "能力愈大, 責任愈大. 為了平滑鼠標滾動, Mos 需要在你的鼠標與系統之間建立一個中間層, 用以接受並處理優化鼠標滾動相關的數據信號. 為了做到這些, 我們需要獲取到系統的輔助功能提所提供的相關 API 才能正常工作";
+"qGs-TM-PTM.title" = "由於 MacOS 的限制, 在 Mos 更新後, 你可能需要重新對其授權. 如果条目已存在, 请删除并重新添加即可";
+"V9n-HF-Vw9.title" = "開始使用";
