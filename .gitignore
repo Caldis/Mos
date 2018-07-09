@@ -1,3 +1,4 @@
 docs/.idea
 docs/node_modules
 docs/resources/dmg/distTemp.dmg
+.DS_Store
