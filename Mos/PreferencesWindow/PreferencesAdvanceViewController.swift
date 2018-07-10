@@ -33,7 +33,6 @@ class PreferencesAdvanceViewController: NSViewController {
         let index = sender.indexOfSelectedItem
         Options.shared.advanced.shift = index>1 ? Utils.modifierKeys[index-2] : 0
     }
-    
     // 禁用
     @IBAction func disableKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem

@@ -537,7 +537,7 @@
                                     <nil key="backgroundColor"/>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="8dl-2h-i32">
-                                    <rect key="frame" x="1" y="9" width="0.0" height="16"/>
+                                    <rect key="frame" x="2" y="278" width="406" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="LP2-dF-uOZ">
@@ -738,12 +738,12 @@
                                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5kn-VP-NCd">
                                         <rect key="frame" x="166" y="304" width="125" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="push" title="⇧ Shift" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cuF-bC-ltS" id="0Bo-1u-AyX">
+                                        <popUpButtonCell key="cell" type="push" title="Disable" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="bcp-Xx-rdX" id="0Bo-1u-AyX">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
                                             <menu key="menu" id="qyg-KQ-B8g">
                                                 <items>
-                                                    <menuItem title="Disable" id="bcp-Xx-rdX">
+                                                    <menuItem title="Disable" state="on" id="bcp-Xx-rdX">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
                                                     <menuItem isSeparatorItem="YES" id="98J-9S-tqC"/>
@@ -756,7 +756,7 @@
                                                     <menuItem title="⌘ Command" id="PCB-gw-VZO">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
-                                                    <menuItem title="⇧ Shift" state="on" id="cuF-bC-ltS">
+                                                    <menuItem title="⇧ Shift" id="cuF-bC-ltS">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
                                                 </items>
@@ -787,12 +787,12 @@
                                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VQt-R8-WLM" userLabel="Block Key Pop Up Button">
                                         <rect key="frame" x="166" y="250" width="125" height="26"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="push" title="⌘ Command" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="WrA-K8-Ran" id="sRN-Pz-npk">
+                                        <popUpButtonCell key="cell" type="push" title="Disable" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="DXO-Xo-tJd" id="sRN-Pz-npk">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
                                             <menu key="menu" id="GYD-c6-9BP">
                                                 <items>
-                                                    <menuItem title="Disable" id="DXO-Xo-tJd">
+                                                    <menuItem title="Disable" state="on" id="DXO-Xo-tJd">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
                                                     <menuItem isSeparatorItem="YES" id="BUT-f5-TK3"/>
@@ -802,7 +802,7 @@
                                                     <menuItem title="⌥ Option" id="Aiz-SX-xsF">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
-                                                    <menuItem title="⌘ Command" state="on" id="WrA-K8-Ran">
+                                                    <menuItem title="⌘ Command" id="WrA-K8-Ran">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                     </menuItem>
                                                     <menuItem title="⇧ Shift" id="H5T-Zw-IoB">
