@@ -47,12 +47,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     func applicationWillTerminate(_ aNotification: Notification) {
         ScrollCore.shared.endHandlingScroll()
     }
-    // 检查是否有访问 accessibility 权限, 如果有则启动滚动处理
+    // 持续检查是否有访问 accessibility 权限, 如果有则启动滚动处理, 并结束计时器
     // 10.14下若无权限会直接在创建 eventTap 时报错
     @objc func accessibilityPermissionsChecker(_ timer: Timer) {
         if AXIsProcessTrusted() {
             timer.invalidate()
-             ScrollCore.shared.startHandlingScroll()
+            ScrollCore.shared.startHandlingScroll()
         }
     }
     

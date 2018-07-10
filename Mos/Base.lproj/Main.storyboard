@@ -571,25 +571,15 @@
                                     <action selector="whiteListModeClick:" target="bga-wG-iim" id="tEA-xE-VhI"/>
                                 </connections>
                             </button>
-                            <box focusRingType="exterior" verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="TlZ-r7-thf">
-                                <rect key="frame" x="21" y="333" width="408" height="5"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </box>
                             <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AQK-ih-gQD">
                                 <rect key="frame" x="20" y="19" width="410" height="23"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <segmentedCell key="cell" borderStyle="border" alignment="left" style="smallSquare" trackingMode="momentary" id="wuZ-GY-2Ba">
+                                <segmentedCell key="cell" borderStyle="border" alignment="left" segmentDistribution="fill" style="smallSquare" trackingMode="momentary" id="wuZ-GY-2Ba">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment image="NSAddTemplate" width="21">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment image="NSRemoveTemplate" width="21" tag="1">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment width="364" enabled="NO">
-                                            <nil key="label"/>
-                                        </segment>
+                                        <segment image="NSAddTemplate" width="21"/>
+                                        <segment image="NSRemoveTemplate" width="21" tag="1"/>
+                                        <segment width="364" enabled="NO"/>
                                     </segments>
                                 </segmentedCell>
                                 <connections>
