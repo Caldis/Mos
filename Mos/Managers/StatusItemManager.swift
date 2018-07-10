@@ -43,11 +43,12 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
                     buildNormalMenu()
                 }
             } else {
-                buildDisabledMenu()
+                buildRequireAccessibilityMenu()
             }
         }
     }
     
+    // 普通菜单
     @objc func buildNormalMenu() {
         if let menu = item.menu {
             menu.removeAllItems()
@@ -59,12 +60,14 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
             menu.addItem(withTitle: i18n.quit, action: #selector(quitClick), keyEquivalent: "").target = self
         }
     }
-    @objc func buildDisabledMenu() {
+    // 无辅助功能访问权限菜单
+    @objc func buildRequireAccessibilityMenu() {
         if let menu = item.menu {
             menu.removeAllItems()
-            menu.addItem(withTitle: i18n.needsAccessToAccessibilityControls, action: nil, keyEquivalent: "").target = self
+            menu.addItem(withTitle: i18n.needsAccessToAccessibilityControls, action: #selector(accessibilityRequire), keyEquivalent: "").target = self
         }
     }
+    // 按下 Option 按钮的菜单
     @objc func buildOptionMenu() {
         if let menu = item.menu {
             menu.removeAllItems()
@@ -88,6 +91,11 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
     // 隐藏
     @objc func hideStatusItem() {
         WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.hideStatusItemWindowController, withTitle: "")
+    }
+    
+    // 辅助权限
+    @objc func accessibilityRequire() {
+        Utils.requireAccessibilityPermissions()
     }
     
 }
