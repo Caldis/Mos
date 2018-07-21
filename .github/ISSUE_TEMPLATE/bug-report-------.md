@@ -8,11 +8,7 @@ about: To help us improve | 帮助我们变得更好
 A clear and concise description of what the bug is. | 清晰简洁的问题描述问题所在
 
 **To Reproduce | 如何重现**
-Steps to reproduce the behavior | 重现问题的步骤:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+Steps to reproduce the behavior | 重现问题的步骤
 
 **Expected behavior | 期望结果**
 A clear and concise description of what you expected to happen. | 简单描述问题解决后您所希望的结果
