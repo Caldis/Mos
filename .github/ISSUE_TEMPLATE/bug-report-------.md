@@ -20,6 +20,7 @@ If applicable, add screenshots to help explain your problem. | 如果有, 可以
  - OS: [e.g. iOS]
  - Browser [e.g. chrome, safari]
  - Version [e.g. 22]
+-  Application [e.g. Safari, Chrome, Whole System]
 
 **Additional context | 额外说明**
 Add any other context about the problem here. | 任何说明都可以
