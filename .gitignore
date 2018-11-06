@@ -1,4 +1,12 @@
+# RESOURCES
 docs/.idea
 docs/node_modules
 docs/resources/dmg/distTemp.dmg
+
+# SYS
 .DS_Store
+
+# Xcode
+xcuserdata
+*.xcuserstate
+*.xcuserdated
