@@ -39,6 +39,7 @@ class ScrollUtils {
     }
     
     // 从 CGEvent 中携带的 PID 获取目标窗口的 BundleId
+    // 已知问题: 获取到的始终为主激活窗口
     // 已知问题: 如果鼠标滚轮事件由 cghidEventTap 层截取, 则获取到的目标窗口 PID 为当前的激活窗口, 而不是悬停窗口
     private var lastEventTargetPID:pid_t = 1     // 目标进程 PID (先前)
     private var currEventTargetPID:pid_t = 1     // 事件的目标进程 PID (当前)
@@ -62,28 +63,36 @@ class ScrollUtils {
         return currEventTargetBID
     }
     
-    // 从指针悬停位置获取窗口 BundleId
+    // 从指针悬停坐标获取窗口 BundleId, 如果失败则从 CGEvent 获取, 但此情况下仅匹配当前激活窗口
     // 原理: 获取指针坐标下的 AXUIElement 信息, 从而获取 BundleID
     // 来自: https://stackoverflow.com/questions/27584963/get-window-values-under-mouse
-    // 已知问题: 外置屏幕获取到的 PID 有大约 30PX 在垂直方向上的偏移, 但内置屏幕无此问题
-    // 已知问题: 效率低下，影响首次滚动性能
+    // 从坐标获取的已知问题:
+    // 1.外置屏幕获取到的 PID 有大约 30PX 在垂直方向上的偏移, 但内置屏幕无此问题
+    // 2.Adobe Acrobat Reader 的画布区域对 AXUIElementCopyElementAtPosition 无响应, 仅能使用 event 获取
+    // 3.效率较低，影响首次滚动性能
     let systemWideElement = AXUIElementCreateSystemWide()
     var bundleIdCache:String? = nil
     var bundleIdDetectTime = 0.0
     var mouseLocationCache = NSPoint(x: 0.0, y: 0.0)
-    func getBundleIdFromMouseLocation() -> String? {
+    func getBundleIdFromMouseLocation(and event: CGEvent) -> String? {
         let location = NSEvent.mouseLocation
-        // 如果距离上次检测时间大于 1000ms, 且鼠标移动大于阈值, 则重新检测一遍, 否则直接返回上次的结果
+        // 如果距离上次检测时间大于 1000ms, 且鼠标移动大于阈值, 或缓存值为空, 则重新检测一遍, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
-        if nowTime-self.bundleIdDetectTime>1.0 && (!mouseStayStill(location, mouseLocationCache) || bundleIdCache==nil) {
-            let pointAsCGPoint = carbonScreenPointFromCocoaScreenPoint(mouseLocation: location)
+        if nowTime-self.bundleIdDetectTime>1.0 && !mouseStayStill(location, mouseLocationCache) || bundleIdCache==nil {
+            // 获取坐标下的元素信息
             var element: AXUIElement?
-            if AXUIElementCopyElementAtPosition(systemWideElement, Float(pointAsCGPoint.x), Float(pointAsCGPoint.y), &element ) == .success {
-                let pid = getPidFrom(element: element!)
-                bundleIdCache = getApplicationBundleIdFrom(pid: pid)
-            }
+            let pointAsCGPoint = carbonScreenPointFromCocoaScreenPoint(mouseLocation: location)
+            let copyElementRes = AXUIElementCopyElementAtPosition(systemWideElement, Float(pointAsCGPoint.x), Float(pointAsCGPoint.y), &element )
+            // 更新缓存值
             mouseLocationCache = location
             bundleIdDetectTime = nowTime
+            // 先尝试从鼠标坐标查找, 如果无法找到, 则使用事件携带的信息查找
+            if copyElementRes == .success {
+                let pid = getPidFrom(element: element!)
+                bundleIdCache = getApplicationBundleIdFrom(pid: pid)
+            } else {
+                bundleIdCache = getCurrentEventTargetBundleId(from: event)
+            }
         }
         return bundleIdCache
     }
