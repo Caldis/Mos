@@ -1,7 +1,8 @@
 # RESOURCES
 docs/.idea
 docs/node_modules
-docs/resources/dmg/distTemp.dmg
+Resource/DMG
+Resource/Designs
 
 # SYS
 .DS_Store
