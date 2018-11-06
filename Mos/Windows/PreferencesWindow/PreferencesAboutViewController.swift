@@ -16,12 +16,6 @@ class PreferencesAboutViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // 设置按钮文字颜色
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .center
-        homePageButton.attributedTitle = NSAttributedString(string: homePageButton.title, attributes: [NSAttributedStringKey.foregroundColor : NSColor.white, NSAttributedStringKey.paragraphStyle : paragraphStyle])
-        githubButton.attributedTitle = NSAttributedString(string: githubButton.title, attributes: [NSAttributedStringKey.foregroundColor : NSColor.white, NSAttributedStringKey.paragraphStyle : paragraphStyle])
-        donateButton.attributedTitle = NSAttributedString(string: donateButton.title, attributes: [NSAttributedStringKey.foregroundColor : NSColor.white, NSAttributedStringKey.paragraphStyle : paragraphStyle])
     }
     
     // 主页

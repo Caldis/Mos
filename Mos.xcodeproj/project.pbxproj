@@ -339,12 +339,9 @@
 				0B6D3B6420419EF5004CC064 /* Utils */,
 				0B12EF5C203C7D510058B169 /* Logger */,
 				0B12EF5B203C3D510058B169 /* Options */,
+				23D707B12191601A007B5325 /* Windows */,
 				0B74C43D205E364A00E3F942 /* Managers */,
 				0B12EF1B203ADD0B0058B169 /* ScrollCore */,
-				0BB0F1BC20F39FFB00909B7D /* WelcomeWindow */,
-				0B12EF20203AE0E00058B169 /* MonitorWindow */,
-				0B12EF21203AE0F50058B169 /* PreferencesWindow */,
-				0B43379C2065415600EEB281 /* HideStatusItemWindow */,
 				0B12EF26203AE25A0058B169 /* OCBridge */,
 				0B12EF28203AE2E00058B169 /* Localization */,
 				22142DA91E25344E00E4BFBF /* Main.storyboard */,
@@ -361,6 +358,17 @@
 				2270D90F1E69BA1500C48231 /* ServiceManagement.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		23D707B12191601A007B5325 /* Windows */ = {
+			isa = PBXGroup;
+			children = (
+				0BB0F1BC20F39FFB00909B7D /* WelcomeWindow */,
+				0B12EF20203AE0E00058B169 /* MonitorWindow */,
+				0B12EF21203AE0F50058B169 /* PreferencesWindow */,
+				0B43379C2065415600EEB281 /* HideStatusItemWindow */,
+			);
+			path = Windows;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
