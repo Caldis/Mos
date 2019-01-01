@@ -16,7 +16,7 @@ class PreferencesTabViewController: NSTabViewController {
     
     override func viewWillAppear() {
         // 初始化 Controller 引用
-        currentWindowController = WindowManager.shared.controller[WindowManager.shared.identifier.preferencesWindowController]!
+        currentWindowController = WindowManager.shared.controllers[WindowManager.shared.identifier.preferencesWindowController]!
         currentTabViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: "general") as NSViewController
         // 初始化窗口大小
         let currentWindowRect = currentWindowController!.window!.frame

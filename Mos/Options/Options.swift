@@ -13,7 +13,7 @@ class Options {
     
     // 单例
     static let shared = Options()
-    init() { print("Class 'Options' is a singleton, use the 'Options.shared' to access it.") }
+    init() { print("Class 'Options' is initialized") }
     
     // 默认设置
     static let DEFAULT_OPTIONS = (
@@ -25,7 +25,7 @@ class Options {
         ),
         // 高级
         advanced: (
-            shift: 0,
+            toggle: 0,
             block: 0,
             step: 35.0,
             speed: 3.00,
@@ -108,7 +108,7 @@ class Options {
         basic.reverse = UserDefaults.standard.bool(forKey: "reverse")
         basic.autoLaunch = UserDefaults.standard.bool(forKey: "autoLaunch")
         // 高级
-        advanced.shift = UserDefaults.standard.integer(forKey: "shift")
+        advanced.toggle = UserDefaults.standard.integer(forKey: "toggle")
         advanced.block = UserDefaults.standard.integer(forKey: "block")
         advanced.step = UserDefaults.standard.double(forKey: "step")
         advanced.speed = UserDefaults.standard.double(forKey: "speed")
@@ -135,7 +135,7 @@ class Options {
             UserDefaults.standard.set(basic.reverse, forKey:"reverse")
             UserDefaults.standard.set(basic.autoLaunch, forKey:"autoLaunch")
             // 高级
-            UserDefaults.standard.set(advanced.shift, forKey:"shift")
+            UserDefaults.standard.set(advanced.toggle, forKey:"toggle")
             UserDefaults.standard.set(advanced.block, forKey:"block")
             UserDefaults.standard.set(advanced.step, forKey:"step")
             UserDefaults.standard.set(advanced.speed, forKey:"speed")

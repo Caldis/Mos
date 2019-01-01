@@ -98,7 +98,7 @@ class Utils {
         }
     }
     class func hideDockIcon() {
-        if WindowManager.shared.controller.count == 1 {
+        if WindowManager.shared.controllers.count == 1 {
             NSApp.setActivationPolicy(NSApplication.ActivationPolicy.accessory)
             isDockIconVisible = false
         }

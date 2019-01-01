@@ -16,7 +16,7 @@ struct InterceptorRef {
 class Interceptor {
     
     // 开始截取
-    class func start(event mask: CGEventMask, handleBy eventHandler: @escaping CGEventTapCallBack, at eventTap: CGEventTapLocation, to eventPlace: CGEventTapPlacement, for behaver: CGEventTapOptions) -> InterceptorRef {
+    class func start(event mask: CGEventMask, handleBy eventHandler: @escaping CGEventTapCallBack, listenOn eventTap: CGEventTapLocation, placeAt eventPlace: CGEventTapPlacement, for behaver: CGEventTapOptions) -> InterceptorRef {
         guard let eventTap = CGEvent.tapCreate(tap: eventTap, place: eventPlace, options: behaver, eventsOfInterest: mask, callback: eventHandler, userInfo: nil) else {
             fatalError("Failed to create event tap")
         }

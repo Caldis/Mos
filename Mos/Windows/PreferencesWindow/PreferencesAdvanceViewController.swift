@@ -10,7 +10,7 @@ import Cocoa
 
 class PreferencesAdvanceViewController: NSViewController {
     
-    @IBOutlet weak var shiftKeyPopUpButton: NSPopUpButton!
+    @IBOutlet weak var toggleKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var disableKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var scrollStepSlider: NSSlider!
     @IBOutlet weak var scrollStepInput: NSTextField!
@@ -29,9 +29,9 @@ class PreferencesAdvanceViewController: NSViewController {
     }
     
     // 转换
-    @IBAction func shiftKeyPopUpButtonChange(_ sender: NSPopUpButton) {
+    @IBAction func toggleKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
-        Options.shared.advanced.shift = index>1 ? Utils.modifierKeys[index-2] : 0
+        Options.shared.advanced.toggle = index>1 ? Utils.modifierKeys[index-2] : 0
     }
     // 禁用
     @IBAction func disableKeyPopUpButtonChange(_ sender: NSPopUpButton) {
@@ -93,10 +93,10 @@ class PreferencesAdvanceViewController: NSViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
         // 转换
-        if let index = Utils.modifierKeys.index(of: Options.shared.advanced.shift) {
-            shiftKeyPopUpButton.selectItem(at: index+2)
+        if let index = Utils.modifierKeys.index(of: Options.shared.advanced.toggle) {
+            toggleKeyPopUpButton.selectItem(at: index+2)
         } else {
-            shiftKeyPopUpButton.selectItem(at: 0)
+            toggleKeyPopUpButton.selectItem(at: 0)
         }
         // 禁用
         if let index = Utils.modifierKeys.index(of: Options.shared.advanced.block) {

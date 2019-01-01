@@ -12,7 +12,7 @@ class ScrollCore {
     
     // 单例
     static let shared = ScrollCore()
-    init() { print("Class 'ScrollCore' is a singleton, use the 'ScrollCore.shared' to access it.") }
+    init() { print("Class 'ScrollCore' is initialized") }
     
     // 鼠标事件轴
     let axis = ( Y: UInt32(1), X: UInt32(1), YX: UInt32(2), YXZ: UInt32(3) )
@@ -21,7 +21,7 @@ class ScrollCore {
     var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
     var scrollDelta  = ( y: 0.0, x: 0.0 )  // 滚动方向记录
     // 热键数据
-    var shiftScroll = false
+    var toggleScroll = false
     var blockSmooth = false
     // 滚动数值滤波, 用于去除滚动的起始抖动
     var scrollFiller = ScrollFiller()
@@ -100,14 +100,14 @@ class ScrollCore {
     
     // 热键处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        var shiftKey = Options.shared.advanced.shift
+        var toggleKey = Options.shared.advanced.toggle
         var disableKey = Options.shared.advanced.block
         var keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         // 统一左右 Shift 的 keyCode
         keyCode = keyCode==60 ? 56 : keyCode
         // 判断转换键
-        if shiftKey != 0 && keyCode == shiftKey {
-            ScrollCore.shared.shiftScroll = !ScrollCore.shared.shiftScroll
+        if toggleKey != 0 && keyCode == toggleKey {
+            ScrollCore.shared.toggleScroll = !ScrollCore.shared.toggleScroll
         }
         // 判断禁用键
         if disableKey != 0 && keyCode == disableKey {
@@ -124,15 +124,15 @@ class ScrollCore {
         scrollEventInterceptor = Interceptor.start(
             event: scrollEventMask,
             handleBy: scrollEventCallBack,
-            at: .cghidEventTap,
-            to: .tailAppendEventTap,
+            listenOn: .cghidEventTap,
+            placeAt: .tailAppendEventTap,
             for: .defaultTap
         )
         hotkeyEventInterceptor = Interceptor.start(
             event: hotkeyEventMask,
             handleBy: hotkeyEventCallBack,
-            at: .cghidEventTap,
-            to: .tailAppendEventTap,
+            listenOn: .cghidEventTap,
+            placeAt: .tailAppendEventTap,
             for: .listenOnly
         )
         // 初始化滚动事件发送器
@@ -220,9 +220,9 @@ class ScrollCore {
     }
     
     // 根据需要变换滚动方向
-    func weapScrollWhenShifting(y: Double, x: Double, shifting: Bool) -> (y: Double, x: Double) {
+    func weapScrollWhenToggling(y: Double, x: Double, toggling: Bool) -> (y: Double, x: Double) {
         // 如果按下 Shift, 则始终将滚动转为横向
-        if shifting {
+        if toggling {
             // 判断哪个轴有值, 有值则赋给 X
             // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向为横向, 此处针对这类转换进行归一化处理
             if y != 0.0 {
@@ -249,7 +249,7 @@ class ScrollCore {
         // 填入 scrollFiller, 并获取值
         let filteredValue = scrollFiller.fillIn(with: scrollPulse)
         // 变换滚动结果
-        let swapedValue = weapScrollWhenShifting(y: filteredValue.y, x: filteredValue.x, shifting: shiftScroll)
+        let swapedValue = weapScrollWhenToggling(y: filteredValue.y, x: filteredValue.x, toggling: toggleScroll)
         // 发送滚动结果
         MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
         // 如果临近目标距离小于精确度门限则停止滚动

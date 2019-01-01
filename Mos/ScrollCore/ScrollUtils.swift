@@ -12,7 +12,7 @@ class ScrollUtils {
     
     // 单例
     static let shared = ScrollUtils()
-    init() { print("Class 'ScrollUtils' is a singleton, use the 'ScrollUtils.shared' to access it.") }
+    init() { print("Class 'ScrollUtils' is initialized") }
     
     // 从 PID 获取进程名称
     private func getApplicationBundleIdFrom(pid: pid_t) -> String? {

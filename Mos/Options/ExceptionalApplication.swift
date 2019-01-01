@@ -26,7 +26,7 @@ struct ExceptionalApplication: Codable {
     var durationTransition: Double?
     
     // 热键 ( 为 2.1 后新增属性, 需要设为 Optional 防止报错 )
-    var shift: Int?
+    var toggle: Int?
     var block: Int?
     
     init(path: String, title: String, bundleId: String) {
@@ -43,7 +43,7 @@ struct ExceptionalApplication: Codable {
         self.duration = Options.DEFAULT_OPTIONS.advanced.duration
         self.durationTransition = Options.DEFAULT_OPTIONS.advanced.durationTransition
         // 热键
-        self.shift = Options.DEFAULT_OPTIONS.advanced.shift
+        self.toggle = Options.DEFAULT_OPTIONS.advanced.toggle
         self.block = Options.DEFAULT_OPTIONS.advanced.block
     }
     

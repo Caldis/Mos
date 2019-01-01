@@ -63,7 +63,7 @@ class PreferencesExceptionViewController: NSViewController {
     // 打开文件选择窗口
     func openFileSelectPanel() {
         // 当前的容器窗口引用
-        let currentWindowController = WindowManager.shared.controller[WindowManager.shared.identifier.preferencesWindowController]!.window!
+        let currentWindowController = WindowManager.shared.controllers[WindowManager.shared.identifier.preferencesWindowController]!.window!
         let openPanel = NSOpenPanel()
         // 默认打开的目录 (/application)
         openPanel.directoryURL = NSURL.fileURL(withPath: "/application", isDirectory: true)
