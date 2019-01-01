@@ -22,37 +22,51 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         // 提示用户状态栏图标已隐藏
         Utils.notificateUserStatusBarIconIsHidden()
         // 监听用户切换, 在切换用户 session 时停止运行
-        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(AppDelegate.sessionDidActive), name: NSWorkspace.sessionDidBecomeActiveNotification, object: nil)
-        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(AppDelegate.sessionDidResign), name: NSWorkspace.sessionDidResignActiveNotification, object: nil)
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(AppDelegate.sessionDidActive),
+            name: NSWorkspace.sessionDidBecomeActiveNotification,
+            object: nil
+        )
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(AppDelegate.sessionDidResign),
+            name: NSWorkspace.sessionDidResignActiveNotification,
+            object: nil
+        )
     }
     // 运行后启动滚动处理
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        if Utils.isHadAccessibilityPermissions() {
-            // 如果应用已在辅助权限列表内, 则启动应用处理
-            ScrollCore.shared.startHandlingScroll()
-        } else {
-            // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
-            WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.welcomeWindowController, withTitle: "")
-            // 启动定时器检测权限, 当拥有授权时启动滚动处理
-            Timer.scheduledTimer(
-                timeInterval: 2.0,
-                target: self,
-                selector: #selector(accessibilityPermissionsChecker(_:)),
-                userInfo: nil,
-                repeats: true
-            )
-        }
+        startWithAccessibilityPermissionsChecker(nil)
     }
     // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
         ScrollCore.shared.endHandlingScroll()
     }
-    // 持续检查是否有访问 accessibility 权限, 如果有则启动滚动处理, 并结束计时器
-    // 10.14下若无权限会直接在创建 eventTap 时报错
-    @objc func accessibilityPermissionsChecker(_ timer: Timer) {
-        if AXIsProcessTrusted() {
-            timer.invalidate()
-            ScrollCore.shared.startHandlingScroll()
+    
+    // 检查是否有访问 accessibility 权限, 如果有则启动滚动处理, 并结束计时器
+    // 10.14(Mojave) 后, 若无该权限会直接在创建 eventTap 时报错 (https://developer.apple.com/videos/play/wwdc2018/702/)
+    @objc func startWithAccessibilityPermissionsChecker(_ timer: Timer?) {
+        if let checkTimer = timer {
+            if Utils.isHadAccessibilityPermissions() {
+                checkTimer.invalidate()
+                ScrollCore.shared.startHandlingScroll()
+            }
+        } else {
+            if Utils.isHadAccessibilityPermissions() {
+                ScrollCore.shared.startHandlingScroll()
+            } else {
+                // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
+                WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.welcomeWindowController, withTitle: "")
+                // 启动定时器检测权限, 当拥有授权时启动滚动处理
+                Timer.scheduledTimer(
+                    timeInterval: 2.0,
+                    target: self,
+                    selector: #selector(startWithAccessibilityPermissionsChecker(_:)),
+                    userInfo: nil,
+                    repeats: true
+                )
+            }
         }
     }
     
