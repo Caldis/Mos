@@ -12,29 +12,29 @@
 // PreferencesWindow
 // General
 "ITL-GD-CPd.title" = "General";
-"ILt-Gz-RiV.title" = "Scroll:";
-"weE-be-TAy.title" = "Smooth Scrolling";
-"G8a-97-8Ey.title" = "Let the mouse wheel scroll smoothly like butter";
-"6FR-2r-rxl.title" = "Scroll Reverse";
-"VUb-ZM-hXo.title" = "Reverse the mouse wheel scroll direction";
-"8sv-2I-VeW.title" = "Miscellaneous:";
-"HZF-2o-Mrh.title" = "Launch on Login";
-"wY5-9W-iNv.title" = "Automatically launch app on login";
+"pwT-er-UCo.title" = "Scroll:";
+"jtK-hi-Ami.title" = "Smooth Scrolling";
+"bbo-GH-WeC.title" = "Let the mouse wheel scroll smoothly like butter";
+"MAF-Hi-l48.title" = "Scroll Reverse";
+"CqK-3z-D0G.title" = "Reverse the mouse wheel scroll direction";
+"dyY-vr-dwT.title" = "Miscellaneous:";
+"xoR-7p-3qj.title" = "Launch on Login";
+"MdS-Nz-zMa.title" = "Automatically launch app on login";
 // Advanced
 "iW5-CD-5OC.title" = "Advanced";
-"NAp-3R-e8q.title" = "Toggle Key:";
-"lzC-ub-pqJ.title" = "Change vertical scrolling to horizontal scrolling";
-"akk-dX-tW4.title" = "Block Key:";
-"62p-76-okJ.title" = "Temporarily block smooth scrolling";
-"bcp-Xx-rdX.title" = "Disable";
-"DXO-Xo-tJd.title" = "Disable";
-"YE2-UH-9Ku.title" = "Step:";
-"3Xk-SU-gqO.title" = "Sets the minimum scroll distance";
-"wck-ay-cL9.title" = "Speed:";
-"PK6-dT-z93.title" = "Sets scrolling acceleration";
-"suV-WY-rbw.title" = "Duration:";
-"vmk-zZ-ifN.title" = "Sets the duration of the scroll animation";
-"2ho-yL-X2k.title" = "Reset to defaults";
+"bQw-5w-Yv0.title" = "Toggle Key:";
+"cTe-aL-0GQ.title" = "Disable";
+"KnM-kA-wn5.title" = "Change vertical scrolling to horizontal scrolling";
+"ebE-Zf-T98.title" = "Block Key:";
+"iki-Jk-qSr.title" = "Temporarily block smooth scrolling";
+"vFk-37-HRU.title" = "Disable";
+"B8B-hi-x3v.title" = "Step:";
+"Jan-OY-m70.title" = "Sets the minimum scroll distance";
+"Gcw-Ir-olP.title" = "Speed:";
+"B3O-iI-E7v.title" = "Sets scrolling acceleration";
+"bqU-Is-gFB.title" = "Duration:";
+"DsD-EW-zCH.title" = "Sets the duration of the scroll animation";
+"t2D-X2-Y6W.title" = "Reset to defaults";
 "bAe-Zc-5SS.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
 // Exception
 "I5j-Bv-Aiy.title" = "Needs access to Accessibility controls";
@@ -47,7 +47,7 @@
 "HDo-Iu-l7K.headerCell.title" = "Smooth";
 "rd0-ca-ufI.headerCell.title" = "Reverse";
 "xfG-Cd-oIk.headerCell.title" = "Application";
-"9fl-xB-j7H.title" = "No One is Special";
+"ThS-Rm-st2.title" = "No One is Special";
 "jaq-Cb-dKM.title" = "You can apply a separate configuration to some apps by clicking the \'+\' button below";
 // Updates
 "EWu-DP-7Gj.title" = "Updates";

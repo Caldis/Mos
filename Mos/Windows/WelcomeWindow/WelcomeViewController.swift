@@ -41,7 +41,7 @@ class WelcomeViewController: NSViewController {
         Utils.requireAccessibilityPermissions()
     }
     @IBAction func beginSmoothButtonClick(_ sender: NSButton) {
-        WindowManager.shared.controllers[WindowManager.shared.identifier.welcomeWindowController]?.close()
+        WindowManager.shared.refs[WindowManager.shared.identifier.welcomeWindowController]?.close()
     }
     
 

@@ -47,6 +47,11 @@
 		22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */; };
 		22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */; };
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
+		23BB4D2D21D7512F009B51E9 /* PreferencesPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D2C21D7512F009B51E9 /* PreferencesPopoverViewController.swift */; };
+		23BB4D2F21D754D3009B51E9 /* PopoverManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */; };
+		23BB4D3121D775D4009B51E9 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D3021D775D4009B51E9 /* EventMonitor.swift */; };
+		23E3C96B21DC976E0098B107 /* PreferencesTabViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E3C96A21DC976E0098B107 /* PreferencesTabViewItem.swift */; };
+		23E3C96D21DCE8F10098B107 /* PreferencesPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E3C96C21DCE8F10098B107 /* PreferencesPopoverView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -159,6 +164,11 @@
 		22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAboutViewController.swift; sourceTree = "<group>"; };
 		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
+		23BB4D2C21D7512F009B51E9 /* PreferencesPopoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesPopoverViewController.swift; sourceTree = "<group>"; };
+		23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverManager.swift; sourceTree = "<group>"; };
+		23BB4D3021D775D4009B51E9 /* EventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMonitor.swift; sourceTree = "<group>"; };
+		23E3C96A21DC976E0098B107 /* PreferencesTabViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewItem.swift; sourceTree = "<group>"; };
+		23E3C96C21DCE8F10098B107 /* PreferencesPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesPopoverView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +217,7 @@
 				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
 				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
 				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
+				23E3C96A21DC976E0098B107 /* PreferencesTabViewItem.swift */,
 				2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */,
 			);
 			path = PreferencesWindow;
@@ -275,6 +286,7 @@
 			isa = PBXGroup;
 			children = (
 				22003C6D1E8555F0001220BC /* Utils.swift */,
+				23BB4D3021D775D4009B51E9 /* EventMonitor.swift */,
 				0B6D3B6520419F0A004CC064 /* LaunchStarter.swift */,
 			);
 			path = Utils;
@@ -284,6 +296,7 @@
 			isa = PBXGroup;
 			children = (
 				0B6D3B672041A790004CC064 /* WindowManager.swift */,
+				23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */,
 				0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */,
 			);
 			path = Managers;
@@ -340,6 +353,7 @@
 				0B12EF5C203C7D510058B169 /* Logger */,
 				0B12EF5B203C3D510058B169 /* Options */,
 				23D707B12191601A007B5325 /* Windows */,
+				23BB4D2921D7504C009B51E9 /* Popovers */,
 				0B74C43D205E364A00E3F942 /* Managers */,
 				0B12EF1B203ADD0B0058B169 /* ScrollCore */,
 				0B12EF26203AE25A0058B169 /* OCBridge */,
@@ -358,6 +372,23 @@
 				2270D90F1E69BA1500C48231 /* ServiceManagement.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		23BB4D2821D74FFA009B51E9 /* PreferencesPopover */ = {
+			isa = PBXGroup;
+			children = (
+				23BB4D2C21D7512F009B51E9 /* PreferencesPopoverViewController.swift */,
+				23E3C96C21DCE8F10098B107 /* PreferencesPopoverView.swift */,
+			);
+			path = PreferencesPopover;
+			sourceTree = "<group>";
+		};
+		23BB4D2921D7504C009B51E9 /* Popovers */ = {
+			isa = PBXGroup;
+			children = (
+				23BB4D2821D74FFA009B51E9 /* PreferencesPopover */,
+			);
+			path = Popovers;
 			sourceTree = "<group>";
 		};
 		23D707B12191601A007B5325 /* Windows */ = {
@@ -411,6 +442,9 @@
 						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.HardenedRuntime = {
+								enabled = 0;
+							};
 							com.apple.Sandbox = {
 								enabled = 0;
 							};
@@ -485,6 +519,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */,
+				23E3C96D21DCE8F10098B107 /* PreferencesPopoverView.swift in Sources */,
 				0BB0F1C020F3A05D00909B7D /* WelcomeViewController.swift in Sources */,
 				2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */,
 				0B6D3B6A2041C348004CC064 /* ScrollEvent.swift in Sources */,
@@ -495,8 +530,11 @@
 				0B6D3B702042BBCD004CC064 /* Localizable.swift in Sources */,
 				0BC2AD2F20F3BA090084416B /* PreferencesContributorsViewController.swift in Sources */,
 				0B12EF1F203ADFB10058B169 /* Interpolator.swift in Sources */,
+				23BB4D2F21D754D3009B51E9 /* PopoverManager.swift in Sources */,
 				0B74C441205E386D00E3F942 /* Interceptor.swift in Sources */,
 				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,
+				23BB4D2D21D7512F009B51E9 /* PreferencesPopoverViewController.swift in Sources */,
+				23BB4D3121D775D4009B51E9 /* EventMonitor.swift in Sources */,
 				0B6D3B6E20429254004CC064 /* WindowUtils.m in Sources */,
 				22816CFF1E2B31020020D6B1 /* MonitorWindowController.swift in Sources */,
 				221E5DFB1F4DE55B00AE17FA /* ProcessUtils.m in Sources */,
@@ -516,6 +554,7 @@
 				2278EE9D1E3DFAC8000AB25B /* ExceptionalApplication.swift in Sources */,
 				0BB0F1BE20F3A04F00909B7D /* WelcomeWindowController.swift in Sources */,
 				22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */,
+				23E3C96B21DC976E0098B107 /* PreferencesTabViewItem.swift in Sources */,
 				0B12EF1D203ADD230058B169 /* ScrollUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -678,6 +717,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 2H959AEV62;
@@ -700,6 +740,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 2H959AEV62;
 				INFOPLIST_FILE = Mos/Info.plist;

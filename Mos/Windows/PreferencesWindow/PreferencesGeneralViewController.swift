@@ -38,6 +38,12 @@ class PreferencesGeneralViewController: NSViewController {
         syncViewWithOptions()
     }
     
+}
+
+/**
+ * 设置同步
+ **/
+extension PreferencesGeneralViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
         // 平滑
@@ -47,5 +53,4 @@ class PreferencesGeneralViewController: NSViewController {
         // 自启
         launchOnLoginCheckBox.state = NSControl.StateValue(rawValue: Options.shared.basic.autoLaunch ? 1 : 0)
     }
-    
 }

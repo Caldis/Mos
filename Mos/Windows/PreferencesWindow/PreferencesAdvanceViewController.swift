@@ -90,6 +90,12 @@ class PreferencesAdvanceViewController: NSViewController {
         syncViewWithOptions()
     }
     
+}
+
+/**
+ * 设置同步
+ **/
+extension PreferencesAdvanceViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
         // 转换
@@ -120,5 +126,4 @@ class PreferencesAdvanceViewController: NSViewController {
         scrollDurationStepper.doubleValue = duration
         scrollDurationInput.stringValue = String(format: "%.2f", duration)
     }
-    
 }

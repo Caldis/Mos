@@ -9,7 +9,7 @@
 import Cocoa
 
 // 实用方法
-class Utils {
+public class Utils {
     
     // 装饰键
     static let modifierKeys = [
@@ -98,7 +98,7 @@ class Utils {
         }
     }
     class func hideDockIcon() {
-        if WindowManager.shared.controllers.count == 1 {
+        if WindowManager.shared.refs.count == 1 {
             NSApp.setActivationPolicy(NSApplication.ActivationPolicy.accessory)
             isDockIconVisible = false
         }

@@ -12,29 +12,29 @@
 // PreferencesWindow
 // General
 "ITL-GD-CPd.title" = "基础";
-"ILt-Gz-RiV.title" = "滚动:";
-"weE-be-TAy.title" = "平滑滚动";
-"G8a-97-8Ey.title" = "让鼠标的滚动效果更佳平滑";
-"6FR-2r-rxl.title" = "翻转方向";
-"VUb-ZM-hXo.title" = "单独翻转鼠标滚动的滚动方向";
-"8sv-2I-VeW.title" = "其他:";
-"HZF-2o-Mrh.title" = "开机启动";
-"wY5-9W-iNv.title" = "在系统登录时自动运行";
+"pwT-er-UCo.title" = "滚动:";
+"jtK-hi-Ami.title" = "平滑滚动";
+"bbo-GH-WeC.title" = "让鼠标的滚动效果更佳平滑";
+"MAF-Hi-l48.title" = "翻转方向";
+"CqK-3z-D0G.title" = "单独翻转鼠标滚动的滚动方向";
+"dyY-vr-dwT.title" = "其他:";
+"xoR-7p-3qj.title" = "开机启动";
+"MdS-Nz-zMa.title" = "在系统登录时自动运行";
 // Advanced
 "iW5-CD-5OC.title" = "高级";
-"NAp-3R-e8q.title" = "转换键:";
-"lzC-ub-pqJ.title" = "按下时将垂直方向的滚动变换为水平方向";
-"akk-dX-tW4.title" = "禁用键:";
-"62p-76-okJ.title" = "按下时禁用平滑滚动";
-"bcp-Xx-rdX.title" = "不使用";
-"DXO-Xo-tJd.title" = "不使用";
-"YE2-UH-9Ku.title" = "最短步长:";
-"3Xk-SU-gqO.title" = "控制单次滚动的最短距离";
-"wck-ay-cL9.title" = "速度增益:";
-"PK6-dT-z93.title" = "控制持续滚动的跟踪速度增益";
-"suV-WY-rbw.title" = "持续时间:";
-"vmk-zZ-ifN.title" = "控制滚动的缓动持续时间";
-"2ho-yL-X2k.title" = "恢复为预设值";
+"bQw-5w-Yv0.title" = "转换键:";
+"cTe-aL-0GQ.title" = "不使用";
+"KnM-kA-wn5.title" = "按下时将垂直方向的滚动变换为水平方向";
+"ebE-Zf-T98.title" = "禁用键:";
+"iki-Jk-qSr.title" = "按下时禁用平滑滚动";
+"vFk-37-HRU.title" = "不使用";
+"B8B-hi-x3v.title" = "最短步长:";
+"Jan-OY-m70.title" = "控制单次滚动的最短距离";
+"Gcw-Ir-olP.title" = "速度增益:";
+"B3O-iI-E7v.title" = "控制持续滚动的跟踪速度增益";
+"bqU-Is-gFB.title" = "持续时间:";
+"DsD-EW-zCH.title" = "控制滚动的缓动持续时间";
+"t2D-X2-Y6W.title" = "恢复为预设值";
 "bAe-Zc-5SS.title" = "在某些应用程序中, 鼠标滚动有时会用于执行某些较为精確的操作 (如调节音量或縮放文档), 此时平滑滚动的插值处理会对精确的操作造成不必要的干扰\n你可以指定一个特定按键作为禁用键, 以在进行此类操作時可以通过按下禁用键, 暂时性地禁用对鼠标滚轮的平滑滚动处理";
 // Exception
 "I5j-Bv-Aiy.title" = "需要用到辅助功能的权限";
@@ -47,7 +47,7 @@
 "HDo-Iu-l7K.headerCell.title" = "平滑";
 "rd0-ca-ufI.headerCell.title" = "反转";
 "xfG-Cd-oIk.headerCell.title" = " 应用程序";
-"9fl-xB-j7H.title" = "没有任何应用程序遭到不平等对待";
+"ThS-Rm-st2.title" = "没有任何应用程序遭到不平等对待";
 "jaq-Cb-dKM.title" = "你可以通过点击下方的 \"+\" 来添加一个应用程序以设置其滚动行为";
 // Updates
 "EWu-DP-7Gj.title" = "更新";

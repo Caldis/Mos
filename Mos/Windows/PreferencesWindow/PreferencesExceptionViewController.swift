@@ -63,7 +63,7 @@ class PreferencesExceptionViewController: NSViewController {
     // 打开文件选择窗口
     func openFileSelectPanel() {
         // 当前的容器窗口引用
-        let currentWindowController = WindowManager.shared.controllers[WindowManager.shared.identifier.preferencesWindowController]!.window!
+        let currentWindowController = WindowManager.shared.refs[WindowManager.shared.identifier.preferencesWindowController]!.window!
         let openPanel = NSOpenPanel()
         // 默认打开的目录 (/application)
         openPanel.directoryURL = NSURL.fileURL(withPath: "/application", isDirectory: true)
@@ -121,24 +121,22 @@ class PreferencesExceptionViewController: NSViewController {
     
 }
 
-// 表格内容
+/**
+ * 表格行内容
+ **/
 extension PreferencesExceptionViewController: NSTableViewDelegate {
-    
     // 每一列在 Storybroad 中的 identifier
     fileprivate enum CellIdentifiers {
         static let smoothCell = "smoothCell"
         static let reverseCell = "reverseCell"
         static let applicationCell = "applicationCell"
     }
-    
     // 构建表格数据 (循环生成行)
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        
         // 如果对应列没有设置 Identifier 直接返回空
         guard let tableColumnIdentifier = tableColumn?.identifier else {
             return nil
         }
-        
         // 生成每行的 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
             // 应用数据
@@ -169,26 +167,22 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
                 return cell
             }
         }
-        
         return nil
-        
     }
-    
     // 行高
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         return 30
     }
-    
 }
 
-// 表格数据源
+/**
+ * 表格数据源
+ **/
 extension PreferencesExceptionViewController: NSTableViewDataSource {
-    
     // 行数
     func numberOfRows(in tableView: NSTableView) -> Int {
         let rows = Options.shared.exception.applications.count
         checkListHasData()
         return rows
     }
-    
 }

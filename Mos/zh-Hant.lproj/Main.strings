@@ -12,29 +12,29 @@
 // PreferencesWindow
 // General
 "ITL-GD-CPd.title" = "基礎";
-"ILt-Gz-RiV.title" = "捲動:";
-"weE-be-TAy.title" = "平滑捲動";
-"G8a-97-8Ey.title" = "讓滑鼠的捲動效果絲般順滑";
-"6FR-2r-rxl.title" = "翻轉方向";
-"VUb-ZM-hXo.title" = "單獨翻轉滑鼠滾輪的捲動方向";
-"8sv-2I-VeW.title" = "其他:";
-"HZF-2o-Mrh.title" = "開機啟動";
-"wY5-9W-iNv.title" = "在系統登錄時自動執行";
+"pwT-er-UCo.title" = "捲動:";
+"jtK-hi-Ami.title" = "平滑捲動";
+"bbo-GH-WeC.title" = "讓滑鼠的捲動效果絲般順滑";
+"MAF-Hi-l48.title" = "翻轉方向";
+"CqK-3z-D0G.title" = "單獨翻轉滑鼠滾輪的捲動方向";
+"dyY-vr-dwT.title" = "其他:";
+"xoR-7p-3qj.title" = "開機啟動";
+"MdS-Nz-zMa.title" = "在系統登錄時自動執行";
 // Advanced
 "iW5-CD-5OC.title" = "高級";
-"NAp-3R-e8q.title" = "轉換鍵:";
-"lzC-ub-pqJ.title" = "暫時性將垂直方向捲動轉變為水平方向";
-"akk-dX-tW4.title" = "禁用鍵:";
-"62p-76-okJ.title" = "暫時性地禁用平滑捲動";
-"bcp-Xx-rdX.title" = "停用";
-"DXO-Xo-tJd.title" = "停用";
-"YE2-UH-9Ku.title" = "最短步長:";
-"3Xk-SU-gqO.title" = "控制單次捲動的最短距離";
-"wck-ay-cL9.title" = "速度增益:";
-"PK6-dT-z93.title" = "控制持續捲動的追蹤速度增益";
-"suV-WY-rbw.title" = "持續時間:";
-"vmk-zZ-ifN.title" = "控制捲動的緩動持續時間";
-"2ho-yL-X2k.title" = "恢復為預設值";
+"bQw-5w-Yv0.title" = "轉換鍵:";
+"cTe-aL-0GQ.title" = "停用";
+"KnM-kA-wn5.title" = "暫時性將垂直方向捲動轉變為水平方向";
+"ebE-Zf-T98.title" = "禁用鍵:";
+"iki-Jk-qSr.title" = "暫時性地禁用平滑捲動";
+"vFk-37-HRU.title" = "停用";
+"B8B-hi-x3v.title" = "最短步長:";
+"Jan-OY-m70.title" = "控制單次捲動的最短距離";
+"Gcw-Ir-olP.title" = "速度增益:";
+"B3O-iI-E7v.title" = "控制持續捲動的追蹤速度增益";
+"bqU-Is-gFB.title" = "持續時間:";
+"DsD-EW-zCH.title" = "控制捲動的緩動持續時間";
+"t2D-X2-Y6W.title" = "恢復為預設值";
 "bAe-Zc-5SS.title" = "在某些應用程式中, 捲動滾輪有時會用於執行某些較為精確的調節操作 (例如調節音量或縮放文檔), 此時平滑捲動的插值處理會對精確的操作造成不必要的干擾\n你可以指定一個特定的按鍵作為禁用鍵, 以在進行此類操作時可以通過按下禁用鍵, 暫時性地禁用對滑鼠滾輪的平滑捲動處理";
 // Exception
 "I5j-Bv-Aiy.title" = "需要用到輔助使用功能的權限";
@@ -47,7 +47,7 @@
 "HDo-Iu-l7K.headerCell.title" = "平滑";
 "rd0-ca-ufI.headerCell.title" = "翻轉";
 "xfG-Cd-oIk.headerCell.title" = " 應用程式";
-"9fl-xB-j7H.title" = "沒有任何應用程式遭到不公對待";
+"ThS-Rm-st2.title" = "沒有任何應用程式遭到不公對待";
 "jaq-Cb-dKM.title" = "你可以通過點擊下方的 \"+\" 來添加一個應用程式以設置其捲動行為";
 // Updates
 "EWu-DP-7Gj.title" = "更新";
