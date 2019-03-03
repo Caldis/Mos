@@ -45,23 +45,21 @@ class PreferencesTabViewController: NSTabViewController {
 extension PreferencesTabViewController {
     // 点击 TabView 按钮响应
     override func tabView(_ tabView: NSTabView, willSelect tabViewItem: NSTabViewItem?) {
-        // Window: 动态设置容器窗口大小/高度
-        if let currentWindow = WindowManager.shared.refs[WindowManager.shared.identifier.preferencesWindowController] {
-            guard currentTabViewController != nil else {
-                print("CurrentTabViewController Not Found")
-                return
+        if let currentTabViewController = self.currentTabViewController {
+            // Window: 动态设置容器窗口大小/高度
+            if let currentWindow = WindowManager.shared.refs[WindowManager.shared.identifier.preferencesWindowController] {
+                // 根据目标 View 的尺寸来改变 Window 高度
+                let targetTabViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: tabViewItem!.identifier as! String) as NSViewController
+                let currentWindowFrame = currentWindow.window!.frame
+                // 根据 View 的尺寸差计算大小, 同时移动窗口 PosY 和 Height 保持窗口基于左上角定位不变
+                let heightDiff = targetTabViewController.view.frame.height - currentTabViewController.view.frame.height
+                let targetWindowPosY = currentWindowFrame.origin.y - heightDiff
+                let targetWindowHeight = currentWindowFrame.height + heightDiff
+                let targetWindowSize = NSMakeRect(currentWindowFrame.origin.x, targetWindowPosY, currentWindowFrame.width, targetWindowHeight)
+                currentWindow.window!.setFrame(targetWindowSize, display: true, animate: true)
+                // 更新当前的 tabViewController 引用
+                self.currentTabViewController = targetTabViewController
             }
-            // 切换 Tab, 根据选中不同的窗口来改变 Window 高度
-            let targetTabViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: tabViewItem!.identifier as! String) as NSViewController
-            let currentWindowRect = currentWindow.window!.frame
-            // 根据 View 的尺寸差计算大小 (同时移动窗口 PosY 和 Height 保持窗口基于左上角定位不变)
-            let heightDiff = targetTabViewController.view.frame.height - currentTabViewController!.view.frame.height
-            let targetWindowPosY = currentWindowRect.origin.y - heightDiff
-            let targetWindowHeight = currentWindowRect.height + heightDiff
-            let targetWindowSize = NSMakeRect(currentWindowRect.origin.x, targetWindowPosY, currentWindowRect.width, targetWindowHeight)
-            currentWindow.window!.setFrame(targetWindowSize, display: true, animate: true)
-            // 更新当前的 tabViewController 引用
-            currentTabViewController = targetTabViewController
         }
     }
 }

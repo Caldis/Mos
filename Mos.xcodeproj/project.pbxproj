@@ -50,7 +50,6 @@
 		23BB4D2D21D7512F009B51E9 /* PreferencesPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D2C21D7512F009B51E9 /* PreferencesPopoverViewController.swift */; };
 		23BB4D2F21D754D3009B51E9 /* PopoverManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */; };
 		23BB4D3121D775D4009B51E9 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D3021D775D4009B51E9 /* EventMonitor.swift */; };
-		23E3C96B21DC976E0098B107 /* PreferencesTabViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E3C96A21DC976E0098B107 /* PreferencesTabViewItem.swift */; };
 		23E3C96D21DCE8F10098B107 /* PreferencesPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E3C96C21DCE8F10098B107 /* PreferencesPopoverView.swift */; };
 /* End PBXBuildFile section */
 
@@ -167,7 +166,6 @@
 		23BB4D2C21D7512F009B51E9 /* PreferencesPopoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesPopoverViewController.swift; sourceTree = "<group>"; };
 		23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverManager.swift; sourceTree = "<group>"; };
 		23BB4D3021D775D4009B51E9 /* EventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMonitor.swift; sourceTree = "<group>"; };
-		23E3C96A21DC976E0098B107 /* PreferencesTabViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewItem.swift; sourceTree = "<group>"; };
 		23E3C96C21DCE8F10098B107 /* PreferencesPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesPopoverView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -217,7 +215,6 @@
 				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
 				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
 				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
-				23E3C96A21DC976E0098B107 /* PreferencesTabViewItem.swift */,
 				2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */,
 			);
 			path = PreferencesWindow;
@@ -554,7 +551,6 @@
 				2278EE9D1E3DFAC8000AB25B /* ExceptionalApplication.swift in Sources */,
 				0BB0F1BE20F3A04F00909B7D /* WelcomeWindowController.swift in Sources */,
 				22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */,
-				23E3C96B21DC976E0098B107 /* PreferencesTabViewItem.swift in Sources */,
 				0B12EF1D203ADD230058B169 /* ScrollUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

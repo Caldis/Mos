@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -76,16 +76,34 @@
             <objects>
                 <viewController storyboardIdentifier="PreferencesPopoverController" id="rve-bT-qgq" customClass="PreferencesPopoverViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="oy3-HV-SPr" customClass="PreferencesPopoverView" customModule="Mos" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="270"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="314"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <containerView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="s28-Ah-Z5w">
-                                <rect key="frame" x="0.0" y="40" width="450" height="190"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                            <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="icf-qB-fPA">
+                                <rect key="frame" x="8" y="281" width="434" height="24"/>
+                                <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="ryH-bK-Z8Q">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <segments>
+                                        <segment label="General" width="142" selected="YES"/>
+                                        <segment label="Advanced" width="142" tag="1"/>
+                                        <segment label="Exception" width="142"/>
+                                    </segments>
+                                    <connections>
+                                        <action selector="preferencesTabSegmentControlSelected:" target="rve-bT-qgq" id="vUc-Xp-03R"/>
+                                    </connections>
+                                </segmentedCell>
+                            </segmentedControl>
+                            <containerView identifier="PreferencesPopoverContainView" translatesAutoresizingMaskIntoConstraints="NO" id="s28-Ah-Z5w">
+                                <rect key="frame" x="0.0" y="41" width="450" height="231"/>
                             </containerView>
-                            <visualEffectView appearanceType="inheritedVibrantLight" fixedFrame="YES" blendingMode="behindWindow" material="toolTip" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="y67-Xc-x5m">
+                            <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="VQz-Vh-v0D">
+                                <rect key="frame" x="0.0" y="270" width="450" height="5"/>
+                            </box>
+                            <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="8VY-ZP-MuC">
+                                <rect key="frame" x="0.0" y="38" width="450" height="5"/>
+                            </box>
+                            <visualEffectView appearanceType="inheritedVibrantLight" blendingMode="behindWindow" material="toolTip" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="y67-Xc-x5m">
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="40"/>
-                                <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="s2n-TB-Z7N">
                                         <rect key="frame" x="40" y="10" width="33" height="20"/>
@@ -100,42 +118,48 @@
                                         <rect key="frame" x="74" y="12" width="115" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Smooth Scrolling" id="Xiq-Kf-xfP">
-                                            <font key="font" metaFont="system" size="11"/>
+                                            <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="g3F-1y-qBi">
-                                        <rect key="frame" x="8" y="8" width="26" height="26"/>
+                                        <rect key="frame" x="8" y="8" width="24" height="24"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AppIconRef" id="gQg-1I-ZxA"/>
                                     </imageView>
+                                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BO4-zW-m2E">
+                                        <rect key="frame" x="360" y="10" width="80" height="19"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="roundRect" title="About" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="JLe-rH-1JU">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                        </buttonCell>
+                                    </button>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="Erq-nv-Ies"/>
+                                </constraints>
                             </visualEffectView>
-                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="VQz-Vh-v0D">
-                                <rect key="frame" x="0.0" y="227" width="450" height="5"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </box>
-                            <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="8VY-ZP-MuC">
-                                <rect key="frame" x="0.0" y="37" width="450" height="5"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </box>
-                            <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="icf-qB-fPA">
-                                <rect key="frame" x="102" y="238" width="248" height="24"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="ryH-bK-Z8Q">
-                                    <font key="font" metaFont="system" size="11"/>
-                                    <segments>
-                                        <segment label="General" width="80" selected="YES"/>
-                                        <segment label="Advanced" width="80" tag="1"/>
-                                        <segment label="Exception" width="80"/>
-                                    </segments>
-                                    <connections>
-                                        <action selector="preferencesTabSegmentControlSelected:" target="rve-bT-qgq" id="vUc-Xp-03R"/>
-                                    </connections>
-                                </segmentedCell>
-                            </segmentedControl>
                         </subviews>
+                        <constraints>
+                            <constraint firstItem="VQz-Vh-v0D" firstAttribute="top" secondItem="icf-qB-fPA" secondAttribute="bottom" constant="10" id="43r-u6-gmI"/>
+                            <constraint firstAttribute="trailing" secondItem="VQz-Vh-v0D" secondAttribute="trailing" id="5gV-aE-zhi"/>
+                            <constraint firstItem="s28-Ah-Z5w" firstAttribute="bottom" secondItem="8VY-ZP-MuC" secondAttribute="top" id="9jt-Wk-MAZ"/>
+                            <constraint firstAttribute="trailing" secondItem="icf-qB-fPA" secondAttribute="trailing" constant="10" id="JdF-bg-ood"/>
+                            <constraint firstItem="s28-Ah-Z5w" firstAttribute="leading" secondItem="oy3-HV-SPr" secondAttribute="leading" id="Jib-b3-oHC"/>
+                            <constraint firstItem="8VY-ZP-MuC" firstAttribute="leading" secondItem="oy3-HV-SPr" secondAttribute="leading" id="Liw-NW-5Xf"/>
+                            <constraint firstAttribute="bottom" secondItem="y67-Xc-x5m" secondAttribute="bottom" id="MUf-jD-pPZ"/>
+                            <constraint firstItem="icf-qB-fPA" firstAttribute="leading" secondItem="oy3-HV-SPr" secondAttribute="leading" constant="10" id="Mz9-le-KSs"/>
+                            <constraint firstAttribute="trailing" secondItem="8VY-ZP-MuC" secondAttribute="trailing" id="bcP-83-2Tt"/>
+                            <constraint firstItem="y67-Xc-x5m" firstAttribute="leading" secondItem="oy3-HV-SPr" secondAttribute="leading" id="cob-JT-Ebd"/>
+                            <constraint firstItem="s28-Ah-Z5w" firstAttribute="top" secondItem="VQz-Vh-v0D" secondAttribute="bottom" id="i9Y-hu-DB5"/>
+                            <constraint firstItem="icf-qB-fPA" firstAttribute="top" secondItem="oy3-HV-SPr" secondAttribute="top" constant="10" id="jgy-5q-Ufa"/>
+                            <constraint firstAttribute="trailing" secondItem="s28-Ah-Z5w" secondAttribute="trailing" id="qXg-3w-2hC"/>
+                            <constraint firstItem="8VY-ZP-MuC" firstAttribute="bottom" secondItem="y67-Xc-x5m" secondAttribute="top" id="sG3-pw-Mee"/>
+                            <constraint firstItem="VQz-Vh-v0D" firstAttribute="leading" secondItem="oy3-HV-SPr" secondAttribute="leading" id="v1S-6b-zGW"/>
+                            <constraint firstAttribute="trailing" secondItem="y67-Xc-x5m" secondAttribute="trailing" id="vEd-VA-qLZ"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="preferencesContainerView" destination="s28-Ah-Z5w" id="6Ty-ec-j1n"/>
@@ -144,7 +168,7 @@
                 </viewController>
                 <customObject id="DRJ-02-w0l" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1610" y="206"/>
+            <point key="canvasLocation" x="1610" y="228"/>
         </scene>
         <!--Preferences Tab View Controller-->
         <scene sceneID="fde-aU-5x8">
@@ -185,7 +209,7 @@
                 <viewController title="General" storyboardIdentifier="general" showSeguePresentationStyle="single" id="ITL-GD-CPd" customClass="PreferencesGeneralViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" blendingMode="behindWindow" material="toolTip" state="followsWindowActiveState" id="LZw-qp-NWH">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="191"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pbD-Py-v9a">
                                 <rect key="frame" x="18" y="154" width="132" height="17"/>
@@ -779,7 +803,7 @@
                 <viewController title="Advanced" storyboardIdentifier="advanced" id="iW5-CD-5OC" customClass="PreferencesAdvanceViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" blendingMode="behindWindow" material="toolTip" state="followsWindowActiveState" id="Jsi-ke-bNZ">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="348"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Nm-TC-llN">
                                 <rect key="frame" x="18" y="310" width="132" height="18"/>
