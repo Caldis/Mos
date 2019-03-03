@@ -34,5 +34,7 @@
 	<string>NSApplication</string>
 	<key>NSUserNotificationAlertStyle</key>
 	<string>alert</string>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Mos needs to access accessibility to enhance your scrolling.</string>
 </dict>
 </plist>

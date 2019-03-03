@@ -55,6 +55,6 @@ extension WindowManager {
         // 隐藏 Dock 图标
         Utils.hideDockIcon()
         // 销毁实例
-        refs.removeValue(forKey: identifier)
+        // refs.removeValue(forKey: identifier)
     }
 }

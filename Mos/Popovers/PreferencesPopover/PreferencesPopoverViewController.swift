@@ -30,28 +30,19 @@ class PreferencesPopoverViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // 设置TAB分页
-        for panelIdentifier in PANEL_IDENTIFIER_LIST {
-            if let targetPreferencesViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: panelIdentifier) as NSViewController? {
-                targetPreferencesViewController.view.alphaValue = 0.0
-                preferencesContainerView.addSubview(targetPreferencesViewController.view)
-            }
-        }
         // 显示第一个TAB分页
         showTargetPanel(with: 0)
-        // 激活窗口 (PopoverManager 中的激活在部分情况下不生效)
-        NSApp.activate(ignoringOtherApps: true)
     }
     override func viewWillAppear() {
         // 监听鼠标点击外部
         clickEventMonitor = EventMonitor(mask: [.leftMouseDown, .rightMouseDown], handler: hidePopover)
-        clickEventMonitor?.start()
+        // 激活窗口
+        NSApp.activate(ignoringOtherApps: true)
     }
     
     @IBAction func preferencesTabSegmentControlSelected(_ sender: NSSegmentedCell) {
         showTargetPanel(with: sender.selectedSegment)
     }
-    
     
 }
 
@@ -67,23 +58,16 @@ extension PreferencesPopoverViewController {
     }
     
     func showTargetPanel(with targetIndex: Int) {
-        // 隐藏原有 subView
+        // 删除原有 subView
         for subView in preferencesContainerView.subviews {
-            subView.alphaValue = 0.0
+            subView.removeFromSuperview()
         }
-        // 显示新 View
-        let targetView = preferencesContainerView.subviews[targetIndex]
-        let currentPopover = PopoverManager.shared.refs[PopoverManager.shared.identifier.preferencesPopoverController]!
-        let currentPopoverFrame = currentPopover.contentViewController!.view.frame
-        let heightTarget = targetView.frame.height
-        if #available(OSX 10.12, *) {
-            NSAnimationContext.runAnimationGroup({ (context) in
-                context.duration = 1.0
-                preferencesContainerView.subviews[targetIndex].animator().alphaValue = 1.0
-            })
-        } else {
-            preferencesContainerView.subviews[targetIndex].alphaValue = 1.0
+        // 插入新 View
+        if let targetPreferencesViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER_LIST[targetIndex]) as NSViewController? {
+            preferencesContainerView.addSubview(targetPreferencesViewController.view)
+            // 调整大小
+            let currentPopover = PopoverManager.shared.refs[PopoverManager.shared.identifier.preferencesPopoverController]!
+            currentPopover.contentSize = NSSize.init(width: currentPopover.contentViewController!.view.frame.width, height: targetPreferencesViewController.view.frame.height + PANEL_PADDING)
         }
-        currentPopover.contentSize = NSSize.init(width: currentPopoverFrame.width, height: heightTarget + PANEL_PADDING)
     }
 }

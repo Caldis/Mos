@@ -74,7 +74,7 @@
         <!--Preferences Popover View Controller-->
         <scene sceneID="T0x-B4-5jS">
             <objects>
-                <viewController storyboardIdentifier="PreferencesPopoverController" id="rve-bT-qgq" customClass="PreferencesPopoverViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PreferencesPopoverController" showSeguePresentationStyle="single" id="rve-bT-qgq" customClass="PreferencesPopoverViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="oy3-HV-SPr" customClass="PreferencesPopoverView" customModule="Mos" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="314"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -206,7 +206,7 @@
         <!--General-->
         <scene sceneID="5zC-sP-JZj">
             <objects>
-                <viewController title="General" storyboardIdentifier="general" showSeguePresentationStyle="single" id="ITL-GD-CPd" customClass="PreferencesGeneralViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="General" storyboardIdentifier="general" id="ITL-GD-CPd" customClass="PreferencesGeneralViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" blendingMode="behindWindow" material="toolTip" state="followsWindowActiveState" id="LZw-qp-NWH">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="191"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -228,7 +228,7 @@
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="scrollSmoothClick:" target="ITL-GD-CPd" id="fP9-MR-Er5"/>
+                                    <action selector="scrollSmoothClick:" target="ITL-GD-CPd" id="RXZ-eh-cx4"/>
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qB6-TG-thS">
@@ -298,12 +298,12 @@
                     <connections>
                         <outlet property="launchOnLoginCheckBox" destination="Xzk-6e-mKA" id="Dx6-Zs-rVj"/>
                         <outlet property="scrollReverseCheckBox" destination="1C8-Zc-3rK" id="42v-MN-ifk"/>
-                        <outlet property="scrollSmoothCheckBox" destination="trO-q7-P9k" id="8uk-H0-hEd"/>
+                        <outlet property="scrollSmoothCheckBox" destination="trO-q7-P9k" id="L5f-e9-PXi"/>
                     </connections>
                 </viewController>
                 <customObject id="KsC-af-ap0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="446" y="1210.5"/>
+            <point key="canvasLocation" x="450" y="1211"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="Hhx-OZ-y0V">

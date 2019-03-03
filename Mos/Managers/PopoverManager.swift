@@ -64,7 +64,7 @@ extension PopoverManager {
             // 隐藏
             popover.performClose(nil)
             // 销毁实例
-            refs.removeValue(forKey: identifier)
+            // refs.removeValue(forKey: identifier)
         }
     }
 }

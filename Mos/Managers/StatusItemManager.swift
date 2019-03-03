@@ -57,7 +57,7 @@ extension StatusItemManager {
         // 类型: 菜单
         case STATUS_ITEM_TYPE.menu:
             if let event = NSApp.currentEvent {
-                // 无辅助功能选项显示求权菜单
+                // 无辅助功能选项显示要求权限菜单
                 guard AXIsProcessTrusted() else {
                     buildRequireAccessibilityMenu()
                     return
