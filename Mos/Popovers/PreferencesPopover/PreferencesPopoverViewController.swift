@@ -25,11 +25,16 @@ class PreferencesPopoverViewController: NSViewController {
     // 点击监听
     var clickEventMonitor: EventMonitor?
     // 引用
+    var panelViewControllers = [NSViewController]()
     @IBOutlet weak var preferencesTabSegmentControl: NSSegmentedControl!
     @IBOutlet weak var preferencesContainerView: NSView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 初始化分页
+        for identifier in PANEL_IDENTIFIER_LIST {
+            panelViewControllers.append(Utils.instantiateControllerFromStoryboard(withIdentifier: identifier)!)
+        }
         // 显示第一个TAB分页
         showTargetPanel(with: 0)
     }
@@ -51,23 +56,24 @@ class PreferencesPopoverViewController: NSViewController {
  **/
 extension PreferencesPopoverViewController {
     
-    //  隐藏Popover
+    //  隐藏 Popover
     func hidePopover(_:NSEvent?) {
         PopoverManager.shared.hidePopover(withIdentifier: PopoverManager.shared.identifier.preferencesPopoverController)
         clickEventMonitor?.stop()
     }
     
+    // 切换到特定分页
     func showTargetPanel(with targetIndex: Int) {
-        // 删除原有 subView
+        // 删除原有的
         for subView in preferencesContainerView.subviews {
             subView.removeFromSuperview()
         }
-        // 插入新 View
-        if let targetPreferencesViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER_LIST[targetIndex]) as NSViewController? {
-            preferencesContainerView.addSubview(targetPreferencesViewController.view)
-            // 调整大小
-            let currentPopover = PopoverManager.shared.refs[PopoverManager.shared.identifier.preferencesPopoverController]!
-            currentPopover.contentSize = NSSize.init(width: currentPopover.contentViewController!.view.frame.width, height: targetPreferencesViewController.view.frame.height + PANEL_PADDING)
-        }
+        // 添加新的
+        let targetView = panelViewControllers[targetIndex].view
+        // 插入
+        preferencesContainerView.addSubview(targetView)
+        // 调整大小
+        let currentPopover = PopoverManager.shared.refs[PopoverManager.shared.identifier.preferencesPopoverController]!
+        currentPopover.contentSize = NSSize.init(width: currentPopover.contentViewController!.view.frame.width, height: targetView.frame.height + PANEL_PADDING)
     }
 }
