@@ -46,24 +46,22 @@ class PreferencesExceptionViewController: NSViewController {
         syncViewWithOptions()
     }
     
-    // 列表底部工具栏
-    @IBAction func tableViewToolBarClick(_ sender: NSSegmentedControl) {
+    // 列表底部按钮
+    @IBAction func addItemClick(_ sender: NSButton) {
         // 添加
-        if sender.selectedSegment == 0 {
-            openFileSelectPanel()
-        }
+        openFileSelectPanel()
+        // 重新加载
+        tableView.reloadData()
+    }
+    @IBAction func removeItemClick(_ sender: NSButton) {
         // 删除
-        if sender.selectedSegment == 1 {
-            deleteTableViewSelectedRow()
-        }
+        deleteTableViewSelectedRow()
         // 重新加载
         tableView.reloadData()
     }
     
     // 打开文件选择窗口
     func openFileSelectPanel() {
-        // 当前的容器窗口引用
-        let currentWindowController = WindowManager.shared.refs[WindowManager.shared.identifier.preferencesWindowController]!.window!
         let openPanel = NSOpenPanel()
         // 默认打开的目录 (/application)
         openPanel.directoryURL = NSURL.fileURL(withPath: "/application", isDirectory: true)
@@ -76,12 +74,12 @@ class PreferencesExceptionViewController: NSViewController {
         // 允许的文件类型
         openPanel.allowedFileTypes = ["app", "App", "APP"]
         // 打开文件选择窗口并读取文件添加到 ExceptionalApplications 列表中
-        openPanel.beginSheetModal(for: currentWindowController, completionHandler: {
+        openPanel.begin(completionHandler: {
             result in
                 if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
                     // 根据路径获取 application 信息并保存到 ExceptionalApplications 列表中
                     let applicationPath = openPanel.url!.path
-                    let applicationName = FileManager().displayName(atPath: String(describing: openPanel.url!)).removingPercentEncoding!
+                    let applicationName = Utils.getApplicationName(from: openPanel.url!)
                     if let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
                         let application = ExceptionalApplication(path: applicationPath, title: applicationName, bundleId: applicationBundleId)
                         Options.shared.exception.applications.append(application)
