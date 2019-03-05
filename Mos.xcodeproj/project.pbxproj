@@ -47,6 +47,7 @@
 		22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */; };
 		22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */; };
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
+		2399BFD8222CDB7D008FA807 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2399BFD7222CDB7D008FA807 /* Constants.swift */; };
 		23BB4D2D21D7512F009B51E9 /* PreferencesPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D2C21D7512F009B51E9 /* PreferencesPopoverViewController.swift */; };
 		23BB4D2F21D754D3009B51E9 /* PopoverManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */; };
 		23BB4D3121D775D4009B51E9 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D3021D775D4009B51E9 /* EventMonitor.swift */; };
@@ -163,6 +164,7 @@
 		22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAboutViewController.swift; sourceTree = "<group>"; };
 		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
+		2399BFD7222CDB7D008FA807 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		23BB4D2C21D7512F009B51E9 /* PreferencesPopoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesPopoverViewController.swift; sourceTree = "<group>"; };
 		23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverManager.swift; sourceTree = "<group>"; };
 		23BB4D3021D775D4009B51E9 /* EventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMonitor.swift; sourceTree = "<group>"; };
@@ -283,6 +285,7 @@
 			isa = PBXGroup;
 			children = (
 				22003C6D1E8555F0001220BC /* Utils.swift */,
+				2399BFD7222CDB7D008FA807 /* Constants.swift */,
 				23BB4D3021D775D4009B51E9 /* EventMonitor.swift */,
 				0B6D3B6520419F0A004CC064 /* LaunchStarter.swift */,
 			);
@@ -516,6 +519,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */,
+				2399BFD8222CDB7D008FA807 /* Constants.swift in Sources */,
 				23E3C96D21DCE8F10098B107 /* PreferencesPopoverView.swift in Sources */,
 				0BB0F1C020F3A05D00909B7D /* WelcomeViewController.swift in Sources */,
 				2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */,
