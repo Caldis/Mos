@@ -20,7 +20,7 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     }
     
     func windowWillClose(_ notification: Notification) {
-        WindowManager.shared.hideWindow(withIdentifier: WindowManager.shared.identifier.preferencesWindowController)
+        WindowManager.shared.hideWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
     }
     
 }

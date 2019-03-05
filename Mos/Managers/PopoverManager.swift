@@ -14,10 +14,6 @@ class PopoverManager {
     static let shared = PopoverManager()
     init() { print("Class 'PopoverManager' is initialized") }
     
-    // 标识列表
-    let identifier = (
-        preferencesPopoverController: "PreferencesPopoverController"
-    )
     // 引用列表
     var refs = [String: NSPopover]()
     

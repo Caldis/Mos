@@ -57,7 +57,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                 ScrollCore.shared.startHandlingScroll()
             } else {
                 // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
-                WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.welcomeWindowController, withTitle: "")
+                WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.welcomeWindowController, withTitle: "")
                 // 启动定时器检测权限, 当拥有授权时启动滚动处理
                 Timer.scheduledTimer(
                     timeInterval: 2.0,

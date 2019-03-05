@@ -15,7 +15,7 @@ class HideStatusItemWindowController: NSWindowController, NSWindowDelegate {
     }
     
     func windowWillClose(_ notification: Notification) {
-        WindowManager.shared.hideWindow(withIdentifier: WindowManager.shared.identifier.hideStatusItemWindowController)
+        WindowManager.shared.hideWindow(withIdentifier: WINDOW_IDENTIFIER.hideStatusItemWindowController)
     }
     
 }

@@ -33,7 +33,7 @@ class PreferencesAboutViewController: NSViewController {
     }
     // 欢迎
     @IBAction func welcomeWindowButtonClick(_ sender: NSButton) {
-        WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.welcomeWindowController, withTitle: "")
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.welcomeWindowController, withTitle: "")
     }
     
 }

@@ -73,7 +73,7 @@ extension StatusItemManager {
             break
         // 类型: 弹出面板
         case STATUS_ITEM_TYPE.popover:
-            PopoverManager.shared.togglePopover(withIdentifier: PopoverManager.shared.identifier.preferencesPopoverController, relativeTo: item.button!)
+            PopoverManager.shared.togglePopover(withIdentifier: POPOVER_IDENTIFIER.preferencesPopoverController, relativeTo: item.button!)
             break
         }
     }
@@ -103,7 +103,7 @@ extension StatusItemManager {
         }
     }
     @objc func hideStatusItem() {
-        WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.hideStatusItemWindowController, withTitle: "")
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.hideStatusItemWindowController, withTitle: "")
     }
     // 常规菜单
     @objc func buildNormalMenu() {
@@ -118,10 +118,10 @@ extension StatusItemManager {
         }
     }
     @objc func monitorClick() {
-        WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.monitorWindowController, withTitle: "")
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.monitorWindowController, withTitle: "")
     }
     @objc func preferencesClick() {
-        WindowManager.shared.showWindow(withIdentifier: WindowManager.shared.identifier.preferencesWindowController, withTitle: i18n.preferences)
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController, withTitle: i18n.preferences)
     }
     @objc func quitClick() {
         NSApplication.shared.terminate(self)

@@ -100,19 +100,44 @@ class ScrollCore {
     
     // 热键处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        var toggleKey = Options.shared.advanced.toggle
-        var disableKey = Options.shared.advanced.block
-        var keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        // 统一左右 Shift 的 keyCode
-        keyCode = keyCode==60 ? 56 : keyCode
+        let toggleKey = Options.shared.advanced.toggle
+        let disableKey = Options.shared.advanced.block
+        let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         // 判断转换键
-        if toggleKey != 0 && keyCode == toggleKey {
-            ScrollCore.shared.toggleScroll = !ScrollCore.shared.toggleScroll
-        }
-        // 判断禁用键
-        if disableKey != 0 && keyCode == disableKey {
-            ScrollCore.shared.blockSmooth = !ScrollCore.shared.blockSmooth
-            ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+        switch keyCode {
+            case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:
+                if (toggleKey == MODIFIER_KEY.controlLeft || toggleKey == MODIFIER_KEY.controlRight) {
+                    ScrollCore.shared.toggleScroll = Utils.isControlDown(event)
+                }
+                if (disableKey == MODIFIER_KEY.controlLeft || disableKey == MODIFIER_KEY.controlRight) {
+                    ScrollCore.shared.blockSmooth = Utils.isControlDown(event)
+                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+                }
+            case MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight:
+                if (toggleKey == MODIFIER_KEY.optionLeft || toggleKey == MODIFIER_KEY.optionRight) {
+                    ScrollCore.shared.toggleScroll = Utils.isOptionDown(event)
+                }
+                if (disableKey == MODIFIER_KEY.optionLeft || disableKey == MODIFIER_KEY.optionRight) {
+                    ScrollCore.shared.blockSmooth = Utils.isOptionDown(event)
+                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+                }
+            case MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight:
+                if (toggleKey == MODIFIER_KEY.commandLeft || toggleKey == MODIFIER_KEY.commandRight) {
+                    ScrollCore.shared.toggleScroll = Utils.isCommandDown(event)
+                }
+                if (disableKey == MODIFIER_KEY.commandLeft || disableKey == MODIFIER_KEY.commandRight) {
+                    ScrollCore.shared.blockSmooth = Utils.isCommandDown(event)
+                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+                }
+            case MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight:
+                if (toggleKey == MODIFIER_KEY.shiftLeft || toggleKey == MODIFIER_KEY.shiftRight) {
+                    ScrollCore.shared.toggleScroll = Utils.isShiftDown(event)
+                }
+                if (disableKey == MODIFIER_KEY.shiftLeft || disableKey == MODIFIER_KEY.shiftRight) {
+                    ScrollCore.shared.blockSmooth = Utils.isShiftDown(event)
+                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+                }
+            default: break
         }
         return nil
     }
@@ -220,18 +245,18 @@ class ScrollCore {
     }
     
     // 根据需要变换滚动方向
-    func weapScrollWhenToggling(y: Double, x: Double, toggling: Bool) -> (y: Double, x: Double) {
+    func weapScrollWhenToggling(with nextValue: ( y: Double, x: Double ), toggling: Bool) -> (y: Double, x: Double) {
         // 如果按下 Shift, 则始终将滚动转为横向
         if toggling {
             // 判断哪个轴有值, 有值则赋给 X
             // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向为横向, 此处针对这类转换进行归一化处理
-            if y != 0.0 {
-                return (y: x, x: y)
+            if nextValue.y != 0.0 && nextValue.x == 0.0 {
+                return (y: nextValue.x, x: nextValue.y)
             } else {
-                return (y: y, x: x)
+                return (y: nextValue.y, x: nextValue.x)
             }
         } else {
-            return (y: y, x: x)
+            return (y: nextValue.y, x: nextValue.x)
         }
     }
     // 处理滚动事件
@@ -249,7 +274,7 @@ class ScrollCore {
         // 填入 scrollFiller, 并获取值
         let filteredValue = scrollFiller.fillIn(with: scrollPulse)
         // 变换滚动结果
-        let swapedValue = weapScrollWhenToggling(y: filteredValue.y, x: filteredValue.x, toggling: toggleScroll)
+        let swapedValue = weapScrollWhenToggling(with: filteredValue, toggling: toggleScroll)
         // 发送滚动结果
         MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
         // 如果临近目标距离小于精确度门限则停止滚动

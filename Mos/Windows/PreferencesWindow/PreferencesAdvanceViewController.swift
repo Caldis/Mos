@@ -31,12 +31,12 @@ class PreferencesAdvanceViewController: NSViewController {
     // 转换
     @IBAction func toggleKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
-        Options.shared.advanced.toggle = index>1 ? Utils.modifierKeys[index-2] : 0
+        Options.shared.advanced.toggle = Int(index>1 ? MODIFIER_KEY.list[index-2] : 0)
     }
     // 禁用
     @IBAction func disableKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
-        Options.shared.advanced.block = index>1 ? Utils.modifierKeys[index-2] : 0
+        Options.shared.advanced.block = Int(index>1 ? MODIFIER_KEY.list[index-2] : 0)
     }
     
     // 步长
@@ -99,13 +99,13 @@ extension PreferencesAdvanceViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
         // 转换
-        if let index = Utils.modifierKeys.index(of: Options.shared.advanced.toggle) {
+        if let index = MODIFIER_KEY.list.index(of: CGKeyCode(Options.shared.advanced.toggle)) {
             toggleKeyPopUpButton.selectItem(at: index+2)
         } else {
             toggleKeyPopUpButton.selectItem(at: 0)
         }
         // 禁用
-        if let index = Utils.modifierKeys.index(of: Options.shared.advanced.block) {
+        if let index = MODIFIER_KEY.list.index(of: CGKeyCode(Options.shared.advanced.block)) {
             disableKeyPopUpButton.selectItem(at: index+2)
         } else {
             disableKeyPopUpButton.selectItem(at: 0)

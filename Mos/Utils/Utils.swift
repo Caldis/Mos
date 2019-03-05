@@ -11,14 +11,6 @@ import Cocoa
 // 实用方法
 public class Utils {
     
-    // 装饰键
-    static let modifierKeys = [
-        59, // control
-        58, // option
-        55, // command
-        56, // shiftLeft (60 is shiftRight)
-    ]
-    
     // 禁止重复运行
     // killExist = true 则杀掉已有进程, 否则自杀
     class func preventMultiRunning(killExist kill: Bool = false) {
@@ -111,4 +103,62 @@ public class Utils {
         }
     }
     
+    // 移除字符
+    class func removingRegexMatches(target: String, pattern: String, replaceWith: String = "") -> String {
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: NSRegularExpression.Options.caseInsensitive)
+            let range = NSMakeRange(0, target.count)
+            return regex.stringByReplacingMatches(in: target, options: [], range: range, withTemplate: replaceWith)
+        } catch {
+            return target
+        }
+    }
+    
+    // 获取应用名称
+    class func getApplicationName(from path: URL) -> String {
+        let applicationRawName = FileManager().displayName(atPath: String(describing: path)).removingPercentEncoding!
+        return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app|.APP")
+    }
+    
+    // 检测按键
+    class func isControlDown(_ event: CGEvent) -> Bool {
+        let flags = event.flags
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        return flags.rawValue & CGEventFlags.maskControl.rawValue != 0 && (keyCode == MODIFIER_KEY.controlLeft || keyCode == MODIFIER_KEY.controlRight)
+    }
+    class func isControlUp(_ event: CGEvent) -> Bool {
+        let flags = event.flags
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        return flags.rawValue & CGEventFlags.maskControl.rawValue == 0 && (keyCode == MODIFIER_KEY.controlLeft || keyCode == MODIFIER_KEY.controlRight)
+    }
+    class func isOptionDown(_ event: CGEvent) -> Bool {
+        let flags = event.flags
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        return flags.rawValue & CGEventFlags.maskAlternate.rawValue != 0 && (keyCode == MODIFIER_KEY.optionLeft || keyCode == MODIFIER_KEY.optionRight)
+    }
+    class func isOptionUp(_ event: CGEvent) -> Bool {
+        let flags = event.flags
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        return flags.rawValue & CGEventFlags.maskAlternate.rawValue == 0 && (keyCode == MODIFIER_KEY.optionLeft || keyCode == MODIFIER_KEY.optionRight)
+    }
+    class func isCommandDown(_ event: CGEvent) -> Bool {
+        let flags = event.flags
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        return flags.rawValue & CGEventFlags.maskCommand.rawValue != 0 && (keyCode == MODIFIER_KEY.commandLeft || keyCode == MODIFIER_KEY.commandRight)
+    }
+    class func isCommandUp(_ event: CGEvent) -> Bool {
+        let flags = event.flags
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        return flags.rawValue & CGEventFlags.maskCommand.rawValue == 0 && (keyCode == MODIFIER_KEY.commandLeft || keyCode == MODIFIER_KEY.commandRight)
+    }
+    class func isShiftDown(_ event: CGEvent) -> Bool {
+        let flags = event.flags
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        return flags.rawValue & CGEventFlags.maskShift.rawValue != 0 && (keyCode == MODIFIER_KEY.shiftLeft || keyCode == MODIFIER_KEY.shiftRight)
+    }
+    class func isShiftUp(_ event: CGEvent) -> Bool {
+        let flags = event.flags
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        return flags.rawValue & CGEventFlags.maskShift.rawValue != 0 && (keyCode == MODIFIER_KEY.shiftLeft || keyCode == MODIFIER_KEY.shiftRight)
+    }
 }

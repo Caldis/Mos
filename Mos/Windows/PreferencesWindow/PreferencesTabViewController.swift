@@ -21,7 +21,7 @@ class PreferencesTabViewController: NSTabViewController {
             // 初始化引用
             self.currentTabViewController = currentTabViewController
             // Window: 初始化容器引用
-            if let currentWindow = WindowManager.shared.refs[WindowManager.shared.identifier.preferencesWindowController] {
+            if let currentWindow = WindowManager.shared.refs[WINDOW_IDENTIFIER.preferencesWindowController] {
                 // 初始化引用
                 self.currentWindow = currentWindow
                 // 初始化窗口大小
@@ -47,7 +47,7 @@ extension PreferencesTabViewController {
     override func tabView(_ tabView: NSTabView, willSelect tabViewItem: NSTabViewItem?) {
         if let currentTabViewController = self.currentTabViewController {
             // Window: 动态设置容器窗口大小/高度
-            if let currentWindow = WindowManager.shared.refs[WindowManager.shared.identifier.preferencesWindowController] {
+            if let currentWindow = WindowManager.shared.refs[WINDOW_IDENTIFIER.preferencesWindowController] {
                 // 根据目标 View 的尺寸来改变 Window 高度
                 let targetTabViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: tabViewItem!.identifier as! String) as NSViewController
                 let currentWindowFrame = currentWindow.window!.frame

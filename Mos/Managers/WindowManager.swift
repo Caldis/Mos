@@ -14,13 +14,6 @@ class WindowManager {
     static let shared = WindowManager()
     init() { print("Class 'WindowManager' is initialized") }
     
-    // 标识列表
-    let identifier = (
-        welcomeWindowController: "WelcomeWindowController",
-        monitorWindowController: "MonitorWindowController",
-        preferencesWindowController: "PreferencesWindowController",
-        hideStatusItemWindowController: "HideStatusItemWindowController"
-    )
     // 引用列表
     var refs = [String: NSWindowController]()
     
