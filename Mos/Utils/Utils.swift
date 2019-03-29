@@ -161,4 +161,28 @@ public class Utils {
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         return flags.rawValue & CGEventFlags.maskShift.rawValue != 0 && (keyCode == MODIFIER_KEY.shiftLeft || keyCode == MODIFIER_KEY.shiftRight)
     }
+    
+    // 从 PID 获取进程名称
+    class func getApplicationBundleIdFrom(pid: pid_t) -> String? {
+        if let runningApps = NSRunningApplication.init(processIdentifier: pid) {
+            return runningApps.bundleIdentifier
+        } else {
+            return nil
+        }
+    }
+    class func oldGetApplicationBundleIdFrom(pid: pid_t) -> String? {
+        // 更新列表
+        let runningApps = NSWorkspace.shared.runningApplications
+        if let matchApp = runningApps.filter({$0.processIdentifier == pid}).first {
+            // 如果找到 bundleId 则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
+            if let bundleId = matchApp.bundleIdentifier {
+                return bundleId as String?
+            } else {
+                let ppid = ProcessUtils.getParentPid(from: matchApp.processIdentifier)
+                return ppid==1 ? nil : getApplicationBundleIdFrom(pid: ppid)
+            }
+        } else {
+            return nil
+        }
+    }
 }

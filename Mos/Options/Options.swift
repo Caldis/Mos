@@ -29,18 +29,18 @@ class Options {
             block: 0,
             step: 35.0,
             speed: 3.00,
-            duration: 3.90, durationTransition: 0.1340,
+            duration: 3.90,
+            durationTransition: 0.1340,
             precision: 1.00
         ),
         // 例外
         exception: (
             whitelist: false,
-            applications: [ExceptionalApplication](), applicationsDict: [String: ExceptionalApplication]()
+            applications: EnhanceArray<ExceptionalApplication>()
         ),
         // 其他
         others: (
-            hideStatusItem: false,
-            letOthersNotAlone: true
+            hideStatusItem: false
         )
     )
     // 当前设置
@@ -69,8 +69,6 @@ class Options {
     // 例外
     var exception = DEFAULT_OPTIONS.exception {
         didSet {
-            // 更新 applicationsDict
-            exception.applicationsDict = generateApplicationsDict(with: exception.applications)
             // 保存到 UserDefaults
             saveOptions()
         }
@@ -117,8 +115,10 @@ class Options {
         advanced.precision = UserDefaults.standard.double(forKey: "precision")
         // 例外
         exception.whitelist = UserDefaults.standard.bool(forKey: "whitelist")
-        exception.applications = try! decoder.decode(Array.self, from: UserDefaults.standard.value(forKey: "applications") as! Data) as [ExceptionalApplication]
-        exception.applicationsDict = generateApplicationsDict(with: exception.applications)
+        exception.applications = EnhanceArray(
+            withData: UserDefaults.standard.value(forKey: "applications") as! Data,
+            match: "bundleId"
+        )
         // 其他
         others.hideStatusItem = UserDefaults.standard.bool(forKey: "hideStatusItem")
         // 解锁
@@ -143,20 +143,12 @@ class Options {
             UserDefaults.standard.set(advanced.precision, forKey:"precision")
             // 例外
             UserDefaults.standard.set(exception.whitelist, forKey:"whitelist")
-            UserDefaults.standard.set(try! encoder.encode(exception.applications), forKey: "applications")
+            UserDefaults.standard.set(exception.applications.json(), forKey:"applications")
             // 其他
             UserDefaults.standard.set(others.hideStatusItem, forKey:"hideStatusItem")
         }
     }
     
-    // 生成 applicationsDict 对象, 用于快速查找
-    private func generateApplicationsDict(with applications: [ExceptionalApplication]) -> [String: ExceptionalApplication] {
-        var applicationsDict = [String: ExceptionalApplication]()
-        applications.forEach { (application) in
-            applicationsDict[application.bundleId] = application
-        }
-        return applicationsDict
-    }
     // 计算插值用的 durationTransition, 用于 lerp 函数直接使用
     private func generateDurationTransition(with duration: Double) -> Double {
         // 上界, 此处需要与界面的 Slider 上界保持同步, 并添加 0.2 的偏移令结果不为 0

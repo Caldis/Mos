@@ -11,9 +11,9 @@ import Cocoa
 class Interpolator: NSObject {
     
     // Liner Interpolation
-    class func lerp(src: Double, dest: Double) -> Double {
+    class func lerp(src: Double, dest: Double, trans: Double) -> Double {
         let x = dest - src
-        return x * Options.shared.advanced.durationTransition
+        return x * trans
     }
     
     // SmoothStep (Need clamp 0-1) (2rd-order equation)

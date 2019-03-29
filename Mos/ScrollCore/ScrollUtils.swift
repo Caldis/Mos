@@ -14,30 +14,6 @@ class ScrollUtils {
     static let shared = ScrollUtils()
     init() { print("Class 'ScrollUtils' is initialized") }
     
-    // 从 PID 获取进程名称
-    private func getApplicationBundleIdFrom(pid: pid_t) -> String? {
-        if let runningApps = NSRunningApplication.init(processIdentifier: pid) {
-            return runningApps.bundleIdentifier
-        } else {
-            return nil
-        }
-    }
-    private func oldGetApplicationBundleIdFrom(pid: pid_t) -> String? {
-        // 更新列表
-        let runningApps = NSWorkspace.shared.runningApplications
-        if let matchApp = runningApps.filter({$0.processIdentifier == pid}).first {
-            // 如果找到 bundleId 则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
-            if let bundleId = matchApp.bundleIdentifier {
-                return bundleId as String?
-            } else {
-                let ppid = ProcessUtils.getParentPid(from: matchApp.processIdentifier)
-                return ppid==1 ? nil : getApplicationBundleIdFrom(pid: ppid)
-            }
-        } else {
-            return nil
-        }
-    }
-    
     // 从 CGEvent 中携带的 PID 获取目标窗口的 BundleId
     // 已知问题: 获取到的始终为主激活窗口
     // 已知问题: 如果鼠标滚轮事件由 cghidEventTap 层截取, 则获取到的目标窗口 PID 为当前的激活窗口, 而不是悬停窗口
@@ -52,7 +28,7 @@ class ScrollUtils {
         // 使用 PID 获取 BID
         // 如果目标 PID 变化, 则重新获取一次窗口 BID (查找 BID 效率较低)
         if lastEventTargetPID != currEventTargetPID {
-            if let bundleId = getApplicationBundleIdFrom(pid: currEventTargetPID) {
+            if let bundleId = Utils.getApplicationBundleIdFrom(pid: currEventTargetPID) {
                 currEventTargetBID = bundleId
                 return currEventTargetBID
             }
@@ -89,7 +65,7 @@ class ScrollUtils {
             // 先尝试从鼠标坐标查找, 如果无法找到, 则使用事件携带的信息查找
             if copyElementRes == .success {
                 let pid = getPidFrom(element: element!)
-                bundleIdCache = getApplicationBundleIdFrom(pid: pid)
+                bundleIdCache = Utils.getApplicationBundleIdFrom(pid: pid)
             } else {
                 bundleIdCache = getCurrentEventTargetBundleId(from: event)
             }
@@ -186,7 +162,7 @@ class ScrollUtils {
     // 从 exceptionalApplications 中取回符合传入的 bundleId 的 ExceptionalApplication 对象
     func applicationInExceptionalApplications(bundleId: String?) -> ExceptionalApplication? {
         if let targetBundleId = bundleId {
-            return Options.shared.exception.applicationsDict[targetBundleId] ?? nil
+            return Options.shared.exception.applications.get(from: targetBundleId)
         }
         return nil
     }
@@ -201,7 +177,7 @@ class ScrollUtils {
     }
 
     // 是否启用平滑
-    func enableSmooth(application: ExceptionalApplication?) -> Bool {
+    func isEnableSmoothOn(application: ExceptionalApplication?) -> Bool {
         if Options.shared.basic.smooth && !ScrollCore.shared.blockSmooth {
             // 针对 Launchpad 特殊处理, 不论是否在列表内均禁用平滑
             if isLaunchpadActive() {
@@ -217,13 +193,11 @@ class ScrollUtils {
         }
     }
     // 是否启用翻转
-    func enableReverse(application: ExceptionalApplication?) -> Bool {
+    func isEnableReverseOn(application: ExceptionalApplication?) -> Bool {
         if Options.shared.basic.reverse {
-            // 例外应用列表(Dict)
-            let applicationsDict = Options.shared.exception.applicationsDict
             // 针对 Launchpad 特殊处理
             if isLaunchpadActive() {
-                if let launchpad = applicationsDict["com.apple.launchpad.launcher"] {
+                if let launchpad = Options.shared.exception.applications.get(from: "com.apple.launchpad.launcher") {
                     return launchpad.reverse
                 }
             }
@@ -236,5 +210,26 @@ class ScrollUtils {
             return false
         }
     }
-    
+    // 应用高级设置参数
+    func optionsStepOn(application: ExceptionalApplication?) -> Double {
+        if let targetApplication = application {
+            return targetApplication.followGlobal ? Options.shared.advanced.step : targetApplication.step
+        } else {
+            return Options.shared.advanced.step
+        }
+    }
+    func optionsSpeedOn(application: ExceptionalApplication?) -> Double {
+        if let targetApplication = application {
+            return targetApplication.followGlobal ? Options.shared.advanced.speed : targetApplication.speed
+        } else {
+            return Options.shared.advanced.speed
+        }
+    }
+    func optionsDurationTransitionOn(application: ExceptionalApplication?) -> Double {
+        if let targetApplication = application {
+            return targetApplication.followGlobal ? Options.shared.advanced.durationTransition : targetApplication.durationTransition
+        } else {
+            return Options.shared.advanced.durationTransition
+        }
+    }
 }

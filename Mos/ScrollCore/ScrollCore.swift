@@ -23,13 +23,17 @@ class ScrollCore {
     // 热键数据
     var toggleScroll = false
     var blockSmooth = false
+    // 插值数据
+    var smoothStep = Options.shared.advanced.step
+    var smoothSpeed = Options.shared.advanced.speed
+    var smoothDuration = Options.shared.advanced.durationTransition
     // 滚动数值滤波, 用于去除滚动的起始抖动
     var scrollFiller = ScrollFiller()
     // 事件发送器
     var scrollEventPoster: CVDisplayLink?
     // 拦截层
-    var scrollEventInterceptor: InterceptorRef?
-    var hotkeyEventInterceptor: InterceptorRef?
+    var scrollEventInterceptor: Interceptor?
+    var hotkeyEventInterceptor: Interceptor?
     var tapKeeperTimer: Timer?
     // 拦截掩码
     let scrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
@@ -45,11 +49,15 @@ class ScrollCore {
             // 获取目标窗口 BundleId
             let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation(and: event)
             // 获取列表中应用程序的列外设置信息
-            let exceptionalApplications = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
+            let exceptionalApplication = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
             // 是否翻转
-            let enableReverse = ScrollUtils.shared.enableReverse(application: exceptionalApplications)
+            let enableReverse = ScrollUtils.shared.isEnableReverseOn(application: exceptionalApplication)
             // 是否平滑
-            let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications)
+            let enableSmooth = ScrollUtils.shared.isEnableSmoothOn(application: exceptionalApplication)
+            // 滚动参数
+            ScrollCore.shared.smoothStep = ScrollUtils.shared.optionsStepOn(application: exceptionalApplication)
+            ScrollCore.shared.smoothSpeed = ScrollUtils.shared.optionsSpeedOn(application: exceptionalApplication)
+            ScrollCore.shared.smoothDuration = ScrollUtils.shared.optionsDurationTransitionOn(application: exceptionalApplication)
             // 处理滚动事件
             let scrollEvent = ScrollEvent(with: event)
             // Y轴
@@ -64,7 +72,7 @@ class ScrollCore {
                     returnOriginalEvent = false
                     // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
                     if !scrollEvent.Y.fixed {
-                        ScrollEventUtils.normalizeY(scrollEvent, Options.shared.advanced.step)
+                        ScrollEventUtils.normalizeY(scrollEvent, ScrollCore.shared.smoothStep)
                     }
                 }
             }
@@ -80,13 +88,13 @@ class ScrollCore {
                     returnOriginalEvent = false
                     // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
                     if !scrollEvent.X.fixed {
-                        ScrollEventUtils.normalizeX(scrollEvent, Options.shared.advanced.step)
+                        ScrollEventUtils.normalizeX(scrollEvent, ScrollCore.shared.smoothStep)
                     }
                 }
             }
             // 触发滚动事件推送
             if enableSmooth {
-                ScrollCore.shared.updateScrollBuffer(y: scrollEvent.Y.usableValue, x: scrollEvent.X.usableValue)
+                ScrollCore.shared.updateScrollBuffer(y: scrollEvent.Y.usableValue, x: scrollEvent.X.usableValue, s: ScrollCore.shared.smoothSpeed)
                 ScrollCore.shared.enableScrollEventPoster()
             }
         }
@@ -146,14 +154,14 @@ class ScrollCore {
     // 启动滚动处理
     func startHandlingScroll() {
         // 开始截取事件
-        scrollEventInterceptor = Interceptor.start(
+        scrollEventInterceptor = Interceptor(
             event: scrollEventMask,
             handleBy: scrollEventCallBack,
             listenOn: .cghidEventTap,
             placeAt: .tailAppendEventTap,
             for: .defaultTap
         )
-        hotkeyEventInterceptor = Interceptor.start(
+        hotkeyEventInterceptor = Interceptor(
             event: hotkeyEventMask,
             handleBy: hotkeyEventCallBack,
             listenOn: .cghidEventTap,
@@ -178,44 +186,29 @@ class ScrollCore {
         // 停止滚动事件发送器
         disableScrollEventPoster()
         // 停止截取事件
-        Interceptor.stop(scrollEventInterceptor)
-        Interceptor.stop(hotkeyEventInterceptor)
+        scrollEventInterceptor?.stop()
+        hotkeyEventInterceptor?.stop()
     }
     // 守护进程
-    // 在某些高压环境下 eventTap 会挂掉
-    // 使用守护进程监控, 如果挂掉就重启, 监控周期 2S, 对CPU基本无占用
     @objc func tapKeeper() {
-        if let ref = scrollEventInterceptor {
-            if let tap = ref.eventTap {
-                if !CGEvent.tapIsEnabled(tap: tap) {
-                    CGEvent.tapEnable(tap: tap, enable: true)
-                }
-            }
-        }
-        if let ref = hotkeyEventInterceptor {
-            if let tap = ref.eventTap {
-                if !CGEvent.tapIsEnabled(tap: tap) {
-                    CGEvent.tapEnable(tap: tap, enable: true)
-                }
-            }
-        }
+        scrollEventInterceptor?.check()
+        hotkeyEventInterceptor?.check()
     }
         
     // 鼠标数据输入
-    func updateScrollBuffer(y: Double, x: Double) {
-        let speed = Options.shared.advanced.speed
+    func updateScrollBuffer(y: Double, x: Double, s: Double) {
         // 更新 Y 轴数据
         if y*scrollDelta.y > 0 {
-            scrollBuffer.y += speed * y
+            scrollBuffer.y += s * y
         } else {
-            scrollBuffer.y = speed * y
+            scrollBuffer.y = s * y
             scrollCurr.y = 0.0
         }
         // 更新 X 轴数据
         if x*scrollDelta.x > 0 {
-            scrollBuffer.x += speed * x
+            scrollBuffer.x += s * x
         } else {
-            scrollBuffer.x = speed * x
+            scrollBuffer.x = s * x
             scrollCurr.x = 0.0
         }
         scrollDelta = ( y: y, x: x )
@@ -245,7 +238,7 @@ class ScrollCore {
     }
     
     // 根据需要变换滚动方向
-    func weapScrollWhenToggling(with nextValue: ( y: Double, x: Double ), toggling: Bool) -> (y: Double, x: Double) {
+    func weapScrollIfToggling(with nextValue: ( y: Double, x: Double ), toggling: Bool) -> (y: Double, x: Double) {
         // 如果按下 Shift, 则始终将滚动转为横向
         if toggling {
             // 判断哪个轴有值, 有值则赋给 X
@@ -263,8 +256,8 @@ class ScrollCore {
     func handleScroll() {
         // 计算插值
         let scrollPulse = (
-            y: Interpolator.lerp(src: scrollCurr.y, dest: scrollBuffer.y),
-            x: Interpolator.lerp(src: scrollCurr.x, dest: scrollBuffer.x)
+            y: Interpolator.lerp(src: scrollCurr.y, dest: scrollBuffer.y, trans: smoothDuration),
+            x: Interpolator.lerp(src: scrollCurr.x, dest: scrollBuffer.x, trans: smoothDuration)
         )
         // 更新滚动位置
         scrollCurr = (
@@ -274,7 +267,7 @@ class ScrollCore {
         // 填入 scrollFiller, 并获取值
         let filteredValue = scrollFiller.fillIn(with: scrollPulse)
         // 变换滚动结果
-        let swapedValue = weapScrollWhenToggling(with: filteredValue, toggling: toggleScroll)
+        let swapedValue = weapScrollIfToggling(with: filteredValue, toggling: toggleScroll)
         // 发送滚动结果
         MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
         // 如果临近目标距离小于精确度门限则停止滚动

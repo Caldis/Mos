@@ -14,11 +14,8 @@ class PreferencesExceptionViewController: NSViewController {
     @IBOutlet weak var whitelistModeCheckBox: NSButton!
     // 表格及工具栏
     @IBOutlet weak var tableView: NSTableView!
-    @IBOutlet weak var tableViewToolBar: NSSegmentedControl!
     // 提示层
     @IBOutlet weak var noDataHint: NSView!
-    // 检查授权定时器
-    var checkAccessibilityTimer: Timer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,9 +76,8 @@ class PreferencesExceptionViewController: NSViewController {
                 if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
                     // 根据路径获取 application 信息并保存到 ExceptionalApplications 列表中
                     let applicationPath = openPanel.url!.path
-                    let applicationName = Utils.getApplicationName(from: openPanel.url!)
                     if let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
-                        let application = ExceptionalApplication(path: applicationPath, title: applicationName, bundleId: applicationBundleId)
+                        let application = ExceptionalApplication(path: applicationPath, bundleId: applicationBundleId)
                         Options.shared.exception.applications.append(application)
                         self.tableView.reloadData()
                     } else {
@@ -102,13 +98,21 @@ class PreferencesExceptionViewController: NSViewController {
     @objc func smoothCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.exception.applications[row].smooth = state.rawValue==1 ? true : false
+        Options.shared.exception.applications.get(at: row).smooth = state.rawValue==1 ? true : false
+        Options.shared.exception.applications = Options.shared.exception.applications
     }
     // 点击反转
     @objc func reverseCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.exception.applications[row].reverse = state.rawValue==1 ? true : false
+        Options.shared.exception.applications.get(at: row).reverse = state.rawValue==1 ? true : false
+        Options.shared.exception.applications = Options.shared.exception.applications
+    }
+    // 点击设置
+    @objc func settingButtonClick(_ sender: NSButton!) {
+        let row = sender.tag
+        let application = Options.shared.exception.applications.get(at: row)
+        PopoverManager.shared.togglePopover(withIdentifier: PANEL_IDENTIFIER.advanced, relativeTo: sender)
     }
     
     // 同步界面与设置参数
@@ -128,6 +132,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
         static let smoothCell = "smoothCell"
         static let reverseCell = "reverseCell"
         static let applicationCell = "applicationCell"
+        static let settingCell = "settingCell"
     }
     // 构建表格数据 (循环生成行)
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
@@ -138,31 +143,39 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
         // 生成每行的 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
             // 应用数据
-            let application = Options.shared.exception.applications[row]
-            let applicationIcon = NSWorkspace.shared.icon(forFile: application.path)
-            // 平滑
-            if tableColumnIdentifier.rawValue == CellIdentifiers.smoothCell {
-                let checkBox = cell.nextKeyView as! NSButton
-                checkBox.tag = row
-                checkBox.target = self
-                checkBox.action = #selector(smoothCheckBoxClick)
-                checkBox.state = NSControl.StateValue(rawValue: application.smooth==true ? 1 : 0)
-                return cell
-            }
-            // 反转
-            if tableColumnIdentifier.rawValue == CellIdentifiers.reverseCell {
-                let checkBox = cell.nextKeyView as! NSButton
-                checkBox.tag = row
-                checkBox.target = self
-                checkBox.action = #selector(reverseCheckBoxClick)
-                checkBox.state = NSControl.StateValue(rawValue: application.reverse==true ? 1 : 0)
-                return cell
-            }
-            // 应用
-            if tableColumnIdentifier.rawValue == CellIdentifiers.applicationCell {
-                cell.imageView?.image = applicationIcon
-                cell.textField?.stringValue = application.title
-                return cell
+            let application = Options.shared.exception.applications.get(at: row)
+            switch tableColumnIdentifier.rawValue {
+                // 平滑
+                case CellIdentifiers.smoothCell:
+                    let checkBox = cell.nextKeyView as! NSButton
+                    checkBox.tag = row
+                    checkBox.target = self
+                    checkBox.action = #selector(smoothCheckBoxClick)
+                    checkBox.state = NSControl.StateValue(rawValue: application.smooth==true ? 1 : 0)
+                    return cell
+                // 反转
+                case CellIdentifiers.reverseCell:
+                    let checkBox = cell.nextKeyView as! NSButton
+                    checkBox.tag = row
+                    checkBox.target = self
+                    checkBox.action = #selector(reverseCheckBoxClick)
+                    checkBox.state = NSControl.StateValue(rawValue: application.reverse==true ? 1 : 0)
+                    return cell
+                // 应用
+                case CellIdentifiers.applicationCell:
+                    cell.imageView?.image = NSWorkspace.shared.icon(forFile: application.path)
+                    if let applicationBundle = Bundle.init(url: URL.init(fileURLWithPath: application.path)) {
+                        cell.textField?.stringValue = applicationBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as! String
+                    }
+                    return cell
+                // 设定
+                case CellIdentifiers.settingCell:
+                    let button = cell.subviews[0] as! NSButton
+                    button.tag = row
+                    button.target = self
+                    button.action = #selector(settingButtonClick)
+                    return cell
+                default: break
             }
         }
         return nil
