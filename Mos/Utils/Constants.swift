@@ -45,7 +45,7 @@ struct PANEL_IDENTIFIER {
         exception,
     ]
 }
-let PANEL_PADDING = CGFloat(84.0)
+let PANEL_PADDING = CGFloat(41.0)
 
 // 气泡弹窗
 struct POPOVER_IDENTIFIER {
