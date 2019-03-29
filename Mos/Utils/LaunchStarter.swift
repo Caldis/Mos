@@ -20,5 +20,4 @@ class LaunchStarter {
             LoginServiceKit.removeLoginItems(at: appPath)
         }
     }
-    
 }
