@@ -307,7 +307,7 @@
                 </viewController>
                 <customObject id="KsC-af-ap0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="450" y="1211"/>
+            <point key="canvasLocation" x="450" y="1210.5"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="Hhx-OZ-y0V">
@@ -850,52 +850,48 @@
         <scene sceneID="VTW-lQ-Mfk">
             <objects>
                 <viewController title="Updates" storyboardIdentifier="updates" id="EWu-DP-7Gj" customClass="PreferencesUpdatesViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" wantsLayer="YES" id="mGP-BF-mdE">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="76"/>
-                        <autoresizingMask key="autoresizingMask"/>
+                    <visualEffectView key="view" blendingMode="behindWindow" material="toolTip" state="active" id="YxW-TX-zxt">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="83"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <subviews>
-                            <visualEffectView fixedFrame="YES" blendingMode="behindWindow" material="toolTip" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="VHb-La-sVZ">
-                                <rect key="frame" x="0.0" y="0.0" width="450" height="76"/>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gxs-4f-Jdz">
+                                <rect key="frame" x="18" y="45" width="132" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </visualEffectView>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u0P-u6-9Am">
-                                <rect key="frame" x="29" y="39" width="120" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Check for updates:" id="N0S-yo-DTg">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Check for updates:" id="vdI-K4-SBh">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LEb-dV-4AM">
-                                <rect key="frame" x="179" y="38" width="110" height="19"/>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4kr-7i-Wm2">
+                                <rect key="frame" x="170" y="44" width="110" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="roundRect" title="Check Now" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="lp3-Dc-zRt">
+                                <buttonCell key="cell" type="roundRect" title="Check Now" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="T9f-TL-GYj">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system" size="10"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="checkButtonClick:" target="EWu-DP-7Gj" id="i2G-yK-k2b"/>
+                                    <action selector="checkButtonClick:" target="EWu-DP-7Gj" id="0pW-49-jYc"/>
                                 </connections>
                             </button>
-                            <textField wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XeP-Gc-BVl">
-                                <rect key="frame" x="179" y="17" width="212" height="17"/>
+                            <textField wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="114-aw-aH2">
+                                <rect key="frame" x="168" y="20" width="212" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Current Version" id="5oM-oR-Dsq">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Current Version" id="Aur-fR-tik">
                                     <font key="font" metaFont="systemLight" size="10"/>
                                     <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                    </view>
+                    </visualEffectView>
                     <connections>
-                        <outlet property="versionLabel" destination="XeP-Gc-BVl" id="A9p-bo-YOp"/>
+                        <outlet property="versionLabel" destination="114-aw-aH2" id="JzV-OD-FI1"/>
                     </connections>
                 </viewController>
                 <customObject id="Tfe-PH-zhM" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1954" y="1153"/>
+            <point key="canvasLocation" x="1955" y="1156.5"/>
         </scene>
         <!--Advanced-->
         <scene sceneID="Fd7-iR-8pW">
