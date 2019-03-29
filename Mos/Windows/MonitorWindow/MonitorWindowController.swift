@@ -17,7 +17,7 @@ class MonitorWindowController: NSWindowController, NSWindowDelegate {
     }
     
     func windowWillClose(_ notification: Notification) {
-        WindowManager.shared.hideWindow(withIdentifier: WINDOW_IDENTIFIER.monitorWindowController)
+        WindowManager.shared.hideWindow(withIdentifier: WINDOW_IDENTIFIER.monitorWindowController, destroy: true)
     }
     
 }

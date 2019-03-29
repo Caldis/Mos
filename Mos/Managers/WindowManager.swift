@@ -44,10 +44,12 @@ extension WindowManager {
         Utils.showDockIcon()
     }
     // 关闭对应 Identifier 的窗口
-    func hideWindow(withIdentifier identifier: String) {
+    func hideWindow(withIdentifier identifier: String, destroy: Bool = false) {
         // 隐藏 Dock 图标
         Utils.hideDockIcon()
         // 销毁实例
-        // refs.removeValue(forKey: identifier)
+        if destroy {
+            refs.removeValue(forKey: identifier)
+        }
     }
 }

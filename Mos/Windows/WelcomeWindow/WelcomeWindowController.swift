@@ -17,7 +17,7 @@ class WelcomeWindowController: NSWindowController, NSWindowDelegate {
     }
     
     func windowWillClose(_ notification: Notification) {
-        WindowManager.shared.hideWindow(withIdentifier: WINDOW_IDENTIFIER.welcomeWindowController)
+        WindowManager.shared.hideWindow(withIdentifier: WINDOW_IDENTIFIER.welcomeWindowController, destroy: true)
     }
     
 }
