@@ -33,16 +33,16 @@ http://mos.caldis.me/
 ## Screenshot
 
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/en/Mointor.png?raw=true">
+  <img width="600" src="https://github.com/mclvren/Mos/blob/master/docs/resources/image/ru/Mointor.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/en/PreferencesGeneral.png?raw=true">
+  <img width="600" src="https://github.com/mclvren/Mos/blob/master/docs/resources/image/ru/PreferencesGeneral.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/en/PreferencesAdvanced.png?raw=true">
+  <img width="600" src="https://github.com/mclvren/Mos/blob/master/docs/resources/image/ru/PreferencesAdvanced.png?raw=true">
 </p>
 <p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/en/PreferencesExceptionFull.png?raw=true">
+  <img width="600" src="https://github.com/mclvren/Mos/blob/master/docs/resources/image/ru/PreferencesException.png?raw=true">
 </p>
 
 
