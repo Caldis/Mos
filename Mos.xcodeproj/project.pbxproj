@@ -159,6 +159,8 @@
 		22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAboutViewController.swift; sourceTree = "<group>"; };
 		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
+		B0A52BDC2302F8DC0059CF6D /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B0A52BDD2302F8DC0059CF6D /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -407,7 +409,6 @@
 				TargetAttributes = {
 					22142D9F1E25344E00E4BFBF = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 2H959AEV62;
 						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -420,7 +421,7 @@
 			};
 			buildConfigurationList = 22142D9B1E25344E00E4BFBF /* Build configuration list for PBXProject "Mos" */;
 			compatibilityVersion = "Xcode 8.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
@@ -428,6 +429,7 @@
 				ja,
 				"zh-Hant",
 				en,
+				ru,
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			productRefGroup = 22142DA11E25344E00E4BFBF /* Products */;
@@ -544,6 +546,7 @@
 				0B0D5B5A2066195A0077C2AC /* ja */,
 				0B0D5B5C206619680077C2AC /* zh-Hant */,
 				0B0D5B60206630E80077C2AC /* en */,
+				B0A52BDD2302F8DC0059CF6D /* ru */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -555,6 +558,7 @@
 				0B0D5B5D2066197B0077C2AC /* ja */,
 				0B0D5B5E2066197E0077C2AC /* zh-Hant */,
 				0B0D5B61206630EE0077C2AC /* en */,
+				B0A52BDC2302F8DC0059CF6D /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -680,7 +684,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 2H959AEV62;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Mos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
@@ -701,7 +705,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 2H959AEV62;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Mos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
