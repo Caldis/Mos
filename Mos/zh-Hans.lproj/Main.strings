@@ -44,9 +44,6 @@
 "Rgu-cb-5lp.title" = "例外的应用程序:";
 "Ksp-g1-48g.title" = "白名单模式";
 "v26-RK-BtL.title" = "启用白名单模式后, Mos 仅会对包含在下方列表内的程序启用, 其他的则不受任何影响";
-"HDo-Iu-l7K.headerCell.title" = "平滑";
-"rd0-ca-ufI.headerCell.title" = "反转";
-"xfG-Cd-oIk.headerCell.title" = " 应用程序";
 "ThS-Rm-st2.title" = "没有任何应用程序遭到不平等对待";
 "jaq-Cb-dKM.title" = "你可以通过点击下方的 \"+\" 来添加一个应用程序以设置其滚动行为";
 // Updates
@@ -84,3 +81,11 @@
 "7bu-fM-Bjm.title" = "能力愈大, 责任愈大. 为了平滑鼠标滚动, Mos 需要在你的鼠标与系统之间建立一个中间层, 用以接受并处理优化鼠标滚动相关的数据信号. 为了做到这些, 我们需要获取到系统的辅助功能提所提供的相关 API 才能正常工作";
 "qGs-TM-PTM.title" = "由于 MacOS 的限制, 在 Mos 更新后, 你可能需要重新对其授权. 如果条目已存在, 请删除并重新添加即可";
 "V9n-HF-Vw9.title" = "开始使用";
+
+// Popover
+"hnf-e0-HXM.title" = "偏好设置";
+"SqT-eH-bOb.title" = "退出";
+"Vs2-5P-BEI.title" = "平滑";
+"sKz-VE-Yfb.title" = "反转";
+"89F-B4-NIY.title" = "应用程序";
+"mfa-4t-oRD.title" = "设定";

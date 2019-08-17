@@ -1,5 +1,5 @@
 //
-//  PreferencesPopoverView.swift
+//  StatusItemPopoverView.swift
 //  Mos
 //  状态栏弹出 View 层
 //  Created by Caldis on 2019/1/2.
@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class PreferencesPopoverView: NSView {
+class StatusItemPopoverView: NSView {
     
     override func viewDidMoveToWindow() {
         // 设定背景色 (包括箭头部分)

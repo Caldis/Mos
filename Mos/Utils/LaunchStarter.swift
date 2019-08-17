@@ -13,11 +13,13 @@ class LaunchStarter {
     
     // 切换自启
     class func launchAtStartup(on: Bool) {
-        let appPath = Bundle.main.bundlePath
+        let bundlePath = Bundle.main.bundlePath
         if on {
-            LoginServiceKit.addLoginItems(at: appPath)
+            if !LoginServiceKit.isExistLoginItems(at: bundlePath) {
+                LoginServiceKit.addLoginItems(at: bundlePath)
+            }
         } else {
-            LoginServiceKit.removeLoginItems(at: appPath)
+            LoginServiceKit.removeLoginItems(at: bundlePath)
         }
     }
 }

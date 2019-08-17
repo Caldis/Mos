@@ -13,6 +13,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
     // 运行前预处理
     func applicationWillFinishLaunching(_ notification: Notification) {
+        // Dev 清空用户设置
+        // UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
         // 设置通知中心代理
         NSUserNotificationCenter.default.delegate = self
         // 禁止重复运行

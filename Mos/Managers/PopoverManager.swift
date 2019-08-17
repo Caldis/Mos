@@ -16,7 +16,14 @@ class PopoverManager {
     
     // 引用列表
     var refs = [String: NSPopover]()
-    
+//    var monitors = [EventMonitor]()
+//    var identifiers = [String]()
+//
+//    // 点击拦截
+//    func clickEventCallBack(_:NSEvent?) {
+//        PopoverManager.shared.hidePopover(withIdentifier: identifiers.last!)
+//    }
+//
 }
 
 /**
@@ -51,16 +58,24 @@ extension PopoverManager {
         }
         // 显示
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
-        // 前置并激活
-        NSApp.activate(ignoringOtherApps: true)
+        // 添加外部点击监听
+//        monitors.last?.stop()
+//        monitors.append(EventMonitor(mask: [.leftMouseDown, .rightMouseDown], handler: clickEventCallBack))
+//        identifiers.append(identifier)
     }
     // 隐藏对应 Identifier 的气泡面板
-    func hidePopover(withIdentifier identifier: String) {
+    func hidePopover(withIdentifier identifier: String, destroy: Bool = false) {
         if let popover = refs[identifier] {
             // 隐藏
             popover.performClose(nil)
+            // 停止当前, 删除并启用上一个监听
+//            monitors.popLast()?.stop()
+//            _ = identifiers.popLast()
+//            monitors.last?.start()
             // 销毁实例
-            // refs.removeValue(forKey: identifier)
+            if destroy {
+                refs.removeValue(forKey: identifier)
+            }
         }
     }
 }

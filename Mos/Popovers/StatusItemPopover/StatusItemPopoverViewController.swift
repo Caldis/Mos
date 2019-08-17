@@ -1,5 +1,5 @@
 //
-//  PreferencesPopoverController.swift
+//  StatusItemPopoverController.swift
 //  Mos
 //  状态栏弹出
 //  Created by Caldis on 2018/12/29.
@@ -8,17 +8,17 @@
 
 import Cocoa
 
-class PreferencesPopoverViewController: NSViewController {
+class StatusItemPopoverViewController: NSViewController {
     
     // 点击监听
     var clickEventMonitor: EventMonitor?
     // 引用
     var currentPopover: NSPopover!
+    var currentViewController: NSViewController!
     var currentViewControllers = [NSViewController]()
     // 控件
     @IBOutlet var menuControl: NSMenu!
-    @IBOutlet weak var preferencesTabSegmentControl: NSSegmentedControl!
-    @IBOutlet weak var preferencesContainerView: NSView!
+    @IBOutlet var preferencesContainerView: NSView!
     
     // 生命周期
     override func viewDidLoad() {
@@ -26,22 +26,15 @@ class PreferencesPopoverViewController: NSViewController {
         // 获取 Popover
         currentPopover = PopoverManager.shared.refs[POPOVER_IDENTIFIER.preferencesPopoverController]!
         // 初始化分页
-        for identifier in PANEL_IDENTIFIER.list {
-            currentViewControllers.append(Utils.instantiateControllerFromStoryboard(withIdentifier: identifier)!)
-        }
-        // 显示第一个TAB分页
-        showTargetPanel(with: 0)
+        currentViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.exception) as NSViewController
+        preferencesContainerView!.addSubview(currentViewController.view)
+        currentPopover.contentSize = NSSize.init(
+            width: currentPopover.contentViewController!.view.frame.width,
+            height: currentViewController.view.frame.height + PANEL_PADDING
+        )
     }
     override func viewWillAppear() {
-        // 监听鼠标点击外部
-        clickEventMonitor = EventMonitor(mask: [.leftMouseDown, .rightMouseDown], handler: hidePopover)
-        // 激活窗口
-        NSApp.activate(ignoringOtherApps: false)
-    }
-    
-    // 页面切换
-    @IBAction func preferencesTabSegmentControlSelected(_ sender: NSSegmentedCell) {
-        showTargetPanel(with: sender.selectedSegment)
+         clickEventMonitor = EventMonitor(mask: [.leftMouseDown, .rightMouseDown], handler: hidePopover)
     }
     
     // 按钮点击
@@ -52,23 +45,20 @@ class PreferencesPopoverViewController: NSViewController {
         let buttonPosition = NSPoint(x: sender.frame.origin.x, y: sender.frame.origin.y - (sender.frame.height / 2))
         menuControl.popUp(positioning: nil, at: buttonPosition, in: sender.superview)
     }
+    @IBAction func menuControlPreferencesButtonClick(_ sender: NSMenuItem) {
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController, withTitle: i18n.preferences)
+    }
     @IBAction func menuControlQuitButtonClick(_ sender: NSMenuItem) {
         NSApplication.shared.terminate(self)
-    }
-    @IBAction func donateButtonClick(_ sender: NSButton) {
-        
-    }
-    @IBAction func aboutButtonClick(_ sender: NSButton) {
-        
     }
 }
 
 /**
  * 面板控制
  **/
-extension PreferencesPopoverViewController {
+extension StatusItemPopoverViewController {
     
-    //  隐藏 Popover
+    // 隐藏
     func hidePopover(_:NSEvent?) {
         PopoverManager.shared.hidePopover(withIdentifier: POPOVER_IDENTIFIER.preferencesPopoverController)
         clickEventMonitor?.stop()
@@ -76,8 +66,6 @@ extension PreferencesPopoverViewController {
     
     // 切换到特定分页
     func showTargetPanel(with targetIndex: Int) {
-        // 关闭动画
-        // currentPopover.animates = false
         // 删除并替换
         for subView in preferencesContainerView.subviews { subView.removeFromSuperview() }
         preferencesContainerView.addSubview(currentViewControllers[targetIndex].view)
@@ -86,7 +74,5 @@ extension PreferencesPopoverViewController {
             width: currentPopover.contentViewController!.view.frame.width,
             height: currentViewControllers[targetIndex].view.frame.height + PANEL_PADDING
         )
-        // 恢复动画
-        // currentPopover.animates = true
     }
 }

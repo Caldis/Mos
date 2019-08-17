@@ -41,12 +41,12 @@ extension WindowManager {
         windowController.window?.makeKeyAndOrderFront(self)
         NSApp.activate(ignoringOtherApps: true)
         // 显示 Dock 图标
-        Utils.showDockIcon()
+        // Utils.showDockIcon()
     }
     // 关闭对应 Identifier 的窗口
     func hideWindow(withIdentifier identifier: String, destroy: Bool = false) {
         // 隐藏 Dock 图标
-        Utils.hideDockIcon()
+        // Utils.hideDockIcon()
         // 销毁实例
         if destroy {
             refs.removeValue(forKey: identifier)

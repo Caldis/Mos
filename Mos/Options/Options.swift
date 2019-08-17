@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import LoginServiceKit
 import ServiceManagement
 
 class Options {
@@ -104,7 +105,8 @@ class Options {
         // 基础
         basic.smooth = UserDefaults.standard.bool(forKey: "smooth")
         basic.reverse = UserDefaults.standard.bool(forKey: "reverse")
-        basic.autoLaunch = UserDefaults.standard.bool(forKey: "autoLaunch")
+        basic.autoLaunch = LoginServiceKit.isExistLoginItems(at: Bundle.main.bundlePath)
+        // basic.autoLaunch = UserDefaults.standard.bool(forKey: "autoLaunch")
         // 高级
         advanced.toggle = UserDefaults.standard.integer(forKey: "toggle")
         advanced.block = UserDefaults.standard.integer(forKey: "block")
@@ -133,7 +135,7 @@ class Options {
             // 基础
             UserDefaults.standard.set(basic.smooth, forKey:"smooth")
             UserDefaults.standard.set(basic.reverse, forKey:"reverse")
-            UserDefaults.standard.set(basic.autoLaunch, forKey:"autoLaunch")
+            // UserDefaults.standard.set(basic.autoLaunch, forKey:"autoLaunch")
             // 高级
             UserDefaults.standard.set(advanced.toggle, forKey:"toggle")
             UserDefaults.standard.set(advanced.block, forKey:"block")
