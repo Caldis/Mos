@@ -41,7 +41,8 @@ class Options {
         ),
         // 其他
         others: (
-            hideStatusItem: false
+            hideStatusItem: false,
+            placeholder: false
         )
     )
     // 当前设置

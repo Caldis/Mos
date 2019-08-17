@@ -93,7 +93,7 @@
 		FA2FEED21CB3F76D00F3A456 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Shunsuke Furubayashi";
 				TargetAttributes = {
 					FA2FEEDA1CB3F76D00F3A456 = {
@@ -104,10 +104,11 @@
 			};
 			buildConfigurationList = FA2FEED51CB3F76D00F3A456 /* Build configuration list for PBXProject "LoginServiceKit" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = FA2FEED11CB3F76D00F3A456;
 			productRefGroup = FA2FEEDC1CB3F76D00F3A456 /* Products */;

@@ -12,10 +12,6 @@
 import Foundation
 import CoreGraphics
 
-#if !os(OSX)
-    import UIKit
-#endif
-
 @objc(ChartLegend)
 open class Legend: ComponentBase
 {
@@ -271,11 +267,7 @@ open class Legend: ComponentBase
                     }
                     
                     width += size.width
-                    
-                    if i < entryCount - 1
-                    {
-                        maxHeight += labelLineHeight + yEntrySpace
-                    }
+                    maxHeight += labelLineHeight + yEntrySpace
                 }
                 else
                 {
@@ -315,7 +307,7 @@ open class Legend: ComponentBase
             
             // Start calculating layout
             
-            let labelAttrs = [NSAttributedStringKey.font: labelFont]
+            let labelAttrs = [NSAttributedString.Key.font: labelFont]
             var maxLineWidth: CGFloat = 0.0
             var currentLineWidth: CGFloat = 0.0
             var requiredWidth: CGFloat = 0.0
@@ -420,7 +412,7 @@ open class Legend: ComponentBase
     }
     
     /// **default**: false (automatic legend)
-    /// - returns: `true` if a custom legend entries has been set
+    /// `true` if a custom legend entries has been set
     @objc open var isLegendCustom: Bool
     {
         return _isLegendCustom

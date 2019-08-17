@@ -55,12 +55,12 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         // 初始化图表数据
         lineChartCount = 0.0
         // 设置数据集
-        let verticalData = LineChartDataSet(values: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Vertical")
+        let verticalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Vertical")
         verticalData.valueTextColor = NSUIColor.white
         verticalData.colors = [green]
         verticalData.circleRadius = 1.5
         verticalData.circleColors = [green]
-        let horizontalData = LineChartDataSet(values: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Horizontal")
+        let horizontalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Horizontal")
         horizontalData.valueTextColor = NSUIColor.white
         horizontalData.colors = [yellow]
         horizontalData.circleRadius = 1.5
