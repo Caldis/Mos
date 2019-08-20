@@ -16,7 +16,7 @@ class HideStatusItemViewController: NSViewController {
     
     @IBAction func hideStatusItemClick(_ sender: NSButton) {
         // 设置隐藏
-        Options.shared.others.hideStatusItem = true
+        Options.shared.global.hideStatusItem = true
         // 关闭窗口
         WindowManager.shared.refs[WINDOW_IDENTIFIER.hideStatusItemWindowController]?.close()
     }

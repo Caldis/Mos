@@ -24,9 +24,9 @@ class ScrollCore {
     var toggleScroll = false
     var blockSmooth = false
     // 插值数据
-    var smoothStep = Options.shared.advanced.step
-    var smoothSpeed = Options.shared.advanced.speed
-    var smoothDuration = Options.shared.advanced.durationTransition
+    var smoothStep = Options.shared.scroll.step
+    var smoothSpeed = Options.shared.scroll.speed
+    var smoothDuration = Options.shared.scroll.durationTransition
     // 滚动数值滤波, 用于去除滚动的起始抖动
     var scrollFiller = ScrollFiller()
     // 事件发送器
@@ -50,9 +50,8 @@ class ScrollCore {
             let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation(and: event)
             // 获取列表中应用程序的列外设置信息
             let exceptionalApplication = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
-            // 是否翻转
+            // 翻转/平滑
             let enableReverse = ScrollUtils.shared.isEnableReverseOn(application: exceptionalApplication)
-            // 是否平滑
             let enableSmooth = ScrollUtils.shared.isEnableSmoothOn(application: exceptionalApplication)
             // 滚动参数
             ScrollCore.shared.smoothStep = ScrollUtils.shared.optionsStepOn(application: exceptionalApplication)
@@ -108,8 +107,8 @@ class ScrollCore {
     
     // 热键处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        let toggleKey = Options.shared.advanced.toggle
-        let disableKey = Options.shared.advanced.block
+        let toggleKey = Options.shared.scroll.toggle
+        let disableKey = Options.shared.scroll.block
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         // 判断转换键
         switch keyCode {
@@ -271,7 +270,7 @@ class ScrollCore {
         // 发送滚动结果
         MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
         // 如果临近目标距离小于精确度门限则停止滚动
-        if scrollPulse.y.magnitude<=Options.shared.advanced.precision && scrollPulse.x.magnitude<=Options.shared.advanced.precision {
+        if scrollPulse.y.magnitude<=Options.shared.scroll.precision && scrollPulse.x.magnitude<=Options.shared.scroll.precision {
             disableScrollEventPoster()
             scrollFiller.clean()
         }

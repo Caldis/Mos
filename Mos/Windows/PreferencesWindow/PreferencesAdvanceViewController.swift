@@ -10,6 +10,10 @@ import Cocoa
 
 class PreferencesAdvanceViewController: NSViewController {
     
+    // Target application
+    static var sharedTargetApplication: ExceptionalApplication?
+    var currentTargetApplication: ExceptionalApplication?
+    // UI Elements
     @IBOutlet weak var toggleKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var disableKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var scrollStepSlider: NSSlider!
@@ -24,6 +28,9 @@ class PreferencesAdvanceViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 同步目标应用
+        currentTargetApplication = PreferencesAdvanceViewController.sharedTargetApplication
+        PreferencesAdvanceViewController.sharedTargetApplication = nil
         // 读取设置
         syncViewWithOptions()
     }
@@ -31,12 +38,12 @@ class PreferencesAdvanceViewController: NSViewController {
     // 转换
     @IBAction func toggleKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
-        Options.shared.advanced.toggle = Int(index>1 ? MODIFIER_KEY.list[index-2] : 0)
+        getTargetScroll().toggle = Int(index>1 ? MODIFIER_KEY.list[index-2] : 0)
     }
     // 禁用
     @IBAction func disableKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
-        Options.shared.advanced.block = Int(index>1 ? MODIFIER_KEY.list[index-2] : 0)
+        getTargetScroll().block = Int(index>1 ? MODIFIER_KEY.list[index-2] : 0)
     }
     
     // 步长
@@ -50,7 +57,7 @@ class PreferencesAdvanceViewController: NSViewController {
         setScrollStep(value: sender.doubleValue)
     }
     func setScrollStep(value: Double) {
-        Options.shared.advanced.step = value
+        getTargetScroll().step = value
         syncViewWithOptions()
     }
     
@@ -65,7 +72,7 @@ class PreferencesAdvanceViewController: NSViewController {
         setScrollSpeed(value: sender.doubleValue)
     }
     func setScrollSpeed(value: Double) {
-        Options.shared.advanced.speed = value
+        getTargetScroll().speed = value
         syncViewWithOptions()
     }
     
@@ -80,50 +87,59 @@ class PreferencesAdvanceViewController: NSViewController {
         setScrollDuration(value: sender.doubleValue)
     }
     func setScrollDuration(value: Double) {
-        Options.shared.advanced.duration = value
+        getTargetScroll().duration = value
         syncViewWithOptions()
     }
     
     // 重置
     @IBAction func resetToDefaultClick(_ sender: NSButton) {
-        Options.shared.advanced = Options.DEFAULT_OPTIONS.advanced
+        if let target = currentTargetApplication {
+            target.scroll = OPTIONS_SCROLL_DEFAULT()
+        } else {
+            Options.shared.scroll = OPTIONS_SCROLL_DEFAULT()
+        }
         syncViewWithOptions()
     }
     
 }
 
 /**
- * 设置同步
+ * 工具函数
  **/
 extension PreferencesAdvanceViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
+        let scroll = getTargetScroll()
         // 转换
-        if let index = MODIFIER_KEY.list.firstIndex(of: CGKeyCode(Options.shared.advanced.toggle)) {
+        if let index = MODIFIER_KEY.list.firstIndex(of: CGKeyCode(scroll.toggle)) {
             toggleKeyPopUpButton.selectItem(at: index+2)
         } else {
             toggleKeyPopUpButton.selectItem(at: 0)
         }
         // 禁用
-        if let index = MODIFIER_KEY.list.firstIndex(of: CGKeyCode(Options.shared.advanced.block)) {
+        if let index = MODIFIER_KEY.list.firstIndex(of: CGKeyCode(scroll.block)) {
             disableKeyPopUpButton.selectItem(at: index+2)
         } else {
             disableKeyPopUpButton.selectItem(at: 0)
         }
         // 步长
-        let step = Options.shared.advanced.step
+        let step = scroll.step
         scrollStepSlider.doubleValue = step
         scrollStepStepper.doubleValue = step
         scrollStepInput.stringValue = String(format: "%.2f", step)
         // 速度
-        let speed = Options.shared.advanced.speed
+        let speed = scroll.speed
         scrollSpeedSlider.doubleValue = speed
         scrollSpeedStepper.doubleValue = speed
         scrollSpeedInput.stringValue = String(format: "%.2f", speed)
         // 过渡
-        let duration = Options.shared.advanced.duration
+        let duration = scroll.duration
         scrollDurationSlider.doubleValue = duration
         scrollDurationStepper.doubleValue = duration
         scrollDurationInput.stringValue = String(format: "%.2f", duration)
+    }
+    // 获取配置目标
+    func getTargetScroll() -> OPTIONS_SCROLL_DEFAULT {
+        return currentTargetApplication?.scroll ?? Options.shared.scroll
     }
 }

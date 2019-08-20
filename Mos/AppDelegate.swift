@@ -82,7 +82,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     // 收到通知后显示图标
     func userNotificationCenter(_ center: NSUserNotificationCenter, didActivate notification: NSUserNotification) {
-        Options.shared.others.hideStatusItem = false
+        Options.shared.global.hideStatusItem = false
     }
     
 }

@@ -35,7 +35,7 @@ public class Utils {
         if NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID).count > 1  {
             let runningInst = NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID)[0]
             if runningInst.terminate() {
-                Options.shared.others.hideStatusItem = false
+                Options.shared.global.hideStatusItem = false
             } else {
                 NSApp.terminate(nil)
             }
@@ -45,7 +45,7 @@ public class Utils {
     // 提示状态栏图标已隐藏
     class func notificateUserStatusBarIconIsHidden() {
         // 如果状态栏图标隐藏
-        if Options.shared.others.hideStatusItem {
+        if Options.shared.global.hideStatusItem {
             // 定义通知
             let notification = NSUserNotification()
             notification.title = "Mos"

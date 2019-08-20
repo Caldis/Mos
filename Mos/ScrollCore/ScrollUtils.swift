@@ -162,23 +162,23 @@ class ScrollUtils {
     // 从 exceptionalApplications 中取回符合传入的 bundleId 的 ExceptionalApplication 对象
     func applicationInExceptionalApplications(bundleId: String?) -> ExceptionalApplication? {
         if let targetBundleId = bundleId {
-            return Options.shared.exception.applications.get(from: targetBundleId)
+            return Options.shared.global.applications.get(from: targetBundleId)
         }
         return nil
     }
     
     // 判断 ExceptionalApplication 是否需要平滑滚动
     private func applicationNeedSmooth(application: ExceptionalApplication) -> Bool {
-        return application.smooth
+        return application.scroll.smooth
     }
     // 判断 ExceptionalApplication 是否需要翻转
     private func applicationNeedReverse(application: ExceptionalApplication) -> Bool {
-        return application.reverse
+        return application.scroll.reverse
     }
 
     // 是否启用平滑
     func isEnableSmoothOn(application: ExceptionalApplication?) -> Bool {
-        if Options.shared.basic.smooth && !ScrollCore.shared.blockSmooth {
+        if Options.shared.scroll.smooth && !ScrollCore.shared.blockSmooth {
             // 针对 Launchpad 特殊处理, 不论是否在列表内均禁用平滑
             if isLaunchpadActive() {
                 return false
@@ -186,7 +186,7 @@ class ScrollUtils {
             if let target = application {
                 return applicationNeedSmooth(application: target)
             } else {
-                return !Options.shared.exception.whitelist
+                return !Options.shared.global.whitelist
             }
         } else {
             return false
@@ -194,17 +194,17 @@ class ScrollUtils {
     }
     // 是否启用翻转
     func isEnableReverseOn(application: ExceptionalApplication?) -> Bool {
-        if Options.shared.basic.reverse {
+        if Options.shared.scroll.reverse {
             // 针对 Launchpad 特殊处理
             if isLaunchpadActive() {
-                if let launchpad = Options.shared.exception.applications.get(from: "com.apple.launchpad.launcher") {
-                    return launchpad.reverse
+                if let launchpad = Options.shared.global.applications.get(from: "com.apple.launchpad.launcher") {
+                    return launchpad.scroll.reverse
                 }
             }
             if let target = application {
                 return applicationNeedReverse(application: target)
             } else {
-                return !Options.shared.exception.whitelist
+                return !Options.shared.global.whitelist
             }
         } else {
             return false
@@ -213,23 +213,23 @@ class ScrollUtils {
     // 应用高级设置参数
     func optionsStepOn(application: ExceptionalApplication?) -> Double {
         if let targetApplication = application {
-            return targetApplication.followGlobal ? Options.shared.advanced.step : targetApplication.step
+            return targetApplication.followGlobal ? Options.shared.scroll.step : targetApplication.scroll.step
         } else {
-            return Options.shared.advanced.step
+            return Options.shared.scroll.step
         }
     }
     func optionsSpeedOn(application: ExceptionalApplication?) -> Double {
         if let targetApplication = application {
-            return targetApplication.followGlobal ? Options.shared.advanced.speed : targetApplication.speed
+            return targetApplication.followGlobal ? Options.shared.scroll.speed : targetApplication.scroll.speed
         } else {
-            return Options.shared.advanced.speed
+            return Options.shared.scroll.speed
         }
     }
     func optionsDurationTransitionOn(application: ExceptionalApplication?) -> Double {
         if let targetApplication = application {
-            return targetApplication.followGlobal ? Options.shared.advanced.durationTransition : targetApplication.durationTransition
+            return targetApplication.followGlobal ? Options.shared.scroll.durationTransition : targetApplication.scroll.durationTransition
         } else {
-            return Options.shared.advanced.durationTransition
+            return Options.shared.scroll.durationTransition
         }
     }
 }
