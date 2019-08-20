@@ -98,20 +98,20 @@ class PreferencesExceptionViewController: NSViewController {
     @objc func smoothCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.exception.applications.get(at: row).smooth = state.rawValue==1 ? true : false
+        Options.shared.exception.applications.get(from: row).smooth = state.rawValue==1 ? true : false
         Options.shared.exception.applications = Options.shared.exception.applications
     }
     // 点击反转
     @objc func reverseCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.exception.applications.get(at: row).reverse = state.rawValue==1 ? true : false
+        Options.shared.exception.applications.get(from: row).reverse = state.rawValue==1 ? true : false
         Options.shared.exception.applications = Options.shared.exception.applications
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
         let row = sender.tag
-        let application = Options.shared.exception.applications.get(at: row)
+        let application = Options.shared.exception.applications.get(from: row)
         PopoverManager.shared.togglePopover(withIdentifier: PANEL_IDENTIFIER.advanced, relativeTo: sender)
     }
     
@@ -143,7 +143,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
         // 生成每行的 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
             // 应用数据
-            let application = Options.shared.exception.applications.get(at: row)
+            let application = Options.shared.exception.applications.get(from: row)
             switch tableColumnIdentifier.rawValue {
                 // 平滑
                 case CellIdentifiers.smoothCell:
@@ -165,7 +165,11 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
                 case CellIdentifiers.applicationCell:
                     cell.imageView?.image = NSWorkspace.shared.icon(forFile: application.path)
                     if let applicationBundle = Bundle.init(url: URL.init(fileURLWithPath: application.path)) {
-                        cell.textField?.stringValue = applicationBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as! String
+                        if let name = applicationBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
+                            cell.textField?.stringValue = name
+                        } else if let name = applicationBundle.object(forInfoDictionaryKey: "CFBundleName") as? String {
+                            cell.textField?.stringValue = name
+                        }
                     }
                     return cell
                 // 设定
