@@ -45,7 +45,7 @@
 "Ksp-g1-48g.title" = "白名单模式";
 "v26-RK-BtL.title" = "启用白名单模式后, Mos 仅会对包含在下方列表内的程序启用, 其他的则不受任何影响";
 "ThS-Rm-st2.title" = "没有任何应用程序遭到不平等对待";
-"jaq-Cb-dKM.title" = "你可以通过点击下方的 \"+\" 来添加一个应用程序以设置其滚动行为";
+"jaq-Cb-dKM.title" = "你可以点击下方的 \"+\" 来添加一个应用程序以设置其滚动行为";
 // Updates
 "EWu-DP-7Gj.title" = "更新";
 "vdI-K4-SBh.title" = "检查更新:";
@@ -88,4 +88,4 @@
 "Vs2-5P-BEI.title" = "平滑";
 "sKz-VE-Yfb.title" = "反转";
 "89F-B4-NIY.title" = "应用程序";
-"mfa-4t-oRD.title" = "设定";
+"mfa-4t-oRD.title" = "高级";
