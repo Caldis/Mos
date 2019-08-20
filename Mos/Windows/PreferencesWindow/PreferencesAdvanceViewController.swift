@@ -26,8 +26,7 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBOutlet weak var scrollDurationInput: NSTextField!
     @IBOutlet weak var scrollDurationStepper: NSStepper!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear() {
         // 同步目标应用
         currentTargetApplication = PreferencesAdvanceViewController.sharedTargetApplication
         PreferencesAdvanceViewController.sharedTargetApplication = nil

@@ -166,17 +166,9 @@ class ScrollUtils {
         }
         return nil
     }
-    
-    // 判断 ExceptionalApplication 是否需要平滑滚动
-    private func applicationNeedSmooth(application: ExceptionalApplication) -> Bool {
-        return application.scroll.smooth
-    }
-    // 判断 ExceptionalApplication 是否需要翻转
-    private func applicationNeedReverse(application: ExceptionalApplication) -> Bool {
-        return application.scroll.reverse
-    }
 
-    // 是否启用平滑
+    // 获取应用
+    // 基础参数
     func isEnableSmoothOn(application: ExceptionalApplication?) -> Bool {
         if Options.shared.scroll.smooth && !ScrollCore.shared.blockSmooth {
             // 针对 Launchpad 特殊处理, 不论是否在列表内均禁用平滑
@@ -184,7 +176,7 @@ class ScrollUtils {
                 return false
             }
             if let target = application {
-                return applicationNeedSmooth(application: target)
+                return target.scroll.smooth
             } else {
                 return !Options.shared.global.whitelist
             }
@@ -192,7 +184,6 @@ class ScrollUtils {
             return false
         }
     }
-    // 是否启用翻转
     func isEnableReverseOn(application: ExceptionalApplication?) -> Bool {
         if Options.shared.scroll.reverse {
             // 针对 Launchpad 特殊处理
@@ -202,7 +193,7 @@ class ScrollUtils {
                 }
             }
             if let target = application {
-                return applicationNeedReverse(application: target)
+                return target.scroll.reverse
             } else {
                 return !Options.shared.global.whitelist
             }
@@ -210,7 +201,21 @@ class ScrollUtils {
             return false
         }
     }
-    // 应用高级设置参数
+    // 高级参数
+    func optionsToggleOn(application: ExceptionalApplication?) -> Int {
+        if let targetApplication = application {
+            return targetApplication.followGlobal ? Options.shared.scroll.toggle : targetApplication.scroll.toggle
+        } else {
+            return Options.shared.scroll.toggle
+        }
+    }
+    func optionsBlockOn(application: ExceptionalApplication?) -> Int {
+        if let targetApplication = application {
+            return targetApplication.followGlobal ? Options.shared.scroll.block : targetApplication.scroll.block
+        } else {
+            return Options.shared.scroll.block
+        }
+    }
     func optionsStepOn(application: ExceptionalApplication?) -> Double {
         if let targetApplication = application {
             return targetApplication.followGlobal ? Options.shared.scroll.step : targetApplication.scroll.step

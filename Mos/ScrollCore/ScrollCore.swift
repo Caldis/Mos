@@ -27,6 +27,8 @@ class ScrollCore {
     var smoothStep = Options.shared.scroll.step
     var smoothSpeed = Options.shared.scroll.speed
     var smoothDuration = Options.shared.scroll.durationTransition
+    // 应用数据
+    var exceptionalApplication: ExceptionalApplication?
     // 滚动数值滤波, 用于去除滚动的起始抖动
     var scrollFiller = ScrollFiller()
     // 事件发送器
@@ -49,14 +51,14 @@ class ScrollCore {
             // 获取目标窗口 BundleId
             let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation(and: event)
             // 获取列表中应用程序的列外设置信息
-            let exceptionalApplication = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
+            ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
             // 翻转/平滑
-            let enableReverse = ScrollUtils.shared.isEnableReverseOn(application: exceptionalApplication)
-            let enableSmooth = ScrollUtils.shared.isEnableSmoothOn(application: exceptionalApplication)
+            let enableReverse = ScrollUtils.shared.isEnableReverseOn(application: ScrollCore.shared.exceptionalApplication)
+            let enableSmooth = ScrollUtils.shared.isEnableSmoothOn(application: ScrollCore.shared.exceptionalApplication)
             // 滚动参数
-            ScrollCore.shared.smoothStep = ScrollUtils.shared.optionsStepOn(application: exceptionalApplication)
-            ScrollCore.shared.smoothSpeed = ScrollUtils.shared.optionsSpeedOn(application: exceptionalApplication)
-            ScrollCore.shared.smoothDuration = ScrollUtils.shared.optionsDurationTransitionOn(application: exceptionalApplication)
+            ScrollCore.shared.smoothStep = ScrollUtils.shared.optionsStepOn(application: ScrollCore.shared.exceptionalApplication)
+            ScrollCore.shared.smoothSpeed = ScrollUtils.shared.optionsSpeedOn(application: ScrollCore.shared.exceptionalApplication)
+            ScrollCore.shared.smoothDuration = ScrollUtils.shared.optionsDurationTransitionOn(application: ScrollCore.shared.exceptionalApplication)
             // 处理滚动事件
             let scrollEvent = ScrollEvent(with: event)
             // Y轴
@@ -107,8 +109,8 @@ class ScrollCore {
     
     // 热键处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        let toggleKey = Options.shared.scroll.toggle
-        let disableKey = Options.shared.scroll.block
+        let toggleKey = ScrollUtils.shared.optionsToggleOn(application: ScrollCore.shared.exceptionalApplication)
+        let disableKey = ScrollUtils.shared.optionsBlockOn(application: ScrollCore.shared.exceptionalApplication)
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         // 判断转换键
         switch keyCode {
