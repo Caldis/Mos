@@ -49,7 +49,7 @@ import Cocoa
 public final class LoginServiceKit: NSObject {}
 
 public extension LoginServiceKit {
-    public static func isExistLoginItems(at path: String) -> Bool {
+    static func isExistLoginItems(at path: String) -> Bool {
         if path.isEmpty { return false }
 
         let itemURL = UnsafeMutablePointer<Unmanaged<CFURL>?>.allocate(capacity: 1)
@@ -69,7 +69,7 @@ public extension LoginServiceKit {
         return false
     }
 
-    public static func addLoginItems(at path: String) {
+    static func addLoginItems(at path: String) {
         if path.isEmpty { return }
 
         let loginItemList = LSSharedFileListCreate(nil, kLSSharedFileListSessionLoginItems.takeRetainedValue(), nil).takeRetainedValue()
@@ -80,7 +80,7 @@ public extension LoginServiceKit {
         LSSharedFileListInsertItemURL(loginItemList, loginItems?.last ?? kLSSharedFileListItemBeforeFirst.takeRetainedValue(), nil, nil, url as CFURL?, nil, nil)
     }
 
-    public static func removeLoginItems(at path: String) {
+    static func removeLoginItems(at path: String) {
         if path.isEmpty { return }
 
         let itemURL = UnsafeMutablePointer<Unmanaged<CFURL>?>.allocate(capacity: 1)
