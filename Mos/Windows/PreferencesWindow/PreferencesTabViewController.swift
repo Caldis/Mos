@@ -10,6 +10,8 @@ import Cocoa
 
 class PreferencesTabViewController: NSTabViewController {
     
+    // 第一个界面的宽高
+    var FIRST_VIEW_SIZE = (width: CGFloat(450.0), height: CGFloat(315.0))
     // 界面 TabViewController 引用
     var currentTabViewController: NSViewController?
     // 容器: Window
@@ -26,7 +28,7 @@ class PreferencesTabViewController: NSTabViewController {
                 self.currentWindow = currentWindow
                 // 初始化窗口大小
                 let currentWindowRect = currentWindow.window!.frame
-                let generalSize = NSMakeRect(currentWindowRect.origin.x, currentWindowRect.origin.y, 450, 265)
+                let generalSize = NSMakeRect(currentWindowRect.origin.x, currentWindowRect.origin.y, FIRST_VIEW_SIZE.width, FIRST_VIEW_SIZE.height)
                 currentWindow.window!.setFrame(generalSize, display: true, animate: true)
             }
         }

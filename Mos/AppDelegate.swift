@@ -9,20 +9,16 @@
 import Cocoa
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate {
 
     // 运行前预处理
     func applicationWillFinishLaunching(_ notification: Notification) {
-        // Dev 清空用户设置
+        // FIXME: 清空用户设置
         // UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
-        // 设置通知中心代理
-        NSUserNotificationCenter.default.delegate = self
         // 禁止重复运行
         Utils.preventMultiRunning(killExist: true)
         // 读取用户设置
         Options.shared.readOptions()
-        // 提示用户状态栏图标已隐藏
-        Utils.notificateUserStatusBarIconIsHidden()
         // 监听用户切换, 在切换用户 session 时停止运行
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
@@ -40,6 +36,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     // 运行后启动滚动处理
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         startWithAccessibilityPermissionsChecker(nil)
+    }
+    // 在运行状态下再次运行则显示图标
+    func applicationWillBecomeActive(_ aNotification: Notification) {
+        Options.shared.global.hideStatusItem = false
     }
     // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -79,10 +79,4 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     @objc func sessionDidResign(notification:NSNotification){
          ScrollCore.shared.endHandlingScroll()
     }
-    
-    // 收到通知后显示图标
-    func userNotificationCenter(_ center: NSUserNotificationCenter, didActivate notification: NSUserNotification) {
-        Options.shared.global.hideStatusItem = false
-    }
-    
 }

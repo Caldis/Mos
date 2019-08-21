@@ -27,21 +27,6 @@ public class Utils {
         }
     }
     
-    // 结束已有进程并尝试显示状态栏图标
-    class func runForShowStatusItem() {
-        // 获取自己的 BundleId
-        let mainBundleID = Bundle.main.bundleIdentifier!
-        // 如果检测到在运行, 则尝试结束进程, 并显示状态栏图标, 否则自杀
-        if NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID).count > 1  {
-            let runningInst = NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID)[0]
-            if runningInst.terminate() {
-                Options.shared.global.hideStatusItem = false
-            } else {
-                NSApp.terminate(nil)
-            }
-        }
-    }
-    
     // 提示状态栏图标已隐藏
     class func notificateUserStatusBarIconIsHidden() {
         // 如果状态栏图标隐藏

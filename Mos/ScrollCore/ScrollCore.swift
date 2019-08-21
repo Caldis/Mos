@@ -149,7 +149,7 @@ class ScrollCore {
                     ScrollCore.shared.blockSmooth = Utils.isShiftDown(event)
                     ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
                 }
-            default: break
+        default: break
         }
         return nil
     }
