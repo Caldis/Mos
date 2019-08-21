@@ -36,12 +36,15 @@ class ScrollCore {
     // 拦截层
     var scrollEventInterceptor: Interceptor?
     var hotkeyEventInterceptor: Interceptor?
+    var mouseEventInterceptor: Interceptor?
     var tapKeeperTimer: Timer?
     // 拦截掩码
     let scrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
     let hotkeyEventMask = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
+    let mouseLeftEventMask = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
+    let mouseRightEventMask = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
     
-    // 滚动处理
+    // 滚动事件处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 是否返回原始事件 (不启用平滑时)
         var returnOriginalEvent = true
@@ -107,7 +110,7 @@ class ScrollCore {
         }
     }
     
-    // 热键处理
+    // 热键事件处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         let toggleKey = ScrollUtils.shared.optionsToggleOn(application: ScrollCore.shared.exceptionalApplication)
         let disableKey = ScrollUtils.shared.optionsBlockOn(application: ScrollCore.shared.exceptionalApplication)
@@ -151,6 +154,13 @@ class ScrollCore {
         return nil
     }
     
+    // 鼠标事件处理
+    let mouseLeftEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        // 如果点击左键则停止滚动
+        ScrollCore.shared.cleanScrollBuffer()
+        ScrollCore.shared.disableScrollEventPoster()
+        return nil
+    }
     
     // 启动滚动处理
     func startHandlingScroll() {
@@ -165,6 +175,13 @@ class ScrollCore {
         hotkeyEventInterceptor = Interceptor(
             event: hotkeyEventMask,
             handleBy: hotkeyEventCallBack,
+            listenOn: .cghidEventTap,
+            placeAt: .tailAppendEventTap,
+            for: .listenOnly
+        )
+        mouseEventInterceptor = Interceptor(
+            event: mouseLeftEventMask,
+            handleBy: mouseLeftEventCallBack,
             listenOn: .cghidEventTap,
             placeAt: .tailAppendEventTap,
             for: .listenOnly
@@ -189,14 +206,16 @@ class ScrollCore {
         // 停止截取事件
         scrollEventInterceptor?.stop()
         hotkeyEventInterceptor?.stop()
+        mouseEventInterceptor?.stop()
     }
     // 守护进程
     @objc func tapKeeper() {
         scrollEventInterceptor?.check()
         hotkeyEventInterceptor?.check()
+        mouseEventInterceptor?.check()
     }
         
-    // 鼠标数据输入
+    // 鼠标数据控制
     func updateScrollBuffer(y: Double, x: Double, s: Double) {
         // 更新 Y 轴数据
         if y*scrollDelta.y > 0 {
@@ -213,6 +232,14 @@ class ScrollCore {
             scrollCurr.x = 0.0
         }
         scrollDelta = ( y: y, x: x )
+    }
+    func cleanScrollBuffer() {
+        // 重置数值
+        scrollCurr = ( y: 0.0, x: 0.0 )
+        scrollBuffer = ( y: 0.0, x: 0.0 )
+        scrollDelta = ( y: 0.0, x: 0.0 )
+        // 重置插值器
+        scrollFiller.clean()
     }
     
     // 鼠标插值数据输出
@@ -265,7 +292,7 @@ class ScrollCore {
             y: scrollCurr.y + scrollPulse.y,
             x: scrollCurr.x + scrollPulse.x
         )
-        // 填入 scrollFiller, 并获取值
+        // 平滑滚动结果
         let filteredValue = scrollFiller.fillIn(with: scrollPulse)
         // 变换滚动结果
         let swapedValue = weapScrollIfToggling(with: filteredValue, toggling: toggleScroll)
@@ -273,8 +300,8 @@ class ScrollCore {
         MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
         // 如果临近目标距离小于精确度门限则停止滚动
         if scrollPulse.y.magnitude<=Options.shared.scroll.precision && scrollPulse.x.magnitude<=Options.shared.scroll.precision {
+            cleanScrollBuffer()
             disableScrollEventPoster()
-            scrollFiller.clean()
         }
     }
     
