@@ -113,7 +113,7 @@ extension PreferencesAdvanceViewController {
         if let index = MODIFIER_KEY.list.firstIndex(of: CGKeyCode(scroll.toggle)) {
             toggleKeyPopUpButton.selectItem(at: index+2)
         } else {
-            toggleKeyPopUpButton.selectItem(at: 0)
+            ///toggleKeyPopUpButton.selectItem(at: 0) /// FIXME: CRASH ON MOJAVE 10.4.6
         }
         // 禁用
         if let index = MODIFIER_KEY.list.firstIndex(of: CGKeyCode(scroll.block)) {

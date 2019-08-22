@@ -14,8 +14,8 @@
 "ITL-GD-CPd.title" = "General";
 "pwT-er-UCo.title" = "Scroll:";
 "jtK-hi-Ami.title" = "Smooth Scrolling";
-"bbo-GH-WeC.title" = "Let the mouse wheel scroll smoothly like butter";
-"MAF-Hi-l48.title" = "Scroll Reverse";
+"bbo-GH-WeC.title" = "Make scrolling with the mouse wheel butter-smooth";
+"MAF-Hi-l48.title" = "Reverse Scroll";
 "CqK-3z-D0G.title" = "Reverse the mouse wheel scroll direction";
 "dyY-vr-dwT.title" = "Miscellaneous:";
 "xoR-7p-3qj.title" = "Launch on Login";
@@ -38,8 +38,8 @@
 "bAe-Zc-5SS.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
 // Exception
 "I5j-Bv-Aiy.title" = "Needs access to Accessibility controls";
-"FU4-wI-K8f.title" = "In order to customize the scroll behavior for certain applications, please allow Mos to have rights to Accessibility.";
-"Pw5-2q-7Fa.title" = "Allow to use accessibility";
+"FU4-wI-K8f.title" = "In order to customize the scroll behavior for certain applications, please allow Mos access to Accessibility controls.";
+"Pw5-2q-7Fa.title" = "Allow accessibility access";
 "bga-wG-iim.title" = "Exception";
 "Rgu-cb-5lp.title" = "Customize per Application:";
 "Ksp-g1-48g.title" = "Whitelist Mode";
@@ -73,14 +73,14 @@
 
 // WelcomeWindow
 "SLb-UR-lz1.title" = "Welcome to Mos";
-"Lhk-Nd-CdT.title" = "Before we smooth your mouse";
-"7o8-5p-CQX.title" = "Just few thing you need to tweak";
+"Lhk-Nd-CdT.title" = "Before we smoothen your scrolling";
+"7o8-5p-CQX.title" = "There are just a few more thing to tweak";
 "VsZ-Yn-TgJ.title" = "Turn off the other smooth scrolling Application or Extensions";
-"u7p-zc-ERS.title" = "Scientists have proven that running on multiple smooth scrolling application at the same time will lead to undescribed consequences. Please close the other, or disable the smooth function of it. Such as the smooth scrolling on Logitech Options or SmoothScroll extension on Chrome.";
+"u7p-zc-ERS.title" = "Scientists have proven that running multiple smooth scrolling applications at the same time will lead to incommunicable consequences. Please close -or disable the smooth function of- any other applications, such as smooth scrolling in Logitech Options or the SmoothScroll extension on Chrome.";
 "3QI-xO-wPK.title" = "Allow Mos access to Accessibility controls";
 "7bu-fM-Bjm.title" = "The greater the power, the greater the responsibility. To smooth your mouse scrolling, Mos needs to create an intermediate layer between the mouse and your system to optimize your mouse. So we need to access to accessibility controls to get this power.";
-"qGs-TM-PTM.title" = "Limited by MacOS, you may need to reauthorization when Mos updated. If the entries already exists, please delete and re-add.";
-"V9n-HF-Vw9.title" = "Begin Smooth";
+"qGs-TM-PTM.title" = "LDue to the limitations of MacOS, you may need to repeat this authorization when Mos is updated. If, in this circumstance, the entry already exists, please delete and re-add it.";
+"V9n-HF-Vw9.title" = "Begin Smoothening";
 
 // Popover
 "hnf-e0-HXM.title" = "Preferences";

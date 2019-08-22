@@ -84,6 +84,13 @@
 			remoteGlobalIDString = FA2FEEDA1CB3F76D00F3A456;
 			remoteInfo = LoginServiceKit;
 		};
+		23A61CF5230EF42300621E52 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0B8E4945206FEFC80099CB59 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1CBBC58C6CE1EBEE9852CE41;
+			remoteInfo = ChartsTests;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -167,6 +174,8 @@
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		236B69B0224B79B100DEF435 /* EnhanceArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhanceArray.swift; sourceTree = "<group>"; };
 		2399BFD7222CDB7D008FA807 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		23A61CF9230EF4BC00621E52 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
+		23A61CFA230EF4BC00621E52 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		23BB4D2C21D7512F009B51E9 /* StatusItemPopoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemPopoverViewController.swift; sourceTree = "<group>"; };
 		23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverManager.swift; sourceTree = "<group>"; };
 		23BB4D3021D775D4009B51E9 /* EventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMonitor.swift; sourceTree = "<group>"; };
@@ -309,6 +318,7 @@
 			isa = PBXGroup;
 			children = (
 				0B8E494B206FEFC80099CB59 /* Charts.framework */,
+				23A61CF6230EF42300621E52 /* ChartsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -465,6 +475,7 @@
 				ja,
 				"zh-Hant",
 				en,
+				ru,
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			productRefGroup = 22142DA11E25344E00E4BFBF /* Products */;
@@ -499,6 +510,13 @@
 			fileType = wrapper.framework;
 			path = LoginServiceKit.framework;
 			remoteRef = 0BB3F8CF20774A5500F61F18 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		23A61CF6230EF42300621E52 /* ChartsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ChartsTests.xctest;
+			remoteRef = 23A61CF5230EF42300621E52 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -587,6 +605,7 @@
 				0B0D5B5A2066195A0077C2AC /* ja */,
 				0B0D5B5C206619680077C2AC /* zh-Hant */,
 				0B0D5B60206630E80077C2AC /* en */,
+				23A61CF9230EF4BC00621E52 /* ru */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -598,6 +617,7 @@
 				0B0D5B5D2066197B0077C2AC /* ja */,
 				0B0D5B5E2066197E0077C2AC /* zh-Hant */,
 				0B0D5B61206630EE0077C2AC /* en */,
+				23A61CFA230EF4BC00621E52 /* ru */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
