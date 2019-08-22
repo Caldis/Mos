@@ -96,7 +96,7 @@ class PreferencesAdvanceViewController: NSViewController {
         if let index = Utils.modifierKeys.index(of: Options.shared.advanced.toggle) {
             toggleKeyPopUpButton.selectItem(at: index+2)
         } else {
-            toggleKeyPopUpButton.selectItem(at: 0)
+            ///toggleKeyPopUpButton.selectItem(at: 0) /// FIXME: CRASH ON MOJAVE 10.4.6
         }
         // 禁用
         if let index = Utils.modifierKeys.index(of: Options.shared.advanced.block) {
