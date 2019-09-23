@@ -1,6 +1,9 @@
 ---
 name: Bug report | 故障报告
 about: To help us improve | 帮助我们变得更好
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
