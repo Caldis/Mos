@@ -13,9 +13,10 @@ about: To help us improve | 帮助我们变得更好
 **Screenshots | 相关截图**
 
 **System Info | 系统信息:**
+ - Mouse: [e.g. Logitech MX Master]
  - OS: [e.g. iOS]
  - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
--  Application [e.g. Safari, Chrome, Whole System]
+ - Version [e.g. v69]
+ -  Application [e.g. Safari, Chrome, Whole System]
 
 **Additional context | 额外说明**
