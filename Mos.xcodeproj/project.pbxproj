@@ -49,6 +49,7 @@
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
 		234B5EB723506D1F00233097 /* StatusItemMainPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234B5EB623506D1F00233097 /* StatusItemMainPanelViewController.swift */; };
 		236B69B1224B79B100DEF435 /* EnhanceArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236B69B0224B79B100DEF435 /* EnhanceArray.swift */; };
+		2391FB322354D59500ECC8C7 /* StatusItemMainPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2391FB312354D59500ECC8C7 /* StatusItemMainPanelView.swift */; };
 		2399BFD8222CDB7D008FA807 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2399BFD7222CDB7D008FA807 /* Constants.swift */; };
 		23B2500D2341B0240033C5BA /* PreferencesAdvanceWithNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B2500C2341B0240033C5BA /* PreferencesAdvanceWithNavigationViewController.swift */; };
 		23B250122341D7850033C5BA /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22142DAC1E25344E00E4BFBF /* Info.plist */; };
@@ -180,6 +181,7 @@
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		234B5EB623506D1F00233097 /* StatusItemMainPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemMainPanelViewController.swift; sourceTree = "<group>"; };
 		236B69B0224B79B100DEF435 /* EnhanceArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhanceArray.swift; sourceTree = "<group>"; };
+		2391FB312354D59500ECC8C7 /* StatusItemMainPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemMainPanelView.swift; sourceTree = "<group>"; };
 		2399BFD7222CDB7D008FA807 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		23A61CF9230EF4BC00621E52 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
 		23A61CFA230EF4BC00621E52 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -423,6 +425,7 @@
 			isa = PBXGroup;
 			children = (
 				234B5EB623506D1F00233097 /* StatusItemMainPanelViewController.swift */,
+				2391FB312354D59500ECC8C7 /* StatusItemMainPanelView.swift */,
 			);
 			path = StatusItemMainPanel;
 			sourceTree = "<group>";
@@ -596,6 +599,7 @@
 				0B6D3B702042BBCD004CC064 /* Localizable.swift in Sources */,
 				0BC2AD2F20F3BA090084416B /* PreferencesContributorsViewController.swift in Sources */,
 				0B12EF1F203ADFB10058B169 /* Interpolator.swift in Sources */,
+				2391FB322354D59500ECC8C7 /* StatusItemMainPanelView.swift in Sources */,
 				23BB4D2F21D754D3009B51E9 /* PopoverManager.swift in Sources */,
 				0B74C441205E386D00E3F942 /* Interceptor.swift in Sources */,
 				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,

@@ -45,7 +45,7 @@ class StatusItemPopoverViewController: NSViewController {
         WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.monitorWindowController, withTitle: "")
     }
     @IBAction func settingButtonClick(_ sender: NSButton) {
-        let targetPosition = NSPoint(x: sender.frame.origin.x, y: sender.frame.origin.y + sender.frame.height + 5)
+        let targetPosition = NSPoint(x: sender.frame.origin.x, y: sender.frame.origin.y + sender.frame.height + -25)
         menuControl.popUp(positioning: nil, at: targetPosition, in: sender.superview)
     }
     @IBAction func menuControlPreferencesButtonClick(_ sender: NSMenuItem) {
