@@ -7,7 +7,7 @@
 */
 
 // Mointor
-"TUE-3v-CaJ.title" = "          呈現該視窗的資訊會影響捲動性能, 如果非必要, 請勿保留此視窗";
+"TUE-3v-CaJ.title" = "          呈現該視窗的資訊會顯著影響捲動性能, 請僅在必要時開啟";
 
 // PreferencesWindow
 // General

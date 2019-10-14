@@ -28,10 +28,13 @@ extension PopoverManager {
         if let popover = refs[identifier] {
             return popover
         } else {
+            // 创建 Popover
             let popover = NSPopover()
             // 与该 Popover 区域外的元素交互时直接关闭窗口
             popover.behavior = NSPopover.Behavior.transient
             popover.contentViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: identifier) as NSViewController
+            popover.contentViewController?.title = "🚥"
+            popover.animates = true
             refs[identifier] = popover
             return popover
         }

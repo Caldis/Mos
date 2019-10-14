@@ -72,7 +72,7 @@ extension StatusItemManager {
                     break
                 // 类型: 弹出面板
                 case STATUS_ITEM_TYPE.popover:
-                    PopoverManager.shared.togglePopover(withIdentifier: POPOVER_IDENTIFIER.preferencesPopoverController, relativeTo: item.button!)
+                    PopoverManager.shared.togglePopover(withIdentifier: POPOVER_IDENTIFIER.statusItemPopoverViewController, relativeTo: item.button!)
                     break
             }
         }
@@ -110,7 +110,7 @@ extension StatusItemManager {
         if let menu = item.menu {
             menu.removeAllItems()
             menu.addItem(withTitle: i18n.monitor, action: #selector(monitorClick), keyEquivalent: "").target = self
-            menu.item(at: 0)?.image = #imageLiteral(resourceName: "MonitorLogo")
+            menu.item(at: 0)?.image = #imageLiteral(resourceName: "IconMonitor")
             menu.addItem(withTitle: i18n.preferences, action: #selector(preferencesClick), keyEquivalent: "").target = self
             menu.item(at: 1)?.image = #imageLiteral(resourceName: "PreferencesLogo")
             menu.addItem(NSMenuItem.separator())

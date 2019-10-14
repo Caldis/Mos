@@ -10,6 +10,12 @@ import Cocoa
 
 class StatusItemPopoverView: NSView {
     
+    override var isFlipped: Bool {
+        get {
+            return true
+        }
+    }
+    
     override func viewDidMoveToWindow() {
         // 设定背景色 (包括箭头部分)
         // Ref: https://stackoverflow.com/questions/19978620/how-to-change-nspopover-background-color-include-triangle-part

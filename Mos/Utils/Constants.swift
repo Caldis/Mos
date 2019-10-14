@@ -8,6 +8,11 @@
 
 import Foundation
 
+// 动画
+struct ANIMATION {
+    static let duration = 0.5
+}
+
 // 修饰键
 struct MODIFIER_KEY {
     static let controlLeft = CGKeyCode(59)
@@ -38,6 +43,7 @@ struct WINDOW_IDENTIFIER {
 struct PANEL_IDENTIFIER {
     static let general = "general"
     static let advanced = "advanced"
+    static let advancedWithNavigation = "advancedWithNavigation"
     static let exception = "exception"
     static let list = [
         general,
@@ -45,11 +51,12 @@ struct PANEL_IDENTIFIER {
         exception,
     ]
 }
-let PANEL_PADDING = CGFloat(41.0)
+let PANEL_PADDING = CGFloat(42.0) // 顶部导航栏高度
 
 // 气泡弹窗
 struct POPOVER_IDENTIFIER {
-    static let preferencesPopoverController = "preferencesPopoverController"
+    static let statusItemPopoverViewController = "statusItemPopoverViewController"
+    static let statusItemMainPanelViewController = "statusItemMainPanelViewController"
 }
 
 // 默认设置项

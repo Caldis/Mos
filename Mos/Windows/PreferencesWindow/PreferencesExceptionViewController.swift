@@ -109,8 +109,11 @@ class PreferencesExceptionViewController: NSViewController {
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
         let row = sender.tag
-        PreferencesAdvanceViewController.sharedTargetApplication = Options.shared.global.applications.get(from: row)
-        PopoverManager.shared.togglePopover(withIdentifier: PANEL_IDENTIFIER.advanced, relativeTo: sender)
+        // 打开界面
+        let statusItemPopover = PopoverManager.shared.get(withIdentifier: POPOVER_IDENTIFIER.statusItemPopoverViewController).contentViewController
+        if let statusItemPopoverViewController = statusItemPopover as? StatusItemPopoverViewController {
+            statusItemPopoverViewController.segueToSetting(with: Options.shared.global.applications.get(from: row))
+        }
     }
     
     // 同步界面与设置参数

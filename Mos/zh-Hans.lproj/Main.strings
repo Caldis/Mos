@@ -7,7 +7,7 @@
 */
 
 // Mointor
-"TUE-3v-CaJ.title" = "          呈现该窗口的数据会影响滚动性能, 如果非必要, 请勿保留此窗口";
+"TUE-3v-CaJ.title" = "          呈现该窗口的数据会显著影响滚动性能, 请仅在需要时开启";
 
 // PreferencesWindow
 // General

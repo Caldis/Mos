@@ -56,25 +56,25 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         lineChartCount = 0.0
         // 设置数据集
         let verticalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Vertical")
-        verticalData.valueTextColor = NSUIColor.white
+        verticalData.valueTextColor = NSColor.labelColor
         verticalData.colors = [green]
         verticalData.circleRadius = 1.5
         verticalData.circleColors = [green]
         let horizontalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Horizontal")
-        horizontalData.valueTextColor = NSUIColor.white
+        horizontalData.valueTextColor = NSColor.labelColor
         horizontalData.colors = [yellow]
         horizontalData.circleRadius = 1.5
         horizontalData.circleColors = [yellow]
         lineChart.data = LineChartData(dataSets: [verticalData, horizontalData])
         // 设置图表样式
-        lineChart.noDataTextColor = NSUIColor.white
+        lineChart.noDataTextColor = NSColor.labelColor
         lineChart.chartDescription?.text = ""
-        lineChart.legend.textColor = NSUIColor.white
-        lineChart.xAxis.labelTextColor = NSUIColor.white
-        lineChart.leftAxis.labelTextColor = NSUIColor.white
-        lineChart.rightAxis.labelTextColor = NSUIColor.white
+        lineChart.legend.textColor = NSColor.labelColor
+        lineChart.xAxis.labelTextColor = NSColor.labelColor
+        lineChart.leftAxis.labelTextColor = NSColor.labelColor
+        lineChart.rightAxis.labelTextColor = NSColor.labelColor
         lineChart.drawBordersEnabled = true
-        lineChart.borderColor = NSUIColor.gray
+        lineChart.borderColor = NSColor.secondaryLabelColor
     }
     // 初始化监听
     func initObserver() {

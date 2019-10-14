@@ -10,6 +10,7 @@ import Cocoa
 
 class PreferencesAboutViewController: NSViewController {
     
+    let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
     @IBOutlet weak var homePageButton: NSButtonCell!
     @IBOutlet weak var githubButton: NSButton!
     @IBOutlet weak var donateButton: NSButton!
@@ -20,16 +21,16 @@ class PreferencesAboutViewController: NSViewController {
     
     // 主页
     @IBAction func homepageButtonClick(_ sender: NSButton) {
-        let homePageUrl = "http://mos.caldis.me"
+        let homePageUrl = "http://mos.caldis.me?from=MosApplication&version=\(version as! String)"
         NSWorkspace.shared.open(URL(string:homePageUrl)!)
     }
     // 项目
     @IBAction func githubButtonClick(_ sender: NSButton) {
-        NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos")!)
+        NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos?from=MosApplication&version=\(version as! String)")!)
     }
     // 帮助
     @IBAction func helpButtonClick(_ sender: NSButton) {
-        NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos/wiki")!)
+        NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos/wiki?from=MosApplication&version=\(version as! String)")!)
     }
     // 欢迎
     @IBAction func welcomeWindowButtonClick(_ sender: NSButton) {

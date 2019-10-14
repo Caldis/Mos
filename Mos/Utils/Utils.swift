@@ -11,6 +11,35 @@ import Cocoa
 // 实用方法
 public class Utils {
     
+    // 动画
+    // 需要设置 allowsImplicitAnimation = true 才能让 contentSize 有动画, https://stackoverflow.com/a/46946957/6727040
+    class func groupAnimatorContainer(_ group: (NSAnimationContext?)->Void, completionHandler: @escaping ()->Void = {()}) {
+        if #available(OSX 10.12, *) {
+            NSAnimationContext.runAnimationGroup({ (context) -> Void in
+                context.duration = ANIMATION.duration
+                context.allowsImplicitAnimation = true
+                group(context)
+            }, completionHandler: completionHandler)
+        } else {
+            group(nil)
+            completionHandler()
+        }
+    }
+    class func groupAnimatorContainer(_ group: (NSAnimationContext?)->Void, headHandler: @escaping ()->Void = {()}, completionHandler: @escaping ()->Void = {()}) {
+        headHandler()
+        groupAnimatorContainer(group, completionHandler: completionHandler)
+    }
+    // https://nyrra33.com/2017/12/21/rotating-a-view-is-not-easy/
+    class func groupAnimatorRotate(with view: NSView, angle: CGFloat) {
+        if let layer = view.layer, let animatorLayer = view.animator().layer {
+            // 设定中心点
+            layer.position = CGPoint(x: layer.frame.midX, y: layer.frame.midY)
+            layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            // 用 CATransform3DMakeRotation 才能保证按中心旋转
+            animatorLayer.transform = CATransform3DMakeRotation(angle, 0, 0, 1)
+        }
+    }
+    
     // 禁止重复运行
     // killExist = true 则杀掉已有进程, 否则自杀
     class func preventMultiRunning(killExist kill: Bool = false) {
