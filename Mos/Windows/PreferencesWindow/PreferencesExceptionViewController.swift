@@ -29,7 +29,7 @@ class PreferencesExceptionViewController: NSViewController {
     
     // 检查表格数据
     func checkListHasData(animate: Bool = true) {
-        let hasData = Options.shared.exception.applications.count != 0
+        let hasData = Options.shared.global.applications.count != 0
         if animate {
             noDataHint.animator().alphaValue = hasData ? 0 : 1
         } else {
@@ -39,7 +39,7 @@ class PreferencesExceptionViewController: NSViewController {
     
     // 白名单模式
     @IBAction func whiteListModeClick(_ sender: NSButton) {
-        Options.shared.exception.whitelist = sender.state.rawValue==0 ? false : true
+        Options.shared.global.whitelist = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     
@@ -78,7 +78,7 @@ class PreferencesExceptionViewController: NSViewController {
                     let applicationPath = openPanel.url!.path
                     if let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
                         let application = ExceptionalApplication(path: applicationPath, bundleId: applicationBundleId)
-                        Options.shared.exception.applications.append(application)
+                        Options.shared.global.applications.append(application)
                         self.tableView.reloadData()
                     } else {
                         // 对于没有 bundleId 的应用可能是快捷方式, 给予提示
@@ -90,7 +90,7 @@ class PreferencesExceptionViewController: NSViewController {
     func deleteTableViewSelectedRow() {
         // 确保有选中特定行
         if tableView.selectedRow != -1 {
-            Options.shared.exception.applications.remove(at: tableView.selectedRow)
+            Options.shared.global.applications.remove(at: tableView.selectedRow)
         }
     }
     
@@ -98,27 +98,28 @@ class PreferencesExceptionViewController: NSViewController {
     @objc func smoothCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.exception.applications.get(at: row).smooth = state.rawValue==1 ? true : false
-        Options.shared.exception.applications = Options.shared.exception.applications
+        Options.shared.global.applications.get(from: row).scroll.smooth = state.rawValue==1 ? true : false
     }
     // 点击反转
     @objc func reverseCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.exception.applications.get(at: row).reverse = state.rawValue==1 ? true : false
-        Options.shared.exception.applications = Options.shared.exception.applications
+        Options.shared.global.applications.get(from: row).scroll.reverse = state.rawValue==1 ? true : false
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
         let row = sender.tag
-        let application = Options.shared.exception.applications.get(at: row)
-        PopoverManager.shared.togglePopover(withIdentifier: PANEL_IDENTIFIER.advanced, relativeTo: sender)
+        // 打开界面
+        let statusItemPopover = PopoverManager.shared.get(withIdentifier: POPOVER_IDENTIFIER.statusItemPopoverViewController).contentViewController
+        if let statusItemPopoverViewController = statusItemPopover as? StatusItemPopoverViewController {
+            statusItemPopoverViewController.segueToSetting(with: Options.shared.global.applications.get(from: row))
+        }
     }
     
     // 同步界面与设置参数
     func syncViewWithOptions() {
         // 白名单
-        whitelistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.exception.whitelist ? 1 : 0)
+        whitelistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.global.whitelist ? 1 : 0)
     }
     
 }
@@ -143,7 +144,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
         // 生成每行的 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
             // 应用数据
-            let application = Options.shared.exception.applications.get(at: row)
+            let application = Options.shared.global.applications.get(from: row)
             switch tableColumnIdentifier.rawValue {
                 // 平滑
                 case CellIdentifiers.smoothCell:
@@ -151,7 +152,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
                     checkBox.tag = row
                     checkBox.target = self
                     checkBox.action = #selector(smoothCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application.smooth==true ? 1 : 0)
+                    checkBox.state = NSControl.StateValue(rawValue: application.scroll.smooth==true ? 1 : 0)
                     return cell
                 // 反转
                 case CellIdentifiers.reverseCell:
@@ -159,13 +160,17 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
                     checkBox.tag = row
                     checkBox.target = self
                     checkBox.action = #selector(reverseCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application.reverse==true ? 1 : 0)
+                    checkBox.state = NSControl.StateValue(rawValue: application.scroll.reverse==true ? 1 : 0)
                     return cell
                 // 应用
                 case CellIdentifiers.applicationCell:
                     cell.imageView?.image = NSWorkspace.shared.icon(forFile: application.path)
                     if let applicationBundle = Bundle.init(url: URL.init(fileURLWithPath: application.path)) {
-                        cell.textField?.stringValue = applicationBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as! String
+                        if let name = applicationBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
+                            cell.textField?.stringValue = name
+                        } else if let name = applicationBundle.object(forInfoDictionaryKey: "CFBundleName") as? String {
+                            cell.textField?.stringValue = name
+                        }
                     }
                     return cell
                 // 设定
@@ -192,7 +197,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
 extension PreferencesExceptionViewController: NSTableViewDataSource {
     // 行数
     func numberOfRows(in tableView: NSTableView) -> Int {
-        let rows = Options.shared.exception.applications.count
+        let rows = Options.shared.global.applications.count
         checkListHasData()
         return rows
     }

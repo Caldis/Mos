@@ -16,51 +16,53 @@ class PopoverManager {
     
     // 引用列表
     var refs = [String: NSPopover]()
-    
 }
 
 /**
  * 面板控制
  **/
 extension PopoverManager {
-    // 切换显示对应 Identifier 的气泡面板
-    func togglePopover(withIdentifier identifier: String, relativeTo button: NSButton) {
+    // 获取对应 Identifier 的气泡面板
+    func get(withIdentifier identifier: String) -> NSPopover {
         // 检查是否在引用列表中
         if let popover = refs[identifier] {
-            // 切换显示
-            if popover.isShown {
-                hidePopover(withIdentifier: identifier)
-            } else {
-                showPopover(withIdentifier: identifier, relativeTo: button)
-            }
+            return popover
+        } else {
+            // 创建 Popover
+            let popover = NSPopover()
+            // 与该 Popover 区域外的元素交互时直接关闭窗口
+            popover.behavior = NSPopover.Behavior.transient
+            popover.contentViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: identifier) as NSViewController
+            popover.contentViewController?.title = "🚥"
+            popover.animates = true
+            refs[identifier] = popover
+            return popover
+        }
+    }
+    // 切换显示对应 Identifier 的气泡面板
+    func togglePopover(withIdentifier identifier: String, relativeTo button: NSButton) {
+        let popover = get(withIdentifier: identifier)
+        if popover.isShown {
+            hidePopover(withIdentifier: identifier)
         } else {
             showPopover(withIdentifier: identifier, relativeTo: button)
         }
     }
     // 显示对应 Identifier 的气泡面板
     func showPopover(withIdentifier identifier: String, relativeTo button: NSButton) {
-        // 检查是否在引用列表中
-        guard let popover = refs[identifier] else {
-            // 如果不存在, 则从 Storyboard 获取一个实例并保存到引用列表中
-            let popover = NSPopover()
-            popover.contentViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: identifier) as NSViewController
-            refs[identifier] = popover
-            // 重试
-            showPopover(withIdentifier: identifier, relativeTo: button)
-            return
-        }
+        let popover = get(withIdentifier: identifier)
         // 显示
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
-        // 前置并激活
-        NSApp.activate(ignoringOtherApps: true)
     }
     // 隐藏对应 Identifier 的气泡面板
-    func hidePopover(withIdentifier identifier: String) {
+    func hidePopover(withIdentifier identifier: String, destroy: Bool = false) {
         if let popover = refs[identifier] {
-            // 隐藏
-            popover.performClose(nil)
+            // 隐藏 (若使用 performClose 则仅关闭当前, close 关闭所有)
+            popover.close()
             // 销毁实例
-            // refs.removeValue(forKey: identifier)
+            if destroy {
+                refs.removeValue(forKey: identifier)
+            }
         }
     }
 }

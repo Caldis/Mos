@@ -16,7 +16,7 @@ enum STATUS_ITEM_TYPE {
 class StatusItemManager: NSMenu, NSMenuDelegate {
     
     // 状态栏类型
-    let panelType = STATUS_ITEM_TYPE.popover
+    let TYPE = STATUS_ITEM_TYPE.popover
     
     // 状态栏引用
     static let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -26,7 +26,7 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
         // 设置图标
         item.image = #imageLiteral(resourceName: "StatusBarIcon")
         // 设置事件响应
-        switch panelType {
+        switch TYPE {
             // 类型: 菜单
             case STATUS_ITEM_TYPE.menu:
                 // 设置菜单代理
@@ -53,28 +53,28 @@ extension StatusItemManager {
         onMenuClick()
     }
     @objc func onMenuClick()  {
-        switch panelType {
-        // 类型: 菜单
-        case STATUS_ITEM_TYPE.menu:
-            if let event = NSApp.currentEvent {
-                // 无辅助功能选项显示要求权限菜单
-                guard AXIsProcessTrusted() else {
-                    buildRequireAccessibilityMenu()
-                    return
-                }
-                // 当按下 option 键显示特殊菜单
-                guard !event.modifierFlags.contains(.option) else {
-                    buildOptionMenu()
-                    return
-                }
-                // 常规菜单
-                buildNormalMenu()
+        if let event = NSApp.currentEvent {
+            // 无辅助功能选项显示要求权限菜单
+            guard AXIsProcessTrusted() else {
+                buildRequireAccessibilityMenu()
+                return
             }
-            break
-        // 类型: 弹出面板
-        case STATUS_ITEM_TYPE.popover:
-            PopoverManager.shared.togglePopover(withIdentifier: POPOVER_IDENTIFIER.preferencesPopoverController, relativeTo: item.button!)
-            break
+            // 当按下 option 键显示特殊菜单
+            guard !event.modifierFlags.contains(.option) else {
+                buildOptionMenu()
+                return
+            }
+            // 根据类型弹出菜单
+            switch TYPE {
+                // 类型: 菜单
+                case STATUS_ITEM_TYPE.menu:
+                    buildNormalMenu()
+                    break
+                // 类型: 弹出面板
+                case STATUS_ITEM_TYPE.popover:
+                    PopoverManager.shared.togglePopover(withIdentifier: POPOVER_IDENTIFIER.statusItemPopoverViewController, relativeTo: item.button!)
+                    break
+            }
         }
     }
 }
@@ -110,7 +110,7 @@ extension StatusItemManager {
         if let menu = item.menu {
             menu.removeAllItems()
             menu.addItem(withTitle: i18n.monitor, action: #selector(monitorClick), keyEquivalent: "").target = self
-            menu.item(at: 0)?.image = #imageLiteral(resourceName: "MonitorLogo")
+            menu.item(at: 0)?.image = #imageLiteral(resourceName: "IconMonitor")
             menu.addItem(withTitle: i18n.preferences, action: #selector(preferencesClick), keyEquivalent: "").target = self
             menu.item(at: 1)?.image = #imageLiteral(resourceName: "PreferencesLogo")
             menu.addItem(NSMenuItem.separator())

@@ -42,7 +42,7 @@ extension EnhanceArray {
             return nil
         }
     }
-    public func get(at index: Int) -> T {
+    public func get(from index: Int) -> T {
         return array[index]
     }
     // 更新值
@@ -99,6 +99,7 @@ extension EnhanceArray {
                         fatalError("Property of \(String(describing: dictionaryKey)) in EnhanceArray must be String Type")
                     }
                     nextDic[targetPropertyValue] = index
+                    break
                 }
             }
         }

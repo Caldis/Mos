@@ -11,6 +11,35 @@ import Cocoa
 // 实用方法
 public class Utils {
     
+    // 动画
+    // 需要设置 allowsImplicitAnimation = true 才能让 contentSize 有动画, https://stackoverflow.com/a/46946957/6727040
+    class func groupAnimatorContainer(_ group: (NSAnimationContext?)->Void, completionHandler: @escaping ()->Void = {()}) {
+        if #available(OSX 10.12, *) {
+            NSAnimationContext.runAnimationGroup({ (context) -> Void in
+                context.duration = ANIMATION.duration
+                context.allowsImplicitAnimation = true
+                group(context)
+            }, completionHandler: completionHandler)
+        } else {
+            group(nil)
+            completionHandler()
+        }
+    }
+    class func groupAnimatorContainer(_ group: (NSAnimationContext?)->Void, headHandler: @escaping ()->Void = {()}, completionHandler: @escaping ()->Void = {()}) {
+        headHandler()
+        groupAnimatorContainer(group, completionHandler: completionHandler)
+    }
+    // https://nyrra33.com/2017/12/21/rotating-a-view-is-not-easy/
+    class func groupAnimatorRotate(with view: NSView, angle: CGFloat) {
+        if let layer = view.layer, let animatorLayer = view.animator().layer {
+            // 设定中心点
+            layer.position = CGPoint(x: layer.frame.midX, y: layer.frame.midY)
+            layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+            // 用 CATransform3DMakeRotation 才能保证按中心旋转
+            animatorLayer.transform = CATransform3DMakeRotation(angle, 0, 0, 1)
+        }
+    }
+    
     // 禁止重复运行
     // killExist = true 则杀掉已有进程, 否则自杀
     class func preventMultiRunning(killExist kill: Bool = false) {
@@ -27,25 +56,10 @@ public class Utils {
         }
     }
     
-    // 结束已有进程并尝试显示状态栏图标
-    class func runForShowStatusItem() {
-        // 获取自己的 BundleId
-        let mainBundleID = Bundle.main.bundleIdentifier!
-        // 如果检测到在运行, 则尝试结束进程, 并显示状态栏图标, 否则自杀
-        if NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID).count > 1  {
-            let runningInst = NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID)[0]
-            if runningInst.terminate() {
-                Options.shared.others.hideStatusItem = false
-            } else {
-                NSApp.terminate(nil)
-            }
-        }
-    }
-    
     // 提示状态栏图标已隐藏
     class func notificateUserStatusBarIconIsHidden() {
         // 如果状态栏图标隐藏
-        if Options.shared.others.hideStatusItem {
+        if Options.shared.global.hideStatusItem {
             // 定义通知
             let notification = NSUserNotification()
             notification.title = "Mos"
@@ -59,9 +73,9 @@ public class Utils {
     }
     
     // 从 StoryBroad 获取一个特定 Controller 的实例
-    private static let storyboard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+    private static let storyboard = NSStoryboard(name: "Main", bundle: nil)
     class func instantiateControllerFromStoryboard<Controller>(withIdentifier identifier: String) -> Controller {
-        let id = NSStoryboard.SceneIdentifier(rawValue: identifier)
+        let id = identifier
         guard let controller = storyboard.instantiateController(withIdentifier: id) as? Controller else {
             fatalError("Can't find Controller: \(id)")
         }
