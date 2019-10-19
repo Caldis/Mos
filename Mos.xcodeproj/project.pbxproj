@@ -52,7 +52,6 @@
 		2391FB322354D59500ECC8C7 /* StatusItemMainPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2391FB312354D59500ECC8C7 /* StatusItemMainPanelView.swift */; };
 		2399BFD8222CDB7D008FA807 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2399BFD7222CDB7D008FA807 /* Constants.swift */; };
 		23B2500D2341B0240033C5BA /* PreferencesAdvanceWithNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B2500C2341B0240033C5BA /* PreferencesAdvanceWithNavigationViewController.swift */; };
-		23B250122341D7850033C5BA /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22142DAC1E25344E00E4BFBF /* Info.plist */; };
 		23BB4D2D21D7512F009B51E9 /* StatusItemPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D2C21D7512F009B51E9 /* StatusItemPopoverViewController.swift */; };
 		23BB4D2F21D754D3009B51E9 /* PopoverManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */; };
 		23BB4D3121D775D4009B51E9 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D3021D775D4009B51E9 /* EventMonitor.swift */; };
@@ -489,12 +488,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0930;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = Caldis;
 				TargetAttributes = {
 					22142D9F1E25344E00E4BFBF = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 2H959AEV62;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -571,7 +569,6 @@
 			files = (
 				22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */,
 				23DB87A02340B43800F49F2B /* Switch.xib in Resources */,
-				23B250122341D7850033C5BA /* Info.plist in Resources */,
 				2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */,
 				22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */,
 			);
@@ -794,7 +791,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 2H959AEV62;
+				DEVELOPMENT_TEAM = 9W3N7NBGBJ;
 				INFOPLIST_FILE = Mos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
@@ -815,7 +812,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 2H959AEV62;
+				DEVELOPMENT_TEAM = 9W3N7NBGBJ;
 				INFOPLIST_FILE = Mos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;

@@ -20,6 +20,8 @@
 "dyY-vr-dwT.title" = "其他:";
 "xoR-7p-3qj.title" = "開機啟動";
 "MdS-Nz-zMa.title" = "在系統登錄時自動執行";
+"hGj-vV-zcY.title" = "Hide Status Bar Icon";
+"bB5-2R-9Da.title" = "Re-run the Mos to show the hidden Icon again";
 // Advanced
 "iW5-CD-5OC.title" = "高級";
 "bQw-5w-Yv0.title" = "轉換鍵:";
@@ -89,3 +91,7 @@
 "sKz-VE-Yfb.title" = "翻轉";
 "89F-B4-NIY.title" = "應用程式";
 "mfa-4t-oRD.title" = "進階";
+"Xiq-Kf-xfP.title" = "Smooth Scrolling";
+"A9r-mp-u8M.title" = "Smooth Scrolling";
+"9Rh-K8-LNY.title" = "Scroll Reverse";
+"yXi-qP-Tje.title" = "Exception Applications";
