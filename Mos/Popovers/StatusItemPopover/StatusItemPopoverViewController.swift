@@ -32,7 +32,7 @@ class StatusItemPopoverViewController: NSViewController {
     }
     override func viewWillAppear() {
         // 初始化大小
-        syncSizeWithContent()
+//        syncSizeWithContent(animate: false)
         // 监听关闭
         clickEventMonitor = EventMonitor(mask: [.leftMouseDown, .rightMouseDown], handler: hidePopover)
     }
@@ -67,16 +67,29 @@ extension StatusItemPopoverViewController: NSPopoverDelegate {
         return true
     }
     
-    // 同步大小
-    func syncSizeWithContent() {
+    // 同步尺寸
+    func syncSizeWithContent(animate: Bool = true) {
+        
         if let currentContentView = contentView.subviews.last {
-            Utils.groupAnimatorContainer({(context) in
-                currentPopover.contentSize = NSSize(
-                    width: currentPopover.contentSize.width,
-                    height: currentContentView.frame.size.height + PANEL_PADDING
-                )
-            })
+            print(currentContentView.frame.size)
         }
+//        if (animate) {
+//            Utils.groupAnimatorContainer({(context) in
+//                if let currentContentView = contentView.subviews.last {
+//                    currentPopover.contentSize = NSSize(
+//                        width: currentPopover.contentSize.width,
+//                        height: currentContentView.frame.size.height + PANEL_PADDING
+//                    )
+//                }
+//            })
+//        } else {
+//            if let currentContentView = contentView.subviews.last {
+//                currentPopover.contentSize = NSSize(
+//                    width: currentPopover.contentSize.width,
+//                    height: currentContentView.frame.size.height + PANEL_PADDING
+//                )
+//            }
+//        }
     }
     
     // 切换到设置

@@ -10,6 +10,7 @@
 "TUE-3v-CaJ.title" = "          Rendering this chart will affect scrolling performance. Close the window when not in use.";
 
 // PreferencesWindow
+"cvF-hf-KVW.title" = "Preferences";
 // General
 "ITL-GD-CPd.title" = "General";
 "pwT-er-UCo.title" = "Scroll:";
@@ -35,7 +36,7 @@
 "bqU-Is-gFB.title" = "Duration:";
 "DsD-EW-zCH.title" = "Sets the duration of the scroll animation";
 "t2D-X2-Y6W.title" = "Reset to defaults";
-"bAe-Zc-5SS.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
+"Rgq-87-vjY.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
 // Exception
 "I5j-Bv-Aiy.title" = "Needs access to Accessibility controls";
 "FU4-wI-K8f.title" = "In order to customize the scroll behavior for certain applications, please allow Mos to have rights to Accessibility.";

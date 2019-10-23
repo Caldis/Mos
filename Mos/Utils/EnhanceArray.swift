@@ -10,17 +10,25 @@ import Foundation
 
 class EnhanceArray<T:Codable> {
 
-    private var array: [T]! {didSet{updateDictionary()}}
+    private var array: [T]! {
+        didSet {
+            updateDictionary()
+            observer()
+        }
+    }
     private var dictionary = [String: Int]()
     private var dictionaryKey: String!
+    private var observer = {()}
 
-    public init(withArray targetArray: [T] = [], match targetDictionaryKey: String = "identity") {
+    public init(withArray targetArray: [T] = [], matchKey targetDictionaryKey: String = "identity", forObserver observerHandler: @escaping ()->Void = {()}) {
         setInitData(targetDictionaryKey, targetArray)
+        observer = observerHandler
     }
-    public init(withData targetData: Data, match targetDictionaryKey: String = "identity") {
+    public init(withData targetData: Data, matchKey targetDictionaryKey: String = "identity", forObserver observerHandler: @escaping ()->Void = {()}) {
         let decoder = JSONDecoder()
         let targetArray = try! decoder.decode([T].self, from: targetData) as [T]
         setInitData(targetDictionaryKey, targetArray)
+        observer = observerHandler
     }
 }
 
@@ -83,7 +91,8 @@ extension EnhanceArray {
  * 工具
  **/
 extension EnhanceArray {
-    // 为了触发 didSet, 直接在 init 处初始化会不会调用 didSet
+    // 为了触发 didSet
+    // 直接在 init 处初始化不会调用 didSet
     private func setInitData(_ targetDictionaryKey: String, _ targetArray: [T]) {
         dictionaryKey = targetDictionaryKey
         array = targetArray

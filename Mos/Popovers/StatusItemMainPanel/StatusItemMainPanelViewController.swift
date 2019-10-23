@@ -48,18 +48,25 @@ class StatusItemMainPanelViewController: NSViewController {
  **/
 extension StatusItemMainPanelViewController {
     
+    func syncParentControllerSize() {
+        // 父容器尺寸
+        let statusItemPopover = PopoverManager.shared.get(withIdentifier: POPOVER_IDENTIFIER.statusItemPopoverViewController).contentViewController
+        if let statusItemPopoverViewController = statusItemPopover as? StatusItemPopoverViewController {
+            statusItemPopoverViewController.syncSizeWithContent()
+        }
+    }
+    
     func expansion() {
         Utils.groupAnimatorContainer({(context) in
+            // 图标
             expansionIndicatorPlus.animator().alphaValue = 0
             expansionIndicatorPlus.animator().layer?.transform = CATransform3DMakeRotation(180.0, 0, 0, 1)
             expansionIndicatorMinus.animator().alphaValue = 0.75
             expansionIndicatorMinus.animator().layer?.transform = CATransform3DMakeRotation(0.0, 0, 0, 1)
-            Utils.groupAnimatorContainer({(context) in
-                view.frame.size = NSSize(
-                    width: view.frame.size.width,
-                    height: EXPANSION_PADDING
-                )
-            })
+            // 容器尺寸
+            view.frame.size = NSSize(width: view.frame.size.width, height: EXPANSION_PADDING)
+            // 父容器尺寸
+            syncParentControllerSize()
         }, headHandler: {() in
             self.expansionIndicatorPlus.layer?.position = CGPoint(x: self.expansionIndicatorPlus.layer!.frame.midX, y: self.expansionIndicatorPlus.layer!.frame.midY)
             self.expansionIndicatorPlus.layer?.anchorPoint = CGPoint(x: 0.5, y: 0.5)
@@ -69,16 +76,15 @@ extension StatusItemMainPanelViewController {
     }
     func collapse() {
         Utils.groupAnimatorContainer({(context) in
+            // 图标
             expansionIndicatorPlus.animator().alphaValue = 0.75
             expansionIndicatorPlus.animator().layer?.transform = CATransform3DMakeRotation(0.0, 0, 0, 1)
             expansionIndicatorMinus.animator().alphaValue = 0
             expansionIndicatorMinus.animator().layer?.transform = CATransform3DMakeRotation(-180.0, 0, 0, 1)
-            Utils.groupAnimatorContainer({(context) in
-                view.frame.size = NSSize(
-                    width: view.frame.size.width,
-                    height: COLLAPSE_PADDING
-                )
-            })
+            // 容器尺寸
+            view.frame.size = NSSize(width: view.frame.size.width, height: COLLAPSE_PADDING)
+            // 父容器尺寸
+            syncParentControllerSize()
         }, headHandler: {() in
             self.expansionIndicatorPlus.layer?.position = CGPoint(x: self.expansionIndicatorPlus.layer!.frame.midX, y: self.expansionIndicatorPlus.layer!.frame.midY)
             self.expansionIndicatorPlus.layer?.anchorPoint = CGPoint(x: 0.5, y: 0.5)

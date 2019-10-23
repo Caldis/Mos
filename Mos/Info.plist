@@ -17,13 +17,17 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.0.0</string>
+	<string>3.0.0-Alpha</string>
 	<key>CFBundleVersion</key>
-	<string>20190306</string>
+	<string>20191018</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>LSMultipleInstancesProhibited</key>
+	<false/>
+	<key>LSUIElement</key>
+	<true/>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>Mos needs to access accessibility to enhance your scrolling.</string>
 	<key>NSHumanReadableCopyright</key>
@@ -32,9 +36,5 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>LSUIElement</key>
-	<true/>
-	<key>LSMultipleInstancesProhibited</key>
-	<false/>
 </dict>
 </plist>
