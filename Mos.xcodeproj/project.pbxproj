@@ -51,7 +51,8 @@
 		236B69B1224B79B100DEF435 /* EnhanceArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236B69B0224B79B100DEF435 /* EnhanceArray.swift */; };
 		2391FB322354D59500ECC8C7 /* StatusItemMainPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2391FB312354D59500ECC8C7 /* StatusItemMainPanelView.swift */; };
 		2399BFD8222CDB7D008FA807 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2399BFD7222CDB7D008FA807 /* Constants.swift */; };
-		23B2500D2341B0240033C5BA /* PreferencesAdvanceWithNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B2500C2341B0240033C5BA /* PreferencesAdvanceWithNavigationViewController.swift */; };
+		239E851123562C34006DE0B0 /* StatusItemPopoverViewContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 239E851023562C34006DE0B0 /* StatusItemPopoverViewContentView.swift */; };
+		23B250122341D7850033C5BA /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 22142DAC1E25344E00E4BFBF /* Info.plist */; };
 		23BB4D2D21D7512F009B51E9 /* StatusItemPopoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D2C21D7512F009B51E9 /* StatusItemPopoverViewController.swift */; };
 		23BB4D2F21D754D3009B51E9 /* PopoverManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */; };
 		23BB4D3121D775D4009B51E9 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D3021D775D4009B51E9 /* EventMonitor.swift */; };
@@ -182,9 +183,9 @@
 		236B69B0224B79B100DEF435 /* EnhanceArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhanceArray.swift; sourceTree = "<group>"; };
 		2391FB312354D59500ECC8C7 /* StatusItemMainPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemMainPanelView.swift; sourceTree = "<group>"; };
 		2399BFD7222CDB7D008FA807 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		239E851023562C34006DE0B0 /* StatusItemPopoverViewContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemPopoverViewContentView.swift; sourceTree = "<group>"; };
 		23A61CF9230EF4BC00621E52 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
 		23A61CFA230EF4BC00621E52 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		23B2500C2341B0240033C5BA /* PreferencesAdvanceWithNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesAdvanceWithNavigationViewController.swift; sourceTree = "<group>"; };
 		23BB4D2C21D7512F009B51E9 /* StatusItemPopoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemPopoverViewController.swift; sourceTree = "<group>"; };
 		23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverManager.swift; sourceTree = "<group>"; };
 		23BB4D3021D775D4009B51E9 /* EventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMonitor.swift; sourceTree = "<group>"; };
@@ -237,7 +238,6 @@
 				22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */,
 				2278EE981E3DF770000AB25B /* PreferencesExceptionViewController.swift */,
 				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
-				23B2500C2341B0240033C5BA /* PreferencesAdvanceWithNavigationViewController.swift */,
 				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
 				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
 				2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */,
@@ -407,6 +407,7 @@
 			children = (
 				23BB4D2C21D7512F009B51E9 /* StatusItemPopoverViewController.swift */,
 				23E3C96C21DCE8F10098B107 /* StatusItemPopoverView.swift */,
+				239E851023562C34006DE0B0 /* StatusItemPopoverViewContentView.swift */,
 			);
 			path = StatusItemPopover;
 			sourceTree = "<group>";
@@ -488,7 +489,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0930;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = Caldis;
 				TargetAttributes = {
 					22142D9F1E25344E00E4BFBF = {
@@ -569,6 +570,7 @@
 			files = (
 				22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */,
 				23DB87A02340B43800F49F2B /* Switch.xib in Resources */,
+				23B250122341D7850033C5BA /* Info.plist in Resources */,
 				2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */,
 				22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */,
 			);
@@ -600,6 +602,7 @@
 				23BB4D2F21D754D3009B51E9 /* PopoverManager.swift in Sources */,
 				0B74C441205E386D00E3F942 /* Interceptor.swift in Sources */,
 				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,
+				239E851123562C34006DE0B0 /* StatusItemPopoverViewContentView.swift in Sources */,
 				23BB4D2D21D7512F009B51E9 /* StatusItemPopoverViewController.swift in Sources */,
 				23BB4D3121D775D4009B51E9 /* EventMonitor.swift in Sources */,
 				0B6D3B6E20429254004CC064 /* WindowUtils.m in Sources */,
@@ -620,7 +623,6 @@
 				0B12EF1A203AD9C80058B169 /* Options.swift in Sources */,
 				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
 				2278EE9D1E3DFAC8000AB25B /* ExceptionalApplication.swift in Sources */,
-				23B2500D2341B0240033C5BA /* PreferencesAdvanceWithNavigationViewController.swift in Sources */,
 				0BB0F1BE20F3A04F00909B7D /* WelcomeWindowController.swift in Sources */,
 				22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */,
 				0B12EF1D203ADD230058B169 /* ScrollUtils.swift in Sources */,

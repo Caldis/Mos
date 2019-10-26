@@ -43,7 +43,11 @@ extension Options {
         global.autoLaunch = LoginServiceKit.isExistLoginItems(at: Bundle.main.bundlePath)
         global.hideStatusItem = UserDefaults.standard.bool(forKey: "hideStatusItem")
         global.whitelist = UserDefaults.standard.bool(forKey: "whitelist")
-        global.applications = EnhanceArray(withData: UserDefaults.standard.value(forKey: "applications") as! Data, match: "bundleId")
+        global.applications = EnhanceArray(
+            withData: UserDefaults.standard.value(forKey: "applications") as! Data,
+            matchKey: "bundleId",
+            forObserver: Options.shared.saveOptions
+        )
         // 滚动
         scroll.smooth = UserDefaults.standard.bool(forKey: "smooth")
         scroll.reverse = UserDefaults.standard.bool(forKey: "reverse")

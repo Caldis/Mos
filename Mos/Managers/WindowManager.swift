@@ -24,12 +24,14 @@ class WindowManager {
  **/
 extension WindowManager {
     // 显示对应 Identifier 的窗口
-    func showWindow(withIdentifier identifier: String, withTitle title: String) {
+    func showWindow(withIdentifier identifier: String, withTitle title: String? = nil) {
         // 检查是否在引用列表中
         guard let windowController = refs[identifier] else {
             // 如果不存在, 则从 Storyboard 获取一个实例并保存到引用列表中
             let windowController = Utils.instantiateControllerFromStoryboard(withIdentifier: identifier) as NSWindowController
-            windowController.window?.title = title
+            if let windowTitle = title {
+                windowController.window?.title = windowTitle
+            }
             refs[identifier] = windowController
             // 重试
             showWindow(withIdentifier: identifier, withTitle: title)

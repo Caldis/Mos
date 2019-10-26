@@ -16,7 +16,7 @@ enum STATUS_ITEM_TYPE {
 class StatusItemManager: NSMenu, NSMenuDelegate {
     
     // 状态栏类型
-    let TYPE = STATUS_ITEM_TYPE.popover
+    let TYPE = STATUS_ITEM_TYPE.menu
     
     // 状态栏引用
     static let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -98,8 +98,26 @@ extension StatusItemManager {
     // 按下 Option 按钮的菜单
     @objc func buildOptionMenu() {
         if let menu = item.menu {
+            // Reset
             menu.removeAllItems()
-            menu.addItem(withTitle: i18n.hideIcon, action: #selector(hideStatusItem), keyEquivalent: "").target = self
+            // Hide
+//            menu.addItem(withTitle: i18n.hideIcon, action: #selector(hideStatusItem), keyEquivalent: "").target = selfReset
+            // Monitor
+            let monitorItem = menu.addItem(withTitle: i18n.monitor, action: #selector(monitorClick), keyEquivalent: "")
+            monitorItem.target = self
+            monitorItem.image = #imageLiteral(resourceName: "SF.square.stack.3d.down.right")
+            monitorItem.image?.size = NSSize(width: 13, height: 13)
+            // Preferences
+            let preferencesItem = menu.addItem(withTitle: i18n.preferences, action: #selector(preferencesClick), keyEquivalent: "")
+            preferencesItem.target = self
+            preferencesItem.image = #imageLiteral(resourceName: "SF.gauge")
+            preferencesItem.image?.size = NSSize(width: 13, height: 13)
+            // Quit
+            menu.addItem(NSMenuItem.separator())
+            let quitItem = menu.addItem(withTitle: i18n.quit, action: #selector(quitClick), keyEquivalent: "")
+            quitItem.target = self
+            quitItem.image = #imageLiteral(resourceName: "SF.escape")
+            quitItem.image?.size = NSSize(width: 13, height: 13)
         }
     }
     @objc func hideStatusItem() {
@@ -108,20 +126,26 @@ extension StatusItemManager {
     // 常规菜单
     @objc func buildNormalMenu() {
         if let menu = item.menu {
+            // Reset
             menu.removeAllItems()
-            menu.addItem(withTitle: i18n.monitor, action: #selector(monitorClick), keyEquivalent: "").target = self
-            menu.item(at: 0)?.image = #imageLiteral(resourceName: "IconMonitor")
-            menu.addItem(withTitle: i18n.preferences, action: #selector(preferencesClick), keyEquivalent: "").target = self
-            menu.item(at: 1)?.image = #imageLiteral(resourceName: "PreferencesLogo")
+            // Perferences
+            let preferencesItem = menu.addItem(withTitle: i18n.preferences, action: #selector(preferencesClick), keyEquivalent: "")
+            preferencesItem.target = self
+            preferencesItem.image = #imageLiteral(resourceName: "SF.gauge")
+            preferencesItem.image?.size = NSSize(width: 13, height: 13)
+            // Quit
             menu.addItem(NSMenuItem.separator())
-            menu.addItem(withTitle: i18n.quit, action: #selector(quitClick), keyEquivalent: "").target = self
+            let quitItem = menu.addItem(withTitle: i18n.quit, action: #selector(quitClick), keyEquivalent: "")
+            quitItem.target = self
+            quitItem.image = #imageLiteral(resourceName: "SF.escape")
+            quitItem.image?.size = NSSize(width: 13, height: 13)
         }
     }
     @objc func monitorClick() {
-        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.monitorWindowController, withTitle: "")
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.monitorWindowController)
     }
     @objc func preferencesClick() {
-        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController, withTitle: i18n.preferences)
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
     }
     @objc func quitClick() {
         NSApplication.shared.terminate(self)

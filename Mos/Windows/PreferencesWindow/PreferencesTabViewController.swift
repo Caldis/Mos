@@ -1,67 +1,59 @@
 //
 //  PreferencesTabViewController.swift
 //  Mos
-//  偏好设置的 TabController 容器
+//  偏好设置的 TabViewController 容器
 //  Created by Caldis on 2017/1/20.
 //  Copyright © 2017年 Caldis. All rights reserved.
 //
+
+//  Transition 踩坑指南
+//  1. NSTabViewController 的层级构成
+//  NSTabViewController - NSView - NSTabView - [tabViewItem]
+//  NSTabViewController 的尺寸适应规则
+//  由于 NSTabViewController 完全适配了 AutoLayout,
+//  如果 tabViewItem 使用了 AutoLayout, 且对应宽或高不存在 ambiguous 的情况下, 由于整个 NSTabViewController 内的 view 都设置了对应的  AutoLayout, 因此, 最终的尺寸将自动 pin 至其 tabViewItem 的大小, 且整个 NSWindow 都会自动 Resize
+//  如果 tabViewItem 其没有以 AutoLayout 指定尺寸, 则默认为 500,500
+//  2. NSTabViewController 的动画适配
+//  2.1 tabViewItem 使用了 AutoLayout
+//  在切换 Tab 时, NSTabViewController 使用了 transition(from:to:options:completionHandler:) 方法 (方法可能经过重写, 无法通过对应  Protocol 设定其动画, 只能通过 transitionOptions 参数), 在这种情况下无法触发其 transition 动画, 仅能通过手动触发
+//  这里 (在 viewDidAppear 中操作可以利用 View 出现时的自动布局, 避免第一次界面错位) 将 NSTabViewController 下的第一级 NSView 的  constraints 全部移除, 然后手动添加, 仅将其 Pin 至 top 和 left 位置 (设置 top 可以让 size 的 transition 出现在底部), 然后在  tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) 方法中获取当前 tabViewItem 的大小, 将其计算偏移量后 apply  到 NSWindow 上
+//  2.2 tabViewItem 没有使用 AutoLayout
+//  与上述操作类似, 只需要跳过移除已有的 constraints 步骤即可
+//  3. 避免动画切换时窗口底部颜色不一致
+//  于 NSTabViewController 下的 NSView 额外叠加一层 NSVisualEffectView, 并固定于界面下方, 避免切换时窗口底部颜色不一致
 
 import Cocoa
 
 class PreferencesTabViewController: NSTabViewController {
     
-    // 第一个界面的宽高
-    var FIRST_VIEW_SIZE = (width: CGFloat(450.0), height: CGFloat(315.0))
-    // 界面 TabViewController 引用
-    var currentTabViewController: NSViewController?
-    // 容器: Window
-    var currentWindow: NSWindowController?
-    
-    override func viewWillAppear() {
-        // 初始化 TabViewController 引用
-        if let currentTabViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: "general") as NSViewController? {
-            // 初始化引用
-            self.currentTabViewController = currentTabViewController
-            // Window: 初始化容器引用
-            if let currentWindow = WindowManager.shared.refs[WINDOW_IDENTIFIER.preferencesWindowController] {
-                // 初始化引用
-                self.currentWindow = currentWindow
-                // 初始化窗口大小
-                let currentWindowRect = currentWindow.window!.frame
-                let generalSize = NSMakeRect(currentWindowRect.origin.x, currentWindowRect.origin.y, FIRST_VIEW_SIZE.width, FIRST_VIEW_SIZE.height)
-                currentWindow.window!.setFrame(generalSize, display: true, animate: true)
-            }
-        }
+    override func viewDidAppear() {
+        // 移除已有约束
+        view.removeConstraints(view.constraints)
+        // 将 tabView 固定于界面左上
+        tabView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        tabView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        // 额外叠加一层 NSVisualEffectView, 并固定于界面下方, 避免切换时窗口底部颜色不一致
+        let backgroundVisualEffectView = NSVisualEffectView()
+        backgroundVisualEffectView.blendingMode = NSVisualEffectView.BlendingMode.behindWindow
+        if #available(OSX 10.14, *) { backgroundVisualEffectView.material = NSVisualEffectView.Material.toolTip }
+        view.addSubview(backgroundVisualEffectView, positioned: NSWindow.OrderingMode.below, relativeTo: tabView)
+        backgroundVisualEffectView.frame.size = tabView.frame.size
+        backgroundVisualEffectView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        backgroundVisualEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true        
     }
-    
-    override func viewWillDisappear() {
-        currentTabViewController = nil
-        currentWindow = nil
-    }
-    
-}
 
-/**
- * TabViews 事件
- **/
-extension PreferencesTabViewController {
-    // 点击 TabView 按钮响应
-    override func tabView(_ tabView: NSTabView, willSelect tabViewItem: NSTabViewItem?) {
-        if let currentTabViewController = self.currentTabViewController {
-            // Window: 动态设置容器窗口大小/高度
-            if let currentWindow = WindowManager.shared.refs[WINDOW_IDENTIFIER.preferencesWindowController] {
-                // 根据目标 View 的尺寸来改变 Window 高度
-                let targetTabViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: tabViewItem!.identifier as! String) as NSViewController
-                let currentWindowFrame = currentWindow.window!.frame
-                // 根据 View 的尺寸差计算大小, 同时移动窗口 PosY 和 Height 保持窗口基于左上角定位不变
-                let heightDiff = targetTabViewController.view.frame.height - currentTabViewController.view.frame.height
-                let targetWindowPosY = currentWindowFrame.origin.y - heightDiff
-                let targetWindowHeight = currentWindowFrame.height + heightDiff
-                let targetWindowSize = NSMakeRect(currentWindowFrame.origin.x, targetWindowPosY, currentWindowFrame.width, targetWindowHeight)
-                currentWindow.window!.setFrame(targetWindowSize, display: true, animate: true)
-                // 更新当前的 tabViewController 引用
-                self.currentTabViewController = targetTabViewController
-            }
+    override func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {
+        // Tab 切换后同步窗口尺寸
+        if let currentWindow = view.window, let currentContentView = tabView.subviews.first {
+            let windowSize = currentWindow.frame.size
+            let contentSize = currentContentView.frame.size
+            let heightDiff = contentSize.height+TOOLBAR_HEIGHT - windowSize.height
+            let targetOrigin = NSPoint(x: currentWindow.frame.origin.x, y: currentWindow.frame.origin.y-heightDiff)
+            let targetSize = NSSize(width: contentSize.width, height: contentSize.height+TOOLBAR_HEIGHT)
+            let targetRect = NSRect(origin: targetOrigin, size: targetSize)
+            Utils.groupAnimatorContainer({(context)  in
+                currentWindow.setFrame(targetRect, display: true)
+            })
         }
     }
 }

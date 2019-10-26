@@ -52,6 +52,7 @@ struct PANEL_IDENTIFIER {
     ]
 }
 let PANEL_PADDING = CGFloat(42.0) // 顶部导航栏高度
+let TOOLBAR_HEIGHT = CGFloat(78.0) // 偏好的 Toolbar 高度
 
 // 气泡弹窗
 struct POPOVER_IDENTIFIER {
@@ -76,9 +77,9 @@ class OPTIONS_GLOBAL_DEFAULT {
     var whitelist = false {
         didSet {Options.shared.saveOptions()}
     }
-    var applications = EnhanceArray<ExceptionalApplication>() {
-        didSet {Options.shared.saveOptions()}
-    }
+    var applications = EnhanceArray<ExceptionalApplication>(forObserver: {() in
+        Options.shared.saveOptions()
+    })
 }
 // 滚动参数
 class OPTIONS_SCROLL_DEFAULT: Codable {
