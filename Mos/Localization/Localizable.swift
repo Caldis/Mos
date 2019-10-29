@@ -23,12 +23,6 @@ class i18n {
     static let quit = NSLocalizedString("Quit", comment: "")
     static let hideIcon = NSLocalizedString("Hide Icon", comment: "")
 
-    // Notification
-    static let mosIsRunningInThebackground = NSLocalizedString("Mos is running in the background", comment: "")
-    static let mosStatusBarIconIsHidden = NSLocalizedString("Mos' status bar icon is hidden", comment: "")
-    static let gotIt = NSLocalizedString("Got it", comment: "")
-    static let showIt = NSLocalizedString("Show it", comment: "")
-
     // Preferences
     static let currentVersion = NSLocalizedString("Current Version", comment: "")
     

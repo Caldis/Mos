@@ -21,21 +21,32 @@ class ScrollCore {
     var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
     var scrollDelta  = ( y: 0.0, x: 0.0 )  // 滚动方向记录
     // 热键数据
+    var dashScroll = false
+    var dashAmplification = 1.0
     var toggleScroll = false
     var blockSmooth = false
+    // 插值数据
+    var smoothStep = Options.shared.scroll.step
+    var smoothSpeed = Options.shared.scroll.speed
+    var smoothDuration = Options.shared.scroll.durationTransition
+    // 应用数据
+    var exceptionalApplication: ExceptionalApplication?
     // 滚动数值滤波, 用于去除滚动的起始抖动
     var scrollFiller = ScrollFiller()
     // 事件发送器
     var scrollEventPoster: CVDisplayLink?
     // 拦截层
-    var scrollEventInterceptor: InterceptorRef?
-    var hotkeyEventInterceptor: InterceptorRef?
+    var scrollEventInterceptor: Interceptor?
+    var hotkeyEventInterceptor: Interceptor?
+    var mouseEventInterceptor: Interceptor?
     var tapKeeperTimer: Timer?
     // 拦截掩码
     let scrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
     let hotkeyEventMask = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
+    let mouseLeftEventMask = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
+    let mouseRightEventMask = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
     
-    // 滚动处理
+    // 滚动事件处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 是否返回原始事件 (不启用平滑时)
         var returnOriginalEvent = true
@@ -45,11 +56,14 @@ class ScrollCore {
             // 获取目标窗口 BundleId
             let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation(and: event)
             // 获取列表中应用程序的列外设置信息
-            let exceptionalApplications = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
-            // 是否翻转
-            let enableReverse = ScrollUtils.shared.enableReverse(application: exceptionalApplications)
-            // 是否平滑
-            let enableSmooth = ScrollUtils.shared.enableSmooth(application: exceptionalApplications)
+            ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
+            // 翻转/平滑
+            let enableReverse = ScrollUtils.shared.isEnableReverseOn(application: ScrollCore.shared.exceptionalApplication, targetBundleId: targetBID)
+            let enableSmooth = ScrollUtils.shared.isEnableSmoothOn(application: ScrollCore.shared.exceptionalApplication, targetBundleId: targetBID)
+            // 滚动参数
+            ScrollCore.shared.smoothStep = ScrollUtils.shared.optionsStepOn(application: ScrollCore.shared.exceptionalApplication)
+            ScrollCore.shared.smoothSpeed = ScrollUtils.shared.optionsSpeedOn(application: ScrollCore.shared.exceptionalApplication)
+            ScrollCore.shared.smoothDuration = ScrollUtils.shared.optionsDurationTransitionOn(application: ScrollCore.shared.exceptionalApplication)
             // 处理滚动事件
             let scrollEvent = ScrollEvent(with: event)
             // Y轴
@@ -64,7 +78,7 @@ class ScrollCore {
                     returnOriginalEvent = false
                     // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
                     if !scrollEvent.Y.fixed {
-                        ScrollEventUtils.normalizeY(scrollEvent, Options.shared.advanced.step)
+                        ScrollEventUtils.normalizeY(scrollEvent, ScrollCore.shared.smoothStep)
                     }
                 }
             }
@@ -80,13 +94,18 @@ class ScrollCore {
                     returnOriginalEvent = false
                     // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
                     if !scrollEvent.X.fixed {
-                        ScrollEventUtils.normalizeX(scrollEvent, Options.shared.advanced.step)
+                        ScrollEventUtils.normalizeX(scrollEvent, ScrollCore.shared.smoothStep)
                     }
                 }
             }
             // 触发滚动事件推送
             if enableSmooth {
-                ScrollCore.shared.updateScrollBuffer(y: scrollEvent.Y.usableValue, x: scrollEvent.X.usableValue)
+                ScrollCore.shared.updateScrollBuffer(
+                    y: scrollEvent.Y.usableValue,
+                    x: scrollEvent.X.usableValue,
+                    s: ScrollCore.shared.smoothSpeed,
+                    a: ScrollCore.shared.dashAmplification
+                )
                 ScrollCore.shared.enableScrollEventPoster()
             }
         }
@@ -98,39 +117,105 @@ class ScrollCore {
         }
     }
     
-    // 热键处理
+    // 热键事件处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        var toggleKey = Options.shared.advanced.toggle
-        var disableKey = Options.shared.advanced.block
-        var keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        // 统一左右 Shift 的 keyCode
-        keyCode = keyCode==60 ? 56 : keyCode
-        // 判断转换键
-        if toggleKey != 0 && keyCode == toggleKey {
-            ScrollCore.shared.toggleScroll = !ScrollCore.shared.toggleScroll
+        // 获取目标应用程序
+        let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation(and: event)
+        guard let targetAppliaction = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID) else {
+            ScrollCore.shared.dashScroll = false
+            ScrollCore.shared.dashAmplification = 1.0
+            ScrollCore.shared.toggleScroll = false
+            ScrollCore.shared.blockSmooth = false
+            return nil
         }
-        // 判断禁用键
-        if disableKey != 0 && keyCode == disableKey {
-            ScrollCore.shared.blockSmooth = !ScrollCore.shared.blockSmooth
-            ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+        // 读取快捷键
+        let dashKey = ScrollUtils.shared.optionsDashOn(application: targetAppliaction)
+        let toggleKey = ScrollUtils.shared.optionsToggleOn(application: targetAppliaction)
+        let disableKey = ScrollUtils.shared.optionsBlockOn(application: targetAppliaction)
+        let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
+        // 判断快捷键
+        switch keyCode {
+            case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:
+                if (dashKey == MODIFIER_KEY.controlLeft || dashKey == MODIFIER_KEY.controlRight) {
+                    ScrollCore.shared.dashScroll = Utils.isControlDown(event)
+                    ScrollCore.shared.dashAmplification = ScrollCore.shared.dashScroll ? 5.0 : 1.0
+                }
+                if (toggleKey == MODIFIER_KEY.controlLeft || toggleKey == MODIFIER_KEY.controlRight) {
+                    ScrollCore.shared.toggleScroll = Utils.isControlDown(event)
+                }
+                if (disableKey == MODIFIER_KEY.controlLeft || disableKey == MODIFIER_KEY.controlRight) {
+                    ScrollCore.shared.blockSmooth = Utils.isControlDown(event)
+                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+                }
+            case MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight:
+                if (dashKey == MODIFIER_KEY.optionLeft || dashKey == MODIFIER_KEY.optionRight) {
+                    ScrollCore.shared.dashScroll = Utils.isOptionDown(event)
+                    ScrollCore.shared.dashAmplification = ScrollCore.shared.dashScroll ? 5.0 : 1.0
+                }
+                if (toggleKey == MODIFIER_KEY.optionLeft || toggleKey == MODIFIER_KEY.optionRight) {
+                    ScrollCore.shared.toggleScroll = Utils.isOptionDown(event)
+                }
+                if (disableKey == MODIFIER_KEY.optionLeft || disableKey == MODIFIER_KEY.optionRight) {
+                    ScrollCore.shared.blockSmooth = Utils.isOptionDown(event)
+                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+                }
+            case MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight:
+                if (dashKey == MODIFIER_KEY.commandLeft || dashKey == MODIFIER_KEY.commandRight) {
+                    ScrollCore.shared.dashScroll = Utils.isCommandDown(event)
+                    ScrollCore.shared.dashAmplification = ScrollCore.shared.dashScroll ? 5.0 : 1.0
+                }
+                if (toggleKey == MODIFIER_KEY.commandLeft || toggleKey == MODIFIER_KEY.commandRight) {
+                    ScrollCore.shared.toggleScroll = Utils.isCommandDown(event)
+                }
+                if (disableKey == MODIFIER_KEY.commandLeft || disableKey == MODIFIER_KEY.commandRight) {
+                    ScrollCore.shared.blockSmooth = Utils.isCommandDown(event)
+                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+                }
+            case MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight:
+                if (dashKey == MODIFIER_KEY.shiftLeft || dashKey == MODIFIER_KEY.shiftRight) {
+                    ScrollCore.shared.dashScroll = Utils.isShiftDown(event)
+                    ScrollCore.shared.dashAmplification = ScrollCore.shared.dashScroll ? 5.0 : 1.0
+                }
+                if (toggleKey == MODIFIER_KEY.shiftLeft || toggleKey == MODIFIER_KEY.shiftRight) {
+                    ScrollCore.shared.toggleScroll = Utils.isShiftDown(event)
+                }
+                if (disableKey == MODIFIER_KEY.shiftLeft || disableKey == MODIFIER_KEY.shiftRight) {
+                    ScrollCore.shared.blockSmooth = Utils.isShiftDown(event)
+                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+                }
+            default: break
         }
         return nil
     }
     
+    // 鼠标事件处理
+    let mouseLeftEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        // 如果点击左键则停止滚动
+        ScrollCore.shared.cleanScrollBuffer()
+        ScrollCore.shared.disableScrollEventPoster()
+        return nil
+    }
     
     // 启动滚动处理
     func startHandlingScroll() {
         // 开始截取事件
-        scrollEventInterceptor = Interceptor.start(
+        scrollEventInterceptor = Interceptor(
             event: scrollEventMask,
             handleBy: scrollEventCallBack,
             listenOn: .cghidEventTap,
             placeAt: .tailAppendEventTap,
             for: .defaultTap
         )
-        hotkeyEventInterceptor = Interceptor.start(
+        hotkeyEventInterceptor = Interceptor(
             event: hotkeyEventMask,
             handleBy: hotkeyEventCallBack,
+            listenOn: .cghidEventTap,
+            placeAt: .tailAppendEventTap,
+            for: .listenOnly
+        )
+        mouseEventInterceptor = Interceptor(
+            event: mouseLeftEventMask,
+            handleBy: mouseLeftEventCallBack,
             listenOn: .cghidEventTap,
             placeAt: .tailAppendEventTap,
             for: .listenOnly
@@ -153,47 +238,42 @@ class ScrollCore {
         // 停止滚动事件发送器
         disableScrollEventPoster()
         // 停止截取事件
-        Interceptor.stop(scrollEventInterceptor)
-        Interceptor.stop(hotkeyEventInterceptor)
+        scrollEventInterceptor?.stop()
+        hotkeyEventInterceptor?.stop()
+        mouseEventInterceptor?.stop()
     }
     // 守护进程
-    // 在某些高压环境下 eventTap 会挂掉
-    // 使用守护进程监控, 如果挂掉就重启, 监控周期 2S, 对CPU基本无占用
     @objc func tapKeeper() {
-        if let ref = scrollEventInterceptor {
-            if let tap = ref.eventTap {
-                if !CGEvent.tapIsEnabled(tap: tap) {
-                    CGEvent.tapEnable(tap: tap, enable: true)
-                }
-            }
-        }
-        if let ref = hotkeyEventInterceptor {
-            if let tap = ref.eventTap {
-                if !CGEvent.tapIsEnabled(tap: tap) {
-                    CGEvent.tapEnable(tap: tap, enable: true)
-                }
-            }
-        }
+        scrollEventInterceptor?.check()
+        hotkeyEventInterceptor?.check()
+        mouseEventInterceptor?.check()
     }
         
-    // 鼠标数据输入
-    func updateScrollBuffer(y: Double, x: Double) {
-        let speed = Options.shared.advanced.speed
+    // 鼠标数据控制
+    func updateScrollBuffer(y: Double, x: Double, s: Double, a: Double = 1) {
         // 更新 Y 轴数据
         if y*scrollDelta.y > 0 {
-            scrollBuffer.y += speed * y
+            scrollBuffer.y += y * s * a
         } else {
-            scrollBuffer.y = speed * y
+            scrollBuffer.y = y * s * a
             scrollCurr.y = 0.0
         }
         // 更新 X 轴数据
         if x*scrollDelta.x > 0 {
-            scrollBuffer.x += speed * x
+            scrollBuffer.x += x * s * a
         } else {
-            scrollBuffer.x = speed * x
+            scrollBuffer.x = x * s * a
             scrollCurr.x = 0.0
         }
         scrollDelta = ( y: y, x: x )
+    }
+    func cleanScrollBuffer() {
+        // 重置数值
+        scrollCurr = ( y: 0.0, x: 0.0 )
+        scrollBuffer = ( y: 0.0, x: 0.0 )
+        scrollDelta = ( y: 0.0, x: 0.0 )
+        // 重置插值器
+        scrollFiller.clean()
     }
     
     // 鼠标插值数据输出
@@ -220,42 +300,42 @@ class ScrollCore {
     }
     
     // 根据需要变换滚动方向
-    func weapScrollWhenToggling(y: Double, x: Double, toggling: Bool) -> (y: Double, x: Double) {
+    func weapScrollIfToggling(with nextValue: ( y: Double, x: Double ), toggling: Bool) -> (y: Double, x: Double) {
         // 如果按下 Shift, 则始终将滚动转为横向
         if toggling {
             // 判断哪个轴有值, 有值则赋给 X
             // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向为横向, 此处针对这类转换进行归一化处理
-            if y != 0.0 {
-                return (y: x, x: y)
+            if nextValue.y != 0.0 && nextValue.x == 0.0 {
+                return (y: nextValue.x, x: nextValue.y)
             } else {
-                return (y: y, x: x)
+                return (y: nextValue.y, x: nextValue.x)
             }
         } else {
-            return (y: y, x: x)
+            return (y: nextValue.y, x: nextValue.x)
         }
     }
     // 处理滚动事件
     func handleScroll() {
         // 计算插值
         let scrollPulse = (
-            y: Interpolator.lerp(src: scrollCurr.y, dest: scrollBuffer.y),
-            x: Interpolator.lerp(src: scrollCurr.x, dest: scrollBuffer.x)
+            y: Interpolator.lerp(src: scrollCurr.y, dest: scrollBuffer.y, trans: smoothDuration),
+            x: Interpolator.lerp(src: scrollCurr.x, dest: scrollBuffer.x, trans: smoothDuration)
         )
         // 更新滚动位置
         scrollCurr = (
             y: scrollCurr.y + scrollPulse.y,
             x: scrollCurr.x + scrollPulse.x
         )
-        // 填入 scrollFiller, 并获取值
+        // 平滑滚动结果
         let filteredValue = scrollFiller.fillIn(with: scrollPulse)
         // 变换滚动结果
-        let swapedValue = weapScrollWhenToggling(y: filteredValue.y, x: filteredValue.x, toggling: toggleScroll)
+        let swapedValue = weapScrollIfToggling(with: filteredValue, toggling: toggleScroll)
         // 发送滚动结果
         MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
         // 如果临近目标距离小于精确度门限则停止滚动
-        if scrollPulse.y.magnitude<=Options.shared.advanced.precision && scrollPulse.x.magnitude<=Options.shared.advanced.precision {
+        if scrollPulse.y.magnitude<=Options.shared.scroll.precision && scrollPulse.x.magnitude<=Options.shared.scroll.precision {
+            cleanScrollBuffer()
             disableScrollEventPoster()
-            scrollFiller.clean()
         }
     }
     

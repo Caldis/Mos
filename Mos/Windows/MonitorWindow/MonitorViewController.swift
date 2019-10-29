@@ -22,7 +22,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     @IBOutlet var otherLogTextField: NSTextView!
     
     // 监听相关
-    var interceptorRef:InterceptorRef?
+    var scrollInterceptor: Interceptor?
     let mask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
     let eventCallBack: CGEventTapCallBack = {
         (proxy, type, event, refcon) in
@@ -55,26 +55,26 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         // 初始化图表数据
         lineChartCount = 0.0
         // 设置数据集
-        let verticalData = LineChartDataSet(values: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Vertical")
-        verticalData.valueTextColor = NSUIColor.white
+        let verticalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Vertical")
+        verticalData.valueTextColor = NSColor.labelColor
         verticalData.colors = [green]
         verticalData.circleRadius = 1.5
         verticalData.circleColors = [green]
-        let horizontalData = LineChartDataSet(values: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Horizontal")
-        horizontalData.valueTextColor = NSUIColor.white
+        let horizontalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Horizontal")
+        horizontalData.valueTextColor = NSColor.labelColor
         horizontalData.colors = [yellow]
         horizontalData.circleRadius = 1.5
         horizontalData.circleColors = [yellow]
         lineChart.data = LineChartData(dataSets: [verticalData, horizontalData])
         // 设置图表样式
-        lineChart.noDataTextColor = NSUIColor.white
+        lineChart.noDataTextColor = NSColor.labelColor
         lineChart.chartDescription?.text = ""
-        lineChart.legend.textColor = NSUIColor.white
-        lineChart.xAxis.labelTextColor = NSUIColor.white
-        lineChart.leftAxis.labelTextColor = NSUIColor.white
-        lineChart.rightAxis.labelTextColor = NSUIColor.white
+        lineChart.legend.textColor = NSColor.labelColor
+        lineChart.xAxis.labelTextColor = NSColor.labelColor
+        lineChart.leftAxis.labelTextColor = NSColor.labelColor
+        lineChart.rightAxis.labelTextColor = NSColor.labelColor
         lineChart.drawBordersEnabled = true
-        lineChart.borderColor = NSUIColor.gray
+        lineChart.borderColor = NSColor.secondaryLabelColor
     }
     // 初始化监听
     func initObserver() {
@@ -82,11 +82,11 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(updateMonitorData), name:NSNotification.Name(rawValue: "ScrollEvent"), object: nil)
         // 开始截取事件
-        interceptorRef = Interceptor.start(event: mask, handleBy: eventCallBack, listenOn: .cgAnnotatedSessionEventTap, placeAt: .tailAppendEventTap, for: .listenOnly)
+        scrollInterceptor = Interceptor(event: mask, handleBy: eventCallBack, listenOn: .cgAnnotatedSessionEventTap, placeAt: .tailAppendEventTap, for: .listenOnly)
     }
     func uninitObserver() {
         // 停止截取
-        Interceptor.stop(interceptorRef)
+        scrollInterceptor?.stop()
         // 停止监听
         NotificationCenter.default.removeObserver(self)
     }

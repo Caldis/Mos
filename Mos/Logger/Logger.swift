@@ -28,14 +28,19 @@ class Logger {
         // scrollWheelEventIsContinuous 采样精度(设为 1 时为像素级别)
         // scrollWheelEventScrollCount 加速度累计
         // scrollWheelEventMomentumPhase 根据触控板响应阶段改变
-        //       2: [触控板]缓动动画进行中
-        //       3: [触控板]缓动动画完成(最后一下)
+        // CGMomentumScrollPhase (触控板缓动阶段)
+        //       0: 未开始(none)
+        //       1: [触控板]开始(begin)
+        //       2: [触控板]缓动动画进行中(continuous)
+        //       3: [触控板]缓动动画完成(最后一下)(end)
         // scrollWheelEventScrollPhase 根据触控板响应阶段改变
-        //     128: [触控板]双指触碰未滑动
-        //       8: [触控板]双指触碰未滑动拿开
-        //       2: [触控板]双指滑动(无缓动), [鼠标]左侧滚轮滑动中
-        //       4: [触控板]双指滑动完拿开(无缓动)(最后一下)
+        // CGScrollPhase (触控板滑动阶段)
         //       0: [触控板]滑动事件缓动, [鼠标]滚轮滚动中 (未接触触控板)
+        //       1: [触控板]开始(kCGScrollPhaseBegan)
+        //       2: [触控板]双指滑动(无缓动), [鼠标]左侧滚轮滑动中(kCGScrollPhaseChanged)
+        //       4: [触控板]双指滑动完拿开(无缓动)(最后一下)(kCGScrollPhaseEnded)
+        //       8: [触控板]双指触碰未滑动拿开(kCGScrollPhaseCancelled)
+        //     128: [触控板]双指触碰未滑动(kCGScrollPhaseMayBegin)
         return """
             scrollWheelEventInstantMouser: \(event.getDoubleValueField(.scrollWheelEventInstantMouser))
             scrollWheelEventIsContinuous: \(event.getDoubleValueField(.scrollWheelEventIsContinuous))

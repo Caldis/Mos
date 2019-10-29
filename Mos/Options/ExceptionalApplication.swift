@@ -8,43 +8,41 @@
 
 import Cocoa
 
-struct ExceptionalApplication: Codable {
+class ExceptionalApplication: Codable, Equatable {
     
-    // 应用信息
-    var path: String        // 路径
-    var title: String       // 名称
-    var bundleId: String    // bundleId
+    // 基础
+    var name: String?
+    var path: String?
+    var bundleId: String
+    // 开关 (smooth 及 reverse 不走这个)
+    var followGlobal = false
+    // 滚动
+    var scroll = OPTIONS_SCROLL_DEFAULT()
     
-    // 常规
-    var smooth: Bool
-    var reverse: Bool
-    
-    // 高级 ( 为 2.1 后新增属性, 需要设为 Optional 防止报错 )
-    var step: Double?
-    var speed: Double?
-    var duration: Double?
-    var durationTransition: Double?
-    
-    // 热键 ( 为 2.1 后新增属性, 需要设为 Optional 防止报错 )
-    var toggle: Int?
-    var block: Int?
-    
-    init(path: String, title: String, bundleId: String) {
-        // 应用信息
+    init(path: String, bundleId: String) {
+        // 基础
         self.path = path
-        self.title = title
         self.bundleId = bundleId
-        // 常规
-        self.smooth = Options.DEFAULT_OPTIONS.basic.smooth
-        self.reverse = Options.DEFAULT_OPTIONS.basic.reverse
-        // 高级
-        self.step = Options.DEFAULT_OPTIONS.advanced.step
-        self.speed = Options.DEFAULT_OPTIONS.advanced.speed
-        self.duration = Options.DEFAULT_OPTIONS.advanced.duration
-        self.durationTransition = Options.DEFAULT_OPTIONS.advanced.durationTransition
-        // 热键
-        self.toggle = Options.DEFAULT_OPTIONS.advanced.toggle
-        self.block = Options.DEFAULT_OPTIONS.advanced.block
+    }
+    init(name: String, bundleId: String) {
+        // 基础
+        self.name = name
+        self.bundleId = bundleId
     }
     
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        // 基础
+        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? nil
+        self.path = try container.decodeIfPresent(String.self, forKey: .path) ?? nil
+        self.bundleId = try container.decodeIfPresent(String.self, forKey: .bundleId) ?? ""
+        // 开关
+        self.followGlobal = try container.decodeIfPresent(Bool.self, forKey: .followGlobal) ?? false
+        // 滚动
+        self.scroll = try container.decodeIfPresent(OPTIONS_SCROLL_DEFAULT.self, forKey: .scroll) ?? OPTIONS_SCROLL_DEFAULT()
+    }
+    
+    static func == (lhs: ExceptionalApplication, rhs: ExceptionalApplication) -> Bool {
+        return lhs.bundleId == rhs.bundleId
+    }
 }

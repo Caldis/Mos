@@ -19,8 +19,23 @@
 +(void)scroll:(uint32_t)type yScroll:(int32_t)yScroll xScroll:(int32_t)xScroll {
     // 创建事件
     CGEventRef event = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitPixel, type, yScroll, xScroll);
-    // 设置目标
+    // 设置事件属性
     CGEventSetIntegerValueField(event, kCGScrollWheelEventIsContinuous, 1);
+    // 发送事件
+    CGEventPost(kCGSessionEventTap, event);
+    // 释放
+    // https://github.com/Caldis/Mos/issues/85
+    CFRelease(event);
+}
+
++(void)scroll:(uint32_t)type yScroll:(int32_t)yScroll xScroll:(int32_t)xScroll scrollPhase:(int32_t)scrollPhase momentumPhase:(int32_t)momentumPhase {
+    // 创建事件
+    CGEventRef event = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitPixel, type, yScroll, xScroll);
+    // 设置事件属性
+    CGEventSetIntegerValueField(event, kCGScrollWheelEventIsContinuous, 1);
+    // 部分应用(网易邮箱大师)需要此属性以模拟触控板触发事件，但会引起 Chrome 不识别滚动，需要进一步模拟各阶段参数
+    // CGEventSetIntegerValueField(event, kCGScrollWheelEventScrollPhase, scrollPhase);
+    // CGEventSetIntegerValueField(event, kCGScrollWheelEventMomentumPhase, momentumPhase);
     // 发送事件
     CGEventPost(kCGSessionEventTap, event);
     // 释放

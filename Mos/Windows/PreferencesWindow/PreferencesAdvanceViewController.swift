@@ -10,6 +10,10 @@ import Cocoa
 
 class PreferencesAdvanceViewController: NSViewController {
     
+    // Target application
+    var currentTargetApplication: ExceptionalApplication?
+    // UI Elements
+    @IBOutlet weak var dashKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var toggleKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var disableKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var scrollStepSlider: NSSlider!
@@ -21,22 +25,28 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBOutlet weak var scrollDurationSlider: NSSlider!
     @IBOutlet weak var scrollDurationInput: NSTextField!
     @IBOutlet weak var scrollDurationStepper: NSStepper!
+    // Constants
+    let PopUpButtonPadding = 2 // 减去第一个 Disabled 和分割线的距离
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear() {
         // 读取设置
         syncViewWithOptions()
     }
     
+    // 加速
+    @IBAction func dashKeyPopUpButtonChange(_ sender: NSPopUpButton) {
+        let index = sender.indexOfSelectedItem
+        getTargetApplicationScrollOptions().dash = Int(index>1 ? MODIFIER_KEY.list[index-PopUpButtonPadding] : 0)
+    }
     // 转换
     @IBAction func toggleKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
-        Options.shared.advanced.toggle = index>1 ? Utils.modifierKeys[index-2] : 0
+        getTargetApplicationScrollOptions().toggle = Int(index>1 ? MODIFIER_KEY.list[index-PopUpButtonPadding] : 0)
     }
     // 禁用
     @IBAction func disableKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
-        Options.shared.advanced.block = index>1 ? Utils.modifierKeys[index-2] : 0
+        getTargetApplicationScrollOptions().block = Int(index>1 ? MODIFIER_KEY.list[index-PopUpButtonPadding] : 0)
     }
     
     // 步长
@@ -50,7 +60,7 @@ class PreferencesAdvanceViewController: NSViewController {
         setScrollStep(value: sender.doubleValue)
     }
     func setScrollStep(value: Double) {
-        Options.shared.advanced.step = value
+        getTargetApplicationScrollOptions().step = value
         syncViewWithOptions()
     }
     
@@ -65,7 +75,7 @@ class PreferencesAdvanceViewController: NSViewController {
         setScrollSpeed(value: sender.doubleValue)
     }
     func setScrollSpeed(value: Double) {
-        Options.shared.advanced.speed = value
+        getTargetApplicationScrollOptions().speed = value
         syncViewWithOptions()
     }
     
@@ -80,45 +90,65 @@ class PreferencesAdvanceViewController: NSViewController {
         setScrollDuration(value: sender.doubleValue)
     }
     func setScrollDuration(value: Double) {
-        Options.shared.advanced.duration = value
+        getTargetApplicationScrollOptions().duration = value
         syncViewWithOptions()
     }
     
     // 重置
     @IBAction func resetToDefaultClick(_ sender: NSButton) {
-        Options.shared.advanced = Options.DEFAULT_OPTIONS.advanced
+        if let target = currentTargetApplication {
+            target.scroll = OPTIONS_SCROLL_DEFAULT()
+        } else {
+            Options.shared.scroll = OPTIONS_SCROLL_DEFAULT()
+        }
         syncViewWithOptions()
     }
     
+}
+
+/**
+ * 工具函数
+ **/
+extension PreferencesAdvanceViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
-        // 转换
-        if let index = Utils.modifierKeys.index(of: Options.shared.advanced.toggle) {
-            toggleKeyPopUpButton.selectItem(at: index+2)
+        let scroll = getTargetApplicationScrollOptions()
+        // 加速
+        if let index = MODIFIER_KEY.list.firstIndex(of: CGKeyCode(scroll.dash ?? 0)) {
+            dashKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
-            ///toggleKeyPopUpButton.selectItem(at: 0) /// FIXME: CRASH ON MOJAVE 10.4.6
+            dashKeyPopUpButton.selectItem(at: 0)
+        }
+        // 转换
+        if let index = MODIFIER_KEY.list.firstIndex(of: CGKeyCode(scroll.toggle ?? 0)) {
+            toggleKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
+        } else {
+             toggleKeyPopUpButton.selectItem(at: 0)
         }
         // 禁用
-        if let index = Utils.modifierKeys.index(of: Options.shared.advanced.block) {
-            disableKeyPopUpButton.selectItem(at: index+2)
+        if let index = MODIFIER_KEY.list.firstIndex(of: CGKeyCode(scroll.block ?? 0)) {
+            disableKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
             disableKeyPopUpButton.selectItem(at: 0)
         }
         // 步长
-        let step = Options.shared.advanced.step
+        let step = scroll.step
         scrollStepSlider.doubleValue = step
         scrollStepStepper.doubleValue = step
         scrollStepInput.stringValue = String(format: "%.2f", step)
         // 速度
-        let speed = Options.shared.advanced.speed
+        let speed = scroll.speed
         scrollSpeedSlider.doubleValue = speed
         scrollSpeedStepper.doubleValue = speed
         scrollSpeedInput.stringValue = String(format: "%.2f", speed)
         // 过渡
-        let duration = Options.shared.advanced.duration
+        let duration = scroll.duration
         scrollDurationSlider.doubleValue = duration
         scrollDurationStepper.doubleValue = duration
         scrollDurationInput.stringValue = String(format: "%.2f", duration)
     }
-    
+    // 获取配置目标
+    func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_DEFAULT {
+        return currentTargetApplication?.scroll ?? Options.shared.scroll
+    }
 }

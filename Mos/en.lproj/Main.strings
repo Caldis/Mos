@@ -7,35 +7,42 @@
 */
 
 // Mointor
-"TUE-3v-CaJ.title" = "          Rendering this chart will affect scrolling performance. Close the window when not in use.";
+"TUE-3v-CaJ.title" = "Rendering this chart will affect scrolling performance. Close the window when not in use.";
 
 // PreferencesWindow
+"cvF-hf-KVW.title" = "Preferences";
 // General
 "ITL-GD-CPd.title" = "General";
-"ILt-Gz-RiV.title" = "Scroll:";
-"weE-be-TAy.title" = "Smooth Scrolling";
-"G8a-97-8Ey.title" = "Make scrolling with the mouse wheel butter-smooth";
-"6FR-2r-rxl.title" = "Reverse Scroll";
-"VUb-ZM-hXo.title" = "Reverse the mouse wheel scroll direction";
-"8sv-2I-VeW.title" = "Miscellaneous:";
-"HZF-2o-Mrh.title" = "Launch on Login";
-"wY5-9W-iNv.title" = "Automatically launch app on login";
+"pwT-er-UCo.title" = "Scroll:";
+"jtK-hi-Ami.title" = "Smooth Scrolling";
+"bbo-GH-WeC.title" = "Make scrolling with the mouse wheel butter-smooth";
+"MAF-Hi-l48.title" = "Reverse Scroll";
+"CqK-3z-D0G.title" = "Reverse the mouse wheel scroll direction";
+"dyY-vr-dwT.title" = "Miscellaneous:";
+"xoR-7p-3qj.title" = "Launch on Login";
+"MdS-Nz-zMa.title" = "Automatically launch app on login";
+"hGj-vV-zcY.title" = "Hide Status Bar Icon";
+"bB5-2R-9Da.title" = "Re-run Mos again to show the hidden Icon";
+"cIk-j1-vYt.title" = "You need to re-run Mos from Finder-Application instead of the launch pad. (The launch pad will automatically ignore the launched app)";
 // Advanced
 "iW5-CD-5OC.title" = "Advanced";
-"NAp-3R-e8q.title" = "Toggle Key:";
-"lzC-ub-pqJ.title" = "Change vertical scrolling to horizontal scrolling";
-"akk-dX-tW4.title" = "Block Key:";
-"62p-76-okJ.title" = "Temporarily block smooth scrolling";
-"bcp-Xx-rdX.title" = "Disable";
-"DXO-Xo-tJd.title" = "Disable";
-"YE2-UH-9Ku.title" = "Step:";
-"3Xk-SU-gqO.title" = "Sets the minimum scroll distance";
-"wck-ay-cL9.title" = "Speed:";
-"PK6-dT-z93.title" = "Sets scrolling acceleration";
-"suV-WY-rbw.title" = "Duration:";
-"vmk-zZ-ifN.title" = "Sets the duration of the scroll animation";
-"2ho-yL-X2k.title" = "Reset to defaults";
-"bAe-Zc-5SS.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
+"hOO-M8-I1z.title" = "Dash Key:";
+"Vhz-Rn-lcU.title" = "Disabled";
+"Z59-tN-QjE.title" = "Increase scrolling speed on long pages";
+"bQw-5w-Yv0.title" = "Toggle Key:";
+"cTe-aL-0GQ.title" = "Disabled";
+"KnM-kA-wn5.title" = "Change vertical scrolling to horizontal scrolling";
+"ebE-Zf-T98.title" = "Block Key:";
+"iki-Jk-qSr.title" = "Temporarily block smooth scrolling";
+"vFk-37-HRU.title" = "Disabled";
+"B8B-hi-x3v.title" = "Step:";
+"Jan-OY-m70.title" = "Sets the minimum scroll distance";
+"Gcw-Ir-olP.title" = "Speed:";
+"B3O-iI-E7v.title" = "Sets scrolling acceleration";
+"bqU-Is-gFB.title" = "Duration:";
+"DsD-EW-zCH.title" = "Sets the duration of the scroll animation";
+"t2D-X2-Y6W.title" = "Reset to defaults";
+"Rgq-87-vjY.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
 // Exception
 "I5j-Bv-Aiy.title" = "Needs access to Accessibility controls";
 "FU4-wI-K8f.title" = "In order to customize the scroll behavior for certain applications, please allow Mos access to Accessibility controls.";
@@ -44,15 +51,18 @@
 "Rgu-cb-5lp.title" = "Customize per Application:";
 "Ksp-g1-48g.title" = "Whitelist Mode";
 "v26-RK-BtL.title" = "The whitelist mode will make Mos only apply to apps within the exception list.";
-"HDo-Iu-l7K.headerCell.title" = "Smooth";
-"rd0-ca-ufI.headerCell.title" = "Reverse";
-"xfG-Cd-oIk.headerCell.title" = "Application";
-"9fl-xB-j7H.title" = "No One is Special";
+"ThS-Rm-st2.title" = "No One is Special";
 "jaq-Cb-dKM.title" = "You can apply a separate configuration to some apps by clicking the \'+\' button below";
+"dhF-95-kUJ.title" = "Select From Installed Applications";
+"Vp7-0n-aRd.title" = "Manually Input Application Information";
+"kUr-cl-KRm.title" = "Application Name:";
+"Ck5-if-9RS.title" = "Bundle Identifier:";
+"Mdw-fZ-Nyy.title" = "Cancel";
+"2v4-AC-WG5.title" = "Confirm";
 // Updates
 "EWu-DP-7Gj.title" = "Updates";
-"N0S-yo-DTg.title" = "Check for updates:";
-"lp3-Dc-zRt.title" = "Check Now";
+"vdI-K4-SBh.title" = "Check for updates:";
+"T9f-TL-GYj.title" = "Check Now";
 "5oM-oR-Dsq.title" = "Current Version";
 // About
 "RfV-Ow-3mF.title" = "About";
@@ -67,13 +77,6 @@
 "Lhz-x5-X0I.title" = "Translation";
 "GWm-aK-UoV.title" = "Contributors List";
 
-// HideStatusItemWindow
-"WNd-iN-aAG.title" = "Hide the status bar icon";
-"hDs-Yh-11x.title" = "But Mos will continue to work in the background without the status bar icon.";
-"zAs-CP-Wpw.title" = "Once you hide the icon you will not be able to access Mos' preferences. If you want to re-display it, use Activity Mointor to close the Mos app then run Mos again. Then, click on the notification's \'Show it\' button.";
-"ueB-gF-VZ8.title" = "Cancel";
-"hhO-Gh-ldE.title" = "Still hide the status bar icon";
-
 // WelcomeWindow
 "SLb-UR-lz1.title" = "Welcome to Mos";
 "Lhk-Nd-CdT.title" = "Before we smoothen your scrolling";
@@ -82,5 +85,13 @@
 "u7p-zc-ERS.title" = "Scientists have proven that running multiple smooth scrolling applications at the same time will lead to incommunicable consequences. Please close -or disable the smooth function of- any other applications, such as smooth scrolling in Logitech Options or the SmoothScroll extension on Chrome.";
 "3QI-xO-wPK.title" = "Allow Mos access to Accessibility controls";
 "7bu-fM-Bjm.title" = "The greater the power, the greater the responsibility. To smooth your mouse scrolling, Mos needs to create an intermediate layer between the mouse and your system to optimize your mouse. So we need to access to accessibility controls to get this power.";
-"qGs-TM-PTM.title" = "Due to the limitations of MacOS, you may need to repeat this authorization when Mos is updated. If, in this circumstance, the entry already exists, please delete and re-add it.";
+"qGs-TM-PTM.title" = "LDue to the limitations of MacOS, you may need to repeat this authorization when Mos is updated. If, in this circumstance, the entry already exists, please delete and re-add it.";
 "V9n-HF-Vw9.title" = "Begin Smoothening";
+
+// Popover
+"hnf-e0-HXM.title" = "Preferences";
+"SqT-eH-bOb.title" = "Quit";
+"Vs2-5P-BEI.title" = "Smooth";
+"sKz-VE-Yfb.title" = "Reverse";
+"89F-B4-NIY.title" = "Application";
+"mfa-4t-oRD.title" = "Advanced";
