@@ -17,18 +17,17 @@ struct ANIMATION {
 struct MODIFIER_KEY {
     static let controlLeft = CGKeyCode(59)
     static let controlRight = CGKeyCode(62)
+    static let controlPair = [controlLeft, controlRight]
     static let optionLeft = CGKeyCode(58)
     static let optionRight = CGKeyCode(61)
+    static let optionPair = [optionLeft, optionRight]
     static let commandLeft = CGKeyCode(55)
     static let commandRight = CGKeyCode(54)
+    static let commandPair = [commandLeft, commandRight]
     static let shiftLeft = CGKeyCode(56)
     static let shiftRight = CGKeyCode(60)
-    static let list = [
-        controlLeft,
-        optionLeft,
-        commandLeft,
-        shiftLeft,
-    ]
+    static let shiftPair = [shiftLeft, shiftRight]
+    static let leftKeyList = [controlLeft, optionLeft, commandLeft, shiftLeft]
 }
 
 // 窗口

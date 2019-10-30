@@ -137,42 +137,42 @@ public class Utils {
     class func isControlDown(_ event: CGEvent) -> Bool {
         let flags = event.flags
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskControl.rawValue != 0 && (keyCode == MODIFIER_KEY.controlLeft || keyCode == MODIFIER_KEY.controlRight)
+        return flags.rawValue & CGEventFlags.maskControl.rawValue != 0 && MODIFIER_KEY.controlPair.contains(CGKeyCode(keyCode))
     }
     class func isControlUp(_ event: CGEvent) -> Bool {
         let flags = event.flags
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskControl.rawValue == 0 && (keyCode == MODIFIER_KEY.controlLeft || keyCode == MODIFIER_KEY.controlRight)
+        return flags.rawValue & CGEventFlags.maskControl.rawValue == 0 && MODIFIER_KEY.controlPair.contains(CGKeyCode(keyCode))
     }
     class func isOptionDown(_ event: CGEvent) -> Bool {
         let flags = event.flags
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskAlternate.rawValue != 0 && (keyCode == MODIFIER_KEY.optionLeft || keyCode == MODIFIER_KEY.optionRight)
+        return flags.rawValue & CGEventFlags.maskAlternate.rawValue != 0 && MODIFIER_KEY.optionPair.contains(CGKeyCode(keyCode))
     }
     class func isOptionUp(_ event: CGEvent) -> Bool {
         let flags = event.flags
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskAlternate.rawValue == 0 && (keyCode == MODIFIER_KEY.optionLeft || keyCode == MODIFIER_KEY.optionRight)
+        return flags.rawValue & CGEventFlags.maskAlternate.rawValue == 0 && MODIFIER_KEY.optionPair.contains(CGKeyCode(keyCode))
     }
     class func isCommandDown(_ event: CGEvent) -> Bool {
         let flags = event.flags
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskCommand.rawValue != 0 && (keyCode == MODIFIER_KEY.commandLeft || keyCode == MODIFIER_KEY.commandRight)
+        return flags.rawValue & CGEventFlags.maskCommand.rawValue != 0 && MODIFIER_KEY.commandPair.contains(CGKeyCode(keyCode))
     }
     class func isCommandUp(_ event: CGEvent) -> Bool {
         let flags = event.flags
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskCommand.rawValue == 0 && (keyCode == MODIFIER_KEY.commandLeft || keyCode == MODIFIER_KEY.commandRight)
+        return flags.rawValue & CGEventFlags.maskCommand.rawValue == 0 && MODIFIER_KEY.commandPair.contains(CGKeyCode(keyCode))
     }
     class func isShiftDown(_ event: CGEvent) -> Bool {
         let flags = event.flags
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskShift.rawValue != 0 && (keyCode == MODIFIER_KEY.shiftLeft || keyCode == MODIFIER_KEY.shiftRight)
+        return flags.rawValue & CGEventFlags.maskShift.rawValue != 0 && MODIFIER_KEY.shiftPair.contains(CGKeyCode(keyCode))
     }
     class func isShiftUp(_ event: CGEvent) -> Bool {
         let flags = event.flags
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskShift.rawValue != 0 && (keyCode == MODIFIER_KEY.shiftLeft || keyCode == MODIFIER_KEY.shiftRight)
+        return flags.rawValue & CGEventFlags.maskShift.rawValue == 0 && MODIFIER_KEY.shiftPair.contains(CGKeyCode(keyCode))
     }
     
     // 从 PID 获取进程名称

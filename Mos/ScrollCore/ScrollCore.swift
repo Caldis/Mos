@@ -29,8 +29,9 @@ class ScrollCore {
     var smoothStep = Options.shared.scroll.step
     var smoothSpeed = Options.shared.scroll.speed
     var smoothDuration = Options.shared.scroll.durationTransition
-    // 应用数据
+    // 例外应用数据
     var exceptionalApplication: ExceptionalApplication?
+    var currentExceptionalApplication: ExceptionalApplication? // 用于区分按下热键及抬起时的作用目标
     // 滚动数值滤波, 用于去除滚动的起始抖动
     var scrollFiller = ScrollFiller()
     // 事件发送器
@@ -57,9 +58,9 @@ class ScrollCore {
             let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation(and: event)
             // 获取列表中应用程序的列外设置信息
             ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
-            // 翻转/平滑
+            // 平滑/翻转
+            let enableSmooth = ScrollUtils.shared.isEnableSmoothOn(application: ScrollCore.shared.exceptionalApplication, targetBundleId: targetBID, flag: ScrollCore.shared.blockSmooth)
             let enableReverse = ScrollUtils.shared.isEnableReverseOn(application: ScrollCore.shared.exceptionalApplication, targetBundleId: targetBID)
-            let enableSmooth = ScrollUtils.shared.isEnableSmoothOn(application: ScrollCore.shared.exceptionalApplication, targetBundleId: targetBID)
             // 滚动参数
             ScrollCore.shared.smoothStep = ScrollUtils.shared.optionsStepOn(application: ScrollCore.shared.exceptionalApplication)
             ScrollCore.shared.smoothSpeed = ScrollUtils.shared.optionsSpeedOn(application: ScrollCore.shared.exceptionalApplication)
@@ -119,73 +120,91 @@ class ScrollCore {
     
     // 热键事件处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        // 获取当前按键
+        let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         // 获取目标应用程序
         let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation(and: event)
-        guard let targetAppliaction = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID) else {
-            ScrollCore.shared.dashScroll = false
-            ScrollCore.shared.dashAmplification = 1.0
-            ScrollCore.shared.toggleScroll = false
-            ScrollCore.shared.blockSmooth = false
-            return nil
-        }
-        // 读取快捷键
-        let dashKey = ScrollUtils.shared.optionsDashOn(application: targetAppliaction)
-        let toggleKey = ScrollUtils.shared.optionsToggleOn(application: targetAppliaction)
-        let disableKey = ScrollUtils.shared.optionsBlockOn(application: targetAppliaction)
-        let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
+        let targetAppliaction = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
         // 判断快捷键
         switch keyCode {
             case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:
-                if (dashKey == MODIFIER_KEY.controlLeft || dashKey == MODIFIER_KEY.controlRight) {
-                    ScrollCore.shared.dashScroll = Utils.isControlDown(event)
-                    ScrollCore.shared.dashAmplification = ScrollCore.shared.dashScroll ? 5.0 : 1.0
-                }
-                if (toggleKey == MODIFIER_KEY.controlLeft || toggleKey == MODIFIER_KEY.controlRight) {
-                    ScrollCore.shared.toggleScroll = Utils.isControlDown(event)
-                }
-                if (disableKey == MODIFIER_KEY.controlLeft || disableKey == MODIFIER_KEY.controlRight) {
-                    ScrollCore.shared.blockSmooth = Utils.isControlDown(event)
-                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
-                }
+                let down = Utils.isControlDown(event)
+                ScrollCore.shared.tryToggleEnableAllFlag(for: targetAppliaction, with: keyCode, using: MODIFIER_KEY.controlPair, on: down)
             case MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight:
-                if (dashKey == MODIFIER_KEY.optionLeft || dashKey == MODIFIER_KEY.optionRight) {
-                    ScrollCore.shared.dashScroll = Utils.isOptionDown(event)
-                    ScrollCore.shared.dashAmplification = ScrollCore.shared.dashScroll ? 5.0 : 1.0
-                }
-                if (toggleKey == MODIFIER_KEY.optionLeft || toggleKey == MODIFIER_KEY.optionRight) {
-                    ScrollCore.shared.toggleScroll = Utils.isOptionDown(event)
-                }
-                if (disableKey == MODIFIER_KEY.optionLeft || disableKey == MODIFIER_KEY.optionRight) {
-                    ScrollCore.shared.blockSmooth = Utils.isOptionDown(event)
-                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
-                }
+                let down = Utils.isOptionDown(event)
+                ScrollCore.shared.tryToggleEnableAllFlag(for: targetAppliaction, with: keyCode, using: MODIFIER_KEY.optionPair, on: down)
             case MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight:
-                if (dashKey == MODIFIER_KEY.commandLeft || dashKey == MODIFIER_KEY.commandRight) {
-                    ScrollCore.shared.dashScroll = Utils.isCommandDown(event)
-                    ScrollCore.shared.dashAmplification = ScrollCore.shared.dashScroll ? 5.0 : 1.0
-                }
-                if (toggleKey == MODIFIER_KEY.commandLeft || toggleKey == MODIFIER_KEY.commandRight) {
-                    ScrollCore.shared.toggleScroll = Utils.isCommandDown(event)
-                }
-                if (disableKey == MODIFIER_KEY.commandLeft || disableKey == MODIFIER_KEY.commandRight) {
-                    ScrollCore.shared.blockSmooth = Utils.isCommandDown(event)
-                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
-                }
+                let down = Utils.isCommandDown(event)
+                ScrollCore.shared.tryToggleEnableAllFlag(for: targetAppliaction, with: keyCode, using: MODIFIER_KEY.commandPair, on: down)
             case MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight:
-                if (dashKey == MODIFIER_KEY.shiftLeft || dashKey == MODIFIER_KEY.shiftRight) {
-                    ScrollCore.shared.dashScroll = Utils.isShiftDown(event)
-                    ScrollCore.shared.dashAmplification = ScrollCore.shared.dashScroll ? 5.0 : 1.0
-                }
-                if (toggleKey == MODIFIER_KEY.shiftLeft || toggleKey == MODIFIER_KEY.shiftRight) {
-                    ScrollCore.shared.toggleScroll = Utils.isShiftDown(event)
-                }
-                if (disableKey == MODIFIER_KEY.shiftLeft || disableKey == MODIFIER_KEY.shiftRight) {
-                    ScrollCore.shared.blockSmooth = Utils.isShiftDown(event)
-                    ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
-                }
+                let down = Utils.isShiftDown(event)
+                ScrollCore.shared.tryToggleEnableAllFlag(for: targetAppliaction, with: keyCode, using: MODIFIER_KEY.shiftPair, on: down)
             default: break
         }
         return nil
+    }
+    func tryEnableDashFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
+        if (keyPair.contains(key)) {
+            ScrollCore.shared.dashScroll = true
+            ScrollCore.shared.dashAmplification = 5.0
+        }
+    }
+    func tryEnableToggleFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
+        if (keyPair.contains(key)) {
+            ScrollCore.shared.toggleScroll = true
+        }
+    }
+    func tryEnableBlockFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
+        if (keyPair.contains(key)) {
+            ScrollCore.shared.blockSmooth = true
+            ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+        }
+    }
+    func tryDisableDashFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
+        if (keyPair.contains(key)) {
+            ScrollCore.shared.dashScroll = false
+            ScrollCore.shared.dashAmplification = 1.0
+        }
+    }
+    func tryDisableToggleFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
+        if (keyPair.contains(key)) {
+            ScrollCore.shared.toggleScroll = false
+        }
+    }
+    func tryDisableBlockFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
+        if (keyPair.contains(key)) {
+            ScrollCore.shared.blockSmooth = false
+        }
+    }
+    func disableAllFlag() {
+        ScrollCore.shared.dashScroll = false
+        ScrollCore.shared.dashAmplification = 1.0
+        ScrollCore.shared.toggleScroll = false
+        ScrollCore.shared.blockSmooth = false
+    }
+    func tryToggleEnableAllFlag(for targetAppliaction:ExceptionalApplication?, with keyCode:CGKeyCode, using keyPair:[CGKeyCode], on down:Bool) {
+        // 读取快捷键
+        let dashKey = ScrollUtils.shared.optionsDashOn(application: targetAppliaction)
+        let toggleKey = ScrollUtils.shared.optionsToggleOn(application: targetAppliaction)
+        let blockKey = ScrollUtils.shared.optionsBlockOn(application: targetAppliaction)
+        if down {
+            // 如果按下, 则按需激活
+            ScrollCore.shared.tryEnableDashFlag(with: dashKey, andKeyPair: keyPair)
+            ScrollCore.shared.tryEnableToggleFlag(with: toggleKey, andKeyPair: keyPair)
+            ScrollCore.shared.tryEnableBlockFlag(with: blockKey, andKeyPair: keyPair)
+            // 并更新记录器
+            ScrollCore.shared.currentExceptionalApplication = targetAppliaction
+        } else if ScrollCore.shared.currentExceptionalApplication == targetAppliaction {
+            // 如果弹起, 且与先前的目标应用相同, 则按需关闭
+            ScrollCore.shared.tryDisableDashFlag(with: dashKey, andKeyPair: keyPair)
+            ScrollCore.shared.tryDisableToggleFlag(with: toggleKey, andKeyPair: keyPair)
+            ScrollCore.shared.tryDisableBlockFlag(with: blockKey, andKeyPair: keyPair)
+        } else {
+            // 否则关闭全部
+            ScrollCore.shared.disableAllFlag()
+            // 并更新记录器
+            ScrollCore.shared.currentExceptionalApplication = nil
+        }
     }
     
     // 鼠标事件处理
