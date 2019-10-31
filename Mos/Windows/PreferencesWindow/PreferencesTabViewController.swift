@@ -26,6 +26,8 @@ import Cocoa
 
 class PreferencesTabViewController: NSTabViewController {
     
+    let backgroundVisualEffectView = NSVisualEffectView()
+    
     override func viewDidAppear() {
         // 移除已有约束
         view.removeConstraints(view.constraints)
@@ -33,11 +35,10 @@ class PreferencesTabViewController: NSTabViewController {
         tabView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         tabView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
         // 额外叠加一层 NSVisualEffectView, 并固定于界面下方, 避免切换时窗口底部颜色不一致
-        let backgroundVisualEffectView = NSVisualEffectView()
         backgroundVisualEffectView.blendingMode = NSVisualEffectView.BlendingMode.behindWindow
         if #available(OSX 10.14, *) { backgroundVisualEffectView.material = NSVisualEffectView.Material.toolTip }
         view.addSubview(backgroundVisualEffectView, positioned: NSWindow.OrderingMode.below, relativeTo: tabView)
-        backgroundVisualEffectView.frame.size = tabView.frame.size
+        backgroundVisualEffectView.frame.size = NSSize(width: 100000, height: 100000) // 只要比预期内容大就行, 不会有额外占用
         backgroundVisualEffectView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
         backgroundVisualEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true        
     }
