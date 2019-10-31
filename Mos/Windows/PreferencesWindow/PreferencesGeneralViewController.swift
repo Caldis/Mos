@@ -10,13 +10,13 @@ import Cocoa
 
 class PreferencesGeneralViewController: NSViewController {
     
+    // UI Elements
     @IBOutlet weak var scrollSmoothCheckBox: NSButton!
     @IBOutlet weak var scrollReverseCheckBox: NSButton!
     @IBOutlet weak var launchOnLoginCheckBox: NSButton!
     @IBOutlet weak var hideStatusBarIconCheckBox: NSButton!
     
     override func viewDidLoad() {
-        super.viewDidLoad()
         // 读取设置
         syncViewWithOptions()
     }

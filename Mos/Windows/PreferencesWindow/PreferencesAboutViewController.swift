@@ -10,14 +10,12 @@ import Cocoa
 
 class PreferencesAboutViewController: NSViewController {
     
-    let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
+    // UI Elements
     @IBOutlet weak var homePageButton: NSButtonCell!
     @IBOutlet weak var githubButton: NSButton!
     @IBOutlet weak var donateButton: NSButton!
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
+    // Constants
+    let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
     
     // 主页
     @IBAction func homepageButtonClick(_ sender: NSButton) {

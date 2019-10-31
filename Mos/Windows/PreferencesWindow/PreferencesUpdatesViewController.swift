@@ -10,11 +10,11 @@ import Cocoa
 
 class PreferencesUpdatesViewController: NSViewController {
     
+    // UI Elements
     // 版本号
     @IBOutlet weak var versionLabel: NSTextField!
     
     override func viewDidLoad() {
-        super.viewDidLoad()
         // 版本号
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
         versionLabel.stringValue = "\(i18n.currentVersion) : \(version as! String)"

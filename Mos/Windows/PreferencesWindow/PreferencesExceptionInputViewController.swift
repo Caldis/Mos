@@ -10,6 +10,7 @@ import Foundation
 
 class PreferencesExceptionInputViewController: NSViewController, NSTextFieldDelegate {
     
+    // UI Elements
     @IBOutlet weak var applicationNameTextField: NSTextField!
     @IBOutlet weak var bundleIdTextField: NSTextField!
     @IBOutlet weak var confirmButton: NSButton!

@@ -9,10 +9,6 @@
 import Cocoa
 
 class PreferencesDonateViewController: NSViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
     
     // 打开 Paypal 捐赠链接
     @IBAction func donateByPaypalClick(_ sender: NSButtonCell) {

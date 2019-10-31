@@ -12,10 +12,6 @@ class MonitorWindowController: NSWindowController, NSWindowDelegate {
     
     @IBOutlet weak var monitorWindow: NSWindow!
     
-    override func windowDidLoad() {
-        super.windowDidLoad()
-    }
-    
     func windowWillClose(_ notification: Notification) {
         WindowManager.shared.hideWindow(withIdentifier: WINDOW_IDENTIFIER.monitorWindowController, destroy: true)
     }

@@ -12,10 +12,6 @@ class WelcomeWindowController: NSWindowController, NSWindowDelegate {
     
     @IBOutlet weak var welcomeWindow: NSWindow!
     
-    override func windowDidLoad() {
-        super.windowDidLoad()
-    }
-    
     func windowWillClose(_ notification: Notification) {
         WindowManager.shared.hideWindow(withIdentifier: WINDOW_IDENTIFIER.welcomeWindowController, destroy: true)
     }

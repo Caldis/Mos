@@ -32,9 +32,6 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         return Unmanaged.passUnretained(event)
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
     override func viewWillAppear() {
         // 初始化图表
         initCharts()
