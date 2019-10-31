@@ -212,42 +212,42 @@ class ScrollUtils {
     // 高级参数
     func optionsDashOn(application: ExceptionalApplication?) -> CGKeyCode {
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.followGlobal ? Options.shared.scroll.dash ?? 0 : targetApplication.scroll.dash ?? 0)
+            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.dash ?? 0 : targetApplication.scroll.dash ?? 0)
         } else {
             return CGKeyCode(Options.shared.scroll.dash ?? 0)
         }
     }
     func optionsToggleOn(application: ExceptionalApplication?) -> CGKeyCode {
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.followGlobal ? Options.shared.scroll.toggle ?? 0 : targetApplication.scroll.toggle ?? 0)
+            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.toggle ?? 0 : targetApplication.scroll.toggle ?? 0)
         } else {
             return CGKeyCode(Options.shared.scroll.toggle ?? 0)
         }
     }
     func optionsBlockOn(application: ExceptionalApplication?) -> CGKeyCode {
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.followGlobal ? Options.shared.scroll.block ?? 0 : targetApplication.scroll.block ?? 0)
+            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.block ?? 0 : targetApplication.scroll.block ?? 0)
         } else {
             return CGKeyCode(Options.shared.scroll.block ?? 0)
         }
     }
     func optionsStepOn(application: ExceptionalApplication?) -> Double {
         if let targetApplication = application {
-            return targetApplication.followGlobal ? Options.shared.scroll.step : targetApplication.scroll.step
+            return targetApplication.inherit ? Options.shared.scroll.step : targetApplication.scroll.step
         } else {
             return Options.shared.scroll.step
         }
     }
     func optionsSpeedOn(application: ExceptionalApplication?) -> Double {
         if let targetApplication = application {
-            return targetApplication.followGlobal ? Options.shared.scroll.speed : targetApplication.scroll.speed
+            return targetApplication.inherit ? Options.shared.scroll.speed : targetApplication.scroll.speed
         } else {
             return Options.shared.scroll.speed
         }
     }
     func optionsDurationTransitionOn(application: ExceptionalApplication?) -> Double {
         if let targetApplication = application {
-            return targetApplication.followGlobal ? Options.shared.scroll.durationTransition : targetApplication.scroll.durationTransition
+            return targetApplication.inherit ? Options.shared.scroll.durationTransition : targetApplication.scroll.durationTransition
         } else {
             return Options.shared.scroll.durationTransition
         }

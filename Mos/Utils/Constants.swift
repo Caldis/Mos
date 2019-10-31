@@ -41,7 +41,7 @@ struct WINDOW_IDENTIFIER {
 struct PANEL_IDENTIFIER {
     static let general = "general"
     static let advanced = "advanced"
-    static let advancedWithNavigation = "advancedWithNavigation"
+    static let advancedWithApplication = "advancedWithApplication"
     static let exception = "exception"
     static let exceptionInput = "exceptionInput"
     static let list = [

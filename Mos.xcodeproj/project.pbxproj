@@ -41,6 +41,7 @@
 		22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */; };
 		22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */; };
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
+		232E50A7236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232E50A6236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift */; };
 		234B5EB723506D1F00233097 /* StatusItemMainPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234B5EB623506D1F00233097 /* StatusItemMainPanelViewController.swift */; };
 		236B69B1224B79B100DEF435 /* EnhanceArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236B69B0224B79B100DEF435 /* EnhanceArray.swift */; };
 		2391FB322354D59500ECC8C7 /* StatusItemMainPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2391FB312354D59500ECC8C7 /* StatusItemMainPanelView.swift */; };
@@ -116,6 +117,7 @@
 		22A32B321E334B2E00A5CF38 /* PreferencesAboutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAboutViewController.swift; sourceTree = "<group>"; };
 		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
+		232E50A6236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesAdvanceWithApplicationViewController.swift; sourceTree = "<group>"; };
 		234B5EB623506D1F00233097 /* StatusItemMainPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemMainPanelViewController.swift; sourceTree = "<group>"; };
 		236B69B0224B79B100DEF435 /* EnhanceArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhanceArray.swift; sourceTree = "<group>"; };
 		2391FB312354D59500ECC8C7 /* StatusItemMainPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemMainPanelView.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 				2278EE981E3DF770000AB25B /* PreferencesExceptionViewController.swift */,
 				23E9673E23613D1100E652F6 /* PreferencesExceptionInputViewController.swift */,
 				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
+				232E50A6236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift */,
 				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
 				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
 				2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */,
@@ -493,6 +496,7 @@
 				2278EE991E3DF770000AB25B /* PreferencesExceptionViewController.swift in Sources */,
 				0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */,
 				23E9673F23613D1100E652F6 /* PreferencesExceptionInputViewController.swift in Sources */,
+				232E50A7236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
 				0BE4C93B20617C6E0001EA0E /* ScrollFiller.swift in Sources */,
 				0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */,

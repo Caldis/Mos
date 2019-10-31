@@ -10,6 +10,7 @@ import Cocoa
 
 class PreferencesExceptionViewController: NSViewController {
     
+    // UI Elements
     // 白名单
     @IBOutlet weak var whitelistModeCheckBox: NSButton!
     // 表格及工具栏
@@ -22,7 +23,6 @@ class PreferencesExceptionViewController: NSViewController {
     @IBOutlet weak var manuallyInputMenuItem: NSMenuItem!
     
     override func viewDidLoad() {
-        super.viewDidLoad()
         // 设置图标
         Utils.attachImage(to: selectFromInstalledMenuItem, withImage: #imageLiteral(resourceName: "SF.tray"))
         Utils.attachImage(to: manuallyInputMenuItem, withImage: #imageLiteral(resourceName: "SF.pencil.and.ellipsis.rectangle"))
@@ -121,9 +121,9 @@ class PreferencesExceptionViewController: NSViewController {
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
         let row = sender.tag
-        let advancedViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.advanced) as PreferencesAdvanceViewController
-        advancedViewController.currentTargetApplication = Options.shared.global.applications.get(from: row)
-        present(advancedViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
+        let advancedWithApplicationViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.advancedWithApplication) as PreferencesAdvanceWithApplicationViewController
+        advancedWithApplicationViewController.currentTargetApplication = Options.shared.global.applications.get(from: row)
+        present(advancedWithApplicationViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
     }
     
     // 添加应用
@@ -186,21 +186,8 @@ extension PreferencesExceptionViewController: NSTableViewDelegate {
                     return cell
                 // 应用
                 case CellIdentifiers.applicationCell:
-                    if let applicationPath = application.path {
-                        cell.imageView?.image = NSWorkspace.shared.icon(forFile: applicationPath)
-                        if let applicationBundle = Bundle.init(url: URL.init(fileURLWithPath: applicationPath)) {
-                            if let name = applicationBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String {
-                                cell.textField?.stringValue = name
-                            } else if let name = applicationBundle.object(forInfoDictionaryKey: "CFBundleName") as? String {
-                                cell.textField?.stringValue = name
-                            }
-                        }
-                    } else if let applicationName = application.name {
-                        cell.imageView?.image = #imageLiteral(resourceName: "SF.cube")
-                        cell.textField?.stringValue = applicationName
-                    } else {
-                        NSLog("Error on rendering application \(application)")
-                    }
+                    cell.imageView?.image = application.getIcon()
+                    cell.textField?.stringValue = application.getName()
                     return cell
                 // 设定
                 case CellIdentifiers.settingCell:

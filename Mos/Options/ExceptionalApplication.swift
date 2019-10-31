@@ -14,18 +14,19 @@ class ExceptionalApplication: Codable, Equatable {
     var name: String?
     var path: String?
     var bundleId: String
-    // 开关 (smooth 及 reverse 不走这个)
-    var followGlobal = false
+    // 继承 (smooth 及 reverse 不走这个)
+    var inherit = true
     // 滚动
     var scroll = OPTIONS_SCROLL_DEFAULT()
     
+    // 初始化
+    // 从应用程序路径选择初始化
     init(path: String, bundleId: String) {
-        // 基础
         self.path = path
         self.bundleId = bundleId
     }
+    // 手动输入初始化
     init(name: String, bundleId: String) {
-        // 基础
         self.name = name
         self.bundleId = bundleId
     }
@@ -37,12 +38,35 @@ class ExceptionalApplication: Codable, Equatable {
         self.path = try container.decodeIfPresent(String.self, forKey: .path) ?? nil
         self.bundleId = try container.decodeIfPresent(String.self, forKey: .bundleId) ?? ""
         // 开关
-        self.followGlobal = try container.decodeIfPresent(Bool.self, forKey: .followGlobal) ?? false
+        self.inherit = try container.decodeIfPresent(Bool.self, forKey: .inherit) ?? true
         // 滚动
         self.scroll = try container.decodeIfPresent(OPTIONS_SCROLL_DEFAULT.self, forKey: .scroll) ?? OPTIONS_SCROLL_DEFAULT()
     }
     
     static func == (lhs: ExceptionalApplication, rhs: ExceptionalApplication) -> Bool {
         return lhs.bundleId == rhs.bundleId
+    }
+}
+
+/**
+ * 工具函数
+ */
+extension ExceptionalApplication {
+    func getIcon() -> NSImage {
+        guard let validPath = path else {
+            return #imageLiteral(resourceName: "SF.cube")
+        }
+        return NSWorkspace.shared.icon(forFile: validPath)
+    }
+    func getName() -> String {
+        if let validName = name {
+            return validName
+        }
+        guard let validPath = path, let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) else {
+            return "Invalid Name"
+        }
+        let CFBundleDisplayName = validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
+        let CFBundleName = validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String
+        return CFBundleDisplayName ?? CFBundleName ?? "Invalid Name"
     }
 }

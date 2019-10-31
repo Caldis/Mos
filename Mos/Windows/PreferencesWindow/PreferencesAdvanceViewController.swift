@@ -25,10 +25,15 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBOutlet weak var scrollDurationSlider: NSSlider!
     @IBOutlet weak var scrollDurationInput: NSTextField!
     @IBOutlet weak var scrollDurationStepper: NSStepper!
+    @IBOutlet weak var resetToDefaultsButton: NSButton!
     // Constants
     let PopUpButtonPadding = 2 // 减去第一个 Disabled 和分割线的距离
     
-    override func viewWillAppear() {
+    override func viewDidLoad() {
+        // 禁止自动 Focus
+        scrollStepInput.refusesFirstResponder = true
+        scrollSpeedInput.refusesFirstResponder = true
+        scrollDurationInput.refusesFirstResponder = true
         // 读取设置
         syncViewWithOptions()
     }
@@ -113,42 +118,64 @@ extension PreferencesAdvanceViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
         let scroll = getTargetApplicationScrollOptions()
+        let enabled = !isTargetApplicationInheritOptions()
         // 加速
         if let index = MODIFIER_KEY.leftKeyList.firstIndex(of: CGKeyCode(scroll.dash ?? 0)) {
             dashKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
             dashKeyPopUpButton.selectItem(at: 0)
         }
+        dashKeyPopUpButton.isEnabled = enabled
         // 转换
         if let index = MODIFIER_KEY.leftKeyList.firstIndex(of: CGKeyCode(scroll.toggle ?? 0)) {
             toggleKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
              toggleKeyPopUpButton.selectItem(at: 0)
         }
+        toggleKeyPopUpButton.isEnabled = enabled
         // 禁用
         if let index = MODIFIER_KEY.leftKeyList.firstIndex(of: CGKeyCode(scroll.block ?? 0)) {
             disableKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
             disableKeyPopUpButton.selectItem(at: 0)
         }
+        disableKeyPopUpButton.isEnabled = enabled
         // 步长
         let step = scroll.step
         scrollStepSlider.doubleValue = step
+        scrollStepSlider.isEnabled = enabled
         scrollStepStepper.doubleValue = step
+        scrollStepStepper.isEnabled = enabled
         scrollStepInput.stringValue = String(format: "%.2f", step)
+        scrollStepInput.isEnabled = enabled
         // 速度
         let speed = scroll.speed
         scrollSpeedSlider.doubleValue = speed
+        scrollSpeedSlider.isEnabled = enabled
         scrollSpeedStepper.doubleValue = speed
+        scrollSpeedStepper.isEnabled = enabled
         scrollSpeedInput.stringValue = String(format: "%.2f", speed)
+        scrollSpeedInput.isEnabled = enabled
         // 过渡
         let duration = scroll.duration
         scrollDurationSlider.doubleValue = duration
+        scrollDurationSlider.isEnabled = enabled
         scrollDurationStepper.doubleValue = duration
+        scrollDurationStepper.isEnabled = enabled
         scrollDurationInput.stringValue = String(format: "%.2f", duration)
+        scrollDurationInput.isEnabled = enabled
+        // 初始化
+        resetToDefaultsButton.isEnabled = enabled
     }
     // 获取配置目标
     func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_DEFAULT {
         return currentTargetApplication?.scroll ?? Options.shared.scroll
+    }
+    // 是否继承全局设置
+    func isTargetApplicationInheritOptions() -> Bool {
+        if let validCurrentTargetApplication = currentTargetApplication {
+            return validCurrentTargetApplication.inherit
+        }
+        return false
     }
 }
