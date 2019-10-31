@@ -43,6 +43,8 @@
 "DsD-EW-zCH.title" = "Sets the duration of the scroll animation";
 "t2D-X2-Y6W.title" = "Reset to defaults";
 "Rgq-87-vjY.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
+// AdvancedWithApplication
+"Wls-5g-cNZ.title" = "Inherit Global Settings";
 // Exception
 "I5j-Bv-Aiy.title" = "Needs access to Accessibility controls";
 "FU4-wI-K8f.title" = "In order to customize the scroll behavior for certain applications, please allow Mos access to Accessibility controls.";
