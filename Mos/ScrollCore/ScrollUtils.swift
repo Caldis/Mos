@@ -17,9 +17,9 @@ class ScrollUtils {
     // 从 CGEvent 中携带的 PID 获取目标窗口的 BundleId
     // 已知问题: 获取到的始终为主激活窗口
     // 已知问题: 如果鼠标滚轮事件由 cghidEventTap 层截取, 则获取到的目标窗口 PID 为当前的激活窗口, 而不是悬停窗口
-    private var lastEventTargetPID:pid_t = 1     // 目标进程 PID (先前)
-    private var currEventTargetPID:pid_t = 1     // 事件的目标进程 PID (当前)
-    private var currEventTargetBID:String?       // 事件的目标进程 BID (当前)
+    private var lastEventTargetPID:pid_t = 1  // 目标进程 PID (先前)
+    private var currEventTargetPID:pid_t = 1  // 事件的目标进程 PID (当前)
+    private var currEventTargetBID:String?    // 事件的目标进程 BID (当前)
     func getCurrentEventTargetBundleId(from event: CGEvent) -> String? {
         // 保存上次 PID
         lastEventTargetPID = currEventTargetPID
@@ -123,7 +123,7 @@ class ScrollUtils {
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - launchpadLastDetectTime > 1.0 {
             if #available(OSX 10.15, *) {
-                // Launchpadu 应用在 10.15 下莫名其妙合并到了 dock 内, 不过这样反而快了
+                // Launchpadu 应用在 10.15 下莫名其妙合并到了 dock 内, 不过这样反而好找了
                 if let bid = targetBID, bid == "com.apple.dock" {
                     launchpadActiveCache = true
                     return true

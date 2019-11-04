@@ -25,7 +25,7 @@ class ExceptionalApplication: Codable, Equatable {
         self.path = path
         self.bundleId = bundleId
     }
-    // 手动输入初始化
+    // 手动输入初始化（会没有图标）
     init(name: String, bundleId: String) {
         self.name = name
         self.bundleId = bundleId
@@ -53,20 +53,12 @@ class ExceptionalApplication: Codable, Equatable {
  */
 extension ExceptionalApplication {
     func getIcon() -> NSImage {
-        guard let validPath = path else {
-            return #imageLiteral(resourceName: "SF.cube")
-        }
-        return NSWorkspace.shared.icon(forFile: validPath)
+        return Utils.getApplicationIcon(from: path)
     }
     func getName() -> String {
         if let validName = name {
             return validName
         }
-        guard let validPath = path, let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) else {
-            return "Invalid Name"
-        }
-        let CFBundleDisplayName = validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-        let CFBundleName = validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String
-        return CFBundleDisplayName ?? CFBundleName ?? "Invalid Name"
+        return Utils.getAppliactionName(from: path)
     }
 }

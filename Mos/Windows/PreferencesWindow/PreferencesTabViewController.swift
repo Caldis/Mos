@@ -52,7 +52,7 @@ class PreferencesTabViewController: NSTabViewController {
             let targetOrigin = NSPoint(x: currentWindow.frame.origin.x, y: currentWindow.frame.origin.y-heightDiff)
             let targetSize = NSSize(width: contentSize.width, height: contentSize.height+TOOLBAR_HEIGHT)
             let targetRect = NSRect(origin: targetOrigin, size: targetSize)
-            Utils.groupAnimatorContainer({(context)  in
+            Utils.groupAnimatorContainer({(context) in
                 currentWindow.setFrame(targetRect, display: true)
             })
         }

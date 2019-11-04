@@ -10,7 +10,7 @@ import Foundation
 
 // 动画
 struct ANIMATION {
-    static let duration = 0.5
+    static let duration = 0.3
 }
 
 // 修饰键

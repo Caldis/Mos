@@ -16,14 +16,16 @@ public class Utils {
         menuItem.image = image
         menuItem.image?.size = NSSize(width: 13, height: 13)
     }
-    class func addMenuItem(to menuControl:NSMenu, withTitle title: String, andImage image: NSImage, forAction action: Selector?) {
+    @discardableResult class func addMenuItem(to menuControl:NSMenu, title: String, icon: NSImage, action: Selector?, target: AnyObject? = nil, represent: Any? = nil) -> NSMenuItem {
         let menuItem = menuControl.addItem(withTitle: title, action: action, keyEquivalent: "")
-        menuItem.target = menuControl
-        attachImage(to: menuItem, withImage: image)
+        menuItem.target = target ?? menuControl
+        menuItem.representedObject = represent
+        attachImage(to: menuItem, withImage: icon)
+        return menuItem
     }
-    class func addMenuItemWithSeparator(to menuControl:NSMenu, withTitle title: String, andImage image: NSImage, forAction action: Selector?) {
+    @discardableResult class func addMenuItemWithSeparator(to menuControl:NSMenu, title: String, icon: NSImage, action: Selector?, target: Any? = nil, represent: Any? = nil) -> NSMenuItem {
         menuControl.addItem(NSMenuItem.separator())
-        addMenuItem(to: menuControl, withTitle: title, andImage: image, forAction: action)
+        return addMenuItem(to: menuControl, title: title, icon: icon, action: action)
     }
     
     // 动画
@@ -127,12 +129,6 @@ public class Utils {
         }
     }
     
-    // 获取应用名称
-    class func getApplicationName(from path: URL) -> String {
-        let applicationRawName = FileManager().displayName(atPath: String(describing: path)).removingPercentEncoding!
-        return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app|.APP")
-    }
-    
     // 检测按键
     class func isControlDown(_ event: CGEvent) -> Bool {
         let flags = event.flags
@@ -197,5 +193,36 @@ public class Utils {
         } else {
             return nil
         }
+    }
+    
+    // 从路径获取应用图标
+    class func getApplicationIcon(from path: String?) -> NSImage {
+        guard let validPath = path else {
+            return #imageLiteral(resourceName: "SF.cube")
+        }
+        return NSWorkspace.shared.icon(forFile: validPath)
+    }
+    class func getApplicationIcon(from path: URL) -> NSImage {
+        return getApplicationIcon(from: path.path)
+    }
+    // 从路径获取应用名称
+    class func getAppliactionName(from path: String?) -> String {
+        guard let validPath = path else {
+            return "Invalid Name"
+        }
+        guard let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) else {
+            return getApplicationFileName(from: validPath)
+        }
+        let CFBundleDisplayName = validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
+        let CFBundleName = validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String
+        let FileName = getApplicationFileName(from: validPath)
+        return CFBundleDisplayName ?? CFBundleName ?? FileName
+    }
+    class func getAppliactionName(from path: URL) -> String {
+        return getAppliactionName(from: path.path)
+    }
+    class func getApplicationFileName(from path: String) -> String {
+        let applicationRawName = FileManager().displayName(atPath: path).removingPercentEncoding!
+        return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app|.App|.APP")
     }
 }

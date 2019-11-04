@@ -89,7 +89,7 @@ extension StatusItemManager {
             menu.removeAllItems()
             menu.addItem(withTitle: i18n.needsAccessToAccessibilityControls, action: #selector(accessibilityRequire), keyEquivalent: "").target = self
             // Quit
-            Utils.addMenuItemWithSeparator(to: menu, withTitle: i18n.quit, andImage: #imageLiteral(resourceName: "SF.escape"), forAction: #selector(quitClick))
+            Utils.addMenuItemWithSeparator(to: menu, title: i18n.quit, icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
         }
     }
     @objc func accessibilityRequire() {
@@ -101,11 +101,11 @@ extension StatusItemManager {
             // Reset
             menu.removeAllItems()
             // Monitor
-            Utils.addMenuItem(to: menu, withTitle: i18n.monitor, andImage: #imageLiteral(resourceName: "SF.square.stack.3d.down.right"), forAction: #selector(monitorClick))
+            Utils.addMenuItem(to: menu, title: i18n.monitor, icon: #imageLiteral(resourceName: "SF.square.stack.3d.down.right"), action: #selector(monitorClick))
             // Preferences
-            Utils.addMenuItem(to: menu, withTitle: i18n.preferences, andImage: #imageLiteral(resourceName: "SF.gauge"), forAction: #selector(preferencesClick))
+            Utils.addMenuItem(to: menu, title: i18n.preferences, icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
             // Quit
-            Utils.addMenuItemWithSeparator(to: menu, withTitle: i18n.quit, andImage: #imageLiteral(resourceName: "SF.escape"), forAction: #selector(quitClick))
+            Utils.addMenuItemWithSeparator(to: menu, title: i18n.quit, icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
         }
     }
     // 常规菜单
@@ -114,9 +114,9 @@ extension StatusItemManager {
             // Reset
             menu.removeAllItems()
             // Preferences
-            Utils.addMenuItem(to: menu, withTitle: i18n.preferences, andImage: #imageLiteral(resourceName: "SF.gauge"), forAction: #selector(preferencesClick))
+            Utils.addMenuItem(to: menu, title: i18n.preferences, icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
             // Quit
-            Utils.addMenuItemWithSeparator(to: menu, withTitle: i18n.quit, andImage: #imageLiteral(resourceName: "SF.escape"), forAction: #selector(quitClick))
+            Utils.addMenuItemWithSeparator(to: menu, title: i18n.quit, icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
         }
     }
     @objc func monitorClick() {
