@@ -46,6 +46,10 @@
 // AdvancedWithApplication
 "Wls-5g-cNZ.title" = "继承全局设定";
 // Exception
+"Vs2-5P-BEI.title" = "平滑";
+"sKz-VE-Yfb.title" = "反转";
+"89F-B4-NIY.title" = "应用程序";
+"mfa-4t-oRD.title" = "高级";
 "I5j-Bv-Aiy.title" = "需要用到辅助功能的权限";
 "FU4-wI-K8f.title" = "为了识别应用程序，我们需要动态获取显示中的窗口相关信息。因此, 请允许我们获取辅助功能的权限以保证该功能的正常运作";
 "Pw5-2q-7Fa.title" = "允许使用辅助功能";
@@ -55,7 +59,8 @@
 "v26-RK-BtL.title" = "启用白名单模式后, Mos 仅会对包含在例外列表内的程序启用, 其他的则不受任何影响";
 "ThS-Rm-st2.title" = "没有任何应用程序遭到不平等对待";
 "jaq-Cb-dKM.title" = "你可以点击下方的 \"+\" 来添加一个应用程序以设置其滚动行为";
-"dhF-95-kUJ.title" = "从已安装的应用程序中选择";
+"R0d-21-g6W.title" = "运行中的应用程序";
+"dhF-95-kUJ.title" = "手动从访达中选择";
 "Vp7-0n-aRd.title" = "手动输入应用程序信息";
 "kUr-cl-KRm.title" = "应用程序名称:";
 "Ck5-if-9RS.title" = "包名称:";
@@ -93,7 +98,3 @@
 // Popover
 "hnf-e0-HXM.title" = "偏好设置";
 "SqT-eH-bOb.title" = "退出";
-"Vs2-5P-BEI.title" = "平滑";
-"sKz-VE-Yfb.title" = "反转";
-"89F-B4-NIY.title" = "应用程序";
-"mfa-4t-oRD.title" = "高级";

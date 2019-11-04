@@ -45,6 +45,10 @@
 // AdvancedWithApplication
 "Wls-5g-cNZ.title" = "繼承全局設定";
 // Exception
+"Vs2-5P-BEI.title" = "平滑";
+"sKz-VE-Yfb.title" = "翻轉";
+"89F-B4-NIY.title" = "應用程式";
+"mfa-4t-oRD.title" = "進階";
 "I5j-Bv-Aiy.title" = "需要用到輔助使用功能的權限";
 "FU4-wI-K8f.title" = "為了更精準地識別所設定的例外應用程式, 我們需要動態獲取運作中的視窗相關信息. 因此, 請允許我們獲取輔助使用功能的權限以保障該功能的正常運作";
 "Pw5-2q-7Fa.title" = "允許使用輔助使用功能";
@@ -54,7 +58,8 @@
 "v26-RK-BtL.title" = "啟用白名單模式后, Mos 僅會對包含在例外列表中的應用程式啟用, 其他的則不受任何影響";
 "ThS-Rm-st2.title" = "沒有任何應用程式遭到不公對待";
 "jaq-Cb-dKM.title" = "你可以通過點擊下方的 \"+\" 來添加一個應用程式以設置其捲動行為";
-"dhF-95-kUJ.title" = "從已安裝的應用程式中選擇";
+"R0d-21-g6W.title" = "执行中的應用程式";
+"dhF-95-kUJ.title" = "手動從 Finder 選擇";
 "Vp7-0n-aRd.title" = "手動輸入應用程式信息";
 "kUr-cl-KRm.title" = "應用程式名稱:";
 "Ck5-if-9RS.title" = "包名稱:";
@@ -92,7 +97,3 @@
 // Popover
 "hnf-e0-HXM.title" = "偏好設定";
 "SqT-eH-bOb.title" = "退出";
-"Vs2-5P-BEI.title" = "平滑";
-"sKz-VE-Yfb.title" = "翻轉";
-"89F-B4-NIY.title" = "應用程式";
-"mfa-4t-oRD.title" = "進階";
