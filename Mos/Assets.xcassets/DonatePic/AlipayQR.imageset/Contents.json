@@ -2,7 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "AlipayQRCode.png"
+      "filename" : "AliPayQRForLight.png"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "AliPayQRForDark.png",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

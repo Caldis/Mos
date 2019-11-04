@@ -2,7 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "WechatpayQRCode.png"
+      "filename" : "WeChatPayQRForLight.png"
+    },
+    {
+      "idiom" : "universal",
+      "filename" : "WeChatPayQRForDark.png",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
     }
   ],
   "info" : {

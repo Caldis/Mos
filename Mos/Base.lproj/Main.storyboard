@@ -2147,7 +2147,7 @@ Gw
                                     <font key="font" metaFont="systemLight" size="12"/>
                                 </buttonCell>
                                 <connections>
-                                    <segue destination="HYX-CS-fYi" kind="popover" popoverAnchorView="38d-cH-Mcc" popoverBehavior="t" preferredEdge="maxY" id="65s-Qo-69I"/>
+                                    <segue destination="HYX-CS-fYi" kind="popover" popoverAnchorView="38d-cH-Mcc" popoverBehavior="t" preferredEdge="maxX" id="65s-Qo-69I"/>
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Uz-Dg-331">
@@ -2422,51 +2422,32 @@ Gw
             <objects>
                 <viewController storyboardIdentifier="donate" id="HYX-CS-fYi" customClass="PreferencesDonateViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="NWm-eD-Q0k">
-                        <rect key="frame" x="0.0" y="0.0" width="570" height="272"/>
+                        <rect key="frame" x="0.0" y="0.0" width="586" height="624"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cTQ-RR-Izk">
-                                <rect key="frame" x="55" y="197" width="100" height="40"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="WNk-EK-S2h"/>
-                                    <constraint firstAttribute="width" constant="100" id="Xcf-8Z-uC0"/>
-                                </constraints>
-                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AlipayLogo" id="dw7-en-g43"/>
-                            </imageView>
-                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="PxZ-JL-fgP">
-                                <rect key="frame" x="30" y="30" width="150" height="150"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="150" id="QWe-83-gAK"/>
-                                    <constraint firstAttribute="height" constant="150" id="ZKI-Y1-OMP"/>
-                                </constraints>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" alphaValue="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="PxZ-JL-fgP">
+                                <rect key="frame" x="389" y="157" width="150" height="150"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AlipayQR" id="86z-w2-DQf"/>
                             </imageView>
-                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tVv-UV-KC0">
-                                <rect key="frame" x="225" y="197" width="120" height="40"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="120" id="FZ7-db-Y4s"/>
-                                    <constraint firstAttribute="height" constant="40" id="OAP-HV-yZn"/>
-                                </constraints>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tVv-UV-KC0">
+                                <rect key="frame" x="404" y="554" width="120" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="WechatpayLogo" id="KxG-B6-8jE"/>
                             </imageView>
-                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3Gz-X2-Fwd">
-                                <rect key="frame" x="210" y="31" width="150" height="150"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="150" id="as1-h8-3ev"/>
-                                    <constraint firstAttribute="width" constant="150" id="vE8-hT-NCC"/>
-                                </constraints>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" alphaValue="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="3Gz-X2-Fwd">
+                                <rect key="frame" x="389" y="394" width="150" height="150"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="WechatpayQR" id="jdG-KX-g7K"/>
                             </imageView>
-                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WhP-jP-gB6">
-                                <rect key="frame" x="415" y="197" width="100" height="40"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="100" id="Iav-CD-Naa"/>
-                                    <constraint firstAttribute="height" constant="40" id="L0S-zm-MGR"/>
-                                </constraints>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WhP-jP-gB6">
+                                <rect key="frame" x="414" y="83" width="100" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="PaypalLogo" id="Ho9-ZJ-OXg"/>
                             </imageView>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EWm-8G-1in">
-                                <rect key="frame" x="383" y="96" width="164" height="32"/>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EWm-8G-1in">
+                                <rect key="frame" x="383" y="42" width="162" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="Donate using PayPal" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="aPi-cE-maK">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -2475,28 +2456,26 @@ Gw
                                     </connections>
                                 </buttonCell>
                             </button>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5sb-Jp-GA1">
+                                <rect key="frame" x="-2" y="0.0" width="352" height="624"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="MEOW" id="kYr-HW-z4U"/>
+                            </imageView>
+                            <box horizontalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Xfu-49-XDZ">
+                                <rect key="frame" x="348" y="0.0" width="5" height="624"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </box>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cTQ-RR-Izk">
+                                <rect key="frame" x="407" y="317" width="115" height="41"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AlipayLogo" id="dw7-en-g43"/>
+                            </imageView>
                         </subviews>
-                        <constraints>
-                            <constraint firstItem="PxZ-JL-fgP" firstAttribute="leading" secondItem="NWm-eD-Q0k" secondAttribute="leading" constant="30" id="ElG-Na-jwa"/>
-                            <constraint firstAttribute="bottom" secondItem="3Gz-X2-Fwd" secondAttribute="bottom" constant="31" id="J31-Ub-x97"/>
-                            <constraint firstItem="tVv-UV-KC0" firstAttribute="leading" secondItem="cTQ-RR-Izk" secondAttribute="trailing" constant="70" id="KQb-Mz-rLc"/>
-                            <constraint firstItem="WhP-jP-gB6" firstAttribute="centerY" secondItem="cTQ-RR-Izk" secondAttribute="centerY" id="Lyz-X4-odS"/>
-                            <constraint firstItem="WhP-jP-gB6" firstAttribute="leading" secondItem="tVv-UV-KC0" secondAttribute="trailing" constant="70" id="MDx-vv-58p"/>
-                            <constraint firstItem="tVv-UV-KC0" firstAttribute="centerY" secondItem="cTQ-RR-Izk" secondAttribute="centerY" id="OI5-6K-5zN"/>
-                            <constraint firstAttribute="bottom" secondItem="PxZ-JL-fgP" secondAttribute="bottom" constant="30" id="ObJ-tZ-qjI"/>
-                            <constraint firstItem="tVv-UV-KC0" firstAttribute="centerX" secondItem="3Gz-X2-Fwd" secondAttribute="centerX" id="ULQ-RL-DOC"/>
-                            <constraint firstItem="3Gz-X2-Fwd" firstAttribute="leading" secondItem="PxZ-JL-fgP" secondAttribute="trailing" constant="30" id="Wgg-ge-JsT"/>
-                            <constraint firstItem="WhP-jP-gB6" firstAttribute="centerX" secondItem="EWm-8G-1in" secondAttribute="centerX" id="fXe-xJ-ZfA"/>
-                            <constraint firstItem="tVv-UV-KC0" firstAttribute="centerX" secondItem="NWm-eD-Q0k" secondAttribute="centerX" id="hgR-pD-23P"/>
-                            <constraint firstItem="tVv-UV-KC0" firstAttribute="top" secondItem="NWm-eD-Q0k" secondAttribute="top" constant="35" id="jan-DW-XYc"/>
-                            <constraint firstItem="PxZ-JL-fgP" firstAttribute="centerX" secondItem="cTQ-RR-Izk" secondAttribute="centerX" id="jsY-34-tkE"/>
-                            <constraint firstAttribute="bottom" secondItem="EWm-8G-1in" secondAttribute="bottom" constant="103" id="wnz-qE-iU3"/>
-                        </constraints>
                     </view>
                 </viewController>
                 <customObject id="HME-8h-VSk" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2778.5" y="1591"/>
+            <point key="canvasLocation" x="2786" y="1767"/>
         </scene>
         <!--Monitor-->
         <scene sceneID="hIz-AP-VOD">
@@ -2825,15 +2804,16 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
         </scene>
     </scenes>
     <resources>
-        <image name="AlipayLogo" width="250" height="93"/>
-        <image name="AlipayQR" width="296" height="299"/>
+        <image name="AlipayLogo" width="432" height="150"/>
+        <image name="AlipayQR" width="256" height="256"/>
         <image name="AppIconRef" width="512" height="512"/>
         <image name="IconMonitor" width="200" height="200"/>
         <image name="IconSetting" width="200" height="200"/>
+        <image name="MEOW" width="1836" height="3264"/>
         <image name="NSAddTemplate" width="11" height="11"/>
         <image name="NSApplicationIcon" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
-        <image name="PaypalLogo" width="238" height="58"/>
+        <image name="PaypalLogo" width="200" height="51"/>
         <image name="PreferencesAbout" width="500" height="500"/>
         <image name="PreferencesAdvanced" width="500" height="500"/>
         <image name="PreferencesException" width="500" height="500"/>
@@ -2844,8 +2824,8 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
         <image name="SF.minus" width="200" height="200"/>
         <image name="SF.plus" width="200" height="200"/>
         <image name="SF.scribble" width="100" height="86"/>
-        <image name="WechatpayLogo" width="309" height="80"/>
-        <image name="WechatpayQR" width="473" height="473"/>
+        <image name="WechatpayLogo" width="442" height="150"/>
+        <image name="WechatpayQR" width="256" height="256"/>
         <image name="buttonCell:V9n-HF-Vw9:image" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05T

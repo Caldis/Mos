@@ -25,7 +25,6 @@
 		22003C6E1E8555F0001220BC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22003C6D1E8555F0001220BC /* Utils.swift */; };
 		22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA31E25344E00E4BFBF /* AppDelegate.swift */; };
 		22142DA61E25344E00E4BFBF /* MonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* MonitorViewController.swift */; };
-		22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA71E25344E00E4BFBF /* Assets.xcassets */; };
 		22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA91E25344E00E4BFBF /* Main.storyboard */; };
 		221E5DFB1F4DE55B00AE17FA /* ProcessUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */; };
 		2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */; };
@@ -43,6 +42,7 @@
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
 		232E50A7236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232E50A6236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift */; };
 		234B5EB723506D1F00233097 /* StatusItemMainPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234B5EB623506D1F00233097 /* StatusItemMainPanelViewController.swift */; };
+		23529E0C237087A400806D92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 23529E0B237087A400806D92 /* Assets.xcassets */; };
 		236B69B1224B79B100DEF435 /* EnhanceArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236B69B0224B79B100DEF435 /* EnhanceArray.swift */; };
 		2391FB322354D59500ECC8C7 /* StatusItemMainPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2391FB312354D59500ECC8C7 /* StatusItemMainPanelView.swift */; };
 		2399BFD8222CDB7D008FA807 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2399BFD7222CDB7D008FA807 /* Constants.swift */; };
@@ -96,7 +96,6 @@
 		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22142DA31E25344E00E4BFBF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		22142DA51E25344E00E4BFBF /* MonitorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorViewController.swift; sourceTree = "<group>"; };
-		22142DA71E25344E00E4BFBF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22142DAA1E25344E00E4BFBF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		22142DAC1E25344E00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		221E5DF71F4DE52400AE17FA /* ProcessUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProcessUtils.h; sourceTree = "<group>"; };
@@ -119,6 +118,7 @@
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		232E50A6236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesAdvanceWithApplicationViewController.swift; sourceTree = "<group>"; };
 		234B5EB623506D1F00233097 /* StatusItemMainPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemMainPanelViewController.swift; sourceTree = "<group>"; };
+		23529E0B237087A400806D92 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		236B69B0224B79B100DEF435 /* EnhanceArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhanceArray.swift; sourceTree = "<group>"; };
 		2391FB312354D59500ECC8C7 /* StatusItemMainPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemMainPanelView.swift; sourceTree = "<group>"; };
 		2399BFD7222CDB7D008FA807 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -291,8 +291,8 @@
 				0B12EF26203AE25A0058B169 /* OCBridge */,
 				0B12EF28203AE2E00058B169 /* Localization */,
 				22142DA91E25344E00E4BFBF /* Main.storyboard */,
+				23529E0B237087A400806D92 /* Assets.xcassets */,
 				0B45621720F1DB01008BA5A1 /* Tester.playground */,
-				22142DA71E25344E00E4BFBF /* Assets.xcassets */,
 				22142DAC1E25344E00E4BFBF /* Info.plist */,
 			);
 			path = Mos;
@@ -427,8 +427,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22142DA81E25344E00E4BFBF /* Assets.xcassets in Resources */,
 				2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */,
+				23529E0C237087A400806D92 /* Assets.xcassets in Resources */,
 				22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
