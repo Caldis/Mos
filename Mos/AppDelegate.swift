@@ -44,7 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     // 在运行状态下再次运行则显示图标
     func applicationWillBecomeActive(_ aNotification: Notification) {
-        Options.shared.global.hideStatusItem = false
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
     }
     // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
