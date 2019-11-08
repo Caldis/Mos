@@ -1,63 +1,55 @@
 {
   "images" : [
     {
+      "idiom" : "mac",
       "size" : "16x16",
-      "idiom" : "mac",
-      "filename" : "APP-Icons-16x16.png",
       "scale" : "1x"
     },
     {
+      "idiom" : "mac",
       "size" : "16x16",
-      "idiom" : "mac",
-      "filename" : "APP-Icons-32x32.png",
       "scale" : "2x"
     },
     {
+      "idiom" : "mac",
       "size" : "32x32",
-      "idiom" : "mac",
-      "filename" : "APP-Icons-32x32-1.png",
       "scale" : "1x"
     },
     {
+      "idiom" : "mac",
       "size" : "32x32",
-      "idiom" : "mac",
-      "filename" : "APP-Icons-64x64.png",
       "scale" : "2x"
     },
     {
-      "size" : "128x128",
       "idiom" : "mac",
-      "filename" : "APP-Icons-128x128.png",
+      "size" : "128x128",
       "scale" : "1x"
     },
     {
-      "size" : "128x128",
       "idiom" : "mac",
-      "filename" : "APP-Icons-256x256.png",
+      "size" : "128x128",
       "scale" : "2x"
     },
     {
-      "size" : "256x256",
       "idiom" : "mac",
-      "filename" : "APP-Icons-256x256-1.png",
+      "size" : "256x256",
       "scale" : "1x"
     },
     {
-      "size" : "256x256",
       "idiom" : "mac",
-      "filename" : "APP-Icons-512x512.png",
+      "size" : "256x256",
       "scale" : "2x"
     },
     {
       "size" : "512x512",
       "idiom" : "mac",
-      "filename" : "APP-Icons-512x512-1.png",
+      "filename" : "AppIcon 512pt@1x.png",
       "scale" : "1x"
     },
     {
       "size" : "512x512",
       "idiom" : "mac",
-      "filename" : "APP-Icons-1024x1024.png",
+      "filename" : "AppIcon 512pt@2x.png",
       "scale" : "2x"
     }
   ],
