@@ -41,6 +41,8 @@
 		22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */; };
 		22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */; };
 		232E50A7236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232E50A6236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift */; };
+		23399B56237EDA54004935CA /* IntroductionWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23399B55237EDA54004935CA /* IntroductionWindowController.swift */; };
+		23399B58237EDC17004935CA /* IntroductionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23399B57237EDC17004935CA /* IntroductionViewController.swift */; };
 		234B5EB723506D1F00233097 /* StatusItemMainPanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234B5EB623506D1F00233097 /* StatusItemMainPanelViewController.swift */; };
 		23529E0C237087A400806D92 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 23529E0B237087A400806D92 /* Assets.xcassets */; };
 		236B69B1224B79B100DEF435 /* EnhanceArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236B69B0224B79B100DEF435 /* EnhanceArray.swift */; };
@@ -56,13 +58,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		221E91D81E69A20500215A67 /* CopyFiles */ = {
+		221E91D81E69A20500215A67 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = Contents/Library/LoginItems;
 			dstSubfolderSpec = 1;
 			files = (
 			);
+			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -117,6 +120,8 @@
 		22A32B361E334B4300A5CF38 /* PreferencesUpdatesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesUpdatesViewController.swift; sourceTree = "<group>"; };
 		22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesTabViewController.swift; sourceTree = "<group>"; };
 		232E50A6236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesAdvanceWithApplicationViewController.swift; sourceTree = "<group>"; };
+		23399B55237EDA54004935CA /* IntroductionWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = IntroductionWindowController.swift; path = Mos/IntroductionWindowController.swift; sourceTree = SOURCE_ROOT; };
+		23399B57237EDC17004935CA /* IntroductionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroductionViewController.swift; sourceTree = "<group>"; };
 		234B5EB623506D1F00233097 /* StatusItemMainPanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemMainPanelViewController.swift; sourceTree = "<group>"; };
 		23529E0B237087A400806D92 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		236B69B0224B79B100DEF435 /* EnhanceArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhanceArray.swift; sourceTree = "<group>"; };
@@ -178,8 +183,8 @@
 				2278EE981E3DF770000AB25B /* PreferencesExceptionViewController.swift */,
 				23E9673E23613D1100E652F6 /* PreferencesExceptionInputViewController.swift */,
 				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
-				232E50A6236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift */,
 				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
+				232E50A6236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift */,
 				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
 				2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */,
 			);
@@ -298,6 +303,15 @@
 			path = Mos;
 			sourceTree = "<group>";
 		};
+		23399B54237ED87F004935CA /* IntroductionWindow */ = {
+			isa = PBXGroup;
+			children = (
+				23399B57237EDC17004935CA /* IntroductionViewController.swift */,
+				23399B55237EDA54004935CA /* IntroductionWindowController.swift */,
+			);
+			path = IntroductionWindow;
+			sourceTree = "<group>";
+		};
 		23BB4D2821D74FFA009B51E9 /* StatusItemPopover */ = {
 			isa = PBXGroup;
 			children = (
@@ -329,6 +343,7 @@
 		23D707B12191601A007B5325 /* Windows */ = {
 			isa = PBXGroup;
 			children = (
+				23399B54237ED87F004935CA /* IntroductionWindow */,
 				0BB0F1BC20F39FFB00909B7D /* WelcomeWindow */,
 				0B12EF20203AE0E00058B169 /* MonitorWindow */,
 				0B12EF21203AE0F50058B169 /* PreferencesWindow */,
@@ -364,7 +379,7 @@
 				22142D9C1E25344E00E4BFBF /* Sources */,
 				22142D9D1E25344E00E4BFBF /* Frameworks */,
 				22142D9E1E25344E00E4BFBF /* Resources */,
-				221E91D81E69A20500215A67 /* CopyFiles */,
+				221E91D81E69A20500215A67 /* Copy Files */,
 			);
 			buildRules = (
 			);
@@ -382,7 +397,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0930;
-				LastUpgradeCheck = 1030;
+				LastUpgradeCheck = 1120;
 				ORGANIZATIONNAME = Caldis;
 				TargetAttributes = {
 					22142D9F1E25344E00E4BFBF = {
@@ -465,6 +480,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23399B58237EDC17004935CA /* IntroductionViewController.swift in Sources */,
 				2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */,
 				2399BFD8222CDB7D008FA807 /* Constants.swift in Sources */,
 				23E3C96D21DCE8F10098B107 /* StatusItemPopoverView.swift in Sources */,
@@ -481,6 +497,7 @@
 				2391FB322354D59500ECC8C7 /* StatusItemMainPanelView.swift in Sources */,
 				23BB4D2F21D754D3009B51E9 /* PopoverManager.swift in Sources */,
 				0B74C441205E386D00E3F942 /* Interceptor.swift in Sources */,
+				23399B56237EDA54004935CA /* IntroductionWindowController.swift in Sources */,
 				22937B091E3B657600A45C1D /* PreferencesDonateViewController.swift in Sources */,
 				239E851123562C34006DE0B0 /* StatusItemPopoverViewContentView.swift in Sources */,
 				23BB4D2D21D7512F009B51E9 /* StatusItemPopoverViewController.swift in Sources */,
@@ -596,7 +613,7 @@
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -637,6 +654,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -647,7 +665,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -662,6 +680,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 2H959AEV62;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Mos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
@@ -685,6 +704,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 2H959AEV62;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Mos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
