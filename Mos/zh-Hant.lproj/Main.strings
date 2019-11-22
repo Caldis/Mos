@@ -83,6 +83,19 @@
 "Lhz-x5-X0I.title" = "譯者";
 "GWm-aK-UoV.title" = "貢獻者名目";
 
+// IntroductionWindow
+"VWv-6P-9Xp.title" = "上一步";
+"E9l-1I-6cD.title" = "下一步";
+"11f-uB-gEM.title" = "隆重介紹";
+"YHn-dn-A4n.title" = "Mos";
+"yFl-4N-WcD.title" = "你的滑鼠即將獲得順滑的滾動體驗, 抓穩你的滑鼠, 你僅僅需要調整幾個選項";
+"016-R7-U4x.title" = "你需要 ...";
+"XP7-rO-U3i.title" = "檢查一些項目";
+"ia9-EG-sGg.title" = "某些應用程序(例如Logitech Options) 會對鼠標進行一些額外的處理, 這會與 Mos 有衝突, 不過不需擔心, 只需要關閉他們的平滑滾動, 你仍然可以正常使用他們, 接下來的交給我们就好";
+"foc-QS-iys.title" = "我們需要 ...";
+"Bbz-lG-LFI.title" = "您的授權";
+"Myd-Ze-ZPf.title" = "由於 macOS 的隱私控制限制, 我們只有在徵得你的同意後才可以正常工作";
+
 // WelcomeWindow
 "SLb-UR-lz1.title" = "歡迎使用 Mos";
 "Lhk-Nd-CdT.title" = "在平滑你的鼠標滾動之前";

@@ -11,6 +11,16 @@ import Cocoa
 // 实用方法
 public class Utils {
     
+    // 通知
+    class func sendNotificationMessage(_ title:String, _ subTitle:String) {
+        // 定义通知
+        let notification = NSUserNotification()
+        notification.title = title
+        notification.subtitle = subTitle
+        // 发送通知
+        NSUserNotificationCenter.default.deliver(notification)
+    }
+    
     // 菜单
     class func attachImage(to menuItem:NSMenuItem, withImage image: NSImage) {
         menuItem.image = image

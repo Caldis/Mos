@@ -32,9 +32,16 @@ struct MODIFIER_KEY {
 
 // 窗口
 struct WINDOW_IDENTIFIER {
+    static let introductionWindowController = "introductionWindowController"
     static let welcomeWindowController = "welcomeWindowController"
     static let monitorWindowController = "monitorWindowController"
     static let preferencesWindowController = "preferencesWindowController"
+}
+
+struct VIEW_IDENTIFIER {
+    static let introductionStepOneViewController = "introductionStepOneViewController"
+    static let introductionStepTwoViewController = "introductionStepTwoViewController"
+    static let introductionStepThreeViewController = "introductionStepThreeViewController"
 }
 
 // 视图
@@ -44,11 +51,7 @@ struct PANEL_IDENTIFIER {
     static let advancedWithApplication = "advancedWithApplication"
     static let exception = "exception"
     static let exceptionInput = "exceptionInput"
-    static let list = [
-        general,
-        advanced,
-        exception,
-    ]
+    static let list = [general, advanced, exception]
 }
 let PANEL_PADDING = CGFloat(42.0) // 顶部导航栏高度
 let TOOLBAR_HEIGHT = CGFloat(78.0) // 偏好的 Toolbar 高度
