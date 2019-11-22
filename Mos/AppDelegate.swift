@@ -44,13 +44,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         startWithAccessibilityPermissionsChecker(nil)
     }
-    // 在运行状态下再次运行则显示图标
-    func applicationWillBecomeActive(_ aNotification: Notification) {
-        if Options.shared.global.hideStatusItem {
-            Options.shared.global.hideStatusItem = false
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        guard !flag else {
+            return true
         }
-        // FIXME: 窗口激活也会弹出设置窗口
-        // WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
+        if Utils.isHadAccessibilityPermissions() {
+            WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
+        }
+        return false
     }
     // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
