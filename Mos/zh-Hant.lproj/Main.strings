@@ -75,13 +75,14 @@
 "5cx-xS-eRe.title" = "很慚愧, 就做了一點微小的工作";
 "yDf-dn-Mcz.title" = "主頁";
 "99M-8D-HLN.title" = "GitHub";
-"AM8-cj-DnH.title" = "請作者飲番杯";
+"AM8-cj-DnH.title" = "餵肥大咪";
 "aPi-cE-maK.title" = "通過 Paypal 捐贈";
 "FIh-fA-18k.title" = "歡迎界面";
 "265-WS-XEd.title" = "貢獻者們";
 "ZJY-Yg-Qev.title" = "貢獻者們";
 "Lhz-x5-X0I.title" = "譯者";
 "GWm-aK-UoV.title" = "貢獻者名目";
+"D0v-Oj-ekP.title" = "它有多胖?";
 
 // IntroductionWindow
 "VWv-6P-9Xp.title" = "上一步";
@@ -89,12 +90,12 @@
 "11f-uB-gEM.title" = "隆重介紹";
 "YHn-dn-A4n.title" = "Mos";
 "yFl-4N-WcD.title" = "你的滑鼠即將獲得順滑的滾動體驗, 抓穩你的滑鼠, 你僅僅需要調整幾個選項";
-"016-R7-U4x.title" = "你需要 ...";
+"016-R7-U4x.title" = "你需要";
 "XP7-rO-U3i.title" = "檢查一些項目";
-"ia9-EG-sGg.title" = "某些應用程序(例如Logitech Options) 會對鼠標進行一些額外的處理, 這會與 Mos 有衝突, 不過不需擔心, 只需要關閉他們的平滑滾動, 你仍然可以正常使用他們, 接下來的交給我们就好";
-"foc-QS-iys.title" = "我們需要 ...";
+"ia9-EG-sGg.title" = "某些應用程序(例如Logitech Options) 會對鼠標進行一些額外的處理\n但不需擔心, 只需要關閉他們的平滑滾動, 你仍然可以正常使用他們, 接下來的交給我们就好";
+"foc-QS-iys.title" = "我們需要";
 "Bbz-lG-LFI.title" = "您的授權";
-"Myd-Ze-ZPf.title" = "由於 macOS 的隱私控制限制, 我們只有在徵得你的同意後才可以正常工作";
+"Myd-Ze-ZPf.title" = "由於 macOS 的隱私控制限制, 我們只有在徵得輔助功能的訪問許可後才可以正常工作\n如果選項已存在, 取消選擇並再次勾選即可";
 
 // WelcomeWindow
 "SLb-UR-lz1.title" = "歡迎使用 Mos";

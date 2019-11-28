@@ -83,19 +83,20 @@
 "ZJY-Yg-Qev.title" = "贡献者们";
 "Lhz-x5-X0I.title" = "译者";
 "GWm-aK-UoV.title" = "贡献者名目";
+"D0v-Oj-ekP.title" = "它有多胖?";
 
 // IntroductionWindow
 "VWv-6P-9Xp.title" = "上一步";
 "E9l-1I-6cD.title" = "下一步";
 "11f-uB-gEM.title" = "隆重介绍";
 "YHn-dn-A4n.title" = "Mos";
-"yFl-4N-WcD.title" = "你的鼠标即将获得顺滑的滚动体验, 抓稳你的鼠标, 你仅仅需要调整几个选项";
-"016-R7-U4x.title" = "你需要 ...";
+"yFl-4N-WcD.title" = "你的鼠标即将获得顺滑的滚动体验\n抓稳你的鼠标, 你仅仅需要调整几个选项";
+"016-R7-U4x.title" = "你需要";
 "XP7-rO-U3i.title" = "检查一些项目";
-"ia9-EG-sGg.title" = "某些应用程序 (例如 Logitech Options) 会对鼠标进行一些额外的处理, 这会与 Mos 有冲突, 不过不需担心, 只需要关闭他们的平滑滚动, 你仍然可以正常使用他们, 接下来的交给我们就好";
-"foc-QS-iys.title" = "我们需要 ...";
+"ia9-EG-sGg.title" = "某些应用程序 (例如 Logitech Options) 会对鼠标进行一些额外的处理\n但不需担心, 只需要关闭他们的平滑滚动, 你仍然可以正常使用他们, 接下来的交给我们就好";
+"foc-QS-iys.title" = "我们需要";
 "Bbz-lG-LFI.title" = "您的授权";
-"Myd-Ze-ZPf.title" = "由于 macOS 的隐私控制限制, 我们只有在征得你的同意后才可以正常工作";
+"Myd-Ze-ZPf.title" = "由于 macOS 的隐私控制限制, 我们只有在获得访问辅助功能的权限许可后才可以正常工作\n如果选项已存在, 取消选择并再次勾选即可";
 
 // WelcomeWindow
 "SLb-UR-lz1.title" = "欢迎使用 Mos";
