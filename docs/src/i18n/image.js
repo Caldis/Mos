@@ -10,15 +10,18 @@
     var i18nLanguageMappingList = {
         detailImageA: {
             zh: "./resources/image/cn/PreferencesGeneral.png",
-            en: "./resources/image/en/PreferencesGeneral.png"
+            en: "./resources/image/en/PreferencesGeneral.png",
+            ru: "./resources/image/ru/PreferencesGeneral.png"
         },
         detailImageB: {
             zh: "./resources/image/cn/PreferencesAdvanced.png",
-            en: "./resources/image/en/PreferencesAdvanced.png"
+            en: "./resources/image/en/PreferencesAdvanced.png",
+            ru: "./resources/image/ru/PreferencesAdvanced.png"
         },
         detailImageC: {
             zh: "./resources/image/cn/PreferencesExceptionFull.png",
-            en: "./resources/image/en/PreferencesExceptionFull.png"
+            en: "./resources/image/en/PreferencesExceptionFull.png",
+            ru: "./resources/image/ru/PreferencesException.png"
         }
     }
     // 国际化页面文字

@@ -29,7 +29,7 @@
 "hOO-M8-I1z.title" = "Кнопка ускорения:";
 "Vhz-Rn-lcU.title" = "Не задана";
 "Z59-tN-QjE.title" = "Увеличивает скорость прокрутки на длинных страницах";
-"bQw-5w-Yv0.title" = "Кнопка переключения:";
+"bQw-5w-Yv0.title" = "Кнопка смены направления:";
 "cTe-aL-0GQ.title" = "Не задана";
 "KnM-kA-wn5.title" = "Изменяет вертикальную прокрутку на горизонтальную";
 "ebE-Zf-T98.title" = "Кнопка блокировки:";
@@ -76,27 +76,27 @@
 "5cx-xS-eRe.title" = "Просто небольшая работа для вашей мыши.";
 "yDf-dn-Mcz.title" = "Сайт";
 "99M-8D-HLN.title" = "GitHub";
-"AM8-cj-DnH.title" = "Купить автору чашку кофе";
+"AM8-cj-DnH.title" = "Покормить 🍥 кота";
 "aPi-cE-maK.title" = "Донат PayPal";
 "FIh-fA-18k.title" = "Окно приветствия";
 "265-WS-XEd.title" = "Авторы";
 "ZJY-Yg-Qev.title" = "Авторы";
 "Lhz-x5-X0I.title" = "Перевод";
 "GWm-aK-UoV.title" = "Список разработчиков";
-"D0v-Oj-ekP.title" = "How fat is this cat?";
+"D0v-Oj-ekP.title" = "Насколько толстый этот кот?";
 
 // IntroductionWindow
-"VWv-6P-9Xp.title" = "Prev";
-"E9l-1I-6cD.title" = "Next";
-"11f-uB-gEM.title" = "Introducting";
+"VWv-6P-9Xp.title" = "Назад";
+"E9l-1I-6cD.title" = "Далее";
+"11f-uB-gEM.title" = "Начало работы";
 "YHn-dn-A4n.title" = "Mos";
-"yFl-4N-WcD.title" = "Your mouse is about to get a smoothest scrolling experience.\nPick up your mouse, we just have a few thing that you need to check.";
-"016-R7-U4x.title" = "You need";
-"XP7-rO-U3i.title" = "Do Some Checks";
-"ia9-EG-sGg.title" = "Some application (E.g. Logitech Options) will apply some handlers to the mouse. \nBut don't worry, just turn off the smooth scrolling in these apps, you can still use them as usual, and leave the rest to us.";
-"foc-QS-iys.title" = "We need";
-"Bbz-lG-LFI.title" = "Authorization";
-"Myd-Ze-ZPf.title" = "Limited by macOS's privacy restrictions, Mos will only works after it is authorized to access Accessibility controls.\nIf the item already exists, just click and toggle the checkbox again.";
+"yFl-4N-WcD.title" = "Ваша мышь готова к плавной прокрутке, но есть еще несколько важных моментов.";
+"016-R7-U4x.title" = "Вам нужно проверить";
+"XP7-rO-U3i.title" = "Настройки";
+"ia9-EG-sGg.title" = "Некоторые приложения (например, Logitech Options) применяют к мыши некоторые обработчики, которые конфликтуют с Mos. Но не волнуйтесь, просто отключите плавную прокрутку в этих приложениях, вы все равно можете использовать их как обычно, а остальное оставьте нам.";
+"foc-QS-iys.title" = "Нам нужна";
+"Bbz-lG-LFI.title" = "Авторизация";
+"Myd-Ze-ZPf.title" = "Вследствии ограничений macOS, Mos будет работать только после получения универсального доступа из настроек.\nЕсли пункт уже существует, просто выключите и заного включите его.";
 
 // WelcomeWindow
 "SLb-UR-lz1.title" = "Добро пожаловать в Mos";
