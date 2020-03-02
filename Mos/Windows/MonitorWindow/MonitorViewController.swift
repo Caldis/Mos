@@ -19,7 +19,9 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     @IBOutlet var scrollLogTextField: NSTextView!
     @IBOutlet var scrollDetailLogTextField: NSTextView!
     @IBOutlet var processLogTextField: NSTextView!
-    @IBOutlet var otherLogTextField: NSTextView!
+    @IBOutlet var mouseLogTextField: NSTextView!
+    @IBOutlet var tabletEventLogTextField: NSTextView!
+    @IBOutlet var tabletProximityLogTextField: NSTextView!
     
     // 监听相关
     var scrollInterceptor: Interceptor?
@@ -104,7 +106,9 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         scrollLogTextField.string = Logger.getScrollLog(form: event)
         scrollDetailLogTextField.string = Logger.getScrollDetailLog(form: event)
         processLogTextField.string = Logger.getProcessLog(form: event)
-        otherLogTextField.string = Logger.getOtherLog(form: event)
+        mouseLogTextField.string = Logger.getMouseLog(form: event)
+        tabletEventLogTextField.string = Logger.getTabletEventLog(form: event)
+        tabletProximityLogTextField.string = Logger.getTabletProximityLog(form: event)
     }
     
     // 刷新图表
