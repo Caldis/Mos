@@ -64,7 +64,7 @@ struct POPOVER_IDENTIFIER {
 
 // 默认设置项
 // 全局参数
-class OPTIONS_GLOBAL_DEFAULT {
+class OPTIONS_GENERAL_DEFAULT {
     // 自启
     var autoLaunch = false {
         willSet {LaunchStarter.launchAtStartup(on: newValue)}
@@ -84,7 +84,7 @@ class OPTIONS_GLOBAL_DEFAULT {
     })
 }
 // 滚动参数
-class OPTIONS_SCROLL_DEFAULT: Codable {
+class OPTIONS_SCROLL_BASIC_DEFAULT: Codable {
     // 基础
     var smooth = true {
         didSet {Options.shared.saveOptions()}
@@ -92,6 +92,9 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
     var reverse = true {
         didSet {Options.shared.saveOptions()}
     }
+}
+// 滚动参数
+class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
     // 高级
     var dash:Int? = 0 {
         didSet {Options.shared.saveOptions()}
@@ -109,7 +112,7 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
         didSet {Options.shared.saveOptions()}
     }
     var duration = 3.90 {
-        willSet {self.durationTransition = OPTIONS_SCROLL_DEFAULT.generateDurationTransition(with: newValue)}
+        willSet {self.durationTransition = OPTIONS_SCROLL_ADVANCED_DEFAULT.generateDurationTransition(with: newValue)}
         didSet {Options.shared.saveOptions()}
     }
     var durationTransition = 0.1340 {

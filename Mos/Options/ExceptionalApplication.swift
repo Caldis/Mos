@@ -17,7 +17,8 @@ class ExceptionalApplication: Codable, Equatable {
     // 继承 (smooth 及 reverse 不走这个)
     var inherit = true
     // 滚动
-    var scroll = OPTIONS_SCROLL_DEFAULT()
+    var scrollBasic = OPTIONS_SCROLL_BASIC_DEFAULT()
+    var scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT()
     
     // 初始化
     // 从应用程序路径选择初始化
@@ -40,7 +41,8 @@ class ExceptionalApplication: Codable, Equatable {
         // 开关
         self.inherit = try container.decodeIfPresent(Bool.self, forKey: .inherit) ?? true
         // 滚动
-        self.scroll = try container.decodeIfPresent(OPTIONS_SCROLL_DEFAULT.self, forKey: .scroll) ?? OPTIONS_SCROLL_DEFAULT()
+        self.scrollBasic = try container.decodeIfPresent(OPTIONS_SCROLL_BASIC_DEFAULT.self, forKey: .scrollBasic) ?? OPTIONS_SCROLL_BASIC_DEFAULT()
+        self.scrollAdvanced = try container.decodeIfPresent(OPTIONS_SCROLL_ADVANCED_DEFAULT.self, forKey: .scrollAdvanced) ?? OPTIONS_SCROLL_ADVANCED_DEFAULT()
     }
     
     static func == (lhs: ExceptionalApplication, rhs: ExceptionalApplication) -> Bool {

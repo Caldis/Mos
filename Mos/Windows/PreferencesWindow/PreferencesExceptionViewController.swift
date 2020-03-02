@@ -39,7 +39,7 @@ class PreferencesExceptionViewController: NSViewController {
     
     // 白名单模式
     @IBAction func whiteListModeClick(_ sender: NSButton) {
-        Options.shared.global.whitelist = sender.state.rawValue==0 ? false : true
+        Options.shared.general.whitelist = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     
@@ -76,7 +76,7 @@ extension PreferencesExceptionViewController {
     // 同步界面与设置参数
     func syncViewWithOptions() {
         // 白名单
-        whitelistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.global.whitelist ? 1 : 0)
+        whitelistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.general.whitelist ? 1 : 0)
     }
 }
 
@@ -93,7 +93,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     }
     // 切换无数据显示
     func toggleNoDataHint(animate: Bool = true) {
-        let hasData = Options.shared.global.applications.count != 0
+        let hasData = Options.shared.general.applications.count != 0
         if animate {
             noDataHint.animator().alphaValue = hasData ? 0 : 1
         } else {
@@ -104,19 +104,19 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     @objc func smoothCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.global.applications.get(from: row).scroll.smooth = state.rawValue==1 ? true : false
+        Options.shared.general.applications.get(from: row).scrollBasic.smooth = state.rawValue==1 ? true : false
     }
     // 点击反转
     @objc func reverseCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.global.applications.get(from: row).scroll.reverse = state.rawValue==1 ? true : false
+        Options.shared.general.applications.get(from: row).scrollBasic.reverse = state.rawValue==1 ? true : false
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
         let row = sender.tag
         let advancedWithApplicationViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.advancedWithApplication) as PreferencesAdvanceWithApplicationViewController
-        advancedWithApplicationViewController.currentTargetApplication = Options.shared.global.applications.get(from: row)
+        advancedWithApplicationViewController.currentTargetApplication = Options.shared.general.applications.get(from: row)
         present(advancedWithApplicationViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
     }
     // 构建表格数据 (循环生成行)
@@ -128,7 +128,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
         // 生成每行的 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
             // 应用数据
-            let application = Options.shared.global.applications.get(from: row)
+            let application = Options.shared.general.applications.get(from: row)
             switch tableColumnIdentifier.rawValue {
                 // 平滑
                 case CellIdentifiers.smoothCell:
@@ -136,7 +136,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
                     checkBox.tag = row
                     checkBox.target = self
                     checkBox.action = #selector(smoothCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application.scroll.smooth==true ? 1 : 0)
+                    checkBox.state = NSControl.StateValue(rawValue: application.scrollBasic.smooth==true ? 1 : 0)
                     return cell
                 // 反转
                 case CellIdentifiers.reverseCell:
@@ -144,7 +144,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
                     checkBox.tag = row
                     checkBox.target = self
                     checkBox.action = #selector(reverseCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application.scroll.reverse==true ? 1 : 0)
+                    checkBox.state = NSControl.StateValue(rawValue: application.scrollBasic.reverse==true ? 1 : 0)
                     return cell
                 // 应用
                 case CellIdentifiers.applicationCell:
@@ -169,7 +169,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     }
     // 行数
     func numberOfRows(in tableView: NSTableView) -> Int {
-        let rows = Options.shared.global.applications.count
+        let rows = Options.shared.general.applications.count
         toggleNoDataHint()
         return rows
     }
@@ -252,12 +252,12 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
     // 添加应用
     func appendApplicationWith(path: String, bundleId: String) {
         let application = ExceptionalApplication(path: path, bundleId: bundleId)
-        Options.shared.global.applications.append(application)
+        Options.shared.general.applications.append(application)
         self.tableView.reloadData()
     }
     func appendApplicationWith(name: String, bundleId: String) {
         let application = ExceptionalApplication(name: name, bundleId: bundleId)
-        Options.shared.global.applications.append(application)
+        Options.shared.general.applications.append(application)
         self.tableView.reloadData()
     }
     @objc func appendApplicationForSenderWithBundleURL(_ sender: NSMenuItem!) {
@@ -271,7 +271,7 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
     func deleteTableViewSelectedRow() {
         // 确保有选中特定行
         if tableView.selectedRow != -1 {
-            Options.shared.global.applications.remove(at: tableView.selectedRow)
+            Options.shared.general.applications.remove(at: tableView.selectedRow)
         }
     }
 }

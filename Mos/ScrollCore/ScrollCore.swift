@@ -26,9 +26,9 @@ class ScrollCore {
     var toggleScroll = false
     var blockSmooth = false
     // 插值数据
-    var smoothStep = Options.shared.scroll.step
-    var smoothSpeed = Options.shared.scroll.speed
-    var smoothDuration = Options.shared.scroll.durationTransition
+    var smoothStep = Options.shared.scrollAdvanced.step
+    var smoothSpeed = Options.shared.scrollAdvanced.speed
+    var smoothDuration = Options.shared.scrollAdvanced.durationTransition
     // 例外应用数据
     var exceptionalApplication: ExceptionalApplication?
     var currentExceptionalApplication: ExceptionalApplication? // 用于区分按下热键及抬起时的作用目标
@@ -352,7 +352,7 @@ class ScrollCore {
         // 发送滚动结果
         MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
         // 如果临近目标距离小于精确度门限则停止滚动
-        if scrollPulse.y.magnitude<=Options.shared.scroll.precision && scrollPulse.x.magnitude<=Options.shared.scroll.precision {
+        if scrollPulse.y.magnitude<=Options.shared.scrollAdvanced.precision && scrollPulse.x.magnitude<=Options.shared.scrollAdvanced.precision {
             cleanScrollBuffer()
             disableScrollEventPoster()
         }

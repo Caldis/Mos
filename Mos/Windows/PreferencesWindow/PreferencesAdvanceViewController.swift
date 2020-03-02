@@ -102,9 +102,9 @@ class PreferencesAdvanceViewController: NSViewController {
     // 重置
     @IBAction func resetToDefaultClick(_ sender: NSButton) {
         if let target = currentTargetApplication {
-            target.scroll = OPTIONS_SCROLL_DEFAULT()
+            target.scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT()
         } else {
-            Options.shared.scroll = OPTIONS_SCROLL_DEFAULT()
+            Options.shared.scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT()
         }
         syncViewWithOptions()
     }
@@ -168,8 +168,8 @@ extension PreferencesAdvanceViewController {
         resetToDefaultsButton.isEnabled = enabled
     }
     // 获取配置目标
-    func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_DEFAULT {
-        return currentTargetApplication?.scroll ?? Options.shared.scroll
+    func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_ADVANCED_DEFAULT {
+        return currentTargetApplication?.scrollAdvanced ?? Options.shared.scrollAdvanced
     }
     // 是否继承全局设置
     func isTargetApplicationInheritOptions() -> Bool {

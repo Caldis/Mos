@@ -170,7 +170,7 @@ class ScrollUtils {
     // 从 exceptionalApplications 中取回符合传入的 bundleId 的 ExceptionalApplication 对象
     func applicationInExceptionalApplications(bundleId: String?) -> ExceptionalApplication? {
         if let targetBundleId = bundleId {
-            return Options.shared.global.applications.get(from: targetBundleId)
+            return Options.shared.general.applications.get(from: targetBundleId)
         }
         return nil
     }
@@ -178,32 +178,32 @@ class ScrollUtils {
     // 获取应用
     // 基础参数
     func isEnableSmoothOn(application: ExceptionalApplication?, targetBundleId: String?, flag: Bool) -> Bool {
-        if Options.shared.scroll.smooth && !flag {
+        if Options.shared.scrollBasic.smooth && !flag {
             // 针对 Launchpad 特殊处理, 不论是否在列表内均禁用平滑
             if isLaunchpadActive(with: targetBundleId) {
                 return false
             }
             if let target = application {
-                return target.scroll.smooth
+                return target.scrollBasic.smooth
             } else {
-                return !Options.shared.global.whitelist
+                return !Options.shared.general.whitelist
             }
         } else {
             return false
         }
     }
     func isEnableReverseOn(application: ExceptionalApplication?, targetBundleId: String?) -> Bool {
-        if Options.shared.scroll.reverse {
+        if Options.shared.scrollBasic.reverse {
             // 针对 Launchpad 特殊处理, 允许用户自行判断是否翻转
             if isLaunchpadActive(with: targetBundleId) {
-                if let launchpad = Options.shared.global.applications.get(from: "com.apple.launchpad.launcher") {
-                    return launchpad.scroll.reverse
+                if let launchpad = Options.shared.general.applications.get(from: "com.apple.launchpad.launcher") {
+                    return launchpad.scrollBasic.reverse
                 }
             }
             if let target = application {
-                return target.scroll.reverse
+                return target.scrollBasic.reverse
             } else {
-                return !Options.shared.global.whitelist
+                return !Options.shared.general.whitelist
             }
         } else {
             return false
@@ -212,44 +212,44 @@ class ScrollUtils {
     // 高级参数
     func optionsDashOn(application: ExceptionalApplication?) -> CGKeyCode {
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.dash ?? 0 : targetApplication.scroll.dash ?? 0)
+            return CGKeyCode(targetApplication.inherit ? Options.shared.scrollAdvanced.dash ?? 0 : targetApplication.scrollAdvanced.dash ?? 0)
         } else {
-            return CGKeyCode(Options.shared.scroll.dash ?? 0)
+            return CGKeyCode(Options.shared.scrollAdvanced.dash ?? 0)
         }
     }
     func optionsToggleOn(application: ExceptionalApplication?) -> CGKeyCode {
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.toggle ?? 0 : targetApplication.scroll.toggle ?? 0)
+            return CGKeyCode(targetApplication.inherit ? Options.shared.scrollAdvanced.toggle ?? 0 : targetApplication.scrollAdvanced.toggle ?? 0)
         } else {
-            return CGKeyCode(Options.shared.scroll.toggle ?? 0)
+            return CGKeyCode(Options.shared.scrollAdvanced.toggle ?? 0)
         }
     }
     func optionsBlockOn(application: ExceptionalApplication?) -> CGKeyCode {
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.block ?? 0 : targetApplication.scroll.block ?? 0)
+            return CGKeyCode(targetApplication.inherit ? Options.shared.scrollAdvanced.block ?? 0 : targetApplication.scrollAdvanced.block ?? 0)
         } else {
-            return CGKeyCode(Options.shared.scroll.block ?? 0)
+            return CGKeyCode(Options.shared.scrollAdvanced.block ?? 0)
         }
     }
     func optionsStepOn(application: ExceptionalApplication?) -> Double {
         if let targetApplication = application {
-            return targetApplication.inherit ? Options.shared.scroll.step : targetApplication.scroll.step
+            return targetApplication.inherit ? Options.shared.scrollAdvanced.step : targetApplication.scrollAdvanced.step
         } else {
-            return Options.shared.scroll.step
+            return Options.shared.scrollAdvanced.step
         }
     }
     func optionsSpeedOn(application: ExceptionalApplication?) -> Double {
         if let targetApplication = application {
-            return targetApplication.inherit ? Options.shared.scroll.speed : targetApplication.scroll.speed
+            return targetApplication.inherit ? Options.shared.scrollAdvanced.speed : targetApplication.scrollAdvanced.speed
         } else {
-            return Options.shared.scroll.speed
+            return Options.shared.scrollAdvanced.speed
         }
     }
     func optionsDurationTransitionOn(application: ExceptionalApplication?) -> Double {
         if let targetApplication = application {
-            return targetApplication.inherit ? Options.shared.scroll.durationTransition : targetApplication.scroll.durationTransition
+            return targetApplication.inherit ? Options.shared.scrollAdvanced.durationTransition : targetApplication.scrollAdvanced.durationTransition
         } else {
-            return Options.shared.scroll.durationTransition
+            return Options.shared.scrollAdvanced.durationTransition
         }
     }
 }
