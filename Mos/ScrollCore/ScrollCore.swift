@@ -243,7 +243,7 @@ class ScrollCore {
         initScrollEventPoster()
         // 初始化守护进程
         tapKeeperTimer = Timer.scheduledTimer(
-            timeInterval: 2.0,
+            timeInterval: 5.0,
             target: self,
             selector: #selector(tapKeeper),
             userInfo: nil,

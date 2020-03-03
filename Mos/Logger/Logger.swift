@@ -10,47 +10,56 @@ import Cocoa
 
 class Logger {
     
-    // 滚动相关信息
-    class func getScrollLog(form event: CGEvent) -> String {
+    // 解析信息
+    class func getParsedLog(form event: CGEvent) -> String {
         return """
-        Is using TouchPad: \(ScrollUtils.shared.isTouchPad(of: event))
-        Fix Y: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis1))
-        Fix X: \(event.getDoubleValueField(.scrollWheelEventDeltaAxis2))
-        Pt Y: \(event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1))
-        Pt X: \(event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2))
-        Fix Pt Y: \(event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1))
-        Fix Pt X: \(event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2))
+        Events from the Trackpad: \(ScrollUtils.shared.isTouchPad(of: event))
+        Events Target BundleId: \(String(describing: ScrollUtils.shared.getBundleIdFromMouseLocation(and: event) ?? "-"))
         """
     }
     
-    // 处理进程相关信息
+    // 滚动方向信息
+    class func getScrollLog(form event: CGEvent) -> String {
+        return """
+        scrollWheelEventDeltaAxis1 (FixY): \(event.getDoubleValueField(.scrollWheelEventDeltaAxis1))
+        scrollWheelEventDeltaAxis2 (FixX): \(event.getDoubleValueField(.scrollWheelEventDeltaAxis2))
+        scrollWheelEventPointDeltaAxis1 (PtY): \(event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1))
+        scrollWheelEventPointDeltaAxis2 (PtX): \(event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2))
+        scrollWheelEventFixedPtDeltaAxis1 (FixPtY): \(String(format: "%.1f", event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)))
+        scrollWheelEventFixedPtDeltaAxis2 (FixPtX): \(String(format: "%.1f", event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2)))
+        unacceleratedPointerMovementY: \(event.getDoubleValueField(.eventUnacceleratedPointerMovementY))
+        unacceleratedPointerMovementX: \(event.getDoubleValueField(.eventUnacceleratedPointerMovementX))
+        """
+    }
+    
+    // 滚动额外信息
     class func getScrollDetailLog(form event: CGEvent) -> String {
-        // scrollWheelEventIsContinuous 采样精度(设为 1 时为像素级别)
+        // scrollWheelEventInstantMouser 事件是否应该被 inkWell 子系统忽略 (手写板处理模块), 如果不为零则将会被忽略
+        // scrollWheelEventIsContinuous 事件是否包含连续滚动状态(触控板), 如果事件为行滚动则该值为零, 像素滚动则为非零
         // scrollWheelEventScrollCount 加速度累计
-        // scrollWheelEventMomentumPhase 根据触控板响应阶段改变
-        // CGMomentumScrollPhase (触控板缓动阶段)
-        //       0: 未开始(none)
-        //       1: [触控板]开始(begin)
-        //       2: [触控板]缓动动画进行中(continuous)
-        //       3: [触控板]缓动动画完成(最后一下)(end)
         // scrollWheelEventScrollPhase 根据触控板响应阶段改变
         // CGScrollPhase (触控板滑动阶段)
-        //       0: [触控板]滑动事件缓动, [鼠标]滚轮滚动中 (未接触触控板)
         //       1: [触控板]开始(kCGScrollPhaseBegan)
-        //       2: [触控板]双指滑动(无缓动), [鼠标]左侧滚轮滑动中(kCGScrollPhaseChanged)
+        //       2: [触控板]双指滑动(无缓动)(kCGScrollPhaseChanged)
         //       4: [触控板]双指滑动完拿开(无缓动)(最后一下)(kCGScrollPhaseEnded)
         //       8: [触控板]双指触碰未滑动拿开(kCGScrollPhaseCancelled)
         //     128: [触控板]双指触碰未滑动(kCGScrollPhaseMayBegin)
+        // scrollWheelEventMomentumPhase 根据触控板响应阶段改变
+        // CGMomentumScrollPhase (触控板缓动阶段)
+        //       1: [触控板]开始(begin)
+        //       2: [触控板]缓动动画进行中(continuous)
+        //       3: [触控板]缓动动画完成(最后一下)(end)
+        // 2-1 内置bounce正常, chrome完全动不了
         return """
         scrollWheelEventInstantMouser: \(event.getDoubleValueField(.scrollWheelEventInstantMouser))
         scrollWheelEventIsContinuous: \(event.getDoubleValueField(.scrollWheelEventIsContinuous))
         scrollWheelEventScrollCount: \(event.getDoubleValueField(.scrollWheelEventScrollCount))
-        scrollWheelEventMomentumPhase: \(event.getDoubleValueField(.scrollWheelEventMomentumPhase))
         scrollWheelEventScrollPhase: \(event.getDoubleValueField(.scrollWheelEventScrollPhase))
+        scrollWheelEventMomentumPhase: \(event.getDoubleValueField(.scrollWheelEventMomentumPhase))
         """
     }
     
-    // 鼠标其他信息
+    // 鼠标信息
     class func getMouseLog(form event: CGEvent) -> String {
         return """
         mouseEventNumber: \(event.getDoubleValueField(.mouseEventNumber))
@@ -66,7 +75,7 @@ class Logger {
         """
     }
     
-    // 处理进程相关信息
+    // 进程信息
     class func getProcessLog(form event: CGEvent) -> String {
         return """
         eventTargetProcessSerialNumber: \(event.getDoubleValueField(.eventTargetProcessSerialNumber))

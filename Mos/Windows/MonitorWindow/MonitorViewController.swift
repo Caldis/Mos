@@ -16,6 +16,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     @IBOutlet weak var lineChart: LineChartView!
     
     // 文字Log区域相关
+    @IBOutlet var parsedLogTextField: NSTextView!
     @IBOutlet var scrollLogTextField: NSTextView!
     @IBOutlet var scrollDetailLogTextField: NSTextView!
     @IBOutlet var processLogTextField: NSTextView!
@@ -103,6 +104,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
             lineChartCount += 1.0
         }
         // 更新Log区域
+        parsedLogTextField.string = Logger.getParsedLog(form: event)
         scrollLogTextField.string = Logger.getScrollLog(form: event)
         scrollDetailLogTextField.string = Logger.getScrollDetailLog(form: event)
         processLogTextField.string = Logger.getProcessLog(form: event)
