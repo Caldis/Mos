@@ -2143,7 +2143,7 @@ Gw
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" id="DjX-Ce-f1D"/>
                                     <constraint firstAttribute="height" constant="18" id="GxZ-Ef-ny7"/>
                                 </constraints>
-                                <buttonCell key="cell" type="roundRect" title="Feed 🍥 MEOW to a fat cat" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="AM8-cj-DnH">
+                                <buttonCell key="cell" type="roundRect" title="Feed 🍥 a fet MEOW" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="AM8-cj-DnH">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="systemLight" size="12"/>
                                 </buttonCell>
