@@ -237,13 +237,14 @@ class ScrollCore {
             placeAt: .tailAppendEventTap,
             for: .defaultTap
         )
-        scrollEventTailInterceptor = Interceptor(
-            event: scrollEventMask,
-            handleBy: scrollEventTailCallBack,
-            listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .tailAppendEventTap,
-            for: .listenOnly
-        )
+        // CPU占用上升了将近一倍...
+        // scrollEventTailInterceptor = Interceptor(
+        //     event: scrollEventMask,
+        //     handleBy: scrollEventTailCallBack,
+        //     listenOn: .cgAnnotatedSessionEventTap,
+        //     placeAt: .tailAppendEventTap,
+        //     for: .listenOnly
+        // )
         hotkeyEventInterceptor = Interceptor(
             event: hotkeyEventMask,
             handleBy: hotkeyEventCallBack,
