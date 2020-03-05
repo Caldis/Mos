@@ -26,7 +26,9 @@ class Options {
     var general = OPTIONS_GENERAL_DEFAULT()
     // 滚动
     var scrollBasic = OPTIONS_SCROLL_BASIC_DEFAULT()
-    var scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT()
+    var scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT() {
+        didSet {Options.shared.saveOptions()}
+    }
 }
 
 /**
