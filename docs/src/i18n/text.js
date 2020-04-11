@@ -30,17 +30,17 @@
         },
         detailTitleB: {
             zh: "滚动, 从未如此顺手",
-            en: "Scrolling, Never So Smooth",
+            en: "Scrolling, Smoother Than Ever",
             ru: "Максимальная плавность"
         },
         detailTextB: {
             zh: "经过 Mos 独特的插值算法处理后, 您的鼠标滚动将会变得前所未有的顺滑",
-            en: "The Mos's special interpolation algorithm can make every mouse roll as smooth and silky as possible.",
+            en: "Mos's special interpolation algorithm can make every mouse roll as smooth and silky as possible.",
             ru: "Специальный алгоритм интерполяции Mos может сделать любую мышку более гладкой и шелковистой."
         },
         detailTitleC: {
             zh: "所有应用, 尽在管理之下",
-            en: "Each Program is Under Management",
+            en: "Manage Programs Independently",
             ru: "Каждая программа под контролем"
         },
         detailTextC: {
