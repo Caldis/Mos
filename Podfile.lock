@@ -1,7 +1,7 @@
 PODS:
-  - Charts (3.4.0):
-    - Charts/Core (= 3.4.0)
-  - Charts/Core (3.4.0)
+  - Charts (3.5.0):
+    - Charts/Core (= 3.5.0)
+  - Charts/Core (3.5.0)
   - LoginServiceKit (2.1.0)
 
 DEPENDENCIES:
@@ -22,9 +22,9 @@ CHECKOUT OPTIONS:
     :git: https://github.com/Clipy/LoginServiceKit.git
 
 SPEC CHECKSUMS:
-  Charts: 74c9f256eaf0460c0c416522d1cf8c634ea6b286
+  Charts: 40a08591df1f8ad5c223ddedfb1a06da92f24f7c
   LoginServiceKit: 9a8b258c3111fa0d9585615052f778b08be92302
 
 PODFILE CHECKSUM: 6a95c26fdf2ffe991455968ab8427eb8fbe380ec
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.3
