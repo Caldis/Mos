@@ -90,6 +90,8 @@
 		0B6D3B6D20429254004CC064 /* WindowUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WindowUtils.m; sourceTree = "<group>"; };
 		0B6D3B6F2042BBCD004CC064 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		0B74C440205E386D00E3F942 /* Interceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interceptor.swift; sourceTree = "<group>"; };
+		0BAC4070251651BC00E8A1FD /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Main.strings; sourceTree = "<group>"; };
+		0BAC4071251651BC00E8A1FD /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BB0F1BD20F3A04F00909B7D /* WelcomeWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowController.swift; sourceTree = "<group>"; };
 		0BB0F1BF20F3A05D00909B7D /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		0BC2AD2E20F3BA090084416B /* PreferencesContributorsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesContributorsViewController.swift; sourceTree = "<group>"; };
@@ -426,6 +428,7 @@
 				"zh-Hant",
 				en,
 				ru,
+				tr,
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			productRefGroup = 22142DA11E25344E00E4BFBF /* Products */;
@@ -539,6 +542,7 @@
 				0B0D5B5C206619680077C2AC /* zh-Hant */,
 				0B0D5B60206630E80077C2AC /* en */,
 				23A61CF9230EF4BC00621E52 /* ru */,
+				0BAC4070251651BC00E8A1FD /* tr */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -551,6 +555,7 @@
 				0B0D5B5E2066197E0077C2AC /* zh-Hant */,
 				0B0D5B61206630EE0077C2AC /* en */,
 				23A61CFA230EF4BC00621E52 /* ru */,
+				0BAC4071251651BC00E8A1FD /* tr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
