@@ -14,6 +14,8 @@ class ScrollCore {
     static let shared = ScrollCore()
     init() { print("Class 'ScrollCore' is initialized") }
     
+    // 执行状态
+    var isCoreRunning = false
     // 鼠标事件轴
     let axis = ( Y: UInt32(1), X: UInt32(1), YX: UInt32(2), YXZ: UInt32(3) )
     // 滚动数据
@@ -229,6 +231,9 @@ class ScrollCore {
     
     // 启动滚动处理
     func startHandlingScroll() {
+        // Guard
+        if isCoreRunning {return}
+        isCoreRunning = true
         // 截取事件
         scrollEventHeadInterceptor = Interceptor(
             event: scrollEventMask,
@@ -278,6 +283,9 @@ class ScrollCore {
     }
     // 停止滚动处理
     func endHandlingScroll() {
+        // Guard
+        if !isCoreRunning {return}
+        isCoreRunning = false
         // 停止守护进程
         tapKeeperTimer?.invalidate()
         // 停止滚动事件发送器
