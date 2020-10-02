@@ -1,447 +1,114 @@
-
-/* Class = "NSTextFieldCell"; title = "You need"; ObjectID = "016-R7-U4x"; */
-"016-R7-U4x.title" = "You need";
-
-/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "0gK-I9-96c"; */
-"0gK-I9-96c.title" = "Text Cell";
-
-/* Class = "NSTextFieldCell"; title = "Introducting"; ObjectID = "11f-uB-gEM"; */
-"11f-uB-gEM.title" = "Introducting";
-
-/* Class = "NSTextFieldCell"; placeholderString = "com.company.application"; ObjectID = "17p-6I-C0p"; */
-"17p-6I-C0p.placeholderString" = "com.company.application";
-
-/* Class = "NSMenuItem"; title = "⌘ Command"; ObjectID = "18C-IE-EKk"; */
-"18C-IE-EKk.title" = "⌘ Command";
-
-/* Class = "NSMenuItem"; title = "⌥ Option"; ObjectID = "1LK-nr-g7N"; */
-"1LK-nr-g7N.title" = "⌥ Option";
-
-/* Class = "NSButtonCell"; title = "The Contributors"; ObjectID = "265-WS-XEd"; */
-"265-WS-XEd.title" = "The Contributors";
-
-/* Class = "NSTextFieldCell"; title = "Mos"; ObjectID = "2AK-Pu-mot"; */
-"2AK-Pu-mot.title" = "Mos";
-
-/* Class = "NSButtonCell"; title = "Confirm"; ObjectID = "2v4-AC-WG5"; */
-"2v4-AC-WG5.title" = "Confirm";
-
-/* Class = "NSTextFieldCell"; title = "Andrew Mclaren(@mclvren)"; ObjectID = "2v8-3K-NkQ"; */
-"2v8-3K-NkQ.title" = "Andrew Mclaren(@mclvren)";
-
-/* Class = "NSTextFieldCell"; title = "Allow Mos access to Accessibility controls"; ObjectID = "3QI-xO-wPK"; */
-"3QI-xO-wPK.title" = "Allow Mos access to Accessibility controls";
-
-/* Class = "NSTextFieldCell"; title = "Just some little job for your mouse."; ObjectID = "5cx-xS-eRe"; */
-"5cx-xS-eRe.title" = "Just some little job for your mouse.";
-
-/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "5ft-0j-oso"; */
-"5ft-0j-oso.title" = "Text Cell";
-
-/* Class = "NSTextFieldCell"; title = "The greater the power, the greater the responsibility. To smooth your mouse scrolling, Mos needs to create an intermediate layer between the mouse and your system to optimize your mouse. So we need to access to accessibility controls to get this power."; ObjectID = "7bu-fM-Bjm"; */
-"7bu-fM-Bjm.title" = "The greater the power, the greater the responsibility. To smooth your mouse scrolling, Mos needs to create an intermediate layer between the mouse and your system to optimize your mouse. So we need to access to accessibility controls to get this power.";
-
-/* Class = "NSTextFieldCell"; title = "Just few thing you need to tweak"; ObjectID = "7o8-5p-CQX"; */
-"7o8-5p-CQX.title" = "Just few thing you need to tweak";
-
-/* Class = "NSTextFieldCell"; title = "Application"; ObjectID = "89F-B4-NIY"; */
-"89F-B4-NIY.title" = "Application";
-
-/* Class = "NSTableColumn"; headerCell.title = "Setting"; ObjectID = "8By-V1-U9w"; */
-"8By-V1-U9w.headerCell.title" = "Setting";
-
-/* Class = "NSMenuItem"; title = "⌃ Control"; ObjectID = "8GX-j2-4nN"; */
-"8GX-j2-4nN.title" = "⌃ Control";
-
-/* Class = "NSButtonCell"; title = "GitHub"; ObjectID = "99M-8D-HLN"; */
-"99M-8D-HLN.title" = "GitHub";
-
-/* Class = "NSButtonCell"; title = "Scroll Reverse"; ObjectID = "9Rh-K8-LNY"; */
-"9Rh-K8-LNY.title" = "Scroll Reverse";
-
-/* Class = "NSButtonCell"; title = "Smooth Scrolling"; ObjectID = "A9r-mp-u8M"; */
-"A9r-mp-u8M.title" = "Smooth Scrolling";
-
-/* Class = "NSButtonCell"; title = "Feed 🍥 a fet MEOW"; ObjectID = "AM8-cj-DnH"; */
-"AM8-cj-DnH.title" = "Feed 🍥 a fet MEOW";
-
-/* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
-"AYu-sK-qS6.title" = "Main Menu";
-
-/* Class = "NSTextFieldCell"; title = "Current Version"; ObjectID = "Aur-fR-tik"; */
-"Aur-fR-tik.title" = "Current Version";
-
-/* Class = "NSTextFieldCell"; title = "Sets scrolling acceleration"; ObjectID = "B3O-iI-E7v"; */
-"B3O-iI-E7v.title" = "Sets scrolling acceleration";
-
-/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "B4M-bA-dgn"; */
-"B4M-bA-dgn.title" = "Text Cell";
-
-/* Class = "NSTextFieldCell"; title = "Step:"; ObjectID = "B8B-hi-x3v"; */
-"B8B-hi-x3v.title" = "Step:";
-
-/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "BDu-5m-yrr"; */
-"BDu-5m-yrr.title" = "Text Cell";
-
-/* Class = "NSTextFieldCell"; title = "Authorization"; ObjectID = "Bbz-lG-LFI"; */
-"Bbz-lG-LFI.title" = "Authorization";
-
-/* Class = "NSTextFieldCell"; title = "Bundle Identifier:"; ObjectID = "Ck5-if-9RS"; */
-"Ck5-if-9RS.title" = "Bundle Identifier:";
-
-/* Class = "NSTextFieldCell"; title = "Reverse the mouse wheel scroll direction"; ObjectID = "CqK-3z-D0G"; */
-"CqK-3z-D0G.title" = "Reverse the mouse wheel scroll direction";
-
-/* Class = "NSButtonCell"; title = "How fat is the cat ?"; ObjectID = "D0v-Oj-ekP"; */
-"D0v-Oj-ekP.title" = "How fat is the cat ?";
-
-/* Class = "NSTextFieldCell"; title = "Sets the duration of the scroll animation"; ObjectID = "DsD-EW-zCH"; */
-"DsD-EW-zCH.title" = "Sets the duration of the scroll animation";
-
-/* Class = "NSTextFieldCell"; title = "Next"; ObjectID = "E9l-1I-6cD"; */
-"E9l-1I-6cD.title" = "Next";
-
-/* Class = "NSViewController"; title = "Updates"; ObjectID = "EWu-DP-7Gj"; */
-"EWu-DP-7Gj.title" = "Updates";
-
-/* Class = "NSTextFieldCell"; title = "Current Version"; ObjectID = "EkY-Xx-kAn"; */
-"EkY-Xx-kAn.title" = "Current Version";
-
-/* Class = "NSButtonCell"; title = "Welcome Window"; ObjectID = "FIh-fA-18k"; */
-"FIh-fA-18k.title" = "Welcome Window";
-
-/* Class = "NSTextFieldCell"; placeholderString = "1-10"; ObjectID = "Fgm-mm-22Q"; */
-"Fgm-mm-22Q.placeholderString" = "1-10";
-
-/* Class = "NSTextFieldCell"; title = "3.00"; ObjectID = "Fgm-mm-22Q"; */
-"Fgm-mm-22Q.title" = "3.00";
-
-/* Class = "NSButtonCell"; title = "Contributors List"; ObjectID = "GWm-aK-UoV"; */
-"GWm-aK-UoV.title" = "Contributors List";
-
-/* Class = "NSTextFieldCell"; title = "Russian"; ObjectID = "Gct-aO-hq1"; */
-"Gct-aO-hq1.title" = "Russian";
-
-/* Class = "NSTextFieldCell"; title = "Speed:"; ObjectID = "Gcw-Ir-olP"; */
-"Gcw-Ir-olP.title" = "Speed:";
-
-/* Class = "NSTableColumn"; headerCell.title = "Smooth"; ObjectID = "HDo-Iu-l7K"; */
-"HDo-Iu-l7K.headerCell.title" = "Smooth";
-
-/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "HEV-nL-Tno"; */
-"HEV-nL-Tno.title" = "Text Cell";
-
-/* Class = "NSTableColumn"; headerCell.title = "PlaceHolder"; ObjectID = "HoU-us-Umx"; */
-"HoU-us-Umx.headerCell.title" = "PlaceHolder";
-
-/* Class = "NSMenuItem"; title = "⌃ Control"; ObjectID = "HrY-s6-CCB"; */
-"HrY-s6-CCB.title" = "⌃ Control";
-
-/* Class = "NSTextFieldCell"; title = "Wang Yudong(@wyudong)"; ObjectID = "I6G-zh-cEt"; */
-"I6G-zh-cEt.title" = "Wang Yudong(@wyudong)";
-
-/* Class = "NSViewController"; title = "General"; ObjectID = "ITL-GD-CPd"; */
-"ITL-GD-CPd.title" = "General";
-
-/* Class = "NSTextFieldCell"; title = " jrthsr700tmax(@jrthsr700tmax)"; ObjectID = "Imc-rJ-YnM"; */
-"Imc-rJ-YnM.title" = " jrthsr700tmax(@jrthsr700tmax)";
-
-/* Class = "NSTextFieldCell"; title = "Sets the minimum scroll distance"; ObjectID = "Jan-OY-m70"; */
-"Jan-OY-m70.title" = "Sets the minimum scroll distance";
-
-/* Class = "NSTextFieldCell"; title = "Change vertical scrolling to horizontal scrolling"; ObjectID = "KnM-kA-wn5"; */
-"KnM-kA-wn5.title" = "Change vertical scrolling to horizontal scrolling";
-
-/* Class = "NSButtonCell"; title = "Whitelist Mode"; ObjectID = "Ksp-g1-48g"; */
-"Ksp-g1-48g.title" = "Whitelist Mode";
-
-/* Class = "NSTextFieldCell"; title = "Before we smooth your mouse"; ObjectID = "Lhk-Nd-CdT"; */
-"Lhk-Nd-CdT.title" = "Before we smooth your mouse";
-
-/* Class = "NSTextFieldCell"; title = "Translation"; ObjectID = "Lhz-x5-X0I"; */
-"Lhz-x5-X0I.title" = "Translation";
-
-/* Class = "NSTextFieldCell"; title = "*"; ObjectID = "Luy-Tf-2zi"; */
-"Luy-Tf-2zi.title" = "*";
-
-/* Class = "NSButtonCell"; title = "Scroll Reverse"; ObjectID = "MAF-Hi-l48"; */
-"MAF-Hi-l48.title" = "Scroll Reverse";
-
-/* Class = "NSTextFieldCell"; title = "© 2019 Caldis. All rights reserved."; ObjectID = "MI6-Tq-Nev"; */
-"MI6-Tq-Nev.title" = "© 2019 Caldis. All rights reserved.";
-
-/* Class = "NSTextFieldCell"; title = "Automatically launch app on login"; ObjectID = "MdS-Nz-zMa"; */
-"MdS-Nz-zMa.title" = "Automatically launch app on login";
-
-/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "Mdw-fZ-Nyy"; */
-"Mdw-fZ-Nyy.title" = "Cancel";
-
-/* Class = "NSTextFieldCell"; title = "Limited by macOS's privacy restrictions of macOS, Mos only works after it is authorized to access Accessibility controls.\nIf the item already exists, just click and toggle the checkbox again."; ObjectID = "Myd-Ze-ZPf"; */
-"Myd-Ze-ZPf.title" = "Limited by macOS's privacy restrictions of macOS, Mos only works after it is authorized to access Accessibility controls.\nIf the item already exists, just click and toggle the checkbox again.";
-
-/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "P0F-Jh-wJx"; */
-"P0F-Jh-wJx.title" = "Text Cell";
-
-/* Class = "NSMenuItem"; title = "⇧ Shift"; ObjectID = "PIa-ES-2Sf"; */
-"PIa-ES-2Sf.title" = "⇧ Shift";
-
-/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "PWT-5o-Rjq"; */
-"PWT-5o-Rjq.title" = "Text Cell";
-
-/* Class = "NSTextFieldCell"; placeholderString = "1-5"; ObjectID = "Qse-ik-rgy"; */
-"Qse-ik-rgy.placeholderString" = "1-5";
-
-/* Class = "NSTextFieldCell"; title = "3.90"; ObjectID = "Qse-ik-rgy"; */
-"Qse-ik-rgy.title" = "3.90";
-
-/* Class = "NSMenuItem"; title = "Running Applications"; ObjectID = "R0d-21-g6W"; */
-"R0d-21-g6W.title" = "Running Applications";
-
-/* Class = "NSViewController"; title = "About"; ObjectID = "RfV-Ow-3mF"; */
-"RfV-Ow-3mF.title" = "About";
-
-/* Class = "NSTextFieldCell"; title = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed."; ObjectID = "Rgq-87-vjY"; */
-"Rgq-87-vjY.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
-
-/* Class = "NSTextFieldCell"; title = "Welcome to Mos"; ObjectID = "SLb-UR-lz1"; */
-"SLb-UR-lz1.title" = "Welcome to Mos";
-
-/* Class = "NSTextFieldCell"; title = "Other"; ObjectID = "SUM-eh-Lms"; */
-"SUM-eh-Lms.title" = "Other";
-
-/* Class = "NSMenuItem"; title = "⇧ Shift"; ObjectID = "Sfx-Rp-8QA"; */
-"Sfx-Rp-8QA.title" = "⇧ Shift";
-
-/* Class = "NSMenuItem"; title = "⇧ Shift"; ObjectID = "Sma-iA-YxQ"; */
-"Sma-iA-YxQ.title" = "⇧ Shift";
-
-/* Class = "NSMenuItem"; title = "Quit"; ObjectID = "SqT-eH-bOb"; */
-"SqT-eH-bOb.title" = "Quit";
-
-/* Class = "NSTextFieldCell"; title = "Joshua Park(@godly-devotion), OrcaXS(@OrcaXS)"; ObjectID = "SuH-MV-uUc"; */
-"SuH-MV-uUc.title" = "Joshua Park(@godly-devotion), OrcaXS(@OrcaXS)";
-
-/* Class = "NSButtonCell"; title = "Check Now"; ObjectID = "T9f-TL-GYj"; */
-"T9f-TL-GYj.title" = "Check Now";
-
-/* Class = "NSTextFieldCell"; title = "Rendering this chart will affect scrolling performance. Close the window when not in use."; ObjectID = "TUE-3v-CaJ"; */
+/*
+  Localizable.strings
+  Mos
+  Storybroad text internationalization
+  Created by Caldis on 2017/1/27.
+  Copyright © 2017年 Caldis. All rights reserved.
+*/
+
+// Mointor
 "TUE-3v-CaJ.title" = "Rendering this chart will affect scrolling performance. Close the window when not in use.";
 
-/* Class = "NSTextFieldCell"; title = "No One is Special"; ObjectID = "ThS-Rm-st2"; */
-"ThS-Rm-st2.title" = "No One is Special";
-
-/* Class = "NSMenuItem"; title = "⌥ Option"; ObjectID = "UJ4-y2-HO8"; */
-"UJ4-y2-HO8.title" = "⌥ Option";
-
-/* Class = "NSButtonCell"; title = "Begin smooth"; ObjectID = "V9n-HF-Vw9"; */
-"V9n-HF-Vw9.title" = "Begin smooth";
-
-/* Class = "NSTextFieldCell"; title = "Prev"; ObjectID = "VWv-6P-9Xp"; */
-"VWv-6P-9Xp.title" = "Prev";
-
-/* Class = "NSMenuItem"; title = "Disabled"; ObjectID = "Vhz-Rn-lcU"; */
-"Vhz-Rn-lcU.title" = "Disabled";
-
-/* Class = "NSMenuItem"; title = "Manually Input Application Information"; ObjectID = "Vp7-0n-aRd"; */
-"Vp7-0n-aRd.title" = "Manually Input Application Information";
-
-/* Class = "NSTextFieldCell"; title = "Smooth"; ObjectID = "Vs2-5P-BEI"; */
-"Vs2-5P-BEI.title" = "Smooth";
-
-/* Class = "NSTextFieldCell"; title = "Turn off the other smooth scrolling Application or Extensions"; ObjectID = "VsZ-Yn-TgJ"; */
-"VsZ-Yn-TgJ.title" = "Turn off the other smooth scrolling Application or Extensions";
-
-/* Class = "NSButtonCell"; title = "Inherit Global Settings"; ObjectID = "Wls-5g-cNZ"; */
-"Wls-5g-cNZ.title" = "Inherit Global Settings";
-
-/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "X1e-9u-FTA"; */
-"X1e-9u-FTA.title" = "Text Cell";
-
-/* Class = "NSTextFieldCell"; title = "Do Some Checks"; ObjectID = "XP7-rO-U3i"; */
-"XP7-rO-U3i.title" = "Do Some Checks";
-
-/* Class = "NSTextFieldCell"; title = "Smooth Scrolling"; ObjectID = "Xiq-Kf-xfP"; */
-"Xiq-Kf-xfP.title" = "Smooth Scrolling";
-
-/* Class = "NSTextFieldCell"; title = "Application Name"; ObjectID = "XjY-7g-GLL"; */
-"XjY-7g-GLL.title" = "Application Name";
-
-/* Class = "NSTableColumn"; headerCell.title = "PlaceHolder"; ObjectID = "XzN-5s-7CF"; */
-"XzN-5s-7CF.headerCell.title" = "PlaceHolder";
-
-/* Class = "NSTextFieldCell"; title = "Mos"; ObjectID = "YHn-dn-A4n"; */
-"YHn-dn-A4n.title" = "Mos";
-
-/* Class = "NSTextFieldCell"; title = "Increase scrolling speed on long pages"; ObjectID = "Z59-tN-QjE"; */
-"Z59-tN-QjE.title" = "Increase scrolling speed on long pages";
-
-/* Class = "NSTextFieldCell"; title = "Contributors"; ObjectID = "ZJY-Yg-Qev"; */
-"ZJY-Yg-Qev.title" = "Contributors";
-
-/* Class = "NSTextFieldCell"; title = "Simplified Chinese"; ObjectID = "ZMc-lN-S4q"; */
-"ZMc-lN-S4q.title" = "Simplified Chinese";
-
-/* Class = "NSMenuItem"; title = "⌘ Command"; ObjectID = "ZqO-Rs-CpS"; */
-"ZqO-Rs-CpS.title" = "⌘ Command";
-
-/* Class = "NSTextFieldCell"; title = "Application Name"; ObjectID = "a3I-0T-N5a"; */
-"a3I-0T-N5a.title" = "Application Name";
-
-/* Class = "NSButtonCell"; title = "Donate using PayPal"; ObjectID = "aPi-cE-maK"; */
-"aPi-cE-maK.title" = "Donate using PayPal";
-
-/* Class = "NSTextFieldCell"; title = "Re-run Mos again to show the hidden Icon"; ObjectID = "bB5-2R-9Da"; */
-"bB5-2R-9Da.title" = "Re-run Mos again to show the hidden Icon";
-
-/* Class = "NSTextFieldCell"; title = "Toggle Key:"; ObjectID = "bQw-5w-Yv0"; */
-"bQw-5w-Yv0.title" = "Toggle Key:";
-
-/* Class = "NSTextFieldCell"; title = "Let the mouse wheel scroll smoothly like butter"; ObjectID = "bbo-GH-WeC"; */
-"bbo-GH-WeC.title" = "Let the mouse wheel scroll smoothly like butter";
-
-/* Class = "NSViewController"; title = "Exception"; ObjectID = "bga-wG-iim"; */
-"bga-wG-iim.title" = "Exception";
-
-/* Class = "NSTextFieldCell"; title = "Duration:"; ObjectID = "bqU-Is-gFB"; */
-"bqU-Is-gFB.title" = "Duration:";
-
-/* Class = "NSMenuItem"; title = "⌘ Command"; ObjectID = "c62-LZ-JNT"; */
-"c62-LZ-JNT.title" = "⌘ Command";
-
-/* Class = "NSTextFieldCell"; title = "You need to re-run Mos from Finder-Application instead of the launch pad. (The launch pad will automatically ignore the launched app)"; ObjectID = "cIk-j1-vYt"; */
-"cIk-j1-vYt.title" = "You need to re-run Mos from Finder-Application instead of the launch pad. (The launch pad will automatically ignore the launched app)";
-
-/* Class = "NSMenuItem"; title = "Disabled"; ObjectID = "cTe-aL-0GQ"; */
-"cTe-aL-0GQ.title" = "Disabled";
-
-/* Class = "NSWindow"; title = "Preferences"; ObjectID = "cvF-hf-KVW"; */
-"cvF-hf-KVW.title" = "Preferences";
-
-/* Class = "NSMenuItem"; title = "⌃ Control"; ObjectID = "dN3-Eq-Xi1"; */
-"dN3-Eq-Xi1.title" = "⌃ Control";
-
-/* Class = "NSMenuItem"; title = "Manually Select From Finder"; ObjectID = "dhF-95-kUJ"; */
-"dhF-95-kUJ.title" = "Manually Select From Finder";
-
-/* Class = "NSTextFieldCell"; title = "Miscellaneous:"; ObjectID = "dyY-vr-dwT"; */
-"dyY-vr-dwT.title" = "Miscellaneous:";
-
-/* Class = "NSTextFieldCell"; title = "*"; ObjectID = "eEZ-km-TkJ"; */
-"eEZ-km-TkJ.title" = "*";
-
-/* Class = "NSTextFieldCell"; title = "Block Key:"; ObjectID = "ebE-Zf-T98"; */
-"ebE-Zf-T98.title" = "Block Key:";
-
-/* Class = "NSTextFieldCell"; title = "We need"; ObjectID = "foc-QS-iys"; */
-"foc-QS-iys.title" = "We need";
-
-/* Class = "NSButtonCell"; title = "Hide Status Bar Icon"; ObjectID = "hGj-vV-zcY"; */
+// PreferencesWindow
+"cvF-hf-KVW.title" = "Einstellungen";
+// General
+"ITL-GD-CPd.title" = "General";
+"pwT-er-UCo.title" = "blättern:";
+"jtK-hi-Ami.title" = "reibungsloser Bildlauf";
+"bbo-GH-WeC.title" = "Scrollen mit dem Mausrad butterweich machen";
+"MAF-Hi-l48.title" = "Rückwärts blättern";
+"CqK-3z-D0G.title" = "Umkehren der Scrollrichtung des Mausrads";
+"dyY-vr-dwT.title" = "Sonstiges:";
+"xoR-7p-3qj.title" = "Start beim Login";
+"MdS-Nz-zMa.title" = "Automatisch starten";
 "hGj-vV-zcY.title" = "Hide Status Bar Icon";
-
-/* Class = "NSTextFieldCell"; title = "Dash Key:"; ObjectID = "hOO-M8-I1z"; */
-"hOO-M8-I1z.title" = "Dash Key:";
-
-/* Class = "NSMenuItem"; title = "Preferences"; ObjectID = "hnf-e0-HXM"; */
-"hnf-e0-HXM.title" = "Preferences";
-
-/* Class = "NSTextFieldCell"; placeholderString = "Safari"; ObjectID = "hth-D3-zzu"; */
-"hth-D3-zzu.placeholderString" = "Safari";
-
-/* Class = "NSViewController"; title = "Advanced"; ObjectID = "iW5-CD-5OC"; */
+"bB5-2R-9Da.title" = "Re-run Mos again to show the hidden Icon";
+"cIk-j1-vYt.title" = "You need to re-run Mos from Finder-Application instead of the launch pad. (The launch pad will automatically ignore the launched app)";
+// Advanced
 "iW5-CD-5OC.title" = "Advanced";
-
-/* Class = "NSTextFieldCell"; title = "Some application (E.g. Logitech Options) will apply extra handlers to your mouse. \nJust turn off the smooth scrolling in these apps, leave the rest to us."; ObjectID = "ia9-EG-sGg"; */
-"ia9-EG-sGg.title" = "Some application (E.g. Logitech Options) will apply extra handlers to your mouse. \nJust turn off the smooth scrolling in these apps, leave the rest to us.";
-
-/* Class = "NSTextFieldCell"; title = "Temporarily block smooth scrolling"; ObjectID = "iki-Jk-qSr"; */
-"iki-Jk-qSr.title" = "Temporarily block smooth scrolling";
-
-/* Class = "NSTableColumn"; headerCell.title = "PlaceHolder"; ObjectID = "jMl-eu-cU8"; */
-"jMl-eu-cU8.headerCell.title" = "PlaceHolder";
-
-/* Class = "NSTextFieldCell"; title = "You can apply a separate configuration to some programs by clicking the '+' on below"; ObjectID = "jaq-Cb-dKM"; */
-"jaq-Cb-dKM.title" = "You can apply a separate configuration to some programs by clicking the '+' on below";
-
-/* Class = "NSButtonCell"; title = "Smooth Scrolling"; ObjectID = "jtK-hi-Ami"; */
-"jtK-hi-Ami.title" = "Smooth Scrolling";
-
-/* Class = "NSTextFieldCell"; title = "Traditional Chinese"; ObjectID = "jzQ-oc-Ugr"; */
-"jzQ-oc-Ugr.title" = "Traditional Chinese";
-
-/* Class = "NSTextFieldCell"; title = "Application Name:"; ObjectID = "kUr-cl-KRm"; */
-"kUr-cl-KRm.title" = "Application Name:";
-
-/* Class = "NSTextFieldCell"; title = "Advanced"; ObjectID = "mfa-4t-oRD"; */
-"mfa-4t-oRD.title" = "Advanced";
-
-/* Class = "NSMenuItem"; title = "⌥ Option"; ObjectID = "mmw-45-VYt"; */
-"mmw-45-VYt.title" = "⌥ Option";
-
-/* Class = "NSTextFieldCell"; title = "Scroll Setting:"; ObjectID = "pwT-er-UCo"; */
-"pwT-er-UCo.title" = "Scroll Setting:";
-
-/* Class = "NSTextFieldCell"; title = "Limited by MacOS, you may need to reauthorization when Mos updated. If the entries already exists, please delete and re-add."; ObjectID = "qGs-TM-PTM"; */
-"qGs-TM-PTM.title" = "Limited by MacOS, you may need to reauthorization when Mos updated. If the entries already exists, please delete and re-add.";
-
-/* Class = "NSTableColumn"; headerCell.title = "Reverse"; ObjectID = "rd0-ca-ufI"; */
-"rd0-ca-ufI.headerCell.title" = "Reverse";
-
-/* Class = "NSTextFieldCell"; title = "Reverse"; ObjectID = "sKz-VE-Yfb"; */
-"sKz-VE-Yfb.title" = "Reverse";
-
-/* Class = "NSButtonCell"; title = "Reset to defaults"; ObjectID = "t2D-X2-Y6W"; */
-"t2D-X2-Y6W.title" = "Reset to defaults";
-
-/* Class = "NSMenu"; title = "Running Applications"; ObjectID = "tXQ-GJ-k5M"; */
-"tXQ-GJ-k5M.title" = "Running Applications";
-
-/* Class = "NSTextFieldCell"; title = "Scientists have proven that running on multiple smooth scrolling application at the same time will lead to undescribed consequences. Please close the other, or disable the smooth function of it. Such as the smooth scrolling on Logitech Options or SmoothScroll extension on Chrome."; ObjectID = "u7p-zc-ERS"; */
-"u7p-zc-ERS.title" = "Scientists have proven that running on multiple smooth scrolling application at the same time will lead to undescribed consequences. Please close the other, or disable the smooth function of it. Such as the smooth scrolling on Logitech Options or SmoothScroll extension on Chrome.";
-
-/* Class = "NSTextFieldCell"; title = "The whitelist mode will make Mos only apply to apps within the exception list."; ObjectID = "v26-RK-BtL"; */
-"v26-RK-BtL.title" = "The whitelist mode will make Mos only apply to apps within the exception list.";
-
-/* Class = "NSMenuItem"; title = "Disabled"; ObjectID = "vFk-37-HRU"; */
+"hOO-M8-I1z.title" = "Dash Key:";
+"Vhz-Rn-lcU.title" = "Disabled";
+"Z59-tN-QjE.title" = "Increase scrolling speed on long pages";
+"bQw-5w-Yv0.title" = "Toggle Key:";
+"cTe-aL-0GQ.title" = "Disabled";
+"KnM-kA-wn5.title" = "Change vertical scrolling to horizontal scrolling";
+"ebE-Zf-T98.title" = "Block Key:";
 "vFk-37-HRU.title" = "Disabled";
-
-/* Class = "NSTextFieldCell"; placeholderString = "10-100"; ObjectID = "vcQ-FZ-z8x"; */
-"vcQ-FZ-z8x.placeholderString" = "10-100";
-
-/* Class = "NSTextFieldCell"; title = "35.00"; ObjectID = "vcQ-FZ-z8x"; */
-"vcQ-FZ-z8x.title" = "35.00";
-
-/* Class = "NSTextFieldCell"; title = "Check for updates:"; ObjectID = "vdI-K4-SBh"; */
+"iki-Jk-qSr.title" = "Temporarily block smooth scrolling";
+"B8B-hi-x3v.title" = "Step:";
+"Jan-OY-m70.title" = "Sets the minimum scroll distance";
+"Gcw-Ir-olP.title" = "Speed:";
+"B3O-iI-E7v.title" = "Sets scrolling acceleration";
+"bqU-Is-gFB.title" = "Duration:";
+"DsD-EW-zCH.title" = "Sets the duration of the scroll animation";
+"t2D-X2-Y6W.title" = "Reset to defaults";
+"Rgq-87-vjY.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
+// AdvancedWithApplication
+"Wls-5g-cNZ.title" = "Inherit Global Settings";
+// Exception
+"Vs2-5P-BEI.title" = "Smooth";
+"sKz-VE-Yfb.title" = "Reverse";
+"89F-B4-NIY.title" = "Application";
+"mfa-4t-oRD.title" = "Advanced";
+"I5j-Bv-Aiy.title" = "Needs access to Accessibility controls";
+"FU4-wI-K8f.title" = "In order to customize the scroll behavior for certain applications, please allow Mos access to Accessibility controls.";
+"Pw5-2q-7Fa.title" = "Allow accessibility access";
+"bga-wG-iim.title" = "Exception";
+"Rgu-cb-5lp.title" = "Customize per Application:";
+"Ksp-g1-48g.title" = "Whitelist Mode";
+"v26-RK-BtL.title" = "The whitelist mode will make Mos only apply to apps within the exception list.";
+"ThS-Rm-st2.title" = "No One is Special";
+"jaq-Cb-dKM.title" = "You can apply a separate configuration to some apps by clicking the \'+\' button below";
+"R0d-21-g6W.title" = "Running Applications";
+"dhF-95-kUJ.title" = "Manually Select From Finder";
+"Vp7-0n-aRd.title" = "Manually Input Application Information";
+"kUr-cl-KRm.title" = "Application Name:";
+"Ck5-if-9RS.title" = "Bundle Identifier:";
+"Mdw-fZ-Nyy.title" = "Cancel";
+"2v4-AC-WG5.title" = "Confirm";
+// Updates
+"EWu-DP-7Gj.title" = "Updates";
 "vdI-K4-SBh.title" = "Check for updates:";
-
-/* Class = "NSWindow"; title = "Welcome to Mos"; ObjectID = "wmL-zT-JRH"; */
-"wmL-zT-JRH.title" = "Welcome to Mos";
-
-/* Class = "NSTextFieldCell"; title = "English"; ObjectID = "wrT-sk-Qjf"; */
-"wrT-sk-Qjf.title" = "English";
-
-/* Class = "NSTableColumn"; headerCell.title = "PlaceHolder"; ObjectID = "wwJ-1v-BB2"; */
-"wwJ-1v-BB2.headerCell.title" = "PlaceHolder";
-
-/* Class = "NSTableColumn"; headerCell.title = " Application"; ObjectID = "xfG-Cd-oIk"; */
-"xfG-Cd-oIk.headerCell.title" = " Application";
-
-/* Class = "NSTextFieldCell"; title = "Waiting for you"; ObjectID = "xnQ-YR-qNR"; */
-"xnQ-YR-qNR.title" = "Waiting for you";
-
-/* Class = "NSButtonCell"; title = "Launch on Login"; ObjectID = "xoR-7p-3qj"; */
-"xoR-7p-3qj.title" = "Launch on Login";
-
-/* Class = "NSButtonCell"; title = "Home Page"; ObjectID = "yDf-dn-Mcz"; */
+"T9f-TL-GYj.title" = "Check Now";
+"5oM-oR-Dsq.title" = "Current Version";
+// About
+"RfV-Ow-3mF.title" = "About";
+"5cx-xS-eRe.title" = "Just some little job for your mouse.";
 "yDf-dn-Mcz.title" = "Home Page";
+"99M-8D-HLN.title" = "GitHub";
+"AM8-cj-DnH.title" = "Feed 🍥 a fet MEOW";
+"aPi-cE-maK.title" = "Donate using PayPal";
+"FIh-fA-18k.title" = "Welcome Window";
+"265-WS-XEd.title" = "The Contributors";
+"ZJY-Yg-Qev.title" = "Contributors";
+"Lhz-x5-X0I.title" = "Translation";
+"GWm-aK-UoV.title" = "Contributors List";
+"D0v-Oj-ekP.title" = "How fat is this cat?";
 
-/* Class = "NSTextFieldCell"; title = "Your mouse is about to get a smoothest scrolling experience.\nPick up your mouse, we just have a few thing that you need to check."; ObjectID = "yFl-4N-WcD"; */
+// IntroductionWindow
+"VWv-6P-9Xp.title" = "Prev";
+"E9l-1I-6cD.title" = "Next";
+"11f-uB-gEM.title" = "Introducting";
+"YHn-dn-A4n.title" = "Mos";
 "yFl-4N-WcD.title" = "Your mouse is about to get a smoothest scrolling experience.\nPick up your mouse, we just have a few thing that you need to check.";
+"016-R7-U4x.title" = "You need";
+"XP7-rO-U3i.title" = "Do Some Checks";
+"ia9-EG-sGg.title" = "Some application (E.g. Logitech Options) will apply some handlers to the mouse. \nBut don't worry, just turn off the smooth scrolling in these apps, you can still use them as usual, and leave the rest to us.";
+"foc-QS-iys.title" = "We need";
+"Bbz-lG-LFI.title" = "Authorization";
+"Myd-Ze-ZPf.title" = "Limited by macOS's privacy restrictions, Mos will only works after it is authorized to access Accessibility controls.\nIf the item already exists, just click and toggle the checkbox again.";
 
-/* Class = "NSTextFieldCell"; title = "Exception Applications"; ObjectID = "yXi-qP-Tje"; */
-"yXi-qP-Tje.title" = "Exception Applications";
+// WelcomeWindow
+"SLb-UR-lz1.title" = "Willkomen bei Mos";
+"Lhk-Nd-CdT.title" = "Before we smoothen your scrolling";
+"7o8-5p-CQX.title" = "There are just a few more thing to tweak";
+"VsZ-Yn-TgJ.title" = "Turn off the other smooth scrolling Application or Extensions";
+"u7p-zc-ERS.title" = "Scientists have proven that running multiple smooth scrolling applications at the same time will lead to incommunicable consequences. Please close -or disable the smooth function of- any other applications, such as smooth scrolling in Logitech Options or the SmoothScroll extension on Chrome.";
+"3QI-xO-wPK.title" = "Allow Mos access to Accessibility controls";
+"7bu-fM-Bjm.title" = "The greater the power, the greater the responsibility. To smooth your mouse scrolling, Mos needs to create an intermediate layer between the mouse and your system to optimize your mouse. So we need to access to accessibility controls to get this power.";
+"qGs-TM-PTM.title" = "LDue to the limitations of MacOS, you may need to repeat this authorization when Mos is updated. If, in this circumstance, the entry already exists, please delete and re-add it.";
+"V9n-HF-Vw9.title" = "Begin Smoothening";
 
-/* Class = "NSMenuItem"; title = "Item"; ObjectID = "zFZ-n3-v9j"; */
-"zFZ-n3-v9j.title" = "Item";
-
-/* Class = "NSTextFieldCell"; title = "Mos"; ObjectID = "zFt-Vs-6gg"; */
-"zFt-Vs-6gg.title" = "Mos";
+// Popover
+"hnf-e0-HXM.title" = "Preferences";
+"SqT-eH-bOb.title" = "Quit";
