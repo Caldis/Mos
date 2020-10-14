@@ -189,19 +189,14 @@ public class Utils {
             return nil
         }
     }
-    class func oldGetApplicationBundleIdFrom(pid: pid_t) -> String? {
-        // 更新列表
-        let runningApps = NSWorkspace.shared.runningApplications
-        if let matchApp = runningApps.filter({$0.processIdentifier == pid}).first {
-            // 如果找到 bundleId 则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
-            if let bundleId = matchApp.bundleIdentifier {
-                return bundleId as String?
-            } else {
-                let ppid = ProcessUtils.getParentPid(from: matchApp.processIdentifier)
-                return ppid==1 ? nil : getApplicationBundleIdFrom(pid: ppid)
-            }
+    class func getApplicationBundleIdRecursivelyFrom(pid: pid_t) -> String? {
+        if let bundleId = NSRunningApplication.init(processIdentifier: pid)?.bundleIdentifier {
+            // 先使用 BundleId 查找
+            return bundleId
         } else {
-            return nil
+            // 否则查找父进程
+            let ppid = ProcessUtils.getParentPid(from: pid)
+            return ppid==1 ? nil : getApplicationBundleIdRecursivelyFrom(pid: ppid)
         }
     }
     

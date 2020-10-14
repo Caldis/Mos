@@ -33,6 +33,7 @@ class ScrollCore {
     var smoothDuration = Options.shared.scrollAdvanced.durationTransition
     // 目标应用数据
     var previousScrollTargetProcessID = 0.0 // 用于在鼠标移动到不同窗口时停止滚动
+    var currentScrollTargetProcessID = 0.0
     // 例外应用数据
     var exceptionalApplication: ExceptionalApplication?
     var currentExceptionalApplication: ExceptionalApplication? // 用于区分按下热键及抬起时的作用目标
@@ -41,8 +42,7 @@ class ScrollCore {
     // 事件发送器
     var scrollEventPoster: CVDisplayLink?
     // 拦截层
-    var scrollEventHeadInterceptor: Interceptor?
-    var scrollEventTailInterceptor: Interceptor?
+    var scrollEventInterceptor: Interceptor?
     var hotkeyEventInterceptor: Interceptor?
     var mouseEventInterceptor: Interceptor?
     var tapKeeperTimer: Timer?
@@ -60,7 +60,7 @@ class ScrollCore {
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
         if ScrollUtils.shared.isMouse(of: event) {
             // 获取目标窗口 BundleID
-            let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation(and: event)
+            let targetBID = ScrollUtils.shared.getBundleByPid(from: event)
             // 获取列表中应用程序的列外设置信息
             ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
             // 平滑/翻转
@@ -123,22 +123,12 @@ class ScrollCore {
         }
     }
     
-    // 滚动事件截取处理:尾部
-    let scrollEventTailCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        let currentProcessID = event.getDoubleValueField(.eventTargetUnixProcessID)
-        if (ScrollCore.shared.previousScrollTargetProcessID != 0.0 && ScrollCore.shared.previousScrollTargetProcessID != currentProcessID) {
-            ScrollCore.shared.pauseHandlingScroll()
-        }
-        ScrollCore.shared.previousScrollTargetProcessID = currentProcessID
-        return nil
-    }
-    
     // 热键事件处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 获取当前按键
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         // 获取目标应用程序
-        let targetBID = ScrollUtils.shared.getBundleIdFromMouseLocation(and: event)
+        let targetBID = ScrollUtils.shared.getBundleByPid(from: event)
         let targetAppliaction = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
         // 判断快捷键
         switch keyCode {
@@ -235,33 +225,25 @@ class ScrollCore {
         if isCoreRunning {return}
         isCoreRunning = true
         // 截取事件
-        scrollEventHeadInterceptor = Interceptor(
+        scrollEventInterceptor = Interceptor(
             event: scrollEventMask,
-            handleBy: scrollEventHeadCallBack,
-            listenOn: .cghidEventTap,
-            placeAt: .tailAppendEventTap,
+            handleBy: scrollEventCallBack,
+            listenOn: .cgAnnotatedSessionEventTap,
+            placeAt: .headInsertEventTap,
             for: .defaultTap
         )
-        // CPU占用上升了将近一倍...
-        // scrollEventTailInterceptor = Interceptor(
-        //     event: scrollEventMask,
-        //     handleBy: scrollEventTailCallBack,
-        //     listenOn: .cgAnnotatedSessionEventTap,
-        //     placeAt: .tailAppendEventTap,
-        //     for: .listenOnly
-        // )
         hotkeyEventInterceptor = Interceptor(
             event: hotkeyEventMask,
             handleBy: hotkeyEventCallBack,
-            listenOn: .cghidEventTap,
-            placeAt: .tailAppendEventTap,
+            listenOn: .cgAnnotatedSessionEventTap,
+            placeAt: .headInsertEventTap,
             for: .listenOnly
         )
         mouseEventInterceptor = Interceptor(
             event: mouseLeftEventMask,
             handleBy: mouseLeftEventCallBack,
-            listenOn: .cghidEventTap,
-            placeAt: .tailAppendEventTap,
+            listenOn: .cgAnnotatedSessionEventTap,
+            placeAt: .headInsertEventTap,
             for: .listenOnly
         )
         // 初始化滚动事件发送器
@@ -280,6 +262,7 @@ class ScrollCore {
         cleanScrollBuffer()
         disableScrollEventPoster()
         previousScrollTargetProcessID = 0.0
+        currentScrollTargetProcessID = 0.0
     }
     // 停止滚动处理
     func endHandlingScroll() {
@@ -291,15 +274,13 @@ class ScrollCore {
         // 停止滚动事件发送器
         disableScrollEventPoster()
         // 停止截取事件
-        scrollEventHeadInterceptor?.stop()
-        scrollEventTailInterceptor?.stop()
+        scrollEventInterceptor?.stop()
         hotkeyEventInterceptor?.stop()
         mouseEventInterceptor?.stop()
     }
     // 守护进程
     @objc func tapKeeper() {
-        scrollEventHeadInterceptor?.check()
-        scrollEventTailInterceptor?.check()
+        scrollEventInterceptor?.check()
         hotkeyEventInterceptor?.check()
         mouseEventInterceptor?.check()
     }
@@ -386,7 +367,7 @@ class ScrollCore {
         // 变换滚动结果
         let swapedValue = weapScrollIfToggling(with: filteredValue, toggling: toggleScroll)
         // 发送滚动结果
-        MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
+        MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x), processID: ScrollCore.shared.currentScrollTargetProcessID)
         // 如果临近目标距离小于精确度门限则暂停滚动
         if scrollPulse.y.magnitude<=Options.shared.scrollAdvanced.precision && scrollPulse.x.magnitude<=Options.shared.scrollAdvanced.precision {
             pauseHandlingScroll()
