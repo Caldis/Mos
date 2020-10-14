@@ -54,6 +54,14 @@ class ScrollCore {
     
     // 滚动事件截取处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        // 更新当前 ProcessID
+        ScrollCore.shared.previousScrollTargetProcessID = ScrollCore.shared.currentScrollTargetProcessID
+        ScrollCore.shared.currentScrollTargetProcessID = event.getDoubleValueField(.eventTargetUnixProcessID)
+        // 切换目标窗口时停止滚动
+        if ScrollCore.shared.previousScrollTargetProcessID != ScrollCore.shared.currentScrollTargetProcessID && ScrollCore.shared.previousScrollTargetProcessID != 0.0 {
+            ScrollCore.shared.pauseHandlingScroll()
+            return nil
+        }
         // 避免处理循环事件
         let isEventProcessedByMos = event.getDoubleValueField(.eventSourceUserData) == 131519.0
         if isEventProcessedByMos {
