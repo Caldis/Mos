@@ -14,6 +14,7 @@
 @interface MouseEvent : NSObject
 
 +(void)scroll:(uint32_t)dimension yScroll:(int32_t)yScroll xScroll:(int32_t)xScroll;
++(void)scroll:(uint32_t)dimension yScroll:(int32_t)yScroll xScroll:(int32_t)xScroll processID:(double)processID;
 +(void)scroll:(uint32_t)dimension yScroll:(int32_t)yScroll xScroll:(int32_t)xScroll scrollPhase:(int32_t)scrollPhase momentumPhase:(int32_t)momentumPhase;
 
 @end

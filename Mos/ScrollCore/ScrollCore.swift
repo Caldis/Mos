@@ -52,8 +52,13 @@ class ScrollCore {
     let mouseLeftEventMask = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
     let mouseRightEventMask = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
     
-    // 滚动事件截取处理:头部
-    let scrollEventHeadCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+    // 滚动事件截取处理
+    let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        // 避免处理循环事件
+        let isEventProcessedByMos = event.getDoubleValueField(.eventSourceUserData) == 131519.0
+        if isEventProcessedByMos {
+            return Unmanaged.passUnretained(event)
+        }
         // 是否返回原始事件 (不启用平滑时)
         var returnOriginalEvent = true
         // 判断输入源 (无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入)

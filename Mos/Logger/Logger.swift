@@ -14,7 +14,7 @@ class Logger {
     class func getParsedLog(form event: CGEvent) -> String {
         return """
         Events from the Trackpad: \(ScrollUtils.shared.isTouchPad(of: event))
-        Events Target BundleId: \(String(describing: ScrollUtils.shared.getBundleIdFromMouseLocation(and: event) ?? "-"))
+        Events Target BundleId: \(String(describing: ScrollUtils.shared.getBundleByPid(from: event) ?? "-"))
         """
     }
     
