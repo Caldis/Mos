@@ -271,7 +271,6 @@
 			children = (
 				22142DA21E25344E00E4BFBF /* Mos */,
 				22142DA11E25344E00E4BFBF /* Products */,
-				D1F0145B7D2FC22D54587737 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -349,13 +348,6 @@
 				0B12EF21203AE0F50058B169 /* PreferencesWindow */,
 			);
 			path = Windows;
-			sourceTree = "<group>";
-		};
-		D1F0145B7D2FC22D54587737 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
