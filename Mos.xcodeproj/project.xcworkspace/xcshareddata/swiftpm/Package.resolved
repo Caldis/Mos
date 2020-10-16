@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Charts",
+        "repositoryURL": "https://github.com/danielgindi/Charts",
+        "state": {
+          "branch": null,
+          "revision": "66546404a6739173b8e436ab6bc1f2897cd08594",
+          "version": "3.6.0"
+        }
+      },
+      {
+        "package": "LoginServiceKit",
+        "repositoryURL": "https://github.com/Clipy/LoginServiceKit",
+        "state": {
+          "branch": null,
+          "revision": "14e88a763ddd230708060c52e5be2662d9142e91",
+          "version": "2.2.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

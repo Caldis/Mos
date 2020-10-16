@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 48;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,6 +22,8 @@
 		0BC2AD2F20F3BA090084416B /* PreferencesContributorsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC2AD2E20F3BA090084416B /* PreferencesContributorsViewController.swift */; };
 		0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */; };
 		0BE4C93B20617C6E0001EA0E /* ScrollFiller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */; };
+		0BE5A292253A1168006D61C0 /* LoginServiceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A291253A1168006D61C0 /* LoginServiceKit */; };
+		0BE5A296253A119C006D61C0 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A295253A119C006D61C0 /* Charts */; };
 		22003C6E1E8555F0001220BC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22003C6D1E8555F0001220BC /* Utils.swift */; };
 		22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA31E25344E00E4BFBF /* AppDelegate.swift */; };
 		22142DA61E25344E00E4BFBF /* MonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* MonitorViewController.swift */; };
@@ -54,7 +56,6 @@
 		23BB4D3121D775D4009B51E9 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BB4D3021D775D4009B51E9 /* EventMonitor.swift */; };
 		23E3C96D21DCE8F10098B107 /* StatusItemPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E3C96C21DCE8F10098B107 /* StatusItemPopoverView.swift */; };
 		23E9673F23613D1100E652F6 /* PreferencesExceptionInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E9673E23613D1100E652F6 /* PreferencesExceptionInputViewController.swift */; };
-		6F6A19043F716EE54DA2AAC4 /* libPods-Mos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CC1CC4115D84907000EEDCD /* libPods-Mos.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -138,9 +139,6 @@
 		23BB4D3021D775D4009B51E9 /* EventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMonitor.swift; sourceTree = "<group>"; };
 		23E3C96C21DCE8F10098B107 /* StatusItemPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemPopoverView.swift; sourceTree = "<group>"; };
 		23E9673E23613D1100E652F6 /* PreferencesExceptionInputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesExceptionInputViewController.swift; sourceTree = "<group>"; };
-		2A3B81BD9BE95DBB59D48D07 /* Pods-Mos.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mos.release.xcconfig"; path = "Target Support Files/Pods-Mos/Pods-Mos.release.xcconfig"; sourceTree = "<group>"; };
-		5CC1CC4115D84907000EEDCD /* libPods-Mos.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Mos.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BDC179607B6A5D3C7F24EC0C /* Pods-Mos.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mos.debug.xcconfig"; path = "Target Support Files/Pods-Mos/Pods-Mos.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,7 +146,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F6A19043F716EE54DA2AAC4 /* libPods-Mos.a in Frameworks */,
+				0BE5A292253A1168006D61C0 /* LoginServiceKit in Frameworks */,
+				0BE5A296253A119C006D61C0 /* Charts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,7 +271,6 @@
 			children = (
 				22142DA21E25344E00E4BFBF /* Mos */,
 				22142DA11E25344E00E4BFBF /* Products */,
-				EFA6920C9C4D4D40572952BC /* Pods */,
 				D1F0145B7D2FC22D54587737 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -356,18 +354,8 @@
 		D1F0145B7D2FC22D54587737 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5CC1CC4115D84907000EEDCD /* libPods-Mos.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		EFA6920C9C4D4D40572952BC /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				BDC179607B6A5D3C7F24EC0C /* Pods-Mos.debug.xcconfig */,
-				2A3B81BD9BE95DBB59D48D07 /* Pods-Mos.release.xcconfig */,
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -377,17 +365,20 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 22142DC51E25344F00E4BFBF /* Build configuration list for PBXNativeTarget "Mos" */;
 			buildPhases = (
-				7D2544E6C3A2E49AAFB38FE6 /* [CP] Check Pods Manifest.lock */,
 				22142D9C1E25344E00E4BFBF /* Sources */,
 				22142D9D1E25344E00E4BFBF /* Frameworks */,
-				22142D9E1E25344E00E4BFBF /* Resources */,
 				221E91D81E69A20500215A67 /* Copy Files */,
+				22142D9E1E25344E00E4BFBF /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Mos;
+			packageProductDependencies = (
+				0BE5A291253A1168006D61C0 /* LoginServiceKit */,
+				0BE5A295253A119C006D61C0 /* Charts */,
+			);
 			productName = Mos;
 			productReference = 22142DA01E25344E00E4BFBF /* Mos.app */;
 			productType = "com.apple.product-type.application";
@@ -432,6 +423,10 @@
 				ko,
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
+			packageReferences = (
+				0BE5A290253A1168006D61C0 /* XCRemoteSwiftPackageReference "LoginServiceKit" */,
+				0BE5A294253A119C006D61C0 /* XCRemoteSwiftPackageReference "Charts" */,
+			);
 			productRefGroup = 22142DA11E25344E00E4BFBF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -453,31 +448,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		7D2544E6C3A2E49AAFB38FE6 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Mos-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		22142D9C1E25344E00E4BFBF /* Sources */ = {
@@ -674,18 +644,18 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
 		22142DC61E25344F00E4BFBF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BDC179607B6A5D3C7F24EC0C /* Pods-Mos.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 20200305;
@@ -693,7 +663,10 @@
 				DEVELOPMENT_TEAM = 2H959AEV62;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Mos/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MARKETING_VERSION = 3.1.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -708,18 +681,20 @@
 		};
 		22142DC71E25344F00E4BFBF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2A3B81BD9BE95DBB59D48D07 /* Pods-Mos.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 20200305;
 				DEVELOPMENT_TEAM = 2H959AEV62;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Mos/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MARKETING_VERSION = 3.1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -754,6 +729,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0BE5A290253A1168006D61C0 /* XCRemoteSwiftPackageReference "LoginServiceKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Clipy/LoginServiceKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.2.0;
+			};
+		};
+		0BE5A294253A119C006D61C0 /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/danielgindi/Charts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0BE5A291253A1168006D61C0 /* LoginServiceKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0BE5A290253A1168006D61C0 /* XCRemoteSwiftPackageReference "LoginServiceKit" */;
+			productName = LoginServiceKit;
+		};
+		0BE5A295253A119C006D61C0 /* Charts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0BE5A294253A119C006D61C0 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = Charts;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 22142D981E25344E00E4BFBF /* Project object */;
 }
