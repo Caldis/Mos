@@ -136,10 +136,18 @@ extension StatusItemManager {
 extension StatusItemManager {
     // 显示状态栏图标
     class func showStatusItem() {
-        StatusItemManager.statusItem.length = NSStatusItem.variableLength
+        if #available(OSX 10.12, *) {
+            self.statusItem.isVisible = true
+        } else {
+            self.statusItem.length = NSStatusItem.variableLength
+        }
     }
     // 隐藏状态栏图标
     class func hideStatusItem() {
-        StatusItemManager.statusItem.length = 0.0
+        if #available(OSX 10.12, *) {
+            self.statusItem.isVisible = false
+        } else {
+            self.statusItem.length = 0.0
+        }
     }
 }
