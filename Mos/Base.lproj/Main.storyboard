@@ -669,7 +669,7 @@
                                 </textFieldCell>
                             </textField>
                             <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="tRq-hb-iBK">
-                                <rect key="frame" x="200" y="22" width="201" height="52"/>
+                                <rect key="frame" x="201" y="23" width="199" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="195" id="bGw-tw-b6e"/>
                                     <constraint firstAttribute="height" constant="45" id="sn6-ZS-RPN"/>
@@ -691,7 +691,7 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2UK-rI-Gkw">
-                                <rect key="frame" x="397" y="131" width="156" height="50"/>
+                                <rect key="frame" x="398" y="132" width="154" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="43" id="QfH-WZ-dur"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="cT7-2u-t3v"/>
@@ -2249,12 +2249,12 @@ Gw
         <scene sceneID="eHC-0y-R7N">
             <objects>
                 <viewController id="zex-mK-IcT" customClass="PreferencesContributorsViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" misplaced="YES" id="NbZ-BN-bEt">
+                    <view key="view" id="NbZ-BN-bEt">
                         <rect key="frame" x="0.0" y="0.0" width="470" height="264"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wbo-Wg-RyO">
-                                <rect key="frame" x="18" y="168" width="434" height="19"/>
+                                <rect key="frame" x="18" y="170" width="434" height="19"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Translation" id="Lhz-x5-X0I">
                                     <font key="font" metaFont="systemUltraLight" size="16"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2262,7 +2262,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="K8n-u9-1XP">
-                                <rect key="frame" x="119" y="140" width="333" height="13"/>
+                                <rect key="frame" x="119" y="142" width="333" height="13"/>
                                 <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title="Joshua Park(@godly-devotion), OrcaXS(@OrcaXS)" id="SuH-MV-uUc">
                                     <font key="font" metaFont="systemUltraLight" size="10"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2270,7 +2270,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CL7-Pu-ouN">
-                                <rect key="frame" x="18" y="207" width="434" height="35"/>
+                                <rect key="frame" x="18" y="209" width="434" height="35"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Contributors" id="ZJY-Yg-Qev">
                                     <font key="font" metaFont="systemUltraLight" size="30"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2278,7 +2278,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8ZB-BU-sKn">
-                                <rect key="frame" x="18" y="142" width="95" height="11"/>
+                                <rect key="frame" x="18" y="144" width="95" height="11"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="English" id="wrT-sk-Qjf">
                                     <font key="font" metaFont="miniSystemBold"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2286,7 +2286,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nmu-9V-mMs">
-                                <rect key="frame" x="18" y="121" width="95" height="11"/>
+                                <rect key="frame" x="18" y="123" width="95" height="11"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Simplified Chinese" id="ZMc-lN-S4q">
                                     <font key="font" metaFont="miniSystemBold"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2294,7 +2294,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="e40-ep-Ivj">
-                                <rect key="frame" x="119" y="119" width="333" height="13"/>
+                                <rect key="frame" x="119" y="121" width="333" height="13"/>
                                 <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title="Wang Yudong(@wyudong)" id="I6G-zh-cEt">
                                     <font key="font" metaFont="systemUltraLight" size="10"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2302,7 +2302,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rXK-39-g8g">
-                                <rect key="frame" x="18" y="100" width="95" height="11"/>
+                                <rect key="frame" x="18" y="102" width="95" height="11"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Traditional Chinese" id="jzQ-oc-Ugr">
                                     <font key="font" metaFont="miniSystemBold"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2310,7 +2310,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OhB-iv-ZYO">
-                                <rect key="frame" x="18" y="79" width="95" height="11"/>
+                                <rect key="frame" x="18" y="81" width="95" height="11"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Russian" id="Gct-aO-hq1">
                                     <font key="font" metaFont="miniSystemBold"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2318,7 +2318,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FB0-Zk-k1Y">
-                                <rect key="frame" x="18" y="58" width="95" height="11"/>
+                                <rect key="frame" x="18" y="60" width="95" height="11"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Other" id="SUM-eh-Lms">
                                     <font key="font" metaFont="miniSystemBold"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2326,7 +2326,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dKF-OI-Qn5">
-                                <rect key="frame" x="119" y="98" width="333" height="13"/>
+                                <rect key="frame" x="119" y="100" width="333" height="13"/>
                                 <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title=" jrthsr700tmax(@jrthsr700tmax)" id="Imc-rJ-YnM">
                                     <font key="font" metaFont="systemUltraLight" size="10"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2334,7 +2334,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2Oa-q8-f7F">
-                                <rect key="frame" x="119" y="77" width="333" height="13"/>
+                                <rect key="frame" x="119" y="79" width="333" height="13"/>
                                 <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title="Andrew Mclaren(@mclvren)" id="2v8-3K-NkQ">
                                     <font key="font" metaFont="systemUltraLight" size="10"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2342,7 +2342,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uh2-b5-ZUZ">
-                                <rect key="frame" x="119" y="56" width="333" height="13"/>
+                                <rect key="frame" x="119" y="58" width="333" height="13"/>
                                 <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title="Waiting for you" id="xnQ-YR-qNR">
                                     <font key="font" metaFont="systemUltraLight" size="10"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -2350,7 +2350,7 @@ Gw
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RuK-DK-wea">
-                                <rect key="frame" x="132" y="16" width="206" height="23"/>
+                                <rect key="frame" x="133" y="17" width="204" height="23"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="200" id="9xz-Yt-Nvx"/>
                                 </constraints>
@@ -2425,7 +2425,7 @@ Gw
                                 <rect key="frame" x="0.0" y="615" width="629" height="5"/>
                             </box>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ky1-pk-TF3">
-                                <rect key="frame" x="37" y="634" width="555" height="39"/>
+                                <rect key="frame" x="38" y="635" width="553" height="37"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="32" id="WOc-ub-6eO"/>
                                 </constraints>

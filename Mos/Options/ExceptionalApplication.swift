@@ -14,6 +14,7 @@ class ExceptionalApplication: Codable, Equatable {
     var name: String?
     var path: String?
     var bundleId: String
+    var bundleURL: String?
     // 继承 (smooth 及 reverse 不走这个)
     var inherit = true
     // 滚动
