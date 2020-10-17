@@ -15,7 +15,11 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     override func windowDidLoad() {
         super.windowDidLoad()
         // 插入 NSToolbarFlexibleSpaceItem 到 index 位置 3 作为分隔符
-        window?.toolbar?.insertItem(withItemIdentifier: NSToolbarItem.Identifier(rawValue: "NSToolbarFlexibleSpaceItem"), at: 3)
+        // 仅在 BigSur 版本之前有效
+        guard #available(OSX 11.0, *) else {
+            window?.toolbar?.insertItem(withItemIdentifier: NSToolbarItem.Identifier(rawValue: "NSToolbarFlexibleSpaceItem"), at: 3)
+            return
+        }
     }
     
     func windowWillClose(_ notification: Notification) {

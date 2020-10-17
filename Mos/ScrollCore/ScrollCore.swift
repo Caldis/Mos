@@ -68,7 +68,7 @@ class ScrollCore {
             return nil
         }
         // 避免处理循环事件
-        let isEventProcessedByMos = event.getDoubleValueField(.eventSourceUserData) == 131519.0
+        let isEventProcessedByMos = event.getDoubleValueField(.eventSourceUserData) == MOS_SCROLL_EVENT_IDENTIFER
         if isEventProcessedByMos {
             return Unmanaged.passUnretained(event)
         }
@@ -244,21 +244,21 @@ class ScrollCore {
             event: scrollEventMask,
             handleBy: scrollEventCallBack,
             listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .headInsertEventTap,
+            placeAt: .tailAppendEventTap,
             for: .defaultTap
         )
         hotkeyEventInterceptor = Interceptor(
             event: hotkeyEventMask,
             handleBy: hotkeyEventCallBack,
             listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .headInsertEventTap,
+            placeAt: .tailAppendEventTap,
             for: .listenOnly
         )
         mouseEventInterceptor = Interceptor(
             event: mouseLeftEventMask,
             handleBy: mouseLeftEventCallBack,
             listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .headInsertEventTap,
+            placeAt: .tailAppendEventTap,
             for: .listenOnly
         )
         // 初始化滚动事件发送器
