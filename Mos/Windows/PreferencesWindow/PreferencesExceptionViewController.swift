@@ -263,8 +263,12 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
     @objc func appendApplicationForSenderWithBundleURL(_ sender: NSMenuItem!) {
         let url = sender.representedObject as! URL
         let path = url.path
-        let bundleId = Bundle(url: url)!.bundleIdentifier!
-        appendApplicationWith(path: path, bundleId: bundleId)
+        let bundle = Bundle(url: url)
+        if let bundleId = bundle?.bundleIdentifier {
+            appendApplicationWith(path: path, bundleId: bundleId)
+        } else {
+            // FIXME: NO BID (JAVA)
+        }
     }
     
     // 删除选定行
