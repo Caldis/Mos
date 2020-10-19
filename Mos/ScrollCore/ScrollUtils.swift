@@ -14,6 +14,17 @@ class ScrollUtils {
     static let shared = ScrollUtils()
     init() { print("Class 'ScrollUtils' is initialized") }
     
+    func setScrollEvent(event: CGEvent, axis: UInt32, y: Double, x: Double) -> CGEvent? {
+        let eventClone = event.copy()
+        eventClone?.setDoubleValueField(.scrollWheelEventScrollCount, value: Double(axis))
+        eventClone?.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: y)
+        eventClone?.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: x)
+        return eventClone
+    }
+    func postScrollEvent(event: CGEvent?, proxy: CGEventTapProxy?) {
+        event?.tapPostEvent(proxy)
+    }
+    
     // 从 CGEvent 中携带的 PID 获取目标窗口的 BundleId
     // 已知问题: 获取到的始终为主激活窗口
     // 已知问题: 如果鼠标滚轮事件由 cghidEventTap 层截取, 则获取到的目标窗口 PID 始终为当前的激活窗口, 而不是悬停窗口

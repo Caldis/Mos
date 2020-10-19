@@ -34,12 +34,15 @@ class ScrollCore {
     // 目标应用数据
     var previousScrollTargetProcessID = 0.0 // 用于在鼠标移动到不同窗口时停止滚动
     var currentScrollTargetProcessID = 0.0
+    var currentScrollTargetProcessSerialNumber = 0.0
     // 例外应用数据
     var exceptionalApplication: ExceptionalApplication?
     var currentExceptionalApplication: ExceptionalApplication? // 用于区分按下热键及抬起时的作用目标
     // 滚动数值滤波, 用于去除滚动的起始抖动
     var scrollFiller = ScrollFiller()
     // 事件发送器
+    var scrollEventBase: CGEvent?
+    var scrollEventProxy: CGEventTapProxy?
     var scrollEventPoster: CVDisplayLink?
     // 拦截层
     var scrollEventInterceptor: Interceptor?
@@ -56,12 +59,16 @@ class ScrollCore {
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 不处理触控板
         // 无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入
-        if (ScrollUtils.shared.isTouchPad(of: event)) {
+        if ScrollUtils.shared.isTouchPad(of: event) {
             return Unmanaged.passUnretained(event)
         }
+        // 更新引用
+        ScrollCore.shared.scrollEventBase = event
+        ScrollCore.shared.scrollEventProxy = proxy
         // 更新当前 ProcessID
         ScrollCore.shared.previousScrollTargetProcessID = ScrollCore.shared.currentScrollTargetProcessID
         ScrollCore.shared.currentScrollTargetProcessID = event.getDoubleValueField(.eventTargetUnixProcessID)
+        ScrollCore.shared.currentScrollTargetProcessSerialNumber = event.getDoubleValueField(.eventTargetProcessSerialNumber)
         // 切换目标窗口时停止滚动
         if ScrollCore.shared.previousScrollTargetProcessID != ScrollCore.shared.currentScrollTargetProcessID && ScrollCore.shared.previousScrollTargetProcessID != 0.0 {
             ScrollCore.shared.pauseHandlingScroll()
@@ -244,7 +251,7 @@ class ScrollCore {
             event: scrollEventMask,
             handleBy: scrollEventCallBack,
             listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .tailAppendEventTap,
+            placeAt: .headInsertEventTap,
             for: .defaultTap
         )
         hotkeyEventInterceptor = Interceptor(
@@ -381,7 +388,10 @@ class ScrollCore {
         // 变换滚动结果
         let swapedValue = weapScrollIfToggling(with: filteredValue, toggling: toggleScroll)
         // 发送滚动结果
-        MouseEvent.scroll(axis.YX, yScroll: Int32(swapedValue.y), xScroll: Int32(swapedValue.x))
+        if let eventBase = scrollEventBase {
+            let clonedEvent = ScrollUtils.shared.setScrollEvent(event: eventBase, axis: axis.YX, y: swapedValue.y, x: swapedValue.x)
+            ScrollUtils.shared.postScrollEvent(event: clonedEvent, proxy: scrollEventProxy)
+        }
         // 如果临近目标距离小于精确度门限则暂停滚动
         if scrollPulse.y.magnitude<=Options.shared.scrollAdvanced.precision && scrollPulse.x.magnitude<=Options.shared.scrollAdvanced.precision {
             pauseHandlingScroll()
