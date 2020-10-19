@@ -14,15 +14,16 @@ class ScrollUtils {
     static let shared = ScrollUtils()
     init() { print("Class 'ScrollUtils' is initialized") }
     
-    func setScrollEvent(event: CGEvent, axis: UInt32, y: Double, x: Double) -> CGEvent? {
-        let eventClone = event.copy()
-        eventClone?.setDoubleValueField(.scrollWheelEventScrollCount, value: Double(axis))
-        eventClone?.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: y)
-        eventClone?.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: x)
-        return eventClone
-    }
-    func postScrollEvent(event: CGEvent?, proxy: CGEventTapProxy?) {
-        event?.tapPostEvent(proxy)
+    // 发送事件
+    func postScrollEvent(proxy: CGEventTapProxy, event: CGEvent, value: ( y: Double, x: Double )) {
+        if let eventClone = event.copy() {
+            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: value.y)
+            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: value.x)
+            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: 0.0)
+            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0.0)
+            eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
+            eventClone.tapPostEvent(proxy)
+        }
     }
     
     // 从 CGEvent 中携带的 PID 获取目标窗口的 BundleId
@@ -138,23 +139,23 @@ class ScrollUtils {
     var launchpadActiveCache = false
     var launchpadLastDetectTime = 0.0
     private func isLaunchpadActive(with targetBID: String? = nil) -> Bool {
+        // 10.15 以上直接判断
+        if #available(OSX 10.15, *) {
+            if let bid = targetBID, bid == "com.apple.dock" {
+                launchpadActiveCache = true
+                return true
+            }
+        }
         // 如果距离上次检测时间大于 1s, 则重新检测一遍, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - launchpadLastDetectTime > 1.0 {
-            if #available(OSX 10.15, *) {
-                // Launchpadu 应用在 10.15 下莫名其妙合并到了 dock 内, 不过这样反而好找了
-                if let bid = targetBID, bid == "com.apple.dock" {
+            // 10.15以下需要根据 windowList 判断
+            let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]?
+            for windowInfo in windowInfoList! {
+                let windowName = windowInfo[kCGWindowName]!
+                if windowName != nil && windowName as! String == "LPSpringboard" {
                     launchpadActiveCache = true
                     return true
-                }
-            } else {
-                let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]?
-                for windowInfo in windowInfoList! {
-                    let windowName = windowInfo[kCGWindowName]!
-                    if windowName != nil && windowName as! String == "LPSpringboard" {
-                        launchpadActiveCache = true
-                        return true
-                    }
                 }
             }
             launchpadActiveCache = false

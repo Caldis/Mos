@@ -34,7 +34,6 @@ class ScrollCore {
     // 目标应用数据
     var previousScrollTargetProcessID = 0.0 // 用于在鼠标移动到不同窗口时停止滚动
     var currentScrollTargetProcessID = 0.0
-    var currentScrollTargetProcessSerialNumber = 0.0
     // 例外应用数据
     var exceptionalApplication: ExceptionalApplication?
     var currentExceptionalApplication: ExceptionalApplication? // 用于区分按下热键及抬起时的作用目标
@@ -68,7 +67,6 @@ class ScrollCore {
         // 更新当前 ProcessID
         ScrollCore.shared.previousScrollTargetProcessID = ScrollCore.shared.currentScrollTargetProcessID
         ScrollCore.shared.currentScrollTargetProcessID = event.getDoubleValueField(.eventTargetUnixProcessID)
-        ScrollCore.shared.currentScrollTargetProcessSerialNumber = event.getDoubleValueField(.eventTargetProcessSerialNumber)
         // 切换目标窗口时停止滚动
         if ScrollCore.shared.previousScrollTargetProcessID != ScrollCore.shared.currentScrollTargetProcessID && ScrollCore.shared.previousScrollTargetProcessID != 0.0 {
             ScrollCore.shared.pauseHandlingScroll()
@@ -388,9 +386,12 @@ class ScrollCore {
         // 变换滚动结果
         let swapedValue = weapScrollIfToggling(with: filteredValue, toggling: toggleScroll)
         // 发送滚动结果
-        if let eventBase = scrollEventBase {
-            let clonedEvent = ScrollUtils.shared.setScrollEvent(event: eventBase, axis: axis.YX, y: swapedValue.y, x: swapedValue.x)
-            ScrollUtils.shared.postScrollEvent(event: clonedEvent, proxy: scrollEventProxy)
+        if let event = scrollEventBase, let proxy = scrollEventProxy {
+            ScrollUtils.shared.postScrollEvent(
+                proxy: proxy,
+                event: event,
+                value: swapedValue
+            )
         }
         // 如果临近目标距离小于精确度门限则暂停滚动
         if scrollPulse.y.magnitude<=Options.shared.scrollAdvanced.precision && scrollPulse.x.magnitude<=Options.shared.scrollAdvanced.precision {
