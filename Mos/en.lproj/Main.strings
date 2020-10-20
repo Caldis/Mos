@@ -112,3 +112,6 @@
 // Popover
 "hnf-e0-HXM.title" = "Preferences";
 "SqT-eH-bOb.title" = "Quit";
+
+/* Class = "NSTextFieldCell"; title = "Türkçe"; ObjectID = "HdK-qX-aAA"; */
+"HdK-qX-aAA.title" = "Turkish";
