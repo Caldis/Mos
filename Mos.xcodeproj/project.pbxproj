@@ -140,6 +140,8 @@
 		23E3C96C21DCE8F10098B107 /* StatusItemPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemPopoverView.swift; sourceTree = "<group>"; };
 		23E9673E23613D1100E652F6 /* PreferencesExceptionInputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesExceptionInputViewController.swift; sourceTree = "<group>"; };
 		2A3B81BD9BE95DBB59D48D07 /* Pods-Mos.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mos.release.xcconfig"; path = "Target Support Files/Pods-Mos/Pods-Mos.release.xcconfig"; sourceTree = "<group>"; };
+		3A0FD5502526112E001C4F39 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
+		3A0FD5512526112E001C4F39 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		5CC1CC4115D84907000EEDCD /* libPods-Mos.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Mos.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDC179607B6A5D3C7F24EC0C /* Pods-Mos.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mos.debug.xcconfig"; path = "Target Support Files/Pods-Mos/Pods-Mos.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -432,6 +434,7 @@
 				ru,
 				tr,
 				ko,
+				de,
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			productRefGroup = 22142DA11E25344E00E4BFBF /* Products */;
@@ -547,6 +550,7 @@
 				23A61CF9230EF4BC00621E52 /* ru */,
 				0BAC4070251651BC00E8A1FD /* tr */,
 				0BAC4072251654C500E8A1FD /* ko */,
+				3A0FD5502526112E001C4F39 /* de */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -561,6 +565,7 @@
 				23A61CFA230EF4BC00621E52 /* ru */,
 				0BAC4071251651BC00E8A1FD /* tr */,
 				0BAC4073251654C500E8A1FD /* ko */,
+				3A0FD5512526112E001C4F39 /* de */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
