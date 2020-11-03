@@ -45,7 +45,7 @@ extension Options {
         // 常规
         general.autoLaunch = LoginServiceKit.isExistLoginItems(at: Bundle.main.bundlePath)
         general.hideStatusItem = UserDefaults.standard.bool(forKey: "hideStatusItem")
-        general.whitelist = UserDefaults.standard.bool(forKey: "whitelist")
+        general.allowlist = UserDefaults.standard.bool(forKey: "allowlist")
         general.applications = EnhanceArray(
             withData: UserDefaults.standard.value(forKey: "applications") as! Data,
             matchKey: "bundleId",
@@ -75,7 +75,7 @@ extension Options {
             // 常规
             // UserDefaults.standard.set(options.autoLaunch, forKey:"autoLaunch") // 直接从系统值初始化
             UserDefaults.standard.set(general.hideStatusItem, forKey:"hideStatusItem")
-            UserDefaults.standard.set(general.whitelist, forKey:"whitelist")
+            UserDefaults.standard.set(general.allowlist, forKey:"allowlist")
             UserDefaults.standard.set(general.applications.json(), forKey:"applications")
             // 滚动:基础
             UserDefaults.standard.set(scrollBasic.smooth, forKey:"smooth")
