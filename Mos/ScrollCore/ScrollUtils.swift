@@ -186,7 +186,7 @@ class ScrollUtils {
             if let target = application {
                 return target.scrollBasic.smooth
             } else {
-                return !Options.shared.general.whitelist
+                return !Options.shared.general.allowlist
             }
         } else {
             return false
@@ -203,7 +203,7 @@ class ScrollUtils {
             if let target = application {
                 return target.scrollBasic.reverse
             } else {
-                return !Options.shared.general.whitelist
+                return !Options.shared.general.allowlist
             }
         } else {
             return false
