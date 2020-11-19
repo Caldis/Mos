@@ -43,7 +43,7 @@ class ScrollUtils {
         // 更新当前 PID
         currEventTargetPID = pid
         // 使用 PID 获取 BID
-        // 如果目标 PID 变化, 则重新获取一次窗口 BID (查找 BID 效率较低)
+        // 如果目标 PID 变化, 则重新获取一次窗口 BID
         if lastEventTargetPID != currEventTargetPID {
             if let bundleId = Utils.getApplicationBundleIdRecursivelyFrom(pid: currEventTargetPID) {
                 cacheEventTargetBID = bundleId
@@ -52,9 +52,9 @@ class ScrollUtils {
         }
         return cacheEventTargetBID
     }
-    // 从 CGEvent 中携带的 PID 获取目标窗口的 URL
-    private var cacheEventTargetPath: String?    // 事件的目标进程 BID (当前)
-    func getPathByPid(from event: CGEvent) -> String? {
+    // 从 CGEvent 中携带的 PID 获取应用信息
+    private var cachedRunningApplication: NSRunningApplication?
+    func getRunningApplication(from event: CGEvent) -> NSRunningApplication? {
         // Guard
         let pid = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
         if pid == pid_t(1) { return nil }
@@ -63,14 +63,11 @@ class ScrollUtils {
         // 更新当前 PID
         currEventTargetPID = pid
         // 使用 PID 获取 BID
-        // 如果目标 PID 变化, 则重新获取一次窗口 BID (查找 BID 效率较低)
+        // 如果目标 PID 变化, 则重新获取一次窗口 BID
         if lastEventTargetPID != currEventTargetPID {
-            if let path = Utils.getApplicationPathRecursivelyFrom(pid: currEventTargetPID) {
-                cacheEventTargetPath = path
-                return cacheEventTargetPath
-            }
+            cachedRunningApplication = NSRunningApplication.init(processIdentifier: pid)
         }
-        return cacheEventTargetPath
+        return cachedRunningApplication
     }
     
     // 从指针悬停坐标获取窗口 BundleId, 如果失败则从 CGEvent 获取, 但此情况下仅匹配当前激活窗口
@@ -181,12 +178,13 @@ class ScrollUtils {
         }
         return launchpadActiveCache
     }
-    private func isLaunchpadActive(withPath targetPath: String?) -> Bool {
+    func getLaunchpadActivity(withRunningApplication runningApplication: NSRunningApplication?) -> Bool {
+        guard let validRunningApplication = runningApplication else { return false }
         // 10.15 以上直接判断
         if #available(OSX 10.15, *) {
-            if let path = targetPath, path == "/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock" {
+            if validRunningApplication.executableURL?.path == "/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock" {
                 launchpadActiveCache = true
-                return true
+                return launchpadActiveCache
             }
         }
         // 如果距离上次检测时间大于 1s, 则重新检测一遍, 否则直接返回上次的结果
@@ -210,7 +208,7 @@ class ScrollUtils {
     // 判断 MissionControl 是否激活
     var missioncontrolActiveCache = false
     var missioncontrolLastDetectTime = 0.0
-    private func isMissioncontrolActive() -> Bool {
+    private func getMissioncontrolActivity() -> Bool {
         // 如果距离上次检测时间大于 1s, 则重新检测一遍, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - missioncontrolLastDetectTime > 1.0 {
@@ -232,83 +230,17 @@ class ScrollUtils {
     
     // 从 exceptionalApplications 中取回符合传入的 key 的 ExceptionalApplication 对象
     // Key 在 applications 初始化时指定于 ExceptionalApplication 中
-    func applicationInExceptionalApplications(key: String?) -> ExceptionalApplication? {
-        if let targetKey = key {
-            print(targetKey)
-            return Options.shared.general.applications.get(by: targetKey)
+    func getExceptionalApplication(from runningApplication: NSRunningApplication?) -> ExceptionalApplication? {
+        if let applicationByBundlePath = Options.shared.general.applications.get(by: runningApplication?.bundleURL?.path) {
+            return applicationByBundlePath
+        }
+        if let applicationByExecutablePath = Options.shared.general.applications.get(by: runningApplication?.executableURL?.path) {
+            return applicationByExecutablePath
         }
         return nil
     }
 
-    // 获取应用
-    // 基础参数
-    func isEnableSmoothOn(application: ExceptionalApplication?, targetBundleId: String?, flag: Bool) -> Bool {
-        if Options.shared.scrollBasic.smooth && !flag {
-            // 针对 Launchpad 特殊处理, 不论是否在列表内均禁用平滑
-            if isLaunchpadActive(withBundleId: targetBundleId) {
-                return false
-            }
-            if let target = application {
-                return target.scrollBasic.smooth
-            } else {
-                return !Options.shared.general.whitelist
-            }
-        } else {
-            return false
-        }
-    }
-    func isEnableSmoothOn(application: ExceptionalApplication?, targetPath: String?, flag: Bool) -> Bool {
-        if Options.shared.scrollBasic.smooth && !flag {
-            // 针对 Launchpad 特殊处理, 不论是否在列表内均禁用平滑
-            if isLaunchpadActive(withPath: targetPath) {
-                return false
-            }
-            if let target = application {
-                return target.scrollBasic.smooth
-            } else {
-                return !Options.shared.general.whitelist
-            }
-        } else {
-            return false
-        }
-    }
-    func isEnableReverseOn(application: ExceptionalApplication?, targetBundleId: String?) -> Bool {
-        if Options.shared.scrollBasic.reverse {
-            // 针对 Launchpad 特殊处理, 允许用户自行判断是否翻转
-            if isLaunchpadActive(withBundleId: targetBundleId) {
-                if let launchpad = Options.shared.general.applications.get(by: "com.apple.launchpad.launcher") {
-                    return launchpad.scrollBasic.reverse
-                }
-            }
-            if let target = application {
-                return target.scrollBasic.reverse
-            } else {
-                return !Options.shared.general.whitelist
-            }
-        } else {
-            return false
-        }
-    }
-    func isEnableReverseOn(application: ExceptionalApplication?, targetPath: String?) -> Bool {
-        if Options.shared.scrollBasic.reverse {
-            // 针对 Launchpad 特殊处理, 允许用户自行判断是否翻转
-            // FIXME: DETECTION by path
-            if isLaunchpadActive(withPath: targetPath) {
-                // FIXME: launchpad path
-                if let launchpad = Options.shared.general.applications.get(by: "com.apple.launchpad.launcher") {
-                    return launchpad.scrollBasic.reverse
-                }
-            }
-            if let target = application {
-                return target.scrollBasic.reverse
-            } else {
-                return !Options.shared.general.whitelist
-            }
-        } else {
-            return false
-        }
-    }
-    // 高级参数
+    // 滚动参数
     func optionsDashOn(application: ExceptionalApplication?) -> CGKeyCode {
         if let targetApplication = application {
             return CGKeyCode(targetApplication.inherit ? Options.shared.scrollAdvanced.dash ?? 0 : targetApplication.scrollAdvanced.dash ?? 0)

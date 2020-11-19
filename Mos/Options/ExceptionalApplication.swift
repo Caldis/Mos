@@ -64,9 +64,16 @@ extension ExceptionalApplication {
         return Utils.getApplicationIcon(fromPath: path)
     }
     func getName() -> String {
-        if let validName = name {
-            return validName
-        }
-        return Utils.getAppliactionName(from: path)
+        if let validName = name { return validName }
+        return Utils.getAppliactionName(fromPath: path)
+    }
+    func isSmooth(_ block: Bool) -> Bool {
+        if block { return false }
+        if !Options.shared.scrollBasic.smooth { return false }
+        return scrollBasic.smooth
+    }
+    func isReverse() -> Bool {
+        if !Options.shared.scrollBasic.reverse { return false }
+        return scrollBasic.reverse
     }
 }

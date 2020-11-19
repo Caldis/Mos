@@ -106,13 +106,13 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     @objc func smoothCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.general.applications.get(by: row).scrollBasic.smooth = state.rawValue==1 ? true : false
+        Options.shared.general.applications.get(by: row)?.scrollBasic.smooth = state.rawValue==1 ? true : false
     }
     // 点击反转
     @objc func reverseCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.general.applications.get(by: row).scrollBasic.reverse = state.rawValue==1 ? true : false
+        Options.shared.general.applications.get(by: row)?.scrollBasic.reverse = state.rawValue==1 ? true : false
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
@@ -138,7 +138,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
                     checkBox.tag = row
                     checkBox.target = self
                     checkBox.action = #selector(smoothCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application.scrollBasic.smooth==true ? 1 : 0)
+                    checkBox.state = NSControl.StateValue(rawValue: application?.scrollBasic.smooth==true ? 1 : 0)
                     return cell
                 // 反转
                 case CellIdentifiers.reverseCell:
@@ -146,12 +146,12 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
                     checkBox.tag = row
                     checkBox.target = self
                     checkBox.action = #selector(reverseCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application.scrollBasic.reverse==true ? 1 : 0)
+                    checkBox.state = NSControl.StateValue(rawValue: application?.scrollBasic.reverse==true ? 1 : 0)
                     return cell
                 // 应用
                 case CellIdentifiers.applicationCell:
-                    cell.imageView?.image = application.getIcon()
-                    cell.textField?.stringValue = application.getName()
+                    cell.imageView?.image = application?.getIcon()
+                    cell.textField?.stringValue = application?.getName() ?? ""
                     return cell
                 // 设定
                 case CellIdentifiers.settingCell:
@@ -215,20 +215,18 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
         // 清除已有
         runningAndInstalledMenuChildrenContainer.removeAllItems()
         // 初始化 Running 应用
-        let runningApplications = NSWorkspace.shared.runningApplications
-        for application in runningApplications {
-            guard application.activationPolicy == .regular else { continue }
-            guard let path = application.executableURL?.path else { continue }
-            let icon = Utils.getApplicationIcon(fromURL: application.bundleURL)
-            let name = Utils.getAppliactionName(from: path)
-            let isExist = ScrollUtils.shared.applicationInExceptionalApplications(key: path) !== nil
+        for runningApplication in NSWorkspace.shared.runningApplications {
+            guard runningApplication.activationPolicy == .regular else { continue }
+            let icon = Utils.getApplicationIcon(fromPath: runningApplication.bundleURL?.path)
+            let name = Utils.getAppliactionName(fromPath: runningApplication.executableURL?.path)
+            let isExist = ScrollUtils.shared.getExceptionalApplication(from: runningApplication) !== nil
             Utils.addMenuItem(
                 to: runningAndInstalledMenuChildrenContainer,
                 title: name,
                 icon: icon,
-                action: #selector(appendApplicationForSenderWithExecutableURL),
+                action: #selector(appendApplicationForSenderWithRunningApplication),
                 target: isExist ? nil : self,
-                represent: path
+                represent: runningApplication
             )
         }
         // 初始化 Installed 应用
@@ -272,10 +270,12 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
             // FIXME: NO BID (JAVA)
         }
     }
-    @objc func appendApplicationForSenderWithExecutableURL(_ sender: NSMenuItem!) {
-        let url = sender.representedObject as! URL
-        let bundle = Bundle(url: url)
-        appendApplicationWith(path: url.path, bundleId: bundle?.bundleIdentifier)
+    @objc func appendApplicationForSenderWithRunningApplication(_ sender: NSMenuItem!) {
+        guard let runningApplication = sender.representedObject as? NSRunningApplication else { return }
+        guard let executablePath = runningApplication.executableURL?.path else { return }
+        guard let bundlePath = runningApplication.bundleURL?.path else { return }
+        guard let bundle = Bundle(path: bundlePath) else { return }
+        appendApplicationWith(path: executablePath, bundleId: bundle.bundleIdentifier)
     }
     
     // 删除选定行

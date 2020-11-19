@@ -43,16 +43,13 @@ extension EnhanceArray {
         }
     }
     // 获取值
-    public func get(by key: String) -> T? {
-        print("GET BY", key, dictionary)
-        if let index = dictionary[key] {
-            return array[index]
-        } else {
-            return nil
-        }
-    }
-    public func get(by index: Int) -> T {
+    public func get(by key: String?) -> T? {
+        guard let validKey = key, let index = dictionary[validKey] else { return nil }
         return array[index]
+    }
+    public func get(by index: Int?) -> T? {
+        guard let validIndex = index else { return nil }
+        return array[validIndex]
     }
     // 更新值
     public func set(by key: String, of item: T) -> EnhanceArray {

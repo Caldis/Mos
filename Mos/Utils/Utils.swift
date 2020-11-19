@@ -220,32 +220,23 @@ public class Utils {
     }
     
     // 从路径获取应用图标
-    class func getApplicationIcon(fromPath path: String?) -> NSImage {
-        guard let validPath = path else {
-            return #imageLiteral(resourceName: "SF.cube")
-        }
-        return NSWorkspace.shared.icon(forFile: validPath)
-    }
-    class func getApplicationIcon(fromURL url: URL?) -> NSImage {
-        return getApplicationIcon(fromPath: url?.path)
+    class func getApplicationIcon(fromPath bundlePath: String?) -> NSImage {
+        return NSWorkspace.shared.icon(forFile: bundlePath ?? "")
     }
     // 从路径获取应用名称
-    class func getAppliactionName(from path: String?) -> String {
+    class func getAppliactionName(fromPath path: String?) -> String {
         guard let validPath = path else {
             return "Invalid Name"
         }
         guard let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) else {
-            return getApplicationFileName(from: validPath)
+            return parseName(fromPath: validPath)
         }
         let CFBundleDisplayName = validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
         let CFBundleName = validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String
-        let FileName = getApplicationFileName(from: validPath)
+        let FileName = parseName(fromPath: validPath)
         return CFBundleDisplayName ?? CFBundleName ?? FileName
     }
-    class func getAppliactionName(from path: URL) -> String {
-        return getAppliactionName(from: path.path)
-    }
-    class func getApplicationFileName(from path: String) -> String {
+    class func parseName(fromPath path: String) -> String {
         let applicationRawName = FileManager().displayName(atPath: path).removingPercentEncoding!
         return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app|.App|.APP")
     }

@@ -77,13 +77,16 @@ class ScrollCore {
         var returnOriginalEvent = true
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
         // 获取目标窗口 Path
-        let targetPath = ScrollUtils.shared.getPathByPid(from: event)
-        print(targetPath)
+        let targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
+        // 获取 Launchpad 状态
+        let isLaunchpadActive = ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication)
         // 获取列表中应用程序的列外设置信息
-        ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.applicationInExceptionalApplications(key: targetPath)
+        ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
         // 平滑/翻转
-        let enableSmooth = ScrollUtils.shared.isEnableSmoothOn(application: ScrollCore.shared.exceptionalApplication, targetPath: targetPath, flag: ScrollCore.shared.blockSmooth)
-        let enableReverse = ScrollUtils.shared.isEnableReverseOn(application: ScrollCore.shared.exceptionalApplication, targetPath: targetPath)
+        let enableSmooth = ScrollCore.shared.exceptionalApplication?.isSmooth(ScrollCore.shared.blockSmooth) ??
+            Options.shared.general.whitelist ? false : Options.shared.scrollBasic.smooth
+        let enableReverse = ScrollCore.shared.exceptionalApplication?.isReverse() ??
+            Options.shared.general.whitelist ? false : Options.shared.scrollBasic.reverse
         // 滚动参数
         ScrollCore.shared.smoothStep = ScrollUtils.shared.optionsStepOn(application: ScrollCore.shared.exceptionalApplication)
         ScrollCore.shared.smoothSpeed = ScrollUtils.shared.optionsSpeedOn(application: ScrollCore.shared.exceptionalApplication)
@@ -145,8 +148,8 @@ class ScrollCore {
         // 获取当前按键
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         // 获取目标应用程序
-        let targetURL = ScrollUtils.shared.getPathByPid(from: event)
-        let targetAppliaction = ScrollUtils.shared.applicationInExceptionalApplications(key: targetURL)
+        let targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
+        let targetAppliaction = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
         // 判断快捷键
         switch keyCode {
             case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:
