@@ -92,7 +92,6 @@ extension EnhanceArray {
     // 为了触发 didSet
     // 直接在 init 处初始化不会调用 didSet
     private func setInitData(_ targetDictionaryKey: String, _ targetArray: [T]) {
-        print("setInitData", targetDictionaryKey)
         dictionaryKey = targetDictionaryKey
         array = targetArray
     }
