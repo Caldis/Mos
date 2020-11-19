@@ -48,7 +48,7 @@ extension Options {
         general.whitelist = UserDefaults.standard.bool(forKey: "whitelist")
         general.applications = EnhanceArray(
             withData: UserDefaults.standard.value(forKey: "applications") as! Data,
-            matchKey: "bundleId",
+            matchKey: "path",
             forObserver: Options.shared.saveOptions
         )
         // 滚动:基础

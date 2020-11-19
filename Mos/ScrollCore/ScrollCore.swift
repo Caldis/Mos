@@ -58,9 +58,7 @@ class ScrollCore {
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 不处理触控板
         // 无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入
-        if ScrollUtils.shared.isTouchPad(of: event) {
-            return Unmanaged.passUnretained(event)
-        }
+        if ScrollUtils.shared.isTouchPad(of: event) { return Unmanaged.passUnretained(event) }
         // 更新引用
         ScrollCore.shared.scrollEventBase = event
         ScrollCore.shared.scrollEventProxy = proxy
@@ -74,19 +72,18 @@ class ScrollCore {
         }
         // 避免处理循环事件
         let isEventProcessedByMos = event.getDoubleValueField(.eventSourceUserData) == MOS_SCROLL_EVENT_IDENTIFER
-        if isEventProcessedByMos {
-            return Unmanaged.passUnretained(event)
-        }
+        if isEventProcessedByMos { return Unmanaged.passUnretained(event) }
         // 是否返回原始事件 (不启用平滑时)
         var returnOriginalEvent = true
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
-        // 获取目标窗口 BundleID
-        let targetBID = ScrollUtils.shared.getBundleByPid(from: event)
+        // 获取目标窗口 Path
+        let targetPath = ScrollUtils.shared.getPathByPid(from: event)
+        print(targetPath)
         // 获取列表中应用程序的列外设置信息
-        ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
+        ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.applicationInExceptionalApplications(key: targetPath)
         // 平滑/翻转
-        let enableSmooth = ScrollUtils.shared.isEnableSmoothOn(application: ScrollCore.shared.exceptionalApplication, targetBundleId: targetBID, flag: ScrollCore.shared.blockSmooth)
-        let enableReverse = ScrollUtils.shared.isEnableReverseOn(application: ScrollCore.shared.exceptionalApplication, targetBundleId: targetBID)
+        let enableSmooth = ScrollUtils.shared.isEnableSmoothOn(application: ScrollCore.shared.exceptionalApplication, targetPath: targetPath, flag: ScrollCore.shared.blockSmooth)
+        let enableReverse = ScrollUtils.shared.isEnableReverseOn(application: ScrollCore.shared.exceptionalApplication, targetPath: targetPath)
         // 滚动参数
         ScrollCore.shared.smoothStep = ScrollUtils.shared.optionsStepOn(application: ScrollCore.shared.exceptionalApplication)
         ScrollCore.shared.smoothSpeed = ScrollUtils.shared.optionsSpeedOn(application: ScrollCore.shared.exceptionalApplication)
@@ -148,8 +145,8 @@ class ScrollCore {
         // 获取当前按键
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         // 获取目标应用程序
-        let targetBID = ScrollUtils.shared.getBundleByPid(from: event)
-        let targetAppliaction = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: targetBID)
+        let targetURL = ScrollUtils.shared.getPathByPid(from: event)
+        let targetAppliaction = ScrollUtils.shared.applicationInExceptionalApplications(key: targetURL)
         // 判断快捷键
         switch keyCode {
             case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:

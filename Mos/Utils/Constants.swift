@@ -82,9 +82,10 @@ class OPTIONS_GENERAL_DEFAULT {
     var whitelist = false {
         didSet {Options.shared.saveOptions()}
     }
-    var applications = EnhanceArray<ExceptionalApplication>(forObserver: {() in
-        Options.shared.saveOptions()
-    })
+    var applications = EnhanceArray<ExceptionalApplication>(
+        matchKey: "path",
+        forObserver: {() in Options.shared.saveOptions()}
+    )
 }
 // 滚动参数
 class OPTIONS_SCROLL_BASIC_DEFAULT: Codable {

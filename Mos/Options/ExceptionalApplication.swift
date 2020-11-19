@@ -11,9 +11,10 @@ import Cocoa
 class ExceptionalApplication: Codable, Equatable {
     
     // 基础
+    var path: String
+    // 额外
     var name: String?
-    var path: String?
-    var bundleId: String
+    var bundleId: String?
     var bundleURL: String?
     // 继承 (smooth 及 reverse 不走这个)
     var inherit = true
@@ -22,13 +23,17 @@ class ExceptionalApplication: Codable, Equatable {
     var scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT()
     
     // 初始化
+    init(path: String) {
+        self.path = path
+    }
     // 从应用程序路径选择初始化
-    init(path: String, bundleId: String) {
+    init(path: String, bundleId: String?) {
         self.path = path
         self.bundleId = bundleId
     }
-    // 手动输入初始化（会没有图标）
-    init(name: String, bundleId: String) {
+    // 手动输入初始化 (没有图标）
+    init(path: String, bundleId: String?, name: String?) {
+        self.path = path
         self.name = name
         self.bundleId = bundleId
     }
@@ -37,7 +42,7 @@ class ExceptionalApplication: Codable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         // 基础
         self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? nil
-        self.path = try container.decodeIfPresent(String.self, forKey: .path) ?? nil
+        self.path = try container.decodeIfPresent(String.self, forKey: .path) ?? ""
         self.bundleId = try container.decodeIfPresent(String.self, forKey: .bundleId) ?? ""
         // 开关
         self.inherit = try container.decodeIfPresent(Bool.self, forKey: .inherit) ?? true
@@ -56,7 +61,7 @@ class ExceptionalApplication: Codable, Equatable {
  */
 extension ExceptionalApplication {
     func getIcon() -> NSImage {
-        return Utils.getApplicationIcon(from: path)
+        return Utils.getApplicationIcon(fromPath: path)
     }
     func getName() -> String {
         if let validName = name {

@@ -181,7 +181,7 @@ public class Utils {
         return flags.rawValue & CGEventFlags.maskShift.rawValue == 0 && MODIFIER_KEY.shiftPair.contains(CGKeyCode(keyCode))
     }
     
-    // 从 PID 获取进程名称
+    // 从 PID 获取对应数据
     class func getApplicationBundleIdFrom(pid: pid_t) -> String? {
         if let runningApps = NSRunningApplication.init(processIdentifier: pid) {
             return runningApps.bundleIdentifier
@@ -189,6 +189,8 @@ public class Utils {
             return nil
         }
     }
+    // 从 PID 获取对应数据: 递归
+    static var pppid: pid_t?
     class func getApplicationBundleIdRecursivelyFrom(pid: pid_t) -> String? {
         if let bundleId = NSRunningApplication.init(processIdentifier: pid)?.bundleIdentifier {
             // 先使用 BundleId 查找
@@ -196,19 +198,36 @@ public class Utils {
         } else {
             // 否则查找父进程
             let ppid = ProcessUtils.getParentPid(from: pid)
-            return ppid==1 ? nil : getApplicationBundleIdRecursivelyFrom(pid: ppid)
+            let wasted = [1, pppid, nil].contains(ppid)
+            pppid = ppid
+            let res = wasted ? nil : getApplicationBundleIdRecursivelyFrom(pid: ppid)
+            return res
+
+        }
+    }
+    // 从 PID 获取 Path
+    class func getApplicationPathRecursivelyFrom(pid: pid_t) -> String? {
+        if let path = NSRunningApplication.init(processIdentifier: pid)?.executableURL?.path {
+            return path
+        } else {
+            // 否则查找父进程
+            let ppid = ProcessUtils.getParentPid(from: pid)
+            let wasted = [1, pppid, nil].contains(ppid)
+            pppid = ppid
+            let res = wasted ? nil : getApplicationPathRecursivelyFrom(pid: ppid)
+            return res
         }
     }
     
     // 从路径获取应用图标
-    class func getApplicationIcon(from path: String?) -> NSImage {
+    class func getApplicationIcon(fromPath path: String?) -> NSImage {
         guard let validPath = path else {
             return #imageLiteral(resourceName: "SF.cube")
         }
         return NSWorkspace.shared.icon(forFile: validPath)
     }
-    class func getApplicationIcon(from path: URL) -> NSImage {
-        return getApplicationIcon(from: path.path)
+    class func getApplicationIcon(fromURL url: URL?) -> NSImage {
+        return getApplicationIcon(fromPath: url?.path)
     }
     // 从路径获取应用名称
     class func getAppliactionName(from path: String?) -> String {

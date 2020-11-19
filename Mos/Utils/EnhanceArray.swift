@@ -43,24 +43,25 @@ extension EnhanceArray {
         }
     }
     // 获取值
-    public func get(from key: String) -> T? {
+    public func get(by key: String) -> T? {
+        print("GET BY", key, dictionary)
         if let index = dictionary[key] {
             return array[index]
         } else {
             return nil
         }
     }
-    public func get(from index: Int) -> T {
+    public func get(by index: Int) -> T {
         return array[index]
     }
     // 更新值
-    public func set(to key: String, of item: T) -> EnhanceArray {
+    public func set(by key: String, of item: T) -> EnhanceArray {
         if let index = dictionary[key] {
             array[index] = item
         }
         return self
     }
-    public func set(to index: Int, of item: T) -> EnhanceArray {
+    public func set(by index: Int, of item: T) -> EnhanceArray {
         array[index] = item
         return self
     }
@@ -94,6 +95,7 @@ extension EnhanceArray {
     // 为了触发 didSet
     // 直接在 init 处初始化不会调用 didSet
     private func setInitData(_ targetDictionaryKey: String, _ targetArray: [T]) {
+        print("setInitData", targetDictionaryKey)
         dictionaryKey = targetDictionaryKey
         array = targetArray
     }

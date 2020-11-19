@@ -31,6 +31,8 @@ class PreferencesExceptionViewController: NSViewController {
         Utils.attachImage(to: manuallyInputMenuItem, withImage: #imageLiteral(resourceName: "SF.pencil.and.ellipsis.rectangle"))
         // 读取设置
         syncViewWithOptions()
+        // 隐藏手动输入
+        manuallyInputMenuItem.isHidden = true
     }
     override func viewWillAppear() {
         // 检查表格数据
@@ -104,19 +106,19 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     @objc func smoothCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.general.applications.get(from: row).scrollBasic.smooth = state.rawValue==1 ? true : false
+        Options.shared.general.applications.get(by: row).scrollBasic.smooth = state.rawValue==1 ? true : false
     }
     // 点击反转
     @objc func reverseCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.general.applications.get(from: row).scrollBasic.reverse = state.rawValue==1 ? true : false
+        Options.shared.general.applications.get(by: row).scrollBasic.reverse = state.rawValue==1 ? true : false
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
         let row = sender.tag
         let advancedWithApplicationViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.advancedWithApplication) as PreferencesAdvanceWithApplicationViewController
-        advancedWithApplicationViewController.currentTargetApplication = Options.shared.general.applications.get(from: row)
+        advancedWithApplicationViewController.currentTargetApplication = Options.shared.general.applications.get(by: row)
         present(advancedWithApplicationViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
     }
     // 构建表格数据 (循环生成行)
@@ -128,7 +130,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
         // 生成每行的 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
             // 应用数据
-            let application = Options.shared.general.applications.get(from: row)
+            let application = Options.shared.general.applications.get(by: row)
             switch tableColumnIdentifier.rawValue {
                 // 平滑
                 case CellIdentifiers.smoothCell:
@@ -196,8 +198,7 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
         // 允许的文件类型
         openPanel.allowedFileTypes = ["app", "App", "APP"]
         // 打开文件选择窗口并读取文件添加到 ExceptionalApplications 列表中
-        openPanel.beginSheetModal(for: view.window!, completionHandler: {
-            result in
+        openPanel.beginSheetModal(for: view.window!, completionHandler: { result in
             if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
                 // 根据路径获取 application 信息并保存到 ExceptionalApplications 列表中
                 if let applicationPath = openPanel.url?.path, let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
@@ -217,16 +218,17 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
         let runningApplications = NSWorkspace.shared.runningApplications
         for application in runningApplications {
             guard application.activationPolicy == .regular else { continue }
-            guard let bundleURL = application.bundleURL else { continue }
-            let icon = Utils.getApplicationIcon(from: bundleURL)
-            let name = Utils.getAppliactionName(from: bundleURL)
-            let isExist = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: application.bundleIdentifier) !== nil
+            guard let path = application.executableURL?.path else { continue }
+            let icon = Utils.getApplicationIcon(fromURL: application.bundleURL)
+            let name = Utils.getAppliactionName(from: path)
+            let isExist = ScrollUtils.shared.applicationInExceptionalApplications(key: path) !== nil
             Utils.addMenuItem(
                 to: runningAndInstalledMenuChildrenContainer,
-                title: name, icon: icon,
-                action: #selector(appendApplicationForSenderWithBundleURL),
+                title: name,
+                icon: icon,
+                action: #selector(appendApplicationForSenderWithExecutableURL),
                 target: isExist ? nil : self,
-                represent: bundleURL
+                represent: path
             )
         }
         // 初始化 Installed 应用
@@ -250,16 +252,16 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
     }
     
     // 添加应用
-    func appendApplicationWith(path: String, bundleId: String) {
+    func appendApplicationWith(path: String, bundleId: String?) {
         let application = ExceptionalApplication(path: path, bundleId: bundleId)
         Options.shared.general.applications.append(application)
         self.tableView.reloadData()
     }
-    func appendApplicationWith(name: String, bundleId: String) {
-        let application = ExceptionalApplication(name: name, bundleId: bundleId)
-        Options.shared.general.applications.append(application)
-        self.tableView.reloadData()
-    }
+//    func appendApplicationWith(name: String, bundleId: String) {
+//        let application = ExceptionalApplication(name: name, bundleId: bundleId)
+//        Options.shared.general.applications.append(application)
+//        self.tableView.reloadData()
+//    }
     @objc func appendApplicationForSenderWithBundleURL(_ sender: NSMenuItem!) {
         let url = sender.representedObject as! URL
         let path = url.path
@@ -269,6 +271,11 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
         } else {
             // FIXME: NO BID (JAVA)
         }
+    }
+    @objc func appendApplicationForSenderWithExecutableURL(_ sender: NSMenuItem!) {
+        let url = sender.representedObject as! URL
+        let bundle = Bundle(url: url)
+        appendApplicationWith(path: url.path, bundleId: bundle?.bundleIdentifier)
     }
     
     // 删除选定行
