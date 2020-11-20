@@ -76,4 +76,13 @@ extension ExceptionalApplication {
         if !Options.shared.scrollBasic.reverse { return false }
         return scrollBasic.reverse
     }
+    func step() -> Double {
+        return inherit ? Options.shared.scrollAdvanced.step : scrollAdvanced.step
+    }
+    func speed() -> Double {
+        return inherit ? Options.shared.scrollAdvanced.speed : scrollAdvanced.speed
+    }
+    func duration() -> Double {
+        return inherit ? Options.shared.scrollAdvanced.durationTransition : scrollAdvanced.durationTransition
+    }
 }

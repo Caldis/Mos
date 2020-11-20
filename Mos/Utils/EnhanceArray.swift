@@ -79,7 +79,7 @@ extension EnhanceArray {
         let encoder = JSONEncoder()
         return try! encoder.encode(array)
     }
-    // 更新内部数据 (不常用)
+    // 更新内部数据
     public func update() {
         updateDictionary()
     }

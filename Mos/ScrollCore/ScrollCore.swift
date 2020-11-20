@@ -28,8 +28,6 @@ class ScrollCore {
     var toggleScroll = false
     var blockSmooth = false
     // 插值数据
-    var smoothStep = Options.shared.scrollAdvanced.step
-    var smoothSpeed = Options.shared.scrollAdvanced.speed
     var smoothDuration = Options.shared.scrollAdvanced.durationTransition
     // 目标应用数据
     var previousScrollTargetProcessID = 0.0 // 用于在鼠标移动到不同窗口时停止滚动
@@ -82,15 +80,20 @@ class ScrollCore {
         let isLaunchpadActive = ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication)
         // 获取列表中应用程序的列外设置信息
         ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
-        // 平滑/翻转
-        let enableSmooth = ScrollCore.shared.exceptionalApplication?.isSmooth(ScrollCore.shared.blockSmooth) ??
-            Options.shared.general.whitelist ? false : Options.shared.scrollBasic.smooth
-        let enableReverse = ScrollCore.shared.exceptionalApplication?.isReverse() ??
-            Options.shared.general.whitelist ? false : Options.shared.scrollBasic.reverse
-        // 滚动参数
-        ScrollCore.shared.smoothStep = ScrollUtils.shared.optionsStepOn(application: ScrollCore.shared.exceptionalApplication)
-        ScrollCore.shared.smoothSpeed = ScrollUtils.shared.optionsSpeedOn(application: ScrollCore.shared.exceptionalApplication)
-        ScrollCore.shared.smoothDuration = ScrollUtils.shared.optionsDurationTransitionOn(application: ScrollCore.shared.exceptionalApplication)
+        // 平滑/翻转/参数
+        var enableSmooth = false, enableReverse = false
+        var step = Options.shared.scrollAdvanced.step, speed = Options.shared.scrollAdvanced.speed
+        ScrollCore.shared.smoothDuration = Options.shared.scrollAdvanced.durationTransition
+        if let exceptionalApplication = ScrollCore.shared.exceptionalApplication {
+            enableSmooth = exceptionalApplication.isSmooth(ScrollCore.shared.blockSmooth)
+            enableReverse = exceptionalApplication.isReverse()
+            step = exceptionalApplication.step()
+            speed = exceptionalApplication.speed()
+            ScrollCore.shared.smoothDuration = exceptionalApplication.duration()
+        } else if !Options.shared.general.whitelist {
+            enableSmooth = Options.shared.scrollBasic.smooth
+            enableReverse = Options.shared.scrollBasic.reverse
+        }
         // 处理滚动事件
         let scrollEvent = ScrollEvent(with: event)
         // Y轴
@@ -105,7 +108,7 @@ class ScrollCore {
                 returnOriginalEvent = false
                 // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
                 if !scrollEvent.Y.fixed {
-                    ScrollEventUtils.normalizeY(scrollEvent, ScrollCore.shared.smoothStep)
+                    ScrollEventUtils.normalizeY(scrollEvent, step)
                 }
             }
         }
@@ -121,7 +124,7 @@ class ScrollCore {
                 returnOriginalEvent = false
                 // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
                 if !scrollEvent.X.fixed {
-                    ScrollEventUtils.normalizeX(scrollEvent, ScrollCore.shared.smoothStep)
+                    ScrollEventUtils.normalizeX(scrollEvent, step)
                 }
             }
         }
@@ -130,7 +133,7 @@ class ScrollCore {
             ScrollCore.shared.updateScrollBuffer(
                 y: scrollEvent.Y.usableValue,
                 x: scrollEvent.X.usableValue,
-                s: ScrollCore.shared.smoothSpeed,
+                s: speed,
                 a: ScrollCore.shared.dashAmplification
             )
             ScrollCore.shared.enableScrollEventPoster()
