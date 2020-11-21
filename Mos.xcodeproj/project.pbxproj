@@ -15,7 +15,6 @@
 		0B6D3B6620419F0A004CC064 /* LaunchStarter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B6520419F0A004CC064 /* LaunchStarter.swift */; };
 		0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B672041A790004CC064 /* WindowManager.swift */; };
 		0B6D3B6A2041C348004CC064 /* ScrollEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B692041C348004CC064 /* ScrollEvent.swift */; };
-		0B6D3B6E20429254004CC064 /* WindowUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B6D20429254004CC064 /* WindowUtils.m */; };
 		0B6D3B702042BBCD004CC064 /* Localizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B6F2042BBCD004CC064 /* Localizable.swift */; };
 		0B74C441205E386D00E3F942 /* Interceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B74C440205E386D00E3F942 /* Interceptor.swift */; };
 		0BB0F1BE20F3A04F00909B7D /* WelcomeWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB0F1BD20F3A04F00909B7D /* WelcomeWindowController.swift */; };
@@ -29,10 +28,8 @@
 		22142DA41E25344E00E4BFBF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA31E25344E00E4BFBF /* AppDelegate.swift */; };
 		22142DA61E25344E00E4BFBF /* MonitorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22142DA51E25344E00E4BFBF /* MonitorViewController.swift */; };
 		22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22142DA91E25344E00E4BFBF /* Main.storyboard */; };
-		221E5DFB1F4DE55B00AE17FA /* ProcessUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */; };
 		2225F8DD1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */; };
 		2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2225F8EA1E3B1A5C0020DD22 /* Localizable.strings */; };
-		226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 226A2E6D1E2E68620035F1A6 /* MouseEvent.m */; };
 		2278EE991E3DF770000AB25B /* PreferencesExceptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2278EE981E3DF770000AB25B /* PreferencesExceptionViewController.swift */; };
 		2278EE9D1E3DFAC8000AB25B /* ExceptionalApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2278EE9C1E3DFAC8000AB25B /* ExceptionalApplication.swift */; };
 		2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */; };
@@ -71,12 +68,9 @@
 		0B12EF1E203ADFB10058B169 /* Interpolator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpolator.swift; sourceTree = "<group>"; };
 		0B12EF5D203C7D650058B169 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		0B56DE3F2568DFDB00B4D9AE /* Archieve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Archieve.swift; sourceTree = "<group>"; };
-		0B61F0C1204BCB160056C4C0 /* NSMenuUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSMenuUtils.h; sourceTree = "<group>"; };
 		0B6D3B6520419F0A004CC064 /* LaunchStarter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchStarter.swift; sourceTree = "<group>"; };
 		0B6D3B672041A790004CC064 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		0B6D3B692041C348004CC064 /* ScrollEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollEvent.swift; sourceTree = "<group>"; };
-		0B6D3B6C20429234004CC064 /* WindowUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowUtils.h; sourceTree = "<group>"; };
-		0B6D3B6D20429254004CC064 /* WindowUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WindowUtils.m; sourceTree = "<group>"; };
 		0B6D3B6F2042BBCD004CC064 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
 		0B74C440205E386D00E3F942 /* Interceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interceptor.swift; sourceTree = "<group>"; };
 		0B7C970A253F1C0200B26AF3 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
@@ -96,13 +90,8 @@
 		22142DA51E25344E00E4BFBF /* MonitorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonitorViewController.swift; sourceTree = "<group>"; };
 		22142DAA1E25344E00E4BFBF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		22142DAC1E25344E00E4BFBF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		221E5DF71F4DE52400AE17FA /* ProcessUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProcessUtils.h; sourceTree = "<group>"; };
-		221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProcessUtils.m; sourceTree = "<group>"; };
 		2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesAdvanceViewController.swift; sourceTree = "<group>"; };
 		2225F8EB1E3B1A610020DD22 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		226A2E6C1E2E68610035F1A6 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
-		226A2E6D1E2E68620035F1A6 /* MouseEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MouseEvent.m; sourceTree = "<group>"; };
-		226A2E711E2E68A00035F1A6 /* MouseEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MouseEvent.h; sourceTree = "<group>"; };
 		2278EE981E3DF770000AB25B /* PreferencesExceptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesExceptionViewController.swift; sourceTree = "<group>"; };
 		2278EE9C1E3DFAC8000AB25B /* ExceptionalApplication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExceptionalApplication.swift; sourceTree = "<group>"; };
 		2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
@@ -184,21 +173,6 @@
 			path = PreferencesWindow;
 			sourceTree = "<group>";
 		};
-		0B12EF26203AE25A0058B169 /* OCBridge */ = {
-			isa = PBXGroup;
-			children = (
-				226A2E6C1E2E68610035F1A6 /* BridgingHeader.h */,
-				226A2E711E2E68A00035F1A6 /* MouseEvent.h */,
-				226A2E6D1E2E68620035F1A6 /* MouseEvent.m */,
-				0B6D3B6C20429234004CC064 /* WindowUtils.h */,
-				0B6D3B6D20429254004CC064 /* WindowUtils.m */,
-				221E5DF71F4DE52400AE17FA /* ProcessUtils.h */,
-				221E5DFA1F4DE55B00AE17FA /* ProcessUtils.m */,
-				0B61F0C1204BCB160056C4C0 /* NSMenuUtils.h */,
-			);
-			path = OCBridge;
-			sourceTree = "<group>";
-		};
 		0B12EF28203AE2E00058B169 /* Localization */ = {
 			isa = PBXGroup;
 			children = (
@@ -277,7 +251,6 @@
 				23BB4D2921D7504C009B51E9 /* Popovers */,
 				0B74C43D205E364A00E3F942 /* Managers */,
 				0B12EF1B203ADD0B0058B169 /* ScrollCore */,
-				0B12EF26203AE25A0058B169 /* OCBridge */,
 				0B12EF28203AE2E00058B169 /* Localization */,
 				22142DA91E25344E00E4BFBF /* Main.storyboard */,
 				23529E0B237087A400806D92 /* Assets.xcassets */,
@@ -439,7 +412,6 @@
 				2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */,
 				22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */,
 				0B12EF5E203C7D650058B169 /* Logger.swift in Sources */,
-				226A2E6E1E2E68620035F1A6 /* MouseEvent.m in Sources */,
 				0B6D3B702042BBCD004CC064 /* Localizable.swift in Sources */,
 				0BC2AD2F20F3BA090084416B /* PreferencesContributorsViewController.swift in Sources */,
 				0B12EF1F203ADFB10058B169 /* Interpolator.swift in Sources */,
@@ -451,10 +423,8 @@
 				239E851123562C34006DE0B0 /* StatusItemPopoverViewContentView.swift in Sources */,
 				23BB4D2D21D7512F009B51E9 /* StatusItemPopoverViewController.swift in Sources */,
 				23BB4D3121D775D4009B51E9 /* EventMonitor.swift in Sources */,
-				0B6D3B6E20429254004CC064 /* WindowUtils.m in Sources */,
 				22816CFF1E2B31020020D6B1 /* MonitorWindowController.swift in Sources */,
 				234B5EB723506D1F00233097 /* StatusItemMainPanelViewController.swift in Sources */,
-				221E5DFB1F4DE55B00AE17FA /* ProcessUtils.m in Sources */,
 				0B6D3B6620419F0A004CC064 /* LaunchStarter.swift in Sources */,
 				22F4EFEF1E325C36009EED31 /* PreferencesTabViewController.swift in Sources */,
 				22003C6E1E8555F0001220BC /* Utils.swift in Sources */,
@@ -656,7 +626,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
-				SWIFT_OBJC_BRIDGING_HEADER = Mos/OCBridge/BridgingHeader.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -690,7 +659,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
-				SWIFT_OBJC_BRIDGING_HEADER = Mos/OCBridge/BridgingHeader.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};

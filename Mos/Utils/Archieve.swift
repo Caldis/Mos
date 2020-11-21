@@ -6,7 +6,7 @@
 //  Copyright © 2020 Caldis. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 
 class Archieve {
     /*
@@ -19,35 +19,6 @@ class Archieve {
         notification.subtitle = subTitle
         // 发送通知
         NSUserNotificationCenter.default.deliver(notification)
-    }
-    
-    /*
-     * 匹配数据获取
-     */
-    // 已知问题: 获取到的始终为主激活窗口
-    // 已知问题: 如果鼠标滚轮事件由 cghidEventTap 层截取, 则获取到的目标窗口 PID 始终为当前的激活窗口, 而不是悬停窗口
-    //          如果事件在 cgAnnotatedSessionEventTap 层截取, 对应目标窗口 PID 则可用，但会造成事件循环截取
-    // 从 CGEvent 中携带的 PID 获取目标窗口的 BundleId
-    private var lastEventTargetPID: pid_t = 1  // 事件的目标进程 PID (先前)
-    private var currEventTargetPID: pid_t = 1  // 事件的目标进程 PID (当前)
-    private var cacheEventTargetBID: String?    // 事件的目标进程 BID (当前)
-    func getBundleByPid(from event: CGEvent) -> String? {
-        // Guard
-        let pid = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
-        if pid == pid_t(1) {return nil}
-        // 保存上次 PID
-        lastEventTargetPID = currEventTargetPID
-        // 更新当前 PID
-        currEventTargetPID = pid
-        // 使用 PID 获取 BID
-        // 如果目标 PID 变化, 则重新获取一次窗口 BID
-        if lastEventTargetPID != currEventTargetPID {
-            if let bundleId = Archieve.getApplicationBundleIdRecursivelyFrom(pid: currEventTargetPID) {
-                cacheEventTargetBID = bundleId
-                return cacheEventTargetBID
-            }
-        }
-        return cacheEventTargetBID
     }
     
     /*
@@ -85,7 +56,7 @@ class Archieve {
                 let pid = getPidFrom(element: element!)
                 bundleIdCache = Archieve.getApplicationBundleIdFrom(pid: pid)
             } else {
-                bundleIdCache = getBundleByPid(from: event)
+                // TODO
             }
         }
         return bundleIdCache
@@ -125,35 +96,6 @@ class Archieve {
             return runningApps.bundleIdentifier
         } else {
             return nil
-        }
-    }
-    // 从 PID 获取对应数据: 递归
-    static var pppid: pid_t?
-    class func getApplicationBundleIdRecursivelyFrom(pid: pid_t) -> String? {
-        if let bundleId = NSRunningApplication.init(processIdentifier: pid)?.bundleIdentifier {
-            // 先使用 BundleId 查找
-            return bundleId
-        } else {
-            // 否则查找父进程
-            let ppid = ProcessUtils.getParentPid(from: pid)
-            let wasted = [1, pppid, nil].contains(ppid)
-            pppid = ppid
-            let res = wasted ? nil : getApplicationBundleIdRecursivelyFrom(pid: ppid)
-            return res
-
-        }
-    }
-    // 从 PID 获取 Path
-    class func getApplicationPathRecursivelyFrom(pid: pid_t) -> String? {
-        if let path = NSRunningApplication.init(processIdentifier: pid)?.executableURL?.path {
-            return path
-        } else {
-            // 否则查找父进程
-            let ppid = ProcessUtils.getParentPid(from: pid)
-            let wasted = [1, pppid, nil].contains(ppid)
-            pppid = ppid
-            let res = wasted ? nil : getApplicationPathRecursivelyFrom(pid: ppid)
-            return res
         }
     }
     
