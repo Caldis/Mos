@@ -39,15 +39,29 @@ class ScrollEvent {
         // 保存事件引用
         event = cgEvent
         // 获取对应轴的数据
-        Y = ScrollEventUtils.initEvent(event: cgEvent, axis: axisType.Y)
-        X = ScrollEventUtils.initEvent(event: cgEvent, axis: axisType.X)
+        Y = ScrollEvent.initEvent(event: cgEvent, axis: axisType.Y)
+        X = ScrollEvent.initEvent(event: cgEvent, axis: axisType.X)
     }
     
+    // 触控板/鼠标判断
+    func isTouchPad() -> Bool {
+        // MomentumPhase 或 ScrollPhase 任一不为零, 则为触控板
+        if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
+            return true
+        }
+        // 累计加速度不为零, 则为触控板
+        if event.getDoubleValueField(.scrollWheelEventScrollCount) != 0.0 {
+            return true
+        }
+        return false
+    }
+    func isMouse() -> Bool {
+        return !isTouchPad()
+    }
 }
 
 // ScrollEvent 的工具方法
-class ScrollEventUtils {
-    
+extension ScrollEvent {
     // 初始化轴数据
     class func initEvent(event: CGEvent, axis: axisType) -> axisData {
         var data = axisData()
@@ -120,5 +134,4 @@ class ScrollEventUtils {
     }
     static let normalizeX = normalize(axis: axisType.X)
     static let normalizeY = normalize(axis: axisType.Y)
-    
 }

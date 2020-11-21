@@ -11,16 +11,6 @@ import Cocoa
 // 实用方法
 public class Utils {
     
-    // 通知
-    class func sendNotificationMessage(_ title:String, _ subTitle:String) {
-        // 定义通知
-        let notification = NSUserNotification()
-        notification.title = title
-        notification.subtitle = subTitle
-        // 发送通知
-        NSUserNotificationCenter.default.deliver(notification)
-    }
-    
     // 菜单
     class func attachImage(to menuItem:NSMenuItem, withImage image: NSImage) {
         menuItem.image = image
@@ -179,44 +169,6 @@ public class Utils {
         let flags = event.flags
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         return flags.rawValue & CGEventFlags.maskShift.rawValue == 0 && MODIFIER_KEY.shiftPair.contains(CGKeyCode(keyCode))
-    }
-    
-    // 从 PID 获取对应数据
-    class func getApplicationBundleIdFrom(pid: pid_t) -> String? {
-        if let runningApps = NSRunningApplication.init(processIdentifier: pid) {
-            return runningApps.bundleIdentifier
-        } else {
-            return nil
-        }
-    }
-    // 从 PID 获取对应数据: 递归
-    static var pppid: pid_t?
-    class func getApplicationBundleIdRecursivelyFrom(pid: pid_t) -> String? {
-        if let bundleId = NSRunningApplication.init(processIdentifier: pid)?.bundleIdentifier {
-            // 先使用 BundleId 查找
-            return bundleId
-        } else {
-            // 否则查找父进程
-            let ppid = ProcessUtils.getParentPid(from: pid)
-            let wasted = [1, pppid, nil].contains(ppid)
-            pppid = ppid
-            let res = wasted ? nil : getApplicationBundleIdRecursivelyFrom(pid: ppid)
-            return res
-
-        }
-    }
-    // 从 PID 获取 Path
-    class func getApplicationPathRecursivelyFrom(pid: pid_t) -> String? {
-        if let path = NSRunningApplication.init(processIdentifier: pid)?.executableURL?.path {
-            return path
-        } else {
-            // 否则查找父进程
-            let ppid = ProcessUtils.getParentPid(from: pid)
-            let wasted = [1, pppid, nil].contains(ppid)
-            pppid = ppid
-            let res = wasted ? nil : getApplicationPathRecursivelyFrom(pid: ppid)
-            return res
-        }
     }
     
     // 从路径获取应用图标

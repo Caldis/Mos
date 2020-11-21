@@ -54,9 +54,11 @@ class ScrollCore {
     
     // 滚动事件截取处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        // 滚动事件
+        let scrollEvent = ScrollEvent(with: event)
         // 不处理触控板
         // 无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入
-        if ScrollUtils.shared.isTouchPad(of: event) { return Unmanaged.passUnretained(event) }
+        if scrollEvent.isTouchPad() { return Unmanaged.passUnretained(event) }
         // 更新引用
         ScrollCore.shared.scrollEventBase = event
         ScrollCore.shared.scrollEventProxy = proxy
@@ -94,13 +96,11 @@ class ScrollCore {
             enableSmooth = Options.shared.scrollBasic.smooth
             enableReverse = Options.shared.scrollBasic.reverse
         }
-        // 处理滚动事件
-        let scrollEvent = ScrollEvent(with: event)
         // Y轴
         if scrollEvent.Y.usable {
             // 是否翻转滚动
             if enableReverse {
-                ScrollEventUtils.reverseY(scrollEvent)
+                ScrollEvent.reverseY(scrollEvent)
             }
             // 是否平滑滚动
             if enableSmooth {
@@ -108,7 +108,7 @@ class ScrollCore {
                 returnOriginalEvent = false
                 // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
                 if !scrollEvent.Y.fixed {
-                    ScrollEventUtils.normalizeY(scrollEvent, step)
+                    ScrollEvent.normalizeY(scrollEvent, step)
                 }
             }
         }
@@ -116,7 +116,7 @@ class ScrollCore {
         if scrollEvent.X.usable {
             // 是否翻转滚动
             if enableReverse {
-                ScrollEventUtils.reverseX(scrollEvent)
+                ScrollEvent.reverseX(scrollEvent)
             }
             // 是否平滑滚动
             if enableSmooth {
@@ -124,7 +124,7 @@ class ScrollCore {
                 returnOriginalEvent = false
                 // 如果输入值为非 Fixed 类型, 则使用 Step 作为门限值将数据归一化
                 if !scrollEvent.X.fixed {
-                    ScrollEventUtils.normalizeX(scrollEvent, step)
+                    ScrollEvent.normalizeX(scrollEvent, step)
                 }
             }
         }
