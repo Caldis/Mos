@@ -7,9 +7,22 @@
 //
 
 import Cocoa
+import LoginServiceKit
 
 // 实用方法
 public class Utils {
+    
+    // 切换自启
+    class func launchAtStartup(on: Bool) {
+        let bundlePath = Bundle.main.bundlePath
+        if on {
+            if !LoginServiceKit.isExistLoginItems(at: bundlePath) {
+                LoginServiceKit.addLoginItems(at: bundlePath)
+            }
+        } else {
+            LoginServiceKit.removeLoginItems(at: bundlePath)
+        }
+    }
     
     // 菜单
     class func attachImage(to menuItem:NSMenuItem, withImage image: NSImage) {

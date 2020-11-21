@@ -70,7 +70,7 @@ struct POPOVER_IDENTIFIER {
 class OPTIONS_GENERAL_DEFAULT {
     // 自启
     var autoLaunch = false {
-        willSet {LaunchStarter.launchAtStartup(on: newValue)}
+        willSet {Utils.launchAtStartup(on: newValue)}
         didSet {Options.shared.saveOptions()}
     }
     // 隐藏
