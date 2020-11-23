@@ -11,14 +11,10 @@ import Cocoa
 class ExceptionalApplication: Codable, Equatable {
     
     // 基础
-    var path: String
-    // 额外
-    var name: String?
-    var bundleId: String?
-    var bundleURL: String?
-    // 继承 (smooth 及 reverse 不走这个)
+    var path: String // executablePath or bundlePath
+    // 配置: 继承 (仅包含 Advanced 部分)
     var inherit = true
-    // 滚动
+    // 配置: 滚动
     var scrollBasic = OPTIONS_SCROLL_BASIC_DEFAULT()
     var scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT()
     
@@ -26,24 +22,12 @@ class ExceptionalApplication: Codable, Equatable {
     init(path: String) {
         self.path = path
     }
-    // 从应用程序路径选择初始化
-    init(path: String, bundleId: String?) {
-        self.path = path
-        self.bundleId = bundleId
-    }
-    // 手动输入初始化 (没有图标）
-    init(path: String, bundleId: String?, name: String?) {
-        self.path = path
-        self.name = name
-        self.bundleId = bundleId
-    }
     
+    // Coredata
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         // 基础
-        self.name = try container.decodeIfPresent(String.self, forKey: .name) ?? nil
         self.path = try container.decodeIfPresent(String.self, forKey: .path) ?? ""
-        self.bundleId = try container.decodeIfPresent(String.self, forKey: .bundleId) ?? ""
         // 开关
         self.inherit = try container.decodeIfPresent(Bool.self, forKey: .inherit) ?? true
         // 滚动
@@ -51,8 +35,9 @@ class ExceptionalApplication: Codable, Equatable {
         self.scrollAdvanced = try container.decodeIfPresent(OPTIONS_SCROLL_ADVANCED_DEFAULT.self, forKey: .scrollAdvanced) ?? OPTIONS_SCROLL_ADVANCED_DEFAULT()
     }
     
-    static func == (lhs: ExceptionalApplication, rhs: ExceptionalApplication) -> Bool {
-        return lhs.bundleId == rhs.bundleId
+    // Comparable
+    static func == (a: ExceptionalApplication, b: ExceptionalApplication) -> Bool {
+        return a.path == b.path
     }
 }
 
@@ -60,13 +45,24 @@ class ExceptionalApplication: Codable, Equatable {
  * 工具函数
  */
 extension ExceptionalApplication {
+    // 基本信息
     func getIcon() -> NSImage {
         return Utils.getApplicationIcon(fromPath: path)
     }
     func getName() -> String {
-        if let validName = name { return validName }
         return Utils.getAppliactionName(fromPath: path)
     }
+    // 配置
+    func getStep() -> Double {
+        return inherit ? Options.shared.scrollAdvanced.step : scrollAdvanced.step
+    }
+    func getSpeed() -> Double {
+        return inherit ? Options.shared.scrollAdvanced.speed : scrollAdvanced.speed
+    }
+    func getDuration() -> Double {
+        return inherit ? Options.shared.scrollAdvanced.durationTransition : scrollAdvanced.durationTransition
+    }
+    // 功能
     func isSmooth(_ block: Bool) -> Bool {
         if block { return false }
         if !Options.shared.scrollBasic.smooth { return false }
@@ -75,14 +71,5 @@ extension ExceptionalApplication {
     func isReverse() -> Bool {
         if !Options.shared.scrollBasic.reverse { return false }
         return scrollBasic.reverse
-    }
-    func step() -> Double {
-        return inherit ? Options.shared.scrollAdvanced.step : scrollAdvanced.step
-    }
-    func speed() -> Double {
-        return inherit ? Options.shared.scrollAdvanced.speed : scrollAdvanced.speed
-    }
-    func duration() -> Double {
-        return inherit ? Options.shared.scrollAdvanced.durationTransition : scrollAdvanced.durationTransition
     }
 }

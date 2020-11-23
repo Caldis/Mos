@@ -47,15 +47,14 @@ class PreferencesExceptionViewController: NSViewController {
     
     // 列表底部按钮
     @IBAction func addItemClick(_ sender: NSButton) {
-        // 初始化运行中及已安装应用子菜单
-        initRunningAndInstalledManuItem()
-        // 显示菜单
-        let targetPosition = NSPoint(x: sender.frame.origin.x, y: sender.frame.origin.y + sender.frame.height - 28)
-        applicationSourceMenuControl.popUp(positioning: nil, at: targetPosition, in: sender.superview)
+        // 添加
+        openRunningApplicationPanel(sender)
+        // 重新加载
+        tableView.reloadData()
     }
     @IBAction func addItemFromFinderClick(_ sender: NSMenuItem) {
         // 添加
-        openFileSelectPanel()
+        openFileSelectionPanel()
         // 重新加载
         tableView.reloadData()
     }
@@ -185,7 +184,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
 extension PreferencesExceptionViewController: NSMenuDelegate {
 
     // 打开文件选择窗口
-    func openFileSelectPanel() {
+    func openFileSelectionPanel() {
         let openPanel = NSOpenPanel()
         // 默认打开的目录 (/Application)
         openPanel.directoryURL = FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first!
@@ -201,17 +200,15 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
         openPanel.beginSheetModal(for: view.window!, completionHandler: { result in
             if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
                 // 根据路径获取 application 信息并保存到 ExceptionalApplications 列表中
-                if let applicationPath = openPanel.url?.path, let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
-                    self.appendApplicationWith(path: applicationPath, bundleId: applicationBundleId)
-                } else {
-                    // 对于没有 bundleId 的应用可能是快捷方式, 给予提示
+                if let bundlePath = openPanel.url?.path {
+                    self.appendApplicationWith(path: bundlePath)
                 }
             }
         })
     }
 
     // 初始化菜单
-    func initRunningAndInstalledManuItem() {
+    func openRunningApplicationPanel(_ sender: NSButton) {
         // 清除已有
         runningAndInstalledMenuChildrenContainer.removeAllItems()
         // 初始化 Running 应用
@@ -224,58 +221,26 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
                 to: runningAndInstalledMenuChildrenContainer,
                 title: name,
                 icon: icon,
-                action: #selector(appendApplicationForSenderWithRunningApplication),
+                action: #selector(appendApplicationWithRunningApplication),
                 target: isExist ? nil : self,
                 represent: runningApplication
             )
         }
-        // 初始化 Installed 应用
-//        let fileManager = FileManager.default
-//        let applicationDirectoryURL = fileManager.urls(for: .applicationDirectory, in: .localDomainMask).first!
-//        do {
-//            let bundleURLs = try fileManager.contentsOfDirectory(at: applicationDirectoryURL, includingPropertiesForKeys: nil)
-//            for bundleURL in bundleURLs {
-//                let icon = Utils.getApplicationIcon(from: bundleURL)
-//                let name = Utils.getAppliactionName(from: bundleURL)
-//                Utils.addMenuItem(
-//                    to: runningAndInstalledMenuChildrenContainer,
-//                    title: name, icon: icon,
-//                    action: #selector(appendApplicationForSenderWithBundleURL),
-//                    target: self, represent: bundleURL
-//                )
-//            }
-//        } catch {
-//            print("Error while enumerating files \(applicationDirectoryURL.path): \(error.localizedDescription)")
-//        }
+        // 显示菜单
+        let targetPosition = NSPoint(x: sender.frame.origin.x, y: sender.frame.origin.y + sender.frame.height - 28)
+        applicationSourceMenuControl.popUp(positioning: nil, at: targetPosition, in: sender.superview)
     }
     
     // 添加应用
-    func appendApplicationWith(path: String, bundleId: String?) {
-        let application = ExceptionalApplication(path: path, bundleId: bundleId)
+    func appendApplicationWith(path: String) {
+        let application = ExceptionalApplication(path: path)
         Options.shared.general.applications.append(application)
         self.tableView.reloadData()
     }
-//    func appendApplicationWith(name: String, bundleId: String) {
-//        let application = ExceptionalApplication(name: name, bundleId: bundleId)
-//        Options.shared.general.applications.append(application)
-//        self.tableView.reloadData()
-//    }
-    @objc func appendApplicationForSenderWithBundleURL(_ sender: NSMenuItem!) {
-        let url = sender.representedObject as! URL
-        let path = url.path
-        let bundle = Bundle(url: url)
-        if let bundleId = bundle?.bundleIdentifier {
-            appendApplicationWith(path: path, bundleId: bundleId)
-        } else {
-            // FIXME: NO BID (JAVA)
-        }
-    }
-    @objc func appendApplicationForSenderWithRunningApplication(_ sender: NSMenuItem!) {
+    @objc func appendApplicationWithRunningApplication(_ sender: NSMenuItem!) {
         guard let runningApplication = sender.representedObject as? NSRunningApplication else { return }
         guard let executablePath = runningApplication.executableURL?.path else { return }
-        guard let bundlePath = runningApplication.bundleURL?.path else { return }
-        guard let bundle = Bundle(path: bundlePath) else { return }
-        appendApplicationWith(path: executablePath, bundleId: bundle.bundleIdentifier)
+        appendApplicationWith(path: executablePath)
     }
     
     // 删除选定行

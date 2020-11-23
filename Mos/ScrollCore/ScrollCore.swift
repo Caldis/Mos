@@ -76,22 +76,22 @@ class ScrollCore {
         // 是否返回原始事件 (不启用平滑时)
         var returnOriginalEvent = true
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
-        // 获取目标窗口 Path
+        // 获取事件目标
         let targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
         // 获取 Launchpad 状态
         let isLaunchpadActive = ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication)
         // 获取列表中应用程序的列外设置信息
         ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
-        // 平滑/翻转/参数
+        // 平滑/翻转
         var enableSmooth = false, enableReverse = false
         var step = Options.shared.scrollAdvanced.step, speed = Options.shared.scrollAdvanced.speed
         ScrollCore.shared.smoothDuration = Options.shared.scrollAdvanced.durationTransition
         if let exceptionalApplication = ScrollCore.shared.exceptionalApplication {
             enableSmooth = exceptionalApplication.isSmooth(ScrollCore.shared.blockSmooth)
             enableReverse = exceptionalApplication.isReverse()
-            step = exceptionalApplication.step()
-            speed = exceptionalApplication.speed()
-            ScrollCore.shared.smoothDuration = exceptionalApplication.duration()
+            step = exceptionalApplication.getStep()
+            speed = exceptionalApplication.getSpeed()
+            ScrollCore.shared.smoothDuration = exceptionalApplication.getDuration()
         } else if !Options.shared.general.whitelist {
             enableSmooth = Options.shared.scrollBasic.smooth
             enableReverse = Options.shared.scrollBasic.reverse
@@ -150,23 +150,39 @@ class ScrollCore {
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 获取当前按键
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
-        // 获取目标应用程序
+        // 获取事件目标
         let targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
         let targetAppliaction = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
         // 判断快捷键
         switch keyCode {
             case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:
-                let down = Utils.isControlDown(event)
-                ScrollCore.shared.tryToggleEnableAllFlag(for: targetAppliaction, with: keyCode, using: MODIFIER_KEY.controlPair, on: down)
+                ScrollCore.shared.tryToggleEnableAllFlag(
+                    for: targetAppliaction,
+                    with: keyCode,
+                    using: MODIFIER_KEY.controlPair,
+                    on: Utils.isControlDown(event)
+                )
             case MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight:
-                let down = Utils.isOptionDown(event)
-                ScrollCore.shared.tryToggleEnableAllFlag(for: targetAppliaction, with: keyCode, using: MODIFIER_KEY.optionPair, on: down)
+                ScrollCore.shared.tryToggleEnableAllFlag(
+                    for: targetAppliaction,
+                    with: keyCode,
+                    using: MODIFIER_KEY.optionPair,
+                    on: Utils.isOptionDown(event)
+                )
             case MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight:
-                let down = Utils.isCommandDown(event)
-                ScrollCore.shared.tryToggleEnableAllFlag(for: targetAppliaction, with: keyCode, using: MODIFIER_KEY.commandPair, on: down)
+                ScrollCore.shared.tryToggleEnableAllFlag(
+                    for: targetAppliaction,
+                    with: keyCode,
+                    using: MODIFIER_KEY.commandPair,
+                    on: Utils.isCommandDown(event)
+                )
             case MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight:
-                let down = Utils.isShiftDown(event)
-                ScrollCore.shared.tryToggleEnableAllFlag(for: targetAppliaction, with: keyCode, using: MODIFIER_KEY.shiftPair, on: down)
+                ScrollCore.shared.tryToggleEnableAllFlag(
+                    for: targetAppliaction,
+                    with: keyCode,
+                    using: MODIFIER_KEY.shiftPair,
+                    on: Utils.isShiftDown(event)
+                )
             default: break
         }
         return nil
@@ -245,14 +261,14 @@ class ScrollCore {
     // 启动滚动处理
     func startHandlingScroll() {
         // Guard
-        if isCoreRunning {return}
+        if isCoreRunning { return }
         isCoreRunning = true
         // 截取事件
         scrollEventInterceptor = Interceptor(
             event: scrollEventMask,
             handleBy: scrollEventCallBack,
             listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .headInsertEventTap,
+            placeAt: .tailAppendEventTap,
             for: .defaultTap
         )
         hotkeyEventInterceptor = Interceptor(
@@ -280,7 +296,7 @@ class ScrollCore {
             repeats: true
         )
     }
-    // 暂停滚动处理
+    // 暂停(当前)滚动处理
     func pauseHandlingScroll() {
         cleanScrollBuffer()
         disableScrollEventPoster()
@@ -401,5 +417,8 @@ class ScrollCore {
             pauseHandlingScroll()
         }
     }
+}
+
+extension ScrollCore {
     
 }

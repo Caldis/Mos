@@ -185,8 +185,13 @@ public class Utils {
     }
     
     // 从路径获取应用图标
-    class func getApplicationIcon(fromPath bundlePath: String?) -> NSImage {
-        return NSWorkspace.shared.icon(forFile: bundlePath ?? "")
+    class func getApplicationIcon(fromPath path: String?) -> NSImage {
+        // 直接从 Path 的 Bundle 获取
+        if let validBundle = Bundle.init(url: URL.init(fileURLWithPath: path ?? "")) {
+            return NSWorkspace.shared.icon(forFile: validBundle.bundlePath)
+        }
+        // 从 Path 关联的 Bundle 获取
+        return NSWorkspace.shared.icon(forFile: path ?? "")
     }
     // 从路径获取应用名称
     class func getAppliactionName(fromPath path: String?) -> String {
@@ -196,13 +201,15 @@ public class Utils {
         guard let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) else {
             return parseName(fromPath: validPath)
         }
-        let CFBundleDisplayName = validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-        let CFBundleName = validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String
-        let FileName = parseName(fromPath: validPath)
-        return CFBundleDisplayName ?? CFBundleName ?? FileName
+        return (
+            validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ??
+            validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String ??
+            parseName(fromPath: validPath)
+        )
     }
     class func parseName(fromPath path: String) -> String {
         let applicationRawName = FileManager().displayName(atPath: path).removingPercentEncoding!
+        print("applicationRawName", applicationRawName)
         return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app|.App|.APP")
     }
 }
