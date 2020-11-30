@@ -21,7 +21,7 @@ struct axisData {
     // 滚动数据是否为 Fix 类型 (非 Fix 类型在可用数据过小时需要归一化处理)
     var fixed = false
     // 滚动数据数据是否可用
-    var usable = false
+    var valid = false
     // 可用的滚动数据
     var usableValue = 0.0
 }
@@ -78,15 +78,15 @@ extension ScrollEvent {
         // 生成可用的滚动数据
         if data.scrollPt != 0.0 {
             data.fixed = false
-            data.usable = true
+            data.valid = true
             data.usableValue = data.scrollPt
         } else if data.scrollFixPt != 0.0 {
             data.fixed = true
-            data.usable = true
+            data.valid = true
             data.usableValue = data.scrollFixPt
         } else if data.scrollFix != 0 {
             data.fixed = true
-            data.usable = true
+            data.valid = true
             data.usableValue = Double(data.scrollFix)
         }
         return data

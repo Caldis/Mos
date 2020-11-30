@@ -28,10 +28,10 @@ class ScrollCore {
     var toggleScroll = false
     var blockSmooth = false
     // 插值数据
-    var smoothDuration = Options.shared.scrollAdvanced.durationTransition
-    // 目标应用数据
-    var previousScrollTargetProcessID = 0.0 // 用于在鼠标移动到不同窗口时停止滚动
-    var currentScrollTargetProcessID = 0.0
+    var interpolator = (
+        worker: Interpolator.lerp,
+        duration: Options.shared.scrollAdvanced.durationTransition
+    )
     // 例外应用数据
     var exceptionalApplication: ExceptionalApplication?
     var currentExceptionalApplication: ExceptionalApplication? // 用于区分按下热键及抬起时的作用目标
@@ -62,42 +62,38 @@ class ScrollCore {
         // 更新引用
         ScrollCore.shared.scrollEventBase = event
         ScrollCore.shared.scrollEventProxy = proxy
-        // 更新当前 ProcessID
-        ScrollCore.shared.previousScrollTargetProcessID = ScrollCore.shared.currentScrollTargetProcessID
-        ScrollCore.shared.currentScrollTargetProcessID = event.getDoubleValueField(.eventTargetUnixProcessID)
-        // 切换目标窗口时停止滚动
-        if ScrollCore.shared.previousScrollTargetProcessID != ScrollCore.shared.currentScrollTargetProcessID && ScrollCore.shared.previousScrollTargetProcessID != 0.0 {
+        // 切换目标窗时停止滚动
+        if ScrollUtils.shared.isTargetChanged(event) {
             ScrollCore.shared.pauseHandlingScroll()
             return nil
         }
-        // 避免处理循环事件
-        let isEventProcessedByMos = event.getDoubleValueField(.eventSourceUserData) == MOS_SCROLL_EVENT_IDENTIFER
-        if isEventProcessedByMos { return Unmanaged.passUnretained(event) }
         // 是否返回原始事件 (不启用平滑时)
         var returnOriginalEvent = true
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
         // 获取事件目标
         let targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
-        // 获取 Launchpad 状态
-        let isLaunchpadActive = ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication)
         // 获取列表中应用程序的列外设置信息
         ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
         // 平滑/翻转
         var enableSmooth = false, enableReverse = false
         var step = Options.shared.scrollAdvanced.step, speed = Options.shared.scrollAdvanced.speed
-        ScrollCore.shared.smoothDuration = Options.shared.scrollAdvanced.durationTransition
+        ScrollCore.shared.interpolator.duration = Options.shared.scrollAdvanced.durationTransition
         if let exceptionalApplication = ScrollCore.shared.exceptionalApplication {
             enableSmooth = exceptionalApplication.isSmooth(ScrollCore.shared.blockSmooth)
             enableReverse = exceptionalApplication.isReverse()
             step = exceptionalApplication.getStep()
             speed = exceptionalApplication.getSpeed()
-            ScrollCore.shared.smoothDuration = exceptionalApplication.getDuration()
+            ScrollCore.shared.interpolator.duration = exceptionalApplication.getDuration()
         } else if !Options.shared.general.whitelist {
             enableSmooth = Options.shared.scrollBasic.smooth
             enableReverse = Options.shared.scrollBasic.reverse
         }
+        // Launchpad 激活则强制屏蔽平滑
+        if ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication) {
+           enableSmooth = false
+        }
         // Y轴
-        if scrollEvent.Y.usable {
+        if scrollEvent.Y.valid {
             // 是否翻转滚动
             if enableReverse {
                 ScrollEvent.reverseY(scrollEvent)
@@ -113,7 +109,7 @@ class ScrollCore {
             }
         }
         // X轴
-        if scrollEvent.X.usable {
+        if scrollEvent.X.valid {
             // 是否翻转滚动
             if enableReverse {
                 ScrollEvent.reverseX(scrollEvent)
@@ -300,7 +296,6 @@ class ScrollCore {
     func pauseHandlingScroll() {
         cleanScrollBuffer()
         disableScrollEventPoster()
-        previousScrollTargetProcessID = 0.0
     }
     // 停止滚动处理
     func endHandlingScroll() {
@@ -392,8 +387,8 @@ class ScrollCore {
     func handleScroll() {
         // 计算插值
         let scrollPulse = (
-            y: Interpolator.lerp(src: scrollCurr.y, dest: scrollBuffer.y, trans: smoothDuration),
-            x: Interpolator.lerp(src: scrollCurr.x, dest: scrollBuffer.x, trans: smoothDuration)
+            y: interpolator.worker(scrollCurr.y, scrollBuffer.y, ScrollCore.shared.interpolator.duration),
+            x: interpolator.worker(scrollCurr.x, scrollBuffer.x, ScrollCore.shared.interpolator.duration)
         )
         // 更新滚动位置
         scrollCurr = (
@@ -407,9 +402,9 @@ class ScrollCore {
         // 发送滚动结果
         if let event = scrollEventBase, let proxy = scrollEventProxy {
             ScrollUtils.shared.postScrollEvent(
-                proxy: proxy,
-                event: event,
-                value: swapedValue
+                proxy,
+                event,
+                swapedValue
             )
         }
         // 如果临近目标距离小于精确度门限则暂停滚动

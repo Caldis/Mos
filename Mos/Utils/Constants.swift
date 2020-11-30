@@ -8,9 +8,6 @@
 
 import Foundation
 
-// 滚动事件标示
-let MOS_SCROLL_EVENT_IDENTIFER = 131519.0
-
 // 动画
 struct ANIMATION {
     static let duration = 0.3

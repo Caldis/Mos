@@ -14,14 +14,28 @@ class ScrollUtils {
     static let shared = ScrollUtils()
     init() { print("Class 'ScrollUtils' is initialized") }
     
+    // 判断事件目标是否变化
+    var previousScrollTargetProcessID = 0.0 // 用于在鼠标移动到不同窗口时停止滚动
+    var currentScrollTargetProcessID = 0.0
+    func isTargetChanged(_ event: CGEvent) -> Bool {
+        // 更新当前 ProcessID
+        previousScrollTargetProcessID = currentScrollTargetProcessID
+        currentScrollTargetProcessID = event.getDoubleValueField(.eventTargetUnixProcessID)
+        // 判断是否变化
+        return previousScrollTargetProcessID != currentScrollTargetProcessID && previousScrollTargetProcessID != 0.0
+    }
+    
     // 发送事件
-    func postScrollEvent(proxy: CGEventTapProxy, event: CGEvent, value: ( y: Double, x: Double )) {
+    func postScrollEvent(_ proxy: CGEventTapProxy, _ event: CGEvent, _ value: ( y: Double, x: Double )) {
         if let eventClone = event.copy() {
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: value.y)
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: value.x)
             eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: 0.0)
             eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0.0)
             eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
+            // EventTapProxy 标识了 EventTapCallback 在事件流中接收到事件的特定位置, 其粒度小于 tap 本身
+            // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
+            // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 也如同 EventTapCallback 所处理的事件, 会被所有后续的 EventTap 接收
             eventClone.tapPostEvent(proxy)
         }
     }

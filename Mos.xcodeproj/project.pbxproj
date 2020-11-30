@@ -20,6 +20,7 @@
 		0BB0F1C020F3A05D00909B7D /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB0F1BF20F3A05D00909B7D /* WelcomeViewController.swift */; };
 		0BC2AD2F20F3BA090084416B /* PreferencesContributorsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC2AD2E20F3BA090084416B /* PreferencesContributorsViewController.swift */; };
 		0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */; };
+		0BDF7A302575105C0093B895 /* Debounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDF7A2F2575105C0093B895 /* Debounce.swift */; };
 		0BE4C93B20617C6E0001EA0E /* ScrollFiller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */; };
 		0BE5A292253A1168006D61C0 /* LoginServiceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A291253A1168006D61C0 /* LoginServiceKit */; };
 		0BE5A296253A119C006D61C0 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A295253A119C006D61C0 /* Charts */; };
@@ -81,6 +82,7 @@
 		0BB0F1BF20F3A05D00909B7D /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		0BC2AD2E20F3BA090084416B /* PreferencesContributorsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesContributorsViewController.swift; sourceTree = "<group>"; };
 		0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemManager.swift; sourceTree = "<group>"; };
+		0BDF7A2F2575105C0093B895 /* Debounce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debounce.swift; sourceTree = "<group>"; };
 		0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollFiller.swift; sourceTree = "<group>"; };
 		22003C6D1E8555F0001220BC /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -196,6 +198,7 @@
 				0B12EF5D203C7D650058B169 /* Logger.swift */,
 				0B56DE3F2568DFDB00B4D9AE /* Archieve.swift */,
 				2399BFD7222CDB7D008FA807 /* Constants.swift */,
+				0BDF7A2F2575105C0093B895 /* Debounce.swift */,
 				0B74C440205E386D00E3F942 /* Interceptor.swift */,
 				23BB4D3021D775D4009B51E9 /* EventMonitor.swift */,
 				236B69B0224B79B100DEF435 /* EnhanceArray.swift */,
@@ -433,6 +436,7 @@
 				0BE4C93B20617C6E0001EA0E /* ScrollFiller.swift in Sources */,
 				0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */,
 				0B12EF1A203AD9C80058B169 /* Options.swift in Sources */,
+				0BDF7A302575105C0093B895 /* Debounce.swift in Sources */,
 				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
 				0B56DE402568DFDB00B4D9AE /* Archieve.swift in Sources */,
 				2278EE9D1E3DFAC8000AB25B /* ExceptionalApplication.swift in Sources */,
