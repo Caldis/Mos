@@ -55,20 +55,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
         ScrollCore.shared.endHandlingScroll()
+        NSLog("ScrollCore End: Terminate")
     }
     
     // 检查是否有访问 accessibility 权限, 如果有则启动滚动处理, 并结束计时器
     // 10.14(Mojave) 后, 若无该权限会直接在创建 eventTap 时报错 (https://developer.apple.com/videos/play/wwdc2018/702/)
     @objc func startWithAccessibilityPermissionsChecker(_ timer: Timer?) {
+        NSLog("Checking Accessibility")
         if let validTimer = timer {
             // 开启辅助权限后, 关闭定时器, 开始处理
             if Utils.isHadAccessibilityPermissions() {
                 validTimer.invalidate()
                 ScrollCore.shared.startHandlingScroll()
+                NSLog("ScrollCore Start: First Open (Accessibility Enabled)")
             }
         } else {
             if Utils.isHadAccessibilityPermissions() {
                 ScrollCore.shared.startHandlingScroll()
+                NSLog("ScrollCore Start: Normal Open")
             } else {
                 // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
                 WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.introductionWindowController, withTitle: "")
@@ -85,10 +89,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     // 在切换用户时停止滚动处理
-    @objc func sessionDidActive(notification:NSNotification){
-         ScrollCore.shared.startHandlingScroll()
+    @objc func sessionDidActive(notification: NSNotification){
+        ScrollCore.shared.startHandlingScroll()
+        NSLog("ScrollCore Start: Session Active")
     }
-    @objc func sessionDidResign(notification:NSNotification){
-         ScrollCore.shared.endHandlingScroll()
+    @objc func sessionDidResign(notification: NSNotification){
+        ScrollCore.shared.endHandlingScroll()
+        NSLog("ScrollCore End: Session Resign")
     }
 }

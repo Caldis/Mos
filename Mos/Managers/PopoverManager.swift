@@ -12,7 +12,7 @@ class PopoverManager {
     
     // 单例
     static let shared = PopoverManager()
-    init() { print("Class 'PopoverManager' is initialized") }
+    init() { NSLog("Module initialized: PopoverManager") }
     
     // 引用列表
     var refs = [String: NSPopover]()

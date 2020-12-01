@@ -80,8 +80,10 @@ public class Utils {
             if kill {
                 let runningInst = NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID)[0]
                 runningInst.terminate()
+                NSLog("Terminate: Other instance", runningInst.processIdentifier)
             } else {
                 NSApp.terminate(nil)
+                NSLog("Terminate: Suicide")
             }
         }
     }

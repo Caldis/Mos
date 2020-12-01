@@ -14,7 +14,7 @@ class Options {
     
     // 单例
     static let shared = Options()
-    init() { print("Class 'Options' is initialized") }
+    init() { NSLog("Module initialized: Options") }
     
     // 读取锁, 防止冲突
     private var readingOptionsLock = false

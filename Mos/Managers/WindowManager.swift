@@ -12,7 +12,7 @@ class WindowManager {
     
     // 单例
     static let shared = WindowManager()
-    init() { print("Class 'WindowManager' is initialized") }
+    init() { NSLog("Module initialized: WindowManager") }
     
     // 引用列表
     var refs = [String: NSWindowController]()
