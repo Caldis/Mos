@@ -12,12 +12,10 @@ class ScrollCore {
     
     // 单例
     static let shared = ScrollCore()
-    init() { print("Class 'ScrollCore' is initialized") }
+    init() { NSLog("Module initialized: ScrollCore") }
     
     // 执行状态
-    var isCoreRunning = false
-    // 鼠标事件轴
-    let axis = ( Y: UInt32(1), X: UInt32(1), YX: UInt32(2), YXZ: UInt32(3) )
+    var isActive = false
     // 滚动数据
     var scrollCurr   = ( y: 0.0, x: 0.0 )  // 当前滚动距离
     var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
@@ -28,15 +26,12 @@ class ScrollCore {
     var toggleScroll = false
     var blockSmooth = false
     // 插值数据
-    var interpolator = (
-        worker: Interpolator.lerp,
-        duration: Options.shared.scrollAdvanced.durationTransition
-    )
+    let interpolatorWorker = Interpolator.lerp
+    let interpolatorFiller = ScrollFiller()
+    var interpolatorDuration = Options.shared.scrollAdvanced.durationTransition
     // 例外应用数据
     var exceptionalApplication: ExceptionalApplication?
     var currentExceptionalApplication: ExceptionalApplication? // 用于区分按下热键及抬起时的作用目标
-    // 滚动数值滤波, 用于去除滚动的起始抖动
-    var scrollFiller = ScrollFiller()
     // 事件发送器
     var scrollEventBase: CGEvent?
     var scrollEventProxy: CGEventTapProxy?
@@ -77,20 +72,20 @@ class ScrollCore {
         // 平滑/翻转
         var enableSmooth = false, enableReverse = false
         var step = Options.shared.scrollAdvanced.step, speed = Options.shared.scrollAdvanced.speed
-        ScrollCore.shared.interpolator.duration = Options.shared.scrollAdvanced.durationTransition
+        ScrollCore.shared.interpolatorDuration = Options.shared.scrollAdvanced.durationTransition
         if let exceptionalApplication = ScrollCore.shared.exceptionalApplication {
             enableSmooth = exceptionalApplication.isSmooth(ScrollCore.shared.blockSmooth)
             enableReverse = exceptionalApplication.isReverse()
             step = exceptionalApplication.getStep()
             speed = exceptionalApplication.getSpeed()
-            ScrollCore.shared.interpolator.duration = exceptionalApplication.getDuration()
+            ScrollCore.shared.interpolatorDuration = exceptionalApplication.getDuration()
         } else if !Options.shared.general.whitelist {
             enableSmooth = Options.shared.scrollBasic.smooth
             enableReverse = Options.shared.scrollBasic.reverse
         }
         // Launchpad 激活则强制屏蔽平滑
         if ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication) {
-           enableSmooth = false
+            enableSmooth = false
         }
         // Y轴
         if scrollEvent.Y.valid {
@@ -151,35 +146,35 @@ class ScrollCore {
         let targetAppliaction = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
         // 判断快捷键
         switch keyCode {
-            case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:
-                ScrollCore.shared.tryToggleEnableAllFlag(
-                    for: targetAppliaction,
-                    with: keyCode,
-                    using: MODIFIER_KEY.controlPair,
-                    on: Utils.isControlDown(event)
-                )
-            case MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight:
-                ScrollCore.shared.tryToggleEnableAllFlag(
-                    for: targetAppliaction,
-                    with: keyCode,
-                    using: MODIFIER_KEY.optionPair,
-                    on: Utils.isOptionDown(event)
-                )
-            case MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight:
-                ScrollCore.shared.tryToggleEnableAllFlag(
-                    for: targetAppliaction,
-                    with: keyCode,
-                    using: MODIFIER_KEY.commandPair,
-                    on: Utils.isCommandDown(event)
-                )
-            case MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight:
-                ScrollCore.shared.tryToggleEnableAllFlag(
-                    for: targetAppliaction,
-                    with: keyCode,
-                    using: MODIFIER_KEY.shiftPair,
-                    on: Utils.isShiftDown(event)
-                )
-            default: break
+        case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:
+            ScrollCore.shared.tryToggleEnableAllFlag(
+                for: targetAppliaction,
+                with: keyCode,
+                using: MODIFIER_KEY.controlPair,
+                on: Utils.isControlDown(event)
+            )
+        case MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight:
+            ScrollCore.shared.tryToggleEnableAllFlag(
+                for: targetAppliaction,
+                with: keyCode,
+                using: MODIFIER_KEY.optionPair,
+                on: Utils.isOptionDown(event)
+            )
+        case MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight:
+            ScrollCore.shared.tryToggleEnableAllFlag(
+                for: targetAppliaction,
+                with: keyCode,
+                using: MODIFIER_KEY.commandPair,
+                on: Utils.isCommandDown(event)
+            )
+        case MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight:
+            ScrollCore.shared.tryToggleEnableAllFlag(
+                for: targetAppliaction,
+                with: keyCode,
+                using: MODIFIER_KEY.shiftPair,
+                on: Utils.isShiftDown(event)
+            )
+        default: break
         }
         return nil
     }
@@ -257,8 +252,8 @@ class ScrollCore {
     // 启动滚动处理
     func startHandlingScroll() {
         // Guard
-        if isCoreRunning { return }
-        isCoreRunning = true
+        if isActive { return }
+        isActive = true
         // 截取事件
         scrollEventInterceptor = Interceptor(
             event: scrollEventMask,
@@ -300,8 +295,8 @@ class ScrollCore {
     // 停止滚动处理
     func endHandlingScroll() {
         // Guard
-        if !isCoreRunning {return}
-        isCoreRunning = false
+        if !isActive {return}
+        isActive = false
         // 停止守护进程
         tapKeeperTimer?.invalidate()
         // 停止滚动事件发送器
@@ -317,7 +312,7 @@ class ScrollCore {
         hotkeyEventInterceptor?.check()
         mouseEventInterceptor?.check()
     }
-        
+    
     // 鼠标数据控制
     func updateScrollBuffer(y: Double, x: Double, s: Double, a: Double = 1) {
         // 更新 Y 轴数据
@@ -342,7 +337,7 @@ class ScrollCore {
         scrollBuffer = ( y: 0.0, x: 0.0 )
         scrollDelta = ( y: 0.0, x: 0.0 )
         // 重置插值器
-        scrollFiller.clean()
+        interpolatorFiller.clean()
     }
     
     // 鼠标插值数据输出
@@ -387,8 +382,8 @@ class ScrollCore {
     func handleScroll() {
         // 计算插值
         let scrollPulse = (
-            y: interpolator.worker(scrollCurr.y, scrollBuffer.y, ScrollCore.shared.interpolator.duration),
-            x: interpolator.worker(scrollCurr.x, scrollBuffer.x, ScrollCore.shared.interpolator.duration)
+            y: interpolatorWorker(scrollCurr.y, scrollBuffer.y, ScrollCore.shared.interpolatorDuration),
+            x: interpolatorWorker(scrollCurr.x, scrollBuffer.x, ScrollCore.shared.interpolatorDuration)
         )
         // 更新滚动位置
         scrollCurr = (
@@ -396,9 +391,9 @@ class ScrollCore {
             x: scrollCurr.x + scrollPulse.x
         )
         // 平滑滚动结果
-        let filteredValue = scrollFiller.fillIn(with: scrollPulse)
+        let filledValue = interpolatorFiller.fill(with: scrollPulse)
         // 变换滚动结果
-        let swapedValue = weapScrollIfToggling(with: filteredValue, toggling: toggleScroll)
+        let swapedValue = weapScrollIfToggling(with: filledValue, toggling: toggleScroll)
         // 发送滚动结果
         if let event = scrollEventBase, let proxy = scrollEventProxy {
             ScrollUtils.shared.postScrollEvent(
@@ -412,8 +407,4 @@ class ScrollCore {
             pauseHandlingScroll()
         }
     }
-}
-
-extension ScrollCore {
-    
 }

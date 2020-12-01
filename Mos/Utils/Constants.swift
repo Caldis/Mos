@@ -37,7 +37,6 @@ struct WINDOW_IDENTIFIER {
     static let monitorWindowController = "monitorWindowController"
     static let preferencesWindowController = "preferencesWindowController"
 }
-
 struct VIEW_IDENTIFIER {
     static let introductionStepOneViewController = "introductionStepOneViewController"
     static let introductionStepTwoViewController = "introductionStepTwoViewController"

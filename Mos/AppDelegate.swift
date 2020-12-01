@@ -61,7 +61,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // 检查是否有访问 accessibility 权限, 如果有则启动滚动处理, 并结束计时器
     // 10.14(Mojave) 后, 若无该权限会直接在创建 eventTap 时报错 (https://developer.apple.com/videos/play/wwdc2018/702/)
     @objc func startWithAccessibilityPermissionsChecker(_ timer: Timer?) {
-        NSLog("Checking Accessibility")
         if let validTimer = timer {
             // 开启辅助权限后, 关闭定时器, 开始处理
             if Utils.isHadAccessibilityPermissions() {

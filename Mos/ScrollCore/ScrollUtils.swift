@@ -12,7 +12,7 @@ class ScrollUtils {
     
     // 单例
     static let shared = ScrollUtils()
-    init() { print("Class 'ScrollUtils' is initialized") }
+    init() { NSLog("Module initialized: ScrollUtils") }
     
     // 判断事件目标是否变化
     var previousScrollTargetProcessID = 0.0 // 用于在鼠标移动到不同窗口时停止滚动
