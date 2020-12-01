@@ -41,17 +41,17 @@ class PreferencesAdvanceViewController: NSViewController {
     // 加速
     @IBAction func dashKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
-        getTargetApplicationScrollOptions().dash = Int(index>1 ? MODIFIER_KEY.leftKeyList[index-PopUpButtonPadding] : 0)
+        getTargetApplicationScrollOptions().dash = Int(index>1 ? MODIFIER_KEY_SET.all.codes[index-PopUpButtonPadding] : 0)
     }
     // 转换
     @IBAction func toggleKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
-        getTargetApplicationScrollOptions().toggle = Int(index>1 ? MODIFIER_KEY.leftKeyList[index-PopUpButtonPadding] : 0)
+        getTargetApplicationScrollOptions().toggle = Int(index>1 ? MODIFIER_KEY_SET.all.codes[index-PopUpButtonPadding] : 0)
     }
     // 禁用
     @IBAction func disableKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
-        getTargetApplicationScrollOptions().block = Int(index>1 ? MODIFIER_KEY.leftKeyList[index-PopUpButtonPadding] : 0)
+        getTargetApplicationScrollOptions().block = Int(index>1 ? MODIFIER_KEY_SET.all.codes[index-PopUpButtonPadding] : 0)
     }
     
     // 步长
@@ -120,21 +120,21 @@ extension PreferencesAdvanceViewController {
         let scroll = getTargetApplicationScrollOptions()
         let enabled = !isTargetApplicationInheritOptions()
         // 加速
-        if let index = MODIFIER_KEY.leftKeyList.firstIndex(of: CGKeyCode(scroll.dash ?? 0)) {
+        if let index = MODIFIER_KEY_SET.all.codes.firstIndex(of: CGKeyCode(scroll.dash ?? 0)) {
             dashKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
             dashKeyPopUpButton.selectItem(at: 0)
         }
         dashKeyPopUpButton.isEnabled = enabled
         // 转换
-        if let index = MODIFIER_KEY.leftKeyList.firstIndex(of: CGKeyCode(scroll.toggle ?? 0)) {
+        if let index = MODIFIER_KEY_SET.all.codes.firstIndex(of: CGKeyCode(scroll.toggle ?? 0)) {
             toggleKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
              toggleKeyPopUpButton.selectItem(at: 0)
         }
         toggleKeyPopUpButton.isEnabled = enabled
         // 禁用
-        if let index = MODIFIER_KEY.leftKeyList.firstIndex(of: CGKeyCode(scroll.block ?? 0)) {
+        if let index = MODIFIER_KEY_SET.all.codes.firstIndex(of: CGKeyCode(scroll.block ?? 0)) {
             disableKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
             disableKeyPopUpButton.selectItem(at: 0)

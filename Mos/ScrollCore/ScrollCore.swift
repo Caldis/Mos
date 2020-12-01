@@ -150,29 +150,29 @@ class ScrollCore {
             ScrollCore.shared.tryToggleEnableAllFlag(
                 for: targetAppliaction,
                 with: keyCode,
-                using: MODIFIER_KEY.controlPair,
-                on: Utils.isControlDown(event)
+                using: MODIFIER_KEY_SET.control.codes,
+                on: Utils.isKeyDown(event, MODIFIER_KEY_SET.control)
             )
         case MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
                 for: targetAppliaction,
                 with: keyCode,
-                using: MODIFIER_KEY.optionPair,
-                on: Utils.isOptionDown(event)
+                using: MODIFIER_KEY_SET.option.codes,
+                on: Utils.isKeyDown(event, MODIFIER_KEY_SET.option)
             )
         case MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
                 for: targetAppliaction,
                 with: keyCode,
-                using: MODIFIER_KEY.commandPair,
-                on: Utils.isCommandDown(event)
+                using: MODIFIER_KEY_SET.command.codes,
+                on: Utils.isKeyDown(event, MODIFIER_KEY_SET.command)
             )
         case MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
                 for: targetAppliaction,
                 with: keyCode,
-                using: MODIFIER_KEY.shiftPair,
-                on: Utils.isShiftDown(event)
+                using: MODIFIER_KEY_SET.shift.codes,
+                on: Utils.isKeyDown(event, MODIFIER_KEY_SET.shift)
             )
         default: break
         }

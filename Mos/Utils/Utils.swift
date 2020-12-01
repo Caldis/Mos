@@ -145,45 +145,20 @@ public class Utils {
     }
     
     // 检测按键
-    class func isControlDown(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskControl.rawValue != 0 && MODIFIER_KEY.controlPair.contains(CGKeyCode(keyCode))
+    class func isKey(_ event: CGEvent, _ keyCodes: [CGKeyCode]) -> Bool {
+        return keyCodes.contains(CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode)))
     }
-    class func isControlUp(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskControl.rawValue == 0 && MODIFIER_KEY.controlPair.contains(CGKeyCode(keyCode))
+    class func isMaskRetain(_ event: CGEvent, _ mask: CGEventFlags) -> Bool {
+        return event.flags.rawValue & mask.rawValue != 0
     }
-    class func isOptionDown(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskAlternate.rawValue != 0 && MODIFIER_KEY.optionPair.contains(CGKeyCode(keyCode))
+    class func isMaskRelease(_ event: CGEvent, _ mask: CGEventFlags) -> Bool {
+        return event.flags.rawValue & mask.rawValue == 0
     }
-    class func isOptionUp(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskAlternate.rawValue == 0 && MODIFIER_KEY.optionPair.contains(CGKeyCode(keyCode))
+    class func isKeyDown(_ event: CGEvent, _ set: ( codes: [CGKeyCode], mask: CGEventFlags )) -> Bool {
+        return isKey(event, set.codes) && isMaskRetain(event, set.mask)
     }
-    class func isCommandDown(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskCommand.rawValue != 0 && MODIFIER_KEY.commandPair.contains(CGKeyCode(keyCode))
-    }
-    class func isCommandUp(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskCommand.rawValue == 0 && MODIFIER_KEY.commandPair.contains(CGKeyCode(keyCode))
-    }
-    class func isShiftDown(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskShift.rawValue != 0 && MODIFIER_KEY.shiftPair.contains(CGKeyCode(keyCode))
-    }
-    class func isShiftUp(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskShift.rawValue == 0 && MODIFIER_KEY.shiftPair.contains(CGKeyCode(keyCode))
+    class func isKeyUp(_ event: CGEvent, _ set: ( codes: [CGKeyCode], mask: CGEventFlags )) -> Bool {
+        return isKey(event, set.codes) && isMaskRelease(event, set.mask)
     }
     
     // 从路径获取应用图标
