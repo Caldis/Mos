@@ -16,26 +16,14 @@ class ScrollCore {
     
     // 执行状态
     var isActive = false
-    // 滚动数据
-    var scrollCurr   = ( y: 0.0, x: 0.0 )  // 当前滚动距离
-    var scrollDelta  = ( y: 0.0, x: 0.0 )  // 滚动方向记录
-    var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
     // 热键数据
     var dashScroll = false
     var dashAmplification = 1.0
     var toggleScroll = false
     var blockSmooth = false
-    // 插值数据
-    let interpolatorWorker = Interpolator.lerp
-    let interpolatorFiller = ScrollFiller()
-    var interpolatorDuration = Options.shared.scrollAdvanced.durationTransition
     // 例外应用数据
     var exceptionalApplication: ExceptionalApplication?
     var currentExceptionalApplication: ExceptionalApplication? // 用于区分按下热键及抬起时的作用目标
-    // 事件发送器
-    var scrollEventBase: CGEvent?
-    var scrollEventProxy: CGEventTapProxy?
-    var scrollEventPoster: CVDisplayLink?
     // 拦截层
     var scrollEventInterceptor: Interceptor?
     var hotkeyEventInterceptor: Interceptor?
@@ -54,9 +42,6 @@ class ScrollCore {
         // 不处理触控板
         // 无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入
         if scrollEvent.isTouchPad() { return Unmanaged.passUnretained(event) }
-        // 更新引用
-        ScrollCore.shared.scrollEventBase = event
-        ScrollCore.shared.scrollEventProxy = proxy
         // 切换目标窗时停止滚动
         if ScrollUtils.shared.isTargetChanged(event) {
             ScrollCore.shared.pauseHandlingScroll()
@@ -71,14 +56,13 @@ class ScrollCore {
         ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
         // 平滑/翻转
         var enableSmooth = false, enableReverse = false
-        var step = Options.shared.scrollAdvanced.step, speed = Options.shared.scrollAdvanced.speed
-        ScrollCore.shared.interpolatorDuration = Options.shared.scrollAdvanced.durationTransition
+        var step = Options.shared.scrollAdvanced.step, speed = Options.shared.scrollAdvanced.speed, duration = Options.shared.scrollAdvanced.durationTransition
         if let exceptionalApplication = ScrollCore.shared.exceptionalApplication {
             enableSmooth = exceptionalApplication.isSmooth(ScrollCore.shared.blockSmooth)
             enableReverse = exceptionalApplication.isReverse()
             step = exceptionalApplication.getStep()
             speed = exceptionalApplication.getSpeed()
-            ScrollCore.shared.interpolatorDuration = exceptionalApplication.getDuration()
+            duration = exceptionalApplication.getDuration()
         } else if !Options.shared.general.whitelist {
             enableSmooth = Options.shared.scrollBasic.smooth
             enableReverse = Options.shared.scrollBasic.reverse
@@ -121,13 +105,16 @@ class ScrollCore {
         }
         // 触发滚动事件推送
         if enableSmooth {
-            ScrollCore.shared.updateScrollBuffer(
+            ScrollPoster.shared.update(
+                event: event,
+                proxy: proxy,
+                swap: false,
+                duration: duration,
                 y: scrollEvent.Y.usableValue,
                 x: scrollEvent.X.usableValue,
-                s: speed,
-                a: ScrollCore.shared.dashAmplification
-            )
-            ScrollCore.shared.enableScrollEventPoster()
+                speed: speed,
+                amplification: ScrollCore.shared.dashAmplification
+            ).enable()
         }
         // 返回事件对象
         if returnOriginalEvent {
@@ -192,7 +179,8 @@ class ScrollCore {
     func tryEnableBlockFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
         if (keyPair.contains(key)) {
             ScrollCore.shared.blockSmooth = true
-            ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
+            // FIXME
+            // ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
         }
     }
     func tryDisableDashFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
@@ -278,7 +266,7 @@ class ScrollCore {
             for: .listenOnly
         )
         // 初始化滚动事件发送器
-        initScrollEventPoster()
+        ScrollPoster.shared.create()
         // 初始化守护进程
         tapKeeperTimer = Timer.scheduledTimer(
             timeInterval: 5.0,
@@ -290,8 +278,8 @@ class ScrollCore {
     }
     // 暂停
     func pauseHandlingScroll() {
-        cleanScrollBuffer()
-        disableScrollEventPoster()
+        ScrollPoster.shared.clean()
+        ScrollPoster.shared.disable()
     }
     // 停止
     func endHandlingScroll() {
@@ -301,7 +289,7 @@ class ScrollCore {
         // 停止守护进程
         tapKeeperTimer?.invalidate()
         // 停止滚动事件发送器
-        disableScrollEventPoster()
+        ScrollPoster.shared.disable()
         // 停止截取事件
         scrollEventInterceptor?.stop()
         hotkeyEventInterceptor?.stop()
@@ -312,99 +300,5 @@ class ScrollCore {
         scrollEventInterceptor?.check()
         hotkeyEventInterceptor?.check()
         mouseEventInterceptor?.check()
-    }
-
-    // MARK: - 插值数据缓存
-    func updateScrollBuffer(y: Double, x: Double, s: Double, a: Double = 1) {
-        // 更新 Y 轴数据
-        if y*scrollDelta.y > 0 {
-            scrollBuffer.y += y * s * a
-        } else {
-            scrollBuffer.y = y * s * a
-            scrollCurr.y = 0.0
-        }
-        // 更新 X 轴数据
-        if x*scrollDelta.x > 0 {
-            scrollBuffer.x += x * s * a
-        } else {
-            scrollBuffer.x = x * s * a
-            scrollCurr.x = 0.0
-        }
-        scrollDelta = ( y: y, x: x )
-    }
-    func cleanScrollBuffer() {
-        // 重置数值
-        scrollCurr = ( y: 0.0, x: 0.0 )
-        scrollBuffer = ( y: 0.0, x: 0.0 )
-        scrollDelta = ( y: 0.0, x: 0.0 )
-        // 重置插值器
-        interpolatorFiller.clean()
-    }
-    
-    // MARK: - 鼠标插值数据输出
-    // 初始化 CVDisplayLink
-    func initScrollEventPoster() {
-        // 新建一个 CVDisplayLinkSetOutputCallback 来执行循环
-        CVDisplayLinkCreateWithActiveCGDisplays(&scrollEventPoster)
-        CVDisplayLinkSetOutputCallback(scrollEventPoster!, {
-            (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in ScrollCore.shared.handleScroll()
-            return kCVReturnSuccess
-        }, nil)
-    }
-    // 启动事件发送器
-    func enableScrollEventPoster() {
-        if !CVDisplayLinkIsRunning(scrollEventPoster!) {
-            CVDisplayLinkStart(scrollEventPoster!)
-        }
-    }
-    // 停止事件发送器
-    func disableScrollEventPoster() {
-        if let poster = scrollEventPoster {
-            CVDisplayLinkStop(poster)
-        }
-    }
-    // 根据需要变换滚动方向
-    func weapScrollIfToggling(with nextValue: ( y: Double, x: Double ), toggling: Bool) -> (y: Double, x: Double) {
-        // 如果按下 Shift, 则始终将滚动转为横向
-        if toggling {
-            // 判断哪个轴有值, 有值则赋给 X
-            // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向为横向, 此处针对这类转换进行归一化处理
-            if nextValue.y != 0.0 && nextValue.x == 0.0 {
-                return (y: nextValue.x, x: nextValue.y)
-            } else {
-                return (y: nextValue.y, x: nextValue.x)
-            }
-        } else {
-            return (y: nextValue.y, x: nextValue.x)
-        }
-    }
-    // 处理滚动事件
-    func handleScroll() {
-        // 计算插值
-        let scrollPulse = (
-            y: interpolatorWorker(scrollCurr.y, scrollBuffer.y, ScrollCore.shared.interpolatorDuration),
-            x: interpolatorWorker(scrollCurr.x, scrollBuffer.x, ScrollCore.shared.interpolatorDuration)
-        )
-        // 更新滚动位置
-        scrollCurr = (
-            y: scrollCurr.y + scrollPulse.y,
-            x: scrollCurr.x + scrollPulse.x
-        )
-        // 平滑滚动结果
-        let filledValue = interpolatorFiller.fill(with: scrollPulse)
-        // 变换滚动结果
-        let swapedValue = weapScrollIfToggling(with: filledValue, toggling: toggleScroll)
-        // 发送滚动结果
-        if let event = scrollEventBase, let proxy = scrollEventProxy {
-            ScrollUtils.shared.postScrollEvent(
-                proxy,
-                event,
-                swapedValue
-            )
-        }
-        // 如果临近目标距离小于精确度门限则暂停滚动
-        if scrollPulse.y.magnitude<=Options.shared.scrollAdvanced.precision && scrollPulse.x.magnitude<=Options.shared.scrollAdvanced.precision {
-            pauseHandlingScroll()
-        }
     }
 }

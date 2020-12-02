@@ -24,27 +24,32 @@ class ScrollPoster {
     private var scrollDelta  = ( y: 0.0, x: 0.0 )  // 滚动方向记录
     private var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
     // 外部依赖
-    var ref: ( event: CGEvent?, proxy: CGEventTapProxy?, swap: Bool ) = ( event: nil, proxy: nil, swap: false )
+    var ref: ( event: CGEvent?, proxy: CGEventTapProxy?, swap: Bool, duration: Double ) = ( event: nil, proxy: nil, swap: false, duration: Options.shared.scrollAdvanced.durationTransition )
 }
 
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
-    func update(y: Double, x: Double, s: Double, a: Double = 1) {
-        // 更新 Y 轴数据
+    func update(event: CGEvent, proxy: CGEventTapProxy, swap: Bool, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
+        // 更新依赖数据
+        ref.event = event
+        ref.proxy = proxy
+        ref.swap = swap
+        ref.duration = duration
+        // 更新滚动数据
         if y*scrollDelta.y > 0 {
-            scrollBuffer.y += y * s * a
+            scrollBuffer.y += y * speed * amplification
         } else {
-            scrollBuffer.y = y * s * a
+            scrollBuffer.y = y * speed * amplification
             scrollCurr.y = 0.0
         }
-        // 更新 X 轴数据
         if x*scrollDelta.x > 0 {
-            scrollBuffer.x += x * s * a
+            scrollBuffer.x += x * speed * amplification
         } else {
-            scrollBuffer.x = x * s * a
+            scrollBuffer.x = x * speed * amplification
             scrollCurr.x = 0.0
         }
         scrollDelta = ( y: y, x: x )
+        return self
     }
     func swap(with nextValue: ( y: Double, x: Double ), flag: Bool) -> (y: Double, x: Double) {
         // 如果按下 Shift, 则始终将滚动转为横向
@@ -73,7 +78,7 @@ extension ScrollPoster {
 // MARK: - 插值数据发送控制
 extension ScrollPoster {
     // 初始化 CVDisplayLink
-    func initScrollEventPoster() {
+    func create() {
         // 新建一个 CVDisplayLinkSetOutputCallback 来执行循环
         CVDisplayLinkCreateWithActiveCGDisplays(&poster)
         CVDisplayLinkSetOutputCallback(poster!, { (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in
@@ -82,13 +87,13 @@ extension ScrollPoster {
         }, nil)
     }
     // 启动事件发送器
-    func enableScrollEventPoster() {
+    func enable() {
         if !CVDisplayLinkIsRunning(poster!) {
             CVDisplayLinkStart(poster!)
         }
     }
     // 停止事件发送器
-    func disableScrollEventPoster() {
+    func disable() {
         if let validPoster = poster {
             CVDisplayLinkStop(validPoster)
         }
@@ -101,8 +106,8 @@ private extension ScrollPoster {
     func prePost() {
         // 计算插值
         let scrollPulse = (
-            y: interpolator(scrollCurr.y, scrollBuffer.y, ScrollCore.shared.interpolatorDuration),
-            x: interpolator(scrollCurr.x, scrollBuffer.x, ScrollCore.shared.interpolatorDuration)
+            y: interpolator(scrollCurr.y, scrollBuffer.y, ref.duration),
+            x: interpolator(scrollCurr.x, scrollBuffer.x, ref.duration)
         )
         // 更新滚动位置
         scrollCurr = (
