@@ -18,8 +18,8 @@ class ScrollCore {
     var isActive = false
     // 滚动数据
     var scrollCurr   = ( y: 0.0, x: 0.0 )  // 当前滚动距离
-    var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
     var scrollDelta  = ( y: 0.0, x: 0.0 )  // 滚动方向记录
+    var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
     // 热键数据
     var dashScroll = false
     var dashAmplification = 1.0
