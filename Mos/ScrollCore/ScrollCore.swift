@@ -47,7 +47,7 @@ class ScrollCore {
     let mouseLeftEventMask = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
     let mouseRightEventMask = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
     
-    // 滚动事件截取处理
+    // MARK: - 滚动事件处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
@@ -137,7 +137,7 @@ class ScrollCore {
         }
     }
     
-    // 热键事件处理
+    // MARK: - 热键事件处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 获取当前按键
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
@@ -242,14 +242,15 @@ class ScrollCore {
         }
     }
     
-    // 鼠标事件处理
+    // MARK: - 鼠标事件处理
     let mouseLeftEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 如果点击左键则停止滚动
         ScrollCore.shared.pauseHandlingScroll()
         return nil
     }
     
-    // 启动滚动处理
+    // MARK: - 事件截取运行管理
+    // 启动
     func startHandlingScroll() {
         // Guard
         if isActive { return }
@@ -287,12 +288,12 @@ class ScrollCore {
             repeats: true
         )
     }
-    // 暂停(当前)滚动处理
+    // 暂停
     func pauseHandlingScroll() {
         cleanScrollBuffer()
         disableScrollEventPoster()
     }
-    // 停止滚动处理
+    // 停止
     func endHandlingScroll() {
         // Guard
         if !isActive {return}
@@ -312,8 +313,8 @@ class ScrollCore {
         hotkeyEventInterceptor?.check()
         mouseEventInterceptor?.check()
     }
-    
-    // 鼠标数据控制
+
+    // MARK: - 插值数据缓存
     func updateScrollBuffer(y: Double, x: Double, s: Double, a: Double = 1) {
         // 更新 Y 轴数据
         if y*scrollDelta.y > 0 {
@@ -340,7 +341,7 @@ class ScrollCore {
         interpolatorFiller.clean()
     }
     
-    // 鼠标插值数据输出
+    // MARK: - 鼠标插值数据输出
     // 初始化 CVDisplayLink
     func initScrollEventPoster() {
         // 新建一个 CVDisplayLinkSetOutputCallback 来执行循环
@@ -362,7 +363,6 @@ class ScrollCore {
             CVDisplayLinkStop(poster)
         }
     }
-    
     // 根据需要变换滚动方向
     func weapScrollIfToggling(with nextValue: ( y: Double, x: Double ), toggling: Bool) -> (y: Double, x: Double) {
         // 如果按下 Shift, 则始终将滚动转为横向
