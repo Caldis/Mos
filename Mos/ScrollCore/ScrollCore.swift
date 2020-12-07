@@ -8,6 +8,26 @@
 
 import Cocoa
 
+enum PH {
+    case idle
+    case contact
+    case tracing
+    case momentum
+    case stop
+}
+let mapp = [
+    // 空
+    PH.idle: ( s: 0, m: 0 ),
+    // 手指触碰
+    PH.contact: ( s: 128, m: 0 ),
+    // 跟随滚动
+    PH.tracing: ( s: 2, m: 0 ),
+    // 缓动
+    PH.momentum: ( s: 0, m: 2 ),
+    // 停止
+    PH.stop: ( s: 0, m: 3 ),
+]
+
 class ScrollCore {
     
     // 单例
@@ -35,8 +55,20 @@ class ScrollCore {
     let mouseLeftEventMask = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
     let mouseRightEventMask = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
     
+    var ph: PH = PH.idle {
+        didSet {
+            print(ScrollCore.shared.ph)
+        }
+    }
+    let dd = Debounce(delay: 0.225) {
+        ScrollCore.shared.ph = PH.momentum
+    }
+    
     // MARK: - 滚动事件处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        ScrollCore.shared.ph = PH.tracing
+        ScrollCore.shared.dd.call()
+        
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
         // 不处理触控板
@@ -237,7 +269,7 @@ class ScrollCore {
         return nil
     }
     
-    // MARK: - 事件截取运行管理
+    // MARK: - 事件运行管理
     // 启动
     func startHandlingScroll() {
         // Guard
@@ -280,6 +312,7 @@ class ScrollCore {
     func pauseHandlingScroll() {
         ScrollPoster.shared.clean()
         ScrollPoster.shared.disable()
+        ScrollCore.shared.ph = PH.momentum
     }
     // 停止
     func endHandlingScroll() {

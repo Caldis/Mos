@@ -19,12 +19,12 @@ class Debounce: NSObject {
         self.callback = callback
     }
 
-    @objc func call() {
+    @objc public func call() {
         timer?.invalidate()
         timer = Timer.scheduledTimer(timeInterval: delay, target: self, selector: #selector(self.fireNow), userInfo: nil, repeats: false)
     }
 
-    @objc func fireNow() {
+    @objc private func fireNow() {
         self.callback()
     }
 }

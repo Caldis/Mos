@@ -133,6 +133,9 @@ private extension ScrollPoster {
     // 发送事件
     func post(_ proxy: CGEventTapProxy, _ event: CGEvent, _ value: ( y: Double, x: Double )) {
         if let eventClone = event.copy() {
+            if (ScrollCore.shared.ph as AnyObject === PH.tracing as AnyObject) {
+                ScrollCore.shared.ph = PH.momentum
+            }
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: value.y)
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: value.x)
             eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: 0.0)
