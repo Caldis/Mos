@@ -8,24 +8,24 @@
 
 import Cocoa
 
-enum PH {
-    case idle
-    case contact
-    case tracing
-    case momentum
-    case stop
+enum Phase {
+    case Idle
+    case Contact
+    case Tracing
+    case Momentum
+    case Pause
 }
-let mapp = [
+let PhaseValueMapping = [
     // 空
-    PH.idle: ( s: 0, m: 0 ),
+    Phase.Idle:     ( s: 0.0,   m: 0.0 ),
     // 手指触碰
-    PH.contact: ( s: 128, m: 0 ),
+    Phase.Contact:  ( s: 128.0, m: 0.0 ),
     // 跟随滚动
-    PH.tracing: ( s: 2, m: 0 ),
+    Phase.Tracing:  ( s: 2.0,   m: 0.0 ),
     // 缓动
-    PH.momentum: ( s: 0, m: 2 ),
+    Phase.Momentum: ( s: 0.0,   m: 2.0 ),
     // 停止
-    PH.stop: ( s: 0, m: 3 ),
+    Phase.Pause:  ( s: 4.0,   m: 0.0 ),//   ( s: 0.0,   m: 3.0 ),
 ]
 
 class ScrollCore {
@@ -48,27 +48,41 @@ class ScrollCore {
     var scrollEventInterceptor: Interceptor?
     var hotkeyEventInterceptor: Interceptor?
     var mouseEventInterceptor: Interceptor?
-    var tapKeeperTimer: Timer?
     // 拦截掩码
     let scrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
     let hotkeyEventMask = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
     let mouseLeftEventMask = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
     let mouseRightEventMask = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
     
-    var ph: PH = PH.idle {
-        didSet {
-            print(ScrollCore.shared.ph)
-        }
+    var phase: Phase = Phase.Idle
+    let debounceSetPhaseToMomentum = Debounce(delay: 0.225) {
+        ScrollCore.shared.phase = Phase.Momentum
     }
-    let dd = Debounce(delay: 0.225) {
-        ScrollCore.shared.ph = PH.momentum
+    func consume() -> Phase {
+        switch phase {
+        case Phase.Idle:
+            return Phase.Idle
+        case Phase.Contact:
+            phase = Phase.Tracing
+            return Phase.Contact
+        case Phase.Tracing:
+            return Phase.Tracing
+        case Phase.Momentum:
+            return Phase.Momentum
+        case Phase.Pause:
+            phase = Phase.Idle
+            return Phase.Pause
+        }
     }
     
     // MARK: - 滚动事件处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        ScrollCore.shared.ph = PH.tracing
-        ScrollCore.shared.dd.call()
-        
+        if [Phase.Idle, Phase.Momentum, Phase.Pause].contains(ScrollCore.shared.phase) {
+            ScrollCore.shared.phase = Phase.Contact
+        } else if (ScrollCore.shared.phase == Phase.Tracing) {
+            ScrollCore.shared.phase = Phase.Tracing
+        }
+        ScrollCore.shared.debounceSetPhaseToMomentum.call()
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
         // 不处理触控板
@@ -76,7 +90,7 @@ class ScrollCore {
         if scrollEvent.isTouchPad() { return Unmanaged.passUnretained(event) }
         // 切换目标窗时停止滚动
         if ScrollUtils.shared.isTargetChanged(event) {
-            ScrollCore.shared.pauseHandlingScroll()
+            ScrollPoster.shared.pause()
             return nil
         }
         // 是否返回原始事件 (不启用平滑时)
@@ -265,7 +279,7 @@ class ScrollCore {
     // MARK: - 鼠标事件处理
     let mouseLeftEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 如果点击左键则停止滚动
-        ScrollCore.shared.pauseHandlingScroll()
+        ScrollPoster.shared.disable()
         return nil
     }
     
@@ -299,39 +313,17 @@ class ScrollCore {
         )
         // 初始化滚动事件发送器
         ScrollPoster.shared.create()
-        // 初始化守护进程
-        tapKeeperTimer = Timer.scheduledTimer(
-            timeInterval: 5.0,
-            target: self,
-            selector: #selector(tapKeeper),
-            userInfo: nil,
-            repeats: true
-        )
-    }
-    // 暂停
-    func pauseHandlingScroll() {
-        ScrollPoster.shared.clean()
-        ScrollPoster.shared.disable()
-        ScrollCore.shared.ph = PH.momentum
     }
     // 停止
     func endHandlingScroll() {
         // Guard
         if !isActive {return}
         isActive = false
-        // 停止守护进程
-        tapKeeperTimer?.invalidate()
         // 停止滚动事件发送器
         ScrollPoster.shared.disable()
         // 停止截取事件
         scrollEventInterceptor?.stop()
         hotkeyEventInterceptor?.stop()
         mouseEventInterceptor?.stop()
-    }
-    // 守护进程
-    @objc func tapKeeper() {
-        scrollEventInterceptor?.check()
-        hotkeyEventInterceptor?.check()
-        mouseEventInterceptor?.check()
     }
 }

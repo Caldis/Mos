@@ -65,12 +65,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // 开启辅助权限后, 关闭定时器, 开始处理
             if Utils.isHadAccessibilityPermissions() {
                 validTimer.invalidate()
-                NSLog("ScrollCore Start: First Open (Accessibility Enabled)")
+                NSLog("First Initialization (Accessibility Authorization Needed)")
                 ScrollCore.shared.startHandlingScroll()
             }
         } else {
             if Utils.isHadAccessibilityPermissions() {
-                NSLog("ScrollCore Start: Normal Open")
+                NSLog("Normal Initialization")
                 ScrollCore.shared.startHandlingScroll()
             } else {
                 // 如果应用不在辅助权限列表内, 则弹出欢迎窗口

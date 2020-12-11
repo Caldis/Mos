@@ -14,6 +14,7 @@ class ScrollPoster {
     static let shared = ScrollPoster()
     init() { NSLog("Module initialized: ScrollPoster") }
     
+    var ts = Date.currentTimeStamp
     // 插值器
     private let filler = ScrollFiller()
     private let interpolator = Interpolator.lerp
@@ -65,13 +66,19 @@ extension ScrollPoster {
             return (y: nextValue.y, x: nextValue.x)
         }
     }
-    func clean() {
+    func reset() {
         // 重置数值
         scrollCurr = ( y: 0.0, x: 0.0 )
-        scrollBuffer = ( y: 0.0, x: 0.0 )
         scrollDelta = ( y: 0.0, x: 0.0 )
+        scrollBuffer = ( y: 0.0, x: 0.0 )
         // 重置插值器
-        filler.clean()
+        filler.reset()
+    }
+}
+
+extension Date {
+    static var currentTimeStamp: Int64{
+        return Int64(Date().timeIntervalSince1970 * 1000)
     }
 }
 
@@ -82,7 +89,10 @@ extension ScrollPoster {
         // 新建一个 CVDisplayLinkSetOutputCallback 来执行循环
         CVDisplayLinkCreateWithActiveCGDisplays(&poster)
         CVDisplayLinkSetOutputCallback(poster!, { (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in
-            ScrollPoster.shared.prePost()
+//            let cur = Date.currentTimeStamp
+//            NSLog("%d, %d", cur - ScrollPoster.shared.ts, cur)
+//            ScrollPoster.shared.ts = cur
+            ScrollPoster.shared.beforePost()
             return kCVReturnSuccess
         }, nil)
     }
@@ -92,10 +102,17 @@ extension ScrollPoster {
             CVDisplayLinkStart(poster!)
         }
     }
+    // 暂停事件发送器
+    func pause() {
+        ScrollCore.shared.phase = Phase.Pause
+        reset()
+    }
     // 停止事件发送器
     func disable() {
+        pause()
         if let validPoster = poster {
             CVDisplayLinkStop(validPoster)
+            afterPost()
         }
     }
 }
@@ -103,7 +120,7 @@ extension ScrollPoster {
 // MARK: - 数据处理及发送
 private extension ScrollPoster {
     // 预处理滚动事件
-    func prePost() {
+    func beforePost() {
         // 计算插值
         let scrollPulse = (
             y: interpolator(scrollCurr.y, scrollBuffer.y, ref.duration),
@@ -127,14 +144,19 @@ private extension ScrollPoster {
             scrollPulse.y.magnitude <= Options.shared.scrollAdvanced.precision &&
             scrollPulse.x.magnitude <= Options.shared.scrollAdvanced.precision
         ) {
-            // pauseHandlingScroll()
+             disable()
         }
     }
-    // 发送事件
+    // 发送滚动事件
     func post(_ proxy: CGEventTapProxy, _ event: CGEvent, _ value: ( y: Double, x: Double )) {
         if let eventClone = event.copy() {
-            if (ScrollCore.shared.ph as AnyObject === PH.tracing as AnyObject) {
-                ScrollCore.shared.ph = PH.momentum
+            let phase = ScrollCore.shared.consume()
+            if phase == Phase.Pause {
+                let phaseValue = PhaseValueMapping[phase]
+                if let validPhaseValue = phaseValue {
+                    eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: validPhaseValue.s)
+                    eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: validPhaseValue.m)
+                }
             }
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: value.y)
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: value.x)
@@ -147,5 +169,10 @@ private extension ScrollPoster {
             eventClone.tapPostEvent(proxy)
         }
     }
-    
+    // 后处理滚动事件
+    func afterPost() {
+        if let proxy = ref.proxy, let event = ref.event {
+            post(proxy, event, ( x: 0.0, y: 0.0 ))
+        }
+    }
 }

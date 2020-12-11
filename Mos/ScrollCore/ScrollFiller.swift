@@ -24,7 +24,7 @@ class ScrollFiller {
         return ( y: windowY[0], x: windowX[0] )
     }
     // 清空
-    public func clean() {
+    public func reset() {
         windowY = [0.0, 0.0]
         windowX = [0.0, 0.0]
     }
