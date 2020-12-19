@@ -11,6 +11,7 @@
 		0B12EF1D203ADD230058B169 /* ScrollUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF1C203ADD230058B169 /* ScrollUtils.swift */; };
 		0B12EF1F203ADFB10058B169 /* Interpolator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF1E203ADFB10058B169 /* Interpolator.swift */; };
 		0B12EF5E203C7D650058B169 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF5D203C7D650058B169 /* Logger.swift */; };
+		0B474329258E12A200A5F8A3 /* ScrollPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B474328258E12A200A5F8A3 /* ScrollPhase.swift */; };
 		0B4C37AF2575E0DD00D4A390 /* IntroductionWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4C37AE2575E0DD00D4A390 /* IntroductionWindowController.swift */; };
 		0B56DE402568DFDB00B4D9AE /* Archieve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B56DE3F2568DFDB00B4D9AE /* Archieve.swift */; };
 		0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6D3B672041A790004CC064 /* WindowManager.swift */; };
@@ -68,6 +69,7 @@
 		0B12EF1C203ADD230058B169 /* ScrollUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollUtils.swift; sourceTree = "<group>"; };
 		0B12EF1E203ADFB10058B169 /* Interpolator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpolator.swift; sourceTree = "<group>"; };
 		0B12EF5D203C7D650058B169 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		0B474328258E12A200A5F8A3 /* ScrollPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollPhase.swift; sourceTree = "<group>"; };
 		0B4C37AE2575E0DD00D4A390 /* IntroductionWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroductionWindowController.swift; sourceTree = "<group>"; };
 		0B56DE3F2568DFDB00B4D9AE /* Archieve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Archieve.swift; sourceTree = "<group>"; };
 		0B6D3B672041A790004CC064 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 				0B12EF1C203ADD230058B169 /* ScrollUtils.swift */,
 				0BE4C93A20617C6E0001EA0E /* ScrollFiller.swift */,
 				0B6D3B692041C348004CC064 /* ScrollEvent.swift */,
+				0B474328258E12A200A5F8A3 /* ScrollPhase.swift */,
 				0B99C5FB2577FC9200021578 /* ScrollPoster.swift */,
 				0B12EF1E203ADFB10058B169 /* Interpolator.swift */,
 			);
@@ -413,6 +416,7 @@
 				2280934C1E2B5D850061A00F /* PreferencesWindowController.swift in Sources */,
 				0B6D3B6A2041C348004CC064 /* ScrollEvent.swift in Sources */,
 				2291A8A31E2A5400004181B8 /* ScrollCore.swift in Sources */,
+				0B474329258E12A200A5F8A3 /* ScrollPhase.swift in Sources */,
 				22A32B381E334B4300A5CF38 /* PreferencesUpdatesViewController.swift in Sources */,
 				0B12EF5E203C7D650058B169 /* Logger.swift in Sources */,
 				0B6D3B702042BBCD004CC064 /* Localizable.swift in Sources */,

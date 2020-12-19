@@ -89,9 +89,6 @@ extension ScrollPoster {
         // 新建一个 CVDisplayLinkSetOutputCallback 来执行循环
         CVDisplayLinkCreateWithActiveCGDisplays(&poster)
         CVDisplayLinkSetOutputCallback(poster!, { (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in
-//            let cur = Date.currentTimeStamp
-//            NSLog("%d, %d", cur - ScrollPoster.shared.ts, cur)
-//            ScrollPoster.shared.ts = cur
             ScrollPoster.shared.beforePost()
             return kCVReturnSuccess
         }, nil)
@@ -104,7 +101,7 @@ extension ScrollPoster {
     }
     // 暂停事件发送器
     func pause() {
-        ScrollCore.shared.phase = Phase.Pause
+        ScrollPhase.shared.phase = Phase.PauseManual
         reset()
     }
     // 停止事件发送器
@@ -137,7 +134,7 @@ private extension ScrollPoster {
         let swapedValue = swap(with: filledValue, flag: ref.swap)
         // 发送滚动结果
         if let proxy = ref.proxy, let event = ref.event {
-            post(proxy, event, swapedValue)
+            post(proxy, event, swapedValue.y, swapedValue.x)
         }
         // 如果临近目标距离小于精确度门限则暂停滚动
         if (
@@ -148,18 +145,17 @@ private extension ScrollPoster {
         }
     }
     // 发送滚动事件
-    func post(_ proxy: CGEventTapProxy, _ event: CGEvent, _ value: ( y: Double, x: Double )) {
+    func post(_ proxy: CGEventTapProxy, _ event: CGEvent, _ y: Double, _ x: Double) {
         if let eventClone = event.copy() {
-            let phase = ScrollCore.shared.consume()
-            if phase == Phase.Pause {
-                let phaseValue = PhaseValueMapping[phase]
-                if let validPhaseValue = phaseValue {
-                    eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: validPhaseValue.s)
-                    eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: validPhaseValue.m)
+            let phase = ScrollPhase.shared.consume()
+            if phase == Phase.PauseAuto || phase == Phase.PauseManual {
+                if let validPhaseValue = PhaseValueMapping[phase] {
+                    eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: validPhaseValue[PhaseItem.Scroll]!)
+                    eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: validPhaseValue[PhaseItem.Momentum]!)
                 }
             }
-            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: value.y)
-            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: value.x)
+            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: y)
+            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: x)
             eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: 0.0)
             eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0.0)
             eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
@@ -172,7 +168,7 @@ private extension ScrollPoster {
     // 后处理滚动事件
     func afterPost() {
         if let proxy = ref.proxy, let event = ref.event {
-            post(proxy, event, ( x: 0.0, y: 0.0 ))
+            post(proxy, event, 0.0, 0.0)
         }
     }
 }

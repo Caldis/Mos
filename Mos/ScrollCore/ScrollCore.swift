@@ -8,25 +8,6 @@
 
 import Cocoa
 
-enum Phase {
-    case Idle
-    case Contact
-    case Tracing
-    case Momentum
-    case Pause
-}
-let PhaseValueMapping = [
-    // 空
-    Phase.Idle:     ( s: 0.0,   m: 0.0 ),
-    // 手指触碰
-    Phase.Contact:  ( s: 128.0, m: 0.0 ),
-    // 跟随滚动
-    Phase.Tracing:  ( s: 2.0,   m: 0.0 ),
-    // 缓动
-    Phase.Momentum: ( s: 0.0,   m: 2.0 ),
-    // 停止
-    Phase.Pause:  ( s: 4.0,   m: 0.0 ),//   ( s: 0.0,   m: 3.0 ),
-]
 
 class ScrollCore {
     
@@ -54,35 +35,10 @@ class ScrollCore {
     let mouseLeftEventMask = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
     let mouseRightEventMask = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
     
-    var phase: Phase = Phase.Idle
-    let debounceSetPhaseToMomentum = Debounce(delay: 0.225) {
-        ScrollCore.shared.phase = Phase.Momentum
-    }
-    func consume() -> Phase {
-        switch phase {
-        case Phase.Idle:
-            return Phase.Idle
-        case Phase.Contact:
-            phase = Phase.Tracing
-            return Phase.Contact
-        case Phase.Tracing:
-            return Phase.Tracing
-        case Phase.Momentum:
-            return Phase.Momentum
-        case Phase.Pause:
-            phase = Phase.Idle
-            return Phase.Pause
-        }
-    }
-    
     // MARK: - 滚动事件处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        if [Phase.Idle, Phase.Momentum, Phase.Pause].contains(ScrollCore.shared.phase) {
-            ScrollCore.shared.phase = Phase.Contact
-        } else if (ScrollCore.shared.phase == Phase.Tracing) {
-            ScrollCore.shared.phase = Phase.Tracing
-        }
-        ScrollCore.shared.debounceSetPhaseToMomentum.call()
+        ScrollPhase.shared.syncPhase()
+        ScrollPhase.shared.debounceSetPhaseToMomentum.call()
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
         // 不处理触控板
