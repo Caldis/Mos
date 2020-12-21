@@ -133,11 +133,23 @@ public class Utils {
         }
     }
     
-    // 移除字符
-    class func removingRegexMatches(target: String, pattern: String, replaceWith: String = "") -> String {
+    // 匹配字符
+    class func extractRegexMatches(target: String = "", pattern: String) -> String {
         do {
-            let regex = try NSRegularExpression(pattern: pattern, options: NSRegularExpression.Options.caseInsensitive)
-            let range = NSMakeRange(0, target.count)
+            let pattern = #"\/?.*\.app"#
+            let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+            let range = NSRange(location: 0, length: target.count)
+            let result = regex.firstMatch(in: target, options: [], range: range)
+            return NSString(string: target).substring(with: result!.range) as String
+        } catch {
+            return target
+        }
+    }
+    // 移除字符
+    class func removingRegexMatches(target: String = "", pattern: String, replaceWith: String = "") -> String {
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+            let range = NSRange(location: 0, length: target.count)
             return regex.stringByReplacingMatches(in: target, options: [], range: range, withTemplate: replaceWith)
         } catch {
             return target
@@ -163,30 +175,47 @@ public class Utils {
     
     // 从路径获取应用图标
     class func getApplicationIcon(fromPath path: String?) -> NSImage {
-        // 直接从 Path 的 Bundle 获取
-        if let validBundle = Bundle.init(url: URL.init(fileURLWithPath: path ?? "")) {
+        guard let validPath = path else {
+            return NSWorkspace.shared.icon(forFile: "")
+        }
+        // 尝试完整路径对应的 Bundle 获取
+        if let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) {
+            return NSWorkspace.shared.icon(forFile: validBundle.bundlePath)
+        }
+        // 尝试从子路径对应的 Bundle 获取
+        let subPath = extractRegexMatches(target: validPath, pattern: #"\/?.*\.app"#)
+        if let validBundle = Bundle.init(url: URL.init(fileURLWithPath: subPath)) {
             return NSWorkspace.shared.icon(forFile: validBundle.bundlePath)
         }
         // 从 Path 关联的 Bundle 获取
-        return NSWorkspace.shared.icon(forFile: path ?? "")
+        return NSWorkspace.shared.icon(forFile: validPath)
     }
     // 从路径获取应用名称
     class func getAppliactionName(fromPath path: String?) -> String {
         guard let validPath = path else {
             return "Invalid Name"
         }
-        guard let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) else {
-            return parseName(fromPath: validPath)
+        // 尝试完整路径对应的 Bundle 获取
+        if let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) {
+            return (
+                validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ??
+                validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String ??
+                parseName(fromPath: validPath)
+            )
         }
-        return (
-            validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ??
-            validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String ??
-            parseName(fromPath: validPath)
-        )
+        // 尝试从子路径对应的 Bundle 获取
+        let subPath = extractRegexMatches(target: validPath, pattern: #"\/?.*\.app"#)
+        if let validBundle = Bundle.init(url: URL.init(fileURLWithPath: subPath)) {
+            return (
+                validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ??
+                validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String ??
+                parseName(fromPath: validPath)
+            )
+        }
+        return parseName(fromPath: validPath)
     }
     class func parseName(fromPath path: String) -> String {
         let applicationRawName = FileManager().displayName(atPath: path).removingPercentEncoding!
-        print("applicationRawName", applicationRawName)
-        return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app|.App|.APP")
+        return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app")
     }
 }
