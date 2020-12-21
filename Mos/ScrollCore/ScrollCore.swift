@@ -37,8 +37,6 @@ class ScrollCore {
     
     // MARK: - 滚动事件处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        ScrollPhase.shared.syncPhase()
-        ScrollPhase.shared.debounceSetPhaseToMomentum.call()
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
         // 不处理触控板
@@ -49,6 +47,8 @@ class ScrollCore {
             ScrollPoster.shared.pause()
             return nil
         }
+        // 滚动阶段
+        ScrollPhase.shared.syncPhase()
         // 是否返回原始事件 (不启用平滑时)
         var returnOriginalEvent = true
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动

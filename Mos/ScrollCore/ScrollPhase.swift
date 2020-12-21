@@ -45,15 +45,16 @@ class ScrollPhase {
     var phase: Phase = Phase.Idle
     
     // MARK: - 滚动阶段更新
+    let debounceSetPhaseToMomentum = Debounce(delay: 0.2) {
+        ScrollPhase.shared.phase = Phase.Momentum
+    }
     func syncPhase() {
         if [Phase.Idle, Phase.Momentum, Phase.PauseAuto, Phase.PauseManual].contains(phase) {
             phase = Phase.Contact
         } else if (phase == Phase.Tracing) {
             phase = Phase.Tracing
         }
-    }
-    let debounceSetPhaseToMomentum = Debounce(delay: 0.2) {
-        ScrollPhase.shared.phase = Phase.Momentum
+        debounceSetPhaseToMomentum.call()
     }
     
     // MARK: - 滚动阶段递进
