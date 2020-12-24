@@ -140,7 +140,11 @@ public class Utils {
             let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)
             let range = NSRange(location: 0, length: target.count)
             let result = regex.firstMatch(in: target, options: [], range: range)
-            return NSString(string: target).substring(with: result!.range) as String
+            if let validResult = result {
+                return NSString(string: target).substring(with: validResult.range) as String
+            } else {
+                return target
+            }
         } catch {
             return target
         }
