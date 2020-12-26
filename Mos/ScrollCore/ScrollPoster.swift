@@ -66,6 +66,9 @@ extension ScrollPoster {
             return (y: nextValue.y, x: nextValue.x)
         }
     }
+    func brake() {
+        ScrollPoster.shared.scrollBuffer = ScrollPoster.shared.scrollCurr
+    }
     func reset() {
         // 重置数值
         scrollCurr = ( y: 0.0, x: 0.0 )

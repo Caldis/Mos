@@ -130,35 +130,32 @@ class ScrollCore {
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 获取当前按键
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
-        // 获取事件目标
-        let targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
-        let targetAppliaction = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
         // 判断快捷键
         switch keyCode {
         case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
-                for: targetAppliaction,
+                for: ScrollCore.shared.exceptionalApplication,
                 with: keyCode,
                 using: MODIFIER_KEY_SET.control.codes,
                 on: Utils.isKeyDown(event, MODIFIER_KEY_SET.control)
             )
         case MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
-                for: targetAppliaction,
+                for: ScrollCore.shared.exceptionalApplication,
                 with: keyCode,
                 using: MODIFIER_KEY_SET.option.codes,
                 on: Utils.isKeyDown(event, MODIFIER_KEY_SET.option)
             )
         case MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
-                for: targetAppliaction,
+                for: ScrollCore.shared.exceptionalApplication,
                 with: keyCode,
                 using: MODIFIER_KEY_SET.command.codes,
                 on: Utils.isKeyDown(event, MODIFIER_KEY_SET.command)
             )
         case MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
-                for: targetAppliaction,
+                for: ScrollCore.shared.exceptionalApplication,
                 with: keyCode,
                 using: MODIFIER_KEY_SET.shift.codes,
                 on: Utils.isKeyDown(event, MODIFIER_KEY_SET.shift)
@@ -173,27 +170,26 @@ class ScrollCore {
             ScrollCore.shared.dashAmplification = 5.0
         }
     }
-    func tryEnableToggleFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
-        if (keyPair.contains(key)) {
-            ScrollCore.shared.toggleScroll = true
-        }
-    }
-    func tryEnableBlockFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
-        if (keyPair.contains(key)) {
-            ScrollCore.shared.blockSmooth = true
-            // FIXME
-            // ScrollCore.shared.scrollBuffer = ScrollCore.shared.scrollCurr
-        }
-    }
     func tryDisableDashFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
         if (keyPair.contains(key)) {
             ScrollCore.shared.dashScroll = false
             ScrollCore.shared.dashAmplification = 1.0
         }
     }
+    func tryEnableToggleFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
+        if (keyPair.contains(key)) {
+            ScrollCore.shared.toggleScroll = true
+        }
+    }
     func tryDisableToggleFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
         if (keyPair.contains(key)) {
             ScrollCore.shared.toggleScroll = false
+        }
+    }
+    func tryEnableBlockFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
+        if (keyPair.contains(key)) {
+            ScrollCore.shared.blockSmooth = true
+            ScrollPoster.shared.brake()
         }
     }
     func tryDisableBlockFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
