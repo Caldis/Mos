@@ -24,18 +24,21 @@ class ScrollPoster {
     private var scrollCurr   = ( y: 0.0, x: 0.0 )  // 当前滚动距离
     private var scrollDelta  = ( y: 0.0, x: 0.0 )  // 滚动方向记录
     private var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
+    // 滚动配置
+    private var shifting = false
+    private var duration = Options.shared.scrollAdvanced.durationTransition
     // 外部依赖
-    var ref: ( event: CGEvent?, proxy: CGEventTapProxy?, swap: Bool, duration: Double ) = ( event: nil, proxy: nil, swap: false, duration: Options.shared.scrollAdvanced.durationTransition )
+    var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
 }
 
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
-    func update(event: CGEvent, proxy: CGEventTapProxy, swap: Bool, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
+    func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
         // 更新依赖数据
         ref.event = event
         ref.proxy = proxy
-        ref.swap = swap
-        ref.duration = duration
+        // 更新滚动配置
+        self.duration = duration
         // 更新滚动数据
         if y*scrollDelta.y > 0 {
             scrollBuffer.y += y * speed * amplification
@@ -52,9 +55,12 @@ extension ScrollPoster {
         scrollDelta = ( y: y, x: x )
         return self
     }
-    func swap(with nextValue: ( y: Double, x: Double ), flag: Bool) -> (y: Double, x: Double) {
+    func updateShifting(enable: Bool) {
+        shifting = enable
+    }
+    func swap(with nextValue: ( y: Double, x: Double ), enable: Bool) -> (y: Double, x: Double) {
         // 如果按下 Shift, 则始终将滚动转为横向
-        if flag {
+        if enable {
             // 判断哪个轴有值, 有值则赋给 X
             // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向为横向, 此处针对这类转换进行归一化处理
             if nextValue.y != 0.0 && nextValue.x == 0.0 {
@@ -133,8 +139,8 @@ private extension ScrollPoster {
     func beforePost() {
         // 计算插值
         let scrollPulse = (
-            y: interpolator(scrollCurr.y, scrollBuffer.y, ref.duration),
-            x: interpolator(scrollCurr.x, scrollBuffer.x, ref.duration)
+            y: interpolator(scrollCurr.y, scrollBuffer.y, duration),
+            x: interpolator(scrollCurr.x, scrollBuffer.x, duration)
         )
         // 更新滚动位置
         scrollCurr = (
@@ -144,7 +150,7 @@ private extension ScrollPoster {
         // 平滑滚动结果
         let filledValue = filler.fill(with: scrollPulse)
         // 变换滚动结果
-        let swapedValue = swap(with: filledValue, flag: ref.swap)
+        let swapedValue = swap(with: filledValue, enable: shifting)
         // 发送滚动结果
         if let proxy = ref.proxy, let event = ref.event {
             post(proxy, event, swapedValue.y, swapedValue.x)

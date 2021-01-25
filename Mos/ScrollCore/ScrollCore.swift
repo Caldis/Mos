@@ -20,7 +20,9 @@ class ScrollCore {
     // 热键数据
     var dashScroll = false
     var dashAmplification = 1.0
-    var toggleScroll = false
+    var toggleScroll = false {
+        didSet { ScrollPoster.shared.updateShifting(enable: toggleScroll) }
+    }
     var blockSmooth = false
     // 例外应用数据
     var exceptionalApplication: ExceptionalApplication?
