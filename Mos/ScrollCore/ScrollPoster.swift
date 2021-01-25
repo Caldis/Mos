@@ -103,16 +103,26 @@ extension ScrollPoster {
         }
     }
     // 暂停事件发送器
-    func pause() {
+    func pauseAuto() {
+        ScrollPhase.shared.phase = Phase.PauseAuto
+        reset()
+    }
+    func pauseManual() {
         ScrollPhase.shared.phase = Phase.PauseManual
         reset()
     }
     // 停止事件发送器
-    func disable() {
-        pause()
+    func disableAuto() {
+        pauseAuto()
         if let validPoster = poster {
             CVDisplayLinkStop(validPoster)
             afterPost()
+        }
+    }
+    func disableManual() {
+        pauseManual()
+        if let validPoster = poster {
+            CVDisplayLinkStop(validPoster)
         }
     }
 }
@@ -144,7 +154,7 @@ private extension ScrollPoster {
             scrollPulse.y.magnitude <= Options.shared.scrollAdvanced.precision &&
             scrollPulse.x.magnitude <= Options.shared.scrollAdvanced.precision
         ) {
-             disable()
+             disableAuto()
         }
     }
     // 发送滚动事件

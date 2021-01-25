@@ -44,7 +44,7 @@ class ScrollCore {
         if scrollEvent.isTouchPad() { return Unmanaged.passUnretained(event) }
         // 切换目标窗时停止滚动
         if ScrollUtils.shared.isTargetChanged(event) {
-            ScrollPoster.shared.pause()
+            ScrollPoster.shared.pauseAuto()
             return nil
         }
         // 滚动阶段
@@ -57,8 +57,11 @@ class ScrollCore {
         // 获取列表中应用程序的列外设置信息
         ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
         // 平滑/翻转
-        var enableSmooth = false, enableReverse = false
-        var step = Options.shared.scrollAdvanced.step, speed = Options.shared.scrollAdvanced.speed, duration = Options.shared.scrollAdvanced.durationTransition
+        var enableSmooth = false,
+            enableReverse = false
+        var step = Options.shared.scrollAdvanced.step,
+            speed = Options.shared.scrollAdvanced.speed,
+            duration = Options.shared.scrollAdvanced.durationTransition
         if let exceptionalApplication = ScrollCore.shared.exceptionalApplication {
             enableSmooth = exceptionalApplication.isSmooth(ScrollCore.shared.blockSmooth)
             enableReverse = exceptionalApplication.isReverse()
@@ -110,7 +113,6 @@ class ScrollCore {
             ScrollPoster.shared.update(
                 event: event,
                 proxy: proxy,
-                swap: false,
                 duration: duration,
                 y: scrollEvent.Y.usableValue,
                 x: scrollEvent.X.usableValue,
@@ -231,7 +233,7 @@ class ScrollCore {
     // MARK: - 鼠标事件处理
     let mouseLeftEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 如果点击左键则停止滚动
-        ScrollPoster.shared.disable()
+        ScrollPoster.shared.disableManual()
         return nil
     }
     
@@ -272,7 +274,7 @@ class ScrollCore {
         if !isActive {return}
         isActive = false
         // 停止滚动事件发送器
-        ScrollPoster.shared.disable()
+        ScrollPoster.shared.disableAuto()
         // 停止截取事件
         scrollEventInterceptor?.stop()
         hotkeyEventInterceptor?.stop()
