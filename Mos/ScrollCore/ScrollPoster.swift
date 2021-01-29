@@ -168,7 +168,8 @@ private extension ScrollPoster {
         if let eventClone = event.copy() {
             let phase = ScrollPhase.shared.consume()
             if phase == Phase.PauseAuto || phase == Phase.PauseManual {
-                if let validPhaseValue = PhaseValueMapping[phase] {
+                // 只有 Phase.PauseManual 对应的 [4.0, 0.0] 可以正确使 Chrome 恢复
+                if let validPhaseValue = PhaseValueMapping[Phase.PauseManual] {
                     eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: validPhaseValue[PhaseItem.Scroll]!)
                     eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: validPhaseValue[PhaseItem.Momentum]!)
                 }
