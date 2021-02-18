@@ -1877,7 +1877,7 @@ Gw
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="950" y="1322"/>
+            <point key="canvasLocation" x="969" y="1327"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="79I-rH-ZaI">
@@ -1907,7 +1907,7 @@ Gw
                 </viewController>
                 <customObject id="9YO-Hc-WUu" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="951" y="1683"/>
+            <point key="canvasLocation" x="970" y="1681"/>
         </scene>
         <!--Preferences Advance With Application View Controller-->
         <scene sceneID="brY-DW-5LE">
@@ -1989,7 +1989,7 @@ Gw
                 </viewController>
                 <customObject id="jKt-Ae-8x9" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="950" y="2014"/>
+            <point key="canvasLocation" x="969" y="2014"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">
@@ -3327,7 +3327,7 @@ Just turn off the smooth scrolling in these apps, leave the rest to us.</string>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="i8p-Ht-8EX"/>
+        <segue reference="GA4-xY-65w"/>
         <segue reference="QV9-il-C7g"/>
     </inferredMetricsTieBreakers>
     <resources>
