@@ -86,24 +86,24 @@
 "D0v-Oj-ekP.title" = "How fat is this cat?";
 
 // IntroductionWindow
-"VWv-6P-9Xp.title" = "Prev";
+"VWv-6P-9Xp.title" = "Back";
 "E9l-1I-6cD.title" = "Next";
 "11f-uB-gEM.title" = "Introducting";
 "YHn-dn-A4n.title" = "Mos";
-"yFl-4N-WcD.title" = "Your mouse is about to get a smoothest scrolling experience.\nPick up your mouse, we just have a few thing that you need to check.";
-"016-R7-U4x.title" = "You need";
-"XP7-rO-U3i.title" = "Do Some Checks";
-"ia9-EG-sGg.title" = "Some application (E.g. Logitech Options) will apply some handlers to the mouse. \nBut don't worry, just turn off the smooth scrolling in these apps, you can still use them as usual, and leave the rest to us.";
-"foc-QS-iys.title" = "We need";
+"yFl-4N-WcD.title" = "Your mouse is about to get a smoother scrolling experience.\nPick up your mouse, there are a few things you need to check.";
+"016-R7-U4x.title" = "You need to...";
+"XP7-rO-U3i.title" = "Do some checks";
+"ia9-EG-sGg.title" = "Some applications (E.g. Logitech Options) apply some handlers to the mouse.\nJust turn off smooth scrolling in these apps and you can still use them as normal.";
+"foc-QS-iys.title" = "We need...";
 "Bbz-lG-LFI.title" = "Authorization";
-"Myd-Ze-ZPf.title" = "Limited by macOS's privacy restrictions, Mos will only works after it is authorized to access Accessibility controls.\nIf the item already exists, just click and toggle the checkbox again.";
+"Myd-Ze-ZPf.title" = "Due to macOS's privacy restrictions, Mos requires access to Accessibility controls.\nIf the item already exists, just click and toggle the checkbox again.";
 
 // WelcomeWindow
 "SLb-UR-lz1.title" = "Welcome to Mos";
 "Lhk-Nd-CdT.title" = "Before we smoothen your scrolling";
-"7o8-5p-CQX.title" = "There are just a few more thing to tweak";
-"VsZ-Yn-TgJ.title" = "Turn off the other smooth scrolling Application or Extensions";
-"u7p-zc-ERS.title" = "Scientists have proven that running multiple smooth scrolling applications at the same time will lead to incommunicable consequences. Please close -or disable the smooth function of- any other applications, such as smooth scrolling in Logitech Options or the SmoothScroll extension on Chrome.";
+"7o8-5p-CQX.title" = "There are a few more things to tweak";
+"VsZ-Yn-TgJ.title" = "Turn off the other smooth scrolling applications or extensions";
+"u7p-zc-ERS.title" = "Scientists have proven that running multiple smooth scrolling applications at the same time will lead to incommunicable consequences. Please close or disable the smooth function of- any other applications, such as smooth scrolling in Logitech Options or the SmoothScroll extension on Chrome.";
 "3QI-xO-wPK.title" = "Allow Mos access to Accessibility controls";
 "7bu-fM-Bjm.title" = "The greater the power, the greater the responsibility. To smooth your mouse scrolling, Mos needs to create an intermediate layer between the mouse and your system to optimize your mouse. So we need to access to accessibility controls to get this power.";
 "qGs-TM-PTM.title" = "LDue to the limitations of MacOS, you may need to repeat this authorization when Mos is updated. If, in this circumstance, the entry already exists, please delete and re-add it.";

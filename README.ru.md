@@ -33,16 +33,16 @@ http://mos.caldis.me/
 ## Screenshot
 
 <p align="center">
-  <img width="600" src="https://github.com/mclvren/Mos/blob/master/docs/resources/image/ru/Mointor.png?raw=true">
+  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/ru/Mointor.png?raw=true">
 </p>
 <p align="center">
-  <img width="562" src="https://github.com/mclvren/Mos/blob/master/docs/resources/image/ru/PreferencesGeneral.png?raw=true">
+  <img width="562" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/ru/PreferencesGeneral.png?raw=true">
 </p>
 <p align="center">
-  <img width="562" src="https://github.com/mclvren/Mos/blob/master/docs/resources/image/ru/PreferencesAdvanced.png?raw=true">
+  <img width="562" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/ru/PreferencesAdvanced.png?raw=true">
 </p>
 <p align="center">
-  <img width="562" src="https://github.com/mclvren/Mos/blob/master/docs/resources/image/ru/PreferencesException.png?raw=true">
+  <img width="562" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/ru/PreferencesException.png?raw=true">
 </p>
 
 
@@ -53,7 +53,7 @@ http://mos.caldis.me/
 Если вы хотите установить приложение с помощью [Homebrew](https://brew.sh):
 
 ```bash
-$ brew cask install mos
+$ brew install mos --cask
 ```
 
 Приложение будет находится по адресу `/Applications/Mos.app`.
@@ -62,7 +62,7 @@ $ brew cask install mos
 
 ```bash
 $ brew update
-$ brew cask reinstall mos
+$ brew reinstall mos --cask
 ```
 
 Закройте и перезапустите приложение.
