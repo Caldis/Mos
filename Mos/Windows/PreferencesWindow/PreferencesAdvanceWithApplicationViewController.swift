@@ -11,8 +11,8 @@ import Cocoa
 class PreferencesAdvanceWithApplicationViewController: NSViewController {
     
     // Target application
-    var currentTargetApplication: ExceptionalApplication!
-    var currentContentViewController: PreferencesAdvanceViewController!
+    private var currentTargetApplication: ExceptionalApplication?
+    private var currentContentViewController: PreferencesAdvanceViewController?
     // UI Elements
     @IBOutlet weak var currentTargetApplicationIcon: NSImageView!
     @IBOutlet weak var currentTargetApplicationName: NSTextField!
@@ -20,21 +20,32 @@ class PreferencesAdvanceWithApplicationViewController: NSViewController {
     
     override func viewDidLoad() {
         // 初始化显示内容
-        currentTargetApplicationIcon.image = currentTargetApplication.getIcon()
-        currentTargetApplicationName.stringValue = currentTargetApplication.getName()
+        currentTargetApplicationIcon.image = currentTargetApplication?.getIcon()
+        currentTargetApplicationName.stringValue = currentTargetApplication?.getName() ?? ""
         // 读取设置
         syncViewWithOptions()
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
         currentContentViewController = (segue.destinationController as! PreferencesAdvanceViewController)
-        currentContentViewController.currentTargetApplication = currentTargetApplication
+        if let vaildContentViewController = currentContentViewController, let validTargetApplication = currentTargetApplication {
+            vaildContentViewController.currentTargetApplication = validTargetApplication
+        }
+    }
+    
+    public func updateTargetApplication(with target: ExceptionalApplication?) {
+        currentTargetApplication = target
+        if let vaildContentViewController = currentContentViewController, let validTargetApplication = currentTargetApplication {
+            vaildContentViewController.currentTargetApplication = validTargetApplication
+        }
     }
     
     // 继承
     @IBAction func inheritGlobalSettingClick(_ sender: NSButton) {
-        currentTargetApplication.inherit = sender.state.rawValue==0 ? false : true
-        currentContentViewController.syncViewWithOptions()
+        if let vaildContentViewController = currentContentViewController, let validTargetApplication = currentTargetApplication {
+            validTargetApplication.inherit = sender.state.rawValue==0 ? false : true
+            vaildContentViewController.syncViewWithOptions()
+        }
     }
 }
 
@@ -45,6 +56,6 @@ extension PreferencesAdvanceWithApplicationViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
         // 继承
-        inheritGlobalSettingCheckBox.state = NSControl.StateValue(rawValue: currentTargetApplication.inherit ? 1 : 0)
+        inheritGlobalSettingCheckBox.state = NSControl.StateValue(rawValue: (currentTargetApplication?.inherit ?? false) ? 1 : 0)
     }
 }

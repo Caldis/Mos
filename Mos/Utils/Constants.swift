@@ -131,3 +131,17 @@ class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
         return 1-(duration/upperLimit).squareRoot()
     }
 }
+extension OPTIONS_SCROLL_ADVANCED_DEFAULT: Equatable {
+    static func == (l: OPTIONS_SCROLL_ADVANCED_DEFAULT, r: OPTIONS_SCROLL_ADVANCED_DEFAULT) -> Bool {
+        return (
+            l.dash == r.dash &&
+            l.toggle == r.toggle &&
+            l.block == r.block &&
+            l.step == r.step &&
+            l.speed == r.speed &&
+            l.duration == r.duration &&
+            l.durationTransition == r.durationTransition &&
+            l.precision == r.precision
+        )
+    }
+}

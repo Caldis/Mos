@@ -13,17 +13,20 @@ class ExceptionalApplication: Codable, Equatable {
     // 基础
     var path: String // executablePath or bundlePath
     // 配置: 继承 (仅包含 Advanced 部分)
-    var inherit = true
+    var inherit = true {
+        didSet {Options.shared.saveOptions()}
+    }
     // 配置: 滚动
     var scrollBasic = OPTIONS_SCROLL_BASIC_DEFAULT()
-    var scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT()
-    
+    var scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT() {
+        didSet {Options.shared.saveOptions()}
+    }
     // 初始化
     init(path: String) {
         self.path = path
     }
     
-    // Coredata
+    // Codable
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         // 基础
@@ -35,7 +38,7 @@ class ExceptionalApplication: Codable, Equatable {
         self.scrollAdvanced = try container.decodeIfPresent(OPTIONS_SCROLL_ADVANCED_DEFAULT.self, forKey: .scrollAdvanced) ?? OPTIONS_SCROLL_ADVANCED_DEFAULT()
     }
     
-    // Comparable
+    // Equatable
     static func == (a: ExceptionalApplication, b: ExceptionalApplication) -> Bool {
         return a.path == b.path
     }

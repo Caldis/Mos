@@ -117,7 +117,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     @objc func settingButtonClick(_ sender: NSButton!) {
         let row = sender.tag
         let advancedWithApplicationViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.advancedWithApplication) as PreferencesAdvanceWithApplicationViewController
-        advancedWithApplicationViewController.currentTargetApplication = Options.shared.general.applications.get(by: row)
+        advancedWithApplicationViewController.updateTargetApplication(with: Options.shared.general.applications.get(by: row))
         present(advancedWithApplicationViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
     }
     // 构建表格数据 (循环生成行)

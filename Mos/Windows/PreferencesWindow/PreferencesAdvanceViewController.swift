@@ -28,6 +28,7 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBOutlet weak var resetToDefaultsButton: NSButton!
     // Constants
     let PopUpButtonPadding = 2 // 减去第一个 Disabled 和分割线的距离
+    let DefaultConfigForCompare = OPTIONS_SCROLL_ADVANCED_DEFAULT()
     
     override func viewDidLoad() {
         // 禁止自动 Focus
@@ -42,16 +43,19 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBAction func dashKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
         getTargetApplicationScrollOptions().dash = Int(index>1 ? MODIFIER_KEY_SET.all.codes[index-PopUpButtonPadding] : 0)
+        syncViewWithOptions()
     }
     // 转换
     @IBAction func toggleKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
         getTargetApplicationScrollOptions().toggle = Int(index>1 ? MODIFIER_KEY_SET.all.codes[index-PopUpButtonPadding] : 0)
+        syncViewWithOptions()
     }
     // 禁用
     @IBAction func disableKeyPopUpButtonChange(_ sender: NSPopUpButton) {
         let index = sender.indexOfSelectedItem
         getTargetApplicationScrollOptions().block = Int(index>1 ? MODIFIER_KEY_SET.all.codes[index-PopUpButtonPadding] : 0)
+        syncViewWithOptions()
     }
     
     // 步长
@@ -130,7 +134,7 @@ extension PreferencesAdvanceViewController {
         if let index = MODIFIER_KEY_SET.all.codes.firstIndex(of: CGKeyCode(scroll.toggle ?? 0)) {
             toggleKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
-             toggleKeyPopUpButton.selectItem(at: 0)
+            toggleKeyPopUpButton.selectItem(at: 0)
         }
         toggleKeyPopUpButton.isEnabled = enabled
         // 禁用
@@ -165,11 +169,14 @@ extension PreferencesAdvanceViewController {
         scrollDurationInput.stringValue = String(format: "%.2f", duration)
         scrollDurationInput.isEnabled = enabled
         // 初始化
-        resetToDefaultsButton.isEnabled = enabled
+        resetToDefaultsButton.isEnabled = scroll != DefaultConfigForCompare
     }
     // 获取配置目标
     func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_ADVANCED_DEFAULT {
-        return currentTargetApplication?.scrollAdvanced ?? Options.shared.scrollAdvanced
+        if let validCurrentTargetApplication = currentTargetApplication, validCurrentTargetApplication.inherit == false  {
+            return validCurrentTargetApplication.scrollAdvanced
+        }
+        return Options.shared.scrollAdvanced
     }
     // 是否继承全局设置
     func isTargetApplicationInheritOptions() -> Bool {

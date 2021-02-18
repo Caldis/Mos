@@ -171,8 +171,8 @@
 				2278EE981E3DF770000AB25B /* PreferencesExceptionViewController.swift */,
 				23E9673E23613D1100E652F6 /* PreferencesExceptionInputViewController.swift */,
 				2225F8DC1E39C8D60020DD22 /* PreferencesAdvanceViewController.swift */,
-				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
 				232E50A6236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift */,
+				2280934F1E2B5DA90061A00F /* PreferencesGeneralViewController.swift */,
 				22F4EFEE1E325C36009EED31 /* PreferencesTabViewController.swift */,
 				2280934B1E2B5D850061A00F /* PreferencesWindowController.swift */,
 			);
