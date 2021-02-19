@@ -43,7 +43,7 @@ class ScrollCore {
         let scrollEvent = ScrollEvent(with: event)
         // 不处理触控板
         // 无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入
-        if scrollEvent.isTouchPad() { return Unmanaged.passUnretained(event) }
+        if scrollEvent.isTrackpad() { return Unmanaged.passUnretained(event) }
         // 切换目标窗时停止滚动
         if ScrollUtils.shared.isTargetChanged(event) {
             ScrollPoster.shared.pauseAuto()

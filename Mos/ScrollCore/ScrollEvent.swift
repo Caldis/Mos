@@ -44,9 +44,21 @@ class ScrollEvent {
     }
     
     // 触控板/鼠标判断
-    func isTouchPad() -> Bool {
+    func isTrackpad() -> Bool {
+        return ScrollEvent.isTrackpadEvent(event: event)
+    }
+    func isMouse() -> Bool {
+        return !ScrollEvent.isTrackpadEvent(event: event)
+    }
+}
+
+// MARK: - 工具方法
+extension ScrollEvent {
+    // 类型判断
+    class func isTrackpadEvent(event: CGEvent) -> Bool {
         // MomentumPhase 或 ScrollPhase 任一不为零, 则为触控板
-        if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
+        if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) ||
+           (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
             return true
         }
         // 累计加速度不为零, 则为触控板
@@ -55,13 +67,7 @@ class ScrollEvent {
         }
         return false
     }
-    func isMouse() -> Bool {
-        return !isTouchPad()
-    }
-}
-
-// ScrollEvent 的工具方法
-extension ScrollEvent {
+    
     // 初始化轴数据
     class func initEvent(event: CGEvent, axis: axisType) -> axisData {
         var data = axisData()

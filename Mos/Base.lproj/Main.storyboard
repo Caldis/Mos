@@ -2854,7 +2854,7 @@ scrollWheelEventMomentumPhase: 0.0</string>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
-                                    <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="GMF-Nl-CJZ">
+                                    <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="GMF-Nl-CJZ">
                                         <rect key="frame" x="30" y="329" width="287" height="25"/>
                                         <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="s5y-xQ-xSw">
                                             <rect key="frame" x="0.0" y="0.0" width="287" height="25"/>
@@ -2869,8 +2869,8 @@ scrollWheelEventMomentumPhase: 0.0</string>
                                                     <size key="maxSize" width="1000" height="10000000"/>
                                                     <attributedString key="textStorage">
                                                         <fragment>
-                                                            <string key="content">Events from the Trackpad: -
-Events Target BundleId: -</string>
+                                                            <string key="content">Trackpad: -
+Path: -</string>
                                                             <attributes>
                                                                 <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                 <font key="NSFont" size="11" name="HelveticaNeue"/>

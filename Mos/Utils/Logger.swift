@@ -12,9 +12,11 @@ class Logger {
     
     // 解析信息
     class func getParsedLog(form event: CGEvent) -> String {
-        let scrollEvent = ScrollEvent(with: event)
+        let isTrackPad = ScrollEvent.isTrackpadEvent(event: event)
+        let runningApplication = ScrollUtils.shared.getRunningApplication(from: event)
         return """
-        Events from the Trackpad: \(scrollEvent.isTouchPad())
+        Trackpad: \(isTrackPad)
+        Path: \(runningApplication?.bundleURL?.path ?? runningApplication?.executableURL?.path ?? "")
         """
     }
     
