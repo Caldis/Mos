@@ -12,7 +12,7 @@ class Logger {
     
     // 解析信息
     class func getParsedLog(form event: CGEvent) -> String {
-        let isTrackPad = ScrollEvent.isTrackpadEvent(event: event)
+        let isTrackPad = ScrollEvent.isTrackpad(with: event)
         let runningApplication = ScrollUtils.shared.getRunningApplication(from: event)
         return """
         Trackpad: \(isTrackPad)

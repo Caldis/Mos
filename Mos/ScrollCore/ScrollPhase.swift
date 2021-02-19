@@ -45,7 +45,7 @@ class ScrollPhase {
     var phase: Phase = Phase.Idle
     
     // MARK: - 滚动阶段更新
-    let debounceSetPhaseToMomentum = Debounce(delay: 0.2) {
+    let debounceSetPhaseToMomentum = Utils.debounce(delay: 200) {
         ScrollPhase.shared.phase = Phase.Momentum
     }
     func syncPhase() {
@@ -54,7 +54,7 @@ class ScrollPhase {
         } else if (phase == Phase.Tracing) {
             phase = Phase.Tracing
         }
-        debounceSetPhaseToMomentum.call()
+        debounceSetPhaseToMomentum()
     }
     
     // MARK: - 滚动阶段递进
@@ -78,4 +78,18 @@ class ScrollPhase {
         }
     }
     
+    // MARK: - 滚动数据附加
+    func attach(to event: CGEvent) {
+        let prevPhase = ScrollPhase.shared.consume()
+        // 仅作用于 Y 轴事件 (For MX Master)
+        if event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2) == 0.0 {
+            if prevPhase == Phase.PauseAuto || prevPhase == Phase.PauseManual  {
+                // 只有 Phase.PauseManual 对应的 [4.0, 0.0] 可以正确使 Chrome 恢复
+                if let validPhaseValue = PhaseValueMapping[Phase.PauseManual] {
+                    event.setDoubleValueField(.scrollWheelEventScrollPhase, value: validPhaseValue[PhaseItem.Scroll]!)
+                    event.setDoubleValueField(.scrollWheelEventMomentumPhase, value: validPhaseValue[PhaseItem.Momentum]!)
+                }
+            }
+        }
+    }
 }

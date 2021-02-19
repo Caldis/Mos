@@ -45,27 +45,36 @@ class ScrollEvent {
     
     // 触控板/鼠标判断
     func isTrackpad() -> Bool {
-        return ScrollEvent.isTrackpadEvent(event: event)
+        return ScrollEvent.isTrackpad(with: event)
     }
     func isMouse() -> Bool {
-        return !ScrollEvent.isTrackpadEvent(event: event)
+        return !ScrollEvent.isTrackpad(with: event)
     }
 }
 
 // MARK: - 工具方法
 extension ScrollEvent {
     // 类型判断
-    class func isTrackpadEvent(event: CGEvent) -> Bool {
-        // MomentumPhase 或 ScrollPhase 任一不为零, 则为触控板
-        if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) ||
-           (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
-            return true
+    class func isTrackpad(with event: CGEvent) -> Bool {
+        var result = false
+        // 根据滚动特征值判定
+        if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
+            // MomentumPhase 或 ScrollPhase 任一不为零, 则为触控板
+            result = true
+        } else if event.getDoubleValueField(.scrollWheelEventScrollCount) != 0.0 {
+            // 累计加速度不为零, 则为触控板
+            result = true
         }
-        // 累计加速度不为零, 则为触控板
-        if event.getDoubleValueField(.scrollWheelEventScrollCount) != 0.0 {
-            return true
+        // 根据输入事件源增强判断
+        if result {
+            if let specialProcessID = Utils.getRunningApplicationProcessIdentifier(withBundleIdentifier: SPECIAL_EVENT_SOURCE_APPLICATION.logitechOptions)?.processIdentifier {
+                let sourceProcessID = event.getIntegerValueField(.eventSourceUnixProcessID)
+                if sourceProcessID == specialProcessID {
+                    result = false
+                }
+            }
         }
-        return false
+        return result
     }
     
     // 初始化轴数据

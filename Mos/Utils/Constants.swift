@@ -63,6 +63,11 @@ struct POPOVER_IDENTIFIER {
     static let statusItemMainPanelViewController = "statusItemMainPanelViewController"
 }
 
+// 事件处理应用
+struct SPECIAL_EVENT_SOURCE_APPLICATION {
+    static let logitechOptions = "com.logitech.manager.daemon"
+}
+
 // 默认设置项
 // 全局参数
 class OPTIONS_GENERAL_DEFAULT {

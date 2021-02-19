@@ -149,7 +149,7 @@ private extension ScrollPoster {
         )
         // 平滑滚动结果
         let filledValue = filler.fill(with: scrollPulse)
-        // 变换滚动结果
+        // 交换滚动结果
         let swapedValue = swap(with: filledValue, enable: shifting)
         // 发送滚动结果
         if let proxy = ref.proxy, let event = ref.event {
@@ -166,14 +166,9 @@ private extension ScrollPoster {
     // 发送滚动事件
     func post(_ proxy: CGEventTapProxy, _ event: CGEvent, _ y: Double, _ x: Double) {
         if let eventClone = event.copy() {
-            let phase = ScrollPhase.shared.consume()
-            if phase == Phase.PauseAuto || phase == Phase.PauseManual {
-                // 只有 Phase.PauseManual 对应的 [4.0, 0.0] 可以正确使 Chrome 恢复
-                if let validPhaseValue = PhaseValueMapping[Phase.PauseManual] {
-                    eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: validPhaseValue[PhaseItem.Scroll]!)
-                    eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: validPhaseValue[PhaseItem.Momentum]!)
-                }
-            }
+            // 设置阶段数据
+            ScrollPhase.shared.attach(to: eventClone)
+            // 设置滚动数据
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: y)
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: x)
             eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: 0.0)

@@ -65,7 +65,7 @@ class ScrollUtils {
     var launchpadLastDetectTime = 0.0
     func getLaunchpadActivity(withRunningApplication runningApplication: NSRunningApplication?) -> Bool {
         guard let validRunningApplication = runningApplication else { return false }
-        // 10.15 以上直接判断
+        // 10.15 以上直接判断是否为 Dock
         if #available(OSX 10.15, *) {
             if validRunningApplication.executableURL?.path == "/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock" {
                 launchpadActiveCache = true

@@ -222,4 +222,34 @@ public class Utils {
         let applicationRawName = FileManager().displayName(atPath: path).removingPercentEncoding!
         return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app")
     }
+    
+    static var runningApplicationThreshold = 60.0
+    static var runningApplicationCache = [String: NSRunningApplication]()
+    static var runningApplicationDetectTime = [String: Double]()
+    class func getRunningApplicationProcessIdentifier(withBundleIdentifier bundleIdentifier: String) -> NSRunningApplication? {
+        let now = NSDate().timeIntervalSince1970
+        if now - (runningApplicationDetectTime[bundleIdentifier] ?? 0.0) > runningApplicationThreshold {
+            let runningApplication = NSRunningApplication.runningApplications(withBundleIdentifier: bundleIdentifier)[0]
+            runningApplicationCache[bundleIdentifier] = runningApplication
+            runningApplicationDetectTime[bundleIdentifier] = now
+        }
+        return runningApplicationCache[bundleIdentifier] ?? nil
+    }
+    
+    class func debounce(delay: Int, action: @escaping (() -> Void)) -> () -> Void {
+        var lastFireTime = DispatchTime.now()
+        let dispatchDelay = DispatchTimeInterval.milliseconds(delay)
+
+        return {
+            lastFireTime = DispatchTime.now()
+            let dispatchTime: DispatchTime = DispatchTime.now() + dispatchDelay
+            DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
+                let when: DispatchTime = lastFireTime + dispatchDelay
+                let now = DispatchTime.now()
+                if now.rawValue >= when.rawValue {
+                    action()
+                }
+            }
+        }
+    }
 }
