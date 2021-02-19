@@ -229,8 +229,8 @@ public class Utils {
     class func getRunningApplicationProcessIdentifier(withBundleIdentifier bundleIdentifier: String) -> NSRunningApplication? {
         let now = NSDate().timeIntervalSince1970
         if now - (runningApplicationDetectTime[bundleIdentifier] ?? 0.0) > runningApplicationThreshold {
-            let runningApplication = NSRunningApplication.runningApplications(withBundleIdentifier: bundleIdentifier)[0]
-            runningApplicationCache[bundleIdentifier] = runningApplication
+            let runningApplications = NSRunningApplication.runningApplications(withBundleIdentifier: bundleIdentifier)
+            runningApplicationCache[bundleIdentifier] = runningApplications.count > 0 ? runningApplications[0] : nil
             runningApplicationDetectTime[bundleIdentifier] = now
         }
         return runningApplicationCache[bundleIdentifier] ?? nil
