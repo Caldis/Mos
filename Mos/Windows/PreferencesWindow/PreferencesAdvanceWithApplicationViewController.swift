@@ -10,6 +10,9 @@ import Cocoa
 
 class PreferencesAdvanceWithApplicationViewController: NSViewController {
     
+    // Parent view
+    private var parentTableView: NSTableView?
+    private var parentTableRow: Int!
     // Target application
     private var currentTargetApplication: ExceptionalApplication?
     private var currentContentViewController: PreferencesAdvanceViewController?
@@ -37,6 +40,21 @@ class PreferencesAdvanceWithApplicationViewController: NSViewController {
         currentTargetApplication = target
         if let vaildContentViewController = currentContentViewController, let validTargetApplication = currentTargetApplication {
             vaildContentViewController.currentTargetApplication = validTargetApplication
+        }
+    }
+    public func updateParentData(with target: NSTableView, for row: Int) {
+        parentTableView = target
+        parentTableRow = row
+    }
+    
+    // 名称
+    @IBAction func currentTargetApplicationNameChange(_ sender: NSTextField) {
+        let name = sender.stringValue
+        if name.count > 0 {
+            currentTargetApplication?.displayName = name
+            if let validParentTableView = parentTableView, let validParentTableRow = parentTableRow {
+                validParentTableView.reloadData(forRowIndexes: [validParentTableRow], columnIndexes: [0, 1, 2])
+            }
         }
     }
     

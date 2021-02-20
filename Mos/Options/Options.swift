@@ -38,6 +38,7 @@ extension Options {
     
     // 从 UserDefaults 中读取到 currentOptions
     func readOptions() {
+        NSLog("Option reading")
         // 配置项如果不存在则尝试用当前设置(默认设置)保存一次
         if UserDefaults.standard.object(forKey: "optionsExist") == nil { saveOptions() }
         // 锁定
@@ -88,6 +89,7 @@ extension Options {
             UserDefaults.standard.set(scrollAdvanced.speed, forKey:"speed")
             UserDefaults.standard.set(scrollAdvanced.duration, forKey:"duration")
             UserDefaults.standard.set(scrollAdvanced.precision, forKey:"precision")
+            NSLog("Option Saved")
         }
     }
 }

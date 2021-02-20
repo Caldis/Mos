@@ -12,6 +12,10 @@ class ExceptionalApplication: Codable, Equatable {
     
     // 基础
     var path: String // executablePath or bundlePath
+    // 配置: 名称
+    var displayName: String? = "" {
+        didSet {Options.shared.saveOptions()}
+    }
     // 配置: 继承 (仅包含 Advanced 部分)
     var inherit = true {
         didSet {Options.shared.saveOptions()}
@@ -30,12 +34,14 @@ class ExceptionalApplication: Codable, Equatable {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         // 基础
-        self.path = try container.decodeIfPresent(String.self, forKey: .path) ?? ""
-        // 开关
-        self.inherit = try container.decodeIfPresent(Bool.self, forKey: .inherit) ?? true
+        path = try container.decodeIfPresent(String.self, forKey: .path) ?? ""
+        // 名称
+        displayName = try container.decodeIfPresent(String.self, forKey: .displayName) ?? ""
+        // 继承
+        inherit = try container.decodeIfPresent(Bool.self, forKey: .inherit) ?? true
         // 滚动
-        self.scrollBasic = try container.decodeIfPresent(OPTIONS_SCROLL_BASIC_DEFAULT.self, forKey: .scrollBasic) ?? OPTIONS_SCROLL_BASIC_DEFAULT()
-        self.scrollAdvanced = try container.decodeIfPresent(OPTIONS_SCROLL_ADVANCED_DEFAULT.self, forKey: .scrollAdvanced) ?? OPTIONS_SCROLL_ADVANCED_DEFAULT()
+        scrollBasic = try container.decodeIfPresent(OPTIONS_SCROLL_BASIC_DEFAULT.self, forKey: .scrollBasic) ?? OPTIONS_SCROLL_BASIC_DEFAULT()
+        scrollAdvanced = try container.decodeIfPresent(OPTIONS_SCROLL_ADVANCED_DEFAULT.self, forKey: .scrollAdvanced) ?? OPTIONS_SCROLL_ADVANCED_DEFAULT()
     }
     
     // Equatable
@@ -53,6 +59,9 @@ extension ExceptionalApplication {
         return Utils.getApplicationIcon(fromPath: path)
     }
     func getName() -> String {
+        if let name = displayName, name.count > 0 {
+            return name
+        }
         return Utils.getAppliactionName(fromPath: path)
     }
     // 配置

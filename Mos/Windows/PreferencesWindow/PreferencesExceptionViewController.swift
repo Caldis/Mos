@@ -118,6 +118,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
         let row = sender.tag
         let advancedWithApplicationViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.advancedWithApplication) as PreferencesAdvanceWithApplicationViewController
         advancedWithApplicationViewController.updateTargetApplication(with: Options.shared.general.applications.get(by: row))
+        advancedWithApplicationViewController.updateParentData(with: tableView, for: row)
         present(advancedWithApplicationViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
     }
     // 构建表格数据 (循环生成行)
@@ -235,7 +236,7 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
     func appendApplicationWith(path: String) {
         let application = ExceptionalApplication(path: path)
         Options.shared.general.applications.append(application)
-        self.tableView.reloadData()
+        tableView.reloadData()
     }
     @objc func appendApplicationWithRunningApplication(_ sender: NSMenuItem!) {
         guard let runningApplication = sender.representedObject as? NSRunningApplication else { return }
