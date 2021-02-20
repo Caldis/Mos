@@ -24,6 +24,7 @@ class PreferencesAdvanceWithApplicationViewController: NSViewController {
     override func viewDidLoad() {
         // 初始化显示内容
         currentTargetApplicationIcon.image = currentTargetApplication?.getIcon()
+        currentTargetApplicationIcon.toolTip = currentTargetApplication?.path
         currentTargetApplicationName.stringValue = currentTargetApplication?.getName() ?? ""
         // 读取设置
         syncViewWithOptions()
