@@ -196,7 +196,7 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
         // 不允许复数选择
         openPanel.allowsMultipleSelection = false
         // 允许的文件类型
-        openPanel.allowedFileTypes = ["app", "App", "APP"]
+        // openPanel.allowedFileTypes = ["app", "App", "APP"]
         // 打开文件选择窗口并读取文件添加到 ExceptionalApplications 列表中
         openPanel.beginSheetModal(for: view.window!, completionHandler: { result in
             if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
