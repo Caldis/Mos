@@ -2169,30 +2169,22 @@ Gw
         <scene sceneID="eHC-0y-R7N">
             <objects>
                 <viewController id="zex-mK-IcT" customClass="PreferencesContributorsViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="NbZ-BN-bEt">
-                        <rect key="frame" x="0.0" y="0.0" width="470" height="330"/>
+                    <view key="view" misplaced="YES" id="NbZ-BN-bEt">
+                        <rect key="frame" x="0.0" y="0.0" width="470" height="343"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wbo-Wg-RyO">
-                                <rect key="frame" x="18" y="236" width="434" height="19"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Translation" id="Lhz-x5-X0I">
-                                    <font key="font" metaFont="systemUltraLight" size="16"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="K8n-u9-1XP">
-                                <rect key="frame" x="119" y="208" width="333" height="13"/>
-                                <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title="Joshua Park(@godly-devotion), OrcaXS(@OrcaXS) ..." id="SuH-MV-uUc">
-                                    <font key="font" metaFont="systemUltraLight" size="10"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="CL7-Pu-ouN">
                                 <rect key="frame" x="18" y="275" width="434" height="35"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Contributors" id="ZJY-Yg-Qev">
                                     <font key="font" metaFont="systemUltraLight" size="30"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wbo-Wg-RyO">
+                                <rect key="frame" x="18" y="236" width="434" height="19"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Translation" id="Lhz-x5-X0I">
+                                    <font key="font" metaFont="systemUltraLight" size="16"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -2203,6 +2195,14 @@ Gw
                                     <font key="font" metaFont="miniSystemBold"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="K8n-u9-1XP">
+                                <rect key="frame" x="119" y="208" width="333" height="13"/>
+                                <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title="Joshua Park(@godly-devotion), OrcaXS(@OrcaXS) ..." id="SuH-MV-uUc">
+                                    <font key="font" metaFont="systemUltraLight" size="10"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nmu-9V-mMs">
@@ -2239,7 +2239,7 @@ Gw
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dKF-OI-Qn5">
                                 <rect key="frame" x="119" y="166" width="333" height="13"/>
-                                <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title=" jrthsr700tmax(@jrthsr700tmax)" id="Imc-rJ-YnM">
+                                <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" title=" jrthsr700tmax(@jrthsr700tmax), Crizant(@crizant)" id="Imc-rJ-YnM">
                                     <font key="font" metaFont="systemUltraLight" size="10"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

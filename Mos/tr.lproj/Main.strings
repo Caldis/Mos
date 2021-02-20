@@ -26,9 +26,6 @@
 /* Class = "NSButtonCell"; title = "Confirm"; ObjectID = "2v4-AC-WG5"; */
 "2v4-AC-WG5.title" = "Onayla";
 
-/* Class = "NSTextFieldCell"; title = "Andrew Mclaren(@mclvren)"; ObjectID = "2v8-3K-NkQ"; */
-"2v8-3K-NkQ.title" = "Andrew Mclaren(@mclvren)";
-
 /* Class = "NSTextFieldCell"; title = "Allow Mos access to Accessibility controls"; ObjectID = "3QI-xO-wPK"; */
 "3QI-xO-wPK.title" = "Mos'ın Erişilebilirlik kontrollerine erişmesine izin verin";
 
@@ -137,14 +134,8 @@
 /* Class = "NSMenuItem"; title = "⌃ Control"; ObjectID = "HrY-s6-CCB"; */
 "HrY-s6-CCB.title" = "⌃ Control";
 
-/* Class = "NSTextFieldCell"; title = "Wang Yudong(@wyudong)"; ObjectID = "I6G-zh-cEt"; */
-"I6G-zh-cEt.title" = "Wang Yudong(@wyudong)";
-
 /* Class = "NSViewController"; title = "General"; ObjectID = "ITL-GD-CPd"; */
 "ITL-GD-CPd.title" = "Genel";
-
-/* Class = "NSTextFieldCell"; title = " jrthsr700tmax(@jrthsr700tmax)"; ObjectID = "Imc-rJ-YnM"; */
-"Imc-rJ-YnM.title" = " jrthsr700tmax(@jrthsr700tmax)";
 
 /* Class = "NSTextFieldCell"; title = "Sets the minimum scroll distance"; ObjectID = "Jan-OY-m70"; */
 "Jan-OY-m70.title" = "Minimum kaydırma uzaklığını ayarlar";
@@ -214,12 +205,6 @@
 
 /* Class = "NSMenuItem"; title = "⇧ Shift"; ObjectID = "Sma-iA-YxQ"; */
 "Sma-iA-YxQ.title" = "⇧ Shift";
-
-/* Class = "NSMenuItem"; title = "Quit"; ObjectID = "SqT-eH-bOb"; */
-"SqT-eH-bOb.title" = "Çıkış";
-
-/* Class = "NSTextFieldCell"; title = "Joshua Park(@godly-devotion), OrcaXS(@OrcaXS)"; ObjectID = "SuH-MV-uUc"; */
-"SuH-MV-uUc.title" = "Joshua Park(@godly-devotion), OrcaXS(@OrcaXS)";
 
 /* Class = "NSButtonCell"; title = "Check Now"; ObjectID = "T9f-TL-GYj"; */
 "T9f-TL-GYj.title" = "Şimdi Kontrol Et";
