@@ -71,7 +71,7 @@ class ScrollCore {
             speed = exceptionalApplication.getSpeed()
             duration = exceptionalApplication.getDuration()
         } else if !Options.shared.general.whitelist {
-            enableSmooth = Options.shared.scrollBasic.smooth
+            enableSmooth = Options.shared.scrollBasic.smooth && !ScrollCore.shared.blockSmooth
             enableReverse = Options.shared.scrollBasic.reverse
         }
         // Launchpad 激活则强制屏蔽平滑
