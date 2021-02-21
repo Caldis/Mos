@@ -169,7 +169,7 @@ extension PreferencesAdvanceViewController {
         scrollDurationInput.stringValue = String(format: "%.2f", duration)
         scrollDurationInput.isEnabled = enabled
         // 初始化
-        resetToDefaultsButton.isEnabled = scroll != DefaultConfigForCompare
+        resetToDefaultsButton.isEnabled = enabled && scroll != DefaultConfigForCompare
     }
     // 获取配置目标
     func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_ADVANCED_DEFAULT {

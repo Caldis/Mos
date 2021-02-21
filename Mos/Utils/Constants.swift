@@ -133,7 +133,9 @@ class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
         // 上界, 此处需要与界面的 Slider 上界保持同步, 并添加 0.2 的偏移令结果不为 0
         let upperLimit = 5.0 + 0.2
         // 生成数据 (https://www.wolframalpha.com/input/?i=1+-+(sqrt+x%2F5)+%3D+y)
-        return 1-(duration/upperLimit).squareRoot()
+        let val = 1-(duration/upperLimit).squareRoot()
+        // 三位小数
+        return Double(round(1000 * val)/1000)
     }
 }
 extension OPTIONS_SCROLL_ADVANCED_DEFAULT: Equatable {
