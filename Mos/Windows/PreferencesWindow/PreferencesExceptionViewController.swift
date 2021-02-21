@@ -151,6 +151,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
                 // 应用
                 case CellIdentifiers.applicationCell:
                     cell.imageView?.image = application?.getIcon()
+                    cell.imageView?.toolTip = application?.path
                     cell.textField?.stringValue = application?.getName() ?? ""
                     return cell
                 // 设定
