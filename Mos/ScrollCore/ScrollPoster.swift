@@ -14,7 +14,6 @@ class ScrollPoster {
     static let shared = ScrollPoster()
     init() { NSLog("Module initialized: ScrollPoster") }
     
-    var ts = Date.currentTimeStamp
     // 插值器
     private let filler = ScrollFiller()
     private let interpolator = Interpolator.lerp
@@ -82,12 +81,6 @@ extension ScrollPoster {
         scrollBuffer = ( y: 0.0, x: 0.0 )
         // 重置插值器
         filler.reset()
-    }
-}
-
-extension Date {
-    static var currentTimeStamp: Int64{
-        return Int64(Date().timeIntervalSince1970 * 1000)
     }
 }
 

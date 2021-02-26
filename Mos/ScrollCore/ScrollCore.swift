@@ -39,11 +39,12 @@ class ScrollCore {
     
     // MARK: - 滚动事件处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        // 滚动事件
-        let scrollEvent = ScrollEvent(with: event)
         // 不处理触控板
         // 无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入
-        if scrollEvent.isTrackpad() { return Unmanaged.passUnretained(event) }
+        // 无法区分 Magic Mouse, 因为其滚动特征与内置的 Trackpad 一致
+        if ScrollEvent.isTrackpad(with: event) {
+            return Unmanaged.passUnretained(event)
+        }
         // 切换目标窗时停止滚动
         if ScrollUtils.shared.isTargetChanged(event) {
             ScrollPoster.shared.pauseAuto()
@@ -78,6 +79,8 @@ class ScrollCore {
         if ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication) {
             enableSmooth = false
         }
+        // 滚动事件
+        let scrollEvent = ScrollEvent(with: event)
         // Y轴
         if scrollEvent.Y.valid {
             // 是否翻转滚动

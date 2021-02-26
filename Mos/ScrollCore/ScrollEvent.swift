@@ -55,26 +55,33 @@ class ScrollEvent {
 // MARK: - 工具方法
 extension ScrollEvent {
     // 类型判断
+    static var isTrackpadCallSamplingRate = 3
+    static var isTrackpadCallCount = 2
+    static var isTrackpadCallCache = true
     class func isTrackpad(with event: CGEvent) -> Bool {
-        var result = false
-        // 根据滚动特征值判定
-        if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
-            // MomentumPhase 或 ScrollPhase 任一不为零, 则为触控板
-            result = true
-        } else if event.getDoubleValueField(.scrollWheelEventScrollCount) != 0.0 {
-            // 累计加速度不为零, 则为触控板
-            result = true
-        }
-        // 根据输入事件源增强判断
-        if result {
-            if let specialProcessID = Utils.getRunningApplicationProcessIdentifier(withBundleIdentifier: SPECIAL_EVENT_SOURCE_APPLICATION.logitechOptions)?.processIdentifier {
-                let sourceProcessID = event.getIntegerValueField(.eventSourceUnixProcessID)
-                if sourceProcessID == specialProcessID {
-                    result = false
+        ScrollEvent.isTrackpadCallCount += 1
+        if isTrackpadCallCount % isTrackpadCallSamplingRate == 0 {
+            ScrollEvent.isTrackpadCallCache = false
+            // 根据滚动特征值判定
+            if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
+                // MomentumPhase 或 ScrollPhase 任一不为零, 则为触控板
+                ScrollEvent.isTrackpadCallCache = true
+            } else if event.getDoubleValueField(.scrollWheelEventScrollCount) != 0.0 {
+                // 累计加速度不为零, 则为触控板
+                ScrollEvent.isTrackpadCallCache = true
+            }
+            // 根据输入事件源增强判断
+            if ScrollEvent.isTrackpadCallCache {
+                if let specialProcessID = Utils.getRunningApplicationProcessIdentifier(withBundleIdentifier: SPECIAL_EVENT_SOURCE_APPLICATION.logitechOptions)?.processIdentifier {
+                    let sourceProcessID = event.getIntegerValueField(.eventSourceUnixProcessID)
+                    if sourceProcessID == specialProcessID {
+                        ScrollEvent.isTrackpadCallCache = false
+                    }
                 }
             }
+            ScrollEvent.isTrackpadCallCount = isTrackpadCallSamplingRate - 1 
         }
-        return result
+        return ScrollEvent.isTrackpadCallCache
     }
     
     // 初始化轴数据
