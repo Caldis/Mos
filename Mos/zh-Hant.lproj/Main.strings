@@ -23,6 +23,7 @@
 "MdS-Nz-zMa.title" = "系統登入時自動啟動";
 "hGj-vV-zcY.title" = "隱藏狀態欄圖示";
 "bB5-2R-9Da.title" = "再次執行 Mos 即可重新顯示狀態欄圖示";
+"cIk-j1-vYt.title" = "您需要從 Finder > 「應用程式」而不是從啟動台重新執行 Mos（啟動台會自動忽略已經啟動的程式）。";
 // Advanced
 "iW5-CD-5OC.title" = "進階";
 "hOO-M8-I1z.title" = "加速鍵：";
@@ -72,7 +73,7 @@
 "5oM-oR-Dsq.title" = "目前版本";
 // About
 "RfV-Ow-3mF.title" = "關於";
-"5cx-xS-eRe.title" = "抱歉，只幫到一點點";
+"5cx-xS-eRe.title" = "抱歉，只幫到了一些些";
 "yDf-dn-Mcz.title" = "首頁";
 "99M-8D-HLN.title" = "GitHub";
 "AM8-cj-DnH.title" = "餵肥大咪";
