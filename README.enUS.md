@@ -87,7 +87,7 @@ Quit then relaunch the app.
 
 ## Contributing
 
-Feel free to submit or propose improvments to the code or to the translation of Mos in different languages. Please submit new issues through [GitHub issues](https://github.com/Caldis/Mos/issues). If you are good at coding, please submit a PR directly!
+Feel free to submit or propose improvements to the code or to the translation of Mos in different languages. Please submit new issues through [GitHub issues](https://github.com/Caldis/Mos/issues). If you are good at coding, please submit a PR directly!
 
 
 ## LICENSE
