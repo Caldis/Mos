@@ -1,34 +1,34 @@
 /*
   Localizable.strings
   Mos
-  In-code text internationalization
-  Created by Caldis on 2018/3/24.
-  Copyright © 2018年 Caldis. All rights reserved.
+  Storyboard text internationalization
+  Created by Caldis on 2021/2/26.
+  Copyright © 2021年 Caldis. All rights reserved.
 */
 
 // Global
-"Ensure" = "確認";
+"Ensure" = "確定";
 "Cancel" = "取消";
 "Version" = "版本";
-"Done" = "授權已取得";
+"Done" = "已取得權限";
 "Error" = "錯誤";
 
 // Status Bar Icon Menu
-"Needs access to Accessibility controls" = "需要先獲得輔助使用的授權才可以工作";
-"Scroll Monitor" = " 滾動監視";
+"Needs access to Accessibility controls" = "需授予「輔助使用」權限才能運作";
+"Scroll Monitor" = " 捲動監視";
 "Preferences" = " 偏好設定";
-"Quit" = " 退出";
+"Quit" = " 結束";
 "Hide Icon" = "隱藏圖示";
 
 // Notification
-"Mos is running in the background" = "Mos 正在後台執行中";
-"Mos' status bar icon is hidden" = "Mos 的圖示已被隱藏";
-"Got it" = "我已了解";
-"Show it" = "顯示圖標";
+"Mos is running in the background" = "Mos 正在背景執行";
+"Mos' status bar icon is hidden" = "已隱藏 Mos 圖示";
+"Got it" = "了解";
+"Show it" = "顯示圖示";
 
 // Preferences
-"Current Version" = "當前版本";
+"Current Version" = "目前版本";
 
 // Welcome Window
-"Allow to access" = "授權訪問";
-"Begin smooth" = "開始使用";
+"Allow to access" = "允許存取";
+"Begin smooth" = "開始體驗";
