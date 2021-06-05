@@ -38,6 +38,8 @@ extension ScrollPoster {
         ref.proxy = proxy
         // 更新滚动配置
         self.duration = duration
+        // 交换滚动
+        let (y, x) = swap(with: (y, x), enable: shifting)
         // 更新滚动数据
         if y*scrollDelta.y > 0 {
             scrollBuffer.y += y * speed * amplification
@@ -142,11 +144,9 @@ private extension ScrollPoster {
         )
         // 平滑滚动结果
         let filledValue = filler.fill(with: scrollPulse)
-        // 交换滚动结果
-        let swapedValue = swap(with: filledValue, enable: shifting)
         // 发送滚动结果
         if let proxy = ref.proxy, let event = ref.event {
-            post(proxy, event, swapedValue.y, swapedValue.x)
+            post(proxy, event, filledValue.y, filledValue.x)
         }
         // 如果临近目标距离小于精确度门限则暂停滚动
         if (
