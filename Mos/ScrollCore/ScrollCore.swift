@@ -12,7 +12,10 @@ import Cocoa
 class ScrollCore {
     
     // 单例
-    static let shared = ScrollCore()
+    static var shared = ScrollCore()
+    static func refreshSharedInstance(){
+        ScrollCore.shared = ScrollCore()
+    }
     init() { NSLog("Module initialized: ScrollCore") }
     
     // 执行状态
