@@ -1,113 +1,115 @@
 /*
   Localizable.strings
   Mos
-  Storybroad text internationalization
+  Storyboard text internationalization
   Created by Caldis on 2021/2/26.
   Copyright © 2021年 Caldis. All rights reserved.
+  Localized with https://zhconvert.org (dict-f6422ad9-r972)
 */
 
 // Mointor
-"TUE-3v-CaJ.title" = "呈現該視窗的資訊會顯著影響捲動性能, 請僅在必要時開啟";
+"TUE-3v-CaJ.title" = "顯示視窗資訊對捲動效能會有顯著影響。請僅在必要時開啟";
 
 // PreferencesWindow
 "cvF-hf-KVW.title" = "偏好設定";
 // General
-"ITL-GD-CPd.title" = "基礎";
-"pwT-er-UCo.title" = "捲動:";
+"ITL-GD-CPd.title" = "一般";
+"pwT-er-UCo.title" = "捲動：";
 "jtK-hi-Ami.title" = "平滑捲動";
-"bbo-GH-WeC.title" = "讓滑鼠的捲動效果絲般順滑";
-"MAF-Hi-l48.title" = "翻轉方向";
-"CqK-3z-D0G.title" = "單獨翻轉滑鼠滾輪的捲動方向";
-"dyY-vr-dwT.title" = "其他:";
+"bbo-GH-WeC.title" = "讓滑鼠捲動如絲般順滑";
+"MAF-Hi-l48.title" = "反轉捲動";
+"CqK-3z-D0G.title" = "只反轉滑鼠滾輪的捲動方向";
+"dyY-vr-dwT.title" = "其他：";
 "xoR-7p-3qj.title" = "開機啟動";
-"MdS-Nz-zMa.title" = "在系統登錄時自動執行";
-"hGj-vV-zcY.title" = "隱藏狀態欄圖標";
-"bB5-2R-9Da.title" = "再次執行 Mos 以顯示狀態欄圖示";
+"MdS-Nz-zMa.title" = "系統登入時自動啟動";
+"hGj-vV-zcY.title" = "隱藏狀態列圖示";
+"bB5-2R-9Da.title" = "重新執行 Mos 即可重新顯示狀態列圖示";
+"cIk-j1-vYt.title" = "您需要從 Finder 中的「應用程式」而不是從「啟動台」重新執行 Mos。（「啟動台」會自動忽略已啟動的應用程式）";
 // Advanced
-"iW5-CD-5OC.title" = "高級";
-"hOO-M8-I1z.title" = "加速鍵:";
+"iW5-CD-5OC.title" = "進階";
+"hOO-M8-I1z.title" = "加速鍵：";
 "Vhz-Rn-lcU.title" = "停用";
-"Z59-tN-QjE.title" = "加快在長頁面時的捲動速度";
-"bQw-5w-Yv0.title" = "轉換鍵:";
+"Z59-tN-QjE.title" = "加快在長頁面的捲動速度";
+"bQw-5w-Yv0.title" = "轉向鍵：";
 "cTe-aL-0GQ.title" = "停用";
-"KnM-kA-wn5.title" = "暫時性將垂直方向捲動轉變為水平方向";
-"ebE-Zf-T98.title" = "禁用鍵:";
+"KnM-kA-wn5.title" = "暫時將垂直方向捲動轉成水平方向";
+"ebE-Zf-T98.title" = "停用鍵：";
 "vFk-37-HRU.title" = "停用";
-"iki-Jk-qSr.title" = "暫時性地禁用平滑捲動";
-"B8B-hi-x3v.title" = "最短步長:";
-"Jan-OY-m70.title" = "控制單次捲動的最短距離";
-"Gcw-Ir-olP.title" = "速度增益:";
-"B3O-iI-E7v.title" = "控制持續捲動的追蹤速度增益";
-"bqU-Is-gFB.title" = "持續時間:";
-"DsD-EW-zCH.title" = "控制捲動的緩動持續時間";
-"t2D-X2-Y6W.title" = "恢復為預設值";
-"Rgq-87-vjY.title" = "在某些應用程式中, 捲動滾輪有時會用於執行某些較為精確的調節操作 (例如調節音量或縮放文檔), 此時平滑捲動的插值處理會對精確的操作造成不必要的幹擾\n你可以指定一個特定的按鍵作為禁用鍵, 以在進行此類操作時可以通過按下禁用鍵, 暫時性地禁用對滑鼠滾輪的平滑捲動處理";
+"iki-Jk-qSr.title" = "暫時停用平滑捲動";
+"B8B-hi-x3v.title" = "單次捲動距離：";
+"Jan-OY-m70.title" = "設定單次捲動距離";
+"Gcw-Ir-olP.title" = "加速捲動：";
+"B3O-iI-E7v.title" = "設定持續捲動的加速程度";
+"bqU-Is-gFB.title" = "持續時間：";
+"DsD-EW-zCH.title" = "設定捲動動畫的持續時間";
+"t2D-X2-Y6W.title" = "還原為預設值";
+"Rgq-87-vjY.title" = "在某些應用程式中，「捲動」是用來進行比較精確的調整動作（例如調整音量、縮放顯示大小等），此時平滑滾動的處理方式有可能會造成干擾。您可以將某個特定按鍵設成「停用鍵」，這樣按鍵壓下去之後，平滑捲動即會暫時停用。";
 // AdvancedWithApplication
-"Wls-5g-cNZ.title" = "繼承全局設定";
+"Wls-5g-cNZ.title" = "繼承全域設定";
 // Exception
 "Vs2-5P-BEI.title" = "平滑";
-"sKz-VE-Yfb.title" = "翻轉";
+"sKz-VE-Yfb.title" = "反轉";
 "89F-B4-NIY.title" = "應用程式";
 "mfa-4t-oRD.title" = "進階";
-"I5j-Bv-Aiy.title" = "需要用到輔助使用功能的權限";
-"FU4-wI-K8f.title" = "為了更精準地識別所設定的例外應用程式, 我們需要動態獲取運作中的視窗相關信息. 因此, 請允許我們獲取輔助使用功能的權限以保障該功能的正常運作";
-"Pw5-2q-7Fa.title" = "允許使用輔助使用功能";
+"I5j-Bv-Aiy.title" = "需要用到「輔助使用」權限";
+"FU4-wI-K8f.title" = "為更精確辨識出設定的例外應用程式，我們需要動態取得執行視窗的相關資訊。因此，請允許我們取得「輔助使用」功能的權限，讓這功能得以正常運作";
+"Pw5-2q-7Fa.title" = "允許使用「輔助使用」功能";
 "bga-wG-iim.title" = "例外";
-"Rgu-cb-5lp.title" = "例外的應用程式:";
+"Rgu-cb-5lp.title" = "例外應用程式：";
 "Ksp-g1-48g.title" = "白名單模式";
-"v26-RK-BtL.title" = "啟用白名單模式後, Mos 僅會對包含在例外列表中的應用程式啟用, 其他的則不受任何影響";
-"ThS-Rm-st2.title" = "沒有任何應用程式遭到不公對待";
-"jaq-Cb-dKM.title" = "你可以通過點擊下方的 \"+\" 來添加一個應用程式以設置其捲動行為";
+"v26-RK-BtL.title" = "啟用白名單模式後，Mos 只會對例外列表中的應用程式啟用，其他不受影響";
+"ThS-Rm-st2.title" = "沒有應用程式被區別對待";
+"jaq-Cb-dKM.title" = "按下方的「+」加入應用程式並設定其捲動行為";
 "R0d-21-g6W.title" = "執行中的應用程式";
-"dhF-95-kUJ.title" = "手動從 Finder 選擇";
-"Vp7-0n-aRd.title" = "手動輸入應用程式信息";
-"kUr-cl-KRm.title" = "應用程式名稱:";
-"Ck5-if-9RS.title" = "包名稱:";
+"dhF-95-kUJ.title" = "自行從 Finder 選擇";
+"Vp7-0n-aRd.title" = "自行輸入應用程式資訊";
+"kUr-cl-KRm.title" = "應用程式名稱：";
+"Ck5-if-9RS.title" = "套件名稱：";
 "Mdw-fZ-Nyy.title" = "取消";
-"2v4-AC-WG5.title" = "確認";
+"2v4-AC-WG5.title" = "確定";
 // Updates
 "EWu-DP-7Gj.title" = "更新";
-"vdI-K4-SBh.title" = "檢查更新:";
-"T9f-TL-GYj.title" = "獲得新版本";
-"5oM-oR-Dsq.title" = "當前版本";
+"vdI-K4-SBh.title" = "檢查更新：";
+"T9f-TL-GYj.title" = "尋找新版本";
+"5oM-oR-Dsq.title" = "目前版本";
 // About
 "RfV-Ow-3mF.title" = "關於";
-"5cx-xS-eRe.title" = "很慚愧, 就做了一點微小的工作";
-"yDf-dn-Mcz.title" = "主頁";
+"5cx-xS-eRe.title" = "抱歉，只幫到了一些些";
+"yDf-dn-Mcz.title" = "首頁";
 "99M-8D-HLN.title" = "GitHub";
 "AM8-cj-DnH.title" = "餵肥大咪";
-"aPi-cE-maK.title" = "通過 Paypal 捐贈";
-"FIh-fA-18k.title" = "歡迎界面";
-"265-WS-XEd.title" = "貢獻者們";
-"ZJY-Yg-Qev.title" = "貢獻者們";
+"aPi-cE-maK.title" = "透過 PayPal 捐贈";
+"FIh-fA-18k.title" = "歡迎畫面";
+"265-WS-XEd.title" = "貢獻者名單";
+"ZJY-Yg-Qev.title" = "貢獻者名單";
 "Lhz-x5-X0I.title" = "譯者";
-"GWm-aK-UoV.title" = "貢獻者名目";
-"D0v-Oj-ekP.title" = "它有多胖?";
+"GWm-aK-UoV.title" = "貢獻者名單";
+"D0v-Oj-ekP.title" = "這🐱多胖？";
 
 // IntroductionWindow
 "VWv-6P-9Xp.title" = "上一步";
 "E9l-1I-6cD.title" = "下一步";
 "11f-uB-gEM.title" = "隆重介紹";
 "YHn-dn-A4n.title" = "Mos";
-"yFl-4N-WcD.title" = "你的滑鼠即將獲得順滑的滾動體驗, 抓穩你的滑鼠, 你僅僅需要調整幾個選項";
-"016-R7-U4x.title" = "你需要";
-"XP7-rO-U3i.title" = "檢查一些項目";
-"ia9-EG-sGg.title" = "某些應用程序(例如Logitech Options) 會對鼠標進行一些額外的處理\n但不需擔心, 只需要關閉他們的平滑滾動, 你仍然可以正常使用他們, 接下來的交給我們就好";
+"yFl-4N-WcD.title" = "您的滑鼠即將獲得順滑的滾動體驗，抓穩您的滑鼠！只有一些選項需要調整";
+"016-R7-U4x.title" = "您需要";
+"XP7-rO-U3i.title" = "檢查一些東西";
+"ia9-EG-sGg.title" = "某些應用程式（例如 Logitech Options）會對滑鼠做些額外處理\n但不需擔心，只要關閉這些程式的平滑捲動，您仍然可以正常使用，接下來的交給我們就好";
 "foc-QS-iys.title" = "我們需要";
 "Bbz-lG-LFI.title" = "您的授權";
-"Myd-Ze-ZPf.title" = "由於 macOS 的隱私控制限制, 我們只有在徵得輔助功能的訪問許可後才可以正常工作\n如果選項已存在, 取消選擇並再次勾選即可";
+"Myd-Ze-ZPf.title" = "由於 macOS 的私隱限制，Mos 需要取得「輔助使用」的控制權限。\n如果已經勾過，取消選擇並重新勾選即可";
 
 // WelcomeWindow
 "SLb-UR-lz1.title" = "歡迎使用 Mos";
-"Lhk-Nd-CdT.title" = "在平滑你的鼠標滾動之前";
-"7o8-5p-CQX.title" = "你還需要進行一些額外的檢查和設置";
-"VsZ-Yn-TgJ.title" = "關閉其他鼠標滾動平滑的應用或擴展";
-"u7p-zc-ERS.title" = "科學家已經證實, 同時運行多個平滑滾動的軟件將會導致某些不可預測的後果或沖突, 還會徒增電力消耗. 在使用 Mos 之前, 請關閉其他同類平滑軟件或瀏覽器插件. 例如 Logitech Options 中的鼠標平滑滾動功能, 或是 Chrome 瀏覽器中的 SmoothScroll 擴展";
-"3QI-xO-wPK.title" = "允許 Mos 訪問輔助功能";
-"7bu-fM-Bjm.title" = "能力愈大, 責任愈大. 為了平滑鼠標滾動, Mos 需要在你的鼠標與系統之間建立一個中間層, 用以接受並處理優化鼠標滾動相關的數據信號. 為了做到這些, 我們需要獲取到系統的輔助功能提所提供的相關 API 才能正常工作";
-"qGs-TM-PTM.title" = "由於 MacOS 的限制, 在 Mos 更新後, 你可能需要重新對其授權. 如果條目已存在, 請刪除並重新添加即可";
+"Lhk-Nd-CdT.title" = "在讓滑鼠捲動變得平滑前";
+"7o8-5p-CQX.title" = "還需要進行額外的檢查和設定";
+"VsZ-Yn-TgJ.title" = "關閉其他同類（滑鼠捲動平滑）的應用程式及延伸功能";
+"u7p-zc-ERS.title" = "英國研究證實同時執行多個平滑捲動的軟件會導致某些無法預測的後果及衝突，還會徒增電力消耗。在使用 Mos 前，請關閉其他同類的平滑軟件或瀏覽器延伸功能——例如 Logitech Options 中的滑鼠平滑捲動功能，或是 Chrome 瀏覽器的 SmoothScroll 延伸功能";
+"3QI-xO-wPK.title" = "允許 Mos 取得「輔助使用」的控制權限";
+"7bu-fM-Bjm.title" = "能力愈大，責任愈大。為了讓滑鼠捲動如絲般順滑，Mos 需要在滑鼠與系統之間建立一個中間層，用來接收並處理最佳化滑鼠捲動相關的資訊。為了做到這些，我們需要取得系統輔助使用提供的相關 API 才能正常運作";
+"qGs-TM-PTM.title" = "由於 macOS 的限制，在 Mos 更新後，您可能需要重新授權。如果項目已經存在，請刪除並重新加入即可";
 "V9n-HF-Vw9.title" = "開始使用";
 
 // Popover
 "hnf-e0-HXM.title" = "偏好設定";
-"SqT-eH-bOb.title" = "退出";
+"SqT-eH-bOb.title" = "結束";
