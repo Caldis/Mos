@@ -4,6 +4,7 @@
   Storyboard text internationalization
   Created by Caldis on 2021/2/26.
   Copyright © 2021年 Caldis. All rights reserved.
+  Localized with https://zhconvert.org (dict-f6422ad9-r972)
 */
 
 // Mointor
@@ -96,14 +97,14 @@
 "ia9-EG-sGg.title" = "某些應用程式（例如 Logitech Options）會對滑鼠做些額外處理\n但不需擔心，只要關閉這些程式的平滑捲動，您仍然可以正常使用，接下來的交給我們就好";
 "foc-QS-iys.title" = "我們需要";
 "Bbz-lG-LFI.title" = "您的授權";
-"Myd-Ze-ZPf.title" = "由於 macOS 的隱私權限制，Mos 需要取得「輔助使用」的控制權限。\n如果已經勾過，取消選擇並重新勾選即可";
+"Myd-Ze-ZPf.title" = "由於 macOS 的私隱限制，Mos 需要取得「輔助使用」的控制權限。\n如果已經勾過，取消選擇並重新勾選即可";
 
 // WelcomeWindow
 "SLb-UR-lz1.title" = "歡迎使用 Mos";
 "Lhk-Nd-CdT.title" = "在讓滑鼠捲動變得平滑前";
 "7o8-5p-CQX.title" = "還需要進行額外的檢查和設定";
-"VsZ-Yn-TgJ.title" = "關閉其它同類（滑鼠捲動平滑）的應用程式及延伸功能";
-"u7p-zc-ERS.title" = "英國研究證實同時執行多個平滑捲動的軟體會導致某些無法預測的後果及衝突，還會徒增電力消耗。在使用 Mos 前，請關閉其他同類的平滑軟體或瀏覽器延伸功能——例如 Logitech Options 中的滑鼠平滑捲動功能，或是 Chrome 瀏覽器的 SmoothScroll 延伸功能";
+"VsZ-Yn-TgJ.title" = "關閉其他同類（滑鼠捲動平滑）的應用程式及延伸功能";
+"u7p-zc-ERS.title" = "英國研究證實同時執行多個平滑捲動的軟件會導致某些無法預測的後果及衝突，還會徒增電力消耗。在使用 Mos 前，請關閉其他同類的平滑軟件或瀏覽器延伸功能——例如 Logitech Options 中的滑鼠平滑捲動功能，或是 Chrome 瀏覽器的 SmoothScroll 延伸功能";
 "3QI-xO-wPK.title" = "允許 Mos 取得「輔助使用」的控制權限";
 "7bu-fM-Bjm.title" = "能力愈大，責任愈大。為了讓滑鼠捲動如絲般順滑，Mos 需要在滑鼠與系統之間建立一個中間層，用來接收並處理最佳化滑鼠捲動相關的資訊。為了做到這些，我們需要取得系統輔助使用提供的相關 API 才能正常運作";
 "qGs-TM-PTM.title" = "由於 macOS 的限制，在 Mos 更新後，您可能需要重新授權。如果項目已經存在，請刪除並重新加入即可";

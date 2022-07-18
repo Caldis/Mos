@@ -2,7 +2,7 @@
 //  ScrollPhase.swift
 //  Mos
 //
-//  Created by 陈标 on 2020/12/19.
+//  Created by Caldis on 2020/12/19.
 //  Copyright © 2020 Caldis. All rights reserved.
 //
 
@@ -45,37 +45,41 @@ class ScrollPhase {
     var phase: Phase = Phase.Idle
     
     // MARK: - 滚动阶段更新
-    let debounceSetPhaseToMomentum = Utils.debounce(delay: 200) {
+    let syncPhaseValueMapping: [Phase: Phase] = [
+        Phase.Idle: Phase.Contact,
+        Phase.Momentum: Phase.Contact,
+        Phase.PauseAuto: Phase.Contact,
+        Phase.PauseManual: Phase.Contact,
+        Phase.Tracing: Phase.Tracing
+    ]
+    var debounceSetPhaseToMomentumCallSamplingRate = 3
+    var debounceSetPhaseToMomentumCallCount = 2
+    let debounceSetPhaseToMomentum = Utils.debounce(delay: 300) {
         ScrollPhase.shared.phase = Phase.Momentum
+        ScrollPhase.shared.debounceSetPhaseToMomentumCallCount = ScrollPhase.shared.debounceSetPhaseToMomentumCallSamplingRate - 1
     }
     func syncPhase() {
-        if [Phase.Idle, Phase.Momentum, Phase.PauseAuto, Phase.PauseManual].contains(phase) {
-            phase = Phase.Contact
-        } else if (phase == Phase.Tracing) {
-            phase = Phase.Tracing
+        if let syncedPhase = syncPhaseValueMapping[phase] {
+            phase = syncedPhase
         }
-        debounceSetPhaseToMomentum()
+        debounceSetPhaseToMomentumCallCount += 1
+        if debounceSetPhaseToMomentumCallCount % debounceSetPhaseToMomentumCallSamplingRate == 0 {
+            debounceSetPhaseToMomentum()
+        }
     }
     
     // MARK: - 滚动阶段递进
+    let consumeValueMapping: [Phase: Phase] = [
+        Phase.Contact: Phase.Tracing,
+        Phase.PauseAuto: Phase.Idle,
+        Phase.PauseManual: Phase.Idle,
+    ]
     func consume() -> Phase {
-        switch phase {
-        case Phase.Idle:
-            return Phase.Idle
-        case Phase.Contact:
-            phase = Phase.Tracing
-            return Phase.Contact
-        case Phase.Tracing:
-            return Phase.Tracing
-        case Phase.Momentum:
-            return Phase.Momentum
-        case Phase.PauseAuto:
-            phase = Phase.Idle
-            return Phase.PauseAuto
-        case Phase.PauseManual:
-            phase = Phase.Idle
-            return Phase.PauseManual
+        let prevPhase = phase
+        if let nextPhase = consumeValueMapping[phase] {
+            phase = nextPhase
         }
+        return prevPhase
     }
     
     // MARK: - 滚动数据附加

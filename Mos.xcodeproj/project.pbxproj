@@ -74,6 +74,10 @@
 		0B6D3B672041A790004CC064 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		0B6D3B692041C348004CC064 /* ScrollEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollEvent.swift; sourceTree = "<group>"; };
 		0B6D3B6F2042BBCD004CC064 /* Localizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizable.swift; sourceTree = "<group>"; };
+		0B6EC89125E8CFFB0073A50B /* zh-Hant-TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant-TW"; path = "zh-Hant-TW.lproj/Main.strings"; sourceTree = "<group>"; };
+		0B6EC89225E8CFFB0073A50B /* zh-Hant-TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant-TW"; path = "zh-Hant-TW.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		0B6EC89325E8D0160073A50B /* zh-Hant-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant-HK"; path = "zh-Hant-HK.lproj/Main.strings"; sourceTree = "<group>"; };
+		0B6EC89425E8D0160073A50B /* zh-Hant-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant-HK"; path = "zh-Hant-HK.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		0B74C440205E386D00E3F942 /* Interceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interceptor.swift; sourceTree = "<group>"; };
 		0B7C970A253F1C0200B26AF3 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Main.strings; sourceTree = "<group>"; };
 		0B7C970B253F1C0300B26AF3 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -341,7 +345,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0930;
-				LastUpgradeCheck = 1220;
+				LastUpgradeCheck = 1340;
 				ORGANIZATIONNAME = Caldis;
 				TargetAttributes = {
 					22142D9F1E25344E00E4BFBF = {
@@ -372,6 +376,8 @@
 				tr,
 				ko,
 				de,
+				"zh-Hant-TW",
+				"zh-Hant-HK",
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			packageReferences = (
@@ -466,6 +472,8 @@
 				0BAC4070251651BC00E8A1FD /* tr */,
 				0BAC4072251654C500E8A1FD /* ko */,
 				0B7C970A253F1C0200B26AF3 /* de */,
+				0B6EC89125E8CFFB0073A50B /* zh-Hant-TW */,
+				0B6EC89325E8D0160073A50B /* zh-Hant-HK */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -481,6 +489,8 @@
 				0BAC4071251651BC00E8A1FD /* tr */,
 				0BAC4073251654C500E8A1FD /* ko */,
 				0B7C970B253F1C0300B26AF3 /* de */,
+				0B6EC89225E8CFFB0073A50B /* zh-Hant-TW */,
+				0B6EC89425E8D0160073A50B /* zh-Hant-HK */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -612,7 +622,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2021.02.21;
+				CURRENT_PROJECT_VERSION = 2021.06.01;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 2H959AEV62;
@@ -623,7 +633,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MARKETING_VERSION = 3.3.2;
+				MARKETING_VERSION = 3.3.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -646,7 +656,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2021.02.21;
+				CURRENT_PROJECT_VERSION = 2021.06.01;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 2H959AEV62;
 				ENABLE_HARDENED_RUNTIME = NO;
@@ -657,7 +667,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MARKETING_VERSION = 3.3.2;
+				MARKETING_VERSION = 3.3.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";

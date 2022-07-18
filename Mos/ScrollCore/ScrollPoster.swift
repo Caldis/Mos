@@ -14,7 +14,6 @@ class ScrollPoster {
     static let shared = ScrollPoster()
     init() { NSLog("Module initialized: ScrollPoster") }
     
-    var ts = Date.currentTimeStamp
     // 插值器
     private let filler = ScrollFiller()
     private let interpolator = Interpolator.lerp
@@ -82,12 +81,6 @@ extension ScrollPoster {
         scrollBuffer = ( y: 0.0, x: 0.0 )
         // 重置插值器
         filler.reset()
-    }
-}
-
-extension Date {
-    static var currentTimeStamp: Int64{
-        return Int64(Date().timeIntervalSince1970 * 1000)
     }
 }
 
@@ -166,6 +159,8 @@ private extension ScrollPoster {
     // 发送滚动事件
     func post(_ proxy: CGEventTapProxy, _ event: CGEvent, _ y: Double, _ x: Double) {
         if let eventClone = event.copy() {
+            // 复制指针防止在 Post 过程中被释放
+            let proxyClone = proxy
             // 设置阶段数据
             ScrollPhase.shared.attach(to: eventClone)
             // 设置滚动数据
@@ -177,7 +172,7 @@ private extension ScrollPoster {
             // EventTapProxy 标识了 EventTapCallback 在事件流中接收到事件的特定位置, 其粒度小于 tap 本身
             // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
             // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 也如同 EventTapCallback 所处理的事件, 会被所有后续的 EventTap 接收
-            eventClone.tapPostEvent(proxy)
+            eventClone.tapPostEvent(proxyClone)
         }
     }
     // 后处理滚动事件
