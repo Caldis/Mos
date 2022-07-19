@@ -89,6 +89,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // 在切换用户时停止滚动处理
     @objc func sessionDidActive(notification: NSNotification){
+        ScrollCore.refreshSharedInstance();
         ScrollCore.shared.startHandlingScroll()
         NSLog("ScrollCore Start: Session Active")
     }
