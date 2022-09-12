@@ -71,7 +71,7 @@ class ScrollCore {
             step = exceptionalApplication.getStep()
             speed = exceptionalApplication.getSpeed()
             duration = exceptionalApplication.getDuration()
-        } else if !Options.shared.general.whitelist {
+        } else if !Options.shared.general.allowlist {
             enableSmooth = Options.shared.scrollBasic.smooth && !ScrollCore.shared.blockSmooth
             enableReverse = Options.shared.scrollBasic.reverse
         }
