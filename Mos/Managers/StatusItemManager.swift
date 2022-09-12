@@ -18,11 +18,16 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
     // 状态栏类型
     let TYPE = STATUS_ITEM_TYPE.menu
     
-    // 状态栏引用
-    static let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-    let item = StatusItemManager.statusItem
     
+    // 单例
+    static let shared = StatusItemManager()
+    
+    // 状态栏引用
+    let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    
+    // 初始化
     override func awakeFromNib() {
+        NSLog("Module initialized: StatusItemManager")
         // 设置图标
         item.image = #imageLiteral(resourceName: "AppStatusBarIcon")
         // 设置事件响应
@@ -135,11 +140,19 @@ extension StatusItemManager {
  **/
 extension StatusItemManager {
     // 显示状态栏图标
-    class func showStatusItem() {
-        StatusItemManager.statusItem.length = NSStatusItem.variableLength
+    func showStatusItem() {
+        if #available(OSX 10.12, *) {
+            item.isVisible = true
+        } else {
+            item.length = NSStatusItem.variableLength
+        }
     }
     // 隐藏状态栏图标
-    class func hideStatusItem() {
-        StatusItemManager.statusItem.length = 0.0
+    func hideStatusItem() {
+        if #available(OSX 10.12, *) {
+            item.isVisible = false
+        } else {
+            item.length = 0.0
+        }
     }
 }

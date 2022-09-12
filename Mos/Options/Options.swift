@@ -14,7 +14,7 @@ class Options {
     
     // 单例
     static let shared = Options()
-    init() { print("Class 'Options' is initialized") }
+    init() { NSLog("Module initialized: Options") }
     
     // 读取锁, 防止冲突
     private var readingOptionsLock = false
@@ -48,7 +48,7 @@ extension Options {
         general.allowlist = UserDefaults.standard.bool(forKey: "allowlist")
         general.applications = EnhanceArray(
             withData: UserDefaults.standard.value(forKey: "applications") as! Data,
-            matchKey: "bundleId",
+            matchKey: "path",
             forObserver: Options.shared.saveOptions
         )
         // 滚动:基础
@@ -65,6 +65,7 @@ extension Options {
         scrollAdvanced.precision = UserDefaults.standard.double(forKey: "precision")
         // 解锁
         readingOptionsLock = false
+        NSLog("Option readed")
     }
     
     // 写入到 UserDefaults

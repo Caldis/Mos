@@ -15,7 +15,7 @@
 //  如果 tabViewItem 其没有以 AutoLayout 指定尺寸, 则默认为 500,500
 //  2. NSTabViewController 的动画适配
 //  2.1 tabViewItem 使用了 AutoLayout
-//  在切换 Tab 时, NSTabViewController 使用了 transition(from:to:options:completionHandler:) 方法 (方法可能经过重写, 无法通过对应  Protocol 设定其动画, 只能通过 transitionOptions 参数), 在这种情况下无法触发其 transition 动画, 仅能通过手动触发
+//  在切换 Tab 时, NSTabViewController 使用了 transition(from:to:options:completionHandler:) 方法 (方法可能经过重写, 无法通过对应 Protocol 设定其动画, 只能通过 transitionOptions 参数), 在这种情况下无法触发其 transition 动画, 仅能通过手动触发
 //  这里 (在 viewDidAppear 中操作可以利用 View 出现时的自动布局, 避免第一次界面错位) 将 NSTabViewController 下的第一级 NSView 的  constraints 全部移除, 然后手动添加, 仅将其 Pin 至 top 和 left 位置 (设置 top 可以让 size 的 transition 出现在底部), 然后在  tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) 方法中获取当前 tabViewItem 的大小, 将其计算偏移量后 apply  到 NSWindow 上
 //  2.2 tabViewItem 没有使用 AutoLayout
 //  与上述操作类似, 只需要跳过移除已有的 constraints 步骤即可

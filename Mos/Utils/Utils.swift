@@ -7,18 +7,21 @@
 //
 
 import Cocoa
+import LoginServiceKit
 
 // 实用方法
 public class Utils {
     
-    // 通知
-    class func sendNotificationMessage(_ title:String, _ subTitle:String) {
-        // 定义通知
-        let notification = NSUserNotification()
-        notification.title = title
-        notification.subtitle = subTitle
-        // 发送通知
-        NSUserNotificationCenter.default.deliver(notification)
+    // 切换自启
+    class func launchAtStartup(on: Bool) {
+        let bundlePath = Bundle.main.bundlePath
+        if on {
+            if !LoginServiceKit.isExistLoginItems(at: bundlePath) {
+                LoginServiceKit.addLoginItems(at: bundlePath)
+            }
+        } else {
+            LoginServiceKit.removeLoginItems(at: bundlePath)
+        }
     }
     
     // 菜单
@@ -77,8 +80,10 @@ public class Utils {
             if kill {
                 let runningInst = NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID)[0]
                 runningInst.terminate()
+                NSLog("Terminate: Other instance", runningInst.processIdentifier)
             } else {
                 NSApp.terminate(nil)
+                NSLog("Terminate: Suicide")
             }
         }
     }
@@ -128,11 +133,27 @@ public class Utils {
         }
     }
     
-    // 移除字符
-    class func removingRegexMatches(target: String, pattern: String, replaceWith: String = "") -> String {
+    // 匹配字符
+    class func extractRegexMatches(target: String = "", pattern: String) -> String {
         do {
-            let regex = try NSRegularExpression(pattern: pattern, options: NSRegularExpression.Options.caseInsensitive)
-            let range = NSMakeRange(0, target.count)
+            let pattern = #"\/?.*\.app"#
+            let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+            let range = NSRange(location: 0, length: target.count)
+            let result = regex.firstMatch(in: target, options: [], range: range)
+            if let validResult = result {
+                return NSString(string: target).substring(with: validResult.range) as String
+            } else {
+                return target
+            }
+        } catch {
+            return target
+        }
+    }
+    // 移除字符
+    class func removingRegexMatches(target: String = "", pattern: String, replaceWith: String = "") -> String {
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+            let range = NSRange(location: 0, length: target.count)
             return regex.stringByReplacingMatches(in: target, options: [], range: range, withTemplate: replaceWith)
         } catch {
             return target
@@ -140,99 +161,95 @@ public class Utils {
     }
     
     // 检测按键
-    class func isControlDown(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskControl.rawValue != 0 && MODIFIER_KEY.controlPair.contains(CGKeyCode(keyCode))
+    class func isKey(_ event: CGEvent, _ keyCodes: [CGKeyCode]) -> Bool {
+        return keyCodes.contains(CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode)))
     }
-    class func isControlUp(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskControl.rawValue == 0 && MODIFIER_KEY.controlPair.contains(CGKeyCode(keyCode))
+    class func isMaskRetain(_ event: CGEvent, _ mask: CGEventFlags) -> Bool {
+        return event.flags.rawValue & mask.rawValue != 0
     }
-    class func isOptionDown(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskAlternate.rawValue != 0 && MODIFIER_KEY.optionPair.contains(CGKeyCode(keyCode))
+    class func isMaskRelease(_ event: CGEvent, _ mask: CGEventFlags) -> Bool {
+        return event.flags.rawValue & mask.rawValue == 0
     }
-    class func isOptionUp(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskAlternate.rawValue == 0 && MODIFIER_KEY.optionPair.contains(CGKeyCode(keyCode))
+    class func isKeyDown(_ event: CGEvent, _ set: ( codes: [CGKeyCode], mask: CGEventFlags )) -> Bool {
+        return isKey(event, set.codes) && isMaskRetain(event, set.mask)
     }
-    class func isCommandDown(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskCommand.rawValue != 0 && MODIFIER_KEY.commandPair.contains(CGKeyCode(keyCode))
-    }
-    class func isCommandUp(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskCommand.rawValue == 0 && MODIFIER_KEY.commandPair.contains(CGKeyCode(keyCode))
-    }
-    class func isShiftDown(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskShift.rawValue != 0 && MODIFIER_KEY.shiftPair.contains(CGKeyCode(keyCode))
-    }
-    class func isShiftUp(_ event: CGEvent) -> Bool {
-        let flags = event.flags
-        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        return flags.rawValue & CGEventFlags.maskShift.rawValue == 0 && MODIFIER_KEY.shiftPair.contains(CGKeyCode(keyCode))
-    }
-    
-    // 从 PID 获取进程名称
-    class func getApplicationBundleIdFrom(pid: pid_t) -> String? {
-        if let runningApps = NSRunningApplication.init(processIdentifier: pid) {
-            return runningApps.bundleIdentifier
-        } else {
-            return nil
-        }
-    }
-    class func oldGetApplicationBundleIdFrom(pid: pid_t) -> String? {
-        // 更新列表
-        let runningApps = NSWorkspace.shared.runningApplications
-        if let matchApp = runningApps.filter({$0.processIdentifier == pid}).first {
-            // 如果找到 bundleId 则返回, 不然则判定为子进程, 通过查找其父进程Id, 递归查找其父进程的bundleId
-            if let bundleId = matchApp.bundleIdentifier {
-                return bundleId as String?
-            } else {
-                let ppid = ProcessUtils.getParentPid(from: matchApp.processIdentifier)
-                return ppid==1 ? nil : getApplicationBundleIdFrom(pid: ppid)
-            }
-        } else {
-            return nil
-        }
+    class func isKeyUp(_ event: CGEvent, _ set: ( codes: [CGKeyCode], mask: CGEventFlags )) -> Bool {
+        return isKey(event, set.codes) && isMaskRelease(event, set.mask)
     }
     
     // 从路径获取应用图标
-    class func getApplicationIcon(from path: String?) -> NSImage {
+    class func getApplicationIcon(fromPath path: String?) -> NSImage {
         guard let validPath = path else {
-            return #imageLiteral(resourceName: "SF.cube")
+            return NSWorkspace.shared.icon(forFile: "")
         }
+        // 尝试完整路径对应的 Bundle 获取
+        if let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) {
+            return NSWorkspace.shared.icon(forFile: validBundle.bundlePath)
+        }
+        // 尝试从子路径对应的 Bundle 获取
+        let subPath = extractRegexMatches(target: validPath, pattern: #"\/?.*\.app"#)
+        if let validBundle = Bundle.init(url: URL.init(fileURLWithPath: subPath)) {
+            return NSWorkspace.shared.icon(forFile: validBundle.bundlePath)
+        }
+        // 从 Path 关联的 Bundle 获取
         return NSWorkspace.shared.icon(forFile: validPath)
     }
-    class func getApplicationIcon(from path: URL) -> NSImage {
-        return getApplicationIcon(from: path.path)
-    }
     // 从路径获取应用名称
-    class func getAppliactionName(from path: String?) -> String {
+    class func getAppliactionName(fromPath path: String?) -> String {
         guard let validPath = path else {
             return "Invalid Name"
         }
-        guard let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) else {
-            return getApplicationFileName(from: validPath)
+        // 尝试完整路径对应的 Bundle 获取
+        if let validBundle = Bundle.init(url: URL.init(fileURLWithPath: validPath)) {
+            return (
+                validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ??
+                validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String ??
+                parseName(fromPath: validPath)
+            )
         }
-        let CFBundleDisplayName = validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-        let CFBundleName = validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String
-        let FileName = getApplicationFileName(from: validPath)
-        return CFBundleDisplayName ?? CFBundleName ?? FileName
+        // 尝试从子路径对应的 Bundle 获取
+        let subPath = extractRegexMatches(target: validPath, pattern: #"\/?.*\.app"#)
+        if let validBundle = Bundle.init(url: URL.init(fileURLWithPath: subPath)) {
+            return (
+                validBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ??
+                validBundle.object(forInfoDictionaryKey: "CFBundleName") as? String ??
+                parseName(fromPath: validPath)
+            )
+        }
+        return parseName(fromPath: validPath)
     }
-    class func getAppliactionName(from path: URL) -> String {
-        return getAppliactionName(from: path.path)
-    }
-    class func getApplicationFileName(from path: String) -> String {
+    class func parseName(fromPath path: String) -> String {
         let applicationRawName = FileManager().displayName(atPath: path).removingPercentEncoding!
-        return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app|.App|.APP")
+        return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app")
+    }
+    
+    static var runningApplicationThreshold = 60.0
+    static var runningApplicationCache = [String: NSRunningApplication]()
+    static var runningApplicationDetectTime = [String: Double]()
+    class func getRunningApplicationProcessIdentifier(withBundleIdentifier bundleIdentifier: String) -> NSRunningApplication? {
+        let now = NSDate().timeIntervalSince1970
+        if now - (runningApplicationDetectTime[bundleIdentifier] ?? 0.0) > runningApplicationThreshold {
+            let runningApplications = NSRunningApplication.runningApplications(withBundleIdentifier: bundleIdentifier)
+            runningApplicationCache[bundleIdentifier] = runningApplications.count > 0 ? runningApplications[0] : nil
+            runningApplicationDetectTime[bundleIdentifier] = now
+        }
+        return runningApplicationCache[bundleIdentifier] ?? nil
+    }
+    
+    class func debounce(delay: Int, action: @escaping (() -> Void)) -> () -> Void {
+        var lastFireTime = DispatchTime.now()
+        let dispatchDelay = DispatchTimeInterval.milliseconds(delay)
+
+        return {
+            lastFireTime = DispatchTime.now()
+            let dispatchTime: DispatchTime = DispatchTime.now() + dispatchDelay
+            DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
+                let when: DispatchTime = lastFireTime + dispatchDelay
+                let now = DispatchTime.now()
+                if now.rawValue >= when.rawValue {
+                    action()
+                }
+            }
+        }
     }
 }

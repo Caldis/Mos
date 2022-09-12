@@ -6,7 +6,7 @@
 //  Copyright © 2019 Caldis. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 
 class PreferencesExceptionInputViewController: NSViewController, NSTextFieldDelegate {
     
@@ -53,10 +53,10 @@ extension PreferencesExceptionInputViewController {
             // 防止重复点击
             confirmButton.isEnabled = false
             // 回传数据
-            if let presenting = presentingViewController as? PreferencesExceptionViewController {
-                presenting.appendApplicationWith(name:applicationNameTextField.stringValue, bundleId:bundleIdTextField.stringValue)
-                dismiss(nil)
-            }
+//            if let presenting = presentingViewController as? PreferencesExceptionViewController {
+//                presenting.appendApplicationWith(name:applicationNameTextField.stringValue, bundleId:bundleIdTextField.stringValue)
+//                dismiss(nil)
+//            }
         }
     }
     

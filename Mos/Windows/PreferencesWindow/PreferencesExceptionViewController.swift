@@ -31,6 +31,8 @@ class PreferencesExceptionViewController: NSViewController {
         Utils.attachImage(to: manuallyInputMenuItem, withImage: #imageLiteral(resourceName: "SF.pencil.and.ellipsis.rectangle"))
         // 读取设置
         syncViewWithOptions()
+        // 隐藏手动输入
+        manuallyInputMenuItem.isHidden = true
     }
     override func viewWillAppear() {
         // 检查表格数据
@@ -45,15 +47,14 @@ class PreferencesExceptionViewController: NSViewController {
     
     // 列表底部按钮
     @IBAction func addItemClick(_ sender: NSButton) {
-        // 初始化运行中及已安装应用子菜单
-        initRunningAndInstalledManuItem()
-        // 显示菜单
-        let targetPosition = NSPoint(x: sender.frame.origin.x, y: sender.frame.origin.y + sender.frame.height - 28)
-        applicationSourceMenuControl.popUp(positioning: nil, at: targetPosition, in: sender.superview)
+        // 添加
+        openRunningApplicationPanel(sender)
+        // 重新加载
+        tableView.reloadData()
     }
     @IBAction func addItemFromFinderClick(_ sender: NSMenuItem) {
         // 添加
-        openFileSelectPanel()
+        openFileSelectionPanel()
         // 重新加载
         tableView.reloadData()
     }
@@ -104,19 +105,20 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     @objc func smoothCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.general.applications.get(from: row).scrollBasic.smooth = state.rawValue==1 ? true : false
+        Options.shared.general.applications.get(by: row)?.scrollBasic.smooth = state.rawValue==1 ? true : false
     }
     // 点击反转
     @objc func reverseCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.general.applications.get(from: row).scrollBasic.reverse = state.rawValue==1 ? true : false
+        Options.shared.general.applications.get(by: row)?.scrollBasic.reverse = state.rawValue==1 ? true : false
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
         let row = sender.tag
         let advancedWithApplicationViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.advancedWithApplication) as PreferencesAdvanceWithApplicationViewController
-        advancedWithApplicationViewController.currentTargetApplication = Options.shared.general.applications.get(from: row)
+        advancedWithApplicationViewController.updateTargetApplication(with: Options.shared.general.applications.get(by: row))
+        advancedWithApplicationViewController.updateParentData(with: tableView, for: row)
         present(advancedWithApplicationViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
     }
     // 构建表格数据 (循环生成行)
@@ -128,7 +130,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
         // 生成每行的 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
             // 应用数据
-            let application = Options.shared.general.applications.get(from: row)
+            let application = Options.shared.general.applications.get(by: row)
             switch tableColumnIdentifier.rawValue {
                 // 平滑
                 case CellIdentifiers.smoothCell:
@@ -136,7 +138,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
                     checkBox.tag = row
                     checkBox.target = self
                     checkBox.action = #selector(smoothCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application.scrollBasic.smooth==true ? 1 : 0)
+                    checkBox.state = NSControl.StateValue(rawValue: application?.scrollBasic.smooth==true ? 1 : 0)
                     return cell
                 // 反转
                 case CellIdentifiers.reverseCell:
@@ -144,12 +146,13 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
                     checkBox.tag = row
                     checkBox.target = self
                     checkBox.action = #selector(reverseCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application.scrollBasic.reverse==true ? 1 : 0)
+                    checkBox.state = NSControl.StateValue(rawValue: application?.scrollBasic.reverse==true ? 1 : 0)
                     return cell
                 // 应用
                 case CellIdentifiers.applicationCell:
-                    cell.imageView?.image = application.getIcon()
-                    cell.textField?.stringValue = application.getName()
+                    cell.imageView?.image = application?.getIcon()
+                    cell.imageView?.toolTip = application?.path
+                    cell.textField?.stringValue = application?.getName() ?? ""
                     return cell
                 // 设定
                 case CellIdentifiers.settingCell:
@@ -183,7 +186,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
 extension PreferencesExceptionViewController: NSMenuDelegate {
 
     // 打开文件选择窗口
-    func openFileSelectPanel() {
+    func openFileSelectionPanel() {
         let openPanel = NSOpenPanel()
         // 默认打开的目录 (/Application)
         openPanel.directoryURL = FileManager.default.urls(for: .applicationDirectory, in: .localDomainMask).first!
@@ -194,77 +197,52 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
         // 不允许复数选择
         openPanel.allowsMultipleSelection = false
         // 允许的文件类型
-        openPanel.allowedFileTypes = ["app", "App", "APP"]
+        // openPanel.allowedFileTypes = ["app", "App", "APP"]
         // 打开文件选择窗口并读取文件添加到 ExceptionalApplications 列表中
-        openPanel.beginSheetModal(for: view.window!, completionHandler: {
-            result in
+        openPanel.beginSheetModal(for: view.window!, completionHandler: { result in
             if result.rawValue == NSFileHandlingPanelOKButton && result == NSApplication.ModalResponse.OK {
                 // 根据路径获取 application 信息并保存到 ExceptionalApplications 列表中
-                if let applicationPath = openPanel.url?.path, let applicationBundleId = Bundle(url: openPanel.url!)?.bundleIdentifier {
-                    self.appendApplicationWith(path: applicationPath, bundleId: applicationBundleId)
-                } else {
-                    // 对于没有 bundleId 的应用可能是快捷方式, 给予提示
+                if let bundlePath = openPanel.url?.path {
+                    self.appendApplicationWith(path: bundlePath)
                 }
             }
         })
     }
 
     // 初始化菜单
-    func initRunningAndInstalledManuItem() {
+    func openRunningApplicationPanel(_ sender: NSButton) {
         // 清除已有
         runningAndInstalledMenuChildrenContainer.removeAllItems()
         // 初始化 Running 应用
-        let runningApplications = NSWorkspace.shared.runningApplications
-        for application in runningApplications {
-            guard application.activationPolicy == .regular else { continue }
-            guard let bundleURL = application.bundleURL else { continue }
-            let icon = Utils.getApplicationIcon(from: bundleURL)
-            let name = Utils.getAppliactionName(from: bundleURL)
-            let isExist = ScrollUtils.shared.applicationInExceptionalApplications(bundleId: application.bundleIdentifier) !== nil
+        for runningApplication in NSWorkspace.shared.runningApplications {
+            guard runningApplication.activationPolicy == .regular else { continue }
+            let icon = Utils.getApplicationIcon(fromPath: runningApplication.bundleURL?.path)
+            let name = Utils.getAppliactionName(fromPath: runningApplication.executableURL?.path)
+            let isExist = ScrollUtils.shared.getExceptionalApplication(from: runningApplication) !== nil
             Utils.addMenuItem(
                 to: runningAndInstalledMenuChildrenContainer,
-                title: name, icon: icon,
-                action: #selector(appendApplicationForSenderWithBundleURL),
+                title: name,
+                icon: icon,
+                action: #selector(appendApplicationWithRunningApplication),
                 target: isExist ? nil : self,
-                represent: bundleURL
+                represent: runningApplication
             )
         }
-        // 初始化 Installed 应用
-//        let fileManager = FileManager.default
-//        let applicationDirectoryURL = fileManager.urls(for: .applicationDirectory, in: .localDomainMask).first!
-//        do {
-//            let bundleURLs = try fileManager.contentsOfDirectory(at: applicationDirectoryURL, includingPropertiesForKeys: nil)
-//            for bundleURL in bundleURLs {
-//                let icon = Utils.getApplicationIcon(from: bundleURL)
-//                let name = Utils.getAppliactionName(from: bundleURL)
-//                Utils.addMenuItem(
-//                    to: runningAndInstalledMenuChildrenContainer,
-//                    title: name, icon: icon,
-//                    action: #selector(appendApplicationForSenderWithBundleURL),
-//                    target: self, represent: bundleURL
-//                )
-//            }
-//        } catch {
-//            print("Error while enumerating files \(applicationDirectoryURL.path): \(error.localizedDescription)")
-//        }
+        // 显示菜单
+        let targetPosition = NSPoint(x: sender.frame.origin.x, y: sender.frame.origin.y + sender.frame.height - 28)
+        applicationSourceMenuControl.popUp(positioning: nil, at: targetPosition, in: sender.superview)
     }
     
     // 添加应用
-    func appendApplicationWith(path: String, bundleId: String) {
-        let application = ExceptionalApplication(path: path, bundleId: bundleId)
+    func appendApplicationWith(path: String) {
+        let application = ExceptionalApplication(path: path)
         Options.shared.general.applications.append(application)
-        self.tableView.reloadData()
+        tableView.reloadData()
     }
-    func appendApplicationWith(name: String, bundleId: String) {
-        let application = ExceptionalApplication(name: name, bundleId: bundleId)
-        Options.shared.general.applications.append(application)
-        self.tableView.reloadData()
-    }
-    @objc func appendApplicationForSenderWithBundleURL(_ sender: NSMenuItem!) {
-        let url = sender.representedObject as! URL
-        let path = url.path
-        let bundleId = Bundle(url: url)!.bundleIdentifier!
-        appendApplicationWith(path: path, bundleId: bundleId)
+    @objc func appendApplicationWithRunningApplication(_ sender: NSMenuItem!) {
+        guard let runningApplication = sender.representedObject as? NSRunningApplication else { return }
+        guard let executablePath = runningApplication.executableURL?.path else { return }
+        appendApplicationWith(path: executablePath)
     }
     
     // 删除选定行

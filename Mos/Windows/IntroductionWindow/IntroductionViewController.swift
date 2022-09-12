@@ -6,7 +6,7 @@
 //  Copyright © 2019 Caldis. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 
 class IntroductionViewController: NSViewController {
     
@@ -21,6 +21,7 @@ class IntroductionViewController: NSViewController {
     var accessibilityPermissionsCheckerTimer: Timer?
     // 按钮文字
     var nextLabelI18NText: String!
+    
     // UI Elements
     @IBOutlet weak var containerView: NSView!
     @IBOutlet weak var prevButton: NSButton!
@@ -34,6 +35,14 @@ class IntroductionViewController: NSViewController {
         containerView.addSubview(children[0].view)
         // 初始化文字
         nextLabelI18NText = nextButtonLabel.stringValue
+        // 启动定时器检测权限, 当拥有授权时启动滚动处理
+        accessibilityPermissionsCheckerTimer = Timer.scheduledTimer(
+            timeInterval: 0.5,
+            target: self,
+            selector: #selector(accessibilityPermissionsChecker(_:)),
+            userInfo: nil,
+            repeats: true
+        )
     }
     override func viewWillDisappear() {
         accessibilityPermissionsCheckerTimer?.invalidate()
@@ -44,16 +53,7 @@ class IntroductionViewController: NSViewController {
     }
     @IBAction func nextButtonClick(_ sender: NSButton) {
         if currentViewIndex == viewList.count-1 {
-            // 启动定时器检测权限, 当拥有授权时启动滚动处理
-            accessibilityPermissionsCheckerTimer?.invalidate()
-            accessibilityPermissionsCheckerTimer = Timer.scheduledTimer(
-                timeInterval: 0.5,
-                target: self,
-                selector: #selector(accessibilityPermissionsChecker(_:)),
-                userInfo: nil,
-                repeats: true
-            )
-            // 请求权限
+            // 最后一页请求权限
             Utils.requireAccessibilityPermissions()
         } else {
             switchToPage(to: currentViewIndex+1)

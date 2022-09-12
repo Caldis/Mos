@@ -21,7 +21,7 @@ struct axisData {
     // 滚动数据是否为 Fix 类型 (非 Fix 类型在可用数据过小时需要归一化处理)
     var fixed = false
     // 滚动数据数据是否可用
-    var usable = false
+    var valid = false
     // 可用的滚动数据
     var usableValue = 0.0
 }
@@ -39,14 +39,50 @@ class ScrollEvent {
         // 保存事件引用
         event = cgEvent
         // 获取对应轴的数据
-        Y = ScrollEventUtils.initEvent(event: cgEvent, axis: axisType.Y)
-        X = ScrollEventUtils.initEvent(event: cgEvent, axis: axisType.X)
+        Y = ScrollEvent.initEvent(event: cgEvent, axis: axisType.Y)
+        X = ScrollEvent.initEvent(event: cgEvent, axis: axisType.X)
     }
     
+    // 触控板/鼠标判断
+    func isTrackpad() -> Bool {
+        return ScrollEvent.isTrackpad(with: event)
+    }
+    func isMouse() -> Bool {
+        return !ScrollEvent.isTrackpad(with: event)
+    }
 }
 
-// ScrollEvent 的工具方法
-class ScrollEventUtils {
+// MARK: - 工具方法
+extension ScrollEvent {
+    // 类型判断
+    static var isTrackpadCallSamplingRate = 3
+    static var isTrackpadCallCount = 2
+    static var isTrackpadCallCache = true
+    class func isTrackpad(with event: CGEvent) -> Bool {
+        ScrollEvent.isTrackpadCallCount += 1
+        if isTrackpadCallCount % isTrackpadCallSamplingRate == 0 {
+            ScrollEvent.isTrackpadCallCache = false
+            // 根据滚动特征值判定
+            if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
+                // MomentumPhase 或 ScrollPhase 任一不为零, 则为触控板
+                ScrollEvent.isTrackpadCallCache = true
+            } else if event.getDoubleValueField(.scrollWheelEventScrollCount) != 0.0 {
+                // 累计加速度不为零, 则为触控板
+                ScrollEvent.isTrackpadCallCache = true
+            }
+            // 根据输入事件源增强判断
+            if ScrollEvent.isTrackpadCallCache {
+                if let specialProcessID = Utils.getRunningApplicationProcessIdentifier(withBundleIdentifier: SPECIAL_EVENT_SOURCE_APPLICATION.logitechOptions)?.processIdentifier {
+                    let sourceProcessID = event.getIntegerValueField(.eventSourceUnixProcessID)
+                    if sourceProcessID == specialProcessID {
+                        ScrollEvent.isTrackpadCallCache = false
+                    }
+                }
+            }
+            ScrollEvent.isTrackpadCallCount = isTrackpadCallSamplingRate - 1 
+        }
+        return ScrollEvent.isTrackpadCallCache
+    }
     
     // 初始化轴数据
     class func initEvent(event: CGEvent, axis: axisType) -> axisData {
@@ -64,15 +100,15 @@ class ScrollEventUtils {
         // 生成可用的滚动数据
         if data.scrollPt != 0.0 {
             data.fixed = false
-            data.usable = true
+            data.valid = true
             data.usableValue = data.scrollPt
         } else if data.scrollFixPt != 0.0 {
             data.fixed = true
-            data.usable = true
+            data.valid = true
             data.usableValue = data.scrollFixPt
         } else if data.scrollFix != 0 {
             data.fixed = true
-            data.usable = true
+            data.valid = true
             data.usableValue = Double(data.scrollFix)
         }
         return data
@@ -120,5 +156,4 @@ class ScrollEventUtils {
     }
     static let normalizeX = normalize(axis: axisType.X)
     static let normalizeY = normalize(axis: axisType.Y)
-    
 }

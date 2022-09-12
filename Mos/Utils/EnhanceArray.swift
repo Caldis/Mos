@@ -43,24 +43,22 @@ extension EnhanceArray {
         }
     }
     // 获取值
-    public func get(from key: String) -> T? {
-        if let index = dictionary[key] {
-            return array[index]
-        } else {
-            return nil
-        }
-    }
-    public func get(from index: Int) -> T {
+    public func get(by key: String?) -> T? {
+        guard let validKey = key, let index = dictionary[validKey] else { return nil }
         return array[index]
     }
+    public func get(by index: Int?) -> T? {
+        guard let validIndex = index else { return nil }
+        return array[validIndex]
+    }
     // 更新值
-    public func set(to key: String, of item: T) -> EnhanceArray {
+    public func set(by key: String, of item: T) -> EnhanceArray {
         if let index = dictionary[key] {
             array[index] = item
         }
         return self
     }
-    public func set(to index: Int, of item: T) -> EnhanceArray {
+    public func set(by index: Int, of item: T) -> EnhanceArray {
         array[index] = item
         return self
     }
@@ -81,7 +79,7 @@ extension EnhanceArray {
         let encoder = JSONEncoder()
         return try! encoder.encode(array)
     }
-    // 更新内部数据 (不常用)
+    // 更新内部数据
     public func update() {
         updateDictionary()
     }

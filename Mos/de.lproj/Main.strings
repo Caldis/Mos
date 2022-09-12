@@ -12,33 +12,33 @@
 // PreferencesWindow
 "cvF-hf-KVW.title" = "Einstellungen";
 // General
-"ITL-GD-CPd.title" = "General";
-"pwT-er-UCo.title" = "blättern:";
-"jtK-hi-Ami.title" = "reibungsloser Bildlauf";
-"bbo-GH-WeC.title" = "Scrollen mit dem Mausrad butterweich machen";
-"MAF-Hi-l48.title" = "Rückwärts blättern";
-"CqK-3z-D0G.title" = "Umkehren der Scrollrichtung des Mausrads";
+"ITL-GD-CPd.title" = "Allgemein";
+"pwT-er-UCo.title" = "Blättern:";
+"jtK-hi-Ami.title" = "Geglätteter Bildlauf";
+"bbo-GH-WeC.title" = "Scrollen mit dem Mausrad glätten";
+"MAF-Hi-l48.title" = "Rückwärts scrollen";
+"CqK-3z-D0G.title" = "Scrollrichtung des Mausrads invertieren";
 "dyY-vr-dwT.title" = "Sonstiges:";
 "xoR-7p-3qj.title" = "Start beim Login";
 "MdS-Nz-zMa.title" = "Automatisch starten";
 "hGj-vV-zcY.title" = "Statusleistensymbol ausblenden";
-"bB5-2R-9Da.title" = "Mos noch einmal laufen lassen, um das versteckte Symbol zu zeigen;
-"cIk-j1-vYt.title" = "Sie müssen Mos erneut vom Finder aus starten, anstatt von der Startrampe aus. (Das Launchpad ignoriert die gestartete Anwendung automatisch)";
+"bB5-2R-9Da.title" = "Mos neustarten, um das ausgeblendete Symbol zu zeigen";
+"cIk-j1-vYt.title" = "Sie müssen Mos erneut vom Finder aus starten, anstatt von Launchpad aus. (Das Launchpad ignoriert die gestartete Anwendung automatisch)";
 // Advanced
 "iW5-CD-5OC.title" = "Erweiterte Einstellungen";
 "hOO-M8-I1z.title" = "Dash Key:";
-"Vhz-Rn-lcU.title" = "deaktiviert";
-"Z59-tN-QjE.title" = "Scrollgescwindigkeit erhöhen auf größeren Seiten";
+"Vhz-Rn-lcU.title" = "Deaktiviert";
+"Z59-tN-QjE.title" = "Scrollgeschwindigkeit auf längeren Seiten erhöhen";
 "bQw-5w-Yv0.title" = "Toggle Key:";
-"cTe-aL-0GQ.title" = "deaktiviert";
-"KnM-kA-wn5.title" = "Ändern des vertikalen Bildlaufs in horizontalen Bildlauf";
+"cTe-aL-0GQ.title" = "Deaktiviert";
+"KnM-kA-wn5.title" = "Vertikalen Bildlauf in horizontalen Bildlauf ändern";
 "ebE-Zf-T98.title" = "Block Key:";
-"vFk-37-HRU.title" = "deaktiviert";
+"vFk-37-HRU.title" = "Deaktiviert";
 "iki-Jk-qSr.title" = "Smooth Scrolling vorübergehend deaktivieren";
 "B8B-hi-x3v.title" = "Schritt:";
 "Jan-OY-m70.title" = "Legt den minimalen Bildlaufabstand fest";
 "Gcw-Ir-olP.title" = "Geschwindigkeit:";
-"B3O-iI-E7v.title" = "Legt den scroll beschleudigung";
+"B3O-iI-E7v.title" = "Legt die Scrollgeschwindigkeit fest";
 "bqU-Is-gFB.title" = "Dauer:";
 "DsD-EW-zCH.title" = "Legt die Dauer der Bildlaufanimation fest";
 "t2D-X2-Y6W.title" = "Auf Standardwerte zurücksetzen";
@@ -46,21 +46,21 @@
 // AdvancedWithApplication
 "Wls-5g-cNZ.title" = "Globale Einstellungen vererben";
 // Exception
-"Vs2-5P-BEI.title" = "Reibungslos";
-"sKz-VE-Yfb.title" = "Umgekehrt";
+"Vs2-5P-BEI.title" = "Geglättet";
+"sKz-VE-Yfb.title" = "Invertiert";
 "89F-B4-NIY.title" = "App";
 "mfa-4t-oRD.title" = "Erweitert";
 "I5j-Bv-Aiy.title" = "Benötigt Zugang zu Zugänglichkeitskontrollen";
 "FU4-wI-K8f.title" = "Um das Scroll-Verhalten für bestimmte Anwendungen anzupassen, erlauben Sie bitte Mos den Zugriff auf die Zugänglichkeitssteuerung.";
 "Pw5-2q-7Fa.title" = "Allow accessibility access";
-"bga-wG-iim.title" = "Ausnahme";
+"bga-wG-iim.title" = "Ausnahmen";
 "Rgu-cb-5lp.title" = "Anpassen pro Anwendung:";
 "Ksp-g1-48g.title" = "Allowlist-Modus";
 "v26-RK-BtL.title" = "Der Allowlistmodus bewirkt, dass Mos nur für Anwendungen innerhalb der Ausnahmeliste gilt.";
 "ThS-Rm-st2.title" = "Niemand ist besonders";
 "jaq-Cb-dKM.title" = "Sie können eine separate Konfiguration auf einige Anwendungen anwenden, indem Sie auf die Schaltfläche \'+\' unten klicken";
-"R0d-21-g6W.title" = "Ausführende Anwendungen";
-"dhF-95-kUJ.title" = "Manuelle Auswahl aus dem Finder";
+"R0d-21-g6W.title" = "Ausgeführte Anwendungen";
+"dhF-95-kUJ.title" = "Manuelle Auswahl mit Finder";
 "Vp7-0n-aRd.title" = "Manuelle Eingabe von Anwendungsinformationen"; "Vp7-0n-aRd.title" = "Manuelle Eingabe von Anwendungsinformationen";
 "kUr-cl-KRm.title" = "Anwendungsname:";
 "Ck5-if-9RS.title" = "Bundle-Bezeichner:";
@@ -75,13 +75,13 @@
 // About
 "RfV-Ow-3mF.title" = "Info";
 "5cx-xS-eRe.title" = "Nur eine kleine Aufgabe für Ihre Maus.";
-"yDf-dn-Mcz.title" = "Home Page";
+"yDf-dn-Mcz.title" = "Homepage";
 "99M-8D-HLN.title" = "GitHub";
 "AM8-cj-DnH.title" = "Spenden";
 "aPi-cE-maK.title" = "Donate using PayPal";
-"FIh-fA-18k.title" = "Willkomensfenster";
-"265-WS-XEd.title" = "Die Mitwirkenden";
-"ZJY-Yg-Qev.title" = "Mitwirkenden";
+"FIh-fA-18k.title" = "Willkommensfenster";
+"265-WS-XEd.title" = "Mitwirkende";
+"ZJY-Yg-Qev.title" = "Mitwirkende";
 "Lhz-x5-X0I.title" = "Übersetzung";
 "GWm-aK-UoV.title" = "Liste der Mitwirkenden";
 "D0v-Oj-ekP.title" = "Wie dick ist diese Katze?";
@@ -103,12 +103,12 @@
 "SLb-UR-lz1.title" = "Willkomen bei Mos";
 "Lhk-Nd-CdT.title" = "Bevor wir Ihren Bildlauf glätten";
 "7o8-5p-CQX.title" = "Es sind nur noch einige wenige Dinge zu optimieren";
-"VsZ-Yn-TgJ.title" = "Schalten Sie die anderen Anwendungen oder Erweiterungen für den reibungslosen Bildlauf aus";
-"u7p-zc-ERS.title" = "Wissenschaftler haben bewiesen, dass das gleichzeitige Ausführen mehrerer Anwendungen mit reibungslosem Bildlauf zu unübertragbaren Folgen führt. Bitte schließen - oder deaktivieren Sie die SmoothScroll-Funktion anderer Anwendungen, wie z.B. SmoothScrolling in Logitech Options oder die SmoothScroll-Erweiterung auf Chrome.";
+"VsZ-Yn-TgJ.title" = "Schalten Sie andere Anwendungen oder Erweiterungen für den reibungslosen Bildlauf aus";
+"u7p-zc-ERS.title" = "Das gleichzeitige Ausführen mehrerer Anwendungen für geglätteten Bildlauf kann zu unerwünschten Folgen führen. Bitte schließen oder deaktivieren Sie die SmoothScroll-Funktion anderer Anwendungen, wie z.B. SmoothScrolling in Logitech Options oder die SmoothScroll-Erweiterung von Chrome.";
 "3QI-xO-wPK.title" = "Erlauben Sie Mos den Zugriff auf Zugänglichkeitskontrollen";
-"7bu-fM-Bjm.title" = "Je größer die Macht, desto größer die Verantwortung. Um das Scrollen Ihrer Maus zu erleichtern, muss Mos eine Zwischenschicht zwischen der Maus und Ihrem System schaffen, um Ihre Maus zu optimieren. Wir müssen also auf die Bedienelemente für die Zugänglichkeit zugreifen, um diese Leistung zu erhalten.";
-"qGs-TM-PTM.title" = "LAufgrund der Einschränkungen von MacOS müssen Sie diese Berechtigung möglicherweise wiederholen, wenn Mos aktualisiert wird. Wenn der Eintrag in diesem Fall bereits existiert, löschen Sie ihn bitte und fügen Sie ihn erneut hinzu.";
-"V9n-HF-Vw9.title" = "Begin Smoothening";
+"7bu-fM-Bjm.title" = "Je größer die Macht, desto größer die Verantwortung. Um das Scrollen Ihrer Maus zu verbessern, muss Mos eine Zwischenschicht zwischen der Maus und Ihrem System schaffen. Wir müssen also auf die Bedienelemente für die Zugänglichkeit zugreifen, um diese Leistung zu erhalten.";
+"qGs-TM-PTM.title" = "Aufgrund der Einschränkungen von MacOS müssen Sie diese Berechtigung möglicherweise wiederholen, wenn Mos aktualisiert wird. Wenn der Eintrag in diesem Fall bereits existiert, löschen Sie ihn bitte und fügen Sie ihn erneut hinzu.";
+"V9n-HF-Vw9.title" = "Smoothening starten";
 
 // Popover
 "hnf-e0-HXM.title" = "Einstellungen";

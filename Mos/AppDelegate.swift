@@ -8,7 +8,7 @@
 
 import Cocoa
 
-@NSApplicationMain
+@main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
     // 运行前预处理
@@ -55,6 +55,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
         ScrollCore.shared.endHandlingScroll()
+        NSLog("ScrollCore End: Terminate")
     }
     
     // 检查是否有访问 accessibility 权限, 如果有则启动滚动处理, 并结束计时器
@@ -64,10 +65,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // 开启辅助权限后, 关闭定时器, 开始处理
             if Utils.isHadAccessibilityPermissions() {
                 validTimer.invalidate()
+                NSLog("First Initialization (Accessibility Authorization Needed)")
                 ScrollCore.shared.startHandlingScroll()
             }
         } else {
             if Utils.isHadAccessibilityPermissions() {
+                NSLog("Normal Initialization")
                 ScrollCore.shared.startHandlingScroll()
             } else {
                 // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
@@ -85,10 +88,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     // 在切换用户时停止滚动处理
-    @objc func sessionDidActive(notification:NSNotification){
-         ScrollCore.shared.startHandlingScroll()
+    @objc func sessionDidActive(notification: NSNotification){
+        ScrollCore.shared.startHandlingScroll()
+        NSLog("ScrollCore Start: Session Active")
     }
-    @objc func sessionDidResign(notification:NSNotification){
-         ScrollCore.shared.endHandlingScroll()
+    @objc func sessionDidResign(notification: NSNotification){
+        ScrollCore.shared.endHandlingScroll()
+        NSLog("ScrollCore End: Session Resign")
     }
 }
