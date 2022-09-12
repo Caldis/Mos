@@ -1111,12 +1111,12 @@
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" id="NS2-ZW-iDh"/>
                                 </constraints>
-                                <buttonCell key="cell" type="check" title="Whitelist Mode" bezelStyle="regularSquare" imagePosition="left" alignment="right" controlSize="small" inset="2" id="Ksp-g1-48g">
+                                <buttonCell key="cell" type="check" title="Allow list Mode" bezelStyle="regularSquare" imagePosition="left" alignment="right" controlSize="small" inset="2" id="Ksp-g1-48g">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="menu" size="11"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="whiteListModeClick:" target="bga-wG-iim" id="MZ6-m7-C6o"/>
+                                    <action selector="allowListModeClick:" target="bga-wG-iim" id="MZ6-m7-C6o"/>
                                 </connections>
                             </button>
                             <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8FH-Zr-4mB">
@@ -1180,7 +1180,7 @@
                         <outlet property="runningAndInstalledManuItem" destination="R0d-21-g6W" id="a14-sX-cP3"/>
                         <outlet property="runningAndInstalledMenuChildrenContainer" destination="tXQ-GJ-k5M" id="kvh-JP-b9D"/>
                         <outlet property="tableView" destination="LmV-gi-3fE" id="GOb-17-dvX"/>
-                        <outlet property="whitelistModeCheckBox" destination="gnb-pe-ZN5" id="HTP-3G-Zme"/>
+                        <outlet property="allowlistModeCheckBox" destination="gnb-pe-ZN5" id="HTP-3G-Zme"/>
                     </connections>
                 </viewController>
                 <menu id="v6G-mQ-Ddk">
@@ -1333,17 +1333,17 @@ Gw
             </objects>
             <point key="canvasLocation" x="1480.5" y="1849.5"/>
         </scene>
-        <!--Exception whitelist hint-->
+        <!--Exception allowlist hint-->
         <scene sceneID="57E-oo-PEW">
             <objects>
-                <viewController id="o12-9v-Ej5" userLabel="Exception whitelist hint" sceneMemberID="viewController">
+                <viewController id="o12-9v-Ej5" userLabel="Exception allowlist hint" sceneMemberID="viewController">
                     <view key="view" id="wdx-Jb-jwG">
                         <rect key="frame" x="0.0" y="0.0" width="224" height="42"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KGW-PK-8DX">
                                 <rect key="frame" x="10" y="10" width="204" height="22"/>
-                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="left" title="The whitelist mode will make Mos only apply to apps within the exception list." id="v26-RK-BtL">
+                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="left" title="The allow list mode will make Mos only apply to apps within the exception list." id="v26-RK-BtL">
                                     <font key="font" metaFont="label" size="9"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

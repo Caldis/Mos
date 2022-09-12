@@ -143,7 +143,7 @@
 /* Class = "NSTextFieldCell"; title = "Change vertical scrolling to horizontal scrolling"; ObjectID = "KnM-kA-wn5"; */
 "KnM-kA-wn5.title" = "Dikey kaydırmayı yatay kaydırma ile değiştir";
 
-/* Class = "NSButtonCell"; title = "Whitelist Mode"; ObjectID = "Ksp-g1-48g"; */
+/* Class = "NSButtonCell"; title = "Allowlist Mode"; ObjectID = "Ksp-g1-48g"; */
 "Ksp-g1-48g.title" = "Beyaz Liste Modu";
 
 /* Class = "NSTextFieldCell"; title = "Before we smooth your mouse"; ObjectID = "Lhk-Nd-CdT"; */
@@ -383,7 +383,7 @@
 /* Class = "NSTextFieldCell"; title = "Scientists have proven that running on multiple smooth scrolling application at the same time will lead to undescribed consequences. Please close the other, or disable the smooth function of it. Such as the smooth scrolling on Logitech Options or SmoothScroll extension on Chrome."; ObjectID = "u7p-zc-ERS"; */
 "u7p-zc-ERS.title" = "Bilim adamları, aynı anda birden fazla yumuşak kaydırma uygulamasında çalıştırmanın açıklanamayan sonuçlara yol açacağını kanıtladılar. Lütfen diğerini kapatın veya yumuşak kaydırma işlevini devre dışı bırakın. Logitech Options'ta veya Chrome'da SmoothScroll uzantısındaki yumuşak kaydırma gibi.";
 
-/* Class = "NSTextFieldCell"; title = "The whitelist mode will make Mos only apply to apps within the exception list."; ObjectID = "v26-RK-BtL"; */
+/* Class = "NSTextFieldCell"; title = "The allowlist mode will make Mos only apply to apps within the exception list."; ObjectID = "v26-RK-BtL"; */
 "v26-RK-BtL.title" = "Beyaz liste modu, Mos'ın yalnızca istisna listesindeki uygulamalar için geçerli olmasını sağlar.";
 
 /* Class = "NSMenuItem"; title = "Disabled"; ObjectID = "vFk-37-HRU"; */

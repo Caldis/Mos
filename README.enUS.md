@@ -26,7 +26,7 @@ http://mos.caldis.me/
 - Allows customizing scroll behavior, such as the speed and acceleration.
 - Allows customizing the scrolling behavior for touchpad and mouse wheel separately.
 - Provides an informative graph that shows the scroll events.
-- Built in per app blacklist/whitelist support.
+- Built in per app block/allow list support.
 - Coded with Swift.
 
 

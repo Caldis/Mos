@@ -12,7 +12,7 @@ class PreferencesExceptionViewController: NSViewController {
     
     // UI Elements
     // 白名单
-    @IBOutlet weak var whitelistModeCheckBox: NSButton!
+    @IBOutlet weak var allowlistModeCheckBox: NSButton!
     // 表格及工具栏
     @IBOutlet weak var tableView: NSTableView!
     // 提示层
@@ -40,8 +40,8 @@ class PreferencesExceptionViewController: NSViewController {
     }
     
     // 白名单模式
-    @IBAction func whiteListModeClick(_ sender: NSButton) {
-        Options.shared.general.whitelist = sender.state.rawValue==0 ? false : true
+    @IBAction func allowListModeClick(_ sender: NSButton) {
+        Options.shared.general.allowlist = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     
@@ -77,7 +77,7 @@ extension PreferencesExceptionViewController {
     // 同步界面与设置参数
     func syncViewWithOptions() {
         // 白名单
-        whitelistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.general.whitelist ? 1 : 0)
+        allowlistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.general.allowlist ? 1 : 0)
     }
 }
 

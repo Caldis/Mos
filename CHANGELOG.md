@@ -215,7 +215,7 @@ Fixed a problem that could cause Mos to crash.
 
 ## New Feature
 
-Add white list mode in Ignore panel.
+Add allow list mode in Ignore panel.
 
 Add Peak setting in Advance panel.
 
