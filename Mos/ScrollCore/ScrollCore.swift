@@ -123,7 +123,7 @@ class ScrollCore {
                 x: scrollEvent.X.usableValue,
                 speed: speed,
                 amplification: ScrollCore.shared.dashAmplification
-            ).enable()
+            ).tryStart()
         }
         // 返回事件对象
         if returnOriginalEvent {
@@ -238,7 +238,7 @@ class ScrollCore {
     // MARK: - 鼠标事件处理
     let mouseLeftEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 如果点击左键则停止滚动
-        ScrollPoster.shared.disableManual()
+        ScrollPoster.shared.stop()
         return nil
     }
     
@@ -279,7 +279,7 @@ class ScrollCore {
         if !isActive {return}
         isActive = false
         // 停止滚动事件发送器
-        ScrollPoster.shared.disableAuto()
+        ScrollPoster.shared.stop()
         // 停止截取事件
         scrollEventInterceptor?.stop()
         hotkeyEventInterceptor?.stop()

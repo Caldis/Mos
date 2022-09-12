@@ -1,23 +1,25 @@
 {
-  "pins" : [
-    {
-      "identity" : "charts",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/danielgindi/Charts",
-      "state" : {
-        "revision" : "66546404a6739173b8e436ab6bc1f2897cd08594",
-        "version" : "3.6.0"
+  "object": {
+    "pins": [
+      {
+        "package": "Charts",
+        "repositoryURL": "https://github.com/danielgindi/Charts",
+        "state": {
+          "branch": null,
+          "revision": "66546404a6739173b8e436ab6bc1f2897cd08594",
+          "version": "3.6.0"
+        }
+      },
+      {
+        "package": "LoginServiceKit",
+        "repositoryURL": "https://github.com/Clipy/LoginServiceKit",
+        "state": {
+          "branch": null,
+          "revision": "5af9098805ff603830aec65754071c6514bbcacd",
+          "version": "2.4.0"
+        }
       }
-    },
-    {
-      "identity" : "loginservicekit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Clipy/LoginServiceKit",
-      "state" : {
-        "revision" : "5af9098805ff603830aec65754071c6514bbcacd",
-        "version" : "2.4.0"
-      }
-    }
-  ],
-  "version" : 2
+    ]
+  },
+  "version": 1
 }

@@ -15,14 +15,13 @@ class ScrollPoster {
     init() { NSLog("Module initialized: ScrollPoster") }
     
     // 插值器
-    private let filler = ScrollFiller()
-    private let interpolator = Interpolator.lerp
+    private let filter = ScrollFilter()
     // 发送器
     private var poster: CVDisplayLink?
     // 滚动数据
-    private var scrollCurr   = ( y: 0.0, x: 0.0 )  // 当前滚动距离
-    private var scrollDelta  = ( y: 0.0, x: 0.0 )  // 滚动方向记录
-    private var scrollBuffer = ( y: 0.0, x: 0.0 )  // 滚动缓冲距离
+    private var current = (y: 0.0, x: 0.0)  // 当前滚动距离
+    private var delta = (y: 0.0, x: 0.0)  // 滚动方向记录
+    private var buffer = (y: 0.0, x: 0.0)  // 滚动缓冲距离
     // 滚动配置
     private var shifting = false
     private var duration = Options.shared.scrollAdvanced.durationTransition
@@ -39,27 +38,27 @@ extension ScrollPoster {
         // 更新滚动配置
         self.duration = duration
         // 更新滚动数据
-        if y*scrollDelta.y > 0 {
-            scrollBuffer.y += y * speed * amplification
+        if y*delta.y > 0 {
+            buffer.y += y * speed * amplification
         } else {
-            scrollBuffer.y = y * speed * amplification
-            scrollCurr.y = 0.0
+            buffer.y = y * speed * amplification
+            current.y = 0.0
         }
-        if x*scrollDelta.x > 0 {
-            scrollBuffer.x += x * speed * amplification
+        if x*delta.x > 0 {
+            buffer.x += x * speed * amplification
         } else {
-            scrollBuffer.x = x * speed * amplification
-            scrollCurr.x = 0.0
+            buffer.x = x * speed * amplification
+            current.x = 0.0
         }
-        scrollDelta = ( y: y, x: x )
+        delta = (y: y, x: x)
         return self
     }
     func updateShifting(enable: Bool) {
         shifting = enable
     }
-    func swap(with nextValue: ( y: Double, x: Double ), enable: Bool) -> (y: Double, x: Double) {
+    func shift(with nextValue: ( y: Double, x: Double )) -> (y: Double, x: Double) {
         // 如果按下 Shift, 则始终将滚动转为横向
-        if enable {
+        if shifting {
             // 判断哪个轴有值, 有值则赋给 X
             // 某些鼠标 (MXMaster/MXAnywhere), 按下 Shift 后会显式转换方向为横向, 此处针对这类转换进行归一化处理
             if nextValue.y != 0.0 && nextValue.x == 0.0 {
@@ -72,15 +71,16 @@ extension ScrollPoster {
         }
     }
     func brake() {
-        ScrollPoster.shared.scrollBuffer = ScrollPoster.shared.scrollCurr
+        ScrollPoster.shared.buffer = ScrollPoster.shared.current
     }
     func reset() {
         // 重置数值
-        scrollCurr = ( y: 0.0, x: 0.0 )
-        scrollDelta = ( y: 0.0, x: 0.0 )
-        scrollBuffer = ( y: 0.0, x: 0.0 )
+        ref = (event: nil, proxy: nil)
+        current = ( y: 0.0, x: 0.0 )
+        delta = ( y: 0.0, x: 0.0 )
+        buffer = ( y: 0.0, x: 0.0 )
         // 重置插值器
-        filler.reset()
+        filter.reset()
     }
 }
 
@@ -91,94 +91,75 @@ extension ScrollPoster {
         // 新建一个 CVDisplayLinkSetOutputCallback 来执行循环
         CVDisplayLinkCreateWithActiveCGDisplays(&poster)
         CVDisplayLinkSetOutputCallback(poster!, { (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in
-            ScrollPoster.shared.beforePost()
+            ScrollPoster.shared.processing()
             return kCVReturnSuccess
         }, nil)
     }
     // 启动事件发送器
-    func enable() {
+    func tryStart() {
         if !CVDisplayLinkIsRunning(poster!) {
             CVDisplayLinkStart(poster!)
         }
     }
-    // 暂停事件发送器
-    func pauseAuto() {
-        ScrollPhase.shared.phase = Phase.PauseAuto
-        reset()
-    }
-    func pauseManual() {
-        ScrollPhase.shared.phase = Phase.PauseManual
-        reset()
-    }
     // 停止事件发送器
-    func disableAuto() {
-        pauseAuto()
-        if let validPoster = poster {
-            CVDisplayLinkStop(validPoster)
-            afterPost()
-        }
-    }
-    func disableManual() {
-        pauseManual()
+    func stop(_ phase: Phase = Phase.PauseManual) {
+        // 停止循环
         if let validPoster = poster {
             CVDisplayLinkStop(validPoster)
         }
+        // 更新阶段
+        ScrollPhase.shared.phase = phase
+        // 对于 Phase.PauseAuto, 我们在结束前额外发送一个事件来重置 Chrome 的滚动缓冲区
+        if phase == Phase.PauseAuto {
+            post(ref, (y: 0.0, x: 0.0))
+        }
+        // 最后重置参数
+        reset()
     }
 }
 
 // MARK: - 数据处理及发送
 private extension ScrollPoster {
-    // 预处理滚动事件
-    func beforePost() {
+    // 处理滚动事件
+    func processing() {
         // 计算插值
-        let scrollPulse = (
-            y: interpolator(scrollCurr.y, scrollBuffer.y, duration),
-            x: interpolator(scrollCurr.x, scrollBuffer.x, duration)
+        let frame = (
+            y: Interpolator.lerp(src: current.y, dest: buffer.y, trans: duration),
+            x: Interpolator.lerp(src: current.x, dest: buffer.x, trans: duration)
         )
         // 更新滚动位置
-        scrollCurr = (
-            y: scrollCurr.y + scrollPulse.y,
-            x: scrollCurr.x + scrollPulse.x
+        current = (
+            y: current.y + frame.y,
+            x: current.x + frame.x
         )
         // 平滑滚动结果
-        let filledValue = filler.fill(with: scrollPulse)
-        // 交换滚动结果
-        let swapedValue = swap(with: filledValue, enable: shifting)
+        let filledValue = filter.fill(with: frame)
+        // 变换滚动结果
+        let shiftedValue = shift(with: filledValue)
         // 发送滚动结果
-        if let proxy = ref.proxy, let event = ref.event {
-            post(proxy, event, swapedValue.y, swapedValue.x)
-        }
+        post(ref, shiftedValue)
         // 如果临近目标距离小于精确度门限则暂停滚动
         if (
-            scrollPulse.y.magnitude <= Options.shared.scrollAdvanced.precision &&
-            scrollPulse.x.magnitude <= Options.shared.scrollAdvanced.precision
+            frame.y.magnitude <= Options.shared.scrollAdvanced.precision &&
+            frame.x.magnitude <= Options.shared.scrollAdvanced.precision
         ) {
-             disableAuto()
+            stop(Phase.PauseAuto)
         }
     }
-    // 发送滚动事件
-    func post(_ proxy: CGEventTapProxy, _ event: CGEvent, _ y: Double, _ x: Double) {
-        if let eventClone = event.copy() {
-            // 复制指针防止在 Post 过程中被释放
-            let proxyClone = proxy
+    func post(_ r: (event: CGEvent?, proxy: CGEventTapProxy?), _ v: (y: Double, x: Double)) {
+        if let proxy = r.proxy, let eventClone = r.event?.copy() {
             // 设置阶段数据
-            ScrollPhase.shared.attach(to: eventClone)
+            ScrollPhase.shared.attachExtraData(to: eventClone)
             // 设置滚动数据
-            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: y)
-            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: x)
+            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: v.y)
+            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: v.x)
             eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: 0.0)
             eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0.0)
             eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
             // EventTapProxy 标识了 EventTapCallback 在事件流中接收到事件的特定位置, 其粒度小于 tap 本身
             // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
             // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 也如同 EventTapCallback 所处理的事件, 会被所有后续的 EventTap 接收
-            eventClone.tapPostEvent(proxyClone)
-        }
-    }
-    // 后处理滚动事件
-    func afterPost() {
-        if let proxy = ref.proxy, let event = ref.event {
-            post(proxy, event, 0.0, 0.0)
+            eventClone.tapPostEvent(proxy)
         }
     }
 }
