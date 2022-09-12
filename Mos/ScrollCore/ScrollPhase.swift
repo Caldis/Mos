@@ -83,7 +83,7 @@ class ScrollPhase {
     }
     
     // MARK: - 滚动数据附加
-    func attach(to event: CGEvent) {
+    func attachExtraData(to event: CGEvent) {
         let prevPhase = ScrollPhase.shared.consume()
         // 仅作用于 Y 轴事件 (For MX Master)
         if event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2) == 0.0 {
