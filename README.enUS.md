@@ -26,7 +26,7 @@ http://mos.caldis.me/
 - Allows customizing scroll behavior, such as the speed and acceleration.
 - Allows customizing the scrolling behavior for touchpad and mouse wheel separately.
 - Provides an informative graph that shows the scroll events.
-- Built in per app blacklist/whitelist support.
+- Built in per app block/allow list support.
 - Coded with Swift.
 
 
@@ -53,7 +53,7 @@ http://mos.caldis.me/
 If you wish to install the application from [Homebrew](https://brew.sh):
 
 ```bash
-$ brew install mos --cask
+$ brew install mos
 ```
 
 The application will live at `/Applications/Mos.app`.
@@ -62,7 +62,7 @@ To update the app:
 
 ```bash
 $ brew update
-$ brew reinstall mos --cask
+$ brew reinstall mos
 ```
 
 Quit then relaunch the app.

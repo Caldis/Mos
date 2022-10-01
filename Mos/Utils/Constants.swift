@@ -78,11 +78,11 @@ class OPTIONS_GENERAL_DEFAULT {
     }
     // 隐藏
     var hideStatusItem = false {
-        willSet {newValue ? StatusItemManager.hideStatusItem() : StatusItemManager.showStatusItem()}
+        willSet {newValue ? StatusItemManager.shared.hideStatusItem() : StatusItemManager.shared.showStatusItem()}
         didSet {Options.shared.saveOptions()}
     }
     // 例外
-    var whitelist = false {
+    var allowlist = false {
         didSet {Options.shared.saveOptions()}
     }
     var applications = EnhanceArray<ExceptionalApplication>(

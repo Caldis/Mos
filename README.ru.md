@@ -53,7 +53,7 @@ http://mos.caldis.me/
 Если вы хотите установить приложение с помощью [Homebrew](https://brew.sh):
 
 ```bash
-$ brew install mos --cask
+$ brew install mos
 ```
 
 Приложение будет находится по адресу `/Applications/Mos.app`.
@@ -62,7 +62,7 @@ $ brew install mos --cask
 
 ```bash
 $ brew update
-$ brew reinstall mos --cask
+$ brew reinstall mos
 ```
 
 Закройте и перезапустите приложение.

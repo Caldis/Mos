@@ -55,9 +55,9 @@
 "Pw5-2q-7Fa.title" = "Allow accessibility access";
 "bga-wG-iim.title" = "Ausnahmen";
 "Rgu-cb-5lp.title" = "Anpassen pro Anwendung:";
-"Ksp-g1-48g.title" = "Whitelist-Modus";
-"v26-RK-BtL.title" = "Der Whitelistmodus bewirkt, dass Mos nur für Anwendungen innerhalb der Ausnahmeliste gilt.";
-"ThS-Rm-st2.title" = "Keine Ausnahmen festgelegt";
+"Ksp-g1-48g.title" = "Allowlist-Modus";
+"v26-RK-BtL.title" = "Der Allowlistmodus bewirkt, dass Mos nur für Anwendungen innerhalb der Ausnahmeliste gilt.";
+"ThS-Rm-st2.title" = "Niemand ist besonders";
 "jaq-Cb-dKM.title" = "Sie können eine separate Konfiguration auf einige Anwendungen anwenden, indem Sie auf die Schaltfläche \'+\' unten klicken";
 "R0d-21-g6W.title" = "Ausgeführte Anwendungen";
 "dhF-95-kUJ.title" = "Manuelle Auswahl mit Finder";

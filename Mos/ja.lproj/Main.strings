@@ -55,8 +55,8 @@
 "Pw5-2q-7Fa.title" = "Allow to use accessibility";
 "bga-wG-iim.title" = "Exception";
 "Rgu-cb-5lp.title" = "Customize per Application:";
-"Ksp-g1-48g.title" = "Whitelist Mode";
-"v26-RK-BtL.title" = "The whitelist mode will make Mos only apply to apps within the exception list.";
+"Ksp-g1-48g.title" = "Allowlist Mode";
+"v26-RK-BtL.title" = "The allowlist mode will make Mos only apply to apps within the exception list.";
 "ThS-Rm-st2.title" = "No One is Special";
 "jaq-Cb-dKM.title" = "You can apply a separate configuration to some apps by clicking the \'+\' button below";
 "R0d-21-g6W.title" = "Running Applications";
