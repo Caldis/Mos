@@ -65,7 +65,6 @@ extension Options {
         scrollAdvanced.precision = UserDefaults.standard.double(forKey: "precision")
         // 解锁
         readingOptionsLock = false
-        NSLog("Option readed")
     }
     
     // 写入到 UserDefaults
