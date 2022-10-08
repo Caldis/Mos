@@ -5,7 +5,6 @@
 //  Created by Caldis on 2018/3/7.
 //  Copyright © 2018年 Caldis. All rights reserved.
 //
-
 import Cocoa
 
 enum STATUS_ITEM_TYPE {
@@ -18,17 +17,14 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
     // 状态栏类型
     let TYPE = STATUS_ITEM_TYPE.menu
     
-    
-    // 单例
-    static let shared = StatusItemManager()
-    
     // 状态栏引用
-    let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    static let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    let item = StatusItemManager.statusItem
     
     // 初始化
     override func awakeFromNib() {
         NSLog("Module initialized: StatusItemManager")
-        // 设置图标
+        // 设置图标/行为
         item.image = #imageLiteral(resourceName: "AppStatusBarIcon")
         // 设置事件响应
         switch TYPE {
@@ -140,19 +136,19 @@ extension StatusItemManager {
  **/
 extension StatusItemManager {
     // 显示状态栏图标
-    func showStatusItem() {
+    class func showStatusItem() {
         if #available(OSX 10.12, *) {
-            item.isVisible = true
+            self.statusItem.isVisible = true
         } else {
-            item.length = NSStatusItem.variableLength
+            self.statusItem.length = NSStatusItem.variableLength
         }
     }
     // 隐藏状态栏图标
-    func hideStatusItem() {
+    class func hideStatusItem() {
         if #available(OSX 10.12, *) {
-            item.isVisible = false
+            self.statusItem.isVisible = false
         } else {
-            item.length = 0.0
+            self.statusItem.length = 0.0
         }
     }
 }

@@ -78,7 +78,7 @@ class OPTIONS_GENERAL_DEFAULT {
     }
     // 隐藏
     var hideStatusItem = false {
-        willSet {newValue ? StatusItemManager.shared.hideStatusItem() : StatusItemManager.shared.showStatusItem()}
+        willSet {newValue ? StatusItemManager.hideStatusItem() : StatusItemManager.showStatusItem()}
         didSet {Options.shared.saveOptions()}
     }
     // 例外
