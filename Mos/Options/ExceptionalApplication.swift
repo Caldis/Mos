@@ -62,7 +62,7 @@ extension ExceptionalApplication {
         if let name = displayName, name.count > 0 {
             return name
         }
-        return Utils.getAppliactionName(fromPath: path)
+        return Utils.getApplicationName(fromPath: path)
     }
     // 配置
     func getStep() -> Double {
