@@ -6,7 +6,7 @@
 //  Copyright © 2018年 Caldis. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 
 class Interceptor {
     

@@ -8,7 +8,6 @@
 
 import Cocoa
 
-
 class ScrollCore {
     
     // 单例

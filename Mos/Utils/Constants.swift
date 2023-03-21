@@ -6,7 +6,7 @@
 //  Copyright © 2019 Caldis. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 
 // 动画
 struct ANIMATION {

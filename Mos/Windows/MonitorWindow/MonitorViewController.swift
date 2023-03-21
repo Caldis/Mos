@@ -68,7 +68,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         lineChart.data = LineChartData(dataSets: [verticalData, horizontalData])
         // 设置图表样式
         lineChart.noDataTextColor = NSColor.labelColor
-        lineChart.chartDescription?.text = ""
+        lineChart.chartDescription.text = ""
         lineChart.legend.textColor = NSColor.labelColor
         lineChart.xAxis.labelTextColor = NSColor.labelColor
         lineChart.leftAxis.labelTextColor = NSColor.labelColor
@@ -102,8 +102,8 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         let event = notification.object as! CGEvent
         // 更新图表数据
         if let data = lineChart.data {
-            data.addEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)), dataSetIndex: 0)
-            data.addEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)), dataSetIndex: 1)
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)), toDataSet: 0)
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)), toDataSet: 1)
             lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 100.0)
             lineChart.moveViewToX(lineChartCount)
             lineChart.notifyDataSetChanged()

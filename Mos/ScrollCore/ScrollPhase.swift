@@ -6,7 +6,7 @@
 //  Copyright © 2020 Caldis. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 
 enum Phase {
     case Idle
