@@ -90,15 +90,19 @@ extension ScrollPoster {
     func create() {
         // 新建一个 CVDisplayLinkSetOutputCallback 来执行循环
         CVDisplayLinkCreateWithActiveCGDisplays(&poster)
-        CVDisplayLinkSetOutputCallback(poster!, { (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in
-            ScrollPoster.shared.processing()
-            return kCVReturnSuccess
-        }, nil)
+        if let validPoster = poster {
+            CVDisplayLinkSetOutputCallback(validPoster, { (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in
+                ScrollPoster.shared.processing()
+                return kCVReturnSuccess
+            }, nil)
+        }
     }
     // 启动事件发送器
     func tryStart() {
-        if !CVDisplayLinkIsRunning(poster!) {
-            CVDisplayLinkStart(poster!)
+        if let validPoster = poster {
+            if !CVDisplayLinkIsRunning(validPoster) {
+                CVDisplayLinkStart(validPoster)
+            }
         }
     }
     // 停止事件发送器
