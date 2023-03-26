@@ -195,7 +195,7 @@ public class Utils {
         return NSWorkspace.shared.icon(forFile: validPath)
     }
     // 从路径获取应用名称
-    class func getAppliactionName(fromPath path: String?) -> String {
+    class func getApplicationName(fromPath path: String?) -> String {
         guard let validPath = path else {
             return "Invalid Name"
         }

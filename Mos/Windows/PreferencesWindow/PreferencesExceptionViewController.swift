@@ -217,7 +217,7 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
         for runningApplication in NSWorkspace.shared.runningApplications {
             guard runningApplication.activationPolicy == .regular else { continue }
             let icon = Utils.getApplicationIcon(fromPath: runningApplication.bundleURL?.path)
-            let name = Utils.getAppliactionName(fromPath: runningApplication.executableURL?.path)
+            let name = Utils.getApplicationName(fromPath: runningApplication.executableURL?.path)
             let isExist = ScrollUtils.shared.getExceptionalApplication(from: runningApplication) !== nil
             Utils.addMenuItem(
                 to: runningAndInstalledMenuChildrenContainer,
