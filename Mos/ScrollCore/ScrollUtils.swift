@@ -61,10 +61,26 @@ class ScrollUtils {
     }
     
     // 判断 LaunchPad 是否激活
+    func isEventTargetingChrome(_ event: CGEvent?) -> Bool {
+        guard let validEvent = event else {
+            return false
+        }
+        guard let targetRunningApplication = getRunningApplication(from: validEvent) else {
+            return false
+        }
+        if let targetBundleIdentifier = targetRunningApplication.bundleIdentifier, targetBundleIdentifier == "com.google.Chrome" {
+            return true
+        }
+        return false
+    }
+    
+    // 判断 LaunchPad 是否激活
     var launchpadActiveCache = false
     var launchpadLastDetectTime = 0.0
     func getLaunchpadActivity(withRunningApplication runningApplication: NSRunningApplication?) -> Bool {
-        guard let validRunningApplication = runningApplication else { return false }
+        guard let validRunningApplication = runningApplication else {
+            return false
+        }
         // 10.15 以上直接判断是否为 Dock
         if #available(OSX 10.15, *) {
             if validRunningApplication.executableURL?.path == "/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock" {

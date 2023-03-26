@@ -85,15 +85,10 @@ class ScrollPhase {
         Phase.PauseAuto: Phase.Idle,
         Phase.PauseManual: Phase.Idle,
     ]
-    func transfrom() -> ( prevPhase: Phase, nextPhase: Phase? ) {
-        let prevPhase: Phase = phase
-        // 阶段转换
+    func transfrom() {
         if let nextPhase = phaseTransfromMapping[phase] {
             phase = nextPhase
-            print(prevPhase, nextPhase)
-            return (prevPhase: prevPhase, nextPhase: nextPhase)
         }
-        return (prevPhase: prevPhase, nextPhase: nil)
     }
     
     // MARK: - 停止
