@@ -44,56 +44,61 @@ class ScrollPhase {
     
     var phase: Phase = Phase.Idle
     
-    // MARK: - 滚动阶段更新
-    let syncPhaseValueMapping: [Phase: Phase] = [
+    // MARK: - 惯性
+    // 将状态重设为 Momentun, 通过防抖来延迟其调用, 并向下采样降低防抖开销
+    var debounceApplyMomentumCallSamplingRate = 3
+    var debounceApplyMomentumCallSamplingCount = 2
+    let debouncedApplyMomentum = Utils.debounce(delay: 300) {
+        ScrollPhase.shared.phase = Phase.Momentum
+        ScrollPhase.shared.debounceApplyMomentumCallSamplingCount = ScrollPhase.shared.debounceApplyMomentumCallSamplingRate - 1
+    }
+    func applyMomentum() {
+        debounceApplyMomentumCallSamplingCount += 1
+        if debounceApplyMomentumCallSamplingCount % debounceApplyMomentumCallSamplingRate == 0 {
+            debouncedApplyMomentum()
+        }
+    }
+    
+    // MARK: - 介入
+    // 启动一个新 Phase
+    let phaseKickInMapping: [Phase: Phase] = [
         Phase.Idle: Phase.Contact,
         Phase.Momentum: Phase.Contact,
         Phase.PauseAuto: Phase.Contact,
         Phase.PauseManual: Phase.Contact,
         Phase.Tracing: Phase.Tracing
     ]
-    var debounceSetPhaseToMomentumCallSamplingRate = 3
-    var debounceSetPhaseToMomentumCallCount = 2
-    let debounceSetPhaseToMomentum = Utils.debounce(delay: 300) {
-        ScrollPhase.shared.phase = Phase.Momentum
-        ScrollPhase.shared.debounceSetPhaseToMomentumCallCount = ScrollPhase.shared.debounceSetPhaseToMomentumCallSamplingRate - 1
-    }
-    func syncPhase() {
-        if let syncedPhase = syncPhaseValueMapping[phase] {
-            phase = syncedPhase
+    func kickIn() {
+        // 阶段转换
+        if let kickedInPhase = phaseKickInMapping[phase] {
+            phase = kickedInPhase
         }
-        debounceSetPhaseToMomentumCallCount += 1
-        if debounceSetPhaseToMomentumCallCount % debounceSetPhaseToMomentumCallSamplingRate == 0 {
-            debounceSetPhaseToMomentum()
-        }
+        // 应用惯性
+        applyMomentum()
     }
     
-    // MARK: - 滚动阶段递进
-    let consumeValueMapping: [Phase: Phase] = [
+    // MARK: - 阶段转换
+    // 根据转换表, 将 Phase 扭转为下一个阶段
+    let phaseTransfromMapping: [Phase: Phase] = [
         Phase.Contact: Phase.Tracing,
+        // Phase.Tracing: Phase.Tracing,
         Phase.PauseAuto: Phase.Idle,
         Phase.PauseManual: Phase.Idle,
     ]
-    func consume() -> Phase {
-        let prevPhase = phase
-        if let nextPhase = consumeValueMapping[phase] {
+    func transfrom() -> ( prevPhase: Phase, nextPhase: Phase? ) {
+        let prevPhase: Phase = phase
+        // 阶段转换
+        if let nextPhase = phaseTransfromMapping[phase] {
             phase = nextPhase
+            print(prevPhase, nextPhase)
+            return (prevPhase: prevPhase, nextPhase: nextPhase)
         }
-        return prevPhase
+        return (prevPhase: prevPhase, nextPhase: nil)
     }
     
-    // MARK: - 滚动数据附加
-    func attachExtraData(to event: CGEvent) {
-        let prevPhase = ScrollPhase.shared.consume()
-        // 仅作用于 Y 轴事件 (For MX Master)
-        if event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2) == 0.0 {
-            if prevPhase == Phase.PauseAuto || prevPhase == Phase.PauseManual  {
-                // 只有 Phase.PauseManual 对应的 [4.0, 0.0] 可以正确使 Chrome 恢复
-                if let validPhaseValue = PhaseValueMapping[Phase.PauseManual] {
-                    event.setDoubleValueField(.scrollWheelEventScrollPhase, value: validPhaseValue[PhaseItem.Scroll]!)
-                    event.setDoubleValueField(.scrollWheelEventMomentumPhase, value: validPhaseValue[PhaseItem.Momentum]!)
-                }
-            }
-        }
+    // MARK: - 停止
+    func stop(_ nextPhase: Phase = Phase.PauseManual) {
+        phase = nextPhase
     }
+
 }

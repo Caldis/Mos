@@ -49,8 +49,8 @@ class ScrollCore {
         //     ScrollPoster.shared.pauseAuto()
         //     return nil
         // }
-        // 滚动阶段
-        ScrollPhase.shared.syncPhase()
+        // 滚动阶段介入
+        ScrollPhase.shared.kickIn()
         // 是否返回原始事件 (不启用平滑时)
         var returnOriginalEvent = true
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动

@@ -111,13 +111,13 @@ extension ScrollPoster {
         if let validPoster = poster {
             CVDisplayLinkStop(validPoster)
         }
-        // 更新阶段
-        ScrollPhase.shared.phase = phase
+        // 先设置阶段为停止
+        ScrollPhase.shared.stop(phase)
         // 对于 Phase.PauseAuto, 我们在结束前额外发送一个事件来重置 Chrome 的滚动缓冲区
-        if phase == Phase.PauseAuto {
-            post(ref, (y: 0.0, x: 0.0))
-        }
-        // 最后重置参数
+         if phase == Phase.PauseAuto {
+             post(ref, (y: 0.0, x: 0.0))
+         }
+        // 重置参数
         reset()
     }
 }
@@ -153,7 +153,15 @@ private extension ScrollPoster {
     func post(_ r: (event: CGEvent?, proxy: CGEventTapProxy?), _ v: (y: Double, x: Double)) {
         if let proxy = r.proxy, let eventClone = r.event?.copy() {
             // 设置阶段数据
-            ScrollPhase.shared.attachExtraData(to: eventClone)
+            let (_, nextPhase) = ScrollPhase.shared.transfrom()
+            // 仅作用于已停止的 Phase 且 Y 轴事件 (For MX Master)
+            if nextPhase == Phase.Idle && eventClone.getDoubleValueField(.scrollWheelEventPointDeltaAxis2) == 0.0 {
+                // 只有 Phase.PauseManual 对应的 [4.0, 0.0] 可以正确使 Chrome 恢复
+                if let validPhaseValue = PhaseValueMapping[Phase.PauseManual] {
+                    eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: validPhaseValue[PhaseItem.Scroll]!)
+                    eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: validPhaseValue[PhaseItem.Momentum]!)
+                }
+            }
             // 设置滚动数据
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: v.y)
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: v.x)
