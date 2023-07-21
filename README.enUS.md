@@ -10,7 +10,7 @@
 ![Xcode 9.0+](https://img.shields.io/badge/Xcode-9.0%2B-blue.svg)
 ![Swift 4.0+](https://img.shields.io/badge/Swift-4.0%2B-orange.svg)
 
-A free & simple app allow your mouse wheel to scroll smoothly on macOS.
+A free & simple app to allow your mouse wheel to scroll smoothly on macOS.
 
 [中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md)
 
@@ -26,7 +26,7 @@ http://mos.caldis.me/
 - Allows customizing scroll behavior, such as the speed and acceleration.
 - Allows customizing the scrolling behavior for touchpad and mouse wheel separately.
 - Provides an informative graph that shows the scroll events.
-- Built in per app block/allow list support.
+- Built-in per app block/allow list support.
 - Coded with Swift.
 
 
