@@ -9,7 +9,7 @@
 import Cocoa
 
 class Tween: NSObject {
-    class func easeOutQuint(x: Double) -> Double {
-        return 1 - pow(1 - x, 5)
+    class func easeOutExpo(x: Double) -> Double {
+        return x == 1 ? 1 : 1 - pow(2, -10 * x)
     }
 }

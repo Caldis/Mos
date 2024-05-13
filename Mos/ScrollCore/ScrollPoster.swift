@@ -8,6 +8,7 @@
 
 import Cocoa
 
+
 class ScrollPoster {
     
     // 单例
@@ -50,23 +51,23 @@ extension ScrollPoster {
             let remaining = abs(buffer.y - current.y)
             start.y = current.y
             buffer.y += newDeltaY
-            dur = max(dur, 300 + Tween.easeOutQuint(x: (abs(newDeltaY) + remaining).clamped(to: 0 ... 10000) / 10000) * duration)
+            dur = max(dur, 300 + Tween.easeOutExpo(x: (abs(newDeltaY) + remaining).clamped(to: 0 ... 10000) / 10000) * duration)
         } else {
             start.y = 0.0
             current.y = 0.0
             buffer.y = newDeltaY
-            dur = max(dur, 300 + Tween.easeOutQuint(x: abs(newDeltaY).clamped(to: 0 ... 10000) / 10000) * duration)
+            dur = max(dur, 300 + Tween.easeOutExpo(x: abs(newDeltaY).clamped(to: 0 ... 10000) / 10000) * duration)
         }
         if x*delta.x > 0 {
             let remaining = abs(buffer.x - current.x)
             start.x = current.x
             current.x = 0.0
             buffer.x += newDeltaX
-            dur = max(dur, 300 + Tween.easeOutQuint(x: (abs(newDeltaX) + remaining).clamped(to: 0 ... 10000) / 10000) * duration)
+            dur = max(dur, 300 + Tween.easeOutExpo(x: (abs(newDeltaX) + remaining).clamped(to: 0 ... 10000) / 10000) * duration)
         } else {
             start.x = 0.0
             buffer.x = newDeltaX
-            dur = max(dur, 300 + Tween.easeOutQuint(x: abs(newDeltaX).clamped(to: 0 ... 10000) / 10000) * duration)
+            dur = max(dur, 300 + Tween.easeOutExpo(x: abs(newDeltaX).clamped(to: 0 ... 10000) / 10000) * duration)
         }
 
         delta = (y: y, x: x)
@@ -141,9 +142,7 @@ extension ScrollPoster {
             // 需要附加特定的阶段数据, 只有 Phase.PauseManual 对应的 [4.0, 0.0] 可以正确使 Chrome 恢复
             validEvent.setDoubleValueField(.scrollWheelEventScrollPhase, value: PhaseValueMapping[Phase.PauseManual]![PhaseItem.Scroll]!)
             validEvent.setDoubleValueField(.scrollWheelEventMomentumPhase, value: PhaseValueMapping[Phase.PauseManual]![PhaseItem.Momentum]!)
-            do {
-                try  post(ref, (y: 0.0, x: 0.0))
-            } catch {}
+            post(ref, (y: 0.0, x: 0.0))
         }
         // 重置参数
         reset()
@@ -158,7 +157,7 @@ private extension ScrollPoster {
         let diffMs = (now - startTime) * 1000
 
         if (diffMs <= duration) {
-            let perc = Tween.easeOutQuint(x: diffMs / duration)
+            let perc = Tween.easeOutExpo(x: diffMs / duration)
             let oldCurrent = current
             // 计算插值
             current = (
@@ -174,14 +173,12 @@ private extension ScrollPoster {
             // 变换滚动结果
             let shiftedValue = shift(with: filledValue)
             // 发送滚动结果
-            do {
-                try post(ref, shiftedValue)
-            } catch {}
+            post(ref, shiftedValue)
         } else {
             stop(Phase.PauseAuto)
         }
     }
-    func post(_ r: (event: CGEvent?, proxy: CGEventTapProxy?), _ v: (y: Double, x: Double)) throws {
+    func post(_ r: (event: CGEvent?, proxy: CGEventTapProxy?), _ v: (y: Double, x: Double)) {
         if let proxy = r.proxy, let eventClone = r.event?.copy() {
             // 设置阶段数据
             ScrollPhase.shared.transfrom()
@@ -195,6 +192,7 @@ private extension ScrollPoster {
             // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
             // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 也如同 EventTapCallback 所处理的事件, 会被所有后续的 EventTap 接收
             eventClone.tapPostEvent(proxy)
+
         }
     }
 }

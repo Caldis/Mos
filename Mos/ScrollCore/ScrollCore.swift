@@ -251,8 +251,8 @@ class ScrollCore {
         scrollEventInterceptor = Interceptor(
             event: scrollEventMask,
             handleBy: scrollEventCallBack,
-            listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .tailAppendEventTap,
+            listenOn: .cghidEventTap,
+            placeAt: .headInsertEventTap,
             for: .defaultTap
         )
         hotkeyEventInterceptor = Interceptor(
