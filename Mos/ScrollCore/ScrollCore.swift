@@ -122,7 +122,7 @@ class ScrollCore {
                 x: scrollEvent.X.usableValue,
                 speed: speed,
                 amplification: ScrollCore.shared.dashAmplification
-            ).tryStart()
+            )
         }
         // 返回事件对象
         if returnOriginalEvent {

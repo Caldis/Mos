@@ -14,7 +14,7 @@ class ScrollPoster {
     // 单例
     static let shared = ScrollPoster()
     init() { NSLog("Module initialized: ScrollPoster") }
-    
+
     // 插值器
     private let filter = ScrollFilter()
     // 发送器
@@ -30,14 +30,22 @@ class ScrollPoster {
     private var shifting = false
     // 外部依赖
     var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
+    
+    // 是否处于平滑滚动中
+    var isScrolling: Bool {
+        if let validPoster = poster {
+            return CVDisplayLinkIsRunning(validPoster)
+        }
+        return false
+    }
 }
 
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
-    func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
+    func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) {
         // 停止循环
-        if let validPoster = poster {
-            CVDisplayLinkStop(validPoster)
+        if isScrolling {
+            CVDisplayLinkStop(poster!)
         }
         
         // 更新依赖数据
@@ -79,7 +87,7 @@ extension ScrollPoster {
         startTime = NSDate().timeIntervalSince1970
         self.duration = dur
 
-        return self
+        CVDisplayLinkStart(poster!)
     }
     func updateShifting(enable: Bool) {
         shifting = enable
@@ -99,7 +107,9 @@ extension ScrollPoster {
         }
     }
     func brake() {
-        ScrollPoster.shared.buffer = ScrollPoster.shared.current
+        if isScrolling {
+            stop()
+        }
     }
     func reset() {
         // 重置数值
@@ -123,16 +133,6 @@ extension ScrollPoster {
                 ScrollPoster.shared.processing()
                 return kCVReturnSuccess
             }, nil)
-        }
-    }
-    // 启动事件发送器
-    func tryStart() {
-        if let validPoster = poster {
-            if !CVDisplayLinkIsRunning(validPoster) {
-                CVDisplayLinkStart(validPoster)
-                // startTime = NSDate().timeIntervalSince1970
-                processing()
-            }
         }
     }
     // 停止事件发送器
