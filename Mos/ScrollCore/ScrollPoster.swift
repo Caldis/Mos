@@ -35,6 +35,11 @@ class ScrollPoster {
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
     func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
+        // 停止循环
+        if let validPoster = poster {
+            CVDisplayLinkStop(validPoster)
+        }
+        
         // 更新依赖数据
         ref.event = event
         ref.proxy = proxy
@@ -125,7 +130,8 @@ extension ScrollPoster {
         if let validPoster = poster {
             if !CVDisplayLinkIsRunning(validPoster) {
                 CVDisplayLinkStart(validPoster)
-                startTime = NSDate().timeIntervalSince1970
+                // startTime = NSDate().timeIntervalSince1970
+                processing()
             }
         }
     }
@@ -192,7 +198,6 @@ private extension ScrollPoster {
             // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
             // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 也如同 EventTapCallback 所处理的事件, 会被所有后续的 EventTap 接收
             eventClone.tapPostEvent(proxy)
-
         }
     }
 }

@@ -151,7 +151,6 @@
 				0B6D3B692041C348004CC064 /* ScrollEvent.swift */,
 				0B474328258E12A200A5F8A3 /* ScrollPhase.swift */,
 				0B99C5FB2577FC9200021578 /* ScrollPoster.swift */,
-				B433B3B42BDF784B002D293C /* Tween.swift */,
 			);
 			path = ScrollCore;
 			sourceTree = "<group>";
@@ -204,6 +203,7 @@
 		0B6D3B6420419EF5004CC064 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				B433B3B42BDF784B002D293C /* Tween.swift */,
 				22003C6D1E8555F0001220BC /* Utils.swift */,
 				0B12EF5D203C7D650058B169 /* Logger.swift */,
 				0B56DE3F2568DFDB00B4D9AE /* Archieve.swift */,
