@@ -1,3 +1,7 @@
+# [5.0.0]
+
+- 支持 MacOS 14, 解决平滑滚动时崩溃问题
+
 # [2.2.0](https://github.com/Caldis/Mos/releases/tag/2.2.0)
 
 真帅
