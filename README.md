@@ -6,7 +6,7 @@
 - 解决了崩溃问题, 
 - 新增 `匀速平滑` 兼容虚拟机 `parallels` 滚动太长
 
-[匀速平滑](docs/resources/image/uniform-scroll.jpg) 
+  ![匀速平滑](docs/resources/image/uniform-scroll.jpg) 
 
   匀速滚动的值即为匀速单步长度. 0 表示默认不使用匀速.
 
