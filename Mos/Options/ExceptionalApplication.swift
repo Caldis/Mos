@@ -74,6 +74,12 @@ extension ExceptionalApplication {
     func getDuration() -> Double {
         return inherit ? Options.shared.scrollAdvanced.durationTransition : scrollAdvanced.durationTransition
     }
+    
+    // 匀速平滑
+    func getUniform() -> Double {
+        return (inherit ? Options.shared.scrollAdvanced.uniform : scrollAdvanced.uniform) ?? OptionsVal.uniformValD
+    }
+    
     // 功能
     func isSmooth(_ block: Bool) -> Bool {
         if block { return false }

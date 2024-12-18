@@ -1,3 +1,23 @@
+# Mos New
+
+
+原作者没维护了, 拉下来看了下.
+
+- 解决了崩溃问题, 
+- 新增 `匀速平滑` 兼容虚拟机 `parallels` 滚动太长
+
+[匀速平滑](docs/resources/image/uniform-scroll.jpg) 
+
+  匀速滚动的值即为匀速单步长度. 0 表示默认不使用匀速.
+
+  目前只测试了在虚拟机中的行为.
+
+
+
+
+下面是原来的
+
+
 <p align="center">
   <a href="http://mos.caldis.me/">
     <img width="320" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/intro.png?raw=true">

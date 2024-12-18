@@ -55,6 +55,7 @@ extension Options {
         scrollBasic.smooth = UserDefaults.standard.bool(forKey: "smooth")
         scrollBasic.reverse = UserDefaults.standard.bool(forKey: "reverse")
         // 滚动:高级
+        scrollAdvanced.uniform = UserDefaults.standard.double(forKey: "uniform")
         scrollAdvanced.dash = UserDefaults.standard.integer(forKey: "dash")
         scrollAdvanced.toggle = UserDefaults.standard.integer(forKey: "toggle")
         scrollAdvanced.block = UserDefaults.standard.integer(forKey: "block")
@@ -81,6 +82,7 @@ extension Options {
             UserDefaults.standard.set(scrollBasic.smooth, forKey:"smooth")
             UserDefaults.standard.set(scrollBasic.reverse, forKey:"reverse")
             // 滚动:高级
+            UserDefaults.standard.set(scrollAdvanced.uniform, forKey:"uniform")
             UserDefaults.standard.set(scrollAdvanced.dash, forKey:"dash")
             UserDefaults.standard.set(scrollAdvanced.toggle, forKey:"toggle")
             UserDefaults.standard.set(scrollAdvanced.block, forKey:"block")

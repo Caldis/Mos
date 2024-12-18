@@ -23,6 +23,8 @@ class ScrollPoster {
     private var current = (y: 0.0, x: 0.0)  // 当前滚动距离
     private var delta = (y: 0.0, x: 0.0)  // 滚动方向记录
     private var buffer = (y: 0.0, x: 0.0)  // 滚动缓冲距离
+    // 匀速平滑
+    private var uniformVal = OptionsVal.uniformValD
     // 滚动配置
     private var shifting = false
     private var duration = Options.shared.scrollAdvanced.durationTransition
@@ -35,7 +37,8 @@ class ScrollPoster {
 // MARK: - 滚动数据更新控制
 @available(macOS 14.0, *)
 extension ScrollPoster {
-    func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
+    func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, uniform_: Double, amplification: Double = 1) -> Self {
+        uniformVal = uniform_
         // 更新依赖数据
         ref.event = event
         ref.proxy = proxy
@@ -94,7 +97,7 @@ extension ScrollPoster {
 extension ScrollPoster {
     
     func createDisplayLink() {
-        NSLog("poster?.isPaused: \(String(describing: poster?.isPaused))")
+        // NSLog("poster?.isPaused: \(String(describing: poster?.isPaused))")
         // 还在就不用创建, isPaused 判断存在问题, 先不用, 改为每次都用新的
 //        if !(poster?.isPaused ?? true) {
 //            return
@@ -118,7 +121,7 @@ extension ScrollPoster {
          
     @objc func step(displaylink: CADisplayLink) {
         if canRun{
-            print(displaylink.targetTimestamp)
+            // NSLog("displaylink.targetTimestamp: \(displaylink.targetTimestamp)")
             poster = displaylink
             ScrollPoster.shared.processing()
         }
@@ -158,8 +161,53 @@ extension ScrollPoster {
 // MARK: - 数据处理及发送
 @available(macOS 14.0, *)
 private extension ScrollPoster {
+    
     // 处理滚动事件
-    func processing() {
+    func processing(){
+        if (uniformVal != OptionsVal.uniformValD){
+            uniformProssing()
+        } else {
+            learpProcessing()
+        }
+    }
+    
+    // 匀速滚动, 使用界面给的 Uniform Key 值作为步长
+    func uniformProssing() {
+        
+        let uniformStep = uniformVal
+        
+        let xDerection = buffer.x > 0 ? 1.0 : (buffer.x == 0 ? 0:-1.0),
+            yDreaction = buffer.y > 0 ? 1.0 : (buffer.y == 0 ? 0:-1.0)
+        
+        // 更新滚动位置
+        current = (
+            y: current.y + uniformStep * yDreaction,
+            x: current.x + uniformStep * xDerection
+        )
+        // 需要滚动的位置
+        let filledValue = (
+            y: uniformStep * yDreaction,
+            x: uniformStep * xDerection
+        )
+        // 变换滚动结果
+        let shiftedValue = shift(with: filledValue)
+        
+        // NSLog("uniformProssing run shiftedValue \(shiftedValue) \n buffer \(buffer) \n current \(current) \n precision: \(Options.shared.scrollAdvanced.precision)")
+        // 发送滚动结果
+        post(ref, shiftedValue)
+        
+        // 临近目标距离 暂停滚动
+        if (
+            abs(current.y) >= abs(buffer.y) &&
+            abs(current.x) >= abs(buffer.x)
+        ) {
+            NSLog("uniformProssing stop with uniformStep \(uniformStep)")
+            stop(Phase.PauseManual)
+        }
+    }
+    
+    // 处理滚动事件
+    func learpProcessing() {
         // 计算插值
         let frame = (
             y: Interpolator.lerp(src: current.y, dest: buffer.y, trans: duration),
