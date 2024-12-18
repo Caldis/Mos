@@ -8,30 +8,37 @@
 
 import Cocoa
 
+@available(macOS 14.0, *)
 class ScrollPoster {
     
     // 单例
     static let shared = ScrollPoster()
-    init() { NSLog("Module initialized: ScrollPoster") }
+    init() { NSLog("Module initialized: ScrollPosterNew") }
     
     // 插值器
     private let filter = ScrollFilter()
     // 发送器
-    private var poster: CVDisplayLink?
+    private var poster: CADisplayLink?
     // 滚动数据
     private var current = (y: 0.0, x: 0.0)  // 当前滚动距离
     private var delta = (y: 0.0, x: 0.0)  // 滚动方向记录
     private var buffer = (y: 0.0, x: 0.0)  // 滚动缓冲距离
+    // 匀速平滑
+    private var uniformVal = OptionsVal.uniformValD
     // 滚动配置
     private var shifting = false
     private var duration = Options.shared.scrollAdvanced.durationTransition
     // 外部依赖
     var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
+    
+    private var canRun = false
 }
 
 // MARK: - 滚动数据更新控制
+@available(macOS 14.0, *)
 extension ScrollPoster {
-    func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
+    func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, uniform_: Double, amplification: Double = 1) -> Self {
+        uniformVal = uniform_
         // 更新依赖数据
         ref.event = event
         ref.proxy = proxy
@@ -84,33 +91,58 @@ extension ScrollPoster {
     }
 }
 
-// MARK: - 插值数据发送控制
+
+// MARK: - 插值数据发送控制 - 高版本 MacOS
+@available(macOS 14.0, *)
 extension ScrollPoster {
-    // 初始化 CVDisplayLink
-    func create() {
-        // 新建一个 CVDisplayLinkSetOutputCallback 来执行循环
-        CVDisplayLinkCreateWithActiveCGDisplays(&poster)
-        if let validPoster = poster {
-            CVDisplayLinkSetOutputCallback(validPoster, { (displayLink, inNow, inOutputTime, flagsIn, flagsOut, displayLinkContext) -> CVReturn in
-                ScrollPoster.shared.processing()
-                return kCVReturnSuccess
-            }, nil)
+    
+    func createDisplayLink() {
+        // NSLog("poster?.isPaused: \(String(describing: poster?.isPaused))")
+        // 还在就不用创建, isPaused 判断存在问题, 先不用, 改为每次都用新的
+//        if !(poster?.isPaused ?? true) {
+//            return
+//        }
+        // 先销毁上一次的
+        poster?.invalidate()
+        
+//        for one in NSScreen.screens {
+//            one.displayLink(target: self, selector: #selector(step)).add(to: .current, forMode: .eventTracking)
+//        }
+        poster = NSScreen.main?.displayLink(target: self, selector: #selector(step))
+        poster?.add(to: .current, forMode: .default)
+        
+        // MacOS 14 初始化不了
+//        let displaylink = CADisplayLink(target: self,
+//                                        selector: #selector(step))
+//        
+//        displaylink.add(to: .current,
+//                        forMode: RunLoop.Mode.default)
+    }
+         
+    @objc func step(displaylink: CADisplayLink) {
+        if canRun{
+            // NSLog("displaylink.targetTimestamp: \(displaylink.targetTimestamp)")
+            poster = displaylink
+            ScrollPoster.shared.processing()
         }
     }
+    
+    // 初始化 CVDisplayLink
+    func create() {
+        // createDisplayLink()
+    }
+    
     // 启动事件发送器
     func tryStart() {
-        if let validPoster = poster {
-            if !CVDisplayLinkIsRunning(validPoster) {
-                CVDisplayLinkStart(validPoster)
-            }
-        }
+        canRun = true
+        // 检查上一次事件停止了就再启动
+        createDisplayLink()
     }
     // 停止事件发送器
     func stop(_ phase: Phase = Phase.PauseManual) {
         // 停止循环
-        if let validPoster = poster {
-            CVDisplayLinkStop(validPoster)
-        }
+        canRun = false
+        poster?.invalidate()
         // 先设置阶段为停止
         ScrollPhase.shared.stop(phase)
         // 对于 Phase.PauseAuto, 我们在结束前额外发送一个事件来重置 Chrome 的滚动缓冲区
@@ -125,10 +157,57 @@ extension ScrollPoster {
     }
 }
 
+
 // MARK: - 数据处理及发送
+@available(macOS 14.0, *)
 private extension ScrollPoster {
+    
     // 处理滚动事件
-    func processing() {
+    func processing(){
+        if (uniformVal != OptionsVal.uniformValD){
+            uniformProssing()
+        } else {
+            learpProcessing()
+        }
+    }
+    
+    // 匀速滚动, 使用界面给的 Uniform Key 值作为步长
+    func uniformProssing() {
+        
+        let uniformStep = uniformVal
+        
+        let xDerection = buffer.x > 0 ? 1.0 : (buffer.x == 0 ? 0:-1.0),
+            yDreaction = buffer.y > 0 ? 1.0 : (buffer.y == 0 ? 0:-1.0)
+        
+        // 更新滚动位置
+        current = (
+            y: current.y + uniformStep * yDreaction,
+            x: current.x + uniformStep * xDerection
+        )
+        // 需要滚动的位置
+        let filledValue = (
+            y: uniformStep * yDreaction,
+            x: uniformStep * xDerection
+        )
+        // 变换滚动结果
+        let shiftedValue = shift(with: filledValue)
+        
+        // NSLog("uniformProssing run shiftedValue \(shiftedValue) \n buffer \(buffer) \n current \(current) \n precision: \(Options.shared.scrollAdvanced.precision)")
+        // 发送滚动结果
+        post(ref, shiftedValue)
+        
+        // 临近目标距离 暂停滚动
+        if (
+            abs(current.y) >= abs(buffer.y) &&
+            abs(current.x) >= abs(buffer.x)
+        ) {
+            NSLog("uniformProssing stop with uniformStep \(uniformStep)")
+            stop(Phase.PauseManual)
+        }
+    }
+    
+    // 处理滚动事件
+    func learpProcessing() {
         // 计算插值
         let frame = (
             y: Interpolator.lerp(src: current.y, dest: buffer.y, trans: duration),

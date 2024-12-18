@@ -26,6 +26,8 @@
 "cIk-j1-vYt.title" = "请从 访达-应用程序 中再次启动 Mos。(启动台会自动忽略已启动的应用程序)";
 // Advanced
 "iW5-CD-5OC.title" = "高级";
+"R1W-2Q-Veo.title" = "匀速平滑:";
+"r1k-PC-wcP.title" = "当平滑可用时匀速滚动步长. 默认 0 表示不可用匀速";
 "hOO-M8-I1z.title" = "加速键:";
 "Vhz-Rn-lcU.title" = "不使用";
 "Z59-tN-QjE.title" = "加快在长页面时的滚动速度";

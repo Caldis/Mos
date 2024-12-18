@@ -100,8 +100,18 @@ class OPTIONS_SCROLL_BASIC_DEFAULT: Codable {
         didSet {Options.shared.saveOptions()}
     }
 }
+
+struct OptionsVal{
+    static let uniformValD = 0.0
+}
+
 // 滚动参数
 class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
+    // 匀速平滑
+    var uniform: Double? = OptionsVal.uniformValD {
+        didSet {Options.shared.saveOptions()}
+    }
+    
     // 高级
     var dash:Int? = 0 {
         didSet {Options.shared.saveOptions()}

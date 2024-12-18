@@ -26,6 +26,8 @@
 "cIk-j1-vYt.title" = "You need to re-run Mos from Finder-Application instead of the launch pad. (The launch pad will automatically ignore the launched app)";
 // Advanced
 "iW5-CD-5OC.title" = "Advanced";
+"R1W-2Q-Veo.title" = "Uniform Key:";
+"r1k-PC-wcP.title" = "Scrolling uniform step which enabled on smooth. 0 is disabled";
 "hOO-M8-I1z.title" = "Dash Key:";
 "Vhz-Rn-lcU.title" = "Disabled";
 "Z59-tN-QjE.title" = "Increase scrolling speed on long pages";

@@ -26,6 +26,8 @@
 "cIk-j1-vYt.title" = "您需要從 Finder 中的「應用程式」而不是從「啟動台」重新執行 Mos。（「啟動台」會自動忽略已啟動的應用程式）";
 // Advanced
 "iW5-CD-5OC.title" = "進階";
+"R1W-2Q-Veo.title" = "均速順暢:";
+"r1k-PC-wcP.title" = "當滑動功能可用時，就會以均速進行滾動步长. 預設 0 表示無法使用均速";
 "hOO-M8-I1z.title" = "加速鍵：";
 "Vhz-Rn-lcU.title" = "停用";
 "Z59-tN-QjE.title" = "加快在長頁面的捲動速度";

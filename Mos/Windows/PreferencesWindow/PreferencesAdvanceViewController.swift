@@ -16,6 +16,11 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBOutlet weak var dashKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var toggleKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var disableKeyPopUpButton: NSPopUpButton!
+    
+    // 匀速平滑
+    @IBOutlet weak var scrollUniformInput: NSTextField!
+    @IBOutlet weak var scrollUniformStepper: NSStepper!
+    
     @IBOutlet weak var scrollStepSlider: NSSlider!
     @IBOutlet weak var scrollStepInput: NSTextField!
     @IBOutlet weak var scrollStepStepper: NSStepper!
@@ -32,10 +37,27 @@ class PreferencesAdvanceViewController: NSViewController {
     
     override func viewDidLoad() {
         // 禁止自动 Focus
+        scrollUniformInput.refusesFirstResponder = true     // 设置以保证 input 行为正常, 不然不知为何 input 某些时候总有个 10 的最小值无法更改
         scrollStepInput.refusesFirstResponder = true
         scrollSpeedInput.refusesFirstResponder = true
         scrollDurationInput.refusesFirstResponder = true
         // 读取设置
+        syncViewWithOptions()
+    }
+    
+    
+    // 匀速平滑
+    @IBAction func scrollUniformInputChange(_ sender: NSTextField) {
+        NSLog("scrollUniformInputChange val: \(sender.doubleValue)")
+        setScrollUniform(value: sender.doubleValue)
+    }
+    
+    @IBAction func scrollUniformStepperChange(_ sender: NSStepper) {
+        NSLog("scrollUniformStepperChange val: \(sender.doubleValue)")
+        setScrollUniform(value: sender.doubleValue)
+    }
+    func setScrollUniform(value: Double) {
+        getTargetApplicationScrollOptions().uniform = value
         syncViewWithOptions()
     }
     
@@ -130,6 +152,20 @@ extension PreferencesAdvanceViewController {
             dashKeyPopUpButton.selectItem(at: 0)
         }
         dashKeyPopUpButton.isEnabled = enabled
+        
+        // 匀速平滑
+        let uniform = scroll.uniform ?? 0.0
+        let strVal = String(format: "%.2f", uniform)
+        // NSLog("syncViewWithOptions uniform: \(strVal)")
+        
+        scrollUniformStepper.doubleValue = uniform
+        scrollUniformStepper.isEnabled = enabled
+        // NSLog("syncViewWithOptions uniform last scrollUniformInput.stringValue: \(scrollUniformInput.stringValue)")
+        scrollUniformInput.stringValue = strVal
+        scrollUniformInput.isEnabled = enabled
+        // NSLog("syncViewWithOptions uniform current scrollUniformInput.stringValue: \(scrollUniformInput.stringValue)")
+        // NSLog("==== syncViewWithOptions ====")
+        
         // 转换
         if let index = MODIFIER_KEY_SET.all.codes.firstIndex(of: CGKeyCode(scroll.toggle ?? 0)) {
             toggleKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)

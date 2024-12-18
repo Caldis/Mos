@@ -63,13 +63,15 @@ class ScrollCore {
             enableReverse = false
         var step = Options.shared.scrollAdvanced.step,
             speed = Options.shared.scrollAdvanced.speed,
-            duration = Options.shared.scrollAdvanced.durationTransition
+            duration = Options.shared.scrollAdvanced.durationTransition,
+            uniform_ = Options.shared.scrollAdvanced.uniform ?? OptionsVal.uniformValD
         if let exceptionalApplication = ScrollCore.shared.exceptionalApplication {
             enableSmooth = exceptionalApplication.isSmooth(ScrollCore.shared.blockSmooth)
             enableReverse = exceptionalApplication.isReverse()
             step = exceptionalApplication.getStep()
             speed = exceptionalApplication.getSpeed()
             duration = exceptionalApplication.getDuration()
+            uniform_ = exceptionalApplication.getUniform()
         } else if !Options.shared.general.allowlist {
             enableSmooth = Options.shared.scrollBasic.smooth && !ScrollCore.shared.blockSmooth
             enableReverse = Options.shared.scrollBasic.reverse
@@ -121,6 +123,7 @@ class ScrollCore {
                 y: scrollEvent.Y.usableValue,
                 x: scrollEvent.X.usableValue,
                 speed: speed,
+                uniform_: uniform_,
                 amplification: ScrollCore.shared.dashAmplification
             ).tryStart()
         }
