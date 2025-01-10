@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -58,6 +58,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0B02ADA62D312AB500DE4132 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
+		0B02ADA72D312AB500DE4132 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Localizable.strings; sourceTree = "<group>"; };
+		0B02ADA82D312ABB00DE4132 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Main.strings; sourceTree = "<group>"; };
+		0B02ADA92D312ABB00DE4132 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0B0D5B5A2066195A0077C2AC /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		0B0D5B5C206619680077C2AC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		0B0D5B5D2066197B0077C2AC /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -378,6 +382,8 @@
 				de,
 				"zh-Hant-TW",
 				"zh-Hant-HK",
+				el,
+				uk,
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			packageReferences = (
@@ -474,6 +480,8 @@
 				0B7C970A253F1C0200B26AF3 /* de */,
 				0B6EC89125E8CFFB0073A50B /* zh-Hant-TW */,
 				0B6EC89325E8D0160073A50B /* zh-Hant-HK */,
+				0B02ADA62D312AB500DE4132 /* el */,
+				0B02ADA82D312ABB00DE4132 /* uk */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -491,6 +499,8 @@
 				0B7C970B253F1C0300B26AF3 /* de */,
 				0B6EC89225E8CFFB0073A50B /* zh-Hant-TW */,
 				0B6EC89425E8D0160073A50B /* zh-Hant-HK */,
+				0B02ADA72D312AB500DE4132 /* el */,
+				0B02ADA92D312ABB00DE4132 /* uk */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -623,7 +633,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "-";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2022.10.08;
@@ -659,7 +669,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_IDENTITY = "-";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2022.10.08;
