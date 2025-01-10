@@ -1,0 +1,34 @@
+/*
+  Localizable.strings
+  Mos
+  In-code text internationalization
+  Created by dittohead on July, 11, 2024.
+  Copyright © 2017年 Caldis. All rights reserved.
+*/
+
+// Global
+"Ensure" = "Підтвердити";
+"Cancel" = "Скасувати";
+"Version" = "Версія";
+"Done" = "Готово";
+"Error" = "Помилка";
+
+// Status Bar Icon Menu
+"Needs access to Accessibility controls" = "Необхідно надати доступ до Доступності";
+"Scroll Monitor" = " Моніторінг прокрутки";
+"Preferences" = " Налаштування";
+"Quit" = " Вийти";
+"Hide Icon" = "Сховати іконку";
+
+// Notification
+"Mos is running in the background" = "Mos працює у фоновому режимі";
+"Mos' status bar icon is hidden" = "Іконка Mos у статусному рядку схована";
+"Got it" = "Зрозуміло";
+"Show it" = "Показати";
+
+// Preferences
+"Current Version" = "Поточна версія";
+
+// Welcome Window
+"Allow to access" = "Дозволити";
+"Begin smooth" = "Почати плавний скрол";
