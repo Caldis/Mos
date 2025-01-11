@@ -349,7 +349,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0930;
-				LastUpgradeCheck = 1420;
+				LastUpgradeCheck = 1620;
 				ORGANIZATIONNAME = Caldis;
 				TargetAttributes = {
 					22142D9F1E25344E00E4BFBF = {
@@ -636,7 +636,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2022.10.08;
+				CURRENT_PROJECT_VERSION = 2024.01.11;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -648,7 +648,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 3.4.1;
+				MARKETING_VERSION = 3.5.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -672,7 +672,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2022.10.08;
+				CURRENT_PROJECT_VERSION = 2024.01.11;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 2H959AEV62;
@@ -684,7 +684,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 3.4.1;
+				MARKETING_VERSION = 3.5.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
