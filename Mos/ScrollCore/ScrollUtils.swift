@@ -60,7 +60,7 @@ class ScrollUtils {
         return cachedRunningApplication
     }
     
-    // 判断 LaunchPad 是否激活
+    // 判断目标是否为 Chrome
     func isEventTargetingChrome(_ event: CGEvent?) -> Bool {
         guard let validEvent = event else {
             return false
@@ -82,6 +82,7 @@ class ScrollUtils {
             return false
         }
         // 10.15 以上直接判断是否为 Dock
+        // FIXME: 当 Dock 的目录设置为 "叠放" 时, 应用对 Dock 的目录预览无法平滑, 且发送平滑后的滚动事件无法被识别, 需要找别的方式
         if #available(OSX 10.15, *) {
             if validRunningApplication.executableURL?.path == "/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock" {
                 launchpadActiveCache = true
