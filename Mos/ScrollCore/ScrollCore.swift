@@ -122,7 +122,7 @@ class ScrollCore {
                 x: scrollEvent.X.usableValue,
                 speed: speed,
                 amplification: ScrollCore.shared.dashAmplification
-            ).tryStart()
+            )
         }
         // 返回事件对象
         if returnOriginalEvent {
@@ -251,8 +251,8 @@ class ScrollCore {
         scrollEventInterceptor = Interceptor(
             event: scrollEventMask,
             handleBy: scrollEventCallBack,
-            listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .tailAppendEventTap,
+            listenOn: .cghidEventTap,
+            placeAt: .headInsertEventTap,
             for: .defaultTap
         )
         hotkeyEventInterceptor = Interceptor(

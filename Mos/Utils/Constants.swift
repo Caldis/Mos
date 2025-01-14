@@ -118,11 +118,11 @@ class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
     var speed = 3.00 {
         didSet {Options.shared.saveOptions()}
     }
-    var duration = 3.90 {
+    var duration = 2.00 {
         willSet {self.durationTransition = OPTIONS_SCROLL_ADVANCED_DEFAULT.generateDurationTransition(with: newValue)}
         didSet {Options.shared.saveOptions()}
     }
-    var durationTransition = 0.1340 {
+    var durationTransition = 500.0 {
         didSet {}
     }
     var precision = 1.00 {
@@ -130,12 +130,7 @@ class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
     }
     // 工具
     static func generateDurationTransition(with duration: Double) -> Double {
-        // 上界, 此处需要与界面的 Slider 上界保持同步, 并添加 0.2 的偏移令结果不为 0
-        let upperLimit = 5.0 + 0.2
-        // 生成数据 (https://www.wolframalpha.com/input/?i=1+-+(sqrt+x%2F5)+%3D+y)
-        let val = 1-(duration/upperLimit).squareRoot()
-        // 三位小数
-        return Double(round(1000 * val)/1000)
+        return Double((duration - 1) * 500)
     }
 }
 extension OPTIONS_SCROLL_ADVANCED_DEFAULT: Equatable {

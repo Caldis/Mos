@@ -8,50 +8,86 @@
 
 import Cocoa
 
+
 class ScrollPoster {
     
     // 单例
     static let shared = ScrollPoster()
     init() { NSLog("Module initialized: ScrollPoster") }
-    
+
     // 插值器
     private let filter = ScrollFilter()
     // 发送器
     private var poster: CVDisplayLink?
     // 滚动数据
+    private var startTime = 0.0 // 起始滚动时间
+    private var start = (y: 0.0, x: 0.0) // 起始滚动位置
     private var current = (y: 0.0, x: 0.0)  // 当前滚动距离
     private var delta = (y: 0.0, x: 0.0)  // 滚动方向记录
     private var buffer = (y: 0.0, x: 0.0)  // 滚动缓冲距离
+    private var duration = 300.0 // 最终计算后的过渡时长
     // 滚动配置
     private var shifting = false
-    private var duration = Options.shared.scrollAdvanced.durationTransition
     // 外部依赖
     var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
+    
+    // 是否处于平滑滚动中
+    var isScrolling: Bool {
+        if let validPoster = poster {
+            return CVDisplayLinkIsRunning(validPoster)
+        }
+        return false
+    }
 }
 
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
-    func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
+    func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) {
+        // 停止循环
+        if isScrolling {
+            CVDisplayLinkStop(poster!)
+        }
+        
         // 更新依赖数据
         ref.event = event
         ref.proxy = proxy
-        // 更新滚动配置
-        self.duration = duration
+
+        let newDeltaY = y * speed * amplification
+        let newDeltaX = x * speed * amplification
+
+        // 根据待滚动距离计算所需过渡时长，以 300ms 为最小持续时长，到达 10000px 时持续时长达到最大，时长非线性递增
+        // x，y 所需时长谁大取谁
+        var dur = 0.0
+
         // 更新滚动数据
         if y*delta.y > 0 {
-            buffer.y += y * speed * amplification
+            let remaining = abs(buffer.y - current.y)
+            start.y = current.y
+            buffer.y += newDeltaY
+            dur = max(dur, 300 + Tween.easeOutExpo(x: (abs(newDeltaY) + remaining).clamped(to: 0 ... 10000) / 10000) * duration)
         } else {
-            buffer.y = y * speed * amplification
+            start.y = 0.0
             current.y = 0.0
+            buffer.y = newDeltaY
+            dur = max(dur, 300 + Tween.easeOutExpo(x: abs(newDeltaY).clamped(to: 0 ... 10000) / 10000) * duration)
         }
         if x*delta.x > 0 {
-            buffer.x += x * speed * amplification
-        } else {
-            buffer.x = x * speed * amplification
+            let remaining = abs(buffer.x - current.x)
+            start.x = current.x
             current.x = 0.0
+            buffer.x += newDeltaX
+            dur = max(dur, 300 + Tween.easeOutExpo(x: (abs(newDeltaX) + remaining).clamped(to: 0 ... 10000) / 10000) * duration)
+        } else {
+            start.x = 0.0
+            buffer.x = newDeltaX
+            dur = max(dur, 300 + Tween.easeOutExpo(x: abs(newDeltaX).clamped(to: 0 ... 10000) / 10000) * duration)
         }
+
         delta = (y: y, x: x)
-        return self
+        startTime = NSDate().timeIntervalSince1970
+        self.duration = dur
+
+        CVDisplayLinkStart(poster!)
     }
     func updateShifting(enable: Bool) {
         shifting = enable
@@ -71,7 +107,9 @@ extension ScrollPoster {
         }
     }
     func brake() {
-        ScrollPoster.shared.buffer = ScrollPoster.shared.current
+        if isScrolling {
+            stop()
+        }
     }
     func reset() {
         // 重置数值
@@ -95,14 +133,6 @@ extension ScrollPoster {
                 ScrollPoster.shared.processing()
                 return kCVReturnSuccess
             }, nil)
-        }
-    }
-    // 启动事件发送器
-    func tryStart() {
-        if let validPoster = poster {
-            if !CVDisplayLinkIsRunning(validPoster) {
-                CVDisplayLinkStart(validPoster)
-            }
         }
     }
     // 停止事件发送器
@@ -129,27 +159,28 @@ extension ScrollPoster {
 private extension ScrollPoster {
     // 处理滚动事件
     func processing() {
-        // 计算插值
-        let frame = (
-            y: Interpolator.lerp(src: current.y, dest: buffer.y, trans: duration),
-            x: Interpolator.lerp(src: current.x, dest: buffer.x, trans: duration)
-        )
-        // 更新滚动位置
-        current = (
-            y: current.y + frame.y,
-            x: current.x + frame.x
-        )
-        // 平滑滚动结果
-        let filledValue = filter.fill(with: frame)
-        // 变换滚动结果
-        let shiftedValue = shift(with: filledValue)
-        // 发送滚动结果
-        post(ref, shiftedValue)
-        // 如果临近目标距离小于精确度门限则暂停滚动
-        if (
-            frame.y.magnitude <= Options.shared.scrollAdvanced.precision &&
-            frame.x.magnitude <= Options.shared.scrollAdvanced.precision
-        ) {
+        let now = NSDate().timeIntervalSince1970
+        let diffMs = (now - startTime) * 1000
+
+        if (diffMs <= duration) {
+            let perc = Tween.easeOutExpo(x: diffMs / duration)
+            let oldCurrent = current
+            // 计算插值
+            current = (
+                y: (buffer.y - start.y) * perc + start.y,
+                x: (buffer.x - start.x) * perc + start.x
+            )
+            let nextDelta = (
+                y: current.y - oldCurrent.y,
+                x: current.x - oldCurrent.x
+            )
+            // 平滑滚动结果
+            let filledValue = filter.fill(with: nextDelta)
+            // 变换滚动结果
+            let shiftedValue = shift(with: filledValue)
+            // 发送滚动结果
+            post(ref, shiftedValue)
+        } else {
             stop(Phase.PauseAuto)
         }
     }
