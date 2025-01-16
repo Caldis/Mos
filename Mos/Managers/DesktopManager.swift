@@ -1,5 +1,5 @@
 //
-//  MissionControlManager.swift
+//  DesktopManager.swift
 //  Mos
 //
 //  Created by Caldis on 2025/1/16.
@@ -8,9 +8,9 @@
 
 import Cocoa
 
-final class DesktopControlManager {
+final class DesktopManager {
     // MARK: - Singleton
-    static let shared = DesktopControlManager()
+    static let shared = DesktopManager()
     private init() {}
     
     // MARK: - Types
@@ -187,20 +187,20 @@ private enum MacKeyCode: CGKeyCode {
 }
 
 // MARK: - Usage Example
-extension DesktopControlManager {
+extension DesktopManager {
     static func example() {
         do {
             // 触发 Mission Control
-            try DesktopControlManager.shared.toggleMissionControl()
+            try DesktopManager.shared.toggleMissionControl()
             
             // 触发 Launchpad
-            try DesktopControlManager.shared.toggleLaunchpad()
+            try DesktopManager.shared.toggleLaunchpad()
             
             // 向左移动一个桌面空间
-            try DesktopControlManager.shared.moveToLeftSpace()
+            try DesktopManager.shared.moveToLeftSpace()
             
             // 向右移动一个桌面空间
-            try DesktopControlManager.shared.moveToRightSpace()
+            try DesktopManager.shared.moveToRightSpace()
         } catch DesktopControlError.accessibilityNotAuthorized {
             print("需要辅助功能权限")
         } catch {
