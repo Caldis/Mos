@@ -13,17 +13,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // 运行前预处理
     func applicationWillFinishLaunching(_ notification: Notification) {
-        // DEBUG
-        // 清空用户设置
-        // UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
-        // 直接弹出设置窗口
-        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
-        
         // 开始
         // 禁止重复运行
         Utils.preventMultiRunning(killExist: true)
         // 读取用户设置
         Options.shared.readOptions()
+        // DEBUG: 清空用户设置
+        // UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+        
+        // 直接弹出设置窗口
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
+        
         // 监听用户切换, 在切换用户 session 时停止运行
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
