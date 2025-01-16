@@ -247,30 +247,34 @@ class ScrollCore {
         // Guard
         if isActive { return }
         isActive = true
-        // 截取事件
-        scrollEventInterceptor = Interceptor(
-            event: scrollEventMask,
-            handleBy: scrollEventCallBack,
-            listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .tailAppendEventTap,
-            for: .defaultTap
-        )
-        hotkeyEventInterceptor = Interceptor(
-            event: hotkeyEventMask,
-            handleBy: hotkeyEventCallBack,
-            listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .tailAppendEventTap,
-            for: .listenOnly
-        )
-        mouseEventInterceptor = Interceptor(
-            event: mouseLeftEventMask,
-            handleBy: mouseLeftEventCallBack,
-            listenOn: .cgAnnotatedSessionEventTap,
-            placeAt: .tailAppendEventTap,
-            for: .listenOnly
-        )
-        // 初始化滚动事件发送器
-        ScrollPoster.shared.create()
+        // 启动事件拦截层
+        do {
+            scrollEventInterceptor = try Interceptor(
+                event: scrollEventMask,
+                handleBy: scrollEventCallBack,
+                listenOn: .cgAnnotatedSessionEventTap,
+                placeAt: .tailAppendEventTap,
+                for: .defaultTap
+            )
+            hotkeyEventInterceptor = try Interceptor(
+                event: hotkeyEventMask,
+                handleBy: hotkeyEventCallBack,
+                listenOn: .cgAnnotatedSessionEventTap,
+                placeAt: .tailAppendEventTap,
+                for: .listenOnly
+            )
+            mouseEventInterceptor = try Interceptor(
+                event: mouseLeftEventMask,
+                handleBy: mouseLeftEventCallBack,
+                listenOn: .cgAnnotatedSessionEventTap,
+                placeAt: .tailAppendEventTap,
+                for: .listenOnly
+            )
+            // 初始化滚动事件发送器
+            ScrollPoster.shared.create()
+        } catch {
+            print("[ScrollCore] Create Interceptor failure: \(error)")
+        }
     }
     // 停止
     func endHandlingScroll() {
