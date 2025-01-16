@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B02ADB12D38EDA000DE4132 /* DesktopControlManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B02ADB02D38EDA000DE4132 /* DesktopControlManager.swift */; };
 		0B12EF1A203AD9C80058B169 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF19203AD9C80058B169 /* Options.swift */; };
 		0B12EF1D203ADD230058B169 /* ScrollUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF1C203ADD230058B169 /* ScrollUtils.swift */; };
 		0B12EF1F203ADFB10058B169 /* Interpolator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF1E203ADFB10058B169 /* Interpolator.swift */; };
@@ -62,6 +63,7 @@
 		0B02ADA72D312AB500DE4132 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0B02ADA82D312ABB00DE4132 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Main.strings; sourceTree = "<group>"; };
 		0B02ADA92D312ABB00DE4132 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		0B02ADB02D38EDA000DE4132 /* DesktopControlManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopControlManager.swift; sourceTree = "<group>"; };
 		0B0D5B5A2066195A0077C2AC /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		0B0D5B5C206619680077C2AC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		0B0D5B5D2066197B0077C2AC /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -223,6 +225,7 @@
 				0B6D3B672041A790004CC064 /* WindowManager.swift */,
 				23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */,
 				0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */,
+				0B02ADB02D38EDA000DE4132 /* DesktopControlManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -449,6 +452,7 @@
 				0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */,
 				23E9673F23613D1100E652F6 /* PreferencesExceptionInputViewController.swift in Sources */,
 				232E50A7236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift in Sources */,
+				0B02ADB12D38EDA000DE4132 /* DesktopControlManager.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
 				0BE4C93B20617C6E0001EA0E /* ScrollFilter.swift in Sources */,
 				0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */,

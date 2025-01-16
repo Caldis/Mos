@@ -17,7 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 清空用户设置
         // UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
         // 直接弹出设置窗口
-        // WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
         
         // 开始
         // 禁止重复运行
