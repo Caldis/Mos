@@ -69,13 +69,11 @@ extension Interceptor {
         // 启动拦截层
         CGEvent.tapEnable(tap: tap, enable: true)
         // 启动守护
-        keeper = Timer.scheduledTimer(
-            timeInterval: 5.0,
-            target: self,
-            selector: #selector(check),
-            userInfo: nil,
-            repeats: true
-        )
+        keeper = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
+            if let self = self, !self.isRunning() {
+                self.restart()
+            }
+        }
     }
     
     public func stop() {
