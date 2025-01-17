@@ -44,11 +44,6 @@ class ScrollCore {
         if ScrollEvent.isTrackpad(with: event) {
             return Unmanaged.passUnretained(event)
         }
-        // 切换目标窗时停止滚动 (DEPRECATED: 目前直接往 EventTap 发送 Event)
-        // if ScrollUtils.shared.isTargetChanged(event) {
-        //     ScrollPoster.shared.pauseAuto()
-        //     return nil
-        // }
         // 滚动阶段介入
         ScrollPhase.shared.kickIn()
         // 是否返回原始事件 (不启用平滑时)
