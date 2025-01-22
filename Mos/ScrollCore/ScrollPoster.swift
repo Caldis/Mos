@@ -166,7 +166,10 @@ private extension ScrollPoster {
             // EventTapProxy 标识了 EventTapCallback 在事件流中接收到事件的特定位置, 其粒度小于 tap 本身
             // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
             // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 也如同 EventTapCallback 所处理的事件, 会被所有后续的 EventTap 接收
-            eventClone.tapPostEvent(proxy)
+            // fixed by @shichangone MR: https://github.com/Caldis/Mos/pull/523
+            DispatchQueue.main.async {
+                eventClone.tapPostEvent(proxy)
+            }
         }
     }
 }
