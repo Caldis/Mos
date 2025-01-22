@@ -1,42 +1,27 @@
 {
-  "name": "Mos-Homepage",
-  "version": "1.0.0",
-  "description": "A lightweight tool used to smooth scrolling and set scroll direction independently for your mouse on MacOS",
-  "main": "./src/index.js",
+  "name": "mos-home",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "dev": "webpack-serve --mode development --open --hot",
-    "dist": "webpack --mode production"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Caldis/Mos.git"
-  },
-  "keywords": [
-    "Mos",
-    "homepage"
-  ],
-  "author": "Caldis",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Caldis/Mos/issues"
-  },
-  "homepage": "mos.u2sk.com",
-  "devDependencies": {
-    "babel-loader": "^7.1.4",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "css-loader": "^3.2.1",
-    "extract-text-webpack-plugin": "^3.0.2",
-    "file-loader": "^1.1.11",
-    "html-webpack-plugin": "^3.1.0",
-    "node-sass": "^4.8.3",
-    "sass-loader": "^6.0.7",
-    "style-loader": "^0.20.3",
-    "webpack": "^4.2.0",
-    "webpack-cli": "^3.3.10",
-    "webpack-serve": "^0.3.0"
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "babel-core": "^6.26.3"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "next": "15.1.5"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.5",
+    "@eslint/eslintrc": "^3"
   }
 }

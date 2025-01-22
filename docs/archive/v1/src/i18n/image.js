@@ -9,19 +9,19 @@
     // 国际化对照表
     var i18nLanguageMappingList = {
         detailImageA: {
-            zh: "./resources/image/cn/PreferencesGeneral.png",
-            en: "./resources/image/en/PreferencesGeneral.png",
-            ru: "./resources/image/ru/PreferencesGeneral.png"
+            zh: "./assets/image/cn/PreferencesGeneral.png",
+            en: "./assets/image/en/PreferencesGeneral.png",
+            ru: "./assets/image/ru/PreferencesGeneral.png"
         },
         detailImageB: {
-            zh: "./resources/image/cn/PreferencesAdvanced.png",
-            en: "./resources/image/en/PreferencesAdvanced.png",
-            ru: "./resources/image/ru/PreferencesAdvanced.png"
+            zh: "./assets/image/cn/PreferencesAdvanced.png",
+            en: "./assets/image/en/PreferencesAdvanced.png",
+            ru: "./assets/image/ru/PreferencesAdvanced.png"
         },
         detailImageC: {
-            zh: "./resources/image/cn/PreferencesExceptionFull.png",
-            en: "./resources/image/en/PreferencesExceptionFull.png",
-            ru: "./resources/image/ru/PreferencesException.png"
+            zh: "./assets/image/cn/PreferencesExceptionFull.png",
+            en: "./assets/image/en/PreferencesExceptionFull.png",
+            ru: "./assets/image/ru/PreferencesException.png"
         }
     }
     // 国际化页面文字
