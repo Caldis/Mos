@@ -1,7 +1,7 @@
 # docs
-docs/.idea
-docs/.next
-docs/node_modules
+website/.idea
+website/.next
+website/node_modules
 
 # macOS
 .DS_Store
