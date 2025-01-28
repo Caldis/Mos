@@ -14,7 +14,7 @@ export function DownloadButton() {
       rel="noopener noreferrer"
     >
       <button className="px-6 py-2.5 bg-zinc-800 text-white dark:bg-zinc-800 dark:text-white rounded-lg font-bold text-sm tracking-wider hover:bg-zinc-700 dark:hover:bg-zinc-700 transition-all hover:scale-105">
-        <ShinyText text="Download for Mac" disabled={false} speed={3} />
+        <ShinyText text="Download for Mac" speed={3} />
       </button>
     </a>
   );

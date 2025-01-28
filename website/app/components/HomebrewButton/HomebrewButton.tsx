@@ -36,6 +36,7 @@ export function HomebrewButton() {
 
   return (
     <>
+      <span>•</span>
       <span
         onClick={() => setIsOpen(true)}
         className="cursor-pointer hover:text-white/90 transition-colors"

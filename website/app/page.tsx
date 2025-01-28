@@ -5,6 +5,7 @@ import { Squares } from "./components/SquaresBackground";
 import { GithubVersion } from "./components/GithubVersion";
 import { HomebrewButton } from "./components/HomebrewButton";
 import { DownloadButton } from "./components/DownloadButton";
+import { ShinyText } from "./components/ShinyText";
 
 const spaceMono = Space_Mono({
   weight: ["400", "700"],
@@ -20,28 +21,28 @@ export default function Home() {
   return (
     <div className={`w-screen h-screen relative ${poppins.className}`}>
       {/* 导航栏 */}
-      <nav className="fixed top-0 left-1/2 -translate-x-1/2 w-[90vw] h-16 mt-6 px-6 flex items-center justify-between backdrop-blur-md bg-black/30 dark:bg-white/5 z-50 rounded-2xl border border-white/10 dark:border-white/5 shadow-lg shadow-black/5">
+      <nav className="fixed top-0 left-1/2 -translate-x-1/2 w-[90vw] h-16 mt-6 px-6 flex items-center justify-between backdrop-blur-md bg-black/30 z-50 rounded-2xl border border-white/10 shadow-lg shadow-black/5">
         <div className="flex items-center gap-3">
           {/* Logo */}
           <Image
             src={logoM}
-            alt="mos-logo"
+            alt="logo"
             width={32}
             height={32}
             className="rounded-lg object-contain"
           />
-          <span className="text-lg font-medium text-white dark:text-white">
-            mos
+          <span className="text-lg font-bold text-white">
+            Mos
           </span>
         </div>
         {/* 导航链接 */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           {/* docs */}
           <a
             href="https://github.com/Caldis/Mos/wiki"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white/60 hover:text-white/90 transition-colors text-sm font-bold flex items-center gap-2"
+            className="text-white/60 hover:text-white/90 transition-colors text-sm font-bold flex items-center gap-1.5"
           >
             <svg
               viewBox="0 0 24 24"
@@ -57,7 +58,7 @@ export default function Home() {
             href="https://github.com/Caldis/Mos"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white/60 hover:text-white/90 transition-colors text-sm font-bold flex items-center gap-2"
+            className="text-white/60 hover:text-white/90 transition-colors text-sm font-bold flex items-center gap-1.5"
           >
             <svg
               viewBox="0 0 24 24"
@@ -86,10 +87,10 @@ export default function Home() {
 
         {/* 内容 */}
         <div className="relative z-10 text-center w-[65vw]">
-          <h1 className="text-5xl sm:text-6xl font-bold mb-6 text-white dark:text-white">
-            Scroll smoothly with mos
+          <h1 className="text-5xl sm:text-6xl font-bold mb-6 text-[#ebebebcc]">
+            Scroll <ShinyText text="smoothly" speed={3} /> with Mos
           </h1>
-          <p className="text-xl text-gray-300 dark:text-gray-300 mb-8">
+          <p className="text-xl text-gray-300 mb-8">
             Mos is powerful tools allow your mouse to scroll smoothly on macOS.
           </p>
         </div>
@@ -109,13 +110,11 @@ export default function Home() {
           </a>
         </div>
         <div
-          className={`flex items-center text-xs tracking-wide text-gray-400 dark:text-gray-400 space-x-4 ${spaceMono.className}`}
+          className={`flex items-center text-xs tracking-wide text-gray-400 space-x-4 ${spaceMono.className}`}
         >
-          <GithubVersion />
-          <span>•</span>
-          <span>macOS 10+</span>
-          <span>•</span>
+          <span>macOS 10.13+</span>
           <HomebrewButton />
+          <GithubVersion />
         </div>
       </footer>
     </div>

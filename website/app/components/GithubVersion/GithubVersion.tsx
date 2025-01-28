@@ -4,5 +4,11 @@ import { useGithubRelease } from "@/app/services/github";
 
 export function GithubVersion() {
   const { data } = useGithubRelease();
-  return <span>{data?.tag_name ? `v${data?.tag_name}` : "-"}</span>;
+  if (!data?.tag_name) return null
+  return (
+    <>
+      <span>•</span>
+      <span>v{data?.tag_name}</span>
+    </>
+  );
 }
