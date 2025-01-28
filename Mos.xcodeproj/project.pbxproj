@@ -647,6 +647,8 @@
 				DEVELOPMENT_TEAM = 2H959AEV62;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = Mos/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Mos;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -683,6 +685,8 @@
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_OPTIMIZATION_LEVEL = fast;
 				INFOPLIST_FILE = Mos/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Mos;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
