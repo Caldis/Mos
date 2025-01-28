@@ -1,0 +1,1 @@
+export { ShinyText } from './ShinyText'

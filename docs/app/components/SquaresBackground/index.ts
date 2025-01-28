@@ -1,0 +1,1 @@
+export { Squares } from './SquaresBackground';
