@@ -12,7 +12,8 @@
 
 Бесплатное и простое приложение, позволяющее колесу мыши плавно прокручиваться в macOS.
 
-[中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md)
+[中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md) |
+[Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md)
 
 
 ## Главная страница
@@ -37,7 +38,7 @@ http://mos.caldis.me/
 Если вы хотите установить приложение с помощью [Homebrew](https://brew.sh):
 
 ```bash
-$ brew install mos
+$ brew install --cask mos
 ```
 
 Приложение будет находится по адресу `/Applications/Mos.app`.
@@ -58,7 +59,7 @@ $ brew reinstall mos
 
 ## Инструкция
 
-- [GithubWiki](https://github.com/Caldis/Mos/wiki)
+- [Wiki](https://github.com/Caldis/Mos/wiki)
 
 
 ## Благодарность

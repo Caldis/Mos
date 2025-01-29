@@ -38,7 +38,7 @@ http://mos.caldis.me/
 Mos可通过[Homebrew](https://brew.sh)来安装:
 
 ```bash
-$ brew install mos
+$ brew install --cask mos
 ```
 
 应用将被安装至 `/Applications/Mos.app`。
@@ -59,7 +59,7 @@ $ brew reinstall mos
 
 ## 帮助
 
-- [GithubWiki](https://github.com/Caldis/Mos/wiki)
+- [Wiki](https://github.com/Caldis/Mos/wiki)
 
 
 ## 鸣谢
