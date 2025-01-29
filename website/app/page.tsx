@@ -95,13 +95,7 @@ export default function Home() {
         {/* 内容 */}
         <div className="relative z-10 text-center w-[65vw]">
           <h1 className="text-5xl sm:text-6xl font-bold mb-6 text-[#ebebebcc]">
-            {t.hero_title.split(" ").map((word, i) => (
-              word.toLowerCase() === "smoothly" ? (
-                <ShinyText key={i} text={word} speed={3} />
-              ) : (
-                <span key={i}>{word} </span>
-              )
-            ))}
+            {t.hero_title}
           </h1>
           <p className="text-xl text-gray-300 mb-8">
             {t.hero_description}
