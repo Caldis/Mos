@@ -19,3 +19,7 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 ```bash
 npm run build
 ```
+
+## Transition
+
+Just edit the wording with your language in `app/i18n` and rise an pull request.
