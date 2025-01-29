@@ -31,22 +31,6 @@ http://mos.caldis.me/
 - 基于 Swift4 构建。
 
 
-## 截图
-
-<p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/Mointor.png?raw=true">
-</p>
-<p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/PreferencesGeneral.png?raw=true">
-</p>
-<p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/PreferencesAdvanced.png?raw=true">
-</p>
-<p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/PreferencesExceptionFull.png?raw=true">
-</p>
-
-
 ## 下载及安装
 
 ### Homebrew安装

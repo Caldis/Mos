@@ -30,22 +30,6 @@ http://mos.caldis.me/
 - Написано на Swift.
 
 
-## Screenshot
-
-<p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/assets/image/ru/Mointor.png?raw=true">
-</p>
-<p align="center">
-  <img width="562" src="https://github.com/Caldis/Mos/blob/master/docs/assets/image/ru/PreferencesGeneral.png?raw=true">
-</p>
-<p align="center">
-  <img width="562" src="https://github.com/Caldis/Mos/blob/master/docs/assets/image/ru/PreferencesAdvanced.png?raw=true">
-</p>
-<p align="center">
-  <img width="562" src="https://github.com/Caldis/Mos/blob/master/docs/assets/image/ru/PreferencesException.png?raw=true">
-</p>
-
-
 ## Загрузка & Установка
 
 ### Homebrew
