@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Space_Mono, Poppins } from "next/font/google";
+import { useI18n } from "@/app/i18n/context";
 
 const spaceMono = Space_Mono({
   weight: ["400", "700"],
@@ -14,6 +15,7 @@ const poppins = Poppins({
 });
 
 export function HomebrewButton() {
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const command = "brew install --cask mos";
@@ -41,7 +43,7 @@ export function HomebrewButton() {
         onClick={() => setIsOpen(true)}
         className="cursor-pointer hover:text-white/90 transition-colors"
       >
-        Install via homebrew
+        {t.footer_installViaHomebrew}
       </span>
 
       {/* Modal Backdrop */}
@@ -64,7 +66,7 @@ export function HomebrewButton() {
         >
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-white">Install via Homebrew</h3>
+              <h3 className="text-xl font-bold text-white">{t.homebrew_title}</h3>
               <button
                 onClick={() => setIsOpen(false)}
                 className="text-white/60 hover:text-white/90 transition-colors"
@@ -86,7 +88,7 @@ export function HomebrewButton() {
             </div>
 
             {/* Description */}
-            <p className="text-white/60 mb-4">Run the following command in your terminal:</p>
+            <p className="text-white/60 mb-4">{t.homebrew_description}</p>
 
             {/* Command Area */}
             <div className="bg-black/30 rounded-lg p-4 flex items-center justify-between gap-4">
@@ -98,7 +100,7 @@ export function HomebrewButton() {
                 onClick={handleCopy}
                 className="px-3 py-1.5 bg-zinc-800 text-white/90 rounded-md hover:bg-zinc-700 transition-colors"
               >
-                {isCopied ? "Copied!" : "Copy"}
+                {isCopied ? t.homebrew_copied : t.homebrew_copy}
               </button>
             </div>
           </div>
