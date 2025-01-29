@@ -1,14 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { useI18n } from "./i18n/context";
 import logoM from "@/assets/image/logo-64.png";
 import { Space_Mono, Poppins } from "next/font/google";
 import { Squares } from "./components/SquaresBackground";
 import { GithubVersion } from "./components/GithubVersion";
 import { HomebrewButton } from "./components/HomebrewButton";
 import { DownloadButton } from "./components/DownloadButton";
-import { ShinyText } from "./components/ShinyText";
-import { useI18n } from "./i18n/context";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { SysRequireButton } from "./components/SysRequireButton";
 
