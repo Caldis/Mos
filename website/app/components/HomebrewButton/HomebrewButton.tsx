@@ -30,9 +30,19 @@ export function HomebrewButton() {
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleOpen = () => {
+    setIsOpen(true);
+    document.addEventListener("keydown", handleKeyDown);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    document.removeEventListener("keydown", handleKeyDown);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
-      setIsOpen(false);
+      handleClose();
     }
   };
 
@@ -40,7 +50,7 @@ export function HomebrewButton() {
     <>
       <span>•</span>
       <span
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className="cursor-pointer hover:text-white/90 transition-colors"
       >
         {t.footer_installViaHomebrew}
@@ -52,10 +62,9 @@ export function HomebrewButton() {
                    transition-opacity duration-500 ease-in-out ${poppins.className}
                    ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={(e) => {
-          if (e.target === e.currentTarget) setIsOpen(false);
+          if (e.target === e.currentTarget) handleClose();
         }}
-        onKeyDown={handleKeyDown}
-        tabIndex={0}
+        tabIndex={-1}
       >
         {/* Modal Content */}
         <div
@@ -68,7 +77,7 @@ export function HomebrewButton() {
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-white">{t.homebrew_title}</h3>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
                 className="text-white/60 hover:text-white/90 transition-colors"
               >
                 <svg
