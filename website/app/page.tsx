@@ -9,6 +9,8 @@ import { HomebrewButton } from "./components/HomebrewButton";
 import { DownloadButton } from "./components/DownloadButton";
 import { ShinyText } from "./components/ShinyText";
 import { useI18n } from "./i18n/context";
+import { LanguageSelector } from "./components/LanguageSelector";
+import { SysRequireButton } from "./components/SysRequireButton";
 
 const spaceMono = Space_Mono({
   weight: ["400", "700"],
@@ -21,7 +23,7 @@ const poppins = Poppins({
 });
 
 export default function Home() {
-  const { t, language, setLanguage } = useI18n();
+  const { t } = useI18n();
 
   return (
     <div className={`w-screen h-screen relative ${poppins.className}`}>
@@ -42,20 +44,6 @@ export default function Home() {
         </div>
         {/* 导航链接 */}
         <div className="flex items-center gap-6">
-          {/* 语言切换 */}
-          <button
-            onClick={() => setLanguage(language === "en" ? "zh" : "en")}
-            className="text-white/60 hover:text-white/90 transition-colors text-sm font-bold flex items-center gap-1.5"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              className="w-5 h-5"
-              fill="currentColor"
-            >
-              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm0-2a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm-3-7h6v2H9v-2zm0-4h6v2H9V9z"/>
-            </svg>
-            <span>{language.toUpperCase()}</span>
-          </button>
           {/* docs */}
           <a
             href="https://github.com/Caldis/Mos/wiki"
@@ -137,9 +125,10 @@ export default function Home() {
         <div
           className={`flex items-center text-xs tracking-wide text-gray-400 space-x-4 ${spaceMono.className}`}
         >
-          <span>{t.footer_systemRequirement}</span>
+          <SysRequireButton/>
           <HomebrewButton />
           <GithubVersion />
+          <LanguageSelector />
         </div>
       </footer>
     </div>
