@@ -41,9 +41,6 @@
 /* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "5ft-0j-oso"; */
 "5ft-0j-oso.title" = "Text Cell";
 
-/* Class = "NSTextFieldCell"; title = "The greater the power, the greater the responsibility. To smooth your mouse scrolling, Mos needs to create an intermediate layer between the mouse and your system to optimize your mouse. So we need to access to accessibility controls to get this power."; ObjectID = "7bu-fM-Bjm"; */
-"7bu-fM-Bjm.title" = "The greater the power, the greater the responsibility. To smooth your mouse scrolling, Mos needs to create an intermediate layer between the mouse and your system to optimize your mouse. So we need to access to accessibility controls to get this power.";
-
 /* Class = "NSTextFieldCell"; title = "Just few thing you need to tweak"; ObjectID = "7o8-5p-CQX"; */
 "7o8-5p-CQX.title" = "Just few thing you need to tweak";
 
@@ -391,9 +388,6 @@
 
 /* Class = "NSMenu"; title = "Running Applications"; ObjectID = "tXQ-GJ-k5M"; */
 "tXQ-GJ-k5M.title" = "Running Applications";
-
-/* Class = "NSTextFieldCell"; title = "Scientists have proven that running on multiple smooth scrolling application at the same time will lead to undescribed consequences. Please close the other, or disable the smooth function of it. Such as the smooth scrolling on Logitech Options or SmoothScroll extension on Chrome."; ObjectID = "u7p-zc-ERS"; */
-"u7p-zc-ERS.title" = "Scientists have proven that running on multiple smooth scrolling application at the same time will lead to undescribed consequences. Please close the other, or disable the smooth function of it. Such as the smooth scrolling on Logitech Options or SmoothScroll extension on Chrome.";
 
 /* Class = "NSTextFieldCell"; title = "The allow list mode will make Mos only apply to apps within the exception list."; ObjectID = "v26-RK-BtL"; */
 "v26-RK-BtL.title" = "The allow list mode will make Mos only apply to apps within the exception list.";

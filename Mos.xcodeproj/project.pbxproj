@@ -22,8 +22,10 @@
 		0B99C5FC2577FC9200021578 /* ScrollPoster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B99C5FB2577FC9200021578 /* ScrollPoster.swift */; };
 		0BB0F1BE20F3A04F00909B7D /* WelcomeWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB0F1BD20F3A04F00909B7D /* WelcomeWindowController.swift */; };
 		0BB0F1C020F3A05D00909B7D /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB0F1BF20F3A05D00909B7D /* WelcomeViewController.swift */; };
+		0BB99B812D4CE9D6006A37AD /* DraggingImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB99B802D4CE9D6006A37AD /* DraggingImageView.swift */; };
 		0BC2AD2F20F3BA090084416B /* PreferencesContributorsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC2AD2E20F3BA090084416B /* PreferencesContributorsViewController.swift */; };
 		0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */; };
+		0BE049E82D4FAE8700796397 /* sparkle.png in Resources */ = {isa = PBXBuildFile; fileRef = 0BE049E72D4FAE8700796397 /* sparkle.png */; };
 		0BE4C93B20617C6E0001EA0E /* ScrollFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE4C93A20617C6E0001EA0E /* ScrollFilter.swift */; };
 		0BE5A292253A1168006D61C0 /* LoginServiceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A291253A1168006D61C0 /* LoginServiceKit */; };
 		0BE5A296253A119C006D61C0 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A295253A119C006D61C0 /* Charts */; };
@@ -94,8 +96,10 @@
 		0BAC4073251654C500E8A1FD /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BB0F1BD20F3A04F00909B7D /* WelcomeWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowController.swift; sourceTree = "<group>"; };
 		0BB0F1BF20F3A05D00909B7D /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
+		0BB99B802D4CE9D6006A37AD /* DraggingImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggingImageView.swift; sourceTree = "<group>"; };
 		0BC2AD2E20F3BA090084416B /* PreferencesContributorsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesContributorsViewController.swift; sourceTree = "<group>"; };
 		0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemManager.swift; sourceTree = "<group>"; };
+		0BE049E72D4FAE8700796397 /* sparkle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sparkle.png; sourceTree = "<group>"; };
 		0BE4C93A20617C6E0001EA0E /* ScrollFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollFilter.swift; sourceTree = "<group>"; };
 		22003C6D1E8555F0001220BC /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -268,7 +272,9 @@
 				0B12EF28203AE2E00058B169 /* Localization */,
 				22142DA91E25344E00E4BFBF /* Main.storyboard */,
 				23529E0B237087A400806D92 /* Assets.xcassets */,
+				0BE049E72D4FAE8700796397 /* sparkle.png */,
 				22142DAC1E25344E00E4BFBF /* Info.plist */,
+				0BB99B802D4CE9D6006A37AD /* DraggingImageView.swift */,
 			);
 			path = Mos;
 			sourceTree = "<group>";
@@ -407,6 +413,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BE049E82D4FAE8700796397 /* sparkle.png in Resources */,
 				23529E0C237087A400806D92 /* Assets.xcassets in Resources */,
 				22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */,
 				2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */,
@@ -455,6 +462,7 @@
 				0B02ADB12D38EDA000DE4132 /* DesktopManager.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
 				0BE4C93B20617C6E0001EA0E /* ScrollFilter.swift in Sources */,
+				0BB99B812D4CE9D6006A37AD /* DraggingImageView.swift in Sources */,
 				0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */,
 				0B12EF1A203AD9C80058B169 /* Options.swift in Sources */,
 				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
