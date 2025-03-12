@@ -1,0 +1,112 @@
+/*
+  Localizable.strings
+  Mos
+  Storybroad text internationalization
+  Created by Roberto Martins on 2025/3/12.
+  Copyright © 2017年 Caldis. All rights reserved.
+*/
+
+// Monitor
+"TUE-3v-CaJ.title" = "Renderizar esse gráfico afetará a performance de rolagem. Feche a janela quando não estiver em uso.";
+
+// PreferencesWindow
+"cvF-hf-KVW.title" = "Preferências";
+// General
+"ITL-GD-CPd.title" = "Geral";
+"pwT-er-UCo.title" = "Rolagem:";
+"jtK-hi-Ami.title" = "Rolagem suave";
+"bbo-GH-WeC.title" = "Tornar a rolagem suave como seda";
+"MAF-Hi-l48.title" = "Rolagem invertida";
+"CqK-3z-D0G.title" = "Inverter a direção de rolagem";
+"dyY-vr-dwT.title" = "Miscelânea:";
+"xoR-7p-3qj.title" = "Inicializar no Login";
+"MdS-Nz-zMa.title" = "Iniciar o app automaticamente durante o login";
+"hGj-vV-zcY.title" = "Ocultar Ícone da Barra de Status";
+"bB5-2R-9Da.title" = "Execute o Mos novamente para mostrar o ícone oculto";
+"cIk-j1-vYt.title" = "Você precisa executar o Mos novamente a partir do Aplicativo Finder ao invés de fazê-lo a partir do Launchpad (O Launchpad irá automaticamente ignorar o app executado)";
+// Advanced
+"iW5-CD-5OC.title" = "Avançado";
+"hOO-M8-I1z.title" = "Tecla de Impulso:";
+"Vhz-Rn-lcU.title" = "Desabilitado";
+"Z59-tN-QjE.title" = "Aumente a velocidade de rolagem em páginas longas";
+"bQw-5w-Yv0.title" = "Tecla de Alternância:";
+"cTe-aL-0GQ.title" = "Desabilitado";
+"KnM-kA-wn5.title" = "Alterne de rolagem vertical para rolagem horizontal";
+"ebE-Zf-T98.title" = "Tecla de Bloqueio:";
+"vFk-37-HRU.title" = "Desabilitado";
+"iki-Jk-qSr.title" = "Bloqueie temporariamente a rolagem suave";
+"B8B-hi-x3v.title" = "Degrau:";
+"Jan-OY-m70.title" = "Define a aceleração de rolagem";
+"Gcw-Ir-olP.title" = "Velocidade:";
+"B3O-iI-E7v.title" = "Define a aceleração de rolagem";
+"bqU-Is-gFB.title" = "Duração:";
+"DsD-EW-zCH.title" = "Define a duração da animação de rolagem";
+"t2D-X2-Y6W.title" = "Restaurar para os padrões";
+"Rgq-87-vjY.title" = "Em alguns aplicativos, a rolagem é usada para ajustar certos parâmetros precisos (como ajustar o volume, dar zoom na tela, etc.) e a rolagem suave pode causar interferência. Você pode definir uma tecla de bloqueio que irá desabilitar a rolagem suave temporariamente quando a tecla for pressionada.";
+// AdvancedWithApplication
+"Wls-5g-cNZ.title" = "Herdar Configurações Globais";
+// Exception
+"Vs2-5P-BEI.title" = "Suavizar";
+"sKz-VE-Yfb.title" = "Inverter";
+"89F-B4-NIY.title" = "Aplicativo";
+"mfa-4t-oRD.title" = "Avançado";
+"I5j-Bv-Aiy.title" = "Requer acesso aos controles de Acessibilidade";
+"FU4-wI-K8f.title" = "Para personalizar o comportamento de rolagem para certos aplicativos, por favor permita que o Mos acesse os controles de Acessibilidade";
+"Pw5-2q-7Fa.title" = "Permitir acesso à acessibilidade";
+"bga-wG-iim.title" = "Exceção";
+"Rgu-cb-5lp.title" = "Personalizar por Aplicativo:";
+"Ksp-g1-48g.title" = "Modo Lista de Permitir";
+"v26-RK-BtL.title" = "O modo lista de permitir fará com que o Mos só se aplique aos apps que estão dentro da lista de exceção.";
+"ThS-Rm-st2.title" = "Ninguém é Especial";
+"jaq-Cb-dKM.title" = "Você pode aplicar uma configuração separada para alguns apps clicando no botão \'+\' abaixo";
+"R0d-21-g6W.title" = "Executando Aplicativos";
+"dhF-95-kUJ.title" = "Selecionar Manualmente Pelo Finder";
+"Vp7-0n-aRd.title" = "Inserir Manualmente Informações de Aplicativos";
+"kUr-cl-KRm.title" = "Nome do Aplicativo:";
+"Ck5-if-9RS.title" = "Identificador do Bundle:";
+"Mdw-fZ-Nyy.title" = "Cancelar";
+"2v4-AC-WG5.title" = "Confirmar";
+// Updates
+"EWu-DP-7Gj.title" = "Atualizações";
+"vdI-K4-SBh.title" = "Buscar atualizações:";
+"T9f-TL-GYj.title" = "Buscar agora";
+"5oM-oR-Dsq.title" = "Versão Atual";
+// About
+"RfV-Ow-3mF.title" = "Sobre";
+"5cx-xS-eRe.title" = "Apenas um pequeno trabalho para o seu mouse.";
+"yDf-dn-Mcz.title" = "Home Page";
+"99M-8D-HLN.title" = "GitHub";
+"AM8-cj-DnH.title" = "Alimente 🍥 um pet";
+"aPi-cE-maK.title" = "Doar via PayPal";
+"FIh-fA-18k.title" = "Janela de Boas-Vindas";
+"265-WS-XEd.title" = "Os Contribuidores";
+"ZJY-Yg-Qev.title" = "Contribuidores";
+"Lhz-x5-X0I.title" = "Tradução";
+"GWm-aK-UoV.title" = "Lista de Contribuidores";
+"D0v-Oj-ekP.title" = "O quão gordo é esse gato?";
+
+// IntroductionWindow
+"VWv-6P-9Xp.title" = "Voltar";
+"E9l-1I-6cD.title" = "Próximo";
+"11f-uB-gEM.title" = "Introduzindo";
+"YHn-dn-A4n.title" = "Mos";
+"yFl-4N-WcD.title" = "Seu mouse está prester a obter uma experiência de rolagem mais suave.\nPegue seu mouse, tem algumas coisas que você precisa verificar.";
+"016-R7-U4x.title" = "Você precisa...";
+"XP7-rO-U3i.title" = "Fazer algumas verificações";
+"ia9-EG-sGg.title" = "Alguns aplicativos (Por exemplo Logitech Options) aplicam alguns handlers ao seu mouse.\nApenas desabilite a rolagem suave nesses apps e você pode usá-los como normal.";
+"foc-QS-iys.title" = "Nós precisamos...";
+"Bbz-lG-LFI.title" = "Autorização";
+"Myd-Ze-ZPf.title" = "Devido às restrições de privacidade do MacOS, o Mos requer acesso aos controles de Acessibilidade.\nSe o item já existe, apenas clique e marque a caixa de seleção novamente.";
+
+// WelcomeWindow
+"SLb-UR-lz1.title" = "Bem vindo ao Mos";
+"Lhk-Nd-CdT.title" = "Antes de suavizarmos sua rolagem";
+"7o8-5p-CQX.title" = "Existem algumas coisas para configurar";
+"VsZ-Yn-TgJ.title" = "Desabilite outros aplicativos ou extensões de rolagem suave";
+"3QI-xO-wPK.title" = "Dê ao Mos controles de Acessibilidade";
+"qGs-TM-PTM.title" = "Devido às limitações do MacOS, você talvez precise repetir essa autorização quando o Mos for atualizado. Se, nessa circunstância, o registro já existir, por favor delete-o e adicione-o novamente.";
+"V9n-HF-Vw9.title" = "Começar Suavização";
+
+// Popover
+"hnf-e0-HXM.title" = "Preferências";
+"SqT-eH-bOb.title" = "Sair";

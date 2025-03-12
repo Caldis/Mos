@@ -13,7 +13,7 @@
 Бесплатное и простое приложение, позволяющее колесу мыши плавно прокручиваться в macOS.
 
 [中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md) |
-[Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md)
+[Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md) | [Português] (https://github.com/Caldis/Mos/blob/master/README.ptBR.md)
 
 
 ## Главная страница

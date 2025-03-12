@@ -1,0 +1,34 @@
+/*
+  Localizable.strings
+  Mos
+  In-code text internationalization
+  Created by Roberto Martins on 2025/3/12.
+  Copyright © 2017年 Caldis. All rights reserved.
+*/
+
+// Global
+"Ensure" = "Garantir";
+"Cancel" = "Cancelar";
+"Version" = "Versão";
+"Done" = "Autorizado";
+"Error" = "Erro";
+
+// Status Bar Icon Menu
+"Needs access to Accessibility controls" = "Precisa de acesso aos controles de Acessibilidade";
+"Scroll Monitor" = " Monitor de Rolagem";
+"Preferences" = " Preferências";
+"Quit" = " Sair";
+"Hide Icon" = "Ocultar Ícone";
+
+// Notification
+"Mos is running in the background" = "Mos está sendo executado em plano de fundo";
+"Mos' status bar icon is hidden" = "O ícone da barra de status do Mos está oculto";
+"Got it" = "Entendi";
+"Show it" = "Mostre";
+
+// Preferences
+"Current Version" = "Versão Atual";
+
+// Welcome Window
+"Allow to access" = "Autorizar";
+"Begin smooth" = "Começar suavização";
