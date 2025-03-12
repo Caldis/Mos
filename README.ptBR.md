@@ -13,7 +13,7 @@
 Um app gratuito e simples para permitir que a rodinha de seu mouse faça a rolagem de maneira suave no macOS
 
 [中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md) |
-[Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md) | [Português] (https://github.com/Caldis/Mos/blob/master/README.ptBR.md)
+[Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md) | [Português](https://github.com/Caldis/Mos/blob/master/README.ptBR.md)
 
 
 ## Página inicial
