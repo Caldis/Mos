@@ -10,7 +10,7 @@
 ![Xcode 9.0+](https://img.shields.io/badge/Xcode-9.0%2B-blue.svg)
 ![Swift 4.0+](https://img.shields.io/badge/Swift-4.0%2B-orange.svg)
 
-Um app gratuito e simples para permitir que a rodinha de seu mouse faça a rolagem de maneira suave no macOS
+Um app gratuito e simples para permitir que o scroll de seu mouse faça a rolagem de maneira suave no macOS
 
 [中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md) |
 [Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md) | [Português](https://github.com/Caldis/Mos/blob/master/README.ptBR.md)
@@ -23,9 +23,9 @@ http://mos.caldis.me/
 
 ## Recursos
 
-- Permite que a rodinha do mouse faça a rolagem de forma suave igual a como ocorre em um touchpad
+- Permite que o scroll do mouse faça a rolagem de forma suave igual a como ocorre em um touchpad
 - Permite a personalização do comportamento da rolagem, assim como a velocidade e a aceleração
-- Permite personalização do comportamento de rolagem para touchpads e rodas de mouse separadamente
+- Permite personalização do comportamento de rolagem para touchpads e scrolls de mouse separadamente
 - Fornece um gráfico informativo que mostra os eventos de rolagem
 - Suporte integrado à lista de bloqueio/permissão por aplicativo.
 - Programado em Swift
