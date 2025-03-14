@@ -18,6 +18,7 @@ const LANGUAGES: {
   { code: "el", name: "Ελληνικά" },
   { code: "tr", name: "Türkçe" },
   { code: "uk", name: "Українська" },
+  { code: "pt", name: "Português"},
 ];
 
 export function LanguageSelector() {

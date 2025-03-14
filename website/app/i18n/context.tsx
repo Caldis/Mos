@@ -11,8 +11,9 @@ import { el } from "./el";
 import { uk } from "./uk";
 import { ja } from "./ja";
 import { zhHant } from "./zh-Hant";
+import { pt } from "./pt"
 
-export type Language = "en" | "zh" | "ru" | "tr" | "ko" | "de" | "el" | "uk" | "ja" | "zh-Hant";
+export type Language = "en" | "zh" | "ru" | "tr" | "ko" | "de" | "el" | "uk" | "ja" | "zh-Hant" | "pt";
 export type Translations = typeof en;
 
 interface I18nContextType {
@@ -51,7 +52,8 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       el,
       uk,
       ja,
-      "zh-Hant": zhHant
+      "zh-Hant": zhHant,
+      pt
     }[language] || en;
     setTranslations(translations);
     // 保存语言偏好到本地存储
