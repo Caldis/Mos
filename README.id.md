@@ -13,7 +13,8 @@
 Aplikasi gratis & sederhana yang bikin mouse kamu discroll lebih halus di macOS.
 
 [中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md) |
-[Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md)
+[Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md) |
+[Indonesia](https://github.com/Caldis/Mos/blob/master/README.id.md)
 
 
 ## Homepage

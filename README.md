@@ -13,7 +13,8 @@
 一个用于在MacOS上平滑你的鼠标滚动效果的小工具, 让你的滚轮爽如触控板。
 
 [中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md) |
-[Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md) | [Indonesia] (https://github.com/Caldis/Mos/blob/master/README.id.md)  
+[Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md) |
+[Indonesia](https://github.com/Caldis/Mos/blob/master/README.id.md)
 
 
 ## 主页
