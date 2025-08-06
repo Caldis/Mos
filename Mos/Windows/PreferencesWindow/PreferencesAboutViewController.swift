@@ -32,7 +32,13 @@ class PreferencesAboutViewController: NSViewController {
     }
     // 欢迎
     @IBAction func welcomeWindowButtonClick(_ sender: NSButton) {
+        // 显示窗口
         WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.introductionWindowController, withTitle: "")
+        // 设置为手动打开标识，避免权限检查导致窗口自动关闭
+        if let windowController = WindowManager.shared.refs[WINDOW_IDENTIFIER.introductionWindowController] as? IntroductionWindowController,
+           let viewController = windowController.contentViewController as? IntroductionViewController {
+            viewController.setManuallyOpened(true)
+        }
     }
     
 }

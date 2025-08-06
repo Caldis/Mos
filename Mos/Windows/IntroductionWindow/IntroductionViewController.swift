@@ -15,6 +15,18 @@ class IntroductionViewController: NSViewController {
     // 帮助弹窗
     var isViewFirstActive = true
     var isHelpPopoverShowed = false
+    // 是否从偏好设置手动打开的标识
+    var isManuallyOpened = false
+    
+    // 设置手动打开标识的方法
+    func setManuallyOpened(_ manually: Bool) {
+        isManuallyOpened = manually
+        // 如果是手动打开，停止现有的定时器
+        if manually {
+            accessibilityPermissionsCheckerTimer?.invalidate()
+            accessibilityPermissionsCheckerTimer = nil
+        }
+    }
     @IBOutlet weak var helpButton: NSButton!
     @IBOutlet weak var helpDragAppArrow: NSImageView!
     @IBOutlet weak var helpDragAppSparkle: NSImageView!
@@ -25,14 +37,16 @@ class IntroductionViewController: NSViewController {
     override func viewDidLoad() {
         // 初始化文字
         authButton.title = i18n.allowToAccess
-        // 启动定时器检测权限, 当拥有授权时启动滚动处理
-        accessibilityPermissionsCheckerTimer = Timer.scheduledTimer(
-            timeInterval: 1.0,
-            target: self,
-            selector: #selector(accessibilityPermissionsChecker(_:)),
-            userInfo: nil,
-            repeats: true
-        )
+        // 只有在非手动打开的情况下才启动权限检测定时器
+        if !isManuallyOpened {
+            accessibilityPermissionsCheckerTimer = Timer.scheduledTimer(
+                timeInterval: 1.0,
+                target: self,
+                selector: #selector(accessibilityPermissionsChecker(_:)),
+                userInfo: nil,
+                repeats: true
+            )
+        }
         // 检查获得焦点
         NotificationCenter.default.addObserver(
             self,
@@ -85,8 +99,10 @@ extension IntroductionViewController {
         if AXIsProcessTrusted() {
             // 关闭检测
             accessibilityPermissionsCheckerTimer?.invalidate()
-            // 关闭窗口
-            view.window?.close()
+            // 只有在非手动打开的情况下才关闭窗口
+            if !isManuallyOpened {
+                view.window?.close()
+            }
         }
     }
     // 请求获取权限
