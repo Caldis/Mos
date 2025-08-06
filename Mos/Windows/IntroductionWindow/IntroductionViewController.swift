@@ -26,6 +26,21 @@ class IntroductionViewController: NSViewController {
             accessibilityPermissionsCheckerTimer?.invalidate()
             accessibilityPermissionsCheckerTimer = nil
         }
+        // 更新按钮状态
+        updateButtonState()
+    }
+    
+    // 更新按钮状态
+    func updateButtonState() {
+        if AXIsProcessTrusted() {
+            // 如果有权限
+            authButton.title = i18n.done
+            authButton.isEnabled = false
+        } else {
+            // 如果没权限
+            authButton.title = i18n.allowToAccess
+            authButton.isEnabled = true
+        }
     }
     @IBOutlet weak var helpButton: NSButton!
     @IBOutlet weak var helpDragAppArrow: NSImageView!
@@ -35,8 +50,8 @@ class IntroductionViewController: NSViewController {
     @IBOutlet weak var authButton: NSButton!
     
     override func viewDidLoad() {
-        // 初始化文字
-        authButton.title = i18n.allowToAccess
+        // 初始化按钮状态
+        updateButtonState()
         // 只有在非手动打开的情况下才启动权限检测定时器
         if !isManuallyOpened {
             accessibilityPermissionsCheckerTimer = Timer.scheduledTimer(
@@ -95,6 +110,8 @@ extension IntroductionViewController {
 extension IntroductionViewController {
     // 检查是否有访问 accessibility 权限, 并设置对应按钮
     @objc func accessibilityPermissionsChecker(_ timer: Timer) {
+        // 更新按钮状态
+        updateButtonState()
         // 如果有权限
         if AXIsProcessTrusted() {
             // 关闭检测
