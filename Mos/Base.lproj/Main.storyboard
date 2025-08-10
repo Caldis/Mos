@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="System colors introduced in macOS 10.14" minToolsVersion="10.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -331,6 +331,7 @@
                     <tabViewItems>
                         <tabViewItem identifier="general" image="SF.gearshape" id="Qwc-OE-zHR"/>
                         <tabViewItem identifier="advanced" image="SF.cpu" id="P9R-tX-qfW"/>
+                        <tabViewItem identifier="buttons" image="SF.button.horizontal.top.press" id="BTN-UI-123"/>
                         <tabViewItem identifier="exception" image="SF.pip" id="gfS-Ix-zI5"/>
                         <tabViewItem identifier="updates" image="SF.arrow.triangle.capsulepath" id="1sm-Qq-6GS"/>
                         <tabViewItem identifier="about" image="SF.person.crop.square" id="MrA-I8-n0Z"/>
@@ -348,6 +349,7 @@
                         <outlet property="tabView" destination="sxC-q7-Qs6" id="CNF-oh-eK6"/>
                         <segue destination="ITL-GD-CPd" kind="relationship" relationship="tabItems" id="z3c-tg-aDc"/>
                         <segue destination="iW5-CD-5OC" kind="relationship" relationship="tabItems" id="GA4-xY-65w"/>
+                        <segue destination="BTN-VC-123" kind="relationship" relationship="tabItems" id="BTN-SG-123"/>
                         <segue destination="bga-wG-iim" kind="relationship" relationship="tabItems" id="QV9-il-C7g"/>
                         <segue destination="EWu-DP-7Gj" kind="relationship" relationship="tabItems" id="gsT-c8-cJ3"/>
                         <segue destination="RfV-Ow-3mF" kind="relationship" relationship="tabItems" id="djr-7D-XVN"/>
@@ -541,7 +543,36 @@
                 </viewController>
                 <customObject id="KsC-af-ap0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="451" y="1236.5"/>
+            <point key="canvasLocation" x="445" y="1237"/>
+        </scene>
+        <!--Buttons-->
+        <scene sceneID="BTN-SC-123">
+            <objects>
+                <viewController title="Buttons" storyboardIdentifier="buttons" id="BTN-VC-123" customClass="PreferencesButtonsViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                    <visualEffectView key="view" blendingMode="behindWindow" material="toolTip" state="active" id="BTN-VW-123">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="241"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="BTN-TF-123">
+                                <rect key="frame" x="18" y="113" width="414" height="16"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Buttons settings will be implemented here" id="BTN-TC-123">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="BTN-TF-123" firstAttribute="centerX" secondItem="BTN-VW-123" secondAttribute="centerX" id="BTN-CX-123"/>
+                            <constraint firstItem="BTN-TF-123" firstAttribute="centerY" secondItem="BTN-VW-123" secondAttribute="centerY" id="BTN-CY-123"/>
+                            <constraint firstItem="BTN-TF-123" firstAttribute="leading" secondItem="BTN-VW-123" secondAttribute="leading" constant="20" id="BTN-LD-123"/>
+                            <constraint firstAttribute="trailing" secondItem="BTN-TF-123" secondAttribute="trailing" constant="20" id="BTN-TR-123"/>
+                        </constraints>
+                    </visualEffectView>
+                </viewController>
+                <customObject id="BTN-FR-123" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1450" y="1238"/>
         </scene>
         <!--Exception-->
         <scene sceneID="UqT-28-MT6">
@@ -996,7 +1027,7 @@
                     </items>
                 </menu>
             </objects>
-            <point key="canvasLocation" x="1480" y="1273"/>
+            <point key="canvasLocation" x="1928" y="1273"/>
         </scene>
         <!--Preferences Exception Input View Controller-->
         <scene sceneID="sQ4-0H-0y0">
@@ -1117,7 +1148,7 @@ Gw
                 </viewController>
                 <customObject id="9r6-ro-pDE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1480.5" y="1849.5"/>
+            <point key="canvasLocation" x="1928" y="1836"/>
         </scene>
         <!--Exception allowlist hint-->
         <scene sceneID="57E-oo-PEW">
@@ -1146,7 +1177,7 @@ Gw
                 </viewController>
                 <customObject id="ZNV-FD-bQh" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1480" y="1653"/>
+            <point key="canvasLocation" x="1928" y="1653"/>
         </scene>
         <!--Updates-->
         <scene sceneID="VTW-lQ-Mfk">
@@ -1217,7 +1248,7 @@ Gw
                 </viewController>
                 <customObject id="Tfe-PH-zhM" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2000" y="1154.5"/>
+            <point key="canvasLocation" x="2433" y="1155"/>
         </scene>
         <!--Advanced-->
         <scene sceneID="Fd7-iR-8pW">
@@ -1665,7 +1696,7 @@ Gw
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="969" y="1327"/>
+            <point key="canvasLocation" x="963" y="1326"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="79I-rH-ZaI">
@@ -1695,7 +1726,7 @@ Gw
                 </viewController>
                 <customObject id="9YO-Hc-WUu" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="970" y="1681"/>
+            <point key="canvasLocation" x="964" y="1693"/>
         </scene>
         <!--Preferences Advance With Application View Controller-->
         <scene sceneID="brY-DW-5LE">
@@ -1780,7 +1811,7 @@ Gw
                 </viewController>
                 <customObject id="jKt-Ae-8x9" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="969" y="2014"/>
+            <point key="canvasLocation" x="1928" y="2225"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">
@@ -1949,7 +1980,7 @@ Gw
                 </viewController>
                 <customObject id="r6n-Nn-xNW" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2507" y="1190"/>
+            <point key="canvasLocation" x="2932" y="1191"/>
         </scene>
         <!--Preferences Contributors View Controller-->
         <scene sceneID="eHC-0y-R7N">
@@ -2180,7 +2211,7 @@ Gw
                 </viewController>
                 <customObject id="xas-PE-1Rw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2205" y="1653.5"/>
+            <point key="canvasLocation" x="2805" y="1627"/>
         </scene>
         <!--Preferences Donate View Controller-->
         <scene sceneID="YcU-UJ-LwR">
@@ -2309,7 +2340,7 @@ Gw
                 </viewController>
                 <customObject id="HME-8h-VSk" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2823.5" y="1800"/>
+            <point key="canvasLocation" x="3396" y="1800"/>
         </scene>
         <!--Monitor-->
         <scene sceneID="hIz-AP-VOD">
@@ -2902,7 +2933,7 @@ Pick up your mouse, we just have a few thing that you need to check.</string>
                                         <rect key="frame" x="159" y="23" width="93" height="20"/>
                                         <buttonCell key="cell" type="squareTextured" title="Getting trouble ?" bezelStyle="texturedSquare" alignment="center" state="on" inset="2" id="XMw-QE-lsq">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="system" size="11"/>
+                                            <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="LXF-Xd-jIB"/>
@@ -3011,7 +3042,7 @@ Try remove Mos from the list first, then to re-authorize by dragging the Mos ico
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="i8p-Ht-8EX"/>
+        <segue reference="GA4-xY-65w"/>
         <segue reference="QV9-il-C7g"/>
     </inferredMetricsTieBreakers>
     <resources>
@@ -3024,6 +3055,7 @@ Try remove Mos from the list first, then to re-authorize by dragging the Mos ico
         <image name="PaypalLogo" width="200" height="51"/>
         <image name="Refresh" width="200" height="191"/>
         <image name="SF.arrow.triangle.capsulepath" width="135" height="135"/>
+        <image name="SF.button.horizontal.top.press" width="135" height="135"/>
         <image name="SF.cpu" width="135" height="135"/>
         <image name="SF.ellipsis.circle" width="100" height="100"/>
         <image name="SF.gearshape" width="135" height="135"/>

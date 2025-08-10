@@ -50,9 +50,10 @@ struct PANEL_IDENTIFIER {
     static let general = "general"
     static let advanced = "advanced"
     static let advancedWithApplication = "advancedWithApplication"
+    static let buttons = "buttons"
     static let exception = "exception"
     static let exceptionInput = "exceptionInput"
-    static let list = [general, advanced, exception]
+    static let list = [general, advanced, buttons, exception]
 }
 let PANEL_PADDING = CGFloat(42.0) // 顶部导航栏高度
 let TOOLBAR_HEIGHT = CGFloat(80.0) // 偏好的 Toolbar 高度
