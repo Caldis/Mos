@@ -19,6 +19,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     @IBOutlet var parsedLogTextField: NSTextView!
     @IBOutlet var scrollLogTextField: NSTextView!
     @IBOutlet var scrollDetailLogTextField: NSTextView!
+    @IBOutlet var buttonEventLogTextField: NSTextView!
     @IBOutlet var processLogTextField: NSTextView!
     @IBOutlet var mouseLogTextField: NSTextView!
     @IBOutlet var tabletEventLogTextField: NSTextView!
@@ -34,6 +35,10 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         // 返回事件对象
         return Unmanaged.passUnretained(event)
     }
+    
+    // 按钮事件日志存储
+    private var buttonEventLog: String = ""
+    private let maxButtonLogLines = 50
 
     override func viewWillAppear() {
         // 初始化图表
@@ -81,7 +86,9 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         // 移除原有
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self, selector: #selector(updateMonitorData), name:NSNotification.Name(rawValue: "ScrollEvent"), object: nil)
-        // 开始截取事件
+        NotificationCenter.default.addObserver(self, selector: #selector(updateButtonEventData), name:NSNotification.Name(rawValue: "ButtonEvent"), object: nil)
+        
+        // 开始截取滚动事件
         do {
             scrollInterceptor = try Interceptor(
                 event: mask,
@@ -93,10 +100,15 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         } catch {
             print("[MonitorView] Create Interceptor failure: \(error)")
         }
+        
+        // 启动按钮事件监控
+        ButtonCore.shared.enable()
     }
     func uninitObserver() {
         // 停止截取
         scrollInterceptor?.stop()
+        // 停止按钮事件监控
+        ButtonCore.shared.disable()
         // 停止监听
         NotificationCenter.default.removeObserver(self)
     }
@@ -123,8 +135,42 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         tabletProximityLogTextField.string = Logger.getTabletProximityLog(form: event)
     }
     
+    // 处理按钮事件数据更新
+    @objc private func updateButtonEventData(notification: NSNotification) {
+        guard let buttonEvent = notification.object as? ButtonEvent else { return }
+        
+        // 添加按钮标识符信息到描述中
+        let buttonId = "Button#\(buttonEvent.eventData.buttonNumber)"
+        let logLine = "[\(buttonEvent.getFormattedTimestamp())] [\(buttonId)] \(buttonEvent.getDescription())"
+        
+        // 将新事件插入到日志开头，确保新事件在首行
+        var logLines = buttonEventLog.isEmpty ? [] : buttonEventLog.components(separatedBy: "\n")
+        logLines.insert(logLine, at: 0)
+        
+        // 管理日志行数，保持最新的 maxButtonLogLines 行（从开头保留）
+        if logLines.count > maxButtonLogLines {
+            logLines = Array(logLines.prefix(maxButtonLogLines))
+        }
+        
+        buttonEventLog = logLines.joined(separator: "\n")
+        
+        // 更新按钮事件专用日志文本框
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self else { return }
+            
+            if let textView = strongSelf.buttonEventLogTextField {
+                // 使用专用按钮事件文本框
+                textView.string = strongSelf.buttonEventLog
+                textView.scrollRangeToVisible(NSRange(location: textView.string.count, length: 0))
+            }
+        }
+    }
+    
     // 刷新图表
     @IBAction func refreshChart(_ sender: Any) {
         initCharts()
+        // 清空按钮事件日志
+        buttonEventLog = ""
+        buttonEventLogTextField?.string = ""
     }
 }
