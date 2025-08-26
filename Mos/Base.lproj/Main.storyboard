@@ -2480,23 +2480,23 @@ scrollWheelEventMomentumPhase: 0.0</string>
                                         </scroller>
                                     </scrollView>
                                     <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="4" verticalPageScroll="4" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="haD-4r-ozY">
-                                        <rect key="frame" x="30" y="76" width="285" height="62"/>
+                                        <rect key="frame" x="30" y="48" width="285" height="90"/>
                                         <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="dg1-Pj-aJX">
-                                            <rect key="frame" x="0.0" y="0.0" width="285" height="62"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="285" height="90"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <textView editable="NO" drawsBackground="NO" importsGraphics="NO" verticallyResizable="NO" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="GG9-kH-lZp">
-                                                    <rect key="frame" x="0.0" y="0.0" width="285" height="62"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="285" height="90"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                    <size key="minSize" width="285" height="62"/>
+                                                    <size key="minSize" width="270" height="62"/>
                                                     <size key="maxSize" width="1000" height="10000000"/>
                                                     <attributedString key="textStorage">
                                                         <fragment content="wait for button press events ...">
                                                             <attributes>
                                                                 <color key="NSColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                                                <font key="NSFont" size="11" name="HelveticaNeue"/>
+                                                                <font key="NSFont" size="9" name="HelveticaNeue"/>
                                                                 <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO"/>
                                                             </attributes>
                                                         </fragment>
@@ -2505,9 +2505,6 @@ scrollWheelEventMomentumPhase: 0.0</string>
                                             </subviews>
                                             <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                         </clipView>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="62" id="A6H-Uk-EO6"/>
-                                        </constraints>
                                         <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="RRJ-tA-hHo">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
@@ -2768,9 +2765,9 @@ Path: -</string>
                                     <constraint firstItem="aCb-Q4-94n" firstAttribute="leading" secondItem="2jT-qX-gdB" secondAttribute="leading" id="9nb-pX-Kkl"/>
                                     <constraint firstItem="haD-4r-ozY" firstAttribute="leading" secondItem="TZY-Nm-E2J" secondAttribute="leading" id="9vM-oZ-Z0d"/>
                                     <constraint firstItem="GMF-Nl-CJZ" firstAttribute="top" secondItem="5GB-25-6Oj" secondAttribute="bottom" constant="20" id="AWJ-HH-dnM"/>
+                                    <constraint firstItem="bb8-Rh-HpB" firstAttribute="top" secondItem="haD-4r-ozY" secondAttribute="bottom" constant="15" id="Dkh-GA-C00"/>
                                     <constraint firstItem="bb8-Rh-HpB" firstAttribute="leading" secondItem="Was-VF-M63" secondAttribute="trailing" constant="4" id="ES5-aq-RuB"/>
                                     <constraint firstItem="HFp-Td-Ujc" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="bb8-Rh-HpB" secondAttribute="trailing" constant="8" symbolic="YES" id="Ita-RN-Nx2"/>
-                                    <constraint firstItem="bb8-Rh-HpB" firstAttribute="top" secondItem="haD-4r-ozY" secondAttribute="bottom" constant="43" id="Ix1-Kd-WPK"/>
                                     <constraint firstAttribute="bottom" secondItem="HFp-Td-Ujc" secondAttribute="bottom" constant="16" id="Jli-2U-mnk"/>
                                     <constraint firstAttribute="trailing" secondItem="HFp-Td-Ujc" secondAttribute="trailing" constant="20" id="LbF-kW-0jf"/>
                                     <constraint firstItem="TZY-Nm-E2J" firstAttribute="top" secondItem="OpG-lX-zPs" secondAttribute="bottom" constant="10" id="LfU-Sr-8T1"/>
