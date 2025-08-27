@@ -16,10 +16,10 @@ enum ButtonType: String, CaseIterable {
     
     var displayName: String {
         switch self {
-        case .leftMouse: return "左键"
-        case .rightMouse: return "右键"
-        case .otherMouse: return "侧键"
-        case .unknown: return "未知"
+        case .leftMouse: return "Left"
+        case .rightMouse: return "Right"
+        case .otherMouse: return "Other"
+        case .unknown: return "Unknown"
         }
     }
 }
@@ -31,9 +31,9 @@ enum ButtonAction: String, CaseIterable {
     
     var displayName: String {
         switch self {
-        case .down: return "按下"
-        case .up: return "抬起"
-        case .unknown: return "未知"
+        case .down: return "Down"
+        case .up: return "Up"
+        case .unknown: return "Unknown"
         }
     }
 }
