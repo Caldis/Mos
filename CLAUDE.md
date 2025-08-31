@@ -33,6 +33,8 @@ cd dmg/
 
 ## Architecture Overview
 
+Minimum macOS version: 10.13, all API should be compatible with it
+
 ### Core Components
 
 **ScrollCore Engine** (`Mos/ScrollCore/`):
