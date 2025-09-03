@@ -10,15 +10,17 @@ import AppKit
 
 class RecordButton: NSVisualEffectView {
     
-    private var mouseRecorder = MouseEventRecorder()
+    private var recorder = EventRecorder()
     
     override func awakeFromNib() {
         super.awakeFromNib()
         setupAppearance()
         setupTrackingArea()
-        setupMouseRecorder()
+        setupRecorder()
     }
     
+    // MARK: - 按键样式和交互处理
+    // 样式
     private func setupAppearance() {
         self.material = .dark
         self.blendingMode = .withinWindow
@@ -28,11 +30,9 @@ class RecordButton: NSVisualEffectView {
         self.layer?.backgroundColor = NSColor.selectedControlColor.withAlphaComponent(0.6).cgColor
         self.layer?.borderColor = NSColor.selectedControlColor.cgColor
         self.layer?.borderWidth = 0.5
-        
-        // Ensure background color shows over visual effect
-        self.layer?.masksToBounds = true
+        self.layer?.masksToBounds = true // Ensure background color shows over visual effect
     }
-    
+    // Hover 效果处理
     private func setupTrackingArea() {
         let trackingArea = NSTrackingArea(
             rect: self.bounds,
@@ -42,7 +42,6 @@ class RecordButton: NSVisualEffectView {
         )
         self.addTrackingArea(trackingArea)
     }
-    
     override func mouseEntered(with event: NSEvent) {
         super.mouseEntered(with: event)
         NSAnimationContext.runAnimationGroup({ context in
@@ -50,7 +49,6 @@ class RecordButton: NSVisualEffectView {
             self.layer?.backgroundColor = NSColor.selectedControlColor.withAlphaComponent(0.8).cgColor
         })
     }
-    
     override func mouseExited(with event: NSEvent) {
         super.mouseExited(with: event)
         NSAnimationContext.runAnimationGroup({ context in
@@ -58,32 +56,25 @@ class RecordButton: NSVisualEffectView {
             self.layer?.backgroundColor = NSColor.selectedControlColor.withAlphaComponent(0.6).cgColor
         })
     }
-    
+    // Click 回调
     override func mouseDown(with event: NSEvent) {
         super.mouseDown(with: event)
         startRecording()
     }
-    
-    // MARK: - Mouse Recording
-    
-    private func setupMouseRecorder() {
-        mouseRecorder.delegate = self
-    }
-    
-    private func startRecording() {
-        // 防止重复点击启动多次录制
-        guard !mouseRecorder.recording else { return }
-        
-        mouseRecorder.startRecording(from: self)
-    }
-    
 }
 
 // MARK: - MouseEventRecorderDelegate
-
-extension RecordButton: MouseEventRecorderDelegate {
-    func mouseEventRecorder(_ recorder: MouseEventRecorder, didRecordButton buttonNumber: Int) {
+extension RecordButton: EventRecorderDelegate {
+    // 初始化 delegate
+    private func setupRecorder() {
+        recorder.delegate = self
+    }
+    // 开始录制事件
+    private func startRecording() {
+        recorder.startRecording(from: self)
+    }
+    // 事件回调
+    func eventRecorder(_ recorder: EventRecorder, didRecordButton buttonNumber: Int) {
         NSLog("Recorded mouse button: \(buttonNumber)")
-        // 这里可以将录制的按钮信息传递给父控制器或保存到配置中
     }
 }
