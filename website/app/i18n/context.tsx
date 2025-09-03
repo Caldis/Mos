@@ -11,8 +11,9 @@ import { el } from "./el";
 import { uk } from "./uk";
 import { ja } from "./ja";
 import { zhHant } from "./zh-Hant";
+import { pl } from "./pl";
 
-export type Language = "en" | "zh" | "ru" | "tr" | "ko" | "de" | "el" | "uk" | "ja" | "zh-Hant";
+export type Language = "en" | "zh" | "ru" | "tr" | "ko" | "de" | "el" | "uk" | "ja" | "zh-Hant" | "pl";
 export type Translations = typeof en;
 
 interface I18nContextType {
@@ -35,7 +36,25 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     } else {
       // 根据浏览器语言设置默认语言
       const browserLang = navigator.language.toLowerCase();
-      setLanguage(browserLang.startsWith("zh") ? "zh" : "en");
+      const languageMap: Record<string, Language | ((lang: string) => Language)> = {
+        zh: (lang) => lang.includes("hant") ? "zh-Hant" : "zh",
+        pl: "pl",
+        ru: "ru",
+        tr: "tr",
+        ko: "ko",
+        de: "de",
+        el: "el",
+        uk: "uk",
+        ja: "ja",
+      };
+
+      const prefix = Object.keys(languageMap).find(p => browserLang.startsWith(p));
+      let defaultLang: Language = "en";
+      if (prefix) {
+        const mapping = languageMap[prefix];
+        defaultLang = typeof mapping === "function" ? mapping(browserLang) : mapping;
+      }
+      setLanguage(defaultLang);
     }
   }, []);
 
@@ -51,7 +70,8 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       el,
       uk,
       ja,
-      "zh-Hant": zhHant
+      "zh-Hant": zhHant,
+      pl
     }[language] || en;
     setTranslations(translations);
     // 保存语言偏好到本地存储

@@ -15,6 +15,7 @@ const LANGUAGES: {
   { code: "ko", name: "한국어" },
   { code: "ru", name: "Русский" },
   { code: "de", name: "Deutsch" },
+  { code: "pl", name: "Polski" },
   { code: "el", name: "Ελληνικά" },
   { code: "tr", name: "Türkçe" },
   { code: "uk", name: "Українська" },
