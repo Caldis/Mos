@@ -8,6 +8,9 @@
 
 import Cocoa
 
+
+let recordNotiName = NSNotification.Name("MouseEventRecorded")
+
 protocol EventRecorderDelegate: AnyObject {
     func eventRecorder(_ recorder: EventRecorder, didRecordButton buttonNumber: Int)
 }
@@ -19,6 +22,7 @@ class EventRecorder: NSObject {
     // Recording
     private var interceptor: Interceptor?
     private var isRecording = false
+    private var isRecorded = false // 是否已经记录过 (每次启动只记录一个按键
     private var recordTimeoutTimer: Timer? // 超时保护定时器
     // Popover
     private var popover: NSPopover?
@@ -26,7 +30,6 @@ class EventRecorder: NSObject {
     
     // MARK: - Life Cycle
     deinit {
-        cancelTimeoutTimer()
         stopRecording()
     }
     
@@ -42,46 +45,44 @@ class EventRecorder: NSObject {
     // MARK: - Recording Manager
     // 开始记录事件
     func startRecording(from sourceView: NSView) {
+        // Log
+        NSLog("[EventRecorder] startRecording")
         // Guard: 防止重复执行
         guard !isRecording else { return }
         isRecording = true
         // 确保清理任何存在的 popover
         hidePopover()
-        // Log
-        NSLog("startRecording")
         // 监听事件
         do {
-            // 使用通知转发回调
-            let callback: CGEventTapCallBack = { (proxy, type, event, refcon) in
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(
-                        name: NSNotification.Name("MouseEventRecorded"),
-                        object: Int(event.getIntegerValueField(.mouseEventButtonNumber))
-                    )
-                }
-                return nil
-            }
-            // 启动拦截器
-            interceptor = try Interceptor(
-                event: mouseEventMask,
-                handleBy: callback,
-                listenOn: CGEventTapLocation.cgSessionEventTap,
-                placeAt: CGEventTapPlacement.headInsertEventTap,
-                for: CGEventTapOptions.defaultTap
-            )
             // 监听回调事件通知
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(handleRecordedEvent(_:)),
-                name: NSNotification.Name("MouseEventRecorded"),
+                name: recordNotiName,
                 object: nil
+            )
+            // 启动拦截器
+            interceptor = try Interceptor(
+                event: mouseEventMask,
+                handleBy: { (proxy, type, event, refcon) in // 使用通知转发回调
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(
+                            name: recordNotiName,
+                            object: Int(event.getIntegerValueField(.mouseEventButtonNumber))
+                        )
+                    }
+                    return nil
+                },
+                listenOn: CGEventTapLocation.cgSessionEventTap,
+                placeAt: CGEventTapPlacement.headInsertEventTap,
+                for: CGEventTapOptions.defaultTap
             )
             // 展示 Popover
             showPopover(at: sourceView)
             // 启动3秒超时保护定时器
             startTimeoutTimer()
             // Log
-            NSLog("[EventRecorder] Started recording mouse events")
+            NSLog("[EventRecorder] Start recording mouse events")
         } catch {
             NSLog("[EventRecorder] Failed to start recording: \(error)")
             // 如果创建失败，重置状态
@@ -94,16 +95,17 @@ class EventRecorder: NSObject {
         guard isRecording else { return }
         // Guard: 获取 button number
         guard let buttonNumber = notification.object as? Int else { return }
+        // 更新记录标识
+        guard !isRecorded else { return }
+        isRecorded = true
         // 更新 popover 显示操作的按键
         updatePopoverText(for: buttonNumber)
-        // 关闭 popover (延迟 300ms 确保能看完提示)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
-            self?.hidePopover()
-        }
         // 将结果发给 delegate
         self.delegate?.eventRecorder(self, didRecordButton: buttonNumber)
-        // 停止录制
-        self.stopRecording()
+        // 停止录制 (延迟 300ms 确保能看完提示
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+            self?.stopRecording()
+        }
     }
     // 停止记录
     func stopRecording() {
@@ -111,15 +113,18 @@ class EventRecorder: NSObject {
         guard isRecording else { return }
         // Log
         NSLog("[EventRecorder] Stopping recording mouse events")
+        // 隐藏 Popover
+        hidePopover()
         // 取消超时定时器
         cancelTimeoutTimer()
         // 取消通知和监听
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("MouseEventRecorded"), object: nil)
         interceptor?.stop()
         interceptor = nil
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("MouseEventRecorded"), object: nil)
         // 重置状态 (添加延迟确保能看完动画不会导致多个 popover 重复出现导致卡住)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             self?.isRecording = false
+            self?.isRecorded = false
             NSLog("[EventRecorder] Recording fully stopped")
         }
     }
@@ -154,7 +159,6 @@ class EventRecorder: NSObject {
         let newPopover = NSPopover()
         newPopover.contentViewController = contentController
         newPopover.behavior = .transient
-        newPopover.delegate = self
         
         // 设置引用并显示
         popover = newPopover
@@ -209,13 +213,5 @@ class EventRecorder: NSObject {
     private func cancelTimeoutTimer() {
         recordTimeoutTimer?.invalidate()
         recordTimeoutTimer = nil
-    }
-}
-
-// MARK: - NSPopoverDelegate
-extension EventRecorder: NSPopoverDelegate {
-    // 关闭 Popover 时连带停止 recording
-    func popoverDidClose(_ notification: Notification) {
-        stopRecording()
     }
 }
