@@ -22,15 +22,31 @@ class RecordButton: NSVisualEffectView {
     // MARK: - 按键样式和交互处理
     // 样式
     private func setupAppearance() {
-        self.material = .dark
+        // 使用语义化material，系统自动适配外观
+        self.material = .hudWindow
         self.blendingMode = .withinWindow
         self.state = .active
         self.wantsLayer = true
         self.layer?.cornerRadius = 8.0
-        self.layer?.backgroundColor = NSColor.selectedControlColor.withAlphaComponent(0.6).cgColor
-        self.layer?.borderColor = NSColor.selectedControlColor.cgColor
+        
+        // 为Light和Dark模式设置不同的配色
+        let backgroundColor: NSColor
+        let borderColor: NSColor
+        
+        if NSApp.effectiveAppearance.name == NSAppearance.Name.darkAqua {
+            // Dark模式：保持原有配色
+            backgroundColor = NSColor.selectedControlColor.withAlphaComponent(0.6)
+            borderColor = NSColor.selectedControlColor
+        } else {
+            // Light模式：使用更适合的配色
+            backgroundColor = NSColor.controlAccentColor.withAlphaComponent(0.15)
+            borderColor = NSColor.controlAccentColor.withAlphaComponent(0.3)
+        }
+        
+        self.layer?.backgroundColor = backgroundColor.cgColor
+        self.layer?.borderColor = borderColor.cgColor
         self.layer?.borderWidth = 0.5
-        self.layer?.masksToBounds = true // Ensure background color shows over visual effect
+        self.layer?.masksToBounds = true
     }
     // Hover 效果处理
     private func setupTrackingArea() {
@@ -46,14 +62,26 @@ class RecordButton: NSVisualEffectView {
         super.mouseEntered(with: event)
         NSAnimationContext.runAnimationGroup({ context in
             context.duration = 0.15
-            self.layer?.backgroundColor = NSColor.selectedControlColor.withAlphaComponent(0.8).cgColor
+            let hoverColor: NSColor
+            if NSApp.effectiveAppearance.name == NSAppearance.Name.darkAqua {
+                hoverColor = NSColor.selectedControlColor.withAlphaComponent(0.8)
+            } else {
+                hoverColor = NSColor.controlAccentColor.withAlphaComponent(0.25)
+            }
+            self.layer?.backgroundColor = hoverColor.cgColor
         })
     }
     override func mouseExited(with event: NSEvent) {
         super.mouseExited(with: event)
         NSAnimationContext.runAnimationGroup({ context in
             context.duration = 0.15
-            self.layer?.backgroundColor = NSColor.selectedControlColor.withAlphaComponent(0.6).cgColor
+            let normalColor: NSColor
+            if NSApp.effectiveAppearance.name == NSAppearance.Name.darkAqua {
+                normalColor = NSColor.selectedControlColor.withAlphaComponent(0.6)
+            } else {
+                normalColor = NSColor.controlAccentColor.withAlphaComponent(0.15)
+            }
+            self.layer?.backgroundColor = normalColor.cgColor
         })
     }
     // Click 回调
@@ -75,6 +103,6 @@ extension RecordButton: EventRecorderDelegate {
     }
     // 事件回调
     func eventRecorder(_ recorder: EventRecorder, didRecordButton buttonNumber: Int) {
-        NSLog("Recorded mouse button: \(buttonNumber)")
+        NSLog("[RecordButton] Recorded mouse button: \(buttonNumber)")
     }
 }

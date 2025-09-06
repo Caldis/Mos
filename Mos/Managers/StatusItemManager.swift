@@ -25,7 +25,7 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
     override func awakeFromNib() {
         NSLog("Module initialized: StatusItemManager")
         // 设置图标/行为
-        item.image = #imageLiteral(resourceName: "AppStatusBarIcon")
+        item.button?.image = #imageLiteral(resourceName: "AppStatusBarIcon")
         // 设置事件响应
         switch TYPE {
             // 类型: 菜单
