@@ -105,13 +105,13 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     @objc func smoothCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.general.applications.get(by: row)?.scrollBasic.smooth = state.rawValue==1 ? true : false
+        Options.shared.general.applications.get(by: row)?.scroll.smooth = state.rawValue==1 ? true : false
     }
     // 点击反转
     @objc func reverseCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.general.applications.get(by: row)?.scrollBasic.reverse = state.rawValue==1 ? true : false
+        Options.shared.general.applications.get(by: row)?.scroll.reverse = state.rawValue==1 ? true : false
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
@@ -138,7 +138,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
                     checkBox.tag = row
                     checkBox.target = self
                     checkBox.action = #selector(smoothCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application?.scrollBasic.smooth==true ? 1 : 0)
+                    checkBox.state = NSControl.StateValue(rawValue: application?.scroll.smooth==true ? 1 : 0)
                     return cell
                 // 反转
                 case CellIdentifiers.reverseCell:
@@ -146,7 +146,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
                     checkBox.tag = row
                     checkBox.target = self
                     checkBox.action = #selector(reverseCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application?.scrollBasic.reverse==true ? 1 : 0)
+                    checkBox.state = NSControl.StateValue(rawValue: application?.scroll.reverse==true ? 1 : 0)
                     return cell
                 // 应用
                 case CellIdentifiers.applicationCell:

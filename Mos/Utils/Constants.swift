@@ -92,7 +92,7 @@ class OPTIONS_GENERAL_DEFAULT {
     )
 }
 // 滚动参数
-class OPTIONS_SCROLL_BASIC_DEFAULT: Codable {
+class OPTIONS_SCROLL_DEFAULT: Codable {
     // 基础
     var smooth = true {
         didSet {Options.shared.saveOptions()}
@@ -100,9 +100,6 @@ class OPTIONS_SCROLL_BASIC_DEFAULT: Codable {
     var reverse = true {
         didSet {Options.shared.saveOptions()}
     }
-}
-// 滚动参数
-class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
     // 高级
     var dash:Int? = 0 {
         didSet {Options.shared.saveOptions()}
@@ -120,7 +117,7 @@ class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
         didSet {Options.shared.saveOptions()}
     }
     var duration = 3.90 {
-        willSet {self.durationTransition = OPTIONS_SCROLL_ADVANCED_DEFAULT.generateDurationTransition(with: newValue)}
+        willSet {self.durationTransition = OPTIONS_SCROLL_DEFAULT.generateDurationTransition(with: newValue)}
         didSet {Options.shared.saveOptions()}
     }
     var durationTransition = 0.1340 {
@@ -139,8 +136,8 @@ class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
         return Double(round(1000 * val)/1000)
     }
 }
-extension OPTIONS_SCROLL_ADVANCED_DEFAULT: Equatable {
-    static func == (l: OPTIONS_SCROLL_ADVANCED_DEFAULT, r: OPTIONS_SCROLL_ADVANCED_DEFAULT) -> Bool {
+extension OPTIONS_SCROLL_DEFAULT: Equatable {
+    static func == (l: OPTIONS_SCROLL_DEFAULT, r: OPTIONS_SCROLL_DEFAULT) -> Bool {
         return (
             l.dash == r.dash &&
             l.toggle == r.toggle &&

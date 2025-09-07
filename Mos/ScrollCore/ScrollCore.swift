@@ -56,9 +56,9 @@ class ScrollCore {
         // 平滑/翻转
         var enableSmooth = false,
             enableReverse = false
-        var step = Options.shared.scrollAdvanced.step,
-            speed = Options.shared.scrollAdvanced.speed,
-            duration = Options.shared.scrollAdvanced.durationTransition
+        var step = Options.shared.scroll.step,
+            speed = Options.shared.scroll.speed,
+            duration = Options.shared.scroll.durationTransition
         if let exceptionalApplication = ScrollCore.shared.exceptionalApplication {
             enableSmooth = exceptionalApplication.isSmooth(ScrollCore.shared.blockSmooth)
             enableReverse = exceptionalApplication.isReverse()
@@ -66,8 +66,8 @@ class ScrollCore {
             speed = exceptionalApplication.getSpeed()
             duration = exceptionalApplication.getDuration()
         } else if !Options.shared.general.allowlist {
-            enableSmooth = Options.shared.scrollBasic.smooth && !ScrollCore.shared.blockSmooth
-            enableReverse = Options.shared.scrollBasic.reverse
+            enableSmooth = Options.shared.scroll.smooth && !ScrollCore.shared.blockSmooth
+            enableReverse = Options.shared.scroll.reverse
         }
         // Launchpad 激活则强制屏蔽平滑
         if ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication) {

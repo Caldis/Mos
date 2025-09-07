@@ -23,13 +23,13 @@ class PreferencesGeneralViewController: NSViewController {
     
     // 平滑
     @IBAction func scrollSmoothClick(_ sender: NSButton) {
-        Options.shared.scrollBasic.smooth = sender.state.rawValue==0 ? false : true
+        Options.shared.scroll.smooth = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     
     // 翻转
     @IBAction func scrollReverseClick(_ sender: NSButton) {
-        Options.shared.scrollBasic.reverse = sender.state.rawValue==0 ? false : true
+        Options.shared.scroll.reverse = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     
@@ -53,9 +53,9 @@ extension PreferencesGeneralViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
         // 平滑
-        scrollSmoothCheckBox.state = NSControl.StateValue(rawValue: Options.shared.scrollBasic.smooth ? 1 : 0)
+        scrollSmoothCheckBox.state = NSControl.StateValue(rawValue: Options.shared.scroll.smooth ? 1 : 0)
         // 翻转
-        scrollReverseCheckBox.state = NSControl.StateValue(rawValue: Options.shared.scrollBasic.reverse ? 1 : 0)
+        scrollReverseCheckBox.state = NSControl.StateValue(rawValue: Options.shared.scroll.reverse ? 1 : 0)
         // 自启
         launchOnLoginCheckBox.state = NSControl.StateValue(rawValue: Options.shared.general.autoLaunch ? 1 : 0)
         // 隐藏

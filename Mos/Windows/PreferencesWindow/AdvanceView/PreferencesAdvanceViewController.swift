@@ -28,7 +28,7 @@ class PreferencesAdvanceViewController: NSViewController {
     @IBOutlet weak var resetToDefaultsButton: NSButton!
     // Constants
     let PopUpButtonPadding = 2 // 减去第一个 Disabled 和分割线的距离
-    let DefaultConfigForCompare = OPTIONS_SCROLL_ADVANCED_DEFAULT()
+    let DefaultConfigForCompare = OPTIONS_SCROLL_DEFAULT()
     
     override func viewDidLoad() {
         // 禁止自动 Focus
@@ -106,9 +106,9 @@ class PreferencesAdvanceViewController: NSViewController {
     // 重置
     @IBAction func resetToDefaultClick(_ sender: NSButton) {
         if let target = currentTargetApplication {
-            target.scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT()
+            target.scroll = OPTIONS_SCROLL_DEFAULT()
         } else {
-            Options.shared.scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT()
+            Options.shared.scroll = OPTIONS_SCROLL_DEFAULT()
         }
         syncViewWithOptions()
     }
@@ -172,11 +172,11 @@ extension PreferencesAdvanceViewController {
         resetToDefaultsButton.isEnabled = enabled && scroll != DefaultConfigForCompare
     }
     // 获取配置目标
-    func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_ADVANCED_DEFAULT {
+    func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_DEFAULT {
         if let validCurrentTargetApplication = currentTargetApplication, validCurrentTargetApplication.inherit == false  {
-            return validCurrentTargetApplication.scrollAdvanced
+            return validCurrentTargetApplication.scroll
         }
-        return Options.shared.scrollAdvanced
+        return Options.shared.scroll
     }
     // 是否继承全局设置
     func isTargetApplicationInheritOptions() -> Bool {

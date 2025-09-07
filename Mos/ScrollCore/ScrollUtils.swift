@@ -122,23 +122,23 @@ class ScrollUtils {
     // 滚动参数: 热键
     func optionsDashOn(application: ExceptionalApplication?) -> CGKeyCode {
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scrollAdvanced.dash ?? 0 : targetApplication.scrollAdvanced.dash ?? 0)
+            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.dash ?? 0 : targetApplication.scroll.dash ?? 0)
         } else {
-            return CGKeyCode(Options.shared.scrollAdvanced.dash ?? 0)
+            return CGKeyCode(Options.shared.scroll.dash ?? 0)
         }
     }
     func optionsToggleOn(application: ExceptionalApplication?) -> CGKeyCode {
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scrollAdvanced.toggle ?? 0 : targetApplication.scrollAdvanced.toggle ?? 0)
+            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.toggle ?? 0 : targetApplication.scroll.toggle ?? 0)
         } else {
-            return CGKeyCode(Options.shared.scrollAdvanced.toggle ?? 0)
+            return CGKeyCode(Options.shared.scroll.toggle ?? 0)
         }
     }
     func optionsBlockOn(application: ExceptionalApplication?) -> CGKeyCode {
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scrollAdvanced.block ?? 0 : targetApplication.scrollAdvanced.block ?? 0)
+            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.block ?? 0 : targetApplication.scroll.block ?? 0)
         } else {
-            return CGKeyCode(Options.shared.scrollAdvanced.block ?? 0)
+            return CGKeyCode(Options.shared.scroll.block ?? 0)
         }
     }
 }

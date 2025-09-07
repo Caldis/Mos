@@ -1,6 +1,7 @@
 //
 //  EventRecorder.swift
 //  Mos
+//  用于录制热键
 //
 //  Created by Claude on 2025/8/31.
 //  Copyright © 2025 Caldis. All rights reserved.

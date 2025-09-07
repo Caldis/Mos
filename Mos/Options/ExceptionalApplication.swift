@@ -16,13 +16,12 @@ class ExceptionalApplication: Codable, Equatable {
     var displayName: String? = "" {
         didSet {Options.shared.saveOptions()}
     }
-    // 配置: 继承 (仅包含 Advanced 部分)
+    // 配置: 继承
     var inherit = true {
         didSet {Options.shared.saveOptions()}
     }
     // 配置: 滚动
-    var scrollBasic = OPTIONS_SCROLL_BASIC_DEFAULT()
-    var scrollAdvanced = OPTIONS_SCROLL_ADVANCED_DEFAULT() {
+    var scroll = OPTIONS_SCROLL_DEFAULT() {
         didSet {Options.shared.saveOptions()}
     }
     // 初始化
@@ -40,8 +39,7 @@ class ExceptionalApplication: Codable, Equatable {
         // 继承
         inherit = try container.decodeIfPresent(Bool.self, forKey: .inherit) ?? true
         // 滚动
-        scrollBasic = try container.decodeIfPresent(OPTIONS_SCROLL_BASIC_DEFAULT.self, forKey: .scrollBasic) ?? OPTIONS_SCROLL_BASIC_DEFAULT()
-        scrollAdvanced = try container.decodeIfPresent(OPTIONS_SCROLL_ADVANCED_DEFAULT.self, forKey: .scrollAdvanced) ?? OPTIONS_SCROLL_ADVANCED_DEFAULT()
+        scroll = try container.decodeIfPresent(OPTIONS_SCROLL_DEFAULT.self, forKey: .scroll) ?? OPTIONS_SCROLL_DEFAULT()
     }
     
     // Equatable
@@ -66,22 +64,22 @@ extension ExceptionalApplication {
     }
     // 配置
     func getStep() -> Double {
-        return inherit ? Options.shared.scrollAdvanced.step : scrollAdvanced.step
+        return inherit ? Options.shared.scroll.step : scroll.step
     }
     func getSpeed() -> Double {
-        return inherit ? Options.shared.scrollAdvanced.speed : scrollAdvanced.speed
+        return inherit ? Options.shared.scroll.speed : scroll.speed
     }
     func getDuration() -> Double {
-        return inherit ? Options.shared.scrollAdvanced.durationTransition : scrollAdvanced.durationTransition
+        return inherit ? Options.shared.scroll.durationTransition : scroll.durationTransition
     }
     // 功能
     func isSmooth(_ block: Bool) -> Bool {
         if block { return false }
-        if !Options.shared.scrollBasic.smooth { return false }
-        return scrollBasic.smooth
+        if !Options.shared.scroll.smooth { return false }
+        return scroll.smooth
     }
     func isReverse() -> Bool {
-        if !Options.shared.scrollBasic.reverse { return false }
-        return scrollBasic.reverse
+        if !Options.shared.scroll.reverse { return false }
+        return scroll.reverse
     }
 }
