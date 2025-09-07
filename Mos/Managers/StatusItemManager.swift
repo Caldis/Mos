@@ -7,15 +7,7 @@
 //
 import Cocoa
 
-enum STATUS_ITEM_TYPE {
-    case menu
-    case popover
-}
-
 class StatusItemManager: NSMenu, NSMenuDelegate {
-    
-    // 状态栏类型
-    let TYPE = STATUS_ITEM_TYPE.menu
     
     // 状态栏引用
     static let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -27,20 +19,8 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
         // 设置图标/行为
         item.button?.image = #imageLiteral(resourceName: "AppStatusBarIcon")
         // 设置事件响应
-        switch TYPE {
-            // 类型: 菜单
-            case STATUS_ITEM_TYPE.menu:
-                // 设置菜单代理
-                item.menu = self
-                item.menu?.delegate = self
-                break
-            // 类型: 弹出面板
-            case STATUS_ITEM_TYPE.popover:
-                // 点击事件 (需要设置 target 才能响应此处方法)
-                item.button?.action = #selector(onMenuClick)
-                item.button?.target = self
-                break
-        }
+        item.menu = self
+        item.menu?.delegate = self
     }
     
 }
@@ -65,17 +45,8 @@ extension StatusItemManager {
                 buildOptionMenu()
                 return
             }
-            // 根据类型弹出菜单
-            switch TYPE {
-                // 类型: 菜单
-                case STATUS_ITEM_TYPE.menu:
-                    buildNormalMenu()
-                    break
-                // 类型: 弹出面板
-                case STATUS_ITEM_TYPE.popover:
-                    PopoverManager.shared.togglePopover(withIdentifier: POPOVER_IDENTIFIER.statusItemPopoverViewController, relativeTo: item.button!)
-                    break
-            }
+            // 弹出菜单
+            buildNormalMenu()
         }
     }
 }

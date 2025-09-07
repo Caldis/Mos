@@ -11,25 +11,11 @@ import Cocoa
 class PreferencesGeneralViewController: NSViewController {
     
     // UI Elements
-    @IBOutlet weak var scrollSmoothCheckBox: NSButton!
-    @IBOutlet weak var scrollReverseCheckBox: NSButton!
     @IBOutlet weak var launchOnLoginCheckBox: NSButton!
     @IBOutlet weak var hideStatusBarIconCheckBox: NSButton!
     
     override func viewDidLoad() {
         // 读取设置
-        syncViewWithOptions()
-    }
-    
-    // 平滑
-    @IBAction func scrollSmoothClick(_ sender: NSButton) {
-        Options.shared.scroll.smooth = sender.state.rawValue==0 ? false : true
-        syncViewWithOptions()
-    }
-    
-    // 翻转
-    @IBAction func scrollReverseClick(_ sender: NSButton) {
-        Options.shared.scroll.reverse = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     
@@ -52,10 +38,6 @@ class PreferencesGeneralViewController: NSViewController {
 extension PreferencesGeneralViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
-        // 平滑
-        scrollSmoothCheckBox.state = NSControl.StateValue(rawValue: Options.shared.scroll.smooth ? 1 : 0)
-        // 翻转
-        scrollReverseCheckBox.state = NSControl.StateValue(rawValue: Options.shared.scroll.reverse ? 1 : 0)
         // 自启
         launchOnLoginCheckBox.state = NSControl.StateValue(rawValue: Options.shared.general.autoLaunch ? 1 : 0)
         // 隐藏

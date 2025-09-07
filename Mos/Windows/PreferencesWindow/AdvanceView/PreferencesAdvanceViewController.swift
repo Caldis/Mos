@@ -13,6 +13,8 @@ class PreferencesAdvanceViewController: NSViewController {
     // Target application
     var currentTargetApplication: ExceptionalApplication?
     // UI Elements
+    @IBOutlet weak var scrollSmoothCheckBox: NSButton!
+    @IBOutlet weak var scrollReverseCheckBox: NSButton!
     @IBOutlet weak var dashKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var toggleKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var disableKeyPopUpButton: NSPopUpButton!
@@ -36,6 +38,18 @@ class PreferencesAdvanceViewController: NSViewController {
         scrollSpeedInput.refusesFirstResponder = true
         scrollDurationInput.refusesFirstResponder = true
         // 读取设置
+        syncViewWithOptions()
+    }
+    
+    // 平滑
+    @IBAction func scrollSmoothClick(_ sender: NSButton) {
+        Options.shared.scroll.smooth = sender.state.rawValue==0 ? false : true
+        syncViewWithOptions()
+    }
+    
+    // 翻转
+    @IBAction func scrollReverseClick(_ sender: NSButton) {
+        Options.shared.scroll.reverse = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     
@@ -121,57 +135,65 @@ class PreferencesAdvanceViewController: NSViewController {
 extension PreferencesAdvanceViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
+        // 是否继承配置
+        let isNotInherit = !isTargetApplicationInheritOptions()
+        // 滚动配置
         let scroll = getTargetApplicationScrollOptions()
-        let enabled = !isTargetApplicationInheritOptions()
+        // 平滑
+        scrollSmoothCheckBox.state = NSControl.StateValue(rawValue: scroll.smooth ? 1 : 0)
+        scrollSmoothCheckBox.isEnabled = isNotInherit
+        // 翻转
+        scrollReverseCheckBox.state = NSControl.StateValue(rawValue: scroll.reverse ? 1 : 0)
+        scrollReverseCheckBox.isEnabled = isNotInherit
         // 加速
         if let index = MODIFIER_KEY_SET.all.codes.firstIndex(of: CGKeyCode(scroll.dash ?? 0)) {
             dashKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
             dashKeyPopUpButton.selectItem(at: 0)
         }
-        dashKeyPopUpButton.isEnabled = enabled
+        dashKeyPopUpButton.isEnabled = isNotInherit
         // 转换
         if let index = MODIFIER_KEY_SET.all.codes.firstIndex(of: CGKeyCode(scroll.toggle ?? 0)) {
             toggleKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
             toggleKeyPopUpButton.selectItem(at: 0)
         }
-        toggleKeyPopUpButton.isEnabled = enabled
+        toggleKeyPopUpButton.isEnabled = isNotInherit
         // 禁用
         if let index = MODIFIER_KEY_SET.all.codes.firstIndex(of: CGKeyCode(scroll.block ?? 0)) {
             disableKeyPopUpButton.selectItem(at: index+PopUpButtonPadding)
         } else {
             disableKeyPopUpButton.selectItem(at: 0)
         }
-        disableKeyPopUpButton.isEnabled = enabled
+        disableKeyPopUpButton.isEnabled = isNotInherit
         // 步长
         let step = scroll.step
         scrollStepSlider.doubleValue = step
-        scrollStepSlider.isEnabled = enabled
+        scrollStepSlider.isEnabled = isNotInherit
         scrollStepStepper.doubleValue = step
-        scrollStepStepper.isEnabled = enabled
+        scrollStepStepper.isEnabled = isNotInherit
         scrollStepInput.stringValue = String(format: "%.2f", step)
-        scrollStepInput.isEnabled = enabled
+        scrollStepInput.isEnabled = isNotInherit
         // 速度
         let speed = scroll.speed
         scrollSpeedSlider.doubleValue = speed
-        scrollSpeedSlider.isEnabled = enabled
+        scrollSpeedSlider.isEnabled = isNotInherit
         scrollSpeedStepper.doubleValue = speed
-        scrollSpeedStepper.isEnabled = enabled
+        scrollSpeedStepper.isEnabled = isNotInherit
         scrollSpeedInput.stringValue = String(format: "%.2f", speed)
-        scrollSpeedInput.isEnabled = enabled
+        scrollSpeedInput.isEnabled = isNotInherit
         // 过渡
         let duration = scroll.duration
         scrollDurationSlider.doubleValue = duration
-        scrollDurationSlider.isEnabled = enabled
+        scrollDurationSlider.isEnabled = isNotInherit
         scrollDurationStepper.doubleValue = duration
-        scrollDurationStepper.isEnabled = enabled
+        scrollDurationStepper.isEnabled = isNotInherit
         scrollDurationInput.stringValue = String(format: "%.2f", duration)
-        scrollDurationInput.isEnabled = enabled
+        scrollDurationInput.isEnabled = isNotInherit
         // 初始化
-        resetToDefaultsButton.isEnabled = enabled && scroll != DefaultConfigForCompare
+        resetToDefaultsButton.isEnabled = isNotInherit && scroll != DefaultConfigForCompare
     }
-    // 获取配置目标
+    // 获取配置目标 (公共或应用配置)
     func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_DEFAULT {
         if let validCurrentTargetApplication = currentTargetApplication, validCurrentTargetApplication.inherit == false  {
             return validCurrentTargetApplication.scroll
