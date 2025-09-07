@@ -85,11 +85,7 @@ extension Options {
         scroll.precision = UserDefaults.standard.double(forKey: OptionItem.Scroll.Precision)
         // 应用
         application.allowlist = UserDefaults.standard.bool(forKey: OptionItem.Application.Allowlist)
-        application.applications = EnhanceArray(
-            withData: UserDefaults.standard.value(forKey: OptionItem.Application.Applications) as! Data,
-            matchKey: "path",
-            forObserver: Options.shared.saveOptions
-        )
+        application.applications = loadApplicationsData()
         // 解锁
         readingOptionsLock = false
     }
@@ -113,7 +109,42 @@ extension Options {
             UserDefaults.standard.set(scroll.precision, forKey: OptionItem.Scroll.Precision)
             // 应用
             UserDefaults.standard.set(application.allowlist, forKey: OptionItem.Application.Allowlist)
-            UserDefaults.standard.set(application.applications.json(), forKey: OptionItem.Application.Applications)
+            if let applicationsData = application.applications.json() {
+                UserDefaults.standard.set(applicationsData, forKey: OptionItem.Application.Applications)
+            } else {
+                NSLog("Failed to serialize applications data, skipping save")
+            }
+        }
+    }
+    
+    // 安全加载应用列表数据
+    private func loadApplicationsData() -> EnhanceArray<ExceptionalApplication> {
+        let defaultArray = EnhanceArray<ExceptionalApplication>(
+            matchKey: "path",
+            forObserver: Options.shared.saveOptions
+        )
+        
+        // 检查 UserDefaults 中的值类型
+        let rawValue = UserDefaults.standard.object(forKey: OptionItem.Application.Applications)
+        guard let data = rawValue as? Data else {
+            if rawValue != nil {
+                NSLog("Applications data has wrong type: \(type(of: rawValue)), clearing corrupted data")
+                UserDefaults.standard.removeObject(forKey: OptionItem.Application.Applications)
+            }
+            return defaultArray
+        }
+        
+        // 尝试解析
+        do {
+            return try EnhanceArray<ExceptionalApplication>(
+                withData: data,
+                matchKey: "path",
+                forObserver: Options.shared.saveOptions
+            )
+        } catch {
+            NSLog("Failed to decode applications data: \(error), resetting to defaults")
+            UserDefaults.standard.removeObject(forKey: OptionItem.Application.Applications)
+            return defaultArray
         }
     }
 }

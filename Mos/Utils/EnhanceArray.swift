@@ -24,9 +24,9 @@ class EnhanceArray<T:Codable> {
         setInitData(targetDictionaryKey, targetArray)
         observer = observerHandler
     }
-    public init(withData targetData: Data, matchKey targetDictionaryKey: String = "identity", forObserver observerHandler: @escaping ()->Void = {()}) {
+    public init(withData targetData: Data, matchKey targetDictionaryKey: String = "identity", forObserver observerHandler: @escaping ()->Void = {()}) throws {
         let decoder = JSONDecoder()
-        let targetArray = try! decoder.decode([T].self, from: targetData) as [T]
+        let targetArray = try decoder.decode([T].self, from: targetData)
         setInitData(targetDictionaryKey, targetArray)
         observer = observerHandler
     }
@@ -75,9 +75,14 @@ extension EnhanceArray {
         array.remove(at: index)
     }
     // 获取 JSON 数据
-    public func json() -> Any? {
+    public func json() -> Data? {
         let encoder = JSONEncoder()
-        return try! encoder.encode(array)
+        do {
+            return try encoder.encode(array)
+        } catch {
+            NSLog("Failed to encode array to JSON: \(error)")
+            return nil
+        }
     }
     // 更新内部数据
     public func update() {
