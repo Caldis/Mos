@@ -584,10 +584,9 @@ extension NSEvent.ModifierFlags {
     func formattedString(excludeFnForFunctionKeys keyCode: UInt16? = nil) -> String {
         var components: [String] = []
         
-        if contains(.command) { components.append("⌘") }
-        if contains(.option) { components.append("⌥") }
-        if contains(.control) { components.append("⌃") }
+        // SHIFT
         if contains(.shift) { components.append("⇧") }
+        // FN
         if contains(.function) {
             // 如果是Fn+F键组合，隐去Fn避免误导
             if let keyCode = keyCode, isFunctionKey(keyCode) {
@@ -596,6 +595,12 @@ extension NSEvent.ModifierFlags {
                 components.append("Fn")
             }
         }
+        // CTRL
+        if contains(.control) { components.append("⌃") }
+        // OPTION
+        if contains(.option) { components.append("⌥") }
+        // COMMAND
+        if contains(.command) { components.append("⌘") }
         
         return components.joined(separator: " ")
     }
