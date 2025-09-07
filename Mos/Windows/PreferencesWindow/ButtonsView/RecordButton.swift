@@ -102,7 +102,7 @@ extension RecordButton: EventRecorderDelegate {
         recorder.startRecording(from: self)
     }
     // 事件回调
-    func eventRecorder(_ recorder: EventRecorder, didRecordButton buttonNumber: Int) {
-        NSLog("[RecordButton] Recorded mouse button: \(buttonNumber)")
+    func eventRecorder(_ recorder: EventRecorder, didRecordEvent event: RecordedEvent) {
+        NSLog("[RecordButton] Recorded event: \(event.displayName())")
     }
 }
