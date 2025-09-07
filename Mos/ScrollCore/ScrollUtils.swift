@@ -110,10 +110,10 @@ class ScrollUtils {
     // 从 exceptionalApplications 中取回符合传入的 key 的 ExceptionalApplication 对象
     // Key 在 applications 初始化时指定于 ExceptionalApplication 中
     func getExceptionalApplication(from runningApplication: NSRunningApplication?) -> ExceptionalApplication? {
-        if let applicationByBundlePath = Options.shared.general.applications.get(by: runningApplication?.bundleURL?.path) {
+        if let applicationByBundlePath = Options.shared.application.applications.get(by: runningApplication?.bundleURL?.path) {
             return applicationByBundlePath
         }
-        if let applicationByExecutablePath = Options.shared.general.applications.get(by: runningApplication?.executableURL?.path) {
+        if let applicationByExecutablePath = Options.shared.application.applications.get(by: runningApplication?.executableURL?.path) {
             return applicationByExecutablePath
         }
         return nil

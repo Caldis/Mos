@@ -41,7 +41,7 @@ class PreferencesExceptionViewController: NSViewController {
     
     // 白名单模式
     @IBAction func allowListModeClick(_ sender: NSButton) {
-        Options.shared.general.allowlist = sender.state.rawValue==0 ? false : true
+        Options.shared.application.allowlist = sender.state.rawValue==0 ? false : true
         syncViewWithOptions()
     }
     
@@ -77,7 +77,7 @@ extension PreferencesExceptionViewController {
     // 同步界面与设置参数
     func syncViewWithOptions() {
         // 白名单
-        allowlistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.general.allowlist ? 1 : 0)
+        allowlistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.application.allowlist ? 1 : 0)
     }
 }
 
@@ -94,7 +94,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     }
     // 切换无数据显示
     func toggleNoDataHint(animate: Bool = true) {
-        let hasData = Options.shared.general.applications.count != 0
+        let hasData = Options.shared.application.applications.count != 0
         if animate {
             noDataHint.animator().alphaValue = hasData ? 0 : 1
         } else {
@@ -105,19 +105,19 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     @objc func smoothCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.general.applications.get(by: row)?.scroll.smooth = state.rawValue==1 ? true : false
+        Options.shared.application.applications.get(by: row)?.scroll.smooth = state.rawValue==1 ? true : false
     }
     // 点击反转
     @objc func reverseCheckBoxClick(_ sender: NSButton!) {
         let row = sender.tag
         let state = sender.state
-        Options.shared.general.applications.get(by: row)?.scroll.reverse = state.rawValue==1 ? true : false
+        Options.shared.application.applications.get(by: row)?.scroll.reverse = state.rawValue==1 ? true : false
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
         let row = sender.tag
         let advancedWithApplicationViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.advancedWithApplication) as PreferencesAdvanceWithApplicationViewController
-        advancedWithApplicationViewController.updateTargetApplication(with: Options.shared.general.applications.get(by: row))
+        advancedWithApplicationViewController.updateTargetApplication(with: Options.shared.application.applications.get(by: row))
         advancedWithApplicationViewController.updateParentData(with: tableView, for: row)
         present(advancedWithApplicationViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
     }
@@ -130,7 +130,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
         // 生成每行的 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
             // 应用数据
-            let application = Options.shared.general.applications.get(by: row)
+            let application = Options.shared.application.applications.get(by: row)
             switch tableColumnIdentifier.rawValue {
                 // 平滑
                 case CellIdentifiers.smoothCell:
@@ -172,7 +172,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
     }
     // 行数
     func numberOfRows(in tableView: NSTableView) -> Int {
-        let rows = Options.shared.general.applications.count
+        let rows = Options.shared.application.applications.count
         toggleNoDataHint()
         return rows
     }
@@ -236,7 +236,7 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
     // 添加应用
     func appendApplicationWith(path: String) {
         let application = ExceptionalApplication(path: path)
-        Options.shared.general.applications.append(application)
+        Options.shared.application.applications.append(application)
         tableView.reloadData()
     }
     @objc func appendApplicationWithRunningApplication(_ sender: NSMenuItem!) {
@@ -249,7 +249,7 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
     func deleteTableViewSelectedRow() {
         // 确保有选中特定行
         if tableView.selectedRow != -1 {
-            Options.shared.general.applications.remove(at: tableView.selectedRow)
+            Options.shared.application.applications.remove(at: tableView.selectedRow)
         }
     }
 }

@@ -50,7 +50,11 @@ class Options {
     var general = OPTIONS_GENERAL_DEFAULT()
     // 滚动
     var scroll = OPTIONS_SCROLL_DEFAULT() {
-        didSet {Options.shared.saveOptions()}
+        didSet { Options.shared.saveOptions() }
+    }
+    // 应用
+    var application = OPTIONS_APPLICATION_DEFAULT() {
+        didSet { Options.shared.saveOptions() }
     }
 }
 
@@ -80,8 +84,8 @@ extension Options {
         scroll.durationTransition = OPTIONS_SCROLL_DEFAULT.generateDurationTransition(with: scroll.duration)
         scroll.precision = UserDefaults.standard.double(forKey: OptionItem.Scroll.Precision)
         // 应用
-        general.allowlist = UserDefaults.standard.bool(forKey: OptionItem.Application.Allowlist)
-        general.applications = EnhanceArray(
+        application.allowlist = UserDefaults.standard.bool(forKey: OptionItem.Application.Allowlist)
+        application.applications = EnhanceArray(
             withData: UserDefaults.standard.value(forKey: OptionItem.Application.Applications) as! Data,
             matchKey: "path",
             forObserver: Options.shared.saveOptions
@@ -108,8 +112,8 @@ extension Options {
             UserDefaults.standard.set(scroll.duration, forKey: OptionItem.Scroll.Duration)
             UserDefaults.standard.set(scroll.precision, forKey: OptionItem.Scroll.Precision)
             // 应用
-            UserDefaults.standard.set(general.allowlist, forKey: OptionItem.Application.Allowlist)
-            UserDefaults.standard.set(general.applications.json(), forKey: OptionItem.Application.Applications)
+            UserDefaults.standard.set(application.allowlist, forKey: OptionItem.Application.Allowlist)
+            UserDefaults.standard.set(application.applications.json(), forKey: OptionItem.Application.Applications)
         }
     }
 }

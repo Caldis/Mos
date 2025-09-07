@@ -70,7 +70,7 @@ struct SPECIAL_EVENT_SOURCE_APPLICATION {
 }
 
 // 默认设置项
-// 全局参数
+// 常规
 class OPTIONS_GENERAL_DEFAULT {
     // 自启
     var autoLaunch = false {
@@ -82,25 +82,15 @@ class OPTIONS_GENERAL_DEFAULT {
         willSet {newValue ? StatusItemManager.hideStatusItem() : StatusItemManager.showStatusItem()}
         didSet {Options.shared.saveOptions()}
     }
-    // 例外
-    var allowlist = false {
-        didSet {Options.shared.saveOptions()}
-    }
-    var applications = EnhanceArray<ExceptionalApplication>(
-        matchKey: "path",
-        forObserver: {() in Options.shared.saveOptions()}
-    )
 }
-// 滚动参数
+// 滚动
 class OPTIONS_SCROLL_DEFAULT: Codable {
-    // 基础
     var smooth = true {
         didSet {Options.shared.saveOptions()}
     }
     var reverse = true {
         didSet {Options.shared.saveOptions()}
     }
-    // 高级
     var dash:Int? = 0 {
         didSet {Options.shared.saveOptions()}
     }
@@ -139,6 +129,8 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
 extension OPTIONS_SCROLL_DEFAULT: Equatable {
     static func == (l: OPTIONS_SCROLL_DEFAULT, r: OPTIONS_SCROLL_DEFAULT) -> Bool {
         return (
+            l.smooth == r.smooth &&
+            l.reverse == r.smooth &&
             l.dash == r.dash &&
             l.toggle == r.toggle &&
             l.block == r.block &&
@@ -149,4 +141,15 @@ extension OPTIONS_SCROLL_DEFAULT: Equatable {
             l.precision == r.precision
         )
     }
+}
+
+// 例外应用
+class OPTIONS_APPLICATION_DEFAULT {
+    var allowlist = false {
+        didSet {Options.shared.saveOptions()}
+    }
+    var applications = EnhanceArray<ExceptionalApplication>(
+        matchKey: "path",
+        forObserver: {() in Options.shared.saveOptions()}
+    )
 }
