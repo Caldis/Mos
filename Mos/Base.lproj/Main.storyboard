@@ -104,17 +104,17 @@
             <objects>
                 <viewController title="General" storyboardIdentifier="general" id="ITL-GD-CPd" customClass="PreferencesGeneralViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" blendingMode="behindWindow" material="toolTip" state="active" id="LZw-qp-NWH">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="110"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="105"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <box hidden="YES" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="vPz-kM-wAq">
-                                <rect key="frame" x="20" y="97" width="410" height="5"/>
+                                <rect key="frame" x="20" y="92" width="410" height="5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="410" id="KJL-ZZ-WMT"/>
                                 </constraints>
                             </box>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="WWH-56-xDd">
-                                <rect key="frame" x="18" y="42" width="140" height="14"/>
+                                <rect key="frame" x="18" y="37" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="W3A-cF-zN1"/>
                                 </constraints>
@@ -125,7 +125,7 @@
                                 </textFieldCell>
                             </textField>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="Xzk-6e-mKA">
-                                <rect key="frame" x="169" y="75" width="261" height="16"/>
+                                <rect key="frame" x="169" y="70" width="261" height="16"/>
                                 <buttonCell key="cell" type="check" title="Launch Mos at Login" bezelStyle="regularSquare" imagePosition="left" inset="2" id="xoR-7p-3qj">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -138,7 +138,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="1OP-ac-77Z">
-                                <rect key="frame" x="169" y="41" width="150" height="16"/>
+                                <rect key="frame" x="169" y="36" width="150" height="16"/>
                                 <buttonCell key="cell" type="check" title="Hide Status Bar Icon" bezelStyle="regularSquare" imagePosition="left" inset="2" id="hGj-vV-zcY">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -152,7 +152,7 @@
                                 </connections>
                             </button>
                             <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sTG-Fn-P3P">
-                                <rect key="frame" x="322" y="39" width="19" height="20"/>
+                                <rect key="frame" x="322" y="34" width="19" height="20"/>
                                 <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" controlSize="mini" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="q3R-0Q-jlP">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="label" size="9"/>
@@ -166,15 +166,15 @@
                                 </connections>
                             </button>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gt2-mv-Ris" userLabel="Launch On Login Description">
-                                <rect key="frame" x="169" y="20" width="264" height="14"/>
+                                <rect key="frame" x="169" y="20" width="264" height="11"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Re-run Mos again to show the hidden Icon" id="bB5-2R-9Da">
-                                    <font key="font" metaFont="menu" size="11"/>
+                                    <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="4ng-X7-dRa">
-                                <rect key="frame" x="18" y="76" width="140" height="14"/>
+                                <rect key="frame" x="18" y="71" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="TJD-cl-63A"/>
                                 </constraints>
@@ -200,7 +200,7 @@
                             <constraint firstAttribute="trailing" secondItem="Gt2-mv-Ris" secondAttribute="trailing" constant="19" id="QIz-Bj-PTh"/>
                             <constraint firstItem="4ng-X7-dRa" firstAttribute="leading" secondItem="LZw-qp-NWH" secondAttribute="leading" constant="20" id="RNz-ur-say"/>
                             <constraint firstItem="1OP-ac-77Z" firstAttribute="top" secondItem="Xzk-6e-mKA" secondAttribute="bottom" constant="20" id="XQy-uw-780"/>
-                            <constraint firstItem="Gt2-mv-Ris" firstAttribute="top" secondItem="1OP-ac-77Z" secondAttribute="bottom" constant="8" id="XY4-ay-hRV"/>
+                            <constraint firstItem="Gt2-mv-Ris" firstAttribute="top" secondItem="1OP-ac-77Z" secondAttribute="bottom" constant="6" id="XY4-ay-hRV"/>
                             <constraint firstItem="Gt2-mv-Ris" firstAttribute="leading" secondItem="Xzk-6e-mKA" secondAttribute="leading" id="Yvi-cN-EWJ"/>
                             <constraint firstItem="Xzk-6e-mKA" firstAttribute="centerY" secondItem="4ng-X7-dRa" secondAttribute="centerY" id="gza-xU-tdS"/>
                             <constraint firstItem="Xzk-6e-mKA" firstAttribute="top" secondItem="LZw-qp-NWH" secondAttribute="top" constant="20" id="is7-Ds-fnD"/>
@@ -215,7 +215,7 @@
                 </viewController>
                 <customObject id="KsC-af-ap0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="445" y="1171"/>
+            <point key="canvasLocation" x="460" y="1172"/>
         </scene>
         <!--Buttons-->
         <scene sceneID="BTN-SC-123">
@@ -829,12 +829,12 @@
             <objects>
                 <customObject id="T8g-3J-WxE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <viewController title="Scrolling" storyboardIdentifier="scrolling" id="iW5-CD-5OC" customClass="PreferencesScrollingViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <visualEffectView key="view" blendingMode="behindWindow" material="toolTip" state="active" id="Jsi-ke-bNZ">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="507"/>
+                    <visualEffectView key="view" misplaced="YES" blendingMode="behindWindow" material="toolTip" state="active" id="Jsi-ke-bNZ">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="481"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="DQH-h2-1Zk">
-                                <rect key="frame" x="18" y="473" width="140" height="14"/>
+                                <rect key="frame" x="18" y="447" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="uRN-Fz-sJm"/>
                                 </constraints>
@@ -845,7 +845,7 @@
                                 </textFieldCell>
                             </textField>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="1Hp-EF-wSq">
-                                <rect key="frame" x="169" y="472" width="262" height="16"/>
+                                <rect key="frame" x="169" y="446" width="262" height="16"/>
                                 <buttonCell key="cell" type="check" title="Make the mouse wheel smoothly" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="bsq-Pe-sDy">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -859,7 +859,7 @@
                                 </connections>
                             </button>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="aV7-KP-bgw">
-                                <rect key="frame" x="18" y="439" width="140" height="14"/>
+                                <rect key="frame" x="18" y="413" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="YBO-Nh-6aE"/>
                                 </constraints>
@@ -870,7 +870,7 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="PIE-3y-0sa">
-                                <rect key="frame" x="169" y="438" width="238" height="16"/>
+                                <rect key="frame" x="169" y="412" width="238" height="16"/>
                                 <buttonCell key="cell" type="check" title="Reverse the mouse wheel direction" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="vjK-Rg-us9">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -883,13 +883,13 @@
                                 </connections>
                             </button>
                             <box verticalHuggingPriority="750" verticalCompressionResistancePriority="751" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="rQj-g8-Y0N">
-                                <rect key="frame" x="20" y="416" width="410" height="5"/>
+                                <rect key="frame" x="20" y="390" width="410" height="5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="410" id="7Ge-xF-ZVC"/>
                                 </constraints>
                             </box>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mKO-0m-Vb0">
-                                <rect key="frame" x="18" y="381" width="140" height="14"/>
+                                <rect key="frame" x="18" y="355" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="rlL-do-7ec"/>
                                 </constraints>
@@ -900,7 +900,7 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton wantsLayer="YES" verticalHuggingPriority="750" verticalCompressionResistancePriority="752" translatesAutoresizingMaskIntoConstraints="NO" id="fHe-ME-GTY">
-                                <rect key="frame" x="168" y="374" width="127" height="25"/>
+                                <rect key="frame" x="168" y="348" width="127" height="25"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Vhz-Rn-lcU" id="GDi-oW-nle">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="message"/>
@@ -933,15 +933,15 @@
                                 </connections>
                             </popUpButton>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="45l-vw-E0o" userLabel="Dash Key Description">
-                                <rect key="frame" x="169" y="356" width="263" height="14"/>
+                                <rect key="frame" x="169" y="335" width="263" height="11"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Increase scrolling speed on long pages" id="Z59-tN-QjE">
-                                    <font key="font" metaFont="menu" size="11"/>
+                                    <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9Nm-TC-llN">
-                                <rect key="frame" x="18" y="327" width="140" height="14"/>
+                                <rect key="frame" x="18" y="306" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="i4m-8K-DpA"/>
                                 </constraints>
@@ -952,7 +952,7 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton wantsLayer="YES" verticalHuggingPriority="750" verticalCompressionResistancePriority="752" translatesAutoresizingMaskIntoConstraints="NO" id="Y3e-Q9-7Ip">
-                                <rect key="frame" x="168" y="320" width="127" height="25"/>
+                                <rect key="frame" x="168" y="299" width="127" height="25"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cTe-aL-0GQ" id="gkh-s7-kv8">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="message"/>
@@ -985,15 +985,15 @@
                                 </connections>
                             </popUpButton>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="gSx-dp-Tvn" userLabel="Toggle Key Description">
-                                <rect key="frame" x="169" y="302" width="263" height="14"/>
+                                <rect key="frame" x="169" y="286" width="263" height="11"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Change vertical scrolling to horizontal scrolling" id="KnM-kA-wn5">
-                                    <font key="font" metaFont="menu" size="11"/>
+                                    <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kMQ-Oj-Bvd">
-                                <rect key="frame" x="18" y="273" width="140" height="14"/>
+                                <rect key="frame" x="18" y="257" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="y87-5B-rDj"/>
                                 </constraints>
@@ -1004,7 +1004,7 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="u9d-n2-6b5" userLabel="Block Key Pop Up Button">
-                                <rect key="frame" x="168" y="266" width="127" height="25"/>
+                                <rect key="frame" x="168" y="250" width="127" height="25"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="vFk-37-HRU" id="veO-qF-0qO">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="message"/>
@@ -1037,21 +1037,21 @@
                                 </connections>
                             </popUpButton>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="1eQ-Un-ZLh" userLabel="Block Key Description">
-                                <rect key="frame" x="169" y="249" width="263" height="14"/>
+                                <rect key="frame" x="169" y="237" width="263" height="11"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Temporarily block smooth scrolling" id="iki-Jk-qSr">
-                                    <font key="font" metaFont="menu" size="11"/>
+                                    <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <box verticalHuggingPriority="750" verticalCompressionResistancePriority="751" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="iLA-i9-HEO">
-                                <rect key="frame" x="20" y="226" width="410" height="5"/>
+                                <rect key="frame" x="20" y="214" width="410" height="5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="410" id="dvS-fP-hkt"/>
                                 </constraints>
                             </box>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zKw-pT-YRj">
-                                <rect key="frame" x="18" y="194" width="140" height="14"/>
+                                <rect key="frame" x="18" y="182" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="DAn-rh-ycF"/>
                                 </constraints>
@@ -1062,7 +1062,7 @@
                                 </textFieldCell>
                             </textField>
                             <slider wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TU2-J4-KYA">
-                                <rect key="frame" x="169" y="191" width="171" height="19"/>
+                                <rect key="frame" x="169" y="179" width="171" height="19"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="167" id="oWf-Q1-9W7"/>
                                     <constraint firstAttribute="height" constant="15" id="srb-fM-rp2"/>
@@ -1072,8 +1072,8 @@
                                     <action selector="scrollStepSliderChange:" target="iW5-CD-5OC" id="kjo-L9-w60"/>
                                 </connections>
                             </slider>
-                            <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lh7-BV-xfD" userLabel="Scroll Step Input">
-                                <rect key="frame" x="346" y="190" width="60" height="21"/>
+                            <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="749" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lh7-BV-xfD" userLabel="Scroll Step Input">
+                                <rect key="frame" x="346" y="179" width="60" height="20"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="35.00" placeholderString="10-100" usesSingleLineMode="YES" bezelStyle="round" id="vcQ-FZ-z8x">
                                     <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="#,##0.00" negativeFormat="-#,##0.00" thousandSeparator="," id="wQq-Kx-2lH">
                                         <attributedString key="attributedStringForNil"/>
@@ -1091,22 +1091,22 @@
                                 </connections>
                             </textField>
                             <stepper wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="a9X-MM-XsO" userLabel="Scroll Step Stepper">
-                                <rect key="frame" x="404" y="186" width="19" height="29"/>
+                                <rect key="frame" x="404" y="175" width="19" height="28"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="10" maxValue="100" doubleValue="35" id="l5w-H3-FUv"/>
                                 <connections>
                                     <action selector="scrollStepStepperChange:" target="iW5-CD-5OC" id="LSH-W5-eWh"/>
                                 </connections>
                             </stepper>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="249" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ET3-bp-TfD" userLabel="Scroll Step Description">
-                                <rect key="frame" x="169" y="172" width="263" height="14"/>
+                                <rect key="frame" x="169" y="164" width="263" height="11"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Sets the minimum scroll distance" id="Jan-OY-m70">
-                                    <font key="font" metaFont="menu" size="11"/>
+                                    <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fAk-N9-naX">
-                                <rect key="frame" x="18" y="137" width="140" height="14"/>
+                                <rect key="frame" x="18" y="129" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="Axk-Bu-mvb"/>
                                 </constraints>
@@ -1117,14 +1117,14 @@
                                 </textFieldCell>
                             </textField>
                             <slider wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YRx-cZ-Ol5">
-                                <rect key="frame" x="169" y="134" width="171" height="20"/>
+                                <rect key="frame" x="169" y="126" width="171" height="20"/>
                                 <sliderCell key="cell" controlSize="small" state="on" alignment="left" minValue="1" maxValue="10" doubleValue="3" tickMarkPosition="above" numberOfTickMarks="5" sliderType="linear" id="ovU-ME-3wf"/>
                                 <connections>
                                     <action selector="scrollSpeedSliderChange:" target="iW5-CD-5OC" id="eDS-0S-PZt"/>
                                 </connections>
                             </slider>
                             <textField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nbg-QY-VXM" userLabel="Scroll Speed Input">
-                                <rect key="frame" x="346" y="133" width="60" height="22"/>
+                                <rect key="frame" x="346" y="125" width="60" height="22"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="3.00" placeholderString="1-10" usesSingleLineMode="YES" bezelStyle="round" id="Fgm-mm-22Q">
                                     <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="#,##0.00" negativeFormat="-#,##0.00" thousandSeparator="," id="LUh-hA-gr3">
                                         <textAttributesForNegativeValues/>
@@ -1143,22 +1143,22 @@
                                 </connections>
                             </textField>
                             <stepper wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="S6c-kz-cql" userLabel="Scroll Speed Stepper">
-                                <rect key="frame" x="404" y="130" width="19" height="28"/>
+                                <rect key="frame" x="404" y="122" width="19" height="28"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="10" doubleValue="3" id="k4I-Zi-yIR"/>
                                 <connections>
                                     <action selector="scrollSpeedStepperChange:" target="iW5-CD-5OC" id="kbJ-4c-Epc"/>
                                 </connections>
                             </stepper>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="U62-ME-IJk" userLabel="Scroll Speed Description">
-                                <rect key="frame" x="169" y="115" width="263" height="14"/>
+                                <rect key="frame" x="169" y="111" width="263" height="11"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Sets scrolling acceleration" id="B3O-iI-E7v">
-                                    <font key="font" metaFont="menu" size="11"/>
+                                    <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="z8H-6h-kRv">
-                                <rect key="frame" x="18" y="80" width="140" height="14"/>
+                                <rect key="frame" x="18" y="76" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="ttO-Mn-fbd"/>
                                 </constraints>
@@ -1169,14 +1169,14 @@
                                 </textFieldCell>
                             </textField>
                             <slider wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ILS-hD-J9N" userLabel="Scroll Duration Slider">
-                                <rect key="frame" x="169" y="77" width="171" height="20"/>
+                                <rect key="frame" x="169" y="73" width="171" height="20"/>
                                 <sliderCell key="cell" controlSize="small" state="on" alignment="left" minValue="1" maxValue="5" doubleValue="4" tickMarkPosition="above" numberOfTickMarks="5" sliderType="linear" id="7tf-65-J41"/>
                                 <connections>
                                     <action selector="scrollDurationSliderChange:" target="iW5-CD-5OC" id="ILK-Vy-7ha"/>
                                 </connections>
                             </slider>
                             <textField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yLh-Cc-KrW" userLabel="Scroll Duration Input">
-                                <rect key="frame" x="346" y="76" width="60" height="22"/>
+                                <rect key="frame" x="346" y="72" width="60" height="22"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="3.90" placeholderString="1-5" usesSingleLineMode="YES" bezelStyle="round" id="Qse-ik-rgy">
                                     <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="#,##0.00" negativeFormat="-#,##0.00" thousandSeparator="," id="oFk-D2-z9j">
                                         <attributedString key="attributedStringForZero"/>
@@ -1192,16 +1192,16 @@
                                 </connections>
                             </textField>
                             <stepper wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="d2K-LV-vnb" userLabel="Scroll Duration Stepper">
-                                <rect key="frame" x="404" y="73" width="19" height="28"/>
+                                <rect key="frame" x="404" y="69" width="19" height="28"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" increment="0.01" minValue="1" maxValue="5" doubleValue="3.8999999999999999" id="Z41-rW-yF2"/>
                                 <connections>
                                     <action selector="scrollDurationStepperChange:" target="iW5-CD-5OC" id="cvd-fX-2VH"/>
                                 </connections>
                             </stepper>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sat-Nx-2q9" userLabel="Scroll Duration Description">
-                                <rect key="frame" x="169" y="58" width="263" height="14"/>
+                                <rect key="frame" x="169" y="58" width="263" height="11"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Sets the duration of the scroll animation" id="DsD-EW-zCH">
-                                    <font key="font" metaFont="menu" size="11"/>
+                                    <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -1217,7 +1217,7 @@
                                 </connections>
                             </button>
                             <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="h1E-p9-RLl">
-                                <rect key="frame" x="298" y="270" width="18" height="19"/>
+                                <rect key="frame" x="298" y="254" width="18" height="19"/>
                                 <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="j7m-hj-J8F">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu" size="11"/>
@@ -1246,21 +1246,20 @@
                             <constraint firstItem="u9d-n2-6b5" firstAttribute="centerY" secondItem="kMQ-Oj-Bvd" secondAttribute="centerY" id="AEw-KI-0fZ"/>
                             <constraint firstItem="rQj-g8-Y0N" firstAttribute="leading" secondItem="Jsi-ke-bNZ" secondAttribute="leading" constant="20" id="BIW-t6-s03"/>
                             <constraint firstItem="fHe-ME-GTY" firstAttribute="centerY" secondItem="mKO-0m-Vb0" secondAttribute="centerY" id="CVI-Da-DOg"/>
-                            <constraint firstItem="sat-Nx-2q9" firstAttribute="top" secondItem="yLh-Cc-KrW" secondAttribute="bottom" constant="4" id="CuU-aS-I4f"/>
                             <constraint firstItem="iLA-i9-HEO" firstAttribute="top" secondItem="1eQ-Un-ZLh" secondAttribute="bottom" constant="20" id="DtP-Yi-Uyt"/>
                             <constraint firstAttribute="trailing" secondItem="JjW-7S-QNG" secondAttribute="trailing" constant="20" id="Dyz-xE-zke"/>
                             <constraint firstItem="TU2-J4-KYA" firstAttribute="centerY" secondItem="zKw-pT-YRj" secondAttribute="centerY" id="E4k-rd-3SV"/>
                             <constraint firstAttribute="trailing" secondItem="S6c-kz-cql" secondAttribute="trailing" constant="30" id="EpB-ey-rLQ"/>
-                            <constraint firstItem="ET3-bp-TfD" firstAttribute="top" secondItem="lh7-BV-xfD" secondAttribute="bottom" constant="4" id="FeC-Mo-U52"/>
                             <constraint firstItem="kMQ-Oj-Bvd" firstAttribute="leading" secondItem="Jsi-ke-bNZ" secondAttribute="leading" constant="20" id="G12-JL-MKC"/>
                             <constraint firstItem="Y3e-Q9-7Ip" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="fHe-ME-GTY" secondAttribute="leading" id="GeS-AG-an3"/>
+                            <constraint firstItem="sat-Nx-2q9" firstAttribute="top" secondItem="ILS-hD-J9N" secondAttribute="bottom" constant="6" id="Gia-1t-IS7"/>
                             <constraint firstItem="TU2-J4-KYA" firstAttribute="top" secondItem="iLA-i9-HEO" secondAttribute="bottom" constant="20" id="HFj-9b-fYI"/>
                             <constraint firstItem="aV7-KP-bgw" firstAttribute="leading" secondItem="Jsi-ke-bNZ" secondAttribute="leading" constant="20" id="Ii8-a4-cEO"/>
                             <constraint firstItem="S6c-kz-cql" firstAttribute="centerY" secondItem="fAk-N9-naX" secondAttribute="centerY" id="IrJ-lk-88B"/>
                             <constraint firstItem="JjW-7S-QNG" firstAttribute="top" secondItem="sat-Nx-2q9" secondAttribute="bottom" constant="20" id="Iv6-67-bzY"/>
                             <constraint firstItem="ET3-bp-TfD" firstAttribute="leading" secondItem="TU2-J4-KYA" secondAttribute="leading" id="J2U-dT-yfG"/>
                             <constraint firstItem="h1E-p9-RLl" firstAttribute="leading" secondItem="u9d-n2-6b5" secondAttribute="trailing" constant="8" id="Jxf-7l-PYM"/>
-                            <constraint firstItem="45l-vw-E0o" firstAttribute="top" secondItem="fHe-ME-GTY" secondAttribute="bottom" constant="8" id="MJA-yH-bAY"/>
+                            <constraint firstItem="45l-vw-E0o" firstAttribute="top" secondItem="fHe-ME-GTY" secondAttribute="bottom" constant="6" id="MJA-yH-bAY"/>
                             <constraint firstItem="z8H-6h-kRv" firstAttribute="leading" secondItem="Jsi-ke-bNZ" secondAttribute="leading" constant="20" id="Mdw-tv-G5c"/>
                             <constraint firstItem="JjW-7S-QNG" firstAttribute="leading" secondItem="Jsi-ke-bNZ" secondAttribute="leading" constant="20" id="N4u-jg-GWf"/>
                             <constraint firstItem="rQj-g8-Y0N" firstAttribute="top" secondItem="aV7-KP-bgw" secondAttribute="bottom" constant="20" id="Ngc-Un-6oj"/>
@@ -1296,7 +1295,7 @@
                             <constraint firstItem="d2K-LV-vnb" firstAttribute="leading" secondItem="yLh-Cc-KrW" secondAttribute="trailing" constant="1" id="fkW-Aj-rsL"/>
                             <constraint firstItem="YRx-cZ-Ol5" firstAttribute="leading" secondItem="fAk-N9-naX" secondAttribute="trailing" constant="15" id="geC-Vo-c6H"/>
                             <constraint firstItem="PIE-3y-0sa" firstAttribute="centerY" secondItem="aV7-KP-bgw" secondAttribute="centerY" id="gkh-p7-Xf5"/>
-                            <constraint firstItem="gSx-dp-Tvn" firstAttribute="top" secondItem="Y3e-Q9-7Ip" secondAttribute="bottom" constant="8" id="hbh-vr-zHd"/>
+                            <constraint firstItem="gSx-dp-Tvn" firstAttribute="top" secondItem="Y3e-Q9-7Ip" secondAttribute="bottom" constant="6" id="hbh-vr-zHd"/>
                             <constraint firstAttribute="trailing" secondItem="gSx-dp-Tvn" secondAttribute="trailing" constant="20" id="i0c-P1-3nv"/>
                             <constraint firstItem="sat-Nx-2q9" firstAttribute="leading" secondItem="ILS-hD-J9N" secondAttribute="leading" id="i4R-S6-InG"/>
                             <constraint firstItem="lh7-BV-xfD" firstAttribute="leading" secondItem="TU2-J4-KYA" secondAttribute="trailing" constant="8" id="jGV-sG-OUj"/>
@@ -1306,7 +1305,7 @@
                             <constraint firstItem="iLA-i9-HEO" firstAttribute="leading" secondItem="Jsi-ke-bNZ" secondAttribute="leading" constant="20" id="m0c-Kl-2LN"/>
                             <constraint firstAttribute="trailing" secondItem="iLA-i9-HEO" secondAttribute="trailing" constant="20" id="mOI-wr-L2y"/>
                             <constraint firstItem="PIE-3y-0sa" firstAttribute="top" secondItem="1Hp-EF-wSq" secondAttribute="bottom" constant="20" id="mic-a1-TdZ"/>
-                            <constraint firstItem="ET3-bp-TfD" firstAttribute="top" secondItem="TU2-J4-KYA" secondAttribute="bottom" constant="7" id="p88-uc-Qe1"/>
+                            <constraint firstItem="ET3-bp-TfD" firstAttribute="top" secondItem="TU2-J4-KYA" secondAttribute="bottom" constant="6" id="p88-uc-Qe1"/>
                             <constraint firstItem="1Hp-EF-wSq" firstAttribute="centerY" secondItem="DQH-h2-1Zk" secondAttribute="centerY" id="pJk-Od-Xub"/>
                             <constraint firstItem="ILS-hD-J9N" firstAttribute="centerY" secondItem="z8H-6h-kRv" secondAttribute="centerY" id="pj0-FV-OUu"/>
                             <constraint firstItem="zKw-pT-YRj" firstAttribute="leading" secondItem="Jsi-ke-bNZ" secondAttribute="leading" constant="20" id="rfM-Zy-Wrg"/>
@@ -1315,8 +1314,8 @@
                             <constraint firstItem="z8H-6h-kRv" firstAttribute="trailing" secondItem="zKw-pT-YRj" secondAttribute="trailing" id="ulJ-Kc-kgE"/>
                             <constraint firstItem="lh7-BV-xfD" firstAttribute="leading" secondItem="yLh-Cc-KrW" secondAttribute="leading" id="wIA-gp-ZRk"/>
                             <constraint firstItem="PIE-3y-0sa" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="1Hp-EF-wSq" secondAttribute="leading" id="wf4-Fp-aTC"/>
-                            <constraint firstItem="1eQ-Un-ZLh" firstAttribute="top" secondItem="u9d-n2-6b5" secondAttribute="bottom" constant="7" id="x8A-dt-XfG"/>
-                            <constraint firstItem="U62-ME-IJk" firstAttribute="top" secondItem="Nbg-QY-VXM" secondAttribute="bottom" constant="4" id="xJO-bU-dmn"/>
+                            <constraint firstItem="1eQ-Un-ZLh" firstAttribute="top" secondItem="u9d-n2-6b5" secondAttribute="bottom" constant="6" id="x8A-dt-XfG"/>
+                            <constraint firstItem="U62-ME-IJk" firstAttribute="top" secondItem="YRx-cZ-Ol5" secondAttribute="bottom" constant="6" id="xJO-bU-dmn"/>
                             <constraint firstAttribute="trailing" secondItem="1Hp-EF-wSq" secondAttribute="trailing" constant="19" id="xlF-l3-vnO"/>
                             <constraint firstItem="fHe-ME-GTY" firstAttribute="leading" secondItem="mKO-0m-Vb0" secondAttribute="trailing" constant="15" id="yfL-RB-OOp"/>
                             <constraint firstItem="Nbg-QY-VXM" firstAttribute="leading" secondItem="YRx-cZ-Ol5" secondAttribute="trailing" constant="8" id="zKX-aV-Ng7"/>
@@ -1341,7 +1340,7 @@
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="963" y="1370"/>
+            <point key="canvasLocation" x="963" y="1360"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="79I-rH-ZaI">
@@ -2492,7 +2491,7 @@ Path: -</string>
                 </viewController>
                 <customObject id="Vmr-ci-gbB" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="446" y="1461"/>
+            <point key="canvasLocation" x="461" y="1461"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="917-oY-KTN">
