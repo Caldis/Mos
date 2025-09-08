@@ -329,7 +329,7 @@
 /* Class = "NSTextFieldCell"; placeholderString = "Safari"; ObjectID = "hth-D3-zzu"; */
 "hth-D3-zzu.placeholderString" = "Safari";
 
-/* Class = "NSViewController"; title = "Advanced"; ObjectID = "iW5-CD-5OC"; */
+/* Class = "NSViewController"; title = "Scrolling"; ObjectID = "iW5-CD-5OC"; */
 "iW5-CD-5OC.title" = "Gelişmiş";
 
 /* Class = "NSTextFieldCell"; title = "Some application (E.g. Logitech Options) will apply extra handlers to your mouse. \nJust turn off the smooth scrolling in these apps, leave the rest to us."; ObjectID = "ia9-EG-sGg"; */
@@ -353,7 +353,7 @@
 /* Class = "NSTextFieldCell"; title = "Application Name:"; ObjectID = "kUr-cl-KRm"; */
 "kUr-cl-KRm.title" = "Uygulama İsmi:";
 
-/* Class = "NSTextFieldCell"; title = "Advanced"; ObjectID = "mfa-4t-oRD"; */
+/* Class = "NSTextFieldCell"; title = "Scrolling"; ObjectID = "mfa-4t-oRD"; */
 "mfa-4t-oRD.title" = "Gelişmiş";
 
 /* Class = "NSMenuItem"; title = "⌥ Option"; ObjectID = "mmw-45-VYt"; */

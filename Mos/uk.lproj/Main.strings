@@ -47,8 +47,8 @@
 /* Class = "NSTextFieldCell"; title = "Application"; ObjectID = "89F-B4-NIY"; */
 "89F-B4-NIY.title" = "Application";
 
-/* Class = "NSTableColumn"; headerCell.title = "Advanced"; ObjectID = "8By-V1-U9w"; */
-"8By-V1-U9w.headerCell.title" = "Advanced";
+/* Class = "NSTableColumn"; headerCell.title = "Scrolling"; ObjectID = "8By-V1-U9w"; */
+"8By-V1-U9w.headerCell.title" = "Scrolling";
 
 /* Class = "NSMenuItem"; title = "⌃ Control"; ObjectID = "8GX-j2-4nN"; */
 "8GX-j2-4nN.title" = "⌃ Control";
@@ -341,8 +341,8 @@
 /* Class = "NSTextFieldCell"; placeholderString = "Safari"; ObjectID = "hth-D3-zzu"; */
 "hth-D3-zzu.placeholderString" = "Safari";
 
-/* Class = "NSViewController"; title = "Advanced"; ObjectID = "iW5-CD-5OC"; */
-"iW5-CD-5OC.title" = "Advanced";
+/* Class = "NSViewController"; title = "Scrolling"; ObjectID = "iW5-CD-5OC"; */
+"iW5-CD-5OC.title" = "Scrolling";
 
 /* Class = "NSTextFieldCell"; title = "Some application (E.g. Logitech Options) will apply extra handlers to your mouse. \nJust turn off the smooth scrolling in these apps, leave the rest to us."; ObjectID = "ia9-EG-sGg"; */
 "ia9-EG-sGg.title" = "Some application (E.g. Logitech Options) will apply extra handlers to your mouse. \nJust turn off the smooth scrolling in these apps, leave the rest to us.";
@@ -362,8 +362,8 @@
 /* Class = "NSTextFieldCell"; title = "Application Name:"; ObjectID = "kUr-cl-KRm"; */
 "kUr-cl-KRm.title" = "Application Name:";
 
-/* Class = "NSTextFieldCell"; title = "Advanced"; ObjectID = "mfa-4t-oRD"; */
-"mfa-4t-oRD.title" = "Advanced";
+/* Class = "NSTextFieldCell"; title = "Scrolling"; ObjectID = "mfa-4t-oRD"; */
+"mfa-4t-oRD.title" = "Scrolling";
 
 /* Class = "NSMenuItem"; title = "⌥ Option"; ObjectID = "mmw-45-VYt"; */
 "mmw-45-VYt.title" = "⌥ Option";

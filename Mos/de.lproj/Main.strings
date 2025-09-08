@@ -13,37 +13,37 @@
 "cvF-hf-KVW.title" = "Einstellungen";
 // General
 "ITL-GD-CPd.title" = "Allgemein";
-"pwT-er-UCo.title" = "Blättern:";
+"pwT-er-UCo.title" = "Blättern";
 "jtK-hi-Ami.title" = "Geglätteter Bildlauf";
 "bbo-GH-WeC.title" = "Scrollen mit dem Mausrad glätten";
 "MAF-Hi-l48.title" = "Rückwärts scrollen";
 "CqK-3z-D0G.title" = "Scrollrichtung des Mausrads invertieren";
-"dyY-vr-dwT.title" = "Sonstiges:";
+"dyY-vr-dwT.title" = "Sonstiges";
 "xoR-7p-3qj.title" = "Start beim Login";
 "MdS-Nz-zMa.title" = "Automatisch starten";
 "hGj-vV-zcY.title" = "Statusleistensymbol ausblenden";
 "bB5-2R-9Da.title" = "Mos neustarten, um das ausgeblendete Symbol zu zeigen";
 "cIk-j1-vYt.title" = "Sie müssen Mos erneut vom Finder aus starten, anstatt von Launchpad aus. (Das Launchpad ignoriert die gestartete Anwendung automatisch)";
-// Advanced
+// Scrolling
 "iW5-CD-5OC.title" = "Erweiterte Einstellungen";
-"hOO-M8-I1z.title" = "Dash Key:";
+"hOO-M8-I1z.title" = "Dash Key";
 "Vhz-Rn-lcU.title" = "Deaktiviert";
 "Z59-tN-QjE.title" = "Scrollgeschwindigkeit auf längeren Seiten erhöhen";
-"bQw-5w-Yv0.title" = "Toggle Key:";
+"bQw-5w-Yv0.title" = "Toggle Key";
 "cTe-aL-0GQ.title" = "Deaktiviert";
 "KnM-kA-wn5.title" = "Vertikalen Bildlauf in horizontalen Bildlauf ändern";
-"ebE-Zf-T98.title" = "Block Key:";
+"ebE-Zf-T98.title" = "Block Key";
 "vFk-37-HRU.title" = "Deaktiviert";
 "iki-Jk-qSr.title" = "Smooth Scrolling vorübergehend deaktivieren";
-"B8B-hi-x3v.title" = "Schritt:";
+"B8B-hi-x3v.title" = "Schritt";
 "Jan-OY-m70.title" = "Legt den minimalen Bildlaufabstand fest";
-"Gcw-Ir-olP.title" = "Geschwindigkeit:";
+"Gcw-Ir-olP.title" = "Geschwindigkeit";
 "B3O-iI-E7v.title" = "Legt die Scrollgeschwindigkeit fest";
-"bqU-Is-gFB.title" = "Dauer:";
+"bqU-Is-gFB.title" = "Dauer";
 "DsD-EW-zCH.title" = "Legt die Dauer der Bildlaufanimation fest";
 "t2D-X2-Y6W.title" = "Auf Standardwerte zurücksetzen";
 "Rgq-87-vjY.title" = "In einigen Anwendungen wird der Bildlauf zur Einstellung bestimmter präziser Parameter verwendet (z. B. zum Einstellen der Lautstärke, zum Zoomen der Anzeige usw.), und ein flüssiger Bildlauf kann Störungen verursachen. Sie können eine Blocktaste festlegen, die den reibungslosen Bildlauf vorübergehend deaktiviert, wenn die Taste gedrückt wird.";
-// AdvancedWithApplication
+// ScrollingWithApplication
 "Wls-5g-cNZ.title" = "Globale Einstellungen vererben";
 // Application
 "Vs2-5P-BEI.title" = "Geglättet";

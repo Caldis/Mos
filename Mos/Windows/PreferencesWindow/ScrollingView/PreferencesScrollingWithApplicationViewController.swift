@@ -1,5 +1,5 @@
 //
-//  PreferencesAdvanceWithApplicationViewController.swift
+//  PreferencesScrollingWithApplicationViewController.swift
 //  Mos
 //
 //  Created by Caldis on 31/10/2019.
@@ -8,14 +8,14 @@
 
 import Cocoa
 
-class PreferencesAdvanceWithApplicationViewController: NSViewController {
+class PreferencesScrollingWithApplicationViewController: NSViewController {
     
     // Parent view
     private var parentTableView: NSTableView?
     private var parentTableRow: Int!
     // Target application
     private var currentTargetApplication: Application?
-    private var currentContentViewController: PreferencesAdvanceViewController?
+    private var currentContentViewController: PreferencesScrollingViewController?
     // UI Elements
     @IBOutlet weak var currentTargetApplicationIcon: NSImageView!
     @IBOutlet weak var currentTargetApplicationName: NSTextField!
@@ -31,7 +31,7 @@ class PreferencesAdvanceWithApplicationViewController: NSViewController {
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        currentContentViewController = (segue.destinationController as! PreferencesAdvanceViewController)
+        currentContentViewController = (segue.destinationController as! PreferencesScrollingViewController)
         if let vaildContentViewController = currentContentViewController, let validTargetApplication = currentTargetApplication {
             vaildContentViewController.currentTargetApplication = validTargetApplication
         }
@@ -71,7 +71,7 @@ class PreferencesAdvanceWithApplicationViewController: NSViewController {
 /**
  * 工具函数
  **/
-extension PreferencesAdvanceWithApplicationViewController {
+extension PreferencesScrollingWithApplicationViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
         // 继承

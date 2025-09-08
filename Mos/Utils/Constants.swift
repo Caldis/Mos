@@ -48,11 +48,11 @@ struct VIEW_IDENTIFIER {
 // 视图
 struct PANEL_IDENTIFIER {
     static let general = "general"
-    static let advanced = "advanced"
-    static let advancedWithApplication = "advancedWithApplication"
+    static let scrolling = "scrolling"
+    static let scrollingWithApplication = "scrollingWithApplication"
     static let buttons = "buttons"
     static let application = "application"
-    static let list = [general, advanced, buttons, application]
+    static let list = [general, scrolling, buttons, application]
 }
 let PANEL_PADDING = CGFloat(42.0) // 顶部导航栏高度
 let TOOLBAR_HEIGHT = CGFloat(80.0) // 偏好的 Toolbar 高度

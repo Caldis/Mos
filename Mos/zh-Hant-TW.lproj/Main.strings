@@ -13,37 +13,37 @@
 "cvF-hf-KVW.title" = "偏好設定";
 // General
 "ITL-GD-CPd.title" = "一般";
-"pwT-er-UCo.title" = "捲動：";
+"pwT-er-UCo.title" = "捲動";
 "jtK-hi-Ami.title" = "平滑捲動";
 "bbo-GH-WeC.title" = "讓滑鼠捲動如絲般順滑";
 "MAF-Hi-l48.title" = "反轉捲動";
 "CqK-3z-D0G.title" = "只反轉滑鼠滾輪的捲動方向";
-"dyY-vr-dwT.title" = "其他：";
+"dyY-vr-dwT.title" = "其他";
 "xoR-7p-3qj.title" = "開機啟動";
 "MdS-Nz-zMa.title" = "系統登入時自動啟動";
 "hGj-vV-zcY.title" = "隱藏狀態列圖示";
 "bB5-2R-9Da.title" = "重新執行 Mos 即可重新顯示狀態列圖示";
 "cIk-j1-vYt.title" = "您需要從 Finder 中的「應用程式」而不是從「啟動台」重新執行 Mos。（「啟動台」會自動忽略已啟動的應用程式）";
-// Advanced
-"iW5-CD-5OC.title" = "進階";
-"hOO-M8-I1z.title" = "加速鍵：";
+// Scrolling
+"iW5-CD-5OC.title" = "捲動";
+"hOO-M8-I1z.title" = "加速鍵";
 "Vhz-Rn-lcU.title" = "停用";
 "Z59-tN-QjE.title" = "加快在長頁面的捲動速度";
-"bQw-5w-Yv0.title" = "轉向鍵：";
+"bQw-5w-Yv0.title" = "轉向鍵";
 "cTe-aL-0GQ.title" = "停用";
 "KnM-kA-wn5.title" = "暫時將垂直方向捲動轉成水平方向";
-"ebE-Zf-T98.title" = "停用鍵：";
+"ebE-Zf-T98.title" = "停用鍵";
 "vFk-37-HRU.title" = "停用";
 "iki-Jk-qSr.title" = "暫時停用平滑捲動";
-"B8B-hi-x3v.title" = "單次捲動距離：";
+"B8B-hi-x3v.title" = "單次捲動距離";
 "Jan-OY-m70.title" = "設定單次捲動距離";
-"Gcw-Ir-olP.title" = "加速捲動：";
+"Gcw-Ir-olP.title" = "加速捲動";
 "B3O-iI-E7v.title" = "設定持續捲動的加速程度";
-"bqU-Is-gFB.title" = "持續時間：";
+"bqU-Is-gFB.title" = "持續時間";
 "DsD-EW-zCH.title" = "設定捲動動畫的持續時間";
 "t2D-X2-Y6W.title" = "還原為預設值";
 "Rgq-87-vjY.title" = "在某些應用程式中，「捲動」是用來進行比較精確的調整動作（例如調整音量、縮放顯示大小等），此時平滑滾動的處理方式有可能會造成干擾。您可以將某個特定按鍵設成「停用鍵」，這樣按鍵壓下去之後，平滑捲動即會暫時停用。";
-// AdvancedWithApplication
+// ScrollingWithApplication
 "Wls-5g-cNZ.title" = "繼承全域設定";
 // Application
 "Vs2-5P-BEI.title" = "平滑";

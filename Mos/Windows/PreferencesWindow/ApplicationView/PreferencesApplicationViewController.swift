@@ -106,10 +106,10 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
         let row = sender.tag
-        let advancedWithApplicationViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.advancedWithApplication) as PreferencesAdvanceWithApplicationViewController
-        advancedWithApplicationViewController.updateTargetApplication(with: Options.shared.application.applications.get(by: row))
-        advancedWithApplicationViewController.updateParentData(with: tableView, for: row)
-        present(advancedWithApplicationViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
+        let scrollingWithApplicationViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.scrollingWithApplication) as PreferencesScrollingWithApplicationViewController
+        scrollingWithApplicationViewController.updateTargetApplication(with: Options.shared.application.applications.get(by: row))
+        scrollingWithApplicationViewController.updateParentData(with: tableView, for: row)
+        present(scrollingWithApplicationViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
     }
     // 构建表格数据 (循环生成行)
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {

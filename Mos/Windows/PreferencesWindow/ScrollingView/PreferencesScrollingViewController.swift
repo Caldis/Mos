@@ -1,14 +1,14 @@
 //
-//  PreferencesAdvanceViewController.swift
+//  PreferencesScrollingViewController.swift
 //  Mos
-//  高级选项界面
+//  滚动选项界面
 //  Created by Caldis on 2017/1/26.
 //  Copyright © 2017年 Caldis. All rights reserved.
 //
 
 import Cocoa
 
-class PreferencesAdvanceViewController: NSViewController {
+class PreferencesScrollingViewController: NSViewController {
     
     // Target application
     var currentTargetApplication: Application?
@@ -132,7 +132,7 @@ class PreferencesAdvanceViewController: NSViewController {
 /**
  * 工具函数
  **/
-extension PreferencesAdvanceViewController {
+extension PreferencesScrollingViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
         // 是否继承配置

@@ -70,7 +70,7 @@
                 <tabViewController showSeguePresentationStyle="single" selectedTabViewItemIndex="0" tabStyle="toolbar" id="0iY-5N-JBV" customClass="PreferencesTabViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem identifier="general" image="SF.gearshape" id="Qwc-OE-zHR"/>
-                        <tabViewItem identifier="advanced" image="SF.cpu" id="P9R-tX-qfW"/>
+                        <tabViewItem identifier="scrolling" image="SF.cpu" id="P9R-tX-qfW"/>
                         <tabViewItem identifier="buttons" image="SF.button.horizontal.top.press" id="BTN-UI-123"/>
                         <tabViewItem identifier="application" image="SF.pip" id="gfS-Ix-zI5"/>
                         <tabViewItem identifier="updates" image="SF.arrow.triangle.capsulepath" id="1sm-Qq-6GS"/>
@@ -828,7 +828,7 @@
         <scene sceneID="Fd7-iR-8pW">
             <objects>
                 <customObject id="T8g-3J-WxE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
-                <viewController title="Scrolling" storyboardIdentifier="advanced" id="iW5-CD-5OC" customClass="PreferencesAdvanceViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Scrolling" storyboardIdentifier="scrolling" id="iW5-CD-5OC" customClass="PreferencesScrollingViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" blendingMode="behindWindow" material="toolTip" state="active" id="Jsi-ke-bNZ">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="507"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -1373,10 +1373,10 @@
             </objects>
             <point key="canvasLocation" x="964" y="1868"/>
         </scene>
-        <!--Preferences Advance With Application View Controller-->
+        <!--Preferences Scrolling With Application View Controller-->
         <scene sceneID="brY-DW-5LE">
             <objects>
-                <viewController storyboardIdentifier="advancedWithApplication" id="lS3-AT-V8l" customClass="PreferencesAdvanceWithApplicationViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="scrollingWithApplication" id="lS3-AT-V8l" customClass="PreferencesScrollingWithApplicationViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" blendingMode="behindWindow" material="toolTip" state="active" id="Ta8-Xb-8AA">
                         <rect key="frame" x="0.0" y="0.0" width="450" height="450"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -2727,7 +2727,7 @@ Try remove Mos from the list first, then to re-authorize by dragging the Mos ico
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="GA4-xY-65w"/>
+        <segue reference="i8p-Ht-8EX"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="AlipayLogo" width="432" height="150"/>

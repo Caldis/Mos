@@ -24,7 +24,7 @@
 "hGj-vV-zcY.title" = "메뉴 바에서 숨기기";
 "bB5-2R-9Da.title" = "Mos를 메뉴바에서 숨깁니다";
 "cIk-j1-vYt.title" = "LaunchPad가 아닌 Finder에서 다시 실행해주세요 (LaunchPad는 실행중인 앱을 자동으로 무시합니다)";
-// Advanced
+// Scrolling
 "iW5-CD-5OC.title" = "고급 설정";
 "hOO-M8-I1z.title" = "대시 키:";
 "Vhz-Rn-lcU.title" = "허용하지 않음";
@@ -43,7 +43,7 @@
 "DsD-EW-zCH.title" = "스크롤 애니메이션의 지속 시간을 설정합니다";
 "t2D-X2-Y6W.title" = "기본 값으로 돌리기";
 "Rgq-87-vjY.title" = "몇몇 애플리케이션의 경우, 스크롤링으로 정확한 매개 변수를 조절(예를 들어 볼륨 조절, 화면크기 조절등)하며, 부드러운 스크롤링은 이에 영향을 미칠수 있습니다. 차단 키를 눌러 이를 미리 방지할 수 있습니다.";
-// AdvancedWithApplication
+// ScrollingWithApplication
 "Wls-5g-cNZ.title" = "전역 설정 따라가기";
 // Application
 "Vs2-5P-BEI.title" = "부드럽게";
