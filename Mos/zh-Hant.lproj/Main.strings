@@ -45,7 +45,7 @@
 "Rgq-87-vjY.title" = "在某些應用程式中，「捲動」是用來進行比較精確的調整動作（例如調整音量、縮放顯示大小等），此時平滑滾動的處理方式有可能會造成干擾。您可以將某個特定按鍵設成「停用鍵」，這樣按鍵壓下去之後，平滑捲動即會暫時停用。";
 // AdvancedWithApplication
 "Wls-5g-cNZ.title" = "繼承全域設定";
-// Exception
+// Application
 "Vs2-5P-BEI.title" = "平滑";
 "sKz-VE-Yfb.title" = "反轉";
 "89F-B4-NIY.title" = "應用程式";
@@ -54,7 +54,7 @@
 "FU4-wI-K8f.title" = "為更精確辨識出設定的例外應用程式，我們需要動態取得執行視窗的相關資訊。因此，請允許我們取得「輔助使用」功能的權限，讓這功能得以正常運作";
 "Pw5-2q-7Fa.title" = "允許使用「輔助使用」功能";
 "bga-wG-iim.title" = "例外";
-"Rgu-cb-5lp.title" = "例外應用程式：";
+"Rgu-cb-5lp.title" = "應用程式：";
 "Ksp-g1-48g.title" = "白名單模式";
 "v26-RK-BtL.title" = "啟用白名單模式後，Mos 只會對例外列表中的應用程式啟用，其他不受影響";
 "ThS-Rm-st2.title" = "沒有應用程式被區別對待";

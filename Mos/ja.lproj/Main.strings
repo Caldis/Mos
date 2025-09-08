@@ -45,7 +45,7 @@
 "Rgq-87-vjY.title" = "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.";
 // AdvancedWithApplication
 "Wls-5g-cNZ.title" = "Inherit Global Settings";
-// Exception
+// Application
 "Vs2-5P-BEI.title" = "Smooth";
 "sKz-VE-Yfb.title" = "Reverse";
 "89F-B4-NIY.title" = "Application";
@@ -53,10 +53,10 @@
 "I5j-Bv-Aiy.title" = "Needs access to Accessibility controls";
 "FU4-wI-K8f.title" = "In order to customize the scroll behavior for certain applications, please allow Mos to have rights to Accessibility.";
 "Pw5-2q-7Fa.title" = "Allow to use accessibility";
-"bga-wG-iim.title" = "Exception";
+"bga-wG-iim.title" = "Application";
 "Rgu-cb-5lp.title" = "Customize per Application:";
 "Ksp-g1-48g.title" = "Allowlist Mode";
-"v26-RK-BtL.title" = "The allowlist mode will make Mos only apply to apps within the exception list.";
+"v26-RK-BtL.title" = "The allowlist mode will make Mos only apply to apps within the Application list.";
 "ThS-Rm-st2.title" = "No One is Special";
 "jaq-Cb-dKM.title" = "You can apply a separate configuration to some apps by clicking the \'+\' button below";
 "R0d-21-g6W.title" = "Running Applications";

@@ -1,14 +1,14 @@
 //
-//  PreferencesExceptionViewController.swift
+//  PreferencesApplicationViewController.swift
 //  Mos
-//  例外应用界面
+//  分应用设置界面
 //  Created by Caldis on 2017/1/29.
 //  Copyright © 2017年 Caldis. All rights reserved.
 //
 
 import Cocoa
 
-class PreferencesExceptionViewController: NSViewController {
+class PreferencesApplicationViewController: NSViewController {
     
     // UI Elements
     // 白名单
@@ -22,17 +22,13 @@ class PreferencesExceptionViewController: NSViewController {
     @IBOutlet weak var runningAndInstalledManuItem: NSMenuItem!
     @IBOutlet weak var runningAndInstalledMenuChildrenContainer: NSMenu!
     @IBOutlet weak var manuallySelectFromFinderMenuItem: NSMenuItem!
-    @IBOutlet weak var manuallyInputMenuItem: NSMenuItem!
     
     override func viewDidLoad() {
         // 设置图标
         Utils.attachImage(to: runningAndInstalledManuItem, withImage: #imageLiteral(resourceName: "SF.wand.and.rays.inverse"))
         Utils.attachImage(to: manuallySelectFromFinderMenuItem, withImage: #imageLiteral(resourceName: "SF.tray"))
-        Utils.attachImage(to: manuallyInputMenuItem, withImage: #imageLiteral(resourceName: "SF.pencil.and.ellipsis.rectangle"))
         // 读取设置
         syncViewWithOptions()
-        // 隐藏手动输入
-        manuallyInputMenuItem.isHidden = true
     }
     override func viewWillAppear() {
         // 检查表格数据
@@ -58,10 +54,6 @@ class PreferencesExceptionViewController: NSViewController {
         // 重新加载
         tableView.reloadData()
     }
-    @IBAction func addItemFromManullyInputClick(_ sender: NSMenuItem) {
-        let exceptionInputViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.exceptionInput) as NSViewController
-        presentAsSheet(exceptionInputViewController)
-    }
     @IBAction func removeItemClick(_ sender: NSButton) {
         // 删除
         deleteTableViewSelectedRow()
@@ -73,7 +65,7 @@ class PreferencesExceptionViewController: NSViewController {
 /**
  * 设置同步
  **/
-extension PreferencesExceptionViewController {
+extension PreferencesApplicationViewController {
     // 同步界面与设置参数
     func syncViewWithOptions() {
         // 白名单
@@ -84,11 +76,9 @@ extension PreferencesExceptionViewController {
 /**
  * 表格区域渲染及操作
  **/
-extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDataSource {
+extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableViewDataSource {
     // 每一列在 Storybroad 中的 identifier
     fileprivate enum CellIdentifiers {
-        static let smoothCell = "smoothCell"
-        static let reverseCell = "reverseCell"
         static let applicationCell = "applicationCell"
         static let settingCell = "settingCell"
     }
@@ -132,22 +122,6 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
             // 应用数据
             let application = Options.shared.application.applications.get(by: row)
             switch tableColumnIdentifier.rawValue {
-                // 平滑
-                case CellIdentifiers.smoothCell:
-                    let checkBox = cell.nextKeyView as! NSButton
-                    checkBox.tag = row
-                    checkBox.target = self
-                    checkBox.action = #selector(smoothCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application?.scroll.smooth==true ? 1 : 0)
-                    return cell
-                // 反转
-                case CellIdentifiers.reverseCell:
-                    let checkBox = cell.nextKeyView as! NSButton
-                    checkBox.tag = row
-                    checkBox.target = self
-                    checkBox.action = #selector(reverseCheckBoxClick)
-                    checkBox.state = NSControl.StateValue(rawValue: application?.scroll.reverse==true ? 1 : 0)
-                    return cell
                 // 应用
                 case CellIdentifiers.applicationCell:
                     cell.imageView?.image = application?.getIcon()
@@ -183,7 +157,7 @@ extension PreferencesExceptionViewController: NSTableViewDelegate, NSTableViewDa
 /**
  * 应用添加/删除控制
  */
-extension PreferencesExceptionViewController: NSMenuDelegate {
+extension PreferencesApplicationViewController: NSMenuDelegate {
 
     // 打开文件选择窗口
     func openFileSelectionPanel() {
@@ -198,10 +172,10 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
         openPanel.allowsMultipleSelection = false
         // 允许的文件类型
         // openPanel.allowedFileTypes = ["app", "App", "APP"]
-        // 打开文件选择窗口并读取文件添加到 ExceptionalApplications 列表中
+        // 打开文件选择窗口并读取文件添加到 Applications 列表中
         openPanel.beginSheetModal(for: view.window!, completionHandler: { result in
             if result.rawValue == NSApplication.ModalResponse.OK.rawValue && result == NSApplication.ModalResponse.OK {
-                // 根据路径获取 application 信息并保存到 ExceptionalApplications 列表中
+                // 根据路径获取 application 信息并保存到 Applications 列表中
                 if let bundlePath = openPanel.url?.path {
                     self.appendApplicationWith(path: bundlePath)
                 }
@@ -218,7 +192,7 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
             guard runningApplication.activationPolicy == .regular else { continue }
             let icon = Utils.getApplicationIcon(fromPath: runningApplication.bundleURL?.path)
             let name = Utils.getApplicationName(fromPath: runningApplication.executableURL?.path)
-            let isExist = ScrollUtils.shared.getExceptionalApplication(from: runningApplication) !== nil
+            let isExist = ScrollUtils.shared.getTargetApplication(from: runningApplication) !== nil
             Utils.addMenuItem(
                 to: runningAndInstalledMenuChildrenContainer,
                 title: name,
@@ -235,7 +209,7 @@ extension PreferencesExceptionViewController: NSMenuDelegate {
     
     // 添加应用
     func appendApplicationWith(path: String) {
-        let application = ExceptionalApplication(path: path)
+        let application = Application(path: path)
         Options.shared.application.applications.append(application)
         tableView.reloadData()
     }

@@ -51,9 +51,8 @@ struct PANEL_IDENTIFIER {
     static let advanced = "advanced"
     static let advancedWithApplication = "advancedWithApplication"
     static let buttons = "buttons"
-    static let exception = "exception"
-    static let exceptionInput = "exceptionInput"
-    static let list = [general, advanced, buttons, exception]
+    static let application = "application"
+    static let list = [general, advanced, buttons, application]
 }
 let PANEL_PADDING = CGFloat(42.0) // 顶部导航栏高度
 let TOOLBAR_HEIGHT = CGFloat(80.0) // 偏好的 Toolbar 高度
@@ -148,7 +147,7 @@ class OPTIONS_APPLICATION_DEFAULT {
     var allowlist = false {
         didSet {Options.shared.saveOptions()}
     }
-    var applications = EnhanceArray<ExceptionalApplication>(
+    var applications = EnhanceArray<Application>(
         matchKey: "path",
         forObserver: {() in Options.shared.saveOptions()}
     )

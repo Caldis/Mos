@@ -11,7 +11,7 @@ import Cocoa
 class PreferencesAdvanceViewController: NSViewController {
     
     // Target application
-    var currentTargetApplication: ExceptionalApplication?
+    var currentTargetApplication: Application?
     // UI Elements
     @IBOutlet weak var scrollSmoothCheckBox: NSButton!
     @IBOutlet weak var scrollReverseCheckBox: NSButton!

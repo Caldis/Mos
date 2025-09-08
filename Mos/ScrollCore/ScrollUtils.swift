@@ -107,9 +107,9 @@ class ScrollUtils {
         return launchpadActiveCache
     }
 
-    // 从 exceptionalApplications 中取回符合传入的 key 的 ExceptionalApplication 对象
-    // Key 在 applications 初始化时指定于 ExceptionalApplication 中
-    func getExceptionalApplication(from runningApplication: NSRunningApplication?) -> ExceptionalApplication? {
+    // 从 Applications 中取回符合传入的 key 的 Application 对象
+    // Key 在 applications 初始化时指定于 Application 中
+    func getTargetApplication(from runningApplication: NSRunningApplication?) -> Application? {
         if let applicationByBundlePath = Options.shared.application.applications.get(by: runningApplication?.bundleURL?.path) {
             return applicationByBundlePath
         }
@@ -120,21 +120,21 @@ class ScrollUtils {
     }
 
     // 滚动参数: 热键
-    func optionsDashOn(application: ExceptionalApplication?) -> CGKeyCode {
+    func optionsDashOn(application: Application?) -> CGKeyCode {
         if let targetApplication = application {
             return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.dash ?? 0 : targetApplication.scroll.dash ?? 0)
         } else {
             return CGKeyCode(Options.shared.scroll.dash ?? 0)
         }
     }
-    func optionsToggleOn(application: ExceptionalApplication?) -> CGKeyCode {
+    func optionsToggleOn(application: Application?) -> CGKeyCode {
         if let targetApplication = application {
             return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.toggle ?? 0 : targetApplication.scroll.toggle ?? 0)
         } else {
             return CGKeyCode(Options.shared.scroll.toggle ?? 0)
         }
     }
-    func optionsBlockOn(application: ExceptionalApplication?) -> CGKeyCode {
+    func optionsBlockOn(application: Application?) -> CGKeyCode {
         if let targetApplication = application {
             return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.block ?? 0 : targetApplication.scroll.block ?? 0)
         } else {

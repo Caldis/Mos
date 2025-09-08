@@ -290,8 +290,8 @@
 /* Class = "NSTextFieldCell"; title = "Let the mouse wheel scroll smoothly like butter"; ObjectID = "bbo-GH-WeC"; */
 "bbo-GH-WeC.title" = "Let the mouse wheel scroll smoothly like butter";
 
-/* Class = "NSViewController"; title = "Exception"; ObjectID = "bga-wG-iim"; */
-"bga-wG-iim.title" = "Exception";
+/* Class = "NSViewController"; title = "Application"; ObjectID = "bga-wG-iim"; */
+"bga-wG-iim.title" = "Application";
 
 /* Class = "NSTextFieldCell"; title = "Duration:"; ObjectID = "bqU-Is-gFB"; */
 "bqU-Is-gFB.title" = "Duration:";
@@ -389,8 +389,8 @@
 /* Class = "NSMenu"; title = "Running Applications"; ObjectID = "tXQ-GJ-k5M"; */
 "tXQ-GJ-k5M.title" = "Running Applications";
 
-/* Class = "NSTextFieldCell"; title = "The allow list mode will make Mos only apply to apps within the exception list."; ObjectID = "v26-RK-BtL"; */
-"v26-RK-BtL.title" = "The allow list mode will make Mos only apply to apps within the exception list.";
+/* Class = "NSTextFieldCell"; title = "The allow list mode will make Mos only apply to apps within the application list."; ObjectID = "v26-RK-BtL"; */
+"v26-RK-BtL.title" = "The allow list mode will make Mos only apply to apps within the application list.";
 
 /* Class = "NSMenuItem"; title = "Disabled"; ObjectID = "vFk-37-HRU"; */
 "vFk-37-HRU.title" = "Disabled";
@@ -425,8 +425,8 @@
 /* Class = "NSTextFieldCell"; title = "Your mouse is about to get a smoothest scrolling experience.\nPick up your mouse, we just have a few thing that you need to check."; ObjectID = "yFl-4N-WcD"; */
 "yFl-4N-WcD.title" = "Your mouse is about to get a smoothest scrolling experience.\nPick up your mouse, we just have a few thing that you need to check.";
 
-/* Class = "NSTextFieldCell"; title = "Exception Applications"; ObjectID = "yXi-qP-Tje"; */
-"yXi-qP-Tje.title" = "Exception Applications";
+/* Class = "NSTextFieldCell"; title = "Applications"; ObjectID = "yXi-qP-Tje"; */
+"yXi-qP-Tje.title" = "Applications";
 
 /* Class = "NSMenuItem"; title = "Item"; ObjectID = "zFZ-n3-v9j"; */
 "zFZ-n3-v9j.title" = "Item";

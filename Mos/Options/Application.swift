@@ -1,14 +1,14 @@
 //
-//  ExceptionalApplication.swift
+//  Application.swift
 //  Mos
-//  例外的应用程序对象
+//  应用程序对象
 //  Created by Caldis on 2018/2/20.
 //  Copyright © 2018年 Caldis. All rights reserved.
 //
 
 import Cocoa
 
-class ExceptionalApplication: Codable, Equatable {
+class Application: Codable, Equatable {
     
     // 基础
     var path: String // executablePath or bundlePath
@@ -43,7 +43,7 @@ class ExceptionalApplication: Codable, Equatable {
     }
     
     // Equatable
-    static func == (a: ExceptionalApplication, b: ExceptionalApplication) -> Bool {
+    static func == (a: Application, b: Application) -> Bool {
         return a.path == b.path
     }
 }
@@ -51,7 +51,7 @@ class ExceptionalApplication: Codable, Equatable {
 /**
  * 工具函数
  */
-extension ExceptionalApplication {
+extension Application {
     // 基本信息
     func getIcon() -> NSImage {
         return Utils.getApplicationIcon(fromPath: path)

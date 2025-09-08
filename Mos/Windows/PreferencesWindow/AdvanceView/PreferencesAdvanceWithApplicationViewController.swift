@@ -14,7 +14,7 @@ class PreferencesAdvanceWithApplicationViewController: NSViewController {
     private var parentTableView: NSTableView?
     private var parentTableRow: Int!
     // Target application
-    private var currentTargetApplication: ExceptionalApplication?
+    private var currentTargetApplication: Application?
     private var currentContentViewController: PreferencesAdvanceViewController?
     // UI Elements
     @IBOutlet weak var currentTargetApplicationIcon: NSImageView!
@@ -37,7 +37,7 @@ class PreferencesAdvanceWithApplicationViewController: NSViewController {
         }
     }
     
-    public func updateTargetApplication(with target: ExceptionalApplication?) {
+    public func updateTargetApplication(with target: Application?) {
         currentTargetApplication = target
         if let vaildContentViewController = currentContentViewController, let validTargetApplication = currentTargetApplication {
             vaildContentViewController.currentTargetApplication = validTargetApplication

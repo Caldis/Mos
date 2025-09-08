@@ -281,7 +281,7 @@
 /* Class = "NSTextFieldCell"; title = "Let the mouse wheel scroll smoothly like butter"; ObjectID = "bbo-GH-WeC"; */
 "bbo-GH-WeC.title" = "Fare tekerleğinin tereyağı gibi yumuşak bir şekilde kaymasına izin verin";
 
-/* Class = "NSViewController"; title = "Exception"; ObjectID = "bga-wG-iim"; */
+/* Class = "NSViewController"; title = "Application"; ObjectID = "bga-wG-iim"; */
 "bga-wG-iim.title" = "İstisna";
 
 /* Class = "NSTextFieldCell"; title = "Duration:"; ObjectID = "bqU-Is-gFB"; */
@@ -377,7 +377,7 @@
 /* Class = "NSMenu"; title = "Running Applications"; ObjectID = "tXQ-GJ-k5M"; */
 "tXQ-GJ-k5M.title" = "Çalışan Uygulamalar";
 
-/* Class = "NSTextFieldCell"; title = "The allowlist mode will make Mos only apply to apps within the exception list."; ObjectID = "v26-RK-BtL"; */
+/* Class = "NSTextFieldCell"; title = "The allowlist mode will make Mos only apply to apps within the application list."; ObjectID = "v26-RK-BtL"; */
 "v26-RK-BtL.title" = "Beyaz liste modu, Mos'ın yalnızca istisna listesindeki uygulamalar için geçerli olmasını sağlar.";
 
 /* Class = "NSMenuItem"; title = "Disabled"; ObjectID = "vFk-37-HRU"; */
@@ -416,8 +416,8 @@
 /* Class = "NSTextFieldCell"; title = "Your mouse is about to get a smoothest scrolling experience.\nPick up your mouse, we just have a few thing that you need to check."; ObjectID = "yFl-4N-WcD"; */
 "yFl-4N-WcD.title" = "Fareniz en akıcı bir kaydırma deneyimini yaşamak üzere.\nFarenizi alın, kontrol etmeniz gereken birkaç şeyimiz var.";
 
-/* Class = "NSTextFieldCell"; title = "Exception Applications"; ObjectID = "yXi-qP-Tje"; */
-"yXi-qP-Tje.title" = "İstisna Uygulamalar";
+/* Class = "NSTextFieldCell"; title = "Applications"; ObjectID = "yXi-qP-Tje"; */
+"yXi-qP-Tje.title" = "Uygulamalar";
 
 /* Class = "NSMenuItem"; title = "Item"; ObjectID = "zFZ-n3-v9j"; */
 "zFZ-n3-v9j.title" = "Öğe";

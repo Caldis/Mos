@@ -118,8 +118,8 @@ extension Options {
     }
     
     // 安全加载应用列表数据
-    private func loadApplicationsData() -> EnhanceArray<ExceptionalApplication> {
-        let defaultArray = EnhanceArray<ExceptionalApplication>(
+    private func loadApplicationsData() -> EnhanceArray<Application> {
+        let defaultArray = EnhanceArray<Application>(
             matchKey: "path",
             forObserver: Options.shared.saveOptions
         )
@@ -136,7 +136,7 @@ extension Options {
         
         // 尝试解析
         do {
-            return try EnhanceArray<ExceptionalApplication>(
+            return try EnhanceArray<Application>(
                 withData: data,
                 matchKey: "path",
                 forObserver: Options.shared.saveOptions

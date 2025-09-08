@@ -45,7 +45,7 @@
 "Rgq-87-vjY.title" = "In einigen Anwendungen wird der Bildlauf zur Einstellung bestimmter präziser Parameter verwendet (z. B. zum Einstellen der Lautstärke, zum Zoomen der Anzeige usw.), und ein flüssiger Bildlauf kann Störungen verursachen. Sie können eine Blocktaste festlegen, die den reibungslosen Bildlauf vorübergehend deaktiviert, wenn die Taste gedrückt wird.";
 // AdvancedWithApplication
 "Wls-5g-cNZ.title" = "Globale Einstellungen vererben";
-// Exception
+// Application
 "Vs2-5P-BEI.title" = "Geglättet";
 "sKz-VE-Yfb.title" = "Invertiert";
 "89F-B4-NIY.title" = "App";

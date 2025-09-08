@@ -24,8 +24,8 @@ class ScrollCore {
     }
     var blockSmooth = false
     // 例外应用数据
-    var exceptionalApplication: ExceptionalApplication?
-    var currentExceptionalApplication: ExceptionalApplication? // 用于区分按下热键及抬起时的作用目标
+    var application: Application?
+    var currentApplication: Application? // 用于区分按下热键及抬起时的作用目标
     // 拦截层
     var scrollEventInterceptor: Interceptor?
     var hotkeyEventInterceptor: Interceptor?
@@ -52,19 +52,19 @@ class ScrollCore {
         // 获取事件目标
         let targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
         // 获取列表中应用程序的列外设置信息
-        ScrollCore.shared.exceptionalApplication = ScrollUtils.shared.getExceptionalApplication(from: targetRunningApplication)
+        ScrollCore.shared.application = ScrollUtils.shared.getTargetApplication(from: targetRunningApplication)
         // 平滑/翻转
         var enableSmooth = false,
             enableReverse = false
         var step = Options.shared.scroll.step,
             speed = Options.shared.scroll.speed,
             duration = Options.shared.scroll.durationTransition
-        if let exceptionalApplication = ScrollCore.shared.exceptionalApplication {
-            enableSmooth = exceptionalApplication.isSmooth(ScrollCore.shared.blockSmooth)
-            enableReverse = exceptionalApplication.isReverse()
-            step = exceptionalApplication.getStep()
-            speed = exceptionalApplication.getSpeed()
-            duration = exceptionalApplication.getDuration()
+        if let targetApplication = ScrollCore.shared.application {
+            enableSmooth = targetApplication.isSmooth(ScrollCore.shared.blockSmooth)
+            enableReverse = targetApplication.isReverse()
+            step = targetApplication.getStep()
+            speed = targetApplication.getSpeed()
+            duration = targetApplication.getDuration()
         } else if !Options.shared.application.allowlist {
             enableSmooth = Options.shared.scroll.smooth && !ScrollCore.shared.blockSmooth
             enableReverse = Options.shared.scroll.reverse
@@ -135,28 +135,28 @@ class ScrollCore {
         switch keyCode {
         case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
-                for: ScrollCore.shared.exceptionalApplication,
+                for: ScrollCore.shared.application,
                 with: keyCode,
                 using: MODIFIER_KEY_SET.control.codes,
                 on: Utils.isKeyDown(event, MODIFIER_KEY_SET.control)
             )
         case MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
-                for: ScrollCore.shared.exceptionalApplication,
+                for: ScrollCore.shared.application,
                 with: keyCode,
                 using: MODIFIER_KEY_SET.option.codes,
                 on: Utils.isKeyDown(event, MODIFIER_KEY_SET.option)
             )
         case MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
-                for: ScrollCore.shared.exceptionalApplication,
+                for: ScrollCore.shared.application,
                 with: keyCode,
                 using: MODIFIER_KEY_SET.command.codes,
                 on: Utils.isKeyDown(event, MODIFIER_KEY_SET.command)
             )
         case MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight:
             ScrollCore.shared.tryToggleEnableAllFlag(
-                for: ScrollCore.shared.exceptionalApplication,
+                for: ScrollCore.shared.application,
                 with: keyCode,
                 using: MODIFIER_KEY_SET.shift.codes,
                 on: Utils.isKeyDown(event, MODIFIER_KEY_SET.shift)
@@ -204,7 +204,7 @@ class ScrollCore {
         ScrollCore.shared.toggleScroll = false
         ScrollCore.shared.blockSmooth = false
     }
-    func tryToggleEnableAllFlag(for targetApplication:ExceptionalApplication?, with keyCode:CGKeyCode, using keyPair:[CGKeyCode], on down:Bool) {
+    func tryToggleEnableAllFlag(for targetApplication:Application?, with keyCode:CGKeyCode, using keyPair:[CGKeyCode], on down:Bool) {
         // 读取快捷键
         let dashKey = ScrollUtils.shared.optionsDashOn(application: targetApplication)
         let toggleKey = ScrollUtils.shared.optionsToggleOn(application: targetApplication)
@@ -215,8 +215,8 @@ class ScrollCore {
             ScrollCore.shared.tryEnableToggleFlag(with: toggleKey, andKeyPair: keyPair)
             ScrollCore.shared.tryEnableBlockFlag(with: blockKey, andKeyPair: keyPair)
             // 并更新记录器
-            ScrollCore.shared.currentExceptionalApplication = targetApplication
-        } else if ScrollCore.shared.currentExceptionalApplication == targetApplication {
+            ScrollCore.shared.currentApplication = targetApplication
+        } else if ScrollCore.shared.currentApplication == targetApplication {
             // 如果弹起, 且与先前的目标应用相同, 则按需关闭
             ScrollCore.shared.tryDisableDashFlag(with: dashKey, andKeyPair: keyPair)
             ScrollCore.shared.tryDisableToggleFlag(with: toggleKey, andKeyPair: keyPair)
@@ -225,7 +225,7 @@ class ScrollCore {
             // 否则关闭全部
             ScrollCore.shared.disableAllFlag()
             // 并更新记录器
-            ScrollCore.shared.currentExceptionalApplication = nil
+            ScrollCore.shared.currentApplication = nil
         }
     }
     
