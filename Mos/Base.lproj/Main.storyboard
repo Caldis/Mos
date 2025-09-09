@@ -313,7 +313,7 @@
                                 </scroller>
                             </scrollView>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="skg-W8-gS0">
-                                <rect key="frame" x="33" y="105" width="385" height="148"/>
+                                <rect key="frame" x="33" y="115" width="385" height="148"/>
                                 <subviews>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AtR-B3-Yvi">
                                         <rect key="frame" x="18" y="20" width="349" height="14"/>
@@ -409,7 +409,7 @@
                             <constraint firstAttribute="bottom" secondItem="DDf-Ia-4rY" secondAttribute="bottom" id="c38-6W-cn0"/>
                             <constraint firstAttribute="trailing" secondItem="uk9-49-SKV" secondAttribute="trailing" id="dZh-h4-HyS"/>
                             <constraint firstItem="DDf-Ia-4rY" firstAttribute="top" secondItem="LhY-K0-OPI" secondAttribute="bottom" id="hIk-uK-MhQ"/>
-                            <constraint firstItem="skg-W8-gS0" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" constant="60" id="tBg-oX-ddF"/>
+                            <constraint firstItem="skg-W8-gS0" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" constant="50" id="tBg-oX-ddF"/>
                         </constraints>
                     </visualEffectView>
                     <connections>
@@ -583,7 +583,7 @@
                                 </scroller>
                             </scrollView>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="LTZ-IH-4Vy">
-                                <rect key="frame" x="33" y="105" width="385" height="148"/>
+                                <rect key="frame" x="33" y="115" width="385" height="148"/>
                                 <subviews>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OKC-Nf-egM">
                                         <rect key="frame" x="18" y="20" width="349" height="14"/>
@@ -748,7 +748,7 @@
                             <constraint firstItem="VAL-LC-T3T" firstAttribute="top" secondItem="jc3-9p-Bfo" secondAttribute="top" id="9QK-kP-Jub"/>
                             <constraint firstAttribute="trailing" secondItem="2yz-Bt-IMN" secondAttribute="trailing" id="Fm8-bP-i1Z"/>
                             <constraint firstItem="LTZ-IH-4Vy" firstAttribute="centerX" secondItem="jc3-9p-Bfo" secondAttribute="centerX" id="Fu9-Mt-We0"/>
-                            <constraint firstItem="LTZ-IH-4Vy" firstAttribute="top" secondItem="jc3-9p-Bfo" secondAttribute="top" constant="60" id="PE0-jE-Dbl"/>
+                            <constraint firstItem="LTZ-IH-4Vy" firstAttribute="top" secondItem="jc3-9p-Bfo" secondAttribute="top" constant="50" id="PE0-jE-Dbl"/>
                             <constraint firstItem="2dP-HG-cdi" firstAttribute="leading" secondItem="jc3-9p-Bfo" secondAttribute="leading" id="PmN-uQ-mSV"/>
                             <constraint firstAttribute="bottom" secondItem="2yz-Bt-IMN" secondAttribute="bottom" id="SIB-8x-LBj"/>
                             <constraint firstItem="2dP-HG-cdi" firstAttribute="top" secondItem="VAL-LC-T3T" secondAttribute="bottom" id="amL-Rg-EUD"/>
@@ -760,9 +760,11 @@
                         </constraints>
                     </visualEffectView>
                     <connections>
-                        <outlet property="addButton" destination="4wb-N2-j0t" id="T7a-Rm-xhh"/>
+                        <outlet property="addButton" destination="ceK-ED-PfL" id="6o3-ow-6Jm"/>
+                        <outlet property="addButtonBig" destination="4wb-N2-j0t" id="T7a-Rm-xhh"/>
                         <outlet property="allowlistModeCheckBox" destination="gnb-pe-ZN5" id="HTP-3G-Zme"/>
                         <outlet property="applicationSourceMenuControl" destination="v6G-mQ-Ddk" id="dfx-xG-DcT"/>
+                        <outlet property="delButton" destination="HZK-yc-ptT" id="Kww-VP-a9A"/>
                         <outlet property="manuallySelectFromFinderMenuItem" destination="dhF-95-kUJ" id="Ny0-LT-dUM"/>
                         <outlet property="runningAndInstalledManuItem" destination="R0d-21-g6W" id="a14-sX-cP3"/>
                         <outlet property="runningAndInstalledMenuChildrenContainer" destination="tXQ-GJ-k5M" id="kvh-JP-b9D"/>

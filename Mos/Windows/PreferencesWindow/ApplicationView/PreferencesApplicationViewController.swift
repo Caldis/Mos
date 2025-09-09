@@ -19,7 +19,9 @@ class PreferencesApplicationViewController: NSViewController {
     @IBOutlet weak var tableFoot: NSView!
     @IBOutlet weak var tableEmpty: NSView!
     // 添加按钮
-    @IBOutlet weak var addButton: AddButton!
+    @IBOutlet weak var addButtonBig: AddButton!
+    @IBOutlet weak var addButton: NSButton!
+    @IBOutlet weak var delButton: NSButton!
     // 选项菜单
     @IBOutlet var applicationSourceMenuControl: NSMenu!
     @IBOutlet weak var runningAndInstalledManuItem: NSMenuItem!
@@ -30,8 +32,12 @@ class PreferencesApplicationViewController: NSViewController {
         // 设置图标
         Utils.attachImage(to: runningAndInstalledManuItem, withImage: #imageLiteral(resourceName: "SF.wand.and.rays.inverse"))
         Utils.attachImage(to: manuallySelectFromFinderMenuItem, withImage: #imageLiteral(resourceName: "SF.tray"))
+        // 设置表格代理
+        tableView.delegate = self
         // 读取设置
         syncViewWithOptions()
+        // 初始化按钮状态
+        updateDeleteButtonState()
     }
     override func viewWillAppear() {
         // 检查表格数据
@@ -42,9 +48,9 @@ class PreferencesApplicationViewController: NSViewController {
     
     // 主添加按钮
     private func setupAddButtonCallback() {
-        addButton.onMouseDown = { [weak self] _ in
+        addButtonBig.onMouseDown = { [weak self] _ in
             guard let self = self else { return }
-            guard let sender = self.addButton else { return }
+            guard let sender = self.addButtonBig else { return }
             let position = NSPoint(x: sender.frame.origin.x - 40, y: sender.frame.origin.y + sender.frame.height - 91)
             self.openRunningApplicationPanel(sender, position)
             self.tableView.reloadData()
@@ -78,6 +84,8 @@ class PreferencesApplicationViewController: NSViewController {
         tableView.reloadData()
         // 立即更新空状态显示
         toggleNoDataHint()
+        // 更新删除按钮状态
+        updateDeleteButtonState()
     }
 }
 
@@ -89,6 +97,11 @@ extension PreferencesApplicationViewController {
     func syncViewWithOptions() {
         // 白名单
         allowlistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.application.allowlist ? 1 : 0)
+    }
+    
+    // 更新删除按钮状态
+    func updateDeleteButtonState() {
+        delButton.isEnabled = tableView.selectedRow != -1
     }
 }
 
@@ -107,8 +120,8 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
         if animate {
             tableEmpty.isHidden = hasData
             tableEmpty.animator().alphaValue = hasData ? 0 : 1
-            addButton.isHidden = hasData
-            addButton.animator().alphaValue = hasData ? 0 : 1
+            addButtonBig.isHidden = hasData
+            addButtonBig.animator().alphaValue = hasData ? 0 : 1
             tableHead.isHidden = !hasData
             tableHead.animator().alphaValue = hasData ? 1 : 0
             tableFoot.isHidden = !hasData
@@ -116,8 +129,8 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
         } else {
             tableEmpty.isHidden = hasData
             tableEmpty.alphaValue = hasData ? 0 : 1
-            addButton.isHidden = hasData
-            addButton.alphaValue = hasData ? 0 : 1
+            addButtonBig.isHidden = hasData
+            addButtonBig.alphaValue = hasData ? 0 : 1
             tableHead.isHidden = !hasData
             tableHead.alphaValue = hasData ? 1 : 0
             tableFoot.isHidden = !hasData
@@ -168,6 +181,11 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     // 行数
     func numberOfRows(in tableView: NSTableView) -> Int {
         return Options.shared.application.applications.count
+    }
+    
+    // 选择变化
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        updateDeleteButtonState()
     }
 }
 
