@@ -300,7 +300,7 @@
                                 </scroller>
                             </scrollView>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="skg-W8-gS0">
-                                <rect key="frame" x="33" y="98" width="385" height="148"/>
+                                <rect key="frame" x="33" y="105" width="385" height="148"/>
                                 <subviews>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AtR-B3-Yvi">
                                         <rect key="frame" x="18" y="20" width="349" height="14"/>
@@ -391,13 +391,13 @@
                             <constraint firstItem="LhY-K0-OPI" firstAttribute="top" secondItem="p3C-6V-IQc" secondAttribute="bottom" id="56D-84-OOD"/>
                             <constraint firstItem="p3C-6V-IQc" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" id="5fZ-hx-qH5"/>
                             <constraint firstItem="skg-W8-gS0" firstAttribute="centerX" secondItem="BTN-VW-123" secondAttribute="centerX" id="8H6-YI-eq0"/>
-                            <constraint firstItem="skg-W8-gS0" firstAttribute="centerY" secondItem="BTN-VW-123" secondAttribute="centerY" constant="-15" id="APY-Uq-ZRJ"/>
                             <constraint firstItem="NVF-cN-B2g" firstAttribute="leading" secondItem="p3C-6V-IQc" secondAttribute="trailing" id="Fvk-Ms-JGR"/>
                             <constraint firstAttribute="bottom" secondItem="ZsK-XR-lqj" secondAttribute="bottom" constant="30" id="PHJ-ss-4Cn"/>
                             <constraint firstAttribute="trailing" secondItem="LhY-K0-OPI" secondAttribute="trailing" id="PSy-Up-pqi"/>
                             <constraint firstItem="NVF-cN-B2g" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" id="XNB-6G-ZKu"/>
                             <constraint firstAttribute="bottom" secondItem="DDf-Ia-4rY" secondAttribute="bottom" id="c38-6W-cn0"/>
                             <constraint firstItem="DDf-Ia-4rY" firstAttribute="top" secondItem="LhY-K0-OPI" secondAttribute="bottom" id="hIk-uK-MhQ"/>
+                            <constraint firstItem="skg-W8-gS0" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" constant="60" id="tBg-oX-ddF"/>
                             <constraint firstAttribute="trailing" secondItem="NVF-cN-B2g" secondAttribute="trailing" id="yWF-j8-WGZ"/>
                         </constraints>
                     </visualEffectView>
@@ -429,12 +429,18 @@
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
+                                            <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="XUy-oo-mzG">
+                                                <rect key="frame" x="0.0" y="-2" width="450" height="5"/>
+                                            </box>
                                         </subviews>
                                         <constraints>
                                             <constraint firstItem="Dph-wy-8sb" firstAttribute="centerY" secondItem="ouh-IG-LyJ" secondAttribute="centerY" id="6H6-5z-Sht"/>
                                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Dph-wy-8sb" secondAttribute="trailing" constant="20" symbolic="YES" id="ASb-HB-fe6"/>
                                             <constraint firstItem="Dph-wy-8sb" firstAttribute="leading" secondItem="ouh-IG-LyJ" secondAttribute="leading" constant="22" id="JAN-ad-8pf"/>
                                             <constraint firstAttribute="height" constant="30" id="Lth-gv-sxw"/>
+                                            <constraint firstAttribute="bottom" secondItem="XUy-oo-mzG" secondAttribute="bottom" id="WI9-RH-ERQ"/>
+                                            <constraint firstItem="XUy-oo-mzG" firstAttribute="leading" secondItem="ouh-IG-LyJ" secondAttribute="leading" id="XRb-rf-T5L"/>
+                                            <constraint firstAttribute="trailing" secondItem="XUy-oo-mzG" secondAttribute="trailing" id="do1-QI-fda"/>
                                         </constraints>
                                     </visualEffectView>
                                 </subviews>
@@ -446,9 +452,6 @@
                                     <constraint firstAttribute="width" constant="450" id="nVH-oK-9VM"/>
                                 </constraints>
                             </visualEffectView>
-                            <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="XUy-oo-mzG">
-                                <rect key="frame" x="0.0" y="280" width="450" height="5"/>
-                            </box>
                             <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="57" horizontalPageScroll="10" verticalLineScroll="57" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" findBarPosition="aboveHorizontalRuler" translatesAutoresizingMaskIntoConstraints="NO" id="2dP-HG-cdi">
                                 <rect key="frame" x="0.0" y="31" width="450" height="252"/>
                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="bif-Bv-tOQ">
@@ -579,7 +582,7 @@
                                 </connections>
                             </button>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="LTZ-IH-4Vy">
-                                <rect key="frame" x="33" y="76" width="385" height="162"/>
+                                <rect key="frame" x="33" y="91" width="385" height="162"/>
                                 <subviews>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OKC-Nf-egM">
                                         <rect key="frame" x="18" y="20" width="349" height="28"/>
@@ -664,7 +667,6 @@
                             </button>
                         </subviews>
                         <constraints>
-                            <constraint firstItem="XUy-oo-mzG" firstAttribute="leading" secondItem="jc3-9p-Bfo" secondAttribute="leading" id="04Z-N5-OZa"/>
                             <constraint firstAttribute="bottom" secondItem="8FH-Zr-4mB" secondAttribute="bottom" constant="7" id="0yR-CX-0aY"/>
                             <constraint firstAttribute="trailing" secondItem="2dP-HG-cdi" secondAttribute="trailing" id="6gh-ZQ-gJJ"/>
                             <constraint firstItem="HZK-yc-ptT" firstAttribute="leading" secondItem="ceK-ED-PfL" secondAttribute="trailing" id="8pg-Jt-1Q8"/>
@@ -673,8 +675,8 @@
                             <constraint firstItem="LTZ-IH-4Vy" firstAttribute="centerX" secondItem="jc3-9p-Bfo" secondAttribute="centerX" id="Fu9-Mt-We0"/>
                             <constraint firstAttribute="trailing" secondItem="4AF-Dk-mkc" secondAttribute="trailing" id="HJV-vI-Asb"/>
                             <constraint firstAttribute="bottom" secondItem="HZK-yc-ptT" secondAttribute="bottom" id="Keg-Js-fyR"/>
-                            <constraint firstItem="XUy-oo-mzG" firstAttribute="top" secondItem="VAL-LC-T3T" secondAttribute="bottom" id="KkB-aE-hE3"/>
                             <constraint firstAttribute="trailing" secondItem="8FH-Zr-4mB" secondAttribute="trailing" constant="8" id="MTe-qC-l4L"/>
+                            <constraint firstItem="LTZ-IH-4Vy" firstAttribute="top" secondItem="jc3-9p-Bfo" secondAttribute="top" constant="60" id="PE0-jE-Dbl"/>
                             <constraint firstItem="2dP-HG-cdi" firstAttribute="leading" secondItem="jc3-9p-Bfo" secondAttribute="leading" id="PmN-uQ-mSV"/>
                             <constraint firstItem="gnb-pe-ZN5" firstAttribute="leading" relation="lessThanOrEqual" secondItem="HZK-yc-ptT" secondAttribute="trailing" constant="256" id="Poq-zs-NWp"/>
                             <constraint firstItem="ceK-ED-PfL" firstAttribute="top" secondItem="4AF-Dk-mkc" secondAttribute="bottom" id="Vsi-nj-LdX"/>
@@ -683,8 +685,6 @@
                             <constraint firstItem="4AF-Dk-mkc" firstAttribute="top" secondItem="2dP-HG-cdi" secondAttribute="bottom" id="duU-aw-HWq"/>
                             <constraint firstItem="ceK-ED-PfL" firstAttribute="leading" secondItem="jc3-9p-Bfo" secondAttribute="leading" constant="8" id="eN7-VB-BI7"/>
                             <constraint firstItem="8FH-Zr-4mB" firstAttribute="centerY" secondItem="gnb-pe-ZN5" secondAttribute="centerY" constant="-0.5" id="gSJ-rn-k02"/>
-                            <constraint firstAttribute="trailing" secondItem="XUy-oo-mzG" secondAttribute="trailing" id="hLv-Bf-fYk"/>
-                            <constraint firstItem="LTZ-IH-4Vy" firstAttribute="centerY" secondItem="jc3-9p-Bfo" secondAttribute="centerY" id="jzG-O6-fne"/>
                             <constraint firstItem="VAL-LC-T3T" firstAttribute="leading" secondItem="jc3-9p-Bfo" secondAttribute="leading" id="sP2-Xj-nWJ"/>
                             <constraint firstItem="HZK-yc-ptT" firstAttribute="top" secondItem="4AF-Dk-mkc" secondAttribute="bottom" id="wOW-0K-0V1"/>
                             <constraint firstAttribute="trailing" secondItem="VAL-LC-T3T" secondAttribute="trailing" id="yNN-sY-waa"/>
@@ -698,6 +698,7 @@
                         <outlet property="noDataHint" destination="LTZ-IH-4Vy" id="DlB-dd-xPl"/>
                         <outlet property="runningAndInstalledManuItem" destination="R0d-21-g6W" id="a14-sX-cP3"/>
                         <outlet property="runningAndInstalledMenuChildrenContainer" destination="tXQ-GJ-k5M" id="kvh-JP-b9D"/>
+                        <outlet property="tableHead" destination="VAL-LC-T3T" id="odB-4n-XWl"/>
                         <outlet property="tableView" destination="LmV-gi-3fE" id="GOb-17-dvX"/>
                     </connections>
                 </viewController>

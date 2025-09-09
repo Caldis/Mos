@@ -14,6 +14,7 @@ class PreferencesApplicationViewController: NSViewController {
     // 白名单
     @IBOutlet weak var allowlistModeCheckBox: NSButton!
     // 表格及工具栏
+    @IBOutlet weak var tableHead: NSVisualEffectView!
     @IBOutlet weak var tableView: NSTableView!
     // 提示层
     @IBOutlet weak var noDataHint: NSView!
@@ -59,6 +60,8 @@ class PreferencesApplicationViewController: NSViewController {
         deleteTableViewSelectedRow()
         // 重新加载
         tableView.reloadData()
+        // 立即更新空状态显示
+        toggleNoDataHint()
     }
 }
 
@@ -86,9 +89,15 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     func toggleNoDataHint(animate: Bool = true) {
         let hasData = Options.shared.application.applications.count != 0
         if animate {
+            noDataHint.isHidden = hasData
             noDataHint.animator().alphaValue = hasData ? 0 : 1
+            tableHead.isHidden = !hasData
+            tableHead.animator().alphaValue = hasData ? 1 : 0
         } else {
             noDataHint.isHidden = hasData
+            noDataHint.alphaValue = hasData ? 0 : 1
+            tableHead.isHidden = !hasData
+            tableHead.alphaValue = hasData ? 1 : 0
         }
     }
     // 点击平滑
@@ -146,9 +155,7 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     }
     // 行数
     func numberOfRows(in tableView: NSTableView) -> Int {
-        let rows = Options.shared.application.applications.count
-        toggleNoDataHint()
-        return rows
+        return Options.shared.application.applications.count
     }
 }
 
@@ -212,6 +219,7 @@ extension PreferencesApplicationViewController: NSMenuDelegate {
         let application = Application(path: path)
         Options.shared.application.applications.append(application)
         tableView.reloadData()
+        toggleNoDataHint()
     }
     @objc func appendApplicationWithRunningApplication(_ sender: NSMenuItem!) {
         guard let runningApplication = sender.representedObject as? NSRunningApplication else { return }
