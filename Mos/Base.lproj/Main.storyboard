@@ -313,7 +313,7 @@
                                 </scroller>
                             </scrollView>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="skg-W8-gS0">
-                                <rect key="frame" x="33" y="115" width="385" height="148"/>
+                                <rect key="frame" x="33" y="125" width="385" height="148"/>
                                 <subviews>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AtR-B3-Yvi">
                                         <rect key="frame" x="18" y="20" width="349" height="14"/>
@@ -354,7 +354,7 @@
                                 </constraints>
                             </customView>
                             <visualEffectView blendingMode="withinWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="ZsK-XR-lqj" customClass="RecordButton" customModule="Mos" customModuleProvider="target">
-                                <rect key="frame" x="40" y="30" width="370" height="54"/>
+                                <rect key="frame" x="40" y="35" width="370" height="54"/>
                                 <subviews>
                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KZV-cB-ex8">
                                         <rect key="frame" x="8" y="28" width="98" height="16"/>
@@ -403,13 +403,13 @@
                             <constraint firstItem="DDf-Ia-4rY" firstAttribute="top" secondItem="uk9-49-SKV" secondAttribute="bottom" id="4W2-gV-aQ1"/>
                             <constraint firstItem="skg-W8-gS0" firstAttribute="centerX" secondItem="BTN-VW-123" secondAttribute="centerX" id="8H6-YI-eq0"/>
                             <constraint firstItem="uk9-49-SKV" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" id="MSp-fM-nSp"/>
-                            <constraint firstAttribute="bottom" secondItem="ZsK-XR-lqj" secondAttribute="bottom" constant="30" id="PHJ-ss-4Cn"/>
+                            <constraint firstAttribute="bottom" secondItem="ZsK-XR-lqj" secondAttribute="bottom" constant="35" id="PHJ-ss-4Cn"/>
                             <constraint firstAttribute="trailing" secondItem="LhY-K0-OPI" secondAttribute="trailing" id="PSy-Up-pqi"/>
                             <constraint firstItem="uk9-49-SKV" firstAttribute="leading" secondItem="BTN-VW-123" secondAttribute="leading" id="Rmr-Ah-E1Y"/>
                             <constraint firstAttribute="bottom" secondItem="DDf-Ia-4rY" secondAttribute="bottom" id="c38-6W-cn0"/>
                             <constraint firstAttribute="trailing" secondItem="uk9-49-SKV" secondAttribute="trailing" id="dZh-h4-HyS"/>
                             <constraint firstItem="DDf-Ia-4rY" firstAttribute="top" secondItem="LhY-K0-OPI" secondAttribute="bottom" id="hIk-uK-MhQ"/>
-                            <constraint firstItem="skg-W8-gS0" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" constant="50" id="tBg-oX-ddF"/>
+                            <constraint firstItem="skg-W8-gS0" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" constant="40" id="tBg-oX-ddF"/>
                         </constraints>
                     </visualEffectView>
                     <connections>
@@ -583,7 +583,7 @@
                                 </scroller>
                             </scrollView>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="LTZ-IH-4Vy">
-                                <rect key="frame" x="33" y="115" width="385" height="148"/>
+                                <rect key="frame" x="33" y="125" width="385" height="148"/>
                                 <subviews>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OKC-Nf-egM">
                                         <rect key="frame" x="18" y="20" width="349" height="14"/>
@@ -701,7 +701,7 @@
                                 </constraints>
                             </customView>
                             <visualEffectView blendingMode="withinWindow" material="dark" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="4wb-N2-j0t" customClass="AddButton" customModule="Mos" customModuleProvider="target">
-                                <rect key="frame" x="40" y="30" width="370" height="54"/>
+                                <rect key="frame" x="40" y="35" width="370" height="54"/>
                                 <subviews>
                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="nDg-gC-ANo">
                                         <rect key="frame" x="8" y="28" width="100" height="16"/>
@@ -748,11 +748,11 @@
                             <constraint firstItem="VAL-LC-T3T" firstAttribute="top" secondItem="jc3-9p-Bfo" secondAttribute="top" id="9QK-kP-Jub"/>
                             <constraint firstAttribute="trailing" secondItem="2yz-Bt-IMN" secondAttribute="trailing" id="Fm8-bP-i1Z"/>
                             <constraint firstItem="LTZ-IH-4Vy" firstAttribute="centerX" secondItem="jc3-9p-Bfo" secondAttribute="centerX" id="Fu9-Mt-We0"/>
-                            <constraint firstItem="LTZ-IH-4Vy" firstAttribute="top" secondItem="jc3-9p-Bfo" secondAttribute="top" constant="50" id="PE0-jE-Dbl"/>
+                            <constraint firstItem="LTZ-IH-4Vy" firstAttribute="top" secondItem="jc3-9p-Bfo" secondAttribute="top" constant="40" id="PE0-jE-Dbl"/>
                             <constraint firstItem="2dP-HG-cdi" firstAttribute="leading" secondItem="jc3-9p-Bfo" secondAttribute="leading" id="PmN-uQ-mSV"/>
                             <constraint firstAttribute="bottom" secondItem="2yz-Bt-IMN" secondAttribute="bottom" id="SIB-8x-LBj"/>
                             <constraint firstItem="2dP-HG-cdi" firstAttribute="top" secondItem="VAL-LC-T3T" secondAttribute="bottom" id="amL-Rg-EUD"/>
-                            <constraint firstAttribute="bottom" secondItem="4wb-N2-j0t" secondAttribute="bottom" constant="30" id="l8P-0K-JWg"/>
+                            <constraint firstAttribute="bottom" secondItem="4wb-N2-j0t" secondAttribute="bottom" constant="35" id="l8P-0K-JWg"/>
                             <constraint firstItem="2yz-Bt-IMN" firstAttribute="leading" secondItem="jc3-9p-Bfo" secondAttribute="leading" id="pKb-NR-26E"/>
                             <constraint firstItem="VAL-LC-T3T" firstAttribute="leading" secondItem="jc3-9p-Bfo" secondAttribute="leading" id="sP2-Xj-nWJ"/>
                             <constraint firstItem="2yz-Bt-IMN" firstAttribute="top" secondItem="2dP-HG-cdi" secondAttribute="bottom" id="u7y-lk-Ug0"/>
