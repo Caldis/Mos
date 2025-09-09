@@ -70,11 +70,11 @@
                 <tabViewController showSeguePresentationStyle="single" selectedTabViewItemIndex="0" tabStyle="toolbar" id="0iY-5N-JBV" customClass="PreferencesTabViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <tabViewItems>
                         <tabViewItem identifier="general" image="SF.gearshape" id="Qwc-OE-zHR"/>
-                        <tabViewItem identifier="scrolling" image="SF.cpu" id="P9R-tX-qfW"/>
+                        <tabViewItem identifier="scrolling" image="SF.circle.dotted.circle" id="P9R-tX-qfW"/>
                         <tabViewItem identifier="buttons" image="SF.button.horizontal.top.press" id="BTN-UI-123"/>
-                        <tabViewItem identifier="application" image="SF.pip" id="gfS-Ix-zI5"/>
+                        <tabViewItem identifier="application" image="SF.app.background.dotted" id="gfS-Ix-zI5"/>
                         <tabViewItem identifier="updates" image="SF.arrow.triangle.capsulepath" id="1sm-Qq-6GS"/>
-                        <tabViewItem identifier="about" image="SF.person.crop.square" id="MrA-I8-n0Z"/>
+                        <tabViewItem identifier="about" image="SF.person.crop.circle.dashed" id="MrA-I8-n0Z"/>
                     </tabViewItems>
                     <viewControllerTransitionOptions key="transitionOptions"/>
                     <tabView key="tabView" wantsLayer="YES" misplaced="YES" type="noTabsNoBorder" id="sxC-q7-Qs6">
@@ -232,7 +232,7 @@
                                         <rect key="frame" x="147" y="7" width="5" height="16"/>
                                     </box>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cQR-ca-8Em">
-                                        <rect key="frame" x="8" y="8" width="46" height="14"/>
+                                        <rect key="frame" x="20" y="8" width="46" height="14"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" title="Buttons" id="jQD-aZ-UGs">
                                             <font key="font" metaFont="systemMedium" size="11"/>
                                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -246,7 +246,7 @@
                                     <constraint firstItem="AoT-hA-ut4" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cQR-ca-8Em" secondAttribute="trailing" constant="8" symbolic="YES" id="LCl-kO-5lh"/>
                                     <constraint firstItem="cQR-ca-8Em" firstAttribute="centerY" secondItem="p3C-6V-IQc" secondAttribute="centerY" id="OeE-Gc-ePk"/>
                                     <constraint firstAttribute="trailing" secondItem="AoT-hA-ut4" secondAttribute="trailing" id="PDk-LJ-6vN"/>
-                                    <constraint firstItem="cQR-ca-8Em" firstAttribute="leading" secondItem="p3C-6V-IQc" secondAttribute="leading" constant="10" id="apn-fd-xSp"/>
+                                    <constraint firstItem="cQR-ca-8Em" firstAttribute="leading" secondItem="p3C-6V-IQc" secondAttribute="leading" constant="22" id="apn-fd-xSp"/>
                                     <constraint firstAttribute="height" constant="30" id="ntK-5B-XOy"/>
                                     <constraint firstAttribute="bottom" secondItem="AoT-hA-ut4" secondAttribute="bottom" constant="7" id="rJk-Ly-cJq"/>
                                 </constraints>
@@ -365,7 +365,7 @@
                                             <constraint firstAttribute="height" constant="25" id="SEk-8d-nPt"/>
                                             <constraint firstAttribute="width" constant="25" id="fP2-cp-o6z"/>
                                         </constraints>
-                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="AppStatusBarIcon" id="0cj-Fl-aoW"/>
+                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="SF.lasso.badge.sparkles" id="0cj-Fl-aoW"/>
                                     </imageView>
                                 </subviews>
                                 <constraints>
@@ -422,7 +422,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="450" height="30"/>
                                         <subviews>
                                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="Dph-wy-8sb">
-                                                <rect key="frame" x="16" y="8" width="65" height="14"/>
+                                                <rect key="frame" x="20" y="8" width="65" height="14"/>
                                                 <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Application" id="89F-B4-NIY">
                                                     <font key="font" metaFont="systemMedium" size="11"/>
                                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -433,7 +433,7 @@
                                         <constraints>
                                             <constraint firstItem="Dph-wy-8sb" firstAttribute="centerY" secondItem="ouh-IG-LyJ" secondAttribute="centerY" id="6H6-5z-Sht"/>
                                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Dph-wy-8sb" secondAttribute="trailing" constant="20" symbolic="YES" id="ASb-HB-fe6"/>
-                                            <constraint firstItem="Dph-wy-8sb" firstAttribute="leading" secondItem="ouh-IG-LyJ" secondAttribute="leading" constant="18" id="JAN-ad-8pf"/>
+                                            <constraint firstItem="Dph-wy-8sb" firstAttribute="leading" secondItem="ouh-IG-LyJ" secondAttribute="leading" constant="22" id="JAN-ad-8pf"/>
                                             <constraint firstAttribute="height" constant="30" id="Lth-gv-sxw"/>
                                         </constraints>
                                     </visualEffectView>
@@ -525,14 +525,14 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4qv-B4-GnV">
-                                                                    <rect key="frame" x="26" y="15" width="39" height="15"/>
+                                                                    <rect key="frame" x="26" y="10" width="39" height="25"/>
                                                                     <buttonCell key="cell" type="roundRect" bezelStyle="roundedRect" image="SF.ellipsis.circle" imagePosition="only" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" id="pZj-5N-agR">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                         <font key="font" metaFont="cellTitle"/>
                                                                     </buttonCell>
                                                                     <constraints>
                                                                         <constraint firstAttribute="width" constant="39" id="Cb7-ZH-zto"/>
-                                                                        <constraint firstAttribute="height" relation="lessThanOrEqual" constant="15" id="V9r-u0-1IM"/>
+                                                                        <constraint firstAttribute="height" relation="lessThanOrEqual" constant="25" id="V9r-u0-1IM"/>
                                                                     </constraints>
                                                                 </button>
                                                             </subviews>
@@ -623,7 +623,7 @@
                                 <rect key="frame" x="0.0" y="28" width="450" height="5"/>
                             </box>
                             <button imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gnb-pe-ZN5">
-                                <rect key="frame" x="322" y="7" width="101" height="16"/>
+                                <rect key="frame" x="320" y="7" width="101" height="16"/>
                                 <buttonCell key="cell" type="check" title="Allow list Mode" bezelStyle="regularSquare" imagePosition="left" alignment="right" controlSize="small" inset="2" id="Ksp-g1-48g">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="menu" size="11"/>
@@ -636,7 +636,7 @@
                                 </connections>
                             </button>
                             <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8FH-Zr-4mB">
-                                <rect key="frame" x="430" y="5" width="16" height="21"/>
+                                <rect key="frame" x="428" y="5" width="16" height="21"/>
                                 <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" controlSize="mini" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="qvR-dH-4Bl">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="label" size="9"/>
@@ -674,7 +674,7 @@
                             <constraint firstAttribute="trailing" secondItem="4AF-Dk-mkc" secondAttribute="trailing" id="HJV-vI-Asb"/>
                             <constraint firstAttribute="bottom" secondItem="HZK-yc-ptT" secondAttribute="bottom" id="Keg-Js-fyR"/>
                             <constraint firstItem="XUy-oo-mzG" firstAttribute="top" secondItem="VAL-LC-T3T" secondAttribute="bottom" id="KkB-aE-hE3"/>
-                            <constraint firstAttribute="trailing" secondItem="8FH-Zr-4mB" secondAttribute="trailing" constant="6" id="MTe-qC-l4L"/>
+                            <constraint firstAttribute="trailing" secondItem="8FH-Zr-4mB" secondAttribute="trailing" constant="8" id="MTe-qC-l4L"/>
                             <constraint firstItem="2dP-HG-cdi" firstAttribute="leading" secondItem="jc3-9p-Bfo" secondAttribute="leading" id="PmN-uQ-mSV"/>
                             <constraint firstItem="gnb-pe-ZN5" firstAttribute="leading" relation="lessThanOrEqual" secondItem="HZK-yc-ptT" secondAttribute="trailing" constant="256" id="Poq-zs-NWp"/>
                             <constraint firstItem="ceK-ED-PfL" firstAttribute="top" secondItem="4AF-Dk-mkc" secondAttribute="bottom" id="Vsi-nj-LdX"/>
@@ -2011,9 +2011,9 @@
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HFp-Td-Ujc">
+                                    <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HFp-Td-Ujc">
                                         <rect key="frame" x="933" y="9" width="74" height="32"/>
-                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="Refresh" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pDT-FT-rU3">
+                                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="SF.arrow.clockwise" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pDT-FT-rU3">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -2726,25 +2726,25 @@ Try remove Mos from the list first, then to re-authorize by dragging the Mos ico
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="i8p-Ht-8EX"/>
+        <segue reference="GA4-xY-65w"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="AlipayLogo" width="432" height="150"/>
         <image name="AlipayQR" width="256" height="256"/>
-        <image name="AppStatusBarIcon" width="16" height="16"/>
         <image name="MEOW" width="680" height="1080"/>
         <image name="NSAddTemplate" width="18" height="17"/>
         <image name="NSApplicationIcon" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="18" height="5"/>
         <image name="PaypalLogo" width="200" height="51"/>
-        <image name="Refresh" width="200" height="191"/>
+        <image name="SF.app.background.dotted" width="135" height="135"/>
+        <image name="SF.arrow.clockwise" width="135" height="135"/>
         <image name="SF.arrow.triangle.capsulepath" width="135" height="135"/>
         <image name="SF.button.horizontal.top.press" width="135" height="135"/>
-        <image name="SF.cpu" width="135" height="135"/>
-        <image name="SF.ellipsis.circle" width="100" height="100"/>
+        <image name="SF.circle.dotted.circle" width="135" height="135"/>
+        <image name="SF.ellipsis.circle" width="135" height="135"/>
         <image name="SF.gearshape" width="135" height="135"/>
-        <image name="SF.person.crop.square" width="135" height="135"/>
-        <image name="SF.pip" width="135" height="135"/>
+        <image name="SF.lasso.badge.sparkles" width="135" height="135"/>
+        <image name="SF.person.crop.circle.dashed" width="135" height="135"/>
         <image name="SF.scribble" width="100" height="86"/>
         <image name="WechatpayLogo" width="442" height="150"/>
         <image name="WechatpayQR" width="256" height="256"/>
