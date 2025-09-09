@@ -761,9 +761,9 @@
                     </visualEffectView>
                     <connections>
                         <outlet property="addButton" destination="ceK-ED-PfL" id="6o3-ow-6Jm"/>
-                        <outlet property="addButtonBig" destination="4wb-N2-j0t" id="T7a-Rm-xhh"/>
                         <outlet property="allowlistModeCheckBox" destination="gnb-pe-ZN5" id="HTP-3G-Zme"/>
                         <outlet property="applicationSourceMenuControl" destination="v6G-mQ-Ddk" id="dfx-xG-DcT"/>
+                        <outlet property="createButton" destination="4wb-N2-j0t" id="T7a-Rm-xhh"/>
                         <outlet property="delButton" destination="HZK-yc-ptT" id="Kww-VP-a9A"/>
                         <outlet property="manuallySelectFromFinderMenuItem" destination="dhF-95-kUJ" id="Ny0-LT-dUM"/>
                         <outlet property="runningAndInstalledManuItem" destination="R0d-21-g6W" id="a14-sX-cP3"/>

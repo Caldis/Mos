@@ -19,7 +19,7 @@ class PreferencesApplicationViewController: NSViewController {
     @IBOutlet weak var tableFoot: NSView!
     @IBOutlet weak var tableEmpty: NSView!
     // 添加按钮
-    @IBOutlet weak var addButtonBig: AddButton!
+    @IBOutlet weak var createButton: AddButton!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var delButton: NSButton!
     // 选项菜单
@@ -48,9 +48,9 @@ class PreferencesApplicationViewController: NSViewController {
     
     // 主添加按钮
     private func setupAddButtonCallback() {
-        addButtonBig.onMouseDown = { [weak self] _ in
+        createButton.onMouseDown = { [weak self] _ in
             guard let self = self else { return }
-            guard let sender = self.addButtonBig else { return }
+            guard let sender = self.createButton else { return }
             let position = NSPoint(x: sender.frame.origin.x - 40, y: sender.frame.origin.y + sender.frame.height - 91)
             self.openRunningApplicationPanel(sender, position)
             self.tableView.reloadData()
@@ -120,8 +120,8 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
         if animate {
             tableEmpty.isHidden = hasData
             tableEmpty.animator().alphaValue = hasData ? 0 : 1
-            addButtonBig.isHidden = hasData
-            addButtonBig.animator().alphaValue = hasData ? 0 : 1
+            createButton.isHidden = hasData
+            createButton.animator().alphaValue = hasData ? 0 : 1
             tableHead.isHidden = !hasData
             tableHead.animator().alphaValue = hasData ? 1 : 0
             tableFoot.isHidden = !hasData
@@ -129,8 +129,8 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
         } else {
             tableEmpty.isHidden = hasData
             tableEmpty.alphaValue = hasData ? 0 : 1
-            addButtonBig.isHidden = hasData
-            addButtonBig.alphaValue = hasData ? 0 : 1
+            createButton.isHidden = hasData
+            createButton.alphaValue = hasData ? 0 : 1
             tableHead.isHidden = !hasData
             tableHead.alphaValue = hasData ? 1 : 0
             tableFoot.isHidden = !hasData
