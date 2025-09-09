@@ -10,14 +10,16 @@ import Cocoa
 
 class PreferencesApplicationViewController: NSViewController {
     
-    // UI Elements
+    // MARK: - UI Elements
     // 白名单
     @IBOutlet weak var allowlistModeCheckBox: NSButton!
-    // 表格及工具栏
+    // 表格
     @IBOutlet weak var tableHead: NSVisualEffectView!
     @IBOutlet weak var tableView: NSTableView!
-    // 提示层
-    @IBOutlet weak var noDataHint: NSView!
+    @IBOutlet weak var tableFoot: NSView!
+    @IBOutlet weak var tableEmpty: NSView!
+    // 添加按钮
+    @IBOutlet weak var addButton: AddButton!
     // 选项菜单
     @IBOutlet var applicationSourceMenuControl: NSMenu!
     @IBOutlet weak var runningAndInstalledManuItem: NSMenuItem!
@@ -34,6 +36,19 @@ class PreferencesApplicationViewController: NSViewController {
     override func viewWillAppear() {
         // 检查表格数据
         toggleNoDataHint(animate: false)
+        // 设置添加按钮回调
+        setupAddButtonCallback()
+    }
+    
+    // 主添加按钮
+    private func setupAddButtonCallback() {
+        addButton.onMouseDown = { [weak self] _ in
+            guard let self = self else { return }
+            guard let sender = self.addButton else { return }
+            let position = NSPoint(x: sender.frame.origin.x - 40, y: sender.frame.origin.y + sender.frame.height - 91)
+            self.openRunningApplicationPanel(sender, position)
+            self.tableView.reloadData()
+        }
     }
     
     // 白名单模式
@@ -45,7 +60,8 @@ class PreferencesApplicationViewController: NSViewController {
     // 列表底部按钮
     @IBAction func addItemClick(_ sender: NSButton) {
         // 添加
-        openRunningApplicationPanel(sender)
+        let position = NSPoint(x: sender.frame.origin.x - 3, y: sender.frame.origin.y + sender.frame.height)
+        openRunningApplicationPanel(sender, position)
         // 重新加载
         tableView.reloadData()
     }
@@ -89,28 +105,24 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     func toggleNoDataHint(animate: Bool = true) {
         let hasData = Options.shared.application.applications.count != 0
         if animate {
-            noDataHint.isHidden = hasData
-            noDataHint.animator().alphaValue = hasData ? 0 : 1
+            tableEmpty.isHidden = hasData
+            tableEmpty.animator().alphaValue = hasData ? 0 : 1
+            addButton.isHidden = hasData
+            addButton.animator().alphaValue = hasData ? 0 : 1
             tableHead.isHidden = !hasData
             tableHead.animator().alphaValue = hasData ? 1 : 0
+            tableFoot.isHidden = !hasData
+            tableFoot.animator().alphaValue = hasData ? 1 : 0
         } else {
-            noDataHint.isHidden = hasData
-            noDataHint.alphaValue = hasData ? 0 : 1
+            tableEmpty.isHidden = hasData
+            tableEmpty.alphaValue = hasData ? 0 : 1
+            addButton.isHidden = hasData
+            addButton.alphaValue = hasData ? 0 : 1
             tableHead.isHidden = !hasData
             tableHead.alphaValue = hasData ? 1 : 0
+            tableFoot.isHidden = !hasData
+            tableFoot.alphaValue = hasData ? 1 : 0
         }
-    }
-    // 点击平滑
-    @objc func smoothCheckBoxClick(_ sender: NSButton!) {
-        let row = sender.tag
-        let state = sender.state
-        Options.shared.application.applications.get(by: row)?.scroll.smooth = state.rawValue==1 ? true : false
-    }
-    // 点击反转
-    @objc func reverseCheckBoxClick(_ sender: NSButton!) {
-        let row = sender.tag
-        let state = sender.state
-        Options.shared.application.applications.get(by: row)?.scroll.reverse = state.rawValue==1 ? true : false
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
@@ -191,7 +203,7 @@ extension PreferencesApplicationViewController: NSMenuDelegate {
     }
 
     // 初始化菜单
-    func openRunningApplicationPanel(_ sender: NSButton) {
+    func openRunningApplicationPanel(_ targetView: NSView, _ targetPosition: NSPoint) {
         // 清除已有
         runningAndInstalledMenuChildrenContainer.removeAllItems()
         // 初始化 Running 应用
@@ -210,8 +222,7 @@ extension PreferencesApplicationViewController: NSMenuDelegate {
             )
         }
         // 显示菜单
-        let targetPosition = NSPoint(x: sender.frame.origin.x, y: sender.frame.origin.y + sender.frame.height - 28)
-        applicationSourceMenuControl.popUp(positioning: nil, at: targetPosition, in: sender.superview)
+        applicationSourceMenuControl.popUp(positioning: nil, at: targetPosition, in: targetView)
     }
     
     // 添加应用
