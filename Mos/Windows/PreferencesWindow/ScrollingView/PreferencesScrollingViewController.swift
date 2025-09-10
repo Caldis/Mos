@@ -11,6 +11,7 @@ import Cocoa
 class PreferencesScrollingViewController: NSViewController {
     
     // Target application
+    // - Using when the VC is inside the Application Setting Popup
     var currentTargetApplication: Application?
     // UI Elements
     @IBOutlet weak var scrollSmoothCheckBox: NSButton!
@@ -43,13 +44,13 @@ class PreferencesScrollingViewController: NSViewController {
     
     // 平滑
     @IBAction func scrollSmoothClick(_ sender: NSButton) {
-        Options.shared.scroll.smooth = sender.state.rawValue==0 ? false : true
+        getTargetApplicationScrollOptions().smooth = sender.state.rawValue != 0
         syncViewWithOptions()
     }
     
     // 翻转
     @IBAction func scrollReverseClick(_ sender: NSButton) {
-        Options.shared.scroll.reverse = sender.state.rawValue==0 ? false : true
+        getTargetApplicationScrollOptions().reverse = sender.state.rawValue != 0
         syncViewWithOptions()
     }
     
