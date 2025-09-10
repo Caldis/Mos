@@ -139,10 +139,14 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
+        // 行号
         let row = sender.tag
+        // 从 SB 构建内容
         let scrollingWithApplicationViewController = Utils.instantiateControllerFromStoryboard(withIdentifier: PANEL_IDENTIFIER.scrollingWithApplication) as PreferencesScrollingWithApplicationViewController
+        // 更新目标数据
         scrollingWithApplicationViewController.updateTargetApplication(with: Options.shared.application.applications.get(by: row))
         scrollingWithApplicationViewController.updateParentData(with: tableView, for: row)
+        // 展示到指定位置
         present(scrollingWithApplicationViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: NSRectEdge.maxX, behavior: NSPopover.Behavior.transient)
     }
     // 构建表格数据 (循环生成行)

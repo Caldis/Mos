@@ -14,15 +14,15 @@ class Application: Codable, Equatable {
     var path: String // executablePath or bundlePath
     // 配置: 名称
     var displayName: String? = "" {
-        didSet {Options.shared.saveOptions()}
+        didSet { Options.shared.saveOptions() }
     }
     // 配置: 继承
     var inherit = true {
-        didSet {Options.shared.saveOptions()}
+        didSet { Options.shared.saveOptions() }
     }
     // 配置: 滚动
     var scroll = OPTIONS_SCROLL_DEFAULT() {
-        didSet {Options.shared.saveOptions()}
+        didSet { Options.shared.saveOptions() }
     }
     // 初始化
     init(path: String) {
