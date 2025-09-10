@@ -51,7 +51,7 @@ class PreferencesApplicationViewController: NSViewController {
         createButton.onMouseDown = { [weak self] _ in
             guard let self = self else { return }
             guard let sender = self.createButton else { return }
-            let position = NSPoint(x: sender.frame.origin.x - 40, y: sender.frame.origin.y + sender.frame.height - 91)
+            let position = NSPoint(x: sender.frame.origin.x - 40, y: sender.frame.origin.y + sender.frame.height - 96)
             self.openRunningApplicationPanel(sender, position)
             self.tableView.reloadData()
         }
