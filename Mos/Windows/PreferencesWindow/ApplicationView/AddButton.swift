@@ -10,7 +10,7 @@ import AppKit
 
 class AddButton: PrimaryButton {
     
-    var onMouseDown: ((AddButton) -> Void)?
+    public var onMouseDown: ((AddButton) -> Void)?
     
     override func awakeFromNib() {
         super.awakeFromNib()

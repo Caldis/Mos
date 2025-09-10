@@ -13,6 +13,7 @@ class PreferencesButtonsViewController: NSViewController {
     // MARK: - UI Elements
     // 表格
     @IBOutlet weak var tableHead: NSVisualEffectView!
+    @IBOutlet weak var tableView: NSTableView!
     @IBOutlet weak var tableEmpty: NSView!
     
     override func viewDidLoad() {

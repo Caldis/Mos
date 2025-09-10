@@ -11,10 +11,10 @@ import AppKit
 class RecordButton: PrimaryButton {
     
     private var recorder = EventRecorder()
+    public var onRecordEnd: ((RecordedEvent) -> Void)?
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Delegate
         recorder.delegate = self
     }
     
@@ -29,5 +29,6 @@ extension RecordButton: EventRecorderDelegate {
     // Record 回调
     func eventRecorder(_ recorder: EventRecorder, didRecordEvent event: RecordedEvent) {
         NSLog("[RecordButton] Recorded event: \(event.displayName())")
+        onRecordEnd?(event)
     }
 }
