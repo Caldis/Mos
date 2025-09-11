@@ -41,7 +41,7 @@ class PreferencesApplicationViewController: NSViewController {
     }
     override func viewWillAppear() {
         // 检查表格数据
-        toggleNoDataHint(animate: false)
+        toggleNoDataHint()
         // 设置添加按钮回调
         setupAddButtonCallback()
     }
@@ -115,27 +115,16 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
         static let settingCell = "settingCell"
     }
     // 切换无数据显示
-    func toggleNoDataHint(animate: Bool = true) {
+    func toggleNoDataHint() {
         let hasData = Options.shared.application.applications.count != 0
-        if animate {
-            tableEmpty.isHidden = hasData
-            tableEmpty.animator().alphaValue = hasData ? 0 : 1
-            createButton.isHidden = hasData
-            createButton.animator().alphaValue = hasData ? 0 : 1
-            tableHead.isHidden = !hasData
-            tableHead.animator().alphaValue = hasData ? 1 : 0
-            tableFoot.isHidden = !hasData
-            tableFoot.animator().alphaValue = hasData ? 1 : 0
-        } else {
-            tableEmpty.isHidden = hasData
-            tableEmpty.alphaValue = hasData ? 0 : 1
-            createButton.isHidden = hasData
-            createButton.alphaValue = hasData ? 0 : 1
-            tableHead.isHidden = !hasData
-            tableHead.alphaValue = hasData ? 1 : 0
-            tableFoot.isHidden = !hasData
-            tableFoot.alphaValue = hasData ? 1 : 0
-        }
+        updateViewVisibility(view: tableEmpty, visible: !hasData)
+        updateViewVisibility(view: createButton, visible: !hasData)
+        updateViewVisibility(view: tableHead, visible: hasData)
+        updateViewVisibility(view: tableFoot, visible: hasData)
+    }
+    private func updateViewVisibility(view: NSView, visible: Bool) {
+        view.isHidden = !visible
+        view.animator().alphaValue = visible ? 1 : 0
     }
     // 点击设置
     @objc func settingButtonClick(_ sender: NSButton!) {
