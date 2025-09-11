@@ -15,6 +15,9 @@ class PreferencesButtonsViewController: NSViewController {
     @IBOutlet weak var tableHead: NSVisualEffectView!
     @IBOutlet weak var tableView: NSTableView!
     @IBOutlet weak var tableEmpty: NSView!
+    // 按钮
+    @IBOutlet weak var createButton: CreateRecordsButton!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()

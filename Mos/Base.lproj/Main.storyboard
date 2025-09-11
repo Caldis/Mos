@@ -469,6 +469,7 @@
                         </constraints>
                     </visualEffectView>
                     <connections>
+                        <outlet property="createButton" destination="uuZ-tE-wlr" id="h6U-Gs-MEr"/>
                         <outlet property="tableEmpty" destination="skg-W8-gS0" id="eHD-Fa-Gdk"/>
                         <outlet property="tableHead" destination="uk9-49-SKV" id="npf-8b-Yrn"/>
                         <outlet property="tableView" destination="tU8-ze-w7X" id="CbL-cb-u12"/>

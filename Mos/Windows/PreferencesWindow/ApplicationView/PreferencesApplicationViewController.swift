@@ -18,7 +18,7 @@ class PreferencesApplicationViewController: NSViewController {
     @IBOutlet weak var tableView: NSTableView!
     @IBOutlet weak var tableFoot: NSView!
     @IBOutlet weak var tableEmpty: NSView!
-    // 添加按钮
+    // 按钮
     @IBOutlet weak var createButton: CreateApplicationButton!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var delButton: NSButton!
@@ -140,30 +140,27 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     }
     // 构建表格数据 (循环生成行)
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        // 如果对应列没有设置 Identifier 直接返回空
-        guard let tableColumnIdentifier = tableColumn?.identifier else {
+        guard let tableColumnIdentifier = tableColumn?.identifier,
+              let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView,
+              let application = Options.shared.application.applications.get(by: row) else {
             return nil
         }
         // 生成每行的 Cell
-        if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView {
-            // 应用数据
-            let application = Options.shared.application.applications.get(by: row)
-            switch tableColumnIdentifier.rawValue {
-                // 应用
-                case CellIdentifiers.applicationCell:
-                    cell.imageView?.image = application?.getIcon()
-                    cell.imageView?.toolTip = application?.path
-                    cell.textField?.stringValue = application?.getName() ?? ""
-                    return cell
-                // 设定
-                case CellIdentifiers.settingCell:
-                    let button = cell.subviews[0] as! NSButton
-                    button.tag = row
-                    button.target = self
-                    button.action = #selector(settingButtonClick)
-                    return cell
-                default: break
-            }
+        switch tableColumnIdentifier.rawValue {
+            // 应用
+            case CellIdentifiers.applicationCell:
+                cell.imageView?.image = application.getIcon()
+                cell.imageView?.toolTip = application.path
+                cell.textField?.stringValue = application.getName()
+                return cell
+            // 设定
+            case CellIdentifiers.settingCell:
+                let button = cell.subviews[0] as! NSButton
+                button.tag = row
+                button.target = self
+                button.action = #selector(settingButtonClick)
+                return cell
+            default: break
         }
         return nil
     }
