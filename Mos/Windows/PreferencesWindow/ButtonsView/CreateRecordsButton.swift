@@ -1,5 +1,5 @@
 //
-//  RecordButton.swift
+//  CreateRecordsButton.swift
 //  Mos
 //
 //  Created by 陈标 on 2025/8/31.
@@ -8,7 +8,7 @@
 
 import AppKit
 
-class RecordButton: PrimaryButton {
+class CreateRecordsButton: PrimaryButton {
     
     private var recorder = EventRecorder()
     public var onRecordEnd: ((RecordedEvent) -> Void)?
@@ -25,7 +25,7 @@ class RecordButton: PrimaryButton {
 }
 
 // MARK: - EventRecorderDelegate
-extension RecordButton: EventRecorderDelegate {
+extension CreateRecordsButton: EventRecorderDelegate {
     // Record 回调
     func eventRecorder(_ recorder: EventRecorder, didRecordEvent event: RecordedEvent) {
         NSLog("[RecordButton] Recorded event: \(event.displayName())")

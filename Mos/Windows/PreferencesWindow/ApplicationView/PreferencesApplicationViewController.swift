@@ -19,7 +19,7 @@ class PreferencesApplicationViewController: NSViewController {
     @IBOutlet weak var tableFoot: NSView!
     @IBOutlet weak var tableEmpty: NSView!
     // 添加按钮
-    @IBOutlet weak var createButton: AddButton!
+    @IBOutlet weak var createButton: CreateApplicationButton!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var delButton: NSButton!
     // 选项菜单
@@ -51,7 +51,7 @@ class PreferencesApplicationViewController: NSViewController {
         createButton.onMouseDown = { [weak self] _ in
             guard let self = self else { return }
             guard let sender = self.createButton else { return }
-            let position = NSPoint(x: sender.frame.origin.x - 40, y: sender.frame.origin.y + sender.frame.height - 96)
+            let position = NSPoint(x: sender.frame.origin.x - 40, y: sender.frame.origin.y - 44)
             self.openRunningApplicationPanel(sender, position)
             self.tableView.reloadData()
         }
@@ -66,7 +66,7 @@ class PreferencesApplicationViewController: NSViewController {
     // 列表底部按钮
     @IBAction func addItemClick(_ sender: NSButton) {
         // 添加
-        let position = NSPoint(x: sender.frame.origin.x - 3, y: sender.frame.origin.y + sender.frame.height)
+        let position = NSPoint(x: sender.frame.origin.x - 3, y: sender.frame.origin.y + 10)
         openRunningApplicationPanel(sender, position)
         // 重新加载
         tableView.reloadData()

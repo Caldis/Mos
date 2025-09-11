@@ -1,5 +1,5 @@
 //
-//  AddButton.swift
+//  CreateApplicationButton.swift
 //  Mos
 //
 //  Created by 陈标 on 2025/8/31.
@@ -8,9 +8,9 @@
 
 import AppKit
 
-class AddButton: PrimaryButton {
+class CreateApplicationButton: PrimaryButton {
     
-    public var onMouseDown: ((AddButton) -> Void)?
+    public var onMouseDown: ((CreateApplicationButton) -> Void)?
     
     override func awakeFromNib() {
         super.awakeFromNib()
