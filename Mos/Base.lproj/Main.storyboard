@@ -289,7 +289,7 @@
                                                                                 <rect key="frame" x="207" y="1" width="168" height="25"/>
                                                                                 <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="epU-lS-atX" id="DPN-ii-WxE">
                                                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="menu"/>
+                                                                                    <font key="font" metaFont="message"/>
                                                                                     <menu key="menu" id="Q8S-vA-nvS">
                                                                                         <items>
                                                                                             <menuItem title="Item 1" state="on" id="epU-lS-atX"/>
@@ -304,7 +304,7 @@
                                                                             </popUpButton>
                                                                             <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0S0-ZL-Rcv">
                                                                                 <rect key="frame" x="376" y="-1.5" width="30.5" height="34"/>
-                                                                                <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSAddTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" inset="2" id="yNV-6J-62m">
+                                                                                <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSStopProgressTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" inset="2" id="yNV-6J-62m">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                                     <font key="font" metaFont="system"/>
                                                                                 </buttonCell>
@@ -444,8 +444,8 @@
                                     <constraint firstAttribute="height" constant="60" id="9cR-Bw-AYg"/>
                                     <constraint firstAttribute="width" constant="370" id="ROH-M2-7yk"/>
                                 </constraints>
-                                <color key="borderColor" red="0.42389131630894372" green="0.4636744067772145" blue="0.47723787481818192" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                <color key="fillColor" red="0.18662581334381545" green="0.23822140348616053" blue="0.25779928054386125" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="borderColor" name="systemBlueColor" catalog="System" colorSpace="catalog"/>
+                                <color key="fillColor" name="selectedControlColor" catalog="System" colorSpace="catalog"/>
                             </box>
                         </subviews>
                         <constraints>
@@ -794,8 +794,8 @@
                                     <constraint firstAttribute="height" constant="60" id="bYK-jU-WEc"/>
                                     <constraint firstAttribute="width" constant="370" id="iNf-4e-Q4K"/>
                                 </constraints>
-                                <color key="borderColor" name="selectedTextBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                <color key="fillColor" red="0.16008279" green="0.2238447563" blue="0.307876496" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="borderColor" name="systemBlueColor" catalog="System" colorSpace="catalog"/>
+                                <color key="fillColor" name="selectedControlColor" catalog="System" colorSpace="catalog"/>
                             </box>
                         </subviews>
                         <constraints>
@@ -2864,6 +2864,7 @@ Try remove Mos from the list first, then to re-authorize by dragging the Mos ico
         <image name="NSAddTemplate" width="18" height="17"/>
         <image name="NSApplicationIcon" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="18" height="5"/>
+        <image name="NSStopProgressTemplate" width="17" height="16"/>
         <image name="PaypalLogo" width="200" height="51"/>
         <image name="SF.app.background.dotted" width="135" height="135"/>
         <image name="SF.arrow.clockwise" width="135" height="135"/>
