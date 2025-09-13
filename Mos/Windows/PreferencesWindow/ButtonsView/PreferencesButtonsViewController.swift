@@ -44,7 +44,7 @@ class PreferencesButtonsViewController: NSViewController {
 extension PreferencesButtonsViewController {
     // 同步界面与设置
     func syncViewWithOptions() {
-        // TODO: 实现按钮相关设置的同步逻辑
+        // TODO: 持久化实现
     }
     
     // 设置录制按钮回调
@@ -62,17 +62,11 @@ extension PreferencesButtonsViewController {
     }
 
     // 删除记录的事件
-    func removeRecordedEvent(_ event: RecordedEvent) {
-        if let index = recordedEvents.firstIndex(where: {
-            $0.mouseButton == event.mouseButton &&
-            $0.keyCode == event.keyCode &&
-            $0.modifierFlags == event.modifierFlags
-        }) {
-            recordedEvents.remove(at: index)
-            tableView.reloadData()
-            toggleNoDataHint()
-            // TODO: 同步到 UserDefaults 保存设置
-        }
+    func removeRecordedEvent(_ row: Int) {
+        recordedEvents.remove(at: row)
+        tableView.reloadData()
+        toggleNoDataHint()
+        // TODO: 持久化
     }
 }
 
@@ -80,37 +74,29 @@ extension PreferencesButtonsViewController {
  * 表格区域渲染及操作
  **/
 extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewDataSource {
-    
-    // 切换无数据显示
+    // 无数据
     func toggleNoDataHint() {
         let hasData = recordedEvents.count != 0
         updateViewVisibility(view: tableEmpty, visible: !hasData)
         updateViewVisibility(view: createButton, visible: !hasData)
     }
-    
     private func updateViewVisibility(view: NSView, visible: Bool) {
         view.isHidden = !visible
         view.animator().alphaValue = visible ? 1 : 0
     }
     
-    // 表格数据源方法
+    // 表格数据源
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        guard let tableColumnIdentifier = tableColumn?.identifier,
-              row < recordedEvents.count else {
-            return nil
-        }
+        guard let tableColumnIdentifier = tableColumn?.identifier else { return nil }
 
-        let event = recordedEvents[row]
-
-        // 使用自定义单元格，直接访问控件
+        // 创建 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? ButtonTableCellView {
-            cell.configure(with: event, viewController: self)
+            cell.setup(from: self, with: recordedEvents[row], at: row)
             return cell
         }
 
         return nil
     }
-    
     
     // 行高
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {

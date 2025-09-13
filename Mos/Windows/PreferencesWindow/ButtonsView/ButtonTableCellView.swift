@@ -11,22 +11,27 @@ import Cocoa
 class ButtonTableCellView: NSTableCellView {
 
     // MARK: - IBOutlets
-    @IBOutlet weak var hotkeyLabel: NSTextField!
+    @IBOutlet weak var keyDisplayContainerView: NSView!
     @IBOutlet weak var actionPopUpButton: NSPopUpButton!
     @IBOutlet weak var deleteButton: NSButton!
 
+    // MARK: - UI Components
+    private var keyDisplayView: KeyDisplayView!
+
     // MARK: - Data
-    private var recordedEvent: RecordedEvent?
-    private weak var viewController: PreferencesButtonsViewController?
+    private weak var viewController: PreferencesButtonsViewController? // 父容器视图
+    private var recordedEvent: RecordedEvent? // 事件
+    private var row: Int?
 
-    // MARK: - Configuration
-    func configure(with event: RecordedEvent, viewController: PreferencesButtonsViewController) {
-        self.recordedEvent = event
+    // MARK: - 初始化内容
+    func setup(from viewController: PreferencesButtonsViewController, with event: RecordedEvent, at row: Int) {
         self.viewController = viewController
+        self.recordedEvent = event
+        self.row = row
 
-        // 配置按键显示
-        hotkeyLabel.stringValue = event.displayName()
-        hotkeyLabel.textColor = NSColor.labelColor
+        // 配置按键显示组件
+        setupKeyDisplayView()
+        keyDisplayView.updateWithEvent(event, style: .normal)
 
         // 配置动作选择器
         setupActionPopUpButton()
@@ -35,6 +40,36 @@ class ButtonTableCellView: NSTableCellView {
         setupDeleteButton()
     }
 
+    // 创建按键视图
+    private func setupKeyDisplayView() {
+        // 如果已经创建过，先移除
+        keyDisplayView?.removeFromSuperview()
+
+        // 创建新的 KeyDisplayView
+        keyDisplayView = KeyDisplayView()
+        keyDisplayView.translatesAutoresizingMaskIntoConstraints = false
+
+        // 添加到容器视图
+        keyDisplayContainerView.addSubview(keyDisplayView)
+
+        // 设置约束
+        let leadingConstraint = keyDisplayView.leadingAnchor.constraint(equalTo: keyDisplayContainerView.leadingAnchor)
+//        let trailingConstraint = keyDisplayView.trailingAnchor.constraint(greaterThanOrEqualTo: keyDisplayContainerView.trailingAnchor)
+        let centerYConstraint = keyDisplayView.centerYAnchor.constraint(equalTo: keyDisplayContainerView.centerYAnchor)
+
+        // 设置优先级
+        leadingConstraint.priority = NSLayoutConstraint.Priority(900)
+//        trailingConstraint.priority = NSLayoutConstraint.Priority(800)
+        centerYConstraint.priority = NSLayoutConstraint.Priority(1000)
+
+        NSLayoutConstraint.activate([
+            leadingConstraint,
+//            trailingConstraint,
+            centerYConstraint
+        ])
+    }
+    
+    // 设置动作按钮
     private func setupActionPopUpButton() {
         actionPopUpButton.removeAllItems()
 
@@ -47,23 +82,25 @@ class ButtonTableCellView: NSTableCellView {
         actionPopUpButton.action = #selector(actionChanged(_:))
     }
 
+    // 设置删除按钮
     private func setupDeleteButton() {
         deleteButton.target = self
-        deleteButton.action = #selector(deleteButtonClicked(_:))
+        deleteButton.action = #selector(deleteRecord(_:))
     }
 
     // MARK: - Actions
+    // 切换动作
     @objc private func actionChanged(_ sender: NSPopUpButton) {
         guard let event = recordedEvent else { return }
 
-        let selectedIndex = sender.indexOfSelectedItem
+        // let selectedIndex = sender.indexOfSelectedItem
         // TODO: 保存动作配置到 event 或 UserDefaults
         print("Action changed for \(event.displayName()): \(sender.titleOfSelectedItem ?? "")")
     }
 
-    @objc private func deleteButtonClicked(_ sender: NSButton) {
-        guard let event = recordedEvent else { return }
-
-        viewController?.removeRecordedEvent(event)
+    // 删除绑定
+    @objc private func deleteRecord(_ sender: NSButton) {
+        guard let row = self.row else { return }
+        viewController?.removeRecordedEvent(row)
     }
 }
