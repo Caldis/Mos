@@ -39,7 +39,7 @@ class PreferencesButtonsViewController: NSViewController {
 }
 
 /**
- * 设置同步
+ * 录制功能
  **/
 extension PreferencesButtonsViewController {
     // 同步界面与设置
@@ -54,11 +54,25 @@ extension PreferencesButtonsViewController {
         }
     }
     
-    // 添加记录的事件到列表
+    // 添加录制事件到列表
     private func addRecordedEvent(_ event: RecordedEvent) {
         recordedEvents.append(event)
         tableView.reloadData()
         toggleNoDataHint()
+    }
+
+    // 删除记录的事件
+    func removeRecordedEvent(_ event: RecordedEvent) {
+        if let index = recordedEvents.firstIndex(where: {
+            $0.mouseButton == event.mouseButton &&
+            $0.keyCode == event.keyCode &&
+            $0.modifierFlags == event.modifierFlags
+        }) {
+            recordedEvents.remove(at: index)
+            tableView.reloadData()
+            toggleNoDataHint()
+            // TODO: 同步到 UserDefaults 保存设置
+        }
     }
 }
 
@@ -66,11 +80,6 @@ extension PreferencesButtonsViewController {
  * 表格区域渲染及操作
  **/
 extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewDataSource {
-    // Cell Identifiers (需要与 Storyboard 中设置的 identifier 匹配)
-    fileprivate enum CellIdentifiers {
-        static let hotkeyCell = "HotkeyCell"    // Hotkey 列
-        static let actionCell = "ActionCell"     // Item 1 列
-    }
     
     // 切换无数据显示
     func toggleNoDataHint() {
@@ -87,78 +96,21 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
     // 表格数据源方法
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         guard let tableColumnIdentifier = tableColumn?.identifier,
-              let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? NSTableCellView,
               row < recordedEvents.count else {
             return nil
         }
-        
+
         let event = recordedEvents[row]
-        configureCellForColumn(cell: cell, columnId: tableColumnIdentifier.rawValue, event: event, row: row)
-        return cell
-    }
-    
-    private func configureCellForColumn(cell: NSTableCellView, columnId: String, event: RecordedEvent, row: Int) {
-        switch columnId {
-        case CellIdentifiers.hotkeyCell:
-            configureHotkeyCell(cell: cell, event: event)
-        case CellIdentifiers.actionCell:
-            configureActionCell(cell: cell, row: row)
-        default:
-            break
+
+        // 使用自定义单元格，直接访问控件
+        if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? ButtonTableCellView {
+            cell.configure(with: event, viewController: self)
+            return cell
         }
-    }
-    
-    private func configureHotkeyCell(cell: NSTableCellView, event: RecordedEvent) {
-        // 根据 Storyboard 层级：Table Cell View > Box > View > Hotkey Label
-        // 使用 viewWithTag 或者层级访问找到 Hotkey 标签
-        if let hotkeyLabel = findHotkeyLabel(in: cell) {
-            hotkeyLabel.stringValue = event.displayName()
-            hotkeyLabel.textColor = NSColor.labelColor
-        }
-    }
-    
-    private func findHotkeyLabel(in cell: NSTableCellView) -> NSTextField? {
-        // 最佳实践：先尝试使用 tag 查找 (建议在 Storyboard 中设置 Hotkey Label tag = 100)
-        if let labelWithTag = cell.viewWithTag(100) as? NSTextField {
-            return labelWithTag
-        }
-        
-        // 备用方案：根据层级结构查找 cell > box > view > hotkey label
-        for subview in cell.subviews {
-            if let box = subview as? NSBox {
-                for boxSubview in box.subviews {
-                    if let view = boxSubview as? NSView {
-                        for viewSubview in view.subviews {
-                            if let label = viewSubview as? NSTextField {
-                                return label
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        // 最后备用方案：递归搜索所有 NSTextField
-        return findTextFieldRecursively(in: cell)
-    }
-    
-    private func findTextFieldRecursively(in view: NSView) -> NSTextField? {
-        if let textField = view as? NSTextField {
-            return textField
-        }
-        
-        for subview in view.subviews {
-            if let found = findTextFieldRecursively(in: subview) {
-                return found
-            }
-        }
-        
+
         return nil
     }
     
-    private func configureActionCell(cell: NSTableCellView, row: Int) {
-        cell.textField?.stringValue = "TODO: Action"
-    }
     
     // 行高
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {

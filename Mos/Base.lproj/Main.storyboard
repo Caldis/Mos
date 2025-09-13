@@ -249,7 +249,7 @@
                                                     </textFieldCell>
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                                     <prototypeCellViews>
-                                                        <tableCellView id="zV9-2l-l6k">
+                                                        <tableCellView id="zV9-2l-l6k" customClass="ButtonTableCellView" customModule="Mos" customModuleProvider="target">
                                                             <rect key="frame" x="18" y="0.0" width="413" height="52"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
@@ -336,6 +336,11 @@
                                                                 <constraint firstAttribute="trailing" secondItem="Hcf-QN-htP" secondAttribute="trailing" id="B5f-Q7-1ek"/>
                                                                 <constraint firstItem="Hcf-QN-htP" firstAttribute="leading" secondItem="zV9-2l-l6k" secondAttribute="leading" id="k9E-8E-a7l"/>
                                                             </constraints>
+                                                            <connections>
+                                                                <outlet property="actionPopUpButton" destination="3eO-mD-7ue" id="78f-cI-nk8"/>
+                                                                <outlet property="deleteButton" destination="0S0-ZL-Rcv" id="hzh-ho-Sb5"/>
+                                                                <outlet property="hotkeyLabel" destination="I5h-WO-SaQ" id="kK1-dw-8ZY"/>
+                                                            </connections>
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
