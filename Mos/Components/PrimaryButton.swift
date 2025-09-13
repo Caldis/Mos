@@ -16,25 +16,21 @@ class PrimaryButton: NSBox {
     override func awakeFromNib() {
         super.awakeFromNib()
         originalFillColor = self.fillColor
-        setupHover()
-    }
-    
-    // MARK: - Hover 效果处理
-    private func setupHover() {
-        let trackingArea = NSTrackingArea(
+        self.addTrackingArea(NSTrackingArea(
             rect: self.bounds,
             options: [.activeInKeyWindow, .mouseEnteredAndExited, .inVisibleRect],
             owner: self,
             userInfo: nil
-        )
-        self.addTrackingArea(trackingArea)
+        ))
     }
+    
+    // MARK: - Hover 效果处理
     override func mouseEntered(with event: NSEvent) {
         super.mouseEntered(with: event)
         guard let originalColor = originalFillColor else { return }
         NSAnimationContext.runAnimationGroup({ context in
             context.duration = 0.15
-            self.animator().fillColor = adjustBrightness(of: originalColor, factor: 1.2)
+            self.animator().fillColor = adjustBrightness(of: originalColor, factor: 1.1)
         })
     }
     override func mouseExited(with event: NSEvent) {
