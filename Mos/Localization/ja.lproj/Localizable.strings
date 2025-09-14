@@ -7,28 +7,28 @@
 */
 
 // Global
-"Ensure" = "Ensure";
-"Cancel" = "Cancel";
-"Version" = "Version";
-"Done" = "Authorized";
-"Error" = "Error";
+"Ensure" = "確実にする";
+"Cancel" = "キャンセル";
+"Version" = "バージョン";
+"Done" = "許可済み";
+"Error" = "エラー";
 
 // Status Bar Icon Menu
-"Needs access to Accessibility controls" = "Needs access to Accessibility controls";
-"Scroll Monitor" = " Scroll Monitor";
-"Preferences" = " Preferences";
-"Quit" = " Quit";
-"Hide Icon" = "Hide Icon";
+"Needs access to Accessibility controls" = "アクセシビリティへのアクセスが必要です";
+"Scroll Monitor" = " スクロール監視";
+"Preferences" = " 設定";
+"Quit" = " 終了";
+"Hide Icon" = "アイコンを隠す";
 
 // Notification
-"Mos is running in the background" = "Mos is running in the background";
-"Mos' status bar icon is hidden" = "Mos' status bar icon is hidden";
-"Got it" = "Got it";
-"Show it" = "Show it";
+"Mos is running in the background" = "Mosはバックグラウンドで動作中です";
+"Mos' status bar icon is hidden" = "Mosのステータスバーアイコンは非表示になっています";
+"Got it" = "了解";
+"Show it" = "表示する";
 
 // Preferences
-"Current Version" = "Current Version";
+"Current Version" = "現在のバージョン";
 
 // Welcome Window
-"Allow to access" = "Allow to access";
-"Begin smooth" = "Begin smooth";
+"Allow to access" = "アクセスを許可する";
+"Begin smooth" = "滑らかにする";
