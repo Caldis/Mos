@@ -9,6 +9,10 @@
 import Cocoa
 
 class KeyDisplayView: NSView {
+    
+    // MARK: - Constants
+    private let fontSize = CGFloat(9)
+    private let keyWaiting = "?"
 
     // MARK: - Configuration
     enum Status {
@@ -17,27 +21,21 @@ class KeyDisplayView: NSView {
         case recording     // 录制中状态（呼吸动画）
     }
 
-    let fontSize = CGFloat(9)
-
     // MARK: - Private Properties
     private var keyComponents: [String] = []
     private var status: Status = .normal
     private var keyViews: [NSView] = []
     private var stackView: NSStackView!
-    private let keyWaiting = "?"
 
     // MARK: - Initialization
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         setupView()
     }
-
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupView()
     }
-
-
     private func setupView() {
         wantsLayer = true
 
@@ -47,15 +45,16 @@ class KeyDisplayView: NSView {
         stackView.alignment = .centerY
         stackView.spacing = 4
         stackView.translatesAutoresizingMaskIntoConstraints = false
-
+        stackView.wantsLayer = true
+        stackView.layer?.backgroundColor = CGColor(red: 0.0, green: 0.0, blue: 1.0, alpha: 1.0)
         addSubview(stackView)
 
         // 默认居中对齐，父组件可以通过约束覆盖
         NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
-            stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
+//            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+//            stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
+//            stackView.trailingAnchor.constraint(greaterThanOrEqualTo: trailingAnchor)
         ])
     }
 
