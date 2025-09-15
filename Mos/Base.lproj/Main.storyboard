@@ -259,21 +259,10 @@
                                                                         <rect key="frame" x="1" y="1" width="411" height="30"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <box boxType="custom" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="xXS-da-tqU">
-                                                                                <rect key="frame" x="5" y="5" width="50" height="20"/>
-                                                                                <view key="contentView" id="gFA-PY-6cW">
-                                                                                    <rect key="frame" x="1" y="1" width="48" height="18"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                                                </view>
-                                                                                <constraints>
-                                                                                    <constraint firstAttribute="width" constant="50" id="6N3-JZ-BME"/>
-                                                                                </constraints>
-                                                                                <color key="borderColor" name="quaternaryLabelColor" catalog="System" colorSpace="catalog"/>
-                                                                            </box>
                                                                             <box boxType="custom" borderWidth="0.0" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="ei3-vh-6kV">
-                                                                                <rect key="frame" x="60" y="5" width="166" height="20"/>
+                                                                                <rect key="frame" x="5" y="5" width="221" height="20"/>
                                                                                 <view key="contentView" id="UjE-iu-X41">
-                                                                                    <rect key="frame" x="0.0" y="0.0" width="166" height="20"/>
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="221" height="20"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 </view>
                                                                                 <color key="borderColor" red="1" green="1" blue="1" alpha="0.10068822230879106" colorSpace="custom" customColorSpace="sRGB"/>
@@ -310,20 +299,17 @@
                                                                             </button>
                                                                         </subviews>
                                                                         <constraints>
-                                                                            <constraint firstAttribute="bottom" secondItem="xXS-da-tqU" secondAttribute="bottom" constant="5" id="0Zl-p5-P2f"/>
                                                                             <constraint firstItem="3eO-mD-7ue" firstAttribute="centerY" secondItem="sUm-mF-Rt9" secondAttribute="centerY" id="29M-ta-uWy"/>
                                                                             <constraint firstItem="xBp-Mh-8GO" firstAttribute="leading" secondItem="ei3-vh-6kV" secondAttribute="trailing" constant="12" id="4h2-Ef-hze"/>
-                                                                            <constraint firstItem="ei3-vh-6kV" firstAttribute="leading" secondItem="xXS-da-tqU" secondAttribute="trailing" constant="5" id="Bua-Ti-JAl"/>
                                                                             <constraint firstAttribute="bottom" secondItem="ei3-vh-6kV" secondAttribute="bottom" constant="5" id="FN4-2W-Rm1"/>
                                                                             <constraint firstItem="ei3-vh-6kV" firstAttribute="top" secondItem="sUm-mF-Rt9" secondAttribute="top" constant="5" id="Ga7-qB-xL0"/>
                                                                             <constraint firstItem="0S0-ZL-Rcv" firstAttribute="centerY" secondItem="sUm-mF-Rt9" secondAttribute="centerY" id="L1H-q9-J28"/>
                                                                             <constraint firstItem="0S0-ZL-Rcv" firstAttribute="leading" secondItem="3eO-mD-7ue" secondAttribute="trailing" constant="5" id="S5P-fX-ApB"/>
                                                                             <constraint firstAttribute="bottom" secondItem="xBp-Mh-8GO" secondAttribute="bottom" constant="6" id="Yxt-Sd-b31"/>
                                                                             <constraint firstAttribute="trailing" secondItem="0S0-ZL-Rcv" secondAttribute="trailing" constant="5" id="adt-n4-12X"/>
-                                                                            <constraint firstItem="xXS-da-tqU" firstAttribute="top" secondItem="sUm-mF-Rt9" secondAttribute="top" constant="5" id="bPy-ca-3Oc"/>
                                                                             <constraint firstItem="3eO-mD-7ue" firstAttribute="leading" secondItem="xBp-Mh-8GO" secondAttribute="trailing" constant="12" id="c6Q-32-guF"/>
                                                                             <constraint firstItem="xBp-Mh-8GO" firstAttribute="top" secondItem="sUm-mF-Rt9" secondAttribute="top" constant="6" id="stc-8i-rxr"/>
-                                                                            <constraint firstItem="xXS-da-tqU" firstAttribute="leading" secondItem="sUm-mF-Rt9" secondAttribute="leading" constant="5" id="xhQ-og-Axa"/>
+                                                                            <constraint firstItem="ei3-vh-6kV" firstAttribute="leading" secondItem="sUm-mF-Rt9" secondAttribute="leading" constant="5" id="vbF-oh-1y2"/>
                                                                         </constraints>
                                                                     </view>
                                                                     <constraints>

@@ -11,15 +11,17 @@ import Cocoa
 class KeyDisplayView: NSView {
 
     // MARK: - Configuration
-    enum Style {
+    enum Status {
         case normal        // 普通状态
         case recorded      // 已录制状态（绿色背景）
         case recording     // 录制中状态（呼吸动画）
     }
 
+    let fontSize = CGFloat(9)
+
     // MARK: - Private Properties
     private var keyComponents: [String] = []
-    private var currentStyle: Style = .normal
+    private var status: Status = .normal
     private var keyViews: [NSView] = []
     private var stackView: NSStackView!
     private let keyWaiting = "?"
@@ -35,6 +37,7 @@ class KeyDisplayView: NSView {
         setupView()
     }
 
+
     private func setupView() {
         wantsLayer = true
 
@@ -47,20 +50,21 @@ class KeyDisplayView: NSView {
 
         addSubview(stackView)
 
+        // 默认居中对齐，父组件可以通过约束覆盖
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 8),
-            stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8)
+            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor),
+            stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
         ])
     }
 
     // MARK: - Public Methods
 
     /// 更新显示的按键组合
-    func updateKeys(_ components: [String], style: Style = .normal) {
+    func updateKeys(_ components: [String], style: Status = .normal) {
         self.keyComponents = components
-        self.currentStyle = style
+        self.status = style
 
         // 清除现有视图
         clearKeyViews()
@@ -76,7 +80,7 @@ class KeyDisplayView: NSView {
     }
 
     /// 便利方法：从 RecordedEvent 更新
-    func updateWithEvent(_ event: RecordedEvent, style: Style = .normal) {
+    func updateWithEvent(_ event: RecordedEvent, style: Status = .normal) {
         let displayName = event.displayName()
         let components = displayName.components(separatedBy: " + ").filter { !$0.isEmpty }
         updateKeys(components, style: style)
@@ -112,7 +116,7 @@ class KeyDisplayView: NSView {
     private func showEmptyState() {
         NSLog("showEmptyState")
         let emptyLabel = NSTextField(labelWithString: "No key assigned")
-        emptyLabel.font = NSFont.systemFont(ofSize: 11)
+        emptyLabel.font = NSFont.systemFont(ofSize: fontSize)
         emptyLabel.textColor = NSColor.secondaryLabelColor
         emptyLabel.alignment = .center
 
@@ -124,7 +128,7 @@ class KeyDisplayView: NSView {
             // 添加分隔符
             if index > 0 {
                 let plusLabel = NSTextField(labelWithString: "+")
-                plusLabel.font = NSFont.systemFont(ofSize: 11)
+                plusLabel.font = NSFont.systemFont(ofSize: fontSize)
                 plusLabel.textColor = NSColor.secondaryLabelColor
                 stackView.addArrangedSubview(plusLabel)
             }
@@ -140,7 +144,7 @@ class KeyDisplayView: NSView {
         let container = NSView()
         container.wantsLayer = true
         // 根据样式设置背景色
-        switch currentStyle {
+        switch status {
         case .normal:
             container.layer?.backgroundColor = NSColor.quaternaryLabelColor.cgColor
         case .recorded:
@@ -152,8 +156,8 @@ class KeyDisplayView: NSView {
         container.layer?.cornerRadius = 4
         // 创建文本标签
         let label = NSTextField(labelWithString: text)
-        label.font = NSFont.systemFont(ofSize: 11, weight: .medium)
-        label.textColor = currentStyle == .recorded ? NSColor.white : NSColor.labelColor
+        label.font = NSFont.systemFont(ofSize: fontSize, weight: .medium)
+        label.textColor = status == .recorded ? NSColor.white : NSColor.labelColor
         label.alignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
@@ -166,7 +170,7 @@ class KeyDisplayView: NSView {
             container.widthAnchor.constraint(greaterThanOrEqualToConstant: 20)
         ])
         // 如果是录制状态且内容是 keyWaiting(问号)，添加呼吸动画
-        if currentStyle == .recording && text == keyWaiting {
+        if status == .recording && text == keyWaiting {
             startBreathingAnimation(for: container)
         }
         return container

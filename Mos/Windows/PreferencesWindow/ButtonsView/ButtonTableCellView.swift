@@ -52,20 +52,11 @@ class ButtonTableCellView: NSTableCellView {
         // 添加到容器视图
         keyDisplayContainerView.addSubview(keyDisplayView)
 
-        // 设置约束
-        let leadingConstraint = keyDisplayView.leadingAnchor.constraint(equalTo: keyDisplayContainerView.leadingAnchor)
-//        let trailingConstraint = keyDisplayView.trailingAnchor.constraint(greaterThanOrEqualTo: keyDisplayContainerView.trailingAnchor)
-        let centerYConstraint = keyDisplayView.centerYAnchor.constraint(equalTo: keyDisplayContainerView.centerYAnchor)
-
-        // 设置优先级
-        leadingConstraint.priority = NSLayoutConstraint.Priority(900)
-//        trailingConstraint.priority = NSLayoutConstraint.Priority(800)
-        centerYConstraint.priority = NSLayoutConstraint.Priority(1000)
-
+        // 靠左对齐，高度自适应
         NSLayoutConstraint.activate([
-            leadingConstraint,
-//            trailingConstraint,
-            centerYConstraint
+            keyDisplayView.leadingAnchor.constraint(equalTo: keyDisplayContainerView.leadingAnchor),
+            keyDisplayView.centerYAnchor.constraint(equalTo: keyDisplayContainerView.centerYAnchor),
+            keyDisplayView.trailingAnchor.constraint(lessThanOrEqualTo: keyDisplayContainerView.trailingAnchor)
         ])
     }
     
