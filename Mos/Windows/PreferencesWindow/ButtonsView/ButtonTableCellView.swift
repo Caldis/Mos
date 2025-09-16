@@ -52,11 +52,10 @@ class ButtonTableCellView: NSTableCellView {
         // 添加到容器视图
         keyDisplayContainerView.addSubview(keyDisplayView)
 
-        // 靠左对齐，高度自适应
+        // 靠左对齐，按内容尺寸显示
         NSLayoutConstraint.activate([
             keyDisplayView.leadingAnchor.constraint(equalTo: keyDisplayContainerView.leadingAnchor),
             keyDisplayView.centerYAnchor.constraint(equalTo: keyDisplayContainerView.centerYAnchor),
-            keyDisplayView.trailingAnchor.constraint(lessThanOrEqualTo: keyDisplayContainerView.trailingAnchor)
         ])
     }
     

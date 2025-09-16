@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class KeyDisplayView: NSView {
+class KeyDisplayView: NSStackView {
     
     // MARK: - Constants
     private let fontSize = CGFloat(9)
@@ -25,7 +25,6 @@ class KeyDisplayView: NSView {
     private var keyComponents: [String] = []
     private var status: Status = .normal
     private var keyViews: [NSView] = []
-    private var stackView: NSStackView!
 
     // MARK: - Initialization
     override init(frame frameRect: NSRect) {
@@ -40,22 +39,14 @@ class KeyDisplayView: NSView {
         wantsLayer = true
 
         // 创建水平堆栈视图
-        stackView = NSStackView()
-        stackView.orientation = .horizontal
-        stackView.alignment = .centerY
-        stackView.spacing = 4
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.wantsLayer = true
-        stackView.layer?.backgroundColor = CGColor(red: 0.0, green: 0.0, blue: 1.0, alpha: 1.0)
-        addSubview(stackView)
+        orientation = .horizontal
+        alignment = .centerY
+        spacing = 4
+        translatesAutoresizingMaskIntoConstraints = false
+        wantsLayer = true
 
-        // 默认居中对齐，父组件可以通过约束覆盖
-        NSLayoutConstraint.activate([
-            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-//            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
-//            stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
-//            stackView.trailingAnchor.constraint(greaterThanOrEqualTo: trailingAnchor)
-        ])
+        // 显示空状态
+        updateKeys([keyWaiting], style: .recording)
     }
 
     // MARK: - Public Methods
@@ -70,7 +61,6 @@ class KeyDisplayView: NSView {
 
         // 如果没有内容，显示空状态
         guard !components.isEmpty else {
-            showEmptyState()
             return
         }
 
@@ -105,23 +95,13 @@ class KeyDisplayView: NSView {
         }
 
         // 移除所有子视图
-        stackView.arrangedSubviews.forEach { view in
-            stackView.removeArrangedSubview(view)
+        arrangedSubviews.forEach { view in
+            removeArrangedSubview(view)
             view.removeFromSuperview()
         }
         keyViews.removeAll()
     }
-
-    private func showEmptyState() {
-        NSLog("showEmptyState")
-        let emptyLabel = NSTextField(labelWithString: "No key assigned")
-        emptyLabel.font = NSFont.systemFont(ofSize: fontSize)
-        emptyLabel.textColor = NSColor.secondaryLabelColor
-        emptyLabel.alignment = .center
-
-        stackView.addArrangedSubview(emptyLabel)
-    }
-
+    
     private func createKeyViews() {
         for (index, component) in keyComponents.enumerated() {
             // 添加分隔符
@@ -129,12 +109,12 @@ class KeyDisplayView: NSView {
                 let plusLabel = NSTextField(labelWithString: "+")
                 plusLabel.font = NSFont.systemFont(ofSize: fontSize)
                 plusLabel.textColor = NSColor.secondaryLabelColor
-                stackView.addArrangedSubview(plusLabel)
+                addArrangedSubview(plusLabel)
             }
 
             // 创建按键视图
             let keyView = createSingleKeyView(for: component)
-            stackView.addArrangedSubview(keyView)
+            addArrangedSubview(keyView)
             keyViews.append(keyView)
         }
     }
@@ -147,7 +127,14 @@ class KeyDisplayView: NSView {
         case .normal:
             container.layer?.backgroundColor = NSColor.quaternaryLabelColor.cgColor
         case .recorded:
-            container.layer?.backgroundColor = NSColor.systemGreen.cgColor
+            // 使用更柔和的绿色，支持 Light/Dark 模式
+            if [.darkAqua, .vibrantDark, .accessibilityHighContrastDarkAqua, .accessibilityHighContrastVibrantDark].contains(NSApp.effectiveAppearance.name) {
+                // Dark 模式：较深的绿色，降低亮度
+                container.layer?.backgroundColor = NSColor(calibratedRed: 0.15, green: 0.65, blue: 0.30, alpha: 1.0).cgColor
+            } else {
+                // Light 模式：柔和的绿色，保持可读性
+                container.layer?.backgroundColor = NSColor(calibratedRed: 0.25, green: 0.70, blue: 0.35, alpha: 1.0).cgColor
+            }
         case .recording:
             container.layer?.backgroundColor = NSColor.quaternaryLabelColor.cgColor
         }
@@ -185,12 +172,5 @@ class KeyDisplayView: NSView {
         animation.repeatCount = .infinity
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         view.layer?.add(animation, forKey: "breathingAnimation")
-    }
-
-    // MARK: - Intrinsic Content Size
-    override var intrinsicContentSize: NSSize {
-        // 让父容器决定高度，这里只提供内容宽度
-        let stackSize = stackView.fittingSize
-        return NSSize(width: max(stackSize.width + 16, 60), height: NSView.noIntrinsicMetric)
     }
 }

@@ -266,7 +266,7 @@
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 </view>
                                                                                 <color key="borderColor" red="1" green="1" blue="1" alpha="0.10068822230879106" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                                <color key="fillColor" red="0.48749545259999999" green="0.96754766589999996" blue="0.4368534349" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                                                <color key="fillColor" red="0.96062562677481145" green="0.96754766589999996" blue="0.93064895263721903" alpha="0.0" colorSpace="custom" customColorSpace="displayP3"/>
                                                                             </box>
                                                                             <box horizontalHuggingPriority="750" alphaValue="0.59999999999999998" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="xBp-Mh-8GO">
                                                                                 <rect key="frame" x="236" y="6" width="5" height="18"/>

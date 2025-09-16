@@ -177,7 +177,6 @@ class EventRecorder: NSObject {
     @objc private func handleRecordingCancelled(_ notification: NSNotification) {
         guard isRecording && !isRecorded else { return }
         NSLog("[EventRecorder] Recording cancelled by ESC key")
-        recordingPopover?.showCancelledState()
         stopRecording()
     }
     // 通知事件处理
