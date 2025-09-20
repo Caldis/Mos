@@ -2217,8 +2217,7 @@ unacceleratedPointerMovementX: 0.0</string>
                                                     <size key="maxSize" width="1000" height="10000000"/>
                                                     <attributedString key="textStorage">
                                                         <fragment>
-                                                            <string key="content">scrollWheelEventInstantMouser: 0.0
-scrollWheelEventIsContinuous: 0.0
+                                                            <string key="content">scrollWheelEventIsContinuous: 0.0
 scrollWheelEventScrollCount: 0.0
 scrollWheelEventScrollPhase: 0.0
 scrollWheelEventMomentumPhase: 0.0</string>

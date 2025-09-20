@@ -54,8 +54,24 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         let event = notification.object as! CGEvent
         // 更新图表
         if let data = lineChart.data {
+            // 原有的两个轴数据
             data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)), toDataSet: 0)
             data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)), toDataSet: 1)
+            
+            // 新增的四个字段
+            // scrollWheelEventIsContinuous (转换为数值：连续=1，非连续=0)
+            let isContinuous = event.getIntegerValueField(.scrollWheelEventIsContinuous) != 0 ? 1.0 : 0.0
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: isContinuous), toDataSet: 2)
+            
+            // scrollWheelEventScrollCount
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: Double(event.getIntegerValueField(.scrollWheelEventScrollCount))), toDataSet: 3)
+            
+            // scrollWheelEventScrollPhase
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: Double(event.getIntegerValueField(.scrollWheelEventScrollPhase))), toDataSet: 4)
+            
+            // scrollWheelEventMomentumPhase
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: Double(event.getIntegerValueField(.scrollWheelEventMomentumPhase))), toDataSet: 5)
+            
             lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 100.0)
             lineChart.moveViewToX(lineChartCount)
             lineChart.notifyDataSetChanged()
@@ -172,22 +188,55 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         // 定义颜色
         let green = NSUIColor(red: 96.0/255.0, green: 198.0/255.0, blue: 85.0/255.0, alpha: 1.0)
         let yellow = NSUIColor(red: 246.0/255.0, green: 191.0/255.0, blue: 79.0/255.0, alpha: 1.0)
+        let blue = NSUIColor(red: 52.0/255.0, green: 152.0/255.0, blue: 219.0/255.0, alpha: 1.0)
+        let purple = NSUIColor(red: 155.0/255.0, green: 89.0/255.0, blue: 182.0/255.0, alpha: 1.0)
+        let orange = NSUIColor(red: 230.0/255.0, green: 126.0/255.0, blue: 34.0/255.0, alpha: 1.0)
+        let red = NSUIColor(red: 231.0/255.0, green: 76.0/255.0, blue: 60.0/255.0, alpha: 1.0)
+        
         // 设置代理
         lineChart.delegate = self
         // 初始化图表数据
         lineChartCount = 0.0
+        
         // 设置数据集
         let verticalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Vertical")
         verticalData.valueTextColor = NSColor.labelColor
         verticalData.colors = [green]
         verticalData.circleRadius = 1.5
         verticalData.circleColors = [green]
+        
         let horizontalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Horizontal")
         horizontalData.valueTextColor = NSColor.labelColor
         horizontalData.colors = [yellow]
         horizontalData.circleRadius = 1.5
         horizontalData.circleColors = [yellow]
-        lineChart.data = LineChartData(dataSets: [verticalData, horizontalData])
+        
+        let isContinuousData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "IsContinuous")
+        isContinuousData.valueTextColor = NSColor.labelColor
+        isContinuousData.colors = [blue]
+        isContinuousData.circleRadius = 1.5
+        isContinuousData.circleColors = [blue]
+        
+        let scrollCountData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "ScrollCount")
+        scrollCountData.valueTextColor = NSColor.labelColor
+        scrollCountData.colors = [purple]
+        scrollCountData.circleRadius = 1.5
+        scrollCountData.circleColors = [purple]
+        
+        let scrollPhaseData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "ScrollPhase")
+        scrollPhaseData.valueTextColor = NSColor.labelColor
+        scrollPhaseData.colors = [orange]
+        scrollPhaseData.circleRadius = 1.5
+        scrollPhaseData.circleColors = [orange]
+        
+        let momentumPhaseData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "MomentumPhase")
+        momentumPhaseData.valueTextColor = NSColor.labelColor
+        momentumPhaseData.colors = [red]
+        momentumPhaseData.circleRadius = 1.5
+        momentumPhaseData.circleColors = [red]
+        
+        lineChart.data = LineChartData(dataSets: [verticalData, horizontalData, isContinuousData, scrollCountData, scrollPhaseData, momentumPhaseData])
+        
         // 设置图表样式
         lineChart.noDataTextColor = NSColor.labelColor
         lineChart.chartDescription.text = ""

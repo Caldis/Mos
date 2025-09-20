@@ -53,7 +53,6 @@ class Logger {
         //       3: [触控板]缓动动画完成(最后一下)(end)
         // 2-1 内置bounce正常, chrome完全动不了
         return """
-        scrollWheelEventInstantMouser: \(event.getDoubleValueField(.scrollWheelEventInstantMouser))
         scrollWheelEventIsContinuous: \(event.getDoubleValueField(.scrollWheelEventIsContinuous))
         scrollWheelEventScrollCount: \(event.getDoubleValueField(.scrollWheelEventScrollCount))
         scrollWheelEventScrollPhase: \(event.getDoubleValueField(.scrollWheelEventScrollPhase))
