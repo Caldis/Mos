@@ -23,8 +23,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Options.shared.readOptions()
         
         // DEBUG: 直接弹出设置窗口
-        // WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
-        
+        #if DEBUG
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
+        #endif
+
         // 监听用户切换, 在切换用户 session 时停止运行
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
