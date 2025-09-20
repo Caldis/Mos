@@ -29,6 +29,9 @@ extension CreateRecordsButton: EventRecorderDelegate {
     // Record 回调
     func eventRecorder(_ recorder: EventRecorder, didRecordEvent event: RecordedEvent) {
         NSLog("[RecordButton] Recorded event: \(event.displayName())")
-        onRecordEnd?(event)
+        // 添加延迟后调用, 确保不要太早消失
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.66) { [weak self] in
+            self?.onRecordEnd?(event)
+        }
     }
 }
