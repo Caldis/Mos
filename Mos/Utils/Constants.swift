@@ -56,6 +56,14 @@ struct PANEL_IDENTIFIER {
 }
 let PANEL_PADDING = CGFloat(42.0) // 顶部导航栏高度
 let TOOLBAR_HEIGHT = CGFloat(80.0) // 偏好的 Toolbar 高度
+// macOS 版本补偿高度 - 只在特定版本生效
+var MACOS_TAHOE_COMPENSATE: CGFloat {
+    if #available(macOS 26.0, *) {
+        return CGFloat(8) // 26 版本的额外高度, 否则底部会被吃掉一部分
+    } else {
+        return CGFloat(0) // 其他版本不需要补偿
+    }
+}
 
 // 气泡弹窗
 struct POPOVER_IDENTIFIER {
