@@ -12,18 +12,20 @@ class PreferencesButtonsViewController: NSViewController {
     
     // MARK: - Data
     private var recordedEvents: [RecordedEvent] = []
-    
+    private var recorder = EventRecorder()
+
     // MARK: - UI Elements
     // 表格
     @IBOutlet weak var tableView: NSTableView!
     @IBOutlet weak var tableEmpty: NSView!
+    @IBOutlet weak var tableFoot: NSView!
     // 按钮
     @IBOutlet weak var createButton: CreateRecordsButton!
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // 设置表格代理
+        // 设置代理
+        recorder.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
         // 读取设置
@@ -35,6 +37,11 @@ class PreferencesButtonsViewController: NSViewController {
         toggleNoDataHint()
         // 设置录制按钮回调
         setupRecordButtonCallback()
+    }
+
+    // 添加
+    @IBAction func addItemClick(_ sender: NSButton) {
+        recorder.startRecording(from: sender)
     }
 }
 
@@ -49,8 +56,8 @@ extension PreferencesButtonsViewController {
     
     // 设置录制按钮回调
     private func setupRecordButtonCallback() {
-        createButton.onRecordEnd = { [weak self] event in
-            self?.addRecordedEvent(event)
+        createButton.onMouseDown = { [weak self] target in
+            self?.recorder.startRecording(from: target)
         }
     }
     
@@ -79,6 +86,7 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
         let hasData = recordedEvents.count != 0
         updateViewVisibility(view: tableEmpty, visible: !hasData)
         updateViewVisibility(view: createButton, visible: !hasData)
+        updateViewVisibility(view: tableFoot, visible: hasData)
     }
     private func updateViewVisibility(view: NSView, visible: Bool) {
         view.isHidden = !visible
@@ -106,5 +114,17 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
     // 行数
     func numberOfRows(in tableView: NSTableView) -> Int {
         return recordedEvents.count
+    }
+}
+
+// MARK: - EventRecorderDelegate
+extension PreferencesButtonsViewController: EventRecorderDelegate {
+    // Record 回调
+    func onEventRecorded(_ recorder: EventRecorder, didRecordEvent event: RecordedEvent) {
+        NSLog("[RecordButton] Recorded event: \(event.displayName())")
+        // 添加延迟后调用, 确保不要太早消失
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.66) { [weak self] in
+            self?.addRecordedEvent(event)
+        }
     }
 }

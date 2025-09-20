@@ -152,8 +152,8 @@ class KeyDisplayView: NSStackView {
             label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
             label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
             container.widthAnchor.constraint(greaterThanOrEqualTo: label.widthAnchor, constant: 12),
+            container.widthAnchor.constraint(greaterThanOrEqualToConstant: 20),
             container.heightAnchor.constraint(equalToConstant: 20),
-            container.widthAnchor.constraint(greaterThanOrEqualToConstant: 20)
         ])
         // 如果是录制状态且内容是 keyWaiting(问号)，添加呼吸动画
         if status == .recording && text == keyWaiting {

@@ -11,7 +11,7 @@ import Cocoa
 
 
 protocol EventRecorderDelegate: AnyObject {
-    func eventRecorder(_ recorder: EventRecorder, didRecordEvent event: RecordedEvent)
+    func onEventRecorded(_ recorder: EventRecorder, didRecordEvent event: RecordedEvent)
 }
 
 class EventRecorder: NSObject {
@@ -196,7 +196,7 @@ class EventRecorder: NSObject {
         // 显示录制完成的按键
         recordingPopover?.showRecordedEvent(event)
         // 将结果发给 delegate
-        self.delegate?.eventRecorder(self, didRecordEvent: event)
+        self.delegate?.onEventRecorded(self, didRecordEvent: event)
         // 停止录制 (延迟 300ms 确保能看完提示
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
             self?.stopRecording()
