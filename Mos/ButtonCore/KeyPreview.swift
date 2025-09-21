@@ -68,16 +68,16 @@ class KeyPreview: NSStackView {
         createKeyViews()
     }
 
-    /// 从 RecordedEvent 更新
-    func updateWithEvent(_ event: KeyEvent, style: Status = .normal) {
+    /// 从 CGEvent 更新
+    func updateWithEvent(_ event: CGEvent, style: Status = .normal) {
         let displayName = event.displayName()
         let components = displayName.components(separatedBy: " + ").filter { !$0.isEmpty }
         updateKeys(components, style: style)
     }
 
     /// 显示录制中状态
-    func showRecordingState(with keyEvent: KeyEvent) {
-        let modifierString = keyEvent.event.formattedString()
+    func showRecordingState(with event: CGEvent) {
+        let modifierString = event.modifierString
 
         if modifierString.isEmpty {
             updateKeys([KeyPreview.WAITING_WORDING], style: .recording)

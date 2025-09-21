@@ -10,7 +10,7 @@
 import Cocoa
 
 protocol EventRecorderDelegate: AnyObject {
-    func onEventRecorded(_ recorder: EventRecorder, didRecordEvent event: KeyEvent)
+    func onEventRecorded(_ recorder: EventRecorder, didRecordEvent event: CGEvent)
 }
 
 class EventRecorder: NSObject {
@@ -29,7 +29,7 @@ class EventRecorder: NSObject {
     private var isRecorded = false // 是否已经记录过 (每次启动只记录一个按键
     private var recordTimeoutTimer: Timer? // 超时保护定时器
     // UI 组件
-    private var recordingPopover: RecordingPopover?
+    private var keyPopover: KeyPopover?
     // 修饰键状态跟踪
     private var currentModifiers = NSEvent.ModifierFlags()
     
@@ -58,8 +58,8 @@ class EventRecorder: NSObject {
         // Log
         NSLog("[EventRecorder] Starting")
         // 确保清理任何存在的录制界面
-        recordingPopover?.hide()
-        recordingPopover = nil
+        keyPopover?.hide()
+        keyPopover = nil
         // 监听事件
         do {
             // 监听回调事件通知
@@ -87,7 +87,7 @@ class EventRecorder: NSObject {
             interceptor = try Interceptor(
                 event: eventMask,
                 handleBy: { (proxy, type, event, refcon) in
-                    let recordedEvent = KeyEvent(event: event)
+                    let recordedEvent = event
                     switch type {
                     case .flagsChanged:
                         // 修饰键变化，发送通知更新UI
@@ -133,8 +133,8 @@ class EventRecorder: NSObject {
                 for: CGEventTapOptions.defaultTap
             )
             // 展示录制界面
-            recordingPopover = RecordingPopover()
-            recordingPopover?.show(at: sourceView)
+            keyPopover = KeyPopover()
+            keyPopover?.show(at: sourceView)
             // 启动超时保护定时器
             startTimeoutTimer()
             // Log
@@ -148,20 +148,20 @@ class EventRecorder: NSObject {
     // 修饰键变化处理
     @objc private func handleModifierFlagsChanged(_ notification: NSNotification) {
         guard isRecording && !isRecorded else { return }
-        guard let keyEvent = notification.object as? KeyEvent else { return }
+        let event = notification.object as! CGEvent
 
         // 更新当前修饰键状态
-        currentModifiers = keyEvent.flags
+        currentModifiers = event.nsEventFlags
 
         // 如果有修饰键被按下，刷新超时定时器给用户更多时间
-        let hasActiveModifiers = !keyEvent.flags.intersection([.command, .option, .control, .shift, .function]).isEmpty
+        let hasActiveModifiers = !event.nsEventFlags.intersection([.command, .option, .control, .shift, .function]).isEmpty
         if hasActiveModifiers {
             startTimeoutTimer() // 重新启动定时器
             NSLog("[EventRecorder] Modifier key pressed, timeout timer refreshed")
         }
         
         // 实时更新录制界面显示当前已按下的修饰键
-        recordingPopover?.updateForModifiers(keyEvent)
+        keyPopover?.updateForModifiers(event)
     }
     // 录制取消处理
     @objc private func handleRecordingCancelled(_ notification: NSNotification) {
@@ -174,7 +174,7 @@ class EventRecorder: NSObject {
         // Guard: 需要 Recording 才进行后续处理
         guard isRecording else { return }
         // Guard: 获取 RecordedEvent
-        guard let event = notification.object as? KeyEvent else { return }
+        let event = notification.object as! CGEvent
         // Guard: 检查事件有效性
         guard event.isValid else { 
             NSLog("[EventRecorder] Invalid event ignored: \(event)")
@@ -184,7 +184,7 @@ class EventRecorder: NSObject {
         guard !isRecorded else { return }
         isRecorded = true
         // 显示录制完成的按键
-        recordingPopover?.showRecordedEvent(event)
+        keyPopover?.showRecordedEvent(event)
         // 将结果发给 delegate
         self.delegate?.onEventRecorded(self, didRecordEvent: event)
         // 停止录制 (延迟 300ms 确保能看完提示
@@ -199,8 +199,8 @@ class EventRecorder: NSObject {
         // Log
         NSLog("[EventRecorder] Stopping")
         // 隐藏录制界面
-        recordingPopover?.hide()
-        recordingPopover = nil
+        keyPopover?.hide()
+        keyPopover = nil
         // 取消超时定时器
         cancelTimeoutTimer()
         // 取消通知和监听

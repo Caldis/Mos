@@ -1,5 +1,5 @@
 //
-//  RecordingPopover.swift
+//  KeyPopover.swift
 //  Mos
 //  录制按键时显示的 Popover UI 组件
 //  Created by Claude on 2025/9/13.
@@ -8,7 +8,7 @@
 
 import Cocoa
 
-class RecordingPopover: NSObject {
+class KeyPopover: NSObject {
 
     // MARK: - Properties
     private var popover: NSPopover?
@@ -30,13 +30,13 @@ class RecordingPopover: NSObject {
 
     // MARK: - Status
     /// 更新显示的修饰键状态（录制过程中实时更新）
-    func updateForModifiers(_ keyEvent: KeyEvent) {
+    func updateForModifiers(_ event: CGEvent) {
         // 更新按键显示
-        keyPreview.showRecordingState(with: keyEvent)
+        keyPreview.showRecordingState(with: event)
     }
     
     /// 显示录制完成的按键
-    func showRecordedEvent(_ event: KeyEvent) {
+    func showRecordedEvent(_ event: CGEvent) {
         keyPreview.updateWithEvent(event, style: .recorded)
     }
 

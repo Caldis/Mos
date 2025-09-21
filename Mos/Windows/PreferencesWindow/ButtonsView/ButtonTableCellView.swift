@@ -20,11 +20,11 @@ class ButtonTableCellView: NSTableCellView {
 
     // MARK: - Data
     private weak var viewController: PreferencesButtonsViewController? // 父容器视图
-    private var recordedEvent: KeyEvent? // 事件
+    private var recordedEvent: CGEvent? // 事件
     private var row: Int?
 
     // MARK: - 初始化内容
-    func setup(from viewController: PreferencesButtonsViewController, with event: KeyEvent, at row: Int) {
+    func setup(from viewController: PreferencesButtonsViewController, with event: CGEvent, at row: Int) {
         self.viewController = viewController
         self.recordedEvent = event
         self.row = row
