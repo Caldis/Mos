@@ -68,7 +68,7 @@ extension CGEvent {
             components.append(modifierString)
         }
 
-        // 根据事件类型判断需要展示的内容
+        // 根据事件类型判断需要展示的内容, 鼠标和键盘事件(非修饰键)互斥
         if isMouseEvent, let mouseButton = mouseButton {
             // 鼠标事件
             switch mouseButton {
@@ -93,8 +93,8 @@ extension CGEvent {
         if flags.contains(.maskShift) { components.append("⇧") }
         // FN
         if flags.contains(.maskSecondaryFn) {
-            // 如果是Fn+F键组合，隐去Fn避免误导
-            if let keyCode = keyCode, isFunctionKey(keyCode) {
+            // 如果是Fn+F键或方向键组合，隐去Fn避免误导
+            if let keyCode = keyCode, (isFunctionKey(keyCode) || isArrowKey(keyCode)) {
                 // Fn+F键组合不显示Fn
             } else {
                 components.append("Fn")
@@ -118,6 +118,10 @@ extension CGEvent {
     /// 检查是否为 FN 键
     private func isFunctionKey(_ keyCode: UInt16) -> Bool {
         return KeyCode.functionKeys.contains(keyCode)
+    }
+
+    private func isArrowKey(_ keyCode: UInt16) -> Bool {
+        return KeyCode.arrowKeys.contains(keyCode)
     }
 }
 
