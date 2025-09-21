@@ -394,7 +394,7 @@
                                     <constraint firstItem="eyA-cJ-hnJ" firstAttribute="centerX" secondItem="skg-W8-gS0" secondAttribute="centerX" id="s45-1k-j6V"/>
                                 </constraints>
                             </customView>
-                            <box boxType="custom" borderType="bezel" cornerRadius="7" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="uuZ-tE-wlr" customClass="CreateRecordsButton" customModule="Mos" customModuleProvider="target">
+                            <box boxType="custom" borderType="bezel" cornerRadius="7" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="uuZ-tE-wlr" customClass="PrimaryButton" customModule="Mos" customModuleProvider="target">
                                 <rect key="frame" x="40" y="38" width="370" height="60"/>
                                 <view key="contentView" id="C4P-9r-BYO">
                                     <rect key="frame" x="1" y="1" width="368" height="58"/>
@@ -505,7 +505,6 @@
                         </constraints>
                     </visualEffectView>
                     <connections>
-                        <outlet property="addButton" destination="xql-gm-0mI" id="4hu-er-1PH"/>
                         <outlet property="createButton" destination="uuZ-tE-wlr" id="h6U-Gs-MEr"/>
                         <outlet property="tableEmpty" destination="skg-W8-gS0" id="eHD-Fa-Gdk"/>
                         <outlet property="tableFoot" destination="y2I-TF-AaH" id="1nE-Ft-HI6"/>
@@ -795,7 +794,7 @@
                                     <constraint firstItem="ceK-ED-PfL" firstAttribute="leading" secondItem="2yz-Bt-IMN" secondAttribute="leading" constant="6" id="jhO-JU-hzS"/>
                                 </constraints>
                             </customView>
-                            <box boxType="custom" borderType="bezel" cornerRadius="7" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="lhT-1U-5Xh" customClass="CreateApplicationButton" customModule="Mos" customModuleProvider="target">
+                            <box boxType="custom" borderType="bezel" cornerRadius="7" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="lhT-1U-5Xh" customClass="PrimaryButton" customModule="Mos" customModuleProvider="target">
                                 <rect key="frame" x="40" y="38" width="370" height="60"/>
                                 <view key="contentView" id="ai9-fs-0Qc">
                                     <rect key="frame" x="1" y="1" width="368" height="58"/>

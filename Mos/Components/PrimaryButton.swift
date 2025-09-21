@@ -12,7 +12,8 @@ import AppKit
 class PrimaryButton: NSBox {
     
     private var originalFillColor: NSColor?
-    
+    public var onMouseDown: ((PrimaryButton) -> Void)?
+
     override func awakeFromNib() {
         super.awakeFromNib()
         originalFillColor = self.fillColor
@@ -23,7 +24,12 @@ class PrimaryButton: NSBox {
             userInfo: nil
         ))
     }
-    
+
+    override func mouseDown(with event: NSEvent) {
+        super.mouseDown(with: event)
+        onMouseDown?(self)
+    }
+
     // MARK: - Hover 效果处理
     override func mouseEntered(with event: NSEvent) {
         super.mouseEntered(with: event)

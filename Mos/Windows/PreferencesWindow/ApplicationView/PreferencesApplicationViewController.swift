@@ -19,7 +19,7 @@ class PreferencesApplicationViewController: NSViewController {
     @IBOutlet weak var tableFoot: NSView!
     @IBOutlet weak var tableEmpty: NSView!
     // 按钮
-    @IBOutlet weak var createButton: CreateApplicationButton!
+    @IBOutlet weak var createButton: PrimaryButton!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var delButton: NSButton!
     // 选项菜单

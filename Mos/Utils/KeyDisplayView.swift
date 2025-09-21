@@ -127,8 +127,7 @@ class KeyDisplayView: NSStackView {
         case .normal:
             container.layer?.backgroundColor = NSColor.quaternaryLabelColor.cgColor
         case .recorded:
-            // 使用更柔和的绿色，支持 Light/Dark 模式
-            if [.darkAqua, .vibrantDark, .accessibilityHighContrastDarkAqua, .accessibilityHighContrastVibrantDark].contains(NSApp.effectiveAppearance.name) {
+            if Utils.isDarkMode(for: self) {
                 // Dark 模式：较深的绿色，降低亮度
                 container.layer?.backgroundColor = NSColor(calibratedRed: 0.15, green: 0.65, blue: 0.30, alpha: 1.0).cgColor
             } else {
@@ -174,3 +173,4 @@ class KeyDisplayView: NSStackView {
         view.layer?.add(animation, forKey: "breathingAnimation")
     }
 }
+

@@ -11,7 +11,32 @@ import LoginServiceKit
 
 // 实用方法
 public class Utils {
-    
+
+    /// Determines whether the app is currently in Dark Mode.
+    /// - Parameter view: An optional view to help infer appearance on macOS 10.13 and earlier.
+    /// - Returns: `true` if the effective appearance is dark-like, otherwise `false`.
+    class func isDarkMode(for view: NSView?) -> Bool {
+        if #available(macOS 10.14, *) {
+            // 10.14+ Use effectiveAppearance to determine dark mode
+            let appearance = NSApp.effectiveAppearance
+            return appearance
+                .bestMatch(
+                    from: [
+                        .darkAqua,
+                        .vibrantDark,
+                        .accessibilityHighContrastDarkAqua,
+                        .accessibilityHighContrastVibrantDark
+                    ]
+                ) != nil
+        } else {
+            // 10.13 and earlier: approximate using window or view appearance name
+            let appearance = view?.window?.appearance ?? view?.appearance
+            let name = appearance?.name.rawValue.lowercased() ?? ""
+            return name.contains("vibrantdark") || name.contains("dark")
+        }
+    }
+
+
     // 切换自启
     class func launchAtStartup(on: Bool) {
         let bundlePath = Bundle.main.bundlePath

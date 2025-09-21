@@ -20,7 +20,7 @@ class PreferencesButtonsViewController: NSViewController {
     @IBOutlet weak var tableEmpty: NSView!
     @IBOutlet weak var tableFoot: NSView!
     // 按钮
-    @IBOutlet weak var createButton: CreateRecordsButton!
+    @IBOutlet weak var createButton: PrimaryButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,7 +46,7 @@ class PreferencesButtonsViewController: NSViewController {
 }
 
 /**
- * 录制功能
+ * 录制和数据持久化
  **/
 extension PreferencesButtonsViewController {
     // 同步界面与设置
@@ -66,6 +66,7 @@ extension PreferencesButtonsViewController {
         recordedEvents.append(event)
         tableView.reloadData()
         toggleNoDataHint()
+        syncViewWithOptions()
     }
 
     // 删除记录的事件
@@ -73,7 +74,7 @@ extension PreferencesButtonsViewController {
         recordedEvents.remove(at: row)
         tableView.reloadData()
         toggleNoDataHint()
-        // TODO: 持久化
+        syncViewWithOptions()
     }
 }
 
