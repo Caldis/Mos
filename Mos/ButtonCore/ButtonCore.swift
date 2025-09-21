@@ -21,37 +21,22 @@ class ButtonCore {
     var buttonEventInterceptor: Interceptor?
     
     // 按钮事件掩码
-    let leftMouseDownMask = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
-    let leftMouseUpMask = CGEventMask(1 << CGEventType.leftMouseUp.rawValue)
-    let rightMouseDownMask = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
-    let rightMouseUpMask = CGEventMask(1 << CGEventType.rightMouseUp.rawValue)
-    let otherMouseDownMask = CGEventMask(1 << CGEventType.otherMouseDown.rawValue)
-    let otherMouseUpMask = CGEventMask(1 << CGEventType.otherMouseUp.rawValue)
-    
+    let leftDown = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
+    let rightDown = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
+    let otherDown = CGEventMask(1 << CGEventType.otherMouseDown.rawValue)
+    let keyDown = CGEventMask(1 << CGEventType.keyDown.rawValue)
+    let flagsChanged = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
+
     // 组合的按钮事件掩码
     var buttonEventMask: CGEventMask {
-        return leftMouseDownMask | leftMouseUpMask | rightMouseDownMask | 
-               rightMouseUpMask | otherMouseDownMask | otherMouseUpMask
+        return leftDown | rightDown | otherDown | keyDown | flagsChanged
     }
-    
+
     // MARK: - 按钮事件处理
     let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 创建按钮事件对象
-        let buttonEvent = ButtonEvent(with: event, type: type)
-        
-        // 发送按钮事件通知
-        NotificationCenter.default.post(
-            name: NSNotification.Name("ButtonEvent"),
-            object: buttonEvent
-        )
-        
-        // 过滤处理
-        if let filteredEvent = ButtonFilter.shared.filterButtonEvent(buttonEvent) {
-            // 如果需要修改事件，在这里实现
-            // 目前先返回原始事件
-            return Unmanaged.passUnretained(event)
-        }
-        
+//        let buttonEvent = ButtonEvent(with: event, type: type)
+        // 目前先返回原始事件
         return Unmanaged.passUnretained(event)
     }
     

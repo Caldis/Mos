@@ -9,12 +9,17 @@
 
 import Cocoa
 
-
 protocol EventRecorderDelegate: AnyObject {
-    func onEventRecorded(_ recorder: EventRecorder, didRecordEvent event: RecordedEvent)
+    func onEventRecorded(_ recorder: EventRecorder, didRecordEvent event: KeyEvent)
 }
 
 class EventRecorder: NSObject {
+    
+    // MARK: - Constants
+    static let TIMEOUT: TimeInterval = 10.0
+    static let FLAG_CHANGE_NOTI_NAME = NSNotification.Name("RECORD_FLAG_CHANGE_NOTI_NAME")
+    static let FINISH_NOTI_NAME = NSNotification.Name("RECORD_FINISH_NOTI_NAME")
+    static let CANCEL_NOTI_NAME = NSNotification.Name("RECORD_CANCEL_NOTI_NAME")
     
     // Delegate
     weak var delegate: EventRecorderDelegate?
@@ -61,74 +66,59 @@ class EventRecorder: NSObject {
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(handleRecordedEvent(_:)),
-                name: EventRecorderConstants.recordNotificationName,
+                name: EventRecorder.FINISH_NOTI_NAME,
                 object: nil
             )
             // 监听修饰键变化通知
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(handleModifierFlagsChanged(_:)),
-                name: EventRecorderConstants.modifierFlagsChangedNotificationName,
+                name: EventRecorder.FLAG_CHANGE_NOTI_NAME,
                 object: nil
             )
             // 监听录制取消通知
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(handleRecordingCancelled(_:)),
-                name: EventRecorderConstants.recordingCancelledNotificationName,
+                name: EventRecorder.CANCEL_NOTI_NAME,
                 object: nil
             )
             // 启动拦截器
             interceptor = try Interceptor(
                 event: eventMask,
                 handleBy: { (proxy, type, event, refcon) in
-                    let flags = NSEvent.ModifierFlags(rawValue: UInt(event.flags.rawValue))
-                    
+                    let recordedEvent = KeyEvent(event: event)
                     switch type {
                     case .flagsChanged:
                         // 修饰键变化，发送通知更新UI
                         DispatchQueue.main.async {
                             NotificationCenter.default.post(
-                                name: EventRecorderConstants.modifierFlagsChangedNotificationName,
-                                object: flags
+                                name: EventRecorder.FLAG_CHANGE_NOTI_NAME,
+                                object: recordedEvent
                             )
                         }
                     case .leftMouseDown, .rightMouseDown, .otherMouseDown:
                         // 鼠标按键
-                        let buttonNumber = Int(event.getIntegerValueField(.mouseEventButtonNumber))
-                        let recordedEvent = RecordedEvent(
-                            modifierFlags: flags,
-                            mouseButton: buttonNumber,
-                            keyCode: nil
-                        )
                         DispatchQueue.main.async {
                             NotificationCenter.default.post(
-                                name: EventRecorderConstants.recordNotificationName,
+                                name: EventRecorder.FINISH_NOTI_NAME,
                                 object: recordedEvent
                             )
                         }
                     case .keyDown:
-                        // 其他键盘按键
-                        let keyCode = UInt16(event.getIntegerValueField(.keyboardEventKeycode))
-                        
                         // ESC键特殊处理：取消录制
-                        if keyCode == EventRecorderConstants.KeyCode.escape {
+                        if recordedEvent.keyCode == KeyCode.escape {
                             DispatchQueue.main.async {
                                 NotificationCenter.default.post(
-                                    name: EventRecorderConstants.recordingCancelledNotificationName,
+                                    name: EventRecorder.CANCEL_NOTI_NAME,
                                     object: nil
                                 )
                             }
                         } else {
                             // 普通按键录制
-                            let recordedEvent = RecordedEvent(
-                                modifierFlags: flags,
-                                mouseButton: nil,
-                                keyCode: keyCode
-                            )
                             DispatchQueue.main.async {
                                 NotificationCenter.default.post(
-                                    name: EventRecorderConstants.recordNotificationName,
+                                    name: EventRecorder.FINISH_NOTI_NAME,
                                     object: recordedEvent
                                 )
                             }
@@ -158,20 +148,20 @@ class EventRecorder: NSObject {
     // 修饰键变化处理
     @objc private func handleModifierFlagsChanged(_ notification: NSNotification) {
         guard isRecording && !isRecorded else { return }
-        guard let flags = notification.object as? NSEvent.ModifierFlags else { return }
-        
+        guard let keyEvent = notification.object as? KeyEvent else { return }
+
         // 更新当前修饰键状态
-        currentModifiers = flags
-        
+        currentModifiers = keyEvent.flags
+
         // 如果有修饰键被按下，刷新超时定时器给用户更多时间
-        let hasActiveModifiers = !flags.intersection([.command, .option, .control, .shift, .function]).isEmpty
+        let hasActiveModifiers = !keyEvent.flags.intersection([.command, .option, .control, .shift, .function]).isEmpty
         if hasActiveModifiers {
             startTimeoutTimer() // 重新启动定时器
             NSLog("[EventRecorder] Modifier key pressed, timeout timer refreshed")
         }
         
         // 实时更新录制界面显示当前已按下的修饰键
-        recordingPopover?.updateForModifiers(flags)
+        recordingPopover?.updateForModifiers(keyEvent)
     }
     // 录制取消处理
     @objc private func handleRecordingCancelled(_ notification: NSNotification) {
@@ -184,7 +174,7 @@ class EventRecorder: NSObject {
         // Guard: 需要 Recording 才进行后续处理
         guard isRecording else { return }
         // Guard: 获取 RecordedEvent
-        guard let event = notification.object as? RecordedEvent else { return }
+        guard let event = notification.object as? KeyEvent else { return }
         // Guard: 检查事件有效性
         guard event.isValid else { 
             NSLog("[EventRecorder] Invalid event ignored: \(event)")
@@ -216,9 +206,9 @@ class EventRecorder: NSObject {
         // 取消通知和监听
         interceptor?.stop()
         interceptor = nil
-        NotificationCenter.default.removeObserver(self, name: EventRecorderConstants.recordNotificationName, object: nil)
-        NotificationCenter.default.removeObserver(self, name: EventRecorderConstants.modifierFlagsChangedNotificationName, object: nil)
-        NotificationCenter.default.removeObserver(self, name: EventRecorderConstants.recordingCancelledNotificationName, object: nil)
+        NotificationCenter.default.removeObserver(self, name: EventRecorder.FINISH_NOTI_NAME, object: nil)
+        NotificationCenter.default.removeObserver(self, name: EventRecorder.FLAG_CHANGE_NOTI_NAME, object: nil)
+        NotificationCenter.default.removeObserver(self, name: EventRecorder.CANCEL_NOTI_NAME, object: nil)
         // 重置状态 (添加延迟确保 Popover 结束动画完成, 避免多个 popover 重复出现导致卡住)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.isRecording = false
@@ -231,8 +221,8 @@ class EventRecorder: NSObject {
     // MARK: - Timeout Protection
     private func startTimeoutTimer() {
         cancelTimeoutTimer()
-        recordTimeoutTimer = Timer.scheduledTimer(withTimeInterval: EventRecorderConstants.recordTimeout, repeats: false) { [weak self] _ in
-            NSLog("[EventRecorder] Recording timed out after 3 seconds")
+        recordTimeoutTimer = Timer.scheduledTimer(withTimeInterval: EventRecorder.TIMEOUT, repeats: false) { [weak self] _ in
+            NSLog("[EventRecorder] Recording timed out")
             self?.stopRecording()
         }
     }
@@ -241,3 +231,4 @@ class EventRecorder: NSObject {
         recordTimeoutTimer = nil
     }
 }
+

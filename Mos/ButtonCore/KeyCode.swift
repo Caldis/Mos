@@ -1,5 +1,5 @@
 //
-//  KeyCodeConstants.swift
+//  KeyCode.swift
 //  Mos
 //  键盘和事件相关的常量定义
 //  Created by Claude on 2025/9/13.
@@ -8,8 +8,7 @@
 
 import Cocoa
 
-// MARK: - 键盘常量
-struct KeyCodeConstants {
+struct KeyCode {
     // 特殊功能键
     static let escape: UInt16 = 53
     static let space: UInt16 = 49
@@ -51,42 +50,4 @@ struct KeyCodeConstants {
         122: "F1", 120: "F2", 99: "F3", 118: "F4", 96: "F5", 97: "F6", 98: "F7", 100: "F8",
         101: "F9", 111: "F10", 103: "F11", 109: "F12", 105: "F13", 107: "F14", 113: "F15"
     ]
-}
-
-// MARK: - 事件录制常量
-struct EventRecorderConstants {
-    // 通知名称
-    static let recordNotificationName = NSNotification.Name("EventRecorded")
-    static let modifierFlagsChangedNotificationName = NSNotification.Name("ModifierFlagsChanged")
-    static let recordingCancelledNotificationName = NSNotification.Name("RecordingCancelled")
-
-    // 超时时间
-    static let recordTimeout: TimeInterval = 10.0
-
-    // 键盘常量的别名，保持向后兼容
-    struct KeyCode {
-        // 特殊功能键
-        static let escape = KeyCodeConstants.escape
-        static let space = KeyCodeConstants.space
-        static let backspace = KeyCodeConstants.backspace
-        static let enter = KeyCodeConstants.enter
-        static let returnKey = KeyCodeConstants.returnKey
-        static let tab = KeyCodeConstants.tab
-        static let grave = KeyCodeConstants.grave
-
-        // 修饰键
-        static let leftCommand = KeyCodeConstants.leftCommand
-        static let rightCommand = KeyCodeConstants.rightCommand
-        static let leftShift = KeyCodeConstants.leftShift
-        static let rightShift = KeyCodeConstants.rightShift
-        static let leftOption = KeyCodeConstants.leftOption
-        static let rightOption = KeyCodeConstants.rightOption
-        static let leftControl = KeyCodeConstants.leftControl
-        static let rightControl = KeyCodeConstants.rightControl
-        static let function = KeyCodeConstants.function
-
-        static let modifierKeys = KeyCodeConstants.modifierKeys
-        static let functionKeys = KeyCodeConstants.functionKeys
-        static let keyMap = KeyCodeConstants.keyMap
-    }
 }

@@ -238,7 +238,7 @@ class ScrollCore {
     
     // MARK: - 事件运行管理
     // 启动
-    func startHandlingScroll() {
+    func enable() {
         // Guard
         if isActive { return }
         isActive = true
@@ -272,7 +272,7 @@ class ScrollCore {
         }
     }
     // 停止
-    func endHandlingScroll() {
+    func disable() {
         // Guard
         if !isActive {return}
         isActive = false

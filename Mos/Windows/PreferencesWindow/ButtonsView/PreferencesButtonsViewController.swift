@@ -11,7 +11,7 @@ import Cocoa
 class PreferencesButtonsViewController: NSViewController {
     
     // MARK: - Data
-    private var recordedEvents: [RecordedEvent] = []
+    private var recordedEvents: [KeyEvent] = []
     private var recorder = EventRecorder()
 
     // MARK: - UI Elements
@@ -62,7 +62,7 @@ extension PreferencesButtonsViewController {
     }
     
     // 添加录制事件到列表
-    private func addRecordedEvent(_ event: RecordedEvent) {
+    private func addRecordedEvent(_ event: KeyEvent) {
         recordedEvents.append(event)
         tableView.reloadData()
         toggleNoDataHint()
@@ -121,7 +121,7 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
 // MARK: - EventRecorderDelegate
 extension PreferencesButtonsViewController: EventRecorderDelegate {
     // Record 回调
-    func onEventRecorded(_ recorder: EventRecorder, didRecordEvent event: RecordedEvent) {
+    func onEventRecorded(_ recorder: EventRecorder, didRecordEvent event: KeyEvent) {
         NSLog("[RecordButton] Recorded event: \(event.displayName())")
         // 添加延迟后调用, 确保不要太早消失
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.66) { [weak self] in

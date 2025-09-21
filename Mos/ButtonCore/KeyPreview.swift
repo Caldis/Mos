@@ -1,5 +1,5 @@
 //
-//  KeyDisplayView.swift
+//  KeyPreview.swift
 //  Mos
 //  可复用的按键显示组件
 //  Created by Claude on 2025/9/13.
@@ -8,11 +8,11 @@
 
 import Cocoa
 
-class KeyDisplayView: NSStackView {
-    
+class KeyPreview: NSStackView {
+
     // MARK: - Constants
-    private let fontSize = CGFloat(9)
-    private let keyWaiting = "?"
+    static let FONT_SIZE = CGFloat(9)
+    static let WAITING_WORDING = "?"
 
     // MARK: - Configuration
     enum Status {
@@ -46,7 +46,7 @@ class KeyDisplayView: NSStackView {
         wantsLayer = true
 
         // 显示空状态
-        updateKeys([keyWaiting], style: .recording)
+        updateKeys([KeyPreview.WAITING_WORDING], style: .recording)
     }
 
     // MARK: - Public Methods
@@ -68,21 +68,21 @@ class KeyDisplayView: NSStackView {
         createKeyViews()
     }
 
-    /// 便利方法：从 RecordedEvent 更新
-    func updateWithEvent(_ event: RecordedEvent, style: Status = .normal) {
+    /// 从 RecordedEvent 更新
+    func updateWithEvent(_ event: KeyEvent, style: Status = .normal) {
         let displayName = event.displayName()
         let components = displayName.components(separatedBy: " + ").filter { !$0.isEmpty }
         updateKeys(components, style: style)
     }
 
     /// 显示录制中状态
-    func showRecordingState(withModifiers modifiers: NSEvent.ModifierFlags = NSEvent.ModifierFlags()) {
-        let modifierString = modifiers.formattedString()
+    func showRecordingState(with keyEvent: KeyEvent) {
+        let modifierString = keyEvent.event.formattedString()
 
         if modifierString.isEmpty {
-            updateKeys([keyWaiting], style: .recording)
+            updateKeys([KeyPreview.WAITING_WORDING], style: .recording)
         } else {
-            updateKeys([modifierString, keyWaiting], style: .recording)
+            updateKeys([modifierString, KeyPreview.WAITING_WORDING], style: .recording)
         }
     }
 
@@ -107,7 +107,7 @@ class KeyDisplayView: NSStackView {
             // 添加分隔符
             if index > 0 {
                 let plusLabel = NSTextField(labelWithString: "+")
-                plusLabel.font = NSFont.systemFont(ofSize: fontSize)
+                plusLabel.font = NSFont.systemFont(ofSize: KeyPreview.FONT_SIZE)
                 plusLabel.textColor = NSColor.secondaryLabelColor
                 addArrangedSubview(plusLabel)
             }
@@ -141,7 +141,7 @@ class KeyDisplayView: NSStackView {
         container.layer?.cornerRadius = 4
         // 创建文本标签
         let label = NSTextField(labelWithString: text)
-        label.font = NSFont.systemFont(ofSize: fontSize, weight: .medium)
+        label.font = NSFont.systemFont(ofSize: KeyPreview.FONT_SIZE, weight: .medium)
         label.textColor = status == .recorded ? NSColor.white : NSColor.labelColor
         label.alignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -155,7 +155,7 @@ class KeyDisplayView: NSStackView {
             container.heightAnchor.constraint(equalToConstant: 20),
         ])
         // 如果是录制状态且内容是 keyWaiting(问号)，添加呼吸动画
-        if status == .recording && text == keyWaiting {
+        if status == .recording && text == KeyPreview.WAITING_WORDING {
             startBreathingAnimation(for: container)
         }
         return container

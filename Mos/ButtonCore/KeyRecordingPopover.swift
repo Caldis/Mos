@@ -12,7 +12,7 @@ class RecordingPopover: NSObject {
 
     // MARK: - Properties
     private var popover: NSPopover?
-    private var keyDisplayView: KeyDisplayView!
+    private var keyPreview: KeyPreview!
 
     // MARK: - Visibility
     /// 显示录制 popover
@@ -30,14 +30,14 @@ class RecordingPopover: NSObject {
 
     // MARK: - Status
     /// 更新显示的修饰键状态（录制过程中实时更新）
-    func updateForModifiers(_ modifiers: NSEvent.ModifierFlags) {
+    func updateForModifiers(_ keyEvent: KeyEvent) {
         // 更新按键显示
-        keyDisplayView.showRecordingState(withModifiers: modifiers)
+        keyPreview.showRecordingState(with: keyEvent)
     }
     
     /// 显示录制完成的按键
-    func showRecordedEvent(_ event: RecordedEvent) {
-        keyDisplayView.updateWithEvent(event, style: .recorded)
+    func showRecordedEvent(_ event: KeyEvent) {
+        keyPreview.updateWithEvent(event, style: .recorded)
     }
 
     // MARK: - Private Methods
@@ -46,17 +46,17 @@ class RecordingPopover: NSObject {
         contentView.wantsLayer = true
 
         // 创建按键显示组件
-        keyDisplayView = KeyDisplayView()
-        keyDisplayView.translatesAutoresizingMaskIntoConstraints = false
+        keyPreview = KeyPreview()
+        keyPreview.translatesAutoresizingMaskIntoConstraints = false
 
         // 添加到内容视图
-        contentView.addSubview(keyDisplayView)
+        contentView.addSubview(keyPreview)
 
         // 设置约束
         NSLayoutConstraint.activate([
             // 按键显示约束
-            keyDisplayView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            keyDisplayView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            keyPreview.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            keyPreview.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
 
             // 内容视图尺寸约束
             contentView.widthAnchor.constraint(greaterThanOrEqualToConstant: 165),

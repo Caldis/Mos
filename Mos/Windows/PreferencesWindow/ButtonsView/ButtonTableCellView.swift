@@ -16,15 +16,15 @@ class ButtonTableCellView: NSTableCellView {
     @IBOutlet weak var deleteButton: NSButton!
 
     // MARK: - UI Components
-    private var keyDisplayView: KeyDisplayView!
+    private var keyDisplayView: KeyPreview!
 
     // MARK: - Data
     private weak var viewController: PreferencesButtonsViewController? // 父容器视图
-    private var recordedEvent: RecordedEvent? // 事件
+    private var recordedEvent: KeyEvent? // 事件
     private var row: Int?
 
     // MARK: - 初始化内容
-    func setup(from viewController: PreferencesButtonsViewController, with event: RecordedEvent, at row: Int) {
+    func setup(from viewController: PreferencesButtonsViewController, with event: KeyEvent, at row: Int) {
         self.viewController = viewController
         self.recordedEvent = event
         self.row = row
@@ -46,7 +46,7 @@ class ButtonTableCellView: NSTableCellView {
         keyDisplayView?.removeFromSuperview()
 
         // 创建新的 KeyDisplayView
-        keyDisplayView = KeyDisplayView()
+        keyDisplayView = KeyPreview()
         keyDisplayView.translatesAutoresizingMaskIntoConstraints = false
 
         // 添加到容器视图

@@ -111,12 +111,11 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     // MARK: - 监听: 按键
     var buttonEventInterceptor: Interceptor?
     var buttonEventMask: CGEventMask {
-        ButtonCore.shared.leftMouseDownMask |
-        ButtonCore.shared.leftMouseUpMask |
-        ButtonCore.shared.rightMouseDownMask |
-        ButtonCore.shared.rightMouseUpMask |
-        ButtonCore.shared.otherMouseDownMask |
-        ButtonCore.shared.otherMouseUpMask
+        ButtonCore.shared.leftDown |
+        ButtonCore.shared.rightDown |
+        ButtonCore.shared.otherDown |
+        ButtonCore.shared.keyDown |
+        ButtonCore.shared.flagsChanged
     }
     let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 创建按钮事件对象
