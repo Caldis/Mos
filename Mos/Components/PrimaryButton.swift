@@ -17,12 +17,19 @@ class PrimaryButton: NSBox {
     override func awakeFromNib() {
         super.awakeFromNib()
         originalFillColor = self.fillColor
+        setupCornerRadius()
         self.addTrackingArea(NSTrackingArea(
             rect: self.bounds,
             options: [.activeInKeyWindow, .mouseEnteredAndExited, .inVisibleRect],
             owner: self,
             userInfo: nil
         ))
+    }
+
+    private func setupCornerRadius() {
+        if #available(macOS 26.0, *) {
+            self.cornerRadius = 12
+        }
     }
 
     override func mouseDown(with event: NSEvent) {
