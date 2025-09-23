@@ -274,11 +274,11 @@
                                                                                     <constraint firstAttribute="height" constant="24" id="rNw-Tj-dig"/>
                                                                                 </constraints>
                                                                             </box>
-                                                                            <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3eO-mD-7ue">
+                                                                            <popUpButton alphaValue="0.98999999999999999" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3eO-mD-7ue">
                                                                                 <rect key="frame" x="251" y="8" width="120" height="24"/>
-                                                                                <popUpButtonCell key="cell" type="push" title="No Action" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="epU-lS-atX" id="DPN-ii-WxE">
+                                                                                <popUpButtonCell key="cell" type="push" title="No Action" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="epU-lS-atX" id="DPN-ii-WxE">
                                                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="message"/>
+                                                                                    <font key="font" metaFont="smallSystem"/>
                                                                                     <menu key="menu" id="Q8S-vA-nvS">
                                                                                         <items>
                                                                                             <menuItem title="No Action" state="on" id="epU-lS-atX"/>
@@ -1023,7 +1023,7 @@
                                 <rect key="frame" x="171" y="469" width="260" height="14"/>
                                 <buttonCell key="cell" type="check" title="Make the mouse wheel smoothly" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="bsq-Pe-sDy">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="260" id="1U9-gg-pb3"/>
@@ -1048,7 +1048,7 @@
                                 <rect key="frame" x="171" y="435" width="236" height="14"/>
                                 <buttonCell key="cell" type="check" title="Reverse the mouse wheel direction" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="vjK-Rg-us9">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="14" id="XMp-ZY-7HT"/>
@@ -1078,7 +1078,7 @@
                                 <rect key="frame" x="171" y="370" width="120" height="24"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Vhz-Rn-lcU" id="GDi-oW-nle">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="smallSystem"/>
                                     <menu key="menu" id="NGP-wM-KXa">
                                         <items>
                                             <menuItem title="Disabled" state="on" id="Vhz-Rn-lcU">
@@ -1130,7 +1130,7 @@
                                 <rect key="frame" x="171" y="317" width="120" height="24"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cTe-aL-0GQ" id="gkh-s7-kv8">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="smallSystem"/>
                                     <menu key="menu" id="pei-BS-BDt">
                                         <items>
                                             <menuItem title="Disabled" state="on" id="cTe-aL-0GQ">
@@ -1179,10 +1179,10 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="u9d-n2-6b5" userLabel="Block Key Pop Up Button">
-                                <rect key="frame" x="171" y="264" width="123" height="24"/>
+                                <rect key="frame" x="171" y="264" width="120" height="24"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="vFk-37-HRU" id="veO-qF-0qO">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="message"/>
+                                    <font key="font" metaFont="smallSystem"/>
                                     <menu key="menu" id="ycb-Tc-24R">
                                         <items>
                                             <menuItem title="Disabled" state="on" id="vFk-37-HRU">
@@ -1248,11 +1248,12 @@
                                 </connections>
                             </slider>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="749" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lh7-BV-xfD" userLabel="Scroll Step Input">
-                                <rect key="frame" x="339" y="189" width="55" height="19"/>
+                                <rect key="frame" x="339" y="188" width="55" height="22"/>
                                 <constraints>
+                                    <constraint firstAttribute="height" constant="22" id="LJv-CS-oLB"/>
                                     <constraint firstAttribute="width" constant="55" id="yX0-cf-o0g"/>
                                 </constraints>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="35.00" placeholderString="10-100" usesSingleLineMode="YES" bezelStyle="round" id="vcQ-FZ-z8x">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="35.00" placeholderString="10-100" drawsBackground="YES" usesSingleLineMode="YES" id="vcQ-FZ-z8x">
                                     <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="#,##0.00" negativeFormat="-#,##0.00" thousandSeparator="," id="wQq-Kx-2lH">
                                         <attributedString key="attributedStringForNil"/>
                                         <attributedString key="attributedStringForNotANumber"/>
@@ -1302,8 +1303,11 @@
                                 </connections>
                             </slider>
                             <textField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nbg-QY-VXM" userLabel="Scroll Speed Input">
-                                <rect key="frame" x="339" y="136" width="55" height="19"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="3.00" placeholderString="1-10" usesSingleLineMode="YES" bezelStyle="round" id="Fgm-mm-22Q">
+                                <rect key="frame" x="339" y="134" width="55" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="22" id="fhi-bo-1m6"/>
+                                </constraints>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="3.00" placeholderString="1-10" drawsBackground="YES" usesSingleLineMode="YES" id="Fgm-mm-22Q">
                                     <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="#,##0.00" negativeFormat="-#,##0.00" thousandSeparator="," id="LUh-hA-gr3">
                                         <textAttributesForNegativeValues/>
                                         <attributedString key="attributedStringForNil"/>
@@ -1354,8 +1358,11 @@
                                 </connections>
                             </slider>
                             <textField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yLh-Cc-KrW" userLabel="Scroll Duration Input">
-                                <rect key="frame" x="339" y="81" width="55" height="19"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="3.90" placeholderString="1-5" usesSingleLineMode="YES" bezelStyle="round" id="Qse-ik-rgy">
+                                <rect key="frame" x="339" y="79" width="55" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="22" id="miX-5f-zbG"/>
+                                </constraints>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" allowsUndo="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" title="3.90" placeholderString="1-5" drawsBackground="YES" usesSingleLineMode="YES" id="Qse-ik-rgy">
                                     <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="#,##0.00" negativeFormat="-#,##0.00" thousandSeparator="," id="oFk-D2-z9j">
                                         <attributedString key="attributedStringForZero"/>
                                         <real key="minimum" value="1"/>
@@ -1388,14 +1395,14 @@
                                 <rect key="frame" x="20" y="20" width="410" height="24"/>
                                 <buttonCell key="cell" type="roundRect" title="Reset to defaults" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="t2D-X2-Y6W">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu" size="11"/>
+                                    <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
                                 <connections>
                                     <action selector="resetToDefaultClick:" target="iW5-CD-5OC" id="YH6-Nc-6jU"/>
                                 </connections>
                             </button>
                             <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="h1E-p9-RLl">
-                                <rect key="frame" x="302" y="266" width="20" height="20"/>
+                                <rect key="frame" x="299" y="266" width="20" height="20"/>
                                 <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="j7m-hj-J8F">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu" size="11"/>
@@ -1516,7 +1523,7 @@
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="954" y="1357"/>
+            <point key="canvasLocation" x="955" y="1367.5"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="79I-rH-ZaI">
