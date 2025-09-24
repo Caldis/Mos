@@ -174,7 +174,9 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     func uninitButtonObserver() {
         buttonEventInterceptor?.stop()
     }
-    
+
+    // MARK: - 按键事件处理
+
     // MARK: - 图表管理
     // 初始化
     func initCharts() {

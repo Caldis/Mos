@@ -19,18 +19,18 @@ struct KeyCode {
     static let grave: UInt16 = 50 // `键
 
     // 修饰键
-    static let leftCommand: UInt16 = 55
-    static let rightCommand: UInt16 = 54
-    static let leftShift: UInt16 = 56
-    static let rightShift: UInt16 = 60
-    static let leftOption: UInt16 = 58
-    static let rightOption: UInt16 = 61
-    static let leftControl: UInt16 = 59
-    static let rightControl: UInt16 = 62
-    static let function: UInt16 = 63
-    static let functionDouble: UInt16 = 179
+    static let commandL: UInt16 = 55
+    static let commandR: UInt16 = 54
+    static let shiftL: UInt16 = 56
+    static let shiftR: UInt16 = 60
+    static let optionL: UInt16 = 58
+    static let optionR: UInt16 = 61
+    static let controlL: UInt16 = 59
+    static let controlR: UInt16 = 62
+    static let fnL: UInt16 = 63
+    static let fnR: UInt16 = 179
 
-    static let modifierKeys: Set<UInt16> = [54, 55, 58, 59, 60, 61, 62, 63, 179]
+    static let modifierKeys: Set<UInt16> = [55, 54, 56, 60, 58, 61, 59, 62, 63, 179]
 
     // F键系列
     static let functionKeys: Set<UInt16> = [122, 120, 99, 118, 96, 97, 98, 100, 101, 109, 103, 111, 105, 107, 113, 106, 64, 79, 80, 90] // F1-F20
