@@ -34,8 +34,6 @@ class ButtonCore {
 
     // MARK: - 按钮事件处理
     let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        // 创建按钮事件对象
-//        let buttonEvent = ButtonEvent(with: event, type: type)
         // 目前先返回原始事件
         return Unmanaged.passUnretained(event)
     }

@@ -114,10 +114,8 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         ButtonCore.shared.flagsChanged
     }
     let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        // 创建按钮事件对象
-        let buttonEvent = ButtonEvent(with: event, type: type)
         // 发送按钮事件通知
-        NotificationCenter.default.post(name: buttonEventName, object: buttonEvent)
+        NotificationCenter.default.post(name: buttonEventName, object: event)
         // 返回事件对象
         return Unmanaged.passUnretained(event)
     }
@@ -126,12 +124,11 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     private let maxButtonLogLines = 50
     // 更新面板
     @objc private func updateButtonEventData(notification: NSNotification) {
-        guard let event = notification.object as? ButtonEvent else { return }
-        
+        let event = notification.object as! CGEvent
+
         // 添加按钮标识符信息到描述中
-        let buttonId = "Button#\(event.eventData.buttonNumber)"
-        let logLine = "[\(event.getFormattedTimestamp())] [\(buttonId)] \(event.getDescription())"
-        
+        let logLine = "[\(event.formattedTimestamp())] \(event.displayName())"
+
         // 将新事件插入到日志开头，确保新事件在首行
         var logLines = buttonEventLog.isEmpty ? [] : buttonEventLog.components(separatedBy: "\n")
         logLines.insert(logLine, at: 0)

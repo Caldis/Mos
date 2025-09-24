@@ -59,6 +59,14 @@ extension CGEvent {
 
     // MARK: - Utils
 
+    /// 时间戳
+    func formattedTimestamp() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss.SSS"
+        formatter.timeZone = TimeZone.current
+        return formatter.string(from: Date(timeIntervalSince1970: Double(timestamp) / 1_000_000_000.0,))
+    }
+
     /// 显示名称
     public func displayName() -> String {
         var components: [String] = []
