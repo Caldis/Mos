@@ -15,7 +15,7 @@
 
 // Status Bar Icon Menu
 "Needs access to Accessibility controls" = "Требуется универсальный доступ";
-"Scroll Monitor" = " Мониторинг скроллинга";
+"Event Monitor" = " Мониторинг событий";
 "Preferences" = " Настройки";
 "Quit" = " Закрыть";
 "Hide Icon" = "Спрятать иконку";

@@ -63,9 +63,15 @@ class ButtonTableCellView: NSTableCellView {
     private func setupActionPopUpButton() {
         actionPopUpButton.removeAllItems()
 
-        // TODO: 添加实际的动作选项
-        let actions = ["No Action", "Scroll Up", "Scroll Down", "Middle Click"]
-        actionPopUpButton.addItems(withTitles: actions)
+        // 添加 No Action 选项
+        actionPopUpButton.addItem(withTitle: "No Action")
+
+        // 添加分割线
+        actionPopUpButton.menu?.addItem(NSMenuItem.separator())
+
+        // 添加其他动作选项
+        let otherActions = ["Scroll Up", "Scroll Down", "Middle Click"]
+        actionPopUpButton.addItems(withTitles: otherActions)
 
         // 设置选择回调
         actionPopUpButton.target = self

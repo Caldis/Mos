@@ -15,7 +15,7 @@
 
 // Status Bar Icon Menu
 "Needs access to Accessibility controls" = "Erişebilirlik kontrollerine erişim izni gerekiyor";
-"Scroll Monitor" = " Kaydırma İzlencesi";
+"Event Monitor" = " Olay İzleyicisi";
 "Preferences" = " Tercihler";
 "Quit" = " Çıkış";
 "Hide Icon" = "İkonu Gizle";

@@ -15,7 +15,7 @@
 
 // Status Bar Icon Menu
 "Needs access to Accessibility controls" = "Needs access to Accessibility controls";
-"Scroll Monitor" = " Scroll Monitor";
+"Event Monitor" = " Event Monitor";
 "Preferences" = " Preferences";
 "Quit" = " Quit";
 "Hide Icon" = "Hide Icon";

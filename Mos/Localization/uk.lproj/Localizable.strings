@@ -15,7 +15,7 @@
 
 // Status Bar Icon Menu
 "Needs access to Accessibility controls" = "Необхідно надати доступ до Доступності";
-"Scroll Monitor" = " Моніторінг прокрутки";
+"Event Monitor" = " Моніторинг подій";
 "Preferences" = " Налаштування";
 "Quit" = " Вийти";
 "Hide Icon" = "Сховати іконку";

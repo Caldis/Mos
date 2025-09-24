@@ -15,7 +15,7 @@
 
 // Status Bar Icon Menu
 "Needs access to Accessibility controls" = "需授予「輔助使用」權限才能運作";
-"Scroll Monitor" = " 捲動監視";
+"Event Monitor" = " 事件監視";
 "Preferences" = " 偏好設定";
 "Quit" = " 結束";
 "Hide Icon" = "隱藏圖示";

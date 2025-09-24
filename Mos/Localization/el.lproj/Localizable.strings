@@ -14,7 +14,7 @@
 
 // Status Bar Icon Menu
 "Needs access to Accessibility controls" = "Χρειάζεται πρόσβαση στον Έλεγχο Προσβασιμότητας";
-"Scroll Monitor" = " Παρακολούθηση Κύλισης";
+"Event Monitor" = " Παρακολούθηση Γεγονότων";
 "Preferences" = " Προτιμήσεις";
 "Quit" = " Έξοδος";
 "Hide Icon" = "Απόκρυψη Εικονιδίου";

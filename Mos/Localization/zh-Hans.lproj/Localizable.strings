@@ -15,7 +15,7 @@
 
 // Status Bar Icon Menu
 "Needs access to Accessibility controls" = "需要先获得辅助功能的权限才可以工作";
-"Scroll Monitor" = " 滚动监控";
+"Event Monitor" = " 事件监控";
 "Preferences" = " 偏好设置";
 "Quit" = " 退出";
 "Hide Icon" = "隐藏图标";

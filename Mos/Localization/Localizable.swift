@@ -18,7 +18,7 @@ class i18n {
 
     // Status Bar Icon Menu
     static let needsAccessToAccessibilityControls = NSLocalizedString("Needs access to Accessibility controls", comment: "")
-    static let monitor = NSLocalizedString("Scroll Monitor", comment: "")
+    static let monitor = NSLocalizedString("Event Monitor", comment: "")
     static let preferences = NSLocalizedString("Preferences", comment: "")
     static let quit = NSLocalizedString("Quit", comment: "")
     static let hideIcon = NSLocalizedString("Hide Icon", comment: "")

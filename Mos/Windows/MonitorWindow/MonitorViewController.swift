@@ -25,8 +25,6 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     @IBOutlet var buttonEventLogTextField: NSTextView!
     @IBOutlet var processLogTextField: NSTextView!
     @IBOutlet var mouseLogTextField: NSTextView!
-    @IBOutlet var tabletEventLogTextField: NSTextView!
-    @IBOutlet var tabletProximityLogTextField: NSTextView!
     
     // MARK: - 生命周期
     override func viewWillAppear() {
@@ -83,8 +81,6 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         scrollDetailLogTextField.string = Logger.getScrollDetailLog(form: event)
         processLogTextField.string = Logger.getProcessLog(form: event)
         mouseLogTextField.string = Logger.getMouseLog(form: event)
-        tabletEventLogTextField.string = Logger.getTabletEventLog(form: event)
-        tabletProximityLogTextField.string = Logger.getTabletProximityLog(form: event)
     }
     // 初始化监听
     func initScrollObserver() {
@@ -154,7 +150,8 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
             if let textView = strongSelf.buttonEventLogTextField {
                 // 使用专用按钮事件文本框
                 textView.string = strongSelf.buttonEventLog
-                textView.scrollRangeToVisible(NSRange(location: textView.string.count, length: 0))
+                // 滚动到顶部以显示最新插入的事件（在首行）
+                textView.scrollRangeToVisible(NSRange(location: 0, length: 0))
             }
         }
     }
