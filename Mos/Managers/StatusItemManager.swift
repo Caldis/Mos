@@ -40,6 +40,10 @@ extension StatusItemManager {
                 buildRequireAccessibilityMenu()
                 return
             }
+            // DEBUG: 直接弹出设置窗口
+            #if DEBUG
+            buildOptionMenu()
+            #else
             // 当按下 option 键显示特殊菜单
             guard !event.modifierFlags.contains(.option) else {
                 buildOptionMenu()
@@ -47,6 +51,7 @@ extension StatusItemManager {
             }
             // 弹出菜单
             buildNormalMenu()
+            #endif
         }
     }
 }
