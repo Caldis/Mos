@@ -90,6 +90,9 @@ struct SystemShortcut {
     static let screenshot = Shortcut([.command, .shift], 20)     // ⌘⇧3
     static let screenshotSelection = Shortcut([.command, .shift], 21) // ⌘⇧4
     static let screenshotWindow = Shortcut([.command, .shift, .option], 21) // ⌘⇧⌥4
+    static let showDesktop = Shortcut(.function, 103)            // F11/Mission Control
+    static let moveSpaceLeft = Shortcut(.control, 123)   // ⌃← (暂不可用
+    static let moveSpaceRight = Shortcut(.control, 124) // ⌃→ (暂不可用
 
     // Finder
     static let newFinderWindow = Shortcut([.command, .option], 49) // ⌘⌥Space
@@ -143,7 +146,8 @@ struct SystemShortcut {
         // 系统功能
         "spotlight": spotlight, "forceQuit": forceQuit, "lockScreen": lockScreen,
         "screenshot": screenshot, "screenshotSelection": screenshotSelection,
-        "screenshotWindow": screenshotWindow,
+        "screenshotWindow": screenshotWindow, "showDesktop": showDesktop,
+        "moveSpaceLeft": moveSpaceLeft, "moveSpaceRight": moveSpaceRight,
 
         // Finder
         "newFinderWindow": newFinderWindow, "goToFolder": goToFolder,
@@ -208,7 +212,8 @@ struct SystemShortcut {
         "系统功能": [
             "spotlight": spotlight, "forceQuit": forceQuit, "lockScreen": lockScreen,
             "screenshot": screenshot, "screenshotSelection": screenshotSelection,
-            "screenshotWindow": screenshotWindow
+            "screenshotWindow": screenshotWindow, "showDesktop": showDesktop,
+            "moveSpaceLeft": moveSpaceLeft, "moveSpaceRight": moveSpaceRight
         ],
         "Finder": [
             "newFinderWindow": newFinderWindow, "goToFolder": goToFolder,
