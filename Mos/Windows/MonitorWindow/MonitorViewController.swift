@@ -162,7 +162,6 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         // 监听内部事件
         NotificationCenter.default.addObserver(self, selector: #selector(updateButtonEventData), name: buttonEventName, object: nil)
         // 启动事件拦截
-        // 启动按钮事件监控
         do {
             buttonEventInterceptor = try Interceptor(
                 event: buttonEventMask,
@@ -181,8 +180,6 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     }
 
     // MARK: - 按键事件处理
-
-
     func setupShortcutMenu() {
         guard shortcutMenu != nil else {
             NSLog("[MonitorView] shortcutMenu 未连接，无法构建菜单")
@@ -190,7 +187,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         }
 
         // 使用 ShortcutManager 构建分级菜单
-        ShortcutManager.shared.buildHierarchicalShortcutMenu(
+        ShortcutManager.buildHierarchicalShortcutMenu(
             into: shortcutMenu,
             target: self,
             action: #selector(onShortcutMenuItemSelected(_:))
@@ -204,45 +201,8 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
             NSLog("[MonitorView] 无法获取快捷键信息")
             return
         }
-
-        NSLog("[MonitorView] 菜单选择: \(sender.title)")
-        NSLog("[MonitorView] 触发快捷键测试: \(shortcut.displayName)")
-
         // 使用 ShortcutManager 触发快捷键
-        ShortcutManager.shared.triggerShortcut(shortcut, delay: 1.0) { [weak self] success in
-            DispatchQueue.main.async {
-                self?.logEventCompletion(shortcut: shortcut)
-
-                // 2秒后重置菜单到 placeholder
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    self?.shortcutPopUpButton?.selectItem(at: 0)
-                    NSLog("[MonitorView] 菜单已重置到 placeholder")
-                }
-            }
-        }
-    }
-
-
-    /// 记录事件完成信息到界面
-    private func logEventCompletion(shortcut: SystemShortcut.Shortcut) {
-        // 在按钮事件日志中添加一条模拟记录
-        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
-        let completionLine = "[\(timestamp)] 📤 已模拟触发: \(shortcut.displayName)"
-
-        var logLines = buttonEventLog.isEmpty ? [] : buttonEventLog.components(separatedBy: "\n")
-        logLines.insert(completionLine, at: 0)
-
-        // 保持日志行数限制
-        if logLines.count > maxButtonLogLines {
-            logLines = Array(logLines.prefix(maxButtonLogLines))
-        }
-
-        buttonEventLog = logLines.joined(separator: "\n")
-
-        if let textView = buttonEventLogTextField {
-            textView.string = buttonEventLog
-            textView.scrollRangeToVisible(NSRange(location: 0, length: 0))
-        }
+        ShortcutManager.triggerShortcut(shortcut, delay: 1.0)
     }
     
 

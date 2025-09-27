@@ -58,7 +58,7 @@ class ButtonTableCellView: NSTableCellView {
         guard let menu = actionPopUpButton.menu else { return }
 
         // 使用 ShortcutManager 构建菜单
-        ShortcutManager.shared.buildShortcutMenu(
+        ShortcutManager.buildShortcutMenu(
             into: menu,
             target: self,
             action: #selector(shortcutSelected(_:))
@@ -86,8 +86,6 @@ class ButtonTableCellView: NSTableCellView {
             return
         }
 
-        NSLog("[ButtonTableCellView] 查找快捷键: \(shortcut.displayName)")
-
         // 首先尝试在子菜单中查找匹配的快捷键
         for categoryItem in menu.items {
             guard let subMenu = categoryItem.submenu else { continue }
@@ -105,8 +103,6 @@ class ButtonTableCellView: NSTableCellView {
                 }
             }
         }
-
-        NSLog("[ButtonTableCellView] 未找到匹配的快捷键: \(shortcut.displayName)")
     }
 
     /// 手动设置 PopUpButton 的显示标题
@@ -160,7 +156,7 @@ class ButtonTableCellView: NSTableCellView {
             triggerEvent: binding.triggerEvent,
             systemShortcutName: SystemShortcut.findShortcut(
                 modifiers: shortcut.modifiers,
-                keyCode: shortcut.keyCode
+                keyCode: shortcut.code
             ) ?? "copy",
             isEnabled: true  // 选择快捷键后启用绑定
         )

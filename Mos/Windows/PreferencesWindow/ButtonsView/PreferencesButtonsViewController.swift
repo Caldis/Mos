@@ -90,7 +90,6 @@ extension PreferencesButtonsViewController {
         tableView.reloadData()
         toggleNoDataHint()
         syncViewWithOptions()
-        updateHotkeyListener()
     }
 
     // 删除按钮绑定
@@ -99,7 +98,6 @@ extension PreferencesButtonsViewController {
         tableView.reloadData()
         toggleNoDataHint()
         syncViewWithOptions()
-        updateHotkeyListener()
     }
 
     // 更新按钮绑定
@@ -109,12 +107,6 @@ extension PreferencesButtonsViewController {
         // 不重载整个表格，避免干扰 UI 状态
         // tableView.reloadData()
         syncViewWithOptions()
-        updateHotkeyListener()
-    }
-
-    // 更新热键监听器
-    private func updateHotkeyListener() {
-        HotkeyListener.shared.updateBindings(buttonBindings)
     }
 }
 
