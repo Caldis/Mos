@@ -37,7 +37,7 @@ class PreferencesApplicationViewController: NSViewController {
         // 读取设置
         syncViewWithOptions()
         // 初始化按钮状态
-        updateDeleteButtonState()
+        updateDelButtonState()
     }
     override func viewWillAppear() {
         // 检查表格数据
@@ -78,19 +78,21 @@ class PreferencesApplicationViewController: NSViewController {
         tableView.reloadData()
     }
     @IBAction func removeItemClick(_ sender: NSButton) {
+        // 确保选择了行
+        guard tableView.selectedRow != -1 else { return }
         // 删除
-        deleteTableViewSelectedRow()
+        Options.shared.application.applications.remove(at: tableView.selectedRow)
         // 重新加载
         tableView.reloadData()
         // 立即更新空状态显示
         toggleNoDataHint()
         // 更新删除按钮状态
-        updateDeleteButtonState()
+        updateDelButtonState()
     }
 }
 
 /**
- * 设置同步
+ * 数据持久化
  **/
 extension PreferencesApplicationViewController {
     // 同步界面与设置参数
@@ -100,7 +102,7 @@ extension PreferencesApplicationViewController {
     }
     
     // 更新删除按钮状态
-    func updateDeleteButtonState() {
+    func updateDelButtonState() {
         delButton.isEnabled = tableView.selectedRow != -1
     }
 }
@@ -117,8 +119,8 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     // 切换无数据显示
     func toggleNoDataHint() {
         let hasData = Options.shared.application.applications.count != 0
-        updateViewVisibility(view: tableEmpty, visible: !hasData)
         updateViewVisibility(view: createButton, visible: !hasData)
+        updateViewVisibility(view: tableEmpty, visible: !hasData)
         updateViewVisibility(view: tableHead, visible: hasData)
         updateViewVisibility(view: tableFoot, visible: hasData)
     }
@@ -175,7 +177,7 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     
     // 选择变化
     func tableViewSelectionDidChange(_ notification: Notification) {
-        updateDeleteButtonState()
+        updateDelButtonState()
     }
 }
 
@@ -244,13 +246,5 @@ extension PreferencesApplicationViewController: NSMenuDelegate {
         guard let runningApplication = sender.representedObject as? NSRunningApplication else { return }
         guard let executablePath = runningApplication.executableURL?.path else { return }
         appendApplicationWith(path: executablePath)
-    }
-    
-    // 删除选定行
-    func deleteTableViewSelectedRow() {
-        // 确保有选中特定行
-        if tableView.selectedRow != -1 {
-            Options.shared.application.applications.remove(at: tableView.selectedRow)
-        }
     }
 }

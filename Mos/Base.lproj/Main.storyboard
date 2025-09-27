@@ -230,7 +230,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="450" height="290"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" enabled="NO" rowHeight="52" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" id="tU8-ze-w7X">
+                                        <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" tableStyle="inset" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="52" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" id="tU8-ze-w7X">
                                             <rect key="frame" x="0.0" y="0.0" width="450" height="290"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <size key="intercellSpacing" width="17" height="0.0"/>
@@ -238,11 +238,11 @@
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
                                                 <tableColumn identifier="Hotkey" width="418" minWidth="40" maxWidth="1000" id="gd2-WO-uk9">
-                                                    <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" enabled="NO" borderStyle="border" alignment="left" title="Hotkey">
+                                                    <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Hotkey">
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                     </tableHeaderCell>
-                                                    <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" enabled="NO" title="Text Cell" id="aP7-2e-zd4">
+                                                    <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="aP7-2e-zd4">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -260,22 +260,22 @@
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <box boxType="custom" borderWidth="0.0" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="ei3-vh-6kV">
-                                                                                <rect key="frame" x="12" y="5" width="214" height="30"/>
+                                                                                <rect key="frame" x="12" y="5" width="244" height="30"/>
                                                                                 <view key="contentView" id="UjE-iu-X41">
-                                                                                    <rect key="frame" x="0.0" y="0.0" width="214" height="30"/>
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="244" height="30"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 </view>
                                                                                 <color key="borderColor" red="1" green="1" blue="1" alpha="0.10068822230879106" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                 <color key="fillColor" red="0.96062562677481145" green="0.96754766589999996" blue="0.93064895263721903" alpha="0.0" colorSpace="custom" customColorSpace="displayP3"/>
                                                                             </box>
                                                                             <box horizontalHuggingPriority="750" alphaValue="0.59999999999999998" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="xBp-Mh-8GO">
-                                                                                <rect key="frame" x="236" y="8" width="5" height="24"/>
+                                                                                <rect key="frame" x="266" y="8" width="5" height="24"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="24" id="rNw-Tj-dig"/>
                                                                                 </constraints>
                                                                             </box>
                                                                             <popUpButton alphaValue="0.98999999999999999" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3eO-mD-7ue">
-                                                                                <rect key="frame" x="251" y="8" width="120" height="24"/>
+                                                                                <rect key="frame" x="281" y="8" width="120" height="24"/>
                                                                                 <popUpButtonCell key="cell" type="push" title="No Action" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="epU-lS-atX" id="DPN-ii-WxE">
                                                                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                                                     <font key="font" metaFont="smallSystem"/>
@@ -290,28 +290,15 @@
                                                                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="ycn-md-UBm"/>
                                                                                 </constraints>
                                                                             </popUpButton>
-                                                                            <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0S0-ZL-Rcv">
-                                                                                <rect key="frame" x="376" y="3.5" width="30.5" height="34"/>
-                                                                                <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSStopProgressTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" inset="2" id="yNV-6J-62m">
-                                                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="system"/>
-                                                                                </buttonCell>
-                                                                                <constraints>
-                                                                                    <constraint firstAttribute="height" constant="30" id="JKr-Oy-Wzf"/>
-                                                                                    <constraint firstAttribute="width" constant="30" id="c5x-gj-xGx"/>
-                                                                                </constraints>
-                                                                            </button>
                                                                         </subviews>
                                                                         <constraints>
+                                                                            <constraint firstAttribute="trailing" secondItem="3eO-mD-7ue" secondAttribute="trailing" constant="10" id="2eY-s6-2qh"/>
                                                                             <constraint firstItem="xBp-Mh-8GO" firstAttribute="leading" secondItem="ei3-vh-6kV" secondAttribute="trailing" constant="12" id="4h2-Ef-hze"/>
                                                                             <constraint firstAttribute="bottom" secondItem="ei3-vh-6kV" secondAttribute="bottom" constant="5" id="FN4-2W-Rm1"/>
                                                                             <constraint firstItem="xBp-Mh-8GO" firstAttribute="centerY" secondItem="sUm-mF-Rt9" secondAttribute="centerY" id="FSe-dI-EpK"/>
                                                                             <constraint firstItem="ei3-vh-6kV" firstAttribute="top" secondItem="sUm-mF-Rt9" secondAttribute="top" constant="5" id="Ga7-qB-xL0"/>
                                                                             <constraint firstItem="3eO-mD-7ue" firstAttribute="centerY" secondItem="sUm-mF-Rt9" secondAttribute="centerY" id="I7g-BJ-jVc"/>
-                                                                            <constraint firstItem="0S0-ZL-Rcv" firstAttribute="leading" secondItem="3eO-mD-7ue" secondAttribute="trailing" constant="5" id="S5P-fX-ApB"/>
-                                                                            <constraint firstAttribute="trailing" secondItem="0S0-ZL-Rcv" secondAttribute="trailing" constant="5" id="adt-n4-12X"/>
                                                                             <constraint firstItem="3eO-mD-7ue" firstAttribute="leading" secondItem="xBp-Mh-8GO" secondAttribute="trailing" constant="12" id="c6Q-32-guF"/>
-                                                                            <constraint firstItem="0S0-ZL-Rcv" firstAttribute="centerY" secondItem="sUm-mF-Rt9" secondAttribute="centerY" id="nL6-Bx-qZs"/>
                                                                             <constraint firstItem="ei3-vh-6kV" firstAttribute="leading" secondItem="sUm-mF-Rt9" secondAttribute="leading" constant="12" id="vbF-oh-1y2"/>
                                                                         </constraints>
                                                                     </view>
@@ -329,7 +316,6 @@
                                                             </constraints>
                                                             <connections>
                                                                 <outlet property="actionPopUpButton" destination="3eO-mD-7ue" id="78f-cI-nk8"/>
-                                                                <outlet property="deleteButton" destination="0S0-ZL-Rcv" id="hzh-ho-Sb5"/>
                                                                 <outlet property="keyDisplayContainerView" destination="UjE-iu-X41" id="kK1-dw-8ZY"/>
                                                             </connections>
                                                         </tableCellView>
@@ -451,7 +437,7 @@
                                     </box>
                                     <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4Ef-t4-sPm">
                                         <rect key="frame" x="36" y="4" width="30.5" height="25"/>
-                                        <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSRemoveTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" transparent="YES" inset="2" id="SGK-IN-m4l">
+                                        <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSRemoveTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" enabled="NO" state="on" inset="2" id="SGK-IN-m4l">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -460,7 +446,7 @@
                                             <constraint firstAttribute="width" constant="30" id="dun-z6-g2j"/>
                                         </constraints>
                                         <connections>
-                                            <action selector="removeItemClick:" target="bga-wG-iim" id="aed-es-48x"/>
+                                            <action selector="removeItemClick:" target="BTN-VC-123" id="CaV-9Y-dCa"/>
                                         </connections>
                                     </button>
                                     <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xql-gm-0mI">
@@ -505,7 +491,9 @@
                         </constraints>
                     </visualEffectView>
                     <connections>
+                        <outlet property="addButton" destination="xql-gm-0mI" id="E6H-zi-qsW"/>
                         <outlet property="createButton" destination="uuZ-tE-wlr" id="h6U-Gs-MEr"/>
+                        <outlet property="delButton" destination="4Ef-t4-sPm" id="80m-Qy-Vdg"/>
                         <outlet property="tableEmpty" destination="skg-W8-gS0" id="eHD-Fa-Gdk"/>
                         <outlet property="tableFoot" destination="y2I-TF-AaH" id="1nE-Ft-HI6"/>
                         <outlet property="tableView" destination="tU8-ze-w7X" id="CbL-cb-u12"/>
@@ -739,7 +727,7 @@
                                     </button>
                                     <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HZK-yc-ptT">
                                         <rect key="frame" x="36" y="4" width="30.5" height="25"/>
-                                        <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSRemoveTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" inset="2" id="dnI-fa-wgE">
+                                        <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSRemoveTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" enabled="NO" state="on" inset="2" id="dnI-fa-wgE">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -2830,7 +2818,6 @@ Try remove Mos from the list first, then to re-authorize by dragging the Mos ico
         <image name="NSAddTemplate" width="18" height="17"/>
         <image name="NSApplicationIcon" width="32" height="32"/>
         <image name="NSRemoveTemplate" width="18" height="5"/>
-        <image name="NSStopProgressTemplate" width="17" height="16"/>
         <image name="NSTouchBarSearchTemplate" width="20" height="20"/>
         <image name="PaypalLogo" width="200" height="51"/>
         <image name="SF.app.background.dotted" width="135" height="135"/>

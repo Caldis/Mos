@@ -12,7 +12,7 @@ class KeyPopover: NSObject {
 
     // MARK: - Properties
     private var popover: NSPopover?
-    private var keyPreview: KeyPreview!
+    var keyPreview: KeyPreview!
 
     // MARK: - Visibility
     /// 显示录制 popover
@@ -26,18 +26,6 @@ class KeyPopover: NSObject {
     func hide() {
         popover?.close()
         popover = nil
-    }
-
-    // MARK: - Status
-    /// 更新显示的修饰键状态（录制过程中实时更新）
-    func updateForModifiers(_ event: CGEvent) {
-        // 更新按键显示
-        keyPreview.showRecordingState(with: event)
-    }
-    
-    /// 显示录制完成的按键
-    func showRecordedEvent(_ event: CGEvent) {
-        keyPreview.updateWithEvent(event, style: .recorded)
     }
 
     // MARK: - Private Methods

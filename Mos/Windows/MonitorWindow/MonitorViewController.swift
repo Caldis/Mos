@@ -132,7 +132,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         let event = notification.object as! CGEvent
 
         // 添加按钮标识符信息到描述中
-        let logLine = "[\(event.formattedTimestamp())] \(event.displayName())"
+        let logLine = "[\(event.timestampFormatted)] \(event.displayName) keyCode: \(event.keyCode), mouseCode: \(event.mouseCode)"
 
         // 将新事件插入到日志开头，确保新事件在首行
         var logLines = buttonEventLog.isEmpty ? [] : buttonEventLog.components(separatedBy: "\n")
@@ -182,18 +182,6 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
 
     // MARK: - 按键事件处理
 
-    /// 将驼峰命名转换为用户友好的显示名称
-    private func formatDisplayName(_ camelCaseName: String) -> String {
-        // 插入空格在小写字母和大写字母之间
-        var result = camelCaseName.replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression)
-
-        // 处理数字和字母之间的空格
-        result = result.replacingOccurrences(of: "([a-z])([0-9])", with: "$1 $2", options: .regularExpression)
-        result = result.replacingOccurrences(of: "([0-9])([A-Z])", with: "$1 $2", options: .regularExpression)
-
-        // 首字母大写
-        return result.prefix(1).capitalized + result.dropFirst()
-    }
 
     func setupShortcutMenu() {
         guard shortcutMenu != nil else {
@@ -201,58 +189,15 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
             return
         }
 
-        // 清空现有菜单项
-        shortcutMenu.removeAllItems()
-
-        NSLog("[MonitorView] 开始构建分级快捷键菜单...")
-
-        // 添加 placeholder 项
-        let placeholderItem = NSMenuItem(title: "Select an action", action: nil, keyEquivalent: "")
-        placeholderItem.isEnabled = false
-        shortcutMenu.addItem(placeholderItem)
-
-        // 添加分割线
-        shortcutMenu.addItem(NSMenuItem.separator())
-
-        var totalShortcuts = 0
-
-        // 按分类构建分级菜单
-        for (categoryName, shortcuts) in SystemShortcut.shortcutsByCategory.sorted(by: { $0.key < $1.key }) {
-            NSLog("[MonitorView] 创建分类子菜单: \(categoryName) (\(shortcuts.count) 个快捷键)")
-
-            // 创建分类主菜单项
-            let categoryMenuItem = NSMenuItem(title: categoryName, action: nil, keyEquivalent: "")
-
-            // 创建子菜单
-            let subMenu = NSMenu(title: categoryName)
-
-            // 添加该分类下的所有快捷键到子菜单
-            let sortedShortcuts = shortcuts.sorted { $0.key < $1.key }
-            for (shortcutName, shortcut) in sortedShortcuts {
-                let shortcutMenuItem = NSMenuItem(
-                    title: "\(formatDisplayName(shortcutName)) - \(shortcut.displayName)",
-                    action: #selector(onShortcutMenuItemSelected(_:)),
-                    keyEquivalent: ""
-                )
-                shortcutMenuItem.target = self
-                shortcutMenuItem.representedObject = shortcut
-                shortcutMenuItem.toolTip = "测试快捷键: \(shortcut.displayName)"
-
-                subMenu.addItem(shortcutMenuItem)
-                totalShortcuts += 1
-            }
-
-            // 将子菜单关联到分类菜单项
-            categoryMenuItem.submenu = subMenu
-
-            // 将分类菜单项添加到主菜单
-            shortcutMenu.addItem(categoryMenuItem)
-        }
+        // 使用 ShortcutManager 构建分级菜单
+        ShortcutManager.shared.buildHierarchicalShortcutMenu(
+            into: shortcutMenu,
+            target: self,
+            action: #selector(onShortcutMenuItemSelected(_:))
+        )
 
         // 设置默认选择 placeholder
         shortcutPopUpButton?.selectItem(at: 0)
-
-        NSLog("[MonitorView] 分级快捷键菜单构建完成: \(SystemShortcut.shortcutsByCategory.count) 个分类，\(totalShortcuts) 个快捷键")
     }
     @objc func onShortcutMenuItemSelected(_ sender: NSMenuItem) {
         guard let shortcut = sender.representedObject as? SystemShortcut.Shortcut else {
@@ -261,132 +206,22 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         }
 
         NSLog("[MonitorView] 菜单选择: \(sender.title)")
+        NSLog("[MonitorView] 触发快捷键测试: \(shortcut.displayName)")
 
-        NSLog("[MonitorView] 触发快捷键测试: \(shortcut.displayName) (keyCode: \(shortcut.keyCode), modifiers: \(shortcut.modifiers.rawValue))")
+        // 使用 ShortcutManager 触发快捷键
+        ShortcutManager.shared.triggerShortcut(shortcut, delay: 1.0) { [weak self] success in
+            DispatchQueue.main.async {
+                self?.logEventCompletion(shortcut: shortcut)
 
-        do {
-            // 构造键盘按下事件 (keyDown)
-            guard let keyDownEvent = createKeyEvent(
-                type: .keyDown,
-                keyCode: shortcut.keyCode,
-                modifiers: shortcut.modifiers
-            ) else {
-                throw NSError(domain: "MonitorView", code: 1, userInfo: [NSLocalizedDescriptionKey: "keyDown 事件构造失败"])
-            }
-
-            NSLog("[MonitorView] ✓ keyDown 事件构造成功: \(keyDownEvent)")
-
-            // 构造键盘抬起事件 (keyUp)
-            guard let keyUpEvent = createKeyEvent(
-                type: .keyUp,
-                keyCode: shortcut.keyCode,
-                modifiers: shortcut.modifiers
-            ) else {
-                throw NSError(domain: "MonitorView", code: 2, userInfo: [NSLocalizedDescriptionKey: "keyUp 事件构造失败"])
-            }
-
-            NSLog("[MonitorView] ✓ keyUp 事件构造成功: \(keyUpEvent)")
-
-            // 验证事件属性
-            NSLog("[MonitorView] 事件详情:")
-            NSLog("[MonitorView] - keyDown flags: \(keyDownEvent.flags.rawValue)")
-            NSLog("[MonitorView] - keyUp flags: \(keyUpEvent.flags.rawValue)")
-            NSLog("[MonitorView] - keyCode: \(keyDownEvent.getIntegerValueField(.keyboardEventKeycode))")
-
-            NSLog("[MonitorView] ✓ 事件构造完成")
-
-            // 显示倒计时并发送事件
-            self.startCountdownAndPost(
-                keyDownEvent: keyDownEvent,
-                keyUpEvent: keyUpEvent,
-                shortcut: shortcut
-            )
-
-        } catch {
-            NSLog("[MonitorView] ✗ 事件构造失败: \(error.localizedDescription)")
-        }
-    }
-
-    /// 创建键盘事件
-    private func createKeyEvent(type: CGEventType, keyCode: UInt16, modifiers: NSEvent.ModifierFlags) -> CGEvent? {
-        // 创建基础键盘事件
-        guard let event = CGEvent(
-            keyboardEventSource: nil,
-            virtualKey: keyCode,
-            keyDown: type == .keyDown
-        ) else {
-            NSLog("[MonitorView] 无法创建基础键盘事件")
-            return nil
-        }
-
-        // 设置修饰键
-        var cgFlags: CGEventFlags = []
-
-        if modifiers.contains(.command) {
-            cgFlags.insert(.maskCommand)
-        }
-        if modifiers.contains(.shift) {
-            cgFlags.insert(.maskShift)
-        }
-        if modifiers.contains(.option) {
-            cgFlags.insert(.maskAlternate)
-        }
-        if modifiers.contains(.control) {
-            cgFlags.insert(.maskControl)
-        }
-        if modifiers.contains(.function) {
-            cgFlags.insert(.maskSecondaryFn)
-        }
-
-        event.flags = cgFlags
-
-        // 设置时间戳
-        event.timestamp = CGEventTimestamp(mach_absolute_time())
-
-        return event
-    }
-
-    /// 倒计时并发送事件
-    private func startCountdownAndPost(keyDownEvent: CGEvent, keyUpEvent: CGEvent, shortcut: SystemShortcut.Shortcut) {
-        NSLog("[MonitorView] ⏱️ 1秒后发送 \(shortcut.displayName)")
-
-        // 1秒延迟后发送事件
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            NSLog("[MonitorView] ⏱️ 延迟结束，开始发送事件")
-            self?.postKeyboardEvents(keyDownEvent: keyDownEvent, keyUpEvent: keyUpEvent, shortcut: shortcut)
-        }
-    }
-
-    /// 发送键盘事件到系统
-    private func postKeyboardEvents(keyDownEvent: CGEvent, keyUpEvent: CGEvent, shortcut: SystemShortcut.Shortcut) {
-        NSLog("[MonitorView] ⏰ [1秒后] 开始发送键盘事件: \(shortcut.displayName)")
-
-        // 发送 keyDown 事件
-        let keyDownLocation = CGEventTapLocation.cghidEventTap
-        keyDownEvent.post(tap: keyDownLocation)
-        NSLog("[MonitorView] ⬇️ keyDown 事件已发送到 eventTap (tap: \(keyDownLocation.rawValue))")
-
-        // 短暂延迟，模拟真实按键时序
-        usleep(10000) // 10ms
-
-        // 发送 keyUp 事件
-        let keyUpLocation = CGEventTapLocation.cghidEventTap
-        keyUpEvent.post(tap: keyUpLocation)
-        NSLog("[MonitorView] ⬆️ keyUp 事件已发送到 eventTap (tap: \(keyUpLocation.rawValue))")
-
-        NSLog("[MonitorView] ✅ 快捷键 \(shortcut.displayName) 发送完成！")
-
-        // 在界面显示完成信息并重置菜单
-        DispatchQueue.main.async { [weak self] in
-            self?.logEventCompletion(shortcut: shortcut)
-
-            // 2秒后重置菜单到 placeholder
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self?.shortcutPopUpButton?.selectItem(at: 0)
-                NSLog("[MonitorView] 菜单已重置到 placeholder")
+                // 2秒后重置菜单到 placeholder
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    self?.shortcutPopUpButton?.selectItem(at: 0)
+                    NSLog("[MonitorView] 菜单已重置到 placeholder")
+                }
             }
         }
     }
+
 
     /// 记录事件完成信息到界面
     private func logEventCompletion(shortcut: SystemShortcut.Shortcut) {

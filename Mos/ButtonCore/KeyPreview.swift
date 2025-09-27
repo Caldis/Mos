@@ -46,54 +46,41 @@ class KeyPreview: NSStackView {
         wantsLayer = true
 
         // 显示空状态
-        updateKeys([KeyPreview.WAITING_WORDING], style: .recording)
+        update(from: [KeyPreview.WAITING_WORDING], status: .recording)
     }
 
     // MARK: - Public Methods
 
     /// 更新显示的按键组合
-    func updateKeys(_ components: [String], style: Status = .normal) {
+    func update(from components: [String], status: Status = .normal) {
         self.keyComponents = components
-        self.status = style
+        self.status = status
 
         // 清除现有视图
         clearKeyViews()
 
-        // 如果没有内容，显示空状态
-        guard !components.isEmpty else {
-            return
-        }
+        // 如果没有内容，不显示
+        guard !components.isEmpty else { return }
 
         // 创建按键视图
         createKeyViews()
     }
 
-    /// 从 CGEvent 更新
-    func updateWithEvent(_ event: CGEvent, style: Status = .normal) {
-        let displayName = event.displayName()
-        let components = displayName.components(separatedBy: " + ").filter { !$0.isEmpty }
-        updateKeys(components, style: style)
-    }
-
     /// 显示录制中状态
-    func showRecordingState(with event: CGEvent) {
-        let modifierString = event.modifierString
-
-        if modifierString.isEmpty {
-            updateKeys([KeyPreview.WAITING_WORDING], style: .recording)
+    func updateForRecording(_ event: CGEvent) {
+        if event.hasModifiers {
+            update(from: [event.modifierString, KeyPreview.WAITING_WORDING], status: .recording)
         } else {
-            updateKeys([modifierString, KeyPreview.WAITING_WORDING], style: .recording)
+            update(from: [KeyPreview.WAITING_WORDING], status: .recording)
         }
     }
 
-    // MARK: - Private Methods
-
+    // MARK: - View and anim control
     private func clearKeyViews() {
         // 停止所有动画
         keyViews.forEach { keyView in
             keyView.layer?.removeAllAnimations()
         }
-
         // 移除所有子视图
         arrangedSubviews.forEach { view in
             removeArrangedSubview(view)
@@ -101,7 +88,6 @@ class KeyPreview: NSStackView {
         }
         keyViews.removeAll()
     }
-    
     private func createKeyViews() {
         for (index, component) in keyComponents.enumerated() {
             // 添加分隔符
@@ -118,7 +104,6 @@ class KeyPreview: NSStackView {
             keyViews.append(keyView)
         }
     }
-
     private func createSingleKeyView(for text: String) -> NSView {
         let container = NSView()
         container.wantsLayer = true
@@ -160,7 +145,6 @@ class KeyPreview: NSStackView {
         }
         return container
     }
-
     private func startBreathingAnimation(for view: NSView) {
         // 创建呼吸动画
         let animation = CABasicAnimation(keyPath: "opacity")

@@ -14,95 +14,13 @@ extension CGEvent {
 
     /// 格式化修饰键字符串
     var modifierString: String {
-        return formatModifierString(from: keyCode)
-    }
-
-    /// 键码
-    var keyCode: UInt16 {
-        return UInt16(getIntegerValueField(.keyboardEventKeycode))
-    }
-
-    /// 鼠标按键编号
-    var mouseButton: Int? {
-        return Int(getIntegerValueField(.mouseEventButtonNumber))
-    }
-
-    /// NSEvent 修饰键标志
-    var nsEventFlags: NSEvent.ModifierFlags {
-        return NSEvent.ModifierFlags(rawValue: UInt(flags.rawValue))
-    }
-
-    /// 是否有修饰键
-    var hasModifiers: Bool {
-        return !nsEventFlags.intersection([.command, .option, .control, .shift, .function]).isEmpty
-    }
-
-    /// 是否为鼠标事件
-    var isMouseEvent: Bool {
-        switch CGEventType(rawValue: UInt32(type.rawValue)) {
-        case .leftMouseDown, .rightMouseDown, .otherMouseDown:
-            return true
-        default:
-            return false
-        }
-    }
-
-    /// 事件是否有效
-    var isValid: Bool {
-        // 纯修饰键不允许被记录
-        if KeyCode.modifierKeys.contains(keyCode) && mouseButton == nil {
-            return false
-        }
-        return true
-    }
-
-
-    // MARK: - Utils
-
-    /// 时间戳
-    func formattedTimestamp() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss.SSS"
-        formatter.timeZone = TimeZone.current
-        return formatter.string(from: Date(timeIntervalSince1970: Double(timestamp) / 1_000_000_000.0,))
-    }
-
-    /// 显示名称
-    public func displayName() -> String {
         var components: [String] = []
-
-        // 使用扩展方法格式化修饰键
-        if !modifierString.isEmpty {
-            components.append(modifierString)
-        }
-
-        // 根据事件类型判断需要展示的内容, 鼠标和键盘事件(非修饰键)互斥
-        if isMouseEvent, let mouseButton = mouseButton {
-            // 鼠标事件
-            switch mouseButton {
-                case 0: components.append("🖱L") // 左键
-                case 1: components.append("🖱R") // 右键
-                case 2: components.append("🖱M") // 中键
-                default: components.append("🖱\(mouseButton + 1)") // 其他鼠标按键
-            }
-        } else {
-            // 键盘事件或其他事件，添加按键名称
-            components.append(getKeyString(from: keyCode))
-        }
-
-        return components.joined(separator: " + ")
-    }
-
-    /// 格式化修饰键为显示字符串
-    private func formatModifierString(from keyCode: UInt16? = nil) -> String {
-        var components: [String] = []
-
         // SHIFT
         if flags.contains(.maskShift) { components.append("⇧") }
         // FN
         if flags.contains(.maskSecondaryFn) {
             // 如果是Fn+F键或方向键组合，隐去Fn避免误导
-            if let keyCode = keyCode, (isFunctionKey(keyCode) || isArrowKey(keyCode)) {
+            if isFunctionKey || isArrowKey {
                 // Fn+F键组合不显示Fn
             } else {
                 components.append("Fn")
@@ -114,22 +32,112 @@ extension CGEvent {
         if flags.contains(.maskAlternate) { components.append("⌥") }
         // COMMAND
         if flags.contains(.maskCommand) { components.append("⌘") }
-
+        // 使用空格拼接
         return components.joined(separator: " ")
     }
 
-    /// 键码转字符串
-    private func getKeyString(from keyCode: UInt16) -> String {
+    /// 键盘键码 (如果没值就是0)
+    var keyCode: UInt16 {
+        return UInt16(getIntegerValueField(.keyboardEventKeycode))
+    }
+
+    /// 键盘键码名称
+    var keyCodeName: String {
         return KeyCode.keyMap[keyCode] ?? "Key(\(keyCode))"
     }
 
-    /// 检查是否为 FN 键
-    private func isFunctionKey(_ keyCode: UInt16) -> Bool {
+    /// 鼠标键码 (如果没值就是0, 会和鼠标主键冲突, 因此取值之前需要先判断 isMouseEvent)
+    var mouseCode: UInt16 {
+        return UInt16(getIntegerValueField(.mouseEventButtonNumber))
+    }
+
+    var mouseCodeName: String {
+        return KeyCode.mouseMap[keyCode] ?? "Mouse(\(keyCode))"
+    }
+
+    /// NSEvent 修饰键标志
+    var modifierFlags: NSEvent.ModifierFlags {
+        return NSEvent.ModifierFlags(rawValue: UInt(flags.rawValue))
+    }
+
+    /// 是否有修饰键
+    var hasModifiers: Bool {
+        return !modifierFlags.intersection([.command, .option, .control, .shift, .function]).isEmpty
+    }
+
+    /// 是否为 F* 键
+    var isFunctionKey: Bool {
         return KeyCode.functionKeys.contains(keyCode)
     }
 
-    private func isArrowKey(_ keyCode: UInt16) -> Bool {
+    /// 是否为方向键
+    var isArrowKey: Bool {
         return KeyCode.arrowKeys.contains(keyCode)
     }
+
+    /// 是否为键盘事件
+    var isKeyboardEvent: Bool {
+        switch type {
+            case .keyDown, .keyUp:
+                return true
+            default:
+                return false
+        }
+    }
+
+    /// 是否为鼠标事件
+    var isMouseEvent: Bool {
+        switch type {
+            case .leftMouseDown, .rightMouseDown, .otherMouseDown:
+                return true
+            default:
+                return false
+        }
+    }
+
+    /// 事件是否有效
+    var isRecordable: Bool {
+        // 无修饰键不允许被记录
+        if !hasModifiers {
+            return false
+        }
+        // 纯修饰键不允许被记录
+        if hasModifiers && isKeyboardEvent && keyCode == 0 {
+            return false
+        }
+        return true
+    }
+
+    /// 时间戳
+    var timestampFormatted: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss.SSS"
+        formatter.timeZone = TimeZone.current
+        return formatter.string(from: Date(timeIntervalSince1970: (Double(self.timestamp)) / 1_000_000_000.0))
+    }
+
+    /// 显示名称 (原始分组)
+    var displayComponents: [String] {
+        var components: [String] = []
+        // 修饰键
+        if !modifierString.isEmpty {
+            components.append(modifierString)
+        }
+        // 键盘
+        if isKeyboardEvent {
+            components.append(keyCodeName)
+        }
+        // 鼠标
+        if isMouseEvent {
+            components.append(mouseCodeName)
+        }
+        return components
+    }
+
+    /// 显示名称
+    var displayName: String {
+        return displayComponents.joined(separator: " + ") // 使用 "+" 拼接
+    }
+
 }
 

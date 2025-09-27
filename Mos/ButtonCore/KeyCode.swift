@@ -9,16 +9,7 @@
 import Cocoa
 
 struct KeyCode {
-    // 特殊功能键
-    static let escape: UInt16 = 53
-    static let space: UInt16 = 49
-    static let backspace: UInt16 = 51
-    static let enter: UInt16 = 76
-    static let returnKey: UInt16 = 36
-    static let tab: UInt16 = 48
-    static let grave: UInt16 = 50 // `键
-
-    // 修饰键
+    /// 修饰键
     static let commandL: UInt16 = 55
     static let commandR: UInt16 = 54
     static let shiftL: UInt16 = 56
@@ -29,16 +20,79 @@ struct KeyCode {
     static let controlR: UInt16 = 62
     static let fnL: UInt16 = 63
     static let fnR: UInt16 = 179
+    static let modifierKeys: Set<UInt16> = [
+        KeyCode.commandL,
+        KeyCode.commandR,
+        KeyCode.shiftL,
+        KeyCode.shiftR,
+        KeyCode.optionL,
+        KeyCode.optionR,
+        KeyCode.controlL,
+        KeyCode.controlR,
+        KeyCode.fnL,
+        KeyCode.fnR
+    ]
 
-    static let modifierKeys: Set<UInt16> = [55, 54, 56, 60, 58, 61, 59, 62, 63, 179]
+    /// F键系列
+    static let F1: UInt16 = 122
+    static let F2: UInt16 = 120
+    static let F3: UInt16 = 99
+    static let F4: UInt16 = 118
+    static let F5: UInt16 = 96
+    static let F6: UInt16 = 97
+    static let F7: UInt16 = 98
+    static let F8: UInt16 = 100
+    static let F9: UInt16 = 101
+    static let F10: UInt16 = 109
+    static let F11: UInt16 = 103
+    static let F12: UInt16 = 111
+    static let F13: UInt16 = 105
+    static let F14: UInt16 = 107
+    static let F15: UInt16 = 113
+    static let F16: UInt16 = 106
+    static let F17: UInt16 = 64
+    static let F18: UInt16 = 79
+    static let F19: UInt16 = 80
+    static let F20: UInt16 = 90
+    static let functionKeys: Set<UInt16> = [
+        KeyCode.F1,
+        KeyCode.F2,
+        KeyCode.F3,
+        KeyCode.F4,
+        KeyCode.F5,
+        KeyCode.F6,
+        KeyCode.F7,
+        KeyCode.F8,
+        KeyCode.F9,
+        KeyCode.F10,
+        KeyCode.F11,
+        KeyCode.F12,
+        KeyCode.F13,
+        KeyCode.F14,
+        KeyCode.F15,
+        KeyCode.F16,
+        KeyCode.F17,
+        KeyCode.F18,
+        KeyCode.F19,
+        KeyCode.F20
+    ]
 
-    // F键系列
-    static let functionKeys: Set<UInt16> = [122, 120, 99, 118, 96, 97, 98, 100, 101, 109, 103, 111, 105, 107, 113, 106, 64, 79, 80, 90] // F1-F20
+    /// 方向系列
+    static let arrowUp: UInt16 = 126
+    static let arrowDown: UInt16 = 125
+    static let arrowLeft: UInt16 = 123
+    static let arrowRight: UInt16 = 124
+    static let arrowKeys: Set<UInt16> = [
+        KeyCode.arrowUp,
+        KeyCode.arrowDown,
+        KeyCode.arrowLeft,
+        KeyCode.arrowRight
+    ]
 
-    // 方向系列
-    static let arrowKeys: Set<UInt16> = [126, 125, 123, 124] // 上下左右
+    /// 其他
+    static let escape: UInt16 = 53
 
-    /// 完整键盘映射
+    /// 键盘字符映射
     /// https://eastmanreference.com/complete-list-of-applescript-key-codes
     static let keyMap: [UInt16: String] = [
         // 字母键
@@ -69,5 +123,16 @@ struct KeyCode {
         63: "Fn", 59: "⌃", 58: "⌥", 55: "⌘", 56: "⇧",
         62: "⌃ (R)", 61: "⌥ (R)", 54: "⌘ (R)", 60: "⇧ (R)", // 键盘不会直接触发这些右侧修饰键, 但是系统预留了
         179: "Fn (179)", // 179 可以通过双击 FN 触发
+    ]
+
+    /// 鼠标字符映射
+    static let mouseMap: [UInt16: String] = [
+        // 主要
+        0: "🖱L", 1: "🖱R", 2: "🖱M",
+        // 其他鼠标按键
+        3: "🖱3", 4: "🖱4", 5: "🖱5", 6: "🖱6", 7: "🖱7", 8: "🖱8",
+        9: "🖱9", 10: "🖱10", 11: "🖱11", 12: "🖱12", 13: "🖱13",
+        14: "🖱14", 15: "🖱15", 16: "🖱16", 17: "🖱17", 18: "🖱18",
+        19: "🖱19", 20: "🖱20"
     ]
 }
