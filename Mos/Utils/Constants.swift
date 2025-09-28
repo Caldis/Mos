@@ -13,23 +13,12 @@ struct ANIMATION {
     static let duration = 0.3
 }
 
-// 修饰键
-struct MODIFIER_KEY {
-    static let controlLeft = CGKeyCode(59)
-    static let controlRight = CGKeyCode(62)
-    static let optionLeft = CGKeyCode(58)
-    static let optionRight = CGKeyCode(61)
-    static let commandLeft = CGKeyCode(55)
-    static let commandRight = CGKeyCode(54)
-    static let shiftLeft = CGKeyCode(56)
-    static let shiftRight = CGKeyCode(60)
-}
 struct MODIFIER_KEY_SET {
-    static let all = ( codes: [MODIFIER_KEY.controlLeft, MODIFIER_KEY.optionLeft, MODIFIER_KEY.commandLeft, MODIFIER_KEY.shiftLeft] , mask: [] )
-    static let control = ( codes: [MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight], mask: CGEventFlags.maskControl )
-    static let option = ( codes: [MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight], mask: CGEventFlags.maskAlternate )
-    static let command = ( codes: [MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight], mask: CGEventFlags.maskCommand )
-    static let shift = ( codes: [MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight], mask: CGEventFlags.maskShift )
+    static let all = ( codes: [KeyCode.controlL, KeyCode.optionL, KeyCode.commandL, KeyCode.shiftL] , mask: [] )
+    static let control = ( codes: [KeyCode.controlL, KeyCode.controlR], mask: CGEventFlags.maskControl )
+    static let option = ( codes: [KeyCode.optionL, KeyCode.optionR], mask: CGEventFlags.maskAlternate )
+    static let command = ( codes: [KeyCode.commandL, KeyCode.commandR], mask: CGEventFlags.maskCommand )
+    static let shift = ( codes: [KeyCode.shiftL, KeyCode.shiftR], mask: CGEventFlags.maskShift )
 }
 
 // 窗口

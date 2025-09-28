@@ -152,7 +152,7 @@ class EventRecorder: NSObject {
         // 更新当前修饰键状态
         currentModifiers = event.modifierFlags
         // 如果有修饰键被按下，刷新超时定时器给用户更多时间
-        let hasActiveModifiers = !event.modifierFlags.intersection([.command, .option, .control, .shift, .function]).isEmpty
+        let hasActiveModifiers = event.hasModifiers
         if hasActiveModifiers {
             startTimeoutTimer() // 重新启动定时器
             NSLog("[EventRecorder] Modifier key pressed, timeout timer refreshed")

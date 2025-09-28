@@ -185,23 +185,6 @@ public class Utils {
         }
     }
     
-    // 检测按键
-    class func isKey(_ event: CGEvent, _ keyCodes: [CGKeyCode]) -> Bool {
-        return keyCodes.contains(CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode)))
-    }
-    class func isMaskRetain(_ event: CGEvent, _ mask: CGEventFlags) -> Bool {
-        return event.flags.rawValue & mask.rawValue != 0
-    }
-    class func isMaskRelease(_ event: CGEvent, _ mask: CGEventFlags) -> Bool {
-        return event.flags.rawValue & mask.rawValue == 0
-    }
-    class func isKeyDown(_ event: CGEvent, _ set: ( codes: [CGKeyCode], mask: CGEventFlags )) -> Bool {
-        return isKey(event, set.codes) && isMaskRetain(event, set.mask)
-    }
-    class func isKeyUp(_ event: CGEvent, _ set: ( codes: [CGKeyCode], mask: CGEventFlags )) -> Bool {
-        return isKey(event, set.codes) && isMaskRelease(event, set.mask)
-    }
-    
     // 从路径获取应用图标
     class func getApplicationIcon(fromPath path: String?) -> NSImage {
         guard let validPath = path else {

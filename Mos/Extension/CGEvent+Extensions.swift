@@ -60,9 +60,55 @@ extension CGEvent {
         return NSEvent.ModifierFlags(rawValue: UInt(flags.rawValue))
     }
 
-    /// 是否有修饰键
+    /// 修饰键
+    var modifiersMask: UInt64 {
+        return CGEventFlags.maskControl.rawValue | CGEventFlags.maskAlternate.rawValue | CGEventFlags.maskCommand.rawValue | CGEventFlags.maskShift.rawValue
+    }
+    var isModifiers: Bool {
+        KeyCode.modifierKeys.contains(keyCode)
+    }
     var hasModifiers: Bool {
-        return !modifierFlags.intersection([.command, .option, .control, .shift, .function]).isEmpty
+        return flags.rawValue & modifiersMask != 0
+    }
+
+    /// Command 键
+    var isCommandKey: Bool {
+        return KeyCode.commandKeys.contains(keyCode)
+    }
+    var hasCommandKey: Bool {
+        return flags.rawValue & CGEventFlags.maskCommand.rawValue  != 0
+    }
+
+    /// Option 键
+    var isOptionKey: Bool {
+        return KeyCode.optionKeys.contains(keyCode)
+    }
+    var hasOptionKey: Bool {
+        return flags.rawValue & CGEventFlags.maskAlternate.rawValue  != 0
+    }
+
+    /// Control 键
+    var isControlKey: Bool {
+        return KeyCode.controlKeys.contains(keyCode)
+    }
+    var hasControlKey: Bool {
+        return flags.rawValue & CGEventFlags.maskControl.rawValue  != 0
+    }
+
+    /// Shift 键
+    var isShiftKey: Bool {
+        return KeyCode.shiftKeys.contains(keyCode)
+    }
+    var hasShiftKey: Bool {
+        return flags.rawValue & CGEventFlags.maskShift.rawValue  != 0
+    }
+
+    /// fn 键
+    var isFnKey: Bool {
+        return KeyCode.fnKeys.contains(keyCode)
+    }
+    var hasFnKey: Bool {
+        return flags.rawValue & CGEventFlags.maskSecondaryFn.rawValue  != 0
     }
 
     /// 是否为 F* 键

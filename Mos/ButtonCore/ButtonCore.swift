@@ -18,18 +18,16 @@ class ButtonCore {
     var isActive = false
     
     // 拦截层
-    var buttonEventInterceptor: Interceptor?
-    
-    // 按钮事件掩码
+    var eventInterceptor: Interceptor?
+
+    // 组合的按钮事件掩码
     let leftDown = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
     let rightDown = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
     let otherDown = CGEventMask(1 << CGEventType.otherMouseDown.rawValue)
     let keyDown = CGEventMask(1 << CGEventType.keyDown.rawValue)
     let flagsChanged = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
-
-    // 组合的按钮事件掩码
-    var buttonEventMask: CGEventMask {
-        return leftDown | rightDown | otherDown | keyDown | flagsChanged
+    var eventMask: CGEventMask {
+        return leftDown | rightDown | otherDown | keyDown
     }
 
     // MARK: - 按钮事件处理
@@ -45,8 +43,8 @@ class ButtonCore {
         if !isActive {
             NSLog("ButtonCore enabled")
             do {
-                buttonEventInterceptor = try Interceptor(
-                    event: buttonEventMask,
+                eventInterceptor = try Interceptor(
+                    event: eventMask,
                     handleBy: buttonEventCallBack,
                     listenOn: .cgAnnotatedSessionEventTap,
                     placeAt: .tailAppendEventTap,
@@ -63,8 +61,8 @@ class ButtonCore {
     func disable() {
         if isActive {
             NSLog("ButtonCore disabled")
-            buttonEventInterceptor?.stop()
-            buttonEventInterceptor = nil
+            eventInterceptor?.stop()
+            eventInterceptor = nil
             isActive = false
         }
     }

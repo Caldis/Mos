@@ -34,7 +34,6 @@ class ScrollCore {
     let scrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
     let hotkeyEventMask = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
     let mouseLeftEventMask = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
-    let mouseRightEventMask = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
     
     // MARK: - 滚动事件处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
@@ -130,38 +129,38 @@ class ScrollCore {
     // MARK: - 热键事件处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 获取当前按键
-        let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
+        let keyCode = event.keyCode
         // 判断快捷键
         switch keyCode {
-        case MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight:
-            ScrollCore.shared.tryToggleEnableAllFlag(
-                for: ScrollCore.shared.application,
-                with: keyCode,
-                using: MODIFIER_KEY_SET.control.codes,
-                on: Utils.isKeyDown(event, MODIFIER_KEY_SET.control)
-            )
-        case MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight:
-            ScrollCore.shared.tryToggleEnableAllFlag(
-                for: ScrollCore.shared.application,
-                with: keyCode,
-                using: MODIFIER_KEY_SET.option.codes,
-                on: Utils.isKeyDown(event, MODIFIER_KEY_SET.option)
-            )
-        case MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight:
-            ScrollCore.shared.tryToggleEnableAllFlag(
-                for: ScrollCore.shared.application,
-                with: keyCode,
-                using: MODIFIER_KEY_SET.command.codes,
-                on: Utils.isKeyDown(event, MODIFIER_KEY_SET.command)
-            )
-        case MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight:
-            ScrollCore.shared.tryToggleEnableAllFlag(
-                for: ScrollCore.shared.application,
-                with: keyCode,
-                using: MODIFIER_KEY_SET.shift.codes,
-                on: Utils.isKeyDown(event, MODIFIER_KEY_SET.shift)
-            )
-        default: break
+            case KeyCode.controlL, KeyCode.controlR:
+                ScrollCore.shared.tryToggleEnableAllFlag(
+                    for: ScrollCore.shared.application,
+                    with: keyCode,
+                    using: MODIFIER_KEY_SET.control.codes,
+                    on: event.isControlKey && event.hasControlKey
+                )
+            case KeyCode.optionL, KeyCode.optionR:
+                ScrollCore.shared.tryToggleEnableAllFlag(
+                    for: ScrollCore.shared.application,
+                    with: keyCode,
+                    using: MODIFIER_KEY_SET.option.codes,
+                    on: event.isOptionKey && event.hasOptionKey
+                )
+            case KeyCode.commandL, KeyCode.commandR:
+                ScrollCore.shared.tryToggleEnableAllFlag(
+                    for: ScrollCore.shared.application,
+                    with: keyCode,
+                    using: MODIFIER_KEY_SET.command.codes,
+                    on: event.isCommandKey && event.hasCommandKey
+                )
+            case KeyCode.shiftL, KeyCode.shiftR:
+                ScrollCore.shared.tryToggleEnableAllFlag(
+                    for: ScrollCore.shared.application,
+                    with: keyCode,
+                    using: MODIFIER_KEY_SET.shift.codes,
+                    on: event.isShiftKey && event.hasShiftKey
+                )
+            default: break
         }
         return nil
     }

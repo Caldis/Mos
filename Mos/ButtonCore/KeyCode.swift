@@ -20,6 +20,11 @@ struct KeyCode {
     static let controlR: UInt16 = 62
     static let fnL: UInt16 = 63
     static let fnR: UInt16 = 179
+    static let commandKeys: Set<UInt16> = [KeyCode.commandL, KeyCode.commandR]
+    static let shiftKeys: Set<UInt16> = [KeyCode.shiftL, KeyCode.shiftR]
+    static let optionKeys: Set<UInt16> = [KeyCode.optionL, KeyCode.optionR]
+    static let controlKeys: Set<UInt16> = [KeyCode.controlL, KeyCode.controlR]
+    static let fnKeys: Set<UInt16> = [KeyCode.fnL, KeyCode.fnR]
     static let modifierKeys: Set<UInt16> = [
         KeyCode.commandL,
         KeyCode.commandR,
