@@ -67,7 +67,7 @@ class KeyPreview: NSStackView {
     }
 
     /// 显示录制中状态
-    func updateForRecording(_ event: CGEvent) {
+    func updateForRecording(from event: CGEvent) {
         if event.hasModifiers {
             update(from: [event.modifierString, KeyPreview.WAITING_WORDING], status: .recording)
         } else {

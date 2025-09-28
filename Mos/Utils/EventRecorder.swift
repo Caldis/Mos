@@ -159,7 +159,7 @@ class EventRecorder: NSObject {
         }
         // 实时更新录制界面显示当前已按下的修饰键
         keyPopover?.keyPreview
-            .update(from: event.displayComponents, status: .recording)
+            .updateForRecording(from: event)
     }
     // 录制取消处理
     @objc private func handleRecordingCancelled(_ notification: NSNotification) {
