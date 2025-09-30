@@ -1066,7 +1066,7 @@
                                 <rect key="frame" x="171" y="370" width="120" height="24"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Vhz-Rn-lcU" id="GDi-oW-nle">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="message"/>
                                     <menu key="menu" id="NGP-wM-KXa">
                                         <items>
                                             <menuItem title="Disabled" state="on" id="Vhz-Rn-lcU">
@@ -1118,7 +1118,7 @@
                                 <rect key="frame" x="171" y="317" width="120" height="24"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cTe-aL-0GQ" id="gkh-s7-kv8">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="message"/>
                                     <menu key="menu" id="pei-BS-BDt">
                                         <items>
                                             <menuItem title="Disabled" state="on" id="cTe-aL-0GQ">
@@ -1170,7 +1170,7 @@
                                 <rect key="frame" x="171" y="264" width="123" height="24"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="vFk-37-HRU" id="veO-qF-0qO">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="message"/>
                                     <menu key="menu" id="ycb-Tc-24R">
                                         <items>
                                             <menuItem title="Disabled" state="on" id="vFk-37-HRU">
