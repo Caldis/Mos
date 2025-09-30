@@ -37,6 +37,27 @@ struct KeyCode {
         KeyCode.fnL,
         KeyCode.fnR
     ]
+    // 掩码
+    static let modifiersMask: UInt64 =
+        CGEventFlags.maskControl.rawValue |
+        CGEventFlags.maskAlternate.rawValue |
+        CGEventFlags.maskCommand.rawValue |
+        CGEventFlags.maskShift.rawValue
+    static let keyCodeToMask: [UInt16: CGEventFlags] = [
+        KeyCode.controlL: .maskControl,
+        KeyCode.controlR: .maskControl,
+        KeyCode.optionL: .maskAlternate,
+        KeyCode.optionR: .maskAlternate,
+        KeyCode.commandL: .maskCommand,
+        KeyCode.commandR: .maskCommand,
+        KeyCode.shiftL: .maskShift,
+        KeyCode.shiftR: .maskShift,
+        KeyCode.fnL: .maskSecondaryFn,
+        KeyCode.fnR: .maskSecondaryFn,
+    ]
+    static func getKeyMask(_ keyCode: UInt16) -> CGEventFlags {
+        return keyCodeToMask[keyCode] ?? CGEventFlags(rawValue: 0)
+    }
 
     /// F键系列
     static let F1: UInt16 = 122

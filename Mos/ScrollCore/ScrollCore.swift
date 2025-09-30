@@ -128,104 +128,39 @@ class ScrollCore {
     
     // MARK: - 热键事件处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        // 获取当前按键
         let keyCode = event.keyCode
-        // 判断快捷键
-        switch keyCode {
-            case KeyCode.controlL, KeyCode.controlR:
-                ScrollCore.shared.tryToggleEnableAllFlag(
-                    for: ScrollCore.shared.application,
-                    with: keyCode,
-                    using: MODIFIER_KEY_SET.control.codes,
-                    on: event.isControlKey && event.hasControlKey
-                )
-            case KeyCode.optionL, KeyCode.optionR:
-                ScrollCore.shared.tryToggleEnableAllFlag(
-                    for: ScrollCore.shared.application,
-                    with: keyCode,
-                    using: MODIFIER_KEY_SET.option.codes,
-                    on: event.isOptionKey && event.hasOptionKey
-                )
-            case KeyCode.commandL, KeyCode.commandR:
-                ScrollCore.shared.tryToggleEnableAllFlag(
-                    for: ScrollCore.shared.application,
-                    with: keyCode,
-                    using: MODIFIER_KEY_SET.command.codes,
-                    on: event.isCommandKey && event.hasCommandKey
-                )
-            case KeyCode.shiftL, KeyCode.shiftR:
-                ScrollCore.shared.tryToggleEnableAllFlag(
-                    for: ScrollCore.shared.application,
-                    with: keyCode,
-                    using: MODIFIER_KEY_SET.shift.codes,
-                    on: event.isShiftKey && event.hasShiftKey
-                )
-            default: break
+        // Dash
+        let (dashKeyCode, dashKeyMask) = ScrollUtils.shared.optionsDashKey(application: ScrollCore.shared.application)
+        if keyCode == dashKeyCode {
+            let dashKeyIsPressed = event.flags.contains(dashKeyMask)
+            ScrollCore.shared.dashScroll = dashKeyIsPressed
+            ScrollCore.shared.dashAmplification = dashKeyIsPressed ? 5.0 : 1.0
         }
-        return nil
-    }
-    func tryEnableDashFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
-        if (keyPair.contains(key)) {
-            ScrollCore.shared.dashScroll = true
-            ScrollCore.shared.dashAmplification = 5.0
+        // Toggle
+        let (toggleKeyCode, toggleKeyMask) = ScrollUtils.shared.optionsToggleKey(application: ScrollCore.shared.application)
+        if keyCode == toggleKeyCode {
+            let toggleKeyIsPressed = event.flags.contains(toggleKeyMask)
+            ScrollCore.shared.toggleScroll = toggleKeyIsPressed
         }
-    }
-    func tryDisableDashFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
-        if (keyPair.contains(key)) {
+        // Block
+        let (blockKeyCode, blockKeyMask) = ScrollUtils.shared.optionsBlockKey(application: ScrollCore.shared.application)
+        if keyCode == blockKeyCode {
+            let blockKeyIsPressed = event.flags.contains(blockKeyMask)
+            ScrollCore.shared.blockSmooth = blockKeyIsPressed
+        }
+        // 处理抬起时焦点 App 变化
+        let isAppTargetChanged = ScrollCore.shared.currentApplication != ScrollCore.shared.application
+        if isAppTargetChanged && event.isKeyUp {
+            // 关闭全部
             ScrollCore.shared.dashScroll = false
             ScrollCore.shared.dashAmplification = 1.0
-        }
-    }
-    func tryEnableToggleFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
-        if (keyPair.contains(key)) {
-            ScrollCore.shared.toggleScroll = true
-        }
-    }
-    func tryDisableToggleFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
-        if (keyPair.contains(key)) {
             ScrollCore.shared.toggleScroll = false
-        }
-    }
-    func tryEnableBlockFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
-        if (keyPair.contains(key)) {
-            ScrollCore.shared.blockSmooth = true
-            ScrollPoster.shared.brake()
-        }
-    }
-    func tryDisableBlockFlag(with key:CGKeyCode, andKeyPair keyPair:[CGKeyCode]) {
-        if (keyPair.contains(key)) {
             ScrollCore.shared.blockSmooth = false
-        }
-    }
-    func disableAllFlag() {
-        ScrollCore.shared.dashScroll = false
-        ScrollCore.shared.dashAmplification = 1.0
-        ScrollCore.shared.toggleScroll = false
-        ScrollCore.shared.blockSmooth = false
-    }
-    func tryToggleEnableAllFlag(for targetApplication:Application?, with keyCode:CGKeyCode, using keyPair:[CGKeyCode], on down:Bool) {
-        // 读取快捷键
-        let dashKey = ScrollUtils.shared.optionsDashOn(application: targetApplication)
-        let toggleKey = ScrollUtils.shared.optionsToggleOn(application: targetApplication)
-        let blockKey = ScrollUtils.shared.optionsBlockOn(application: targetApplication)
-        if down {
-            // 如果按下, 则按需激活
-            ScrollCore.shared.tryEnableDashFlag(with: dashKey, andKeyPair: keyPair)
-            ScrollCore.shared.tryEnableToggleFlag(with: toggleKey, andKeyPair: keyPair)
-            ScrollCore.shared.tryEnableBlockFlag(with: blockKey, andKeyPair: keyPair)
-            // 并更新记录器
-            ScrollCore.shared.currentApplication = targetApplication
-        } else if ScrollCore.shared.currentApplication == targetApplication {
-            // 如果弹起, 且与先前的目标应用相同, 则按需关闭
-            ScrollCore.shared.tryDisableDashFlag(with: dashKey, andKeyPair: keyPair)
-            ScrollCore.shared.tryDisableToggleFlag(with: toggleKey, andKeyPair: keyPair)
-            ScrollCore.shared.tryDisableBlockFlag(with: blockKey, andKeyPair: keyPair)
-        } else {
-            // 否则关闭全部
-            ScrollCore.shared.disableAllFlag()
             // 并更新记录器
             ScrollCore.shared.currentApplication = nil
         }
+        // 不返回原始事件
+        return nil
     }
     
     // MARK: - 鼠标事件处理

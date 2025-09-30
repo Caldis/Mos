@@ -61,14 +61,24 @@ extension CGEvent {
     }
 
     /// 修饰键
-    var modifiersMask: UInt64 {
-        return CGEventFlags.maskControl.rawValue | CGEventFlags.maskAlternate.rawValue | CGEventFlags.maskCommand.rawValue | CGEventFlags.maskShift.rawValue
-    }
     var isModifiers: Bool {
         KeyCode.modifierKeys.contains(keyCode)
     }
     var hasModifiers: Bool {
-        return flags.rawValue & modifiersMask != 0
+        return flags.rawValue & KeyCode.modifiersMask != 0
+    }
+
+    /// 是否按下
+    var isKeyDown: Bool {
+        // 修饰键, 则比对按键是否匹配 mask
+        if type == CGEventType.flagsChanged {
+            return flags.contains(KeyCode.getKeyMask(keyCode))
+        }
+        // 常规情况
+        return type == CGEventType.keyDown
+    }
+    var isKeyUp: Bool {
+        return !isKeyDown
     }
 
     /// Command 键

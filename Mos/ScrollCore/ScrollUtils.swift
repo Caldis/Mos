@@ -120,25 +120,34 @@ class ScrollUtils {
     }
 
     // 滚动参数: 热键
-    func optionsDashOn(application: Application?) -> CGKeyCode {
+    func optionsDashKey(application: Application?) -> (CGKeyCode, CGEventFlags) {
+        var code: CGKeyCode
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.dash ?? 0 : targetApplication.scroll.dash ?? 0)
+            code = CGKeyCode(targetApplication.inherit ? Options.shared.scroll.dash ?? 0 : targetApplication.scroll.dash ?? 0)
         } else {
-            return CGKeyCode(Options.shared.scroll.dash ?? 0)
+            code = CGKeyCode(Options.shared.scroll.dash ?? 0)
         }
+        let mask = KeyCode.getKeyMask(code)
+        return (code, mask)
     }
-    func optionsToggleOn(application: Application?) -> CGKeyCode {
+    func optionsToggleKey(application: Application?) -> (CGKeyCode, CGEventFlags) {
+        var code: CGKeyCode
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.toggle ?? 0 : targetApplication.scroll.toggle ?? 0)
+            code = CGKeyCode(targetApplication.inherit ? Options.shared.scroll.toggle ?? 0 : targetApplication.scroll.toggle ?? 0)
         } else {
-            return CGKeyCode(Options.shared.scroll.toggle ?? 0)
+            code = CGKeyCode(Options.shared.scroll.toggle ?? 0)
         }
+        let mask = KeyCode.getKeyMask(code)
+        return (code, mask)
     }
-    func optionsBlockOn(application: Application?) -> CGKeyCode {
+    func optionsBlockKey(application: Application?) -> (CGKeyCode, CGEventFlags) {
+        var code: CGKeyCode
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scroll.block ?? 0 : targetApplication.scroll.block ?? 0)
+            code = CGKeyCode(targetApplication.inherit ? Options.shared.scroll.block ?? 0 : targetApplication.scroll.block ?? 0)
         } else {
-            return CGKeyCode(Options.shared.scroll.block ?? 0)
+            code = CGKeyCode(Options.shared.scroll.block ?? 0)
         }
+        let mask = KeyCode.getKeyMask(code)
+        return (code, mask)
     }
 }
