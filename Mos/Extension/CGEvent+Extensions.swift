@@ -55,11 +55,6 @@ extension CGEvent {
         return KeyCode.mouseMap[keyCode] ?? "Mouse(\(keyCode))"
     }
 
-    /// NSEvent 修饰键标志
-    var modifierFlags: NSEvent.ModifierFlags {
-        return NSEvent.ModifierFlags(rawValue: UInt(flags.rawValue))
-    }
-
     /// 修饰键
     var isModifiers: Bool {
         KeyCode.modifierKeys.contains(keyCode)

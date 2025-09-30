@@ -30,8 +30,6 @@ class EventRecorder: NSObject {
     private var recordTimeoutTimer: Timer? // 超时保护定时器
     // UI 组件
     private var keyPopover: KeyPopover?
-    // 修饰键状态跟踪
-    private var currentModifiers = NSEvent.ModifierFlags()
     
     // MARK: - Life Cycle
     deinit {
@@ -149,8 +147,6 @@ class EventRecorder: NSObject {
     @objc private func handleModifierFlagsChanged(_ notification: NSNotification) {
         guard isRecording && !isRecorded else { return }
         let event = notification.object as! CGEvent
-        // 更新当前修饰键状态
-        currentModifiers = event.modifierFlags
         // 如果有修饰键被按下，刷新超时定时器给用户更多时间
         let hasActiveModifiers = event.hasModifiers
         if hasActiveModifiers {
@@ -212,7 +208,6 @@ class EventRecorder: NSObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.isRecording = false
             self?.isRecorded = false
-            self?.currentModifiers = NSEvent.ModifierFlags()
             NSLog("[EventRecorder] Stopped")
         }
     }

@@ -26,17 +26,19 @@ struct KeyCode {
     static let controlKeys: Set<UInt16> = [KeyCode.controlL, KeyCode.controlR]
     static let fnKeys: Set<UInt16> = [KeyCode.fnL, KeyCode.fnR]
     static let modifierKeys: Set<UInt16> = [
+        KeyCode.controlL,
+        KeyCode.controlR,
+        KeyCode.optionL,
+        KeyCode.optionR,
         KeyCode.commandL,
         KeyCode.commandR,
         KeyCode.shiftL,
         KeyCode.shiftR,
-        KeyCode.optionL,
-        KeyCode.optionR,
-        KeyCode.controlL,
-        KeyCode.controlR,
         KeyCode.fnL,
         KeyCode.fnR
     ]
+    static let modifierLKeys = [KeyCode.controlL, KeyCode.optionL, KeyCode.commandL, KeyCode.shiftL]
+    static let modifierRKeys = [KeyCode.controlL, KeyCode.optionL, KeyCode.commandL, KeyCode.shiftL]
     // 掩码
     static let modifiersMask: UInt64 =
         CGEventFlags.maskControl.rawValue |

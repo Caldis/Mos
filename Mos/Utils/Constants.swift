@@ -13,14 +13,6 @@ struct ANIMATION {
     static let duration = 0.3
 }
 
-struct MODIFIER_KEY_SET {
-    static let all = ( codes: [KeyCode.controlL, KeyCode.optionL, KeyCode.commandL, KeyCode.shiftL] , mask: [] )
-    static let control = ( codes: [KeyCode.controlL, KeyCode.controlR], mask: CGEventFlags.maskControl )
-    static let option = ( codes: [KeyCode.optionL, KeyCode.optionR], mask: CGEventFlags.maskAlternate )
-    static let command = ( codes: [KeyCode.commandL, KeyCode.commandR], mask: CGEventFlags.maskCommand )
-    static let shift = ( codes: [KeyCode.shiftL, KeyCode.shiftR], mask: CGEventFlags.maskShift )
-}
-
 // 窗口
 struct WINDOW_IDENTIFIER {
     static let introductionWindowController = "introductionWindowController"
