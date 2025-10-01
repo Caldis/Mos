@@ -31,7 +31,7 @@ class PreferencesButtonsViewController: NSViewController {
         tableView.delegate = self
         tableView.dataSource = self
         // 读取设置
-        syncViewWithOptions()
+        loadOptionsToView()
     }
     
     override func viewWillAppear() {
@@ -64,9 +64,16 @@ class PreferencesButtonsViewController: NSViewController {
  * 数据持久化
  **/
 extension PreferencesButtonsViewController {
-    // 同步界面与设置
+    // 从 Options 加载到界面
+    func loadOptionsToView() {
+        buttonBindings = Options.shared.buttonBindings
+        tableView.reloadData()
+        toggleNoDataHint()
+    }
+
+    // 保存界面到 Options
     func syncViewWithOptions() {
-        // TODO: 持久化实现
+        Options.shared.buttonBindings = buttonBindings
     }
 
     // 更新删除按钮状态

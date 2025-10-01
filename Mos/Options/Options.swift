@@ -15,7 +15,7 @@ struct OptionItem {
         static let OptionsExist = "optionsExist"
         static let HideStatusItem = "hideStatusItem"
     }
-    
+
     struct Scroll {
         static let Smooth = "smooth"
         static let Reverse = "reverse"
@@ -27,10 +27,14 @@ struct OptionItem {
         static let Duration = "duration"
         static let Precision = "precision"
     }
-    
+
     struct Application {
         static let Allowlist = "allowlist"
         static let Applications = "applications"
+    }
+
+    struct Button {
+        static let Bindings = "buttonBindings"
     }
 }
 
@@ -54,6 +58,10 @@ class Options {
     }
     // 应用
     var application = OPTIONS_APPLICATION_DEFAULT() {
+        didSet { Options.shared.saveOptions() }
+    }
+    // 按钮绑定
+    var buttonBindings: [ButtonBinding] = [] {
         didSet { Options.shared.saveOptions() }
     }
 }
@@ -86,6 +94,8 @@ extension Options {
         // 应用
         application.allowlist = UserDefaults.standard.bool(forKey: OptionItem.Application.Allowlist)
         application.applications = loadApplicationsData()
+        // 按钮绑定
+        buttonBindings = loadButtonBindingsData()
         // 解锁
         readingOptionsLock = false
     }
@@ -114,6 +124,8 @@ extension Options {
             } else {
                 NSLog("Failed to serialize applications data, skipping save")
             }
+            // 按钮绑定
+            saveButtonBindingsData()
         }
     }
     
@@ -123,7 +135,7 @@ extension Options {
             matchKey: "path",
             forObserver: Options.shared.saveOptions
         )
-        
+
         // 检查 UserDefaults 中的值类型
         let rawValue = UserDefaults.standard.object(forKey: OptionItem.Application.Applications)
         guard let data = rawValue as? Data else {
@@ -133,7 +145,7 @@ extension Options {
             }
             return defaultArray
         }
-        
+
         // 尝试解析
         do {
             return try EnhanceArray<Application>(
@@ -145,6 +157,36 @@ extension Options {
             NSLog("Failed to decode applications data: \(error), resetting to defaults")
             UserDefaults.standard.removeObject(forKey: OptionItem.Application.Applications)
             return defaultArray
+        }
+    }
+
+    // 安全加载按钮绑定数据
+    private func loadButtonBindingsData() -> [ButtonBinding] {
+        let rawValue = UserDefaults.standard.object(forKey: OptionItem.Button.Bindings)
+        guard let data = rawValue as? Data else {
+            if rawValue != nil {
+                NSLog("Button bindings data has wrong type: \(type(of: rawValue)), clearing corrupted data")
+                UserDefaults.standard.removeObject(forKey: OptionItem.Button.Bindings)
+            }
+            return []
+        }
+
+        do {
+            return try decoder.decode([ButtonBinding].self, from: data)
+        } catch {
+            NSLog("Failed to decode button bindings data: \(error), resetting to defaults")
+            UserDefaults.standard.removeObject(forKey: OptionItem.Button.Bindings)
+            return []
+        }
+    }
+
+    // 保存按钮绑定数据
+    private func saveButtonBindingsData() {
+        do {
+            let data = try encoder.encode(buttonBindings)
+            UserDefaults.standard.set(data, forKey: OptionItem.Button.Bindings)
+        } catch {
+            NSLog("Failed to encode button bindings data: \(error), skipping save")
         }
     }
 }
