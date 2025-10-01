@@ -91,12 +91,34 @@ extension PreferencesButtonsViewController {
     // 添加录制事件到列表
     private func addRecordedEvent(_ event: CGEvent) {
         let recordedEvent = RecordedEvent(from: event)
+
+        // 检查是否已存在相同的录制事件
+        if let existingIndex = buttonBindings.firstIndex(where: { $0.triggerEvent == recordedEvent }) {
+            // 找到重复项，高亮显示
+            highlightExistingRow(at: existingIndex)
+            return
+        }
+
         // 新录制的事件不设置默认快捷键，等待用户选择
         let binding = ButtonBinding(triggerEvent: recordedEvent, systemShortcutName: "", isEnabled: false)
         buttonBindings.append(binding)
         tableView.reloadData()
         toggleNoDataHint()
         syncViewWithOptions()
+    }
+
+    // 高亮已存在的行
+    private func highlightExistingRow(at row: Int) {
+        // 取消当前选中
+        tableView.deselectAll(nil)
+
+        // 滚动到目标行
+        tableView.scrollRowToVisible(row)
+
+        // 获取该行的 cell view 并触发高亮
+        if let cellView = tableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? ButtonTableCellView {
+            cellView.highlight()
+        }
     }
 
     // 删除按钮绑定
@@ -159,6 +181,15 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
     // 选择变化
     func tableViewSelectionDidChange(_ notification: Notification) {
         updateDelButtonState()
+    }
+
+    // Type Selection 支持
+    func tableView(_ tableView: NSTableView, typeSelectStringFor tableColumn: NSTableColumn?, row: Int) -> String? {
+        guard row < buttonBindings.count else { return nil }
+        let components = buttonBindings[row].triggerEvent.displayComponents
+        // 去掉第一项（修饰键），只保留实际按键用于匹配
+        let keyOnly = components.count > 1 ? Array(components.dropFirst()) : components
+        return keyOnly.joined(separator: " ")
     }
 }
 

@@ -22,6 +22,7 @@ class ButtonTableCellView: NSTableCellView {
     private weak var viewController: PreferencesButtonsViewController? // 父容器视图
     private var buttonBinding: ButtonBinding? // 按钮绑定
     private var row: Int?
+    private var originalRowBackgroundColor: NSColor? // 保存原始行背景色
 
     // MARK: - 初始化内容
     func setup(from viewController: PreferencesButtonsViewController, with binding: ButtonBinding, at row: Int) {
@@ -29,11 +30,50 @@ class ButtonTableCellView: NSTableCellView {
         self.buttonBinding = binding
         self.row = row
 
+        // 保存原始背景色（首次或复用时）
+        if originalRowBackgroundColor == nil, let rowView = self.superview as? NSTableRowView {
+            originalRowBackgroundColor = rowView.backgroundColor
+        }
+
         // 配置按键显示组件
         setupKeyDisplayView(with: binding.triggerEvent)
 
         // 配置动作选择器
         setupActionPopUpButton()
+    }
+
+    // 高亮该行（重复两次）
+    func highlight() {
+        guard let rowView = self.superview as? NSTableRowView else { return }
+
+        // 设置高亮色
+        let isDarkMode = Utils.isDarkMode(for: rowView)
+        let highlightColor = isDarkMode ? NSColor(white: 1.0, alpha: 0.2) : NSColor(white: 0.0, alpha: 0.15)
+        let originalColor = originalRowBackgroundColor ?? rowView.backgroundColor
+
+        // 第一次高亮
+        NSAnimationContext.runAnimationGroup({ context in
+            context.duration = 0.4
+            rowView.animator().backgroundColor = highlightColor
+        }, completionHandler: {
+            // 第一次恢复
+            NSAnimationContext.runAnimationGroup({ context in
+                context.duration = 0.4
+                rowView.animator().backgroundColor = originalColor
+            }, completionHandler: {
+                // 第二次高亮
+                NSAnimationContext.runAnimationGroup({ context in
+                    context.duration = 0.4
+                    rowView.animator().backgroundColor = highlightColor
+                }, completionHandler: {
+                    // 第二次恢复
+                    NSAnimationContext.runAnimationGroup({ context in
+                        context.duration = 0.4
+                        rowView.animator().backgroundColor = originalColor
+                    })
+                })
+            })
+        })
     }
 
     // 创建按键视图
