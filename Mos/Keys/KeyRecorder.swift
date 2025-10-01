@@ -170,9 +170,11 @@ class KeyRecorder: NSObject {
         // Guard: 获取 RecordedEvent
         let event = notification.object as! CGEvent
         // Guard: 检查事件有效性
-        guard event.isRecordable else { 
+        guard event.isRecordable else {
             NSLog("[EventRecorder] Invalid event ignored: \(event)")
-            return 
+            // 触发警告动画反馈
+            keyPopover?.keyPreview.shakeWarning()
+            return
         }
         // 更新记录标识
         guard !isRecorded else { return }

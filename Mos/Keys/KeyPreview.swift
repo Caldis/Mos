@@ -75,6 +75,64 @@ class KeyPreview: NSStackView {
         }
     }
 
+    /// 显示警告反馈(不可录制的按键)
+    /// 对WAITING_WORDING对应的keyView执行黄色+晃动动画
+    func shakeWarning() {
+        // 找到WAITING_WORDING对应的view
+        guard let waitingView = findWaitingView() else { return }
+        guard let layer = waitingView.layer else { return }
+
+        // 停止呼吸动画,避免和警告动画冲突
+        layer.removeAnimation(forKey: "breathingAnimation")
+        layer.opacity = 1.0
+
+        // 1. 晃动动画
+        let shakeAnimation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        shakeAnimation.values = [0, -8, 8, -8, 8, -4, 4, 0]
+        shakeAnimation.duration = 0.4
+        shakeAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut)
+
+        // 2. 背景色变化动画
+        let warningColor: CGColor
+        if Utils.isDarkMode(for: self) {
+            // Dark模式: 较深的红色
+            warningColor = NSColor(calibratedRed: 0.85, green: 0.25, blue: 0.20, alpha: 1.0).cgColor
+        } else {
+            // Light模式: 明亮的红色
+            warningColor = NSColor(calibratedRed: 0.95, green: 0.35, blue: 0.30, alpha: 1.0).cgColor
+        }
+
+        let colorAnimation = CABasicAnimation(keyPath: "backgroundColor")
+        colorAnimation.toValue = warningColor
+        colorAnimation.duration = 0.3
+        colorAnimation.autoreverses = true
+        colorAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut)
+
+        // 执行动画
+        layer.add(shakeAnimation, forKey: "shakeWarning")
+        layer.add(colorAnimation, forKey: "colorWarning")
+
+        // 动画结束后恢复呼吸动画
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            // 只有在recording状态才恢复呼吸动画
+            if self.status == .recording {
+                self.startBreathingAnimation(for: waitingView)
+            }
+        }
+    }
+
+    /// 查找WAITING_WORDING对应的keyView
+    private func findWaitingView() -> NSView? {
+        guard let waitingIndex = keyComponents.firstIndex(of: KeyPreview.WAITING_WORDING) else {
+            return nil
+        }
+        guard waitingIndex < keyViews.count else {
+            return nil
+        }
+        return keyViews[waitingIndex]
+    }
+
     // MARK: - View and anim control
     private func clearKeyViews() {
         // 停止所有动画
@@ -149,8 +207,8 @@ class KeyPreview: NSStackView {
         // 创建呼吸动画
         let animation = CABasicAnimation(keyPath: "opacity")
         animation.fromValue = 1.0
-        animation.toValue = 0.3
-        animation.duration = 0.35
+        animation.toValue = 0.5
+        animation.duration = 0.5
         animation.autoreverses = true
         animation.repeatCount = .infinity
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
