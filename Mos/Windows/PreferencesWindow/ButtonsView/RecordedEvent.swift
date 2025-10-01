@@ -1,5 +1,5 @@
 //
-//  ButtonBinding.swift
+//  RecordedEvent.swift
 //  Mos
 //  按钮绑定数据结构, 包含两部分
 //  - RecordedEvent: 录制后的 CGEvent 事件的信息结构题, 可序列化存储
