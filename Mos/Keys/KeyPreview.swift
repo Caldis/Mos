@@ -163,25 +163,9 @@ class KeyPreview: NSStackView {
         }
     }
     private func createSingleKeyView(for text: String) -> NSView {
-        let container = NSView()
-        container.wantsLayer = true
-        // 根据样式设置背景色
-        switch status {
-        case .normal:
-            container.layer?.backgroundColor = NSColor.quaternaryLabelColor.cgColor
-        case .recorded:
-            if Utils.isDarkMode(for: self) {
-                // Dark 模式：较深的绿色，降低亮度
-                container.layer?.backgroundColor = NSColor(calibratedRed: 0.15, green: 0.65, blue: 0.30, alpha: 1.0).cgColor
-            } else {
-                // Light 模式：柔和的绿色，保持可读性
-                container.layer?.backgroundColor = NSColor(calibratedRed: 0.25, green: 0.70, blue: 0.35, alpha: 1.0).cgColor
-            }
-        case .recording:
-            container.layer?.backgroundColor = NSColor.quaternaryLabelColor.cgColor
-        }
-        // 圆角
-        container.layer?.cornerRadius = 4
+        // 创建一个能动态响应外观变化的容器
+        let container = KeyComponentContainer(keyStatus: status)
+
         // 创建文本标签
         let label = NSTextField(labelWithString: text)
         label.font = NSFont.systemFont(ofSize: KeyPreview.FONT_SIZE, weight: .medium)
@@ -189,6 +173,7 @@ class KeyPreview: NSStackView {
         label.alignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
+
         // 设置约束
         NSLayoutConstraint.activate([
             label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
@@ -197,10 +182,12 @@ class KeyPreview: NSStackView {
             container.widthAnchor.constraint(greaterThanOrEqualToConstant: 20),
             container.heightAnchor.constraint(equalToConstant: 20),
         ])
+
         // 如果是录制状态且内容是 keyWaiting(问号)，添加呼吸动画
         if status == .recording && text == KeyPreview.WAITING_WORDING {
             startBreathingAnimation(for: container)
         }
+
         return container
     }
     private func startBreathingAnimation(for view: NSView) {
@@ -213,6 +200,39 @@ class KeyPreview: NSStackView {
         animation.repeatCount = .infinity
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         view.layer?.add(animation, forKey: "breathingAnimation")
+    }
+}
+
+// MARK: - KeyComponentContainer
+/// 按键组件容器，通过 updateLayer 动态响应外观变化
+private final class KeyComponentContainer: NSView {
+    let keyStatus: KeyPreview.Status
+
+    init(keyStatus: KeyPreview.Status) {
+        self.keyStatus = keyStatus
+        super.init(frame: .zero)
+        wantsLayer = true
+        layer?.cornerRadius = 4
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) not implemented")
+    }
+
+    override func updateLayer() {
+        super.updateLayer()
+        layer?.backgroundColor = getBackgroundColor().cgColor
+    }
+
+    private func getBackgroundColor() -> NSColor {
+        switch keyStatus {
+        case .normal, .recording:
+            return NSColor.quaternaryLabelColor
+        case .recorded:
+            return Utils.isDarkMode(for: self)
+                ? NSColor(calibratedRed: 0.15, green: 0.65, blue: 0.30, alpha: 1.0)
+                : NSColor(calibratedRed: 0.25, green: 0.70, blue: 0.35, alpha: 1.0)
+        }
     }
 }
 

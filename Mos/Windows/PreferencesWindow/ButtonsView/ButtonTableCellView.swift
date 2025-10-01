@@ -38,6 +38,9 @@ class ButtonTableCellView: NSTableCellView {
 
     // 创建按键视图
     private func setupKeyDisplayView(with recordedEvent: RecordedEvent) {
+        // 清理旧的子视图（复用 cell 时会有残留）
+        keyDisplayContainerView.subviews.forEach { $0.removeFromSuperview() }
+
         // 创建新的 KeyDisplayView
         keyPreview = KeyPreview()
         keyDisplayContainerView.addSubview(keyPreview)
@@ -49,8 +52,7 @@ class ButtonTableCellView: NSTableCellView {
         ])
 
         // 设置事件内容
-        keyPreview
-            .update(from: recordedEvent.displayComponents, status: .normal)
+        keyPreview.update(from: recordedEvent.displayComponents, status: .normal)
     }
     
     // 设置动作按钮
