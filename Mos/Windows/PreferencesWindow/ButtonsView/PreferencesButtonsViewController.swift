@@ -12,7 +12,7 @@ class PreferencesButtonsViewController: NSViewController {
 
     // MARK: - Data
     private var buttonBindings: [ButtonBinding] = []
-    private var recorder = EventRecorder()
+    private var recorder = KeyRecorder()
 
     // MARK: - UI Elements
     // 表格
@@ -156,9 +156,9 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
 }
 
 // MARK: - EventRecorderDelegate
-extension PreferencesButtonsViewController: EventRecorderDelegate {
+extension PreferencesButtonsViewController: KeyRecorderDelegate {
     // Record 回调
-    func onEventRecorded(_ recorder: EventRecorder, didRecordEvent event: CGEvent) {
+    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: CGEvent) {
         // 添加延迟后调用, 确保不要太早消失
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.66) { [weak self] in
             self?.addRecordedEvent(event)

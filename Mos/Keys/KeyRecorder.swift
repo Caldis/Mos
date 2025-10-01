@@ -1,5 +1,5 @@
 //
-//  EventRecorder.swift
+//  KeyRecorder.swift
 //  Mos
 //  用于录制热键
 //
@@ -9,11 +9,11 @@
 
 import Cocoa
 
-protocol EventRecorderDelegate: AnyObject {
-    func onEventRecorded(_ recorder: EventRecorder, didRecordEvent event: CGEvent)
+protocol KeyRecorderDelegate: AnyObject {
+    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: CGEvent)
 }
 
-class EventRecorder: NSObject {
+class KeyRecorder: NSObject {
     
     // MARK: - Constants
     static let TIMEOUT: TimeInterval = 10.0
@@ -22,7 +22,7 @@ class EventRecorder: NSObject {
     static let CANCEL_NOTI_NAME = NSNotification.Name("RECORD_CANCEL_NOTI_NAME")
     
     // Delegate
-    weak var delegate: EventRecorderDelegate?
+    weak var delegate: KeyRecorderDelegate?
     // Recording
     private var interceptor: Interceptor?
     private var isRecording = false
@@ -64,21 +64,21 @@ class EventRecorder: NSObject {
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(handleRecordedEvent(_:)),
-                name: EventRecorder.FINISH_NOTI_NAME,
+                name: KeyRecorder.FINISH_NOTI_NAME,
                 object: nil
             )
             // 监听修饰键变化通知
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(handleModifierFlagsChanged(_:)),
-                name: EventRecorder.FLAG_CHANGE_NOTI_NAME,
+                name: KeyRecorder.FLAG_CHANGE_NOTI_NAME,
                 object: nil
             )
             // 监听录制取消通知
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(handleRecordingCancelled(_:)),
-                name: EventRecorder.CANCEL_NOTI_NAME,
+                name: KeyRecorder.CANCEL_NOTI_NAME,
                 object: nil
             )
             // 启动拦截器
@@ -91,7 +91,7 @@ class EventRecorder: NSObject {
                         // 修饰键变化，发送通知更新UI
                         DispatchQueue.main.async {
                             NotificationCenter.default.post(
-                                name: EventRecorder.FLAG_CHANGE_NOTI_NAME,
+                                name: KeyRecorder.FLAG_CHANGE_NOTI_NAME,
                                 object: recordedEvent
                             )
                         }
@@ -99,7 +99,7 @@ class EventRecorder: NSObject {
                         // 鼠标按键
                         DispatchQueue.main.async {
                             NotificationCenter.default.post(
-                                name: EventRecorder.FINISH_NOTI_NAME,
+                                name: KeyRecorder.FINISH_NOTI_NAME,
                                 object: recordedEvent
                             )
                         }
@@ -108,7 +108,7 @@ class EventRecorder: NSObject {
                         if recordedEvent.keyCode == KeyCode.escape {
                             DispatchQueue.main.async {
                                 NotificationCenter.default.post(
-                                    name: EventRecorder.CANCEL_NOTI_NAME,
+                                    name: KeyRecorder.CANCEL_NOTI_NAME,
                                     object: nil
                                 )
                             }
@@ -116,7 +116,7 @@ class EventRecorder: NSObject {
                             // 普通按键录制
                             DispatchQueue.main.async {
                                 NotificationCenter.default.post(
-                                    name: EventRecorder.FINISH_NOTI_NAME,
+                                    name: KeyRecorder.FINISH_NOTI_NAME,
                                     object: recordedEvent
                                 )
                             }
@@ -201,9 +201,9 @@ class EventRecorder: NSObject {
         // 取消通知和监听
         interceptor?.stop()
         interceptor = nil
-        NotificationCenter.default.removeObserver(self, name: EventRecorder.FINISH_NOTI_NAME, object: nil)
-        NotificationCenter.default.removeObserver(self, name: EventRecorder.FLAG_CHANGE_NOTI_NAME, object: nil)
-        NotificationCenter.default.removeObserver(self, name: EventRecorder.CANCEL_NOTI_NAME, object: nil)
+        NotificationCenter.default.removeObserver(self, name: KeyRecorder.FINISH_NOTI_NAME, object: nil)
+        NotificationCenter.default.removeObserver(self, name: KeyRecorder.FLAG_CHANGE_NOTI_NAME, object: nil)
+        NotificationCenter.default.removeObserver(self, name: KeyRecorder.CANCEL_NOTI_NAME, object: nil)
         // 重置状态 (添加延迟确保 Popover 结束动画完成, 避免多个 popover 重复出现导致卡住)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.isRecording = false
@@ -215,7 +215,7 @@ class EventRecorder: NSObject {
     // MARK: - Timeout Protection
     private func startTimeoutTimer() {
         cancelTimeoutTimer()
-        recordTimeoutTimer = Timer.scheduledTimer(withTimeInterval: EventRecorder.TIMEOUT, repeats: false) { [weak self] _ in
+        recordTimeoutTimer = Timer.scheduledTimer(withTimeInterval: KeyRecorder.TIMEOUT, repeats: false) { [weak self] _ in
             NSLog("[EventRecorder] Recording timed out")
             self?.stopRecording()
         }
