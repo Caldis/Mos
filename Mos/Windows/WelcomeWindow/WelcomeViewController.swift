@@ -20,7 +20,7 @@ class WelcomeViewController: NSViewController {
     override func viewDidLoad() {
         // 获取版本号
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
-        versionLabel.stringValue = "\(i18n.currentVersion) : \(version as! String)"
+        versionLabel.stringValue = "\(NSLocalizedString("Current Version", comment: "")) : \(version as! String)"
     }
     override func viewWillAppear() {
         // 启动定时器检测权限, 当拥有授权时启动滚动处理
@@ -48,12 +48,12 @@ class WelcomeViewController: NSViewController {
     @objc func accessibilityPermissionsChecker(_ timer: Timer) {
         if AXIsProcessTrusted() {
             // 如果有权限
-            allowToAccessButton.title = i18n.done
+            allowToAccessButton.title = NSLocalizedString("Done", comment: "")
             allowToAccessButton.isEnabled = false
             beginSmoothButton.isEnabled = true
         } else {
             // 如果没权限
-            allowToAccessButton.title = i18n.allowToAccess
+            allowToAccessButton.title = NSLocalizedString("Allow to access", comment: "")
             allowToAccessButton.isEnabled = true
             beginSmoothButton.isEnabled = false
         }

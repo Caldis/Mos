@@ -64,9 +64,9 @@ extension StatusItemManager {
     @objc func buildRequireAccessibilityMenu() {
         if let menu = item.menu {
             menu.removeAllItems()
-            menu.addItem(withTitle: i18n.needsAccessToAccessibilityControls, action: #selector(accessibilityRequire), keyEquivalent: "").target = self
+            menu.addItem(withTitle: NSLocalizedString("Needs access to Accessibility controls", comment: ""), action: #selector(accessibilityRequire), keyEquivalent: "").target = self
             // Quit
-            Utils.addMenuItemWithSeparator(to: menu, title: i18n.quit, icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
+            Utils.addMenuItemWithSeparator(to: menu, title: NSLocalizedString("Quit", comment: ""), icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
         }
     }
     @objc func accessibilityRequire() {
@@ -78,11 +78,11 @@ extension StatusItemManager {
             // Reset
             menu.removeAllItems()
             // Monitor
-            Utils.addMenuItem(to: menu, title: i18n.monitor, icon: #imageLiteral(resourceName: "SF.square.stack.3d.down.right"), action: #selector(monitorClick))
+            Utils.addMenuItem(to: menu, title: NSLocalizedString("Event Monitor", comment: ""), icon: #imageLiteral(resourceName: "SF.square.stack.3d.down.right"), action: #selector(monitorClick))
             // Preferences
-            Utils.addMenuItem(to: menu, title: i18n.preferences, icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
+            Utils.addMenuItem(to: menu, title: NSLocalizedString("Preferences", comment: ""), icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
             // Quit
-            Utils.addMenuItemWithSeparator(to: menu, title: i18n.quit, icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
+            Utils.addMenuItemWithSeparator(to: menu, title: NSLocalizedString("Quit", comment: ""), icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
         }
     }
     // 常规菜单
@@ -91,9 +91,9 @@ extension StatusItemManager {
             // Reset
             menu.removeAllItems()
             // Preferences
-            Utils.addMenuItem(to: menu, title: i18n.preferences, icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
+            Utils.addMenuItem(to: menu, title: NSLocalizedString("Preferences", comment: ""), icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
             // Quit
-            Utils.addMenuItemWithSeparator(to: menu, title: i18n.quit, icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
+            Utils.addMenuItemWithSeparator(to: menu, title: NSLocalizedString("Quit", comment: ""), icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
         }
     }
     @objc func monitorClick() {

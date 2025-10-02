@@ -17,7 +17,7 @@ class PreferencesUpdatesViewController: NSViewController {
     override func viewDidLoad() {
         // 版本号
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
-        versionLabel.stringValue = "\(i18n.currentVersion) : \(version as! String)"
+        versionLabel.stringValue = "\(NSLocalizedString("Current Version", comment: "")) : \(version as! String)"
     }
     
     // 查询更新

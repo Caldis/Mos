@@ -34,11 +34,11 @@ class IntroductionViewController: NSViewController {
     func updateButtonState() {
         if AXIsProcessTrusted() {
             // 如果有权限
-            authButton.title = i18n.done
+            authButton.title = NSLocalizedString("Done", comment: "")
             authButton.isEnabled = false
         } else {
             // 如果没权限
-            authButton.title = i18n.allowToAccess
+            authButton.title = NSLocalizedString("Allow to access", comment: "")
             authButton.isEnabled = true
         }
     }
