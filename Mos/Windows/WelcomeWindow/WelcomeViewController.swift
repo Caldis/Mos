@@ -48,12 +48,12 @@ class WelcomeViewController: NSViewController {
     @objc func accessibilityPermissionsChecker(_ timer: Timer) {
         if AXIsProcessTrusted() {
             // 如果有权限
-            allowToAccessButton.title = NSLocalizedString("Done", comment: "")
+            allowToAccessButton.title = NSLocalizedString("Authorized", comment: "")
             allowToAccessButton.isEnabled = false
             beginSmoothButton.isEnabled = true
         } else {
             // 如果没权限
-            allowToAccessButton.title = NSLocalizedString("Allow to access", comment: "")
+            allowToAccessButton.title = NSLocalizedString("Auth", comment: "")
             allowToAccessButton.isEnabled = true
             beginSmoothButton.isEnabled = false
         }
