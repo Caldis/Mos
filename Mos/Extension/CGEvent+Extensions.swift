@@ -52,7 +52,7 @@ extension CGEvent {
     }
 
     var mouseCodeName: String {
-        return KeyCode.mouseMap[keyCode] ?? "Mouse(\(keyCode))"
+        return KeyCode.mouseMap[mouseCode] ?? "Mouse(\(mouseCode))"
     }
 
     /// 修饰键
