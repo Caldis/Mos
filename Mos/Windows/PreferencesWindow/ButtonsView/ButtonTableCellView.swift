@@ -45,33 +45,19 @@ class ButtonTableCellView: NSTableCellView {
     // 高亮该行（重复两次）
     func highlight() {
         guard let rowView = self.superview as? NSTableRowView else { return }
-
         // 设置高亮色
         let isDarkMode = Utils.isDarkMode(for: rowView)
         let highlightColor = isDarkMode ? NSColor(white: 1.0, alpha: 0.2) : NSColor(white: 0.0, alpha: 0.15)
         let originalColor = originalRowBackgroundColor ?? rowView.backgroundColor
-
-        // 第一次高亮
+        // 高亮
         NSAnimationContext.runAnimationGroup({ context in
-            context.duration = 0.4
+            context.duration = 0
             rowView.animator().backgroundColor = highlightColor
         }, completionHandler: {
-            // 第一次恢复
+            // 恢复
             NSAnimationContext.runAnimationGroup({ context in
-                context.duration = 0.4
+                context.duration = 1.0
                 rowView.animator().backgroundColor = originalColor
-            }, completionHandler: {
-                // 第二次高亮
-                NSAnimationContext.runAnimationGroup({ context in
-                    context.duration = 0.4
-                    rowView.animator().backgroundColor = highlightColor
-                }, completionHandler: {
-                    // 第二次恢复
-                    NSAnimationContext.runAnimationGroup({ context in
-                        context.duration = 0.4
-                        rowView.animator().backgroundColor = originalColor
-                    })
-                })
             })
         })
     }

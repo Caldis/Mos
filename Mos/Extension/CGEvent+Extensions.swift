@@ -148,15 +148,28 @@ extension CGEvent {
 
     /// 事件是否有效
     var isRecordable: Bool {
-        // 无修饰键不允许被记录
-        if !hasModifiers {
-            return false
+        // 键盘事件
+        if isKeyboardEvent {
+            // 无修饰键不允许被记录
+            if !hasModifiers {
+                return false
+            }
+            // 纯修饰键不允许被记录
+            if hasModifiers && isKeyboardEvent && keyCode == 0 {
+                return false
+            }
+            return true
         }
-        // 纯修饰键不允许被记录
-        if hasModifiers && isKeyboardEvent && keyCode == 0 {
-            return false
+        // 鼠标事件
+        if isMouseEvent {
+            // 如果是左中右则必须包含修饰键
+            if !hasModifiers && KeyCode.mouseMainKeys.contains(mouseCode) {
+                return false
+            }
+            return true
         }
-        return true
+        // 其他不做处理
+        return false
     }
 
     /// 时间戳
