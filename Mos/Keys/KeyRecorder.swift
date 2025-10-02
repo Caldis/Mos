@@ -9,8 +9,18 @@
 
 import Cocoa
 
-protocol KeyRecorderDelegate: AnyObject {
-    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: CGEvent)
+@objc protocol KeyRecorderDelegate: AnyObject {
+    /// 录制完成回调
+    /// - Parameters:
+    ///   - recorder: 录制器实例
+    ///   - event: 录制的事件
+    ///   - isDuplicate: 是否为重复录制 (true = 重复, false = 新录制)
+    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: CGEvent, isDuplicate: Bool)
+
+    /// 可选方法: 验证录制的事件是否为重复
+    /// - Returns: true = 新录制, false = 重复录制
+    /// - Note: 如果不实现此方法,默认返回 true (视为新录制,向后兼容)
+    @objc optional func validateRecordedEvent(_ recorder: KeyRecorder, event: CGEvent) -> Bool
 }
 
 class KeyRecorder: NSObject {
@@ -179,11 +189,15 @@ class KeyRecorder: NSObject {
         // 更新记录标识
         guard !isRecorded else { return }
         isRecorded = true
+        // 验证是否为重复录制 (如果 delegate 没实现验证方法,默认为新录制)
+        let isNew = self.delegate?.validateRecordedEvent?(self, event: event) ?? true
+        let isDuplicate = !isNew
+        let status: KeyPreview.Status = isNew ? .recorded : .duplicate
         // 显示录制完成的按键
         keyPopover?.keyPreview
-            .update(from: event.displayComponents, status: .recorded)
-        // 将结果发给 delegate
-        self.delegate?.onEventRecorded(self, didRecordEvent: event)
+            .update(from: event.displayComponents, status: status)
+        // 将结果发给 delegate (携带验证结果,避免下游重复检查)
+        self.delegate?.onEventRecorded(self, didRecordEvent: event, isDuplicate: isDuplicate)
         // 停止录制 (延迟 300ms 确保能看完提示
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
             self?.stopRecording()

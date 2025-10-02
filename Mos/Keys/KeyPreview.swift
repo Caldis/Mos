@@ -18,6 +18,7 @@ class KeyPreview: NSStackView {
     enum Status {
         case normal        // 普通状态
         case recorded      // 已录制状态（绿色背景）
+        case duplicate     // 重复录制状态（蓝色背景）
         case recording     // 录制中状态（呼吸动画）
     }
 
@@ -169,7 +170,7 @@ class KeyPreview: NSStackView {
         // 创建文本标签
         let label = NSTextField(labelWithString: text)
         label.font = NSFont.systemFont(ofSize: KeyPreview.FONT_SIZE, weight: .medium)
-        label.textColor = status == .recorded ? NSColor.white : NSColor.labelColor
+        label.textColor = (status == .recorded || status == .duplicate) ? NSColor.white : NSColor.labelColor
         label.alignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
@@ -232,6 +233,10 @@ private final class KeyComponentContainer: NSView {
             return Utils.isDarkMode(for: self)
                 ? NSColor(calibratedRed: 0.15, green: 0.65, blue: 0.30, alpha: 1.0)
                 : NSColor(calibratedRed: 0.25, green: 0.70, blue: 0.35, alpha: 1.0)
+        case .duplicate:
+            return Utils.isDarkMode(for: self)
+                ? NSColor(calibratedRed: 0.20, green: 0.50, blue: 0.85, alpha: 1.0)
+                : NSColor(calibratedRed: 0.30, green: 0.60, blue: 0.95, alpha: 1.0)
         }
     }
 }

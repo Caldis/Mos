@@ -91,13 +91,14 @@ extension PreferencesButtonsViewController {
     }
     
     // 添加录制事件到列表
-    private func addRecordedEvent(_ event: CGEvent) {
+    private func addRecordedEvent(_ event: CGEvent, isDuplicate: Bool) {
         let recordedEvent = RecordedEvent(from: event)
 
-        // 检查是否已存在相同的录制事件
-        if let existingIndex = buttonBindings.firstIndex(where: { $0.triggerEvent == recordedEvent }) {
-            // 找到重复项，高亮显示
-            highlightExistingRow(at: existingIndex)
+        // 如果是重复录制,高亮已存在行
+        if isDuplicate {
+            if let existingIndex = buttonBindings.firstIndex(where: { $0.triggerEvent == recordedEvent }) {
+                highlightExistingRow(at: existingIndex)
+            }
             return
         }
 
@@ -109,15 +110,10 @@ extension PreferencesButtonsViewController {
         syncViewWithOptions()
     }
 
-    // 高亮已存在的行
+    // 高亮已存在的行 (用于重复录制的视觉反馈)
     private func highlightExistingRow(at row: Int) {
-        // 取消当前选中
         tableView.deselectAll(nil)
-
-        // 滚动到目标行
         tableView.scrollRowToVisible(row)
-
-        // 获取该行的 cell view 并触发高亮
         if let cellView = tableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? ButtonTableCellView {
             cellView.highlight()
         }
@@ -197,11 +193,18 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
 
 // MARK: - EventRecorderDelegate
 extension PreferencesButtonsViewController: KeyRecorderDelegate {
-    // Record 回调
-    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: CGEvent) {
+    // 验证录制的事件是否重复
+    func validateRecordedEvent(_ recorder: KeyRecorder, event: CGEvent) -> Bool {
+        let recordedEvent = RecordedEvent(from: event)
+        // 返回 true = 新录制(绿色), false = 重复(蓝色)
+        return !buttonBindings.contains(where: { $0.triggerEvent == recordedEvent })
+    }
+
+    // Record 回调 (isDuplicate 由 KeyRecorder 传递,避免重复验证)
+    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: CGEvent, isDuplicate: Bool) {
         // 添加延迟后调用, 确保不要太早消失
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.66) { [weak self] in
-            self?.addRecordedEvent(event)
+            self?.addRecordedEvent(event, isDuplicate: isDuplicate)
         }
     }
 }
