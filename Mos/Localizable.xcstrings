@@ -138,6 +138,12 @@
             "state": "translated",
             "value": " 事件監視"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " イベントモニター"
+          }
         }
       }
     },
@@ -278,6 +284,12 @@
             "state": "translated",
             "value": " 偏好設定"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " 環境設定"
+          }
         }
       }
     },
@@ -347,6 +359,12 @@
           "stringUnit": {
             "state": "translated",
             "value": " 結束"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " 終了"
           }
         }
       }
@@ -418,6 +436,12 @@
             "state": "translated",
             "value": "允許存取"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autorisieren"
+          }
         }
       }
     },
@@ -487,6 +511,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已取得權限"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "認証済み"
           }
         }
       }
