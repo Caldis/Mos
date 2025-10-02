@@ -104,19 +104,19 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "抱歉，只幫到了一些些"
+            "value" : "很慚愧，就做了一點微小的工作"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "抱歉，只幫到了一些些"
+            "value" : "很慚愧，就做了一點微小的工作"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "抱歉，只幫到了一些些"
+            "value" : "很慚愧，就做了一點微小的工作"
           }
         }
       }
@@ -799,35 +799,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重新執行 Mos 即可重新顯示狀態列圖示"
-          }
-        }
-      }
-    },
-    "BDu-5m-yrr.title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Text Cell"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Metin Hücresi"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Text Cell"
           }
         }
       }
@@ -1955,35 +1926,6 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Scroll Reverse"
-          }
-        }
-      }
-    },
-    "HEV-nL-Tno.title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Text Cell"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Metin Hücresi"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Text Cell"
           }
         }
       }
@@ -4073,35 +4015,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "加快在長頁面的捲動速度"
-          }
-        }
-      }
-    },
-    "zFZ-n3-v9j.title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Item"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Öğe"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Item"
           }
         }
       }
