@@ -10,9 +10,11 @@ import Cocoa
 
 class PreferencesButtonsViewController: NSViewController {
 
+    // MARK: - Recorder
+    private var recorder = KeyRecorder()
+
     // MARK: - Data
     private var buttonBindings: [ButtonBinding] = []
-    private var recorder = KeyRecorder()
 
     // MARK: - UI Elements
     // 表格
@@ -66,14 +68,14 @@ class PreferencesButtonsViewController: NSViewController {
 extension PreferencesButtonsViewController {
     // 从 Options 加载到界面
     func loadOptionsToView() {
-        buttonBindings = Options.shared.buttonBindings
+        buttonBindings = Options.shared.buttons.binding
         tableView.reloadData()
         toggleNoDataHint()
     }
 
     // 保存界面到 Options
     func syncViewWithOptions() {
-        Options.shared.buttonBindings = buttonBindings
+        Options.shared.buttons.binding = buttonBindings
     }
 
     // 更新删除按钮状态

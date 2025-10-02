@@ -57,7 +57,7 @@ struct SPECIAL_EVENT_SOURCE_APPLICATION {
     static let logitechOptions = "com.logitech.manager.daemon"
 }
 
-// 默认设置项
+/// 默认设置项
 // 常规
 class OPTIONS_GENERAL_DEFAULT {
     // 自启
@@ -71,6 +71,14 @@ class OPTIONS_GENERAL_DEFAULT {
         didSet {Options.shared.saveOptions()}
     }
 }
+
+// 按键
+class OPTIONS_BUTTONS_DEFAULT: Codable {
+    var binding:[ButtonBinding] = [] {
+        didSet { Options.shared.saveOptions() }
+    }
+}
+
 // 滚动
 class OPTIONS_SCROLL_DEFAULT: Codable {
     var smooth = true {
