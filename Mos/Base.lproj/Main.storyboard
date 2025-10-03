@@ -2542,15 +2542,14 @@ mouseEventWindowUnderMousePointerThatCanHandleThisEvent: 0.0</string>
         <scene sceneID="V22-gr-sOZ">
             <objects>
                 <viewController id="3aa-uW-Wet" sceneMemberID="viewController">
-                    <view key="view" id="Yv2-eG-rK5">
-                        <rect key="frame" x="0.0" y="0.0" width="317" height="53"/>
+                    <view key="view" misplaced="YES" id="Yv2-eG-rK5">
+                        <rect key="frame" x="0.0" y="0.0" width="317" height="31"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lw5-DQ-yJl">
-                                <rect key="frame" x="10" y="10" width="297" height="33"/>
-                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="left" id="cIk-j1-vYt">
+                                <rect key="frame" x="10" y="10" width="297" height="11"/>
+                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="left" title="You need to re-run Mos to change the settings" id="cIk-j1-vYt">
                                     <font key="font" metaFont="label" size="9"/>
-                                    <string key="title">You need to re-run Mos from Finder-Application instead of the launch pad. (The launch pad will automatically ignore the launched app)</string>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
