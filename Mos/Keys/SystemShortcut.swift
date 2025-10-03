@@ -31,6 +31,39 @@ struct SystemShortcut {
             return NSLocalizedString(identifier, comment: "")
         }
 
+        /// 获取 SF Symbol 图标名称 (macOS 11.0+)
+        var symbolName: String {
+            switch identifier {
+            // 窗口管理
+            case "minimizeWindow": return "minus.rectangle"
+            case "hideApplication": return "eye.slash"
+            case "hideOthers": return "eye.slash.circle"
+            case "nextWindow": return "arrow.right.square"
+            case "closeWindow": return "xmark.rectangle"
+            case "closeAllWindows": return "xmark.circle.fill"
+            // 应用切换
+            case "switchApp": return "arrow.right.circle"
+            case "switchAppReverse": return "arrow.left.circle"
+            // 系统功能
+            case "spotlight": return "magnifyingglass"
+            case "forceQuit": return "exclamationmark.triangle"
+            case "lockScreen": return "lock.shield"
+            case "screenshot": return "camera.viewfinder"
+            case "screenshotSelection": return "viewfinder.rectangular"
+            case "screenshotWindow": return "macwindow.on.rectangle"
+            case "showDesktop": return "rectangle.on.rectangle"
+            case "moveSpaceLeft": return "arrow.left.to.line"
+            case "moveSpaceRight": return "arrow.right.to.line"
+            // 功能键
+            case "missionControl": return "square.grid.3x2"
+            case "appExpose": return "square.grid.3x3"
+            case "spotlightFn": return "magnifyingglass.circle"
+            case "dictation": return "mic"
+            case "doNotDisturb": return "moon"
+            default: return "questionmark.circle"
+            }
+        }
+
         /// Equatable 协议实现
         static func == (lhs: Shortcut, rhs: Shortcut) -> Bool {
             return lhs.code == rhs.code && lhs.modifiers == rhs.modifiers
@@ -179,5 +212,16 @@ struct SystemShortcut {
     /// 获取分类的本地化名称
     static func localizedCategoryName(_ categoryIdentifier: String) -> String {
         return NSLocalizedString(categoryIdentifier, comment: "")
+    }
+
+    /// 获取分类的 SF Symbol 图标名称 (macOS 11.0+)
+    static func categorySymbolName(_ categoryIdentifier: String) -> String {
+        switch categoryIdentifier {
+        case "categoryWindowManagement": return "macwindow"
+        case "categoryAppSwitching": return "arrow.left.arrow.right"
+        case "categorySystemFunctions": return "gearshape"
+        case "categoryFunctionKeys": return "keyboard"
+        default: return "folder"
+        }
     }
 }

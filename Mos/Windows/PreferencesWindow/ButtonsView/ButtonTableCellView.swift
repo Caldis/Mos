@@ -123,8 +123,8 @@ class ButtonTableCellView: NSTableCellView {
                    itemShortcut == shortcut {
                     NSLog("[ButtonTableCellView] 找到匹配项: \(shortcutItem.title)")
 
-                    // 关键修复：手动设置显示标题
-                    setCustomTitle(shortcutItem.title)
+                    // 设置显示标题和图标
+                    setCustomTitle(shortcutItem.title, image: shortcutItem.image)
 
                     NSLog("[ButtonTableCellView] 已设置显示标题: \(shortcutItem.title)")
                     return
@@ -133,8 +133,8 @@ class ButtonTableCellView: NSTableCellView {
         }
     }
 
-    /// 手动设置 PopUpButton 的显示标题
-    private func setCustomTitle(_ title: String) {
+    /// 手动设置 PopUpButton 的显示标题和图标
+    private func setCustomTitle(_ title: String, image: NSImage?) {
         guard let menu = actionPopUpButton.menu,
               let placeholderItem = menu.items.first else {
             NSLog("[ButtonTableCellView] 无法找到占位符菜单项")
@@ -144,6 +144,14 @@ class ButtonTableCellView: NSTableCellView {
         // 更新占位符的标题为选中的快捷键
         placeholderItem.title = title
 
+        // 更新占位符的图标 (如果有)
+        // NSPopUpButton 中图标和文本间距较紧,需要添加右侧边距
+        if let originalImage = image {
+            placeholderItem.image = createImageWithTrailingSpace(originalImage)
+        } else {
+            placeholderItem.image = nil
+        }
+
         // 确保占位符保持 disabled 状态
         placeholderItem.isEnabled = false
 
@@ -151,6 +159,31 @@ class ButtonTableCellView: NSTableCellView {
         actionPopUpButton.selectItem(at: 0)
 
         NSLog("[ButtonTableCellView] 已更新占位符显示: \(title)")
+    }
+
+    /// 创建带右侧边距的图标 (用于 PopUpButton 显示)
+    private func createImageWithTrailingSpace(_ originalImage: NSImage) -> NSImage {
+        let spacing: CGFloat = 4.0  // 右侧边距
+        let originalSize = originalImage.size
+        let newSize = NSSize(width: originalSize.width + spacing, height: originalSize.height)
+
+        let newImage = NSImage(size: newSize)
+        newImage.lockFocus()
+
+        // 在左侧绘制原始图标,右侧留白
+        originalImage.draw(
+            in: NSRect(x: 0, y: 0, width: originalSize.width, height: originalSize.height),
+            from: NSRect(origin: .zero, size: originalSize),
+            operation: .sourceOver,
+            fraction: 1.0
+        )
+
+        newImage.unlockFocus()
+
+        // template 模式,确保图标能适配系统颜色
+        newImage.isTemplate = originalImage.isTemplate
+
+        return newImage
     }
 
     /// 重置占位符为默认状态
@@ -192,8 +225,8 @@ class ButtonTableCellView: NSTableCellView {
         // 更新本地绑定状态
         self.buttonBinding = updatedBinding
 
-        // 设置自定义显示标题
-        setCustomTitle(sender.title)
+        // 设置自定义显示标题和图标
+        setCustomTitle(sender.title, image: sender.image)
 
         // 通知父视图控制器更新
         viewController?.updateButtonBinding(at: row, with: updatedBinding)

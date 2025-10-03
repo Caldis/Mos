@@ -11,6 +11,22 @@ import Cocoa
 /// 快捷键管理器 - 负责快捷键菜单构建和事件触发
 class ShortcutManager {
 
+    // MARK: - 版本检测
+
+    /// 检测当前系统是否支持 SF Symbols (macOS 11.0+)
+    private static var supportsSFSymbols: Bool {
+        if #available(macOS 11.0, *) {
+            return true
+        }
+        return false
+    }
+
+    /// 创建带图标的 NSImage (macOS 11.0+)
+    @available(macOS 11.0, *)
+    private static func createSymbolImage(_ symbolName: String) -> NSImage? {
+        return NSImage(systemSymbolName: symbolName, accessibilityDescription: nil)
+    }
+
     // MARK: - 菜单构建
     /// 构建分级快捷键菜单 (用于 MonitorViewController)
     /// - Parameter menu: 目标菜单对象
@@ -37,6 +53,14 @@ class ShortcutManager {
             let categoryName = SystemShortcut.localizedCategoryName(categoryIdentifier)
             let categoryMenuItem = NSMenuItem(title: categoryName, action: nil, keyEquivalent: "")
 
+            // 为分类添加图标 (macOS 11.0+)
+            if supportsSFSymbols {
+                if #available(macOS 11.0, *) {
+                    let symbolName = SystemShortcut.categorySymbolName(categoryIdentifier)
+                    categoryMenuItem.image = createSymbolImage(symbolName)
+                }
+            }
+
             // 创建子菜单
             let subMenu = NSMenu(title: categoryName)
 
@@ -55,6 +79,13 @@ class ShortcutManager {
                 shortcutMenuItem.representedObject = shortcut
                 shortcutMenuItem.toolTip = shortcut.localizedName
 
+                // 为快捷键添加图标 (macOS 11.0+)
+                if supportsSFSymbols {
+                    if #available(macOS 11.0, *) {
+                        shortcutMenuItem.image = createSymbolImage(shortcut.symbolName)
+                    }
+                }
+
                 subMenu.addItem(shortcutMenuItem)
                 totalShortcuts += 1
             }
@@ -67,7 +98,7 @@ class ShortcutManager {
         }
     }
 
-    /// 构建多级快捷键菜单 (修复 NSPopUpButton 显示问题)
+    /// 构建多级快捷键菜单
     /// - Parameter menu: 目标菜单对象
     /// - Parameter target: 菜单项点击事件的目标对象
     /// - Parameter action: 菜单项点击事件的选择器
@@ -92,6 +123,14 @@ class ShortcutManager {
             let categoryName = SystemShortcut.localizedCategoryName(categoryIdentifier)
             let categoryMenuItem = NSMenuItem(title: categoryName, action: nil, keyEquivalent: "")
 
+            // 为分类添加图标 (macOS 11.0+)
+            if supportsSFSymbols {
+                if #available(macOS 11.0, *) {
+                    let symbolName = SystemShortcut.categorySymbolName(categoryIdentifier)
+                    categoryMenuItem.image = createSymbolImage(symbolName)
+                }
+            }
+
             // 创建子菜单
             let subMenu = NSMenu(title: categoryName)
 
@@ -109,6 +148,13 @@ class ShortcutManager {
                 shortcutMenuItem.target = target
                 shortcutMenuItem.representedObject = shortcut
                 shortcutMenuItem.toolTip = shortcut.localizedName
+
+                // 为快捷键添加图标 (macOS 11.0+)
+                if supportsSFSymbols {
+                    if #available(macOS 11.0, *) {
+                        shortcutMenuItem.image = createSymbolImage(shortcut.symbolName)
+                    }
+                }
 
                 subMenu.addItem(shortcutMenuItem)
                 totalShortcuts += 1
