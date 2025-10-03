@@ -50,7 +50,6 @@ struct SystemShortcut {
             case "lockScreen": return "lock.shield"
             case "screenshot": return "camera.viewfinder"
             case "screenshotSelection": return "viewfinder.rectangular"
-            case "screenshotWindow": return "macwindow.on.rectangle"
             case "showDesktop": return "rectangle.on.rectangle"
             case "moveSpaceLeft": return "arrow.left.to.line"
             case "moveSpaceRight": return "arrow.right.to.line"
@@ -132,7 +131,6 @@ struct SystemShortcut {
     static let lockScreen = Shortcut("lockScreen", 12, [.command, .control])
     static let screenshot = Shortcut("screenshot", 20, [.command, .shift])
     static let screenshotSelection = Shortcut("screenshotSelection", 21, [.command, .shift])
-    static let screenshotWindow = Shortcut("screenshotWindow", 21, [.command, .shift, .option])
     static let showDesktop = Shortcut("showDesktop", 103, .function)
     static let moveSpaceLeft = Shortcut("moveSpaceLeft", 123, .control)
     static let moveSpaceRight = Shortcut("moveSpaceRight", 124, .control)
@@ -159,8 +157,7 @@ struct SystemShortcut {
         // 系统功能
         "spotlight": spotlight, "forceQuit": forceQuit, "lockScreen": lockScreen,
         "screenshot": screenshot, "screenshotSelection": screenshotSelection,
-        "screenshotWindow": screenshotWindow, "showDesktop": showDesktop,
-        "moveSpaceLeft": moveSpaceLeft, "moveSpaceRight": moveSpaceRight,
+        "showDesktop": showDesktop, "moveSpaceLeft": moveSpaceLeft, "moveSpaceRight": moveSpaceRight,
 
         // F键
         "missionControl": missionControl, "appExpose": appExpose,
@@ -202,7 +199,7 @@ struct SystemShortcut {
         ],
         "categorySystemFunctions": [
             spotlight, forceQuit, lockScreen, screenshot, screenshotSelection,
-            screenshotWindow, showDesktop, moveSpaceLeft, moveSpaceRight
+            showDesktop, moveSpaceLeft, moveSpaceRight
         ],
         "categoryFunctionKeys": [
             missionControl, appExpose, spotlight_fn, dictation, doNotDisturb

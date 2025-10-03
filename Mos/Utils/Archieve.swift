@@ -87,7 +87,7 @@ class Archieve {
     private func mouseStayStill(_ a: CGPoint, _ b: CGPoint) -> Bool {
         return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2)) < limit
     }
-    
+
     /*
      * 从 PID 获取对应数据
      */
