@@ -16,14 +16,19 @@ struct SystemShortcut {
 
     /// 快捷键组合结构
     struct Shortcut: Equatable, Hashable {
-        let name: String
+        let identifier: String  // 本地化键名(如 "minimizeWindow")
         let code: UInt16
         let modifiers: NSEvent.ModifierFlags
 
-        init(_ name: String, _ code: UInt16, _ modifiers: NSEvent.ModifierFlags) {
-            self.name = name
+        init(_ identifier: String, _ code: UInt16, _ modifiers: NSEvent.ModifierFlags) {
+            self.identifier = identifier
             self.code = code
             self.modifiers = modifiers
+        }
+
+        /// 获取本地化显示名称
+        var localizedName: String {
+            return NSLocalizedString(identifier, comment: "")
         }
 
         /// Equatable 协议实现
@@ -77,34 +82,34 @@ struct SystemShortcut {
 
     // MARK: - 快捷键
     // 窗口管理
-    static let minimizeWindow = Shortcut("Minimize Window", 46, .command)
-    static let hideApplication = Shortcut("Hide Application", 4, .command)
-    static let hideOthers = Shortcut("Hide Others", 4, [.command, .option])
-    static let nextWindow = Shortcut("Next Window", 50, .command)
-    static let closeWindow = Shortcut("Close Window", 13, .command)
-    static let closeAllWindows = Shortcut("Close All Windows", 13, [.command, .option])
+    static let minimizeWindow = Shortcut("minimizeWindow", 46, .command)
+    static let hideApplication = Shortcut("hideApplication", 4, .command)
+    static let hideOthers = Shortcut("hideOthers", 4, [.command, .option])
+    static let nextWindow = Shortcut("nextWindow", 50, .command)
+    static let closeWindow = Shortcut("closeWindow", 13, .command)
+    static let closeAllWindows = Shortcut("closeAllWindows", 13, [.command, .option])
 
     // 应用切换
-    static let switchApp = Shortcut("Switch Application", 48, .command)
-    static let switchAppReverse = Shortcut("Switch Application Reverse", 48, [.command, .shift])
+    static let switchApp = Shortcut("switchApp", 48, .command)
+    static let switchAppReverse = Shortcut("switchAppReverse", 48, [.command, .shift])
 
     // 系统功能
-    static let spotlight = Shortcut("Spotlight Search", 49, .command)
-    static let forceQuit = Shortcut("Force Quit", 53, [.command, .option])
-    static let lockScreen = Shortcut("Lock Screen", 12, [.command, .control])
-    static let screenshot = Shortcut("Screenshot", 20, [.command, .shift])
-    static let screenshotSelection = Shortcut("Screenshot Selection", 21, [.command, .shift])
-    static let screenshotWindow = Shortcut("Screenshot Window", 21, [.command, .shift, .option])
-    static let showDesktop = Shortcut("Show Desktop", 103, .function)
-    static let moveSpaceLeft = Shortcut("Move Space Left", 123, .control)
-    static let moveSpaceRight = Shortcut("Move Space Right", 124, .control)
+    static let spotlight = Shortcut("spotlight", 49, .command)
+    static let forceQuit = Shortcut("forceQuit", 53, [.command, .option])
+    static let lockScreen = Shortcut("lockScreen", 12, [.command, .control])
+    static let screenshot = Shortcut("screenshot", 20, [.command, .shift])
+    static let screenshotSelection = Shortcut("screenshotSelection", 21, [.command, .shift])
+    static let screenshotWindow = Shortcut("screenshotWindow", 21, [.command, .shift, .option])
+    static let showDesktop = Shortcut("showDesktop", 103, .function)
+    static let moveSpaceLeft = Shortcut("moveSpaceLeft", 123, .control)
+    static let moveSpaceRight = Shortcut("moveSpaceRight", 124, .control)
 
     // F键快捷键
-    static let missionControl = Shortcut("Mission Control", 160, .function)
-    static let appExpose = Shortcut("Launchpad", 131, .function)
-    static let spotlight_fn = Shortcut("Spotlight Search", 177, .function)
-    static let dictation = Shortcut("Dictation", 176, .function)
-    static let doNotDisturb = Shortcut("Do Not Disturb", 178, .function)
+    static let missionControl = Shortcut("missionControl", 160, .function)
+    static let appExpose = Shortcut("appExpose", 131, .function)
+    static let spotlight_fn = Shortcut("spotlightFn", 177, .function)
+    static let dictation = Shortcut("dictation", 176, .function)
+    static let doNotDisturb = Shortcut("doNotDisturb", 178, .function)
 
     // MARK: - 辅助方法
 
@@ -156,18 +161,23 @@ struct SystemShortcut {
 
     /// 按类别分组的快捷键
     static let shortcutsByCategory: [String: [Shortcut]] = [
-        "Window Management": [
+        "categoryWindowManagement": [
             minimizeWindow, hideApplication, hideOthers, nextWindow, closeWindow, closeAllWindows
         ],
-        "App Switching": [
+        "categoryAppSwitching": [
             switchApp, switchAppReverse
         ],
-        "System Functions": [
+        "categorySystemFunctions": [
             spotlight, forceQuit, lockScreen, screenshot, screenshotSelection,
             screenshotWindow, showDesktop, moveSpaceLeft, moveSpaceRight
         ],
-        "Function Keys": [
+        "categoryFunctionKeys": [
             missionControl, appExpose, spotlight_fn, dictation, doNotDisturb
         ]
     ]
+
+    /// 获取分类的本地化名称
+    static func localizedCategoryName(_ categoryIdentifier: String) -> String {
+        return NSLocalizedString(categoryIdentifier, comment: "")
+    }
 }

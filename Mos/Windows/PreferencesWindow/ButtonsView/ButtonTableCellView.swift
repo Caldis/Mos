@@ -161,7 +161,7 @@ class ButtonTableCellView: NSTableCellView {
         }
 
         // 重置为默认占位符文本
-        placeholderItem.title = "Select an action"
+        placeholderItem.title = NSLocalizedString("selectAnAction", comment: "")
         placeholderItem.isEnabled = false
 
         // 选中占位符项

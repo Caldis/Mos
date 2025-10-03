@@ -21,7 +21,7 @@ class ShortcutManager {
         menu.removeAllItems()
 
         // 添加 placeholder 项
-        let placeholderItem = NSMenuItem(title: "Select an action", action: nil, keyEquivalent: "")
+        let placeholderItem = NSMenuItem(title: NSLocalizedString("selectAnAction", comment: ""), action: nil, keyEquivalent: "")
         placeholderItem.isEnabled = false
         menu.addItem(placeholderItem)
 
@@ -31,28 +31,29 @@ class ShortcutManager {
         var totalShortcuts = 0
 
         // 按分类构建分级菜单
-        for (categoryName, shortcuts) in SystemShortcut.shortcutsByCategory.sorted(by: { $0.key < $1.key }) {
+        for (categoryIdentifier, shortcuts) in SystemShortcut.shortcutsByCategory.sorted(by: { $0.key < $1.key }) {
 
-            // 创建分类主菜单项
+            // 创建分类主菜单项 (使用本地化名称)
+            let categoryName = SystemShortcut.localizedCategoryName(categoryIdentifier)
             let categoryMenuItem = NSMenuItem(title: categoryName, action: nil, keyEquivalent: "")
 
             // 创建子菜单
             let subMenu = NSMenu(title: categoryName)
 
             // 添加该分类下的所有快捷键到子菜单
-            let sortedShortcuts = shortcuts.sorted { $0.name < $1.name }
+            let sortedShortcuts = shortcuts.sorted { $0.localizedName < $1.localizedName }
             for shortcut in sortedShortcuts {
                 let menuKeyEquivalent = shortcut.keyEquivalent
 
                 let shortcutMenuItem = NSMenuItem(
-                    title: shortcut.name,
+                    title: shortcut.localizedName,
                     action: action,
                     keyEquivalent: menuKeyEquivalent.keyEquivalent
                 )
                 shortcutMenuItem.keyEquivalentModifierMask = menuKeyEquivalent.modifierMask
                 shortcutMenuItem.target = target
                 shortcutMenuItem.representedObject = shortcut
-                shortcutMenuItem.toolTip = shortcut.name
+                shortcutMenuItem.toolTip = shortcut.localizedName
 
                 subMenu.addItem(shortcutMenuItem)
                 totalShortcuts += 1
@@ -75,7 +76,7 @@ class ShortcutManager {
         menu.removeAllItems()
 
         // 添加 placeholder 项
-        let placeholderItem = NSMenuItem(title: "Select an action", action: nil, keyEquivalent: "")
+        let placeholderItem = NSMenuItem(title: NSLocalizedString("selectAnAction", comment: ""), action: nil, keyEquivalent: "")
         placeholderItem.isEnabled = false
         menu.addItem(placeholderItem)
 
@@ -85,28 +86,29 @@ class ShortcutManager {
         var totalShortcuts = 0
 
         // 按分类构建分级菜单
-        for (categoryName, shortcuts) in SystemShortcut.shortcutsByCategory.sorted(by: { $0.key < $1.key }) {
+        for (categoryIdentifier, shortcuts) in SystemShortcut.shortcutsByCategory.sorted(by: { $0.key < $1.key }) {
 
-            // 创建分类主菜单项
+            // 创建分类主菜单项 (使用本地化名称)
+            let categoryName = SystemShortcut.localizedCategoryName(categoryIdentifier)
             let categoryMenuItem = NSMenuItem(title: categoryName, action: nil, keyEquivalent: "")
 
             // 创建子菜单
             let subMenu = NSMenu(title: categoryName)
 
             // 添加该分类下的所有快捷键到子菜单
-            let sortedShortcuts = shortcuts.sorted { $0.name < $1.name }
+            let sortedShortcuts = shortcuts.sorted { $0.localizedName < $1.localizedName }
             for shortcut in sortedShortcuts {
                 let menuKeyEquivalent = shortcut.keyEquivalent
 
                 let shortcutMenuItem = NSMenuItem(
-                    title: shortcut.name,
+                    title: shortcut.localizedName,
                     action: action,
                     keyEquivalent: menuKeyEquivalent.keyEquivalent
                 )
                 shortcutMenuItem.keyEquivalentModifierMask = menuKeyEquivalent.modifierMask
                 shortcutMenuItem.target = target
                 shortcutMenuItem.representedObject = shortcut
-                shortcutMenuItem.toolTip = shortcut.name
+                shortcutMenuItem.toolTip = shortcut.localizedName
 
                 subMenu.addItem(shortcutMenuItem)
                 totalShortcuts += 1
