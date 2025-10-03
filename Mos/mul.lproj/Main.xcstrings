@@ -236,78 +236,78 @@
       }
     },
     "2hV-f7-8yO.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Unlock the power of your mouse button\"; ObjectID = \"2hV-f7-8yO\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Unlock the power of your buttons\"; ObjectID = \"2hV-f7-8yO\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Entfesseln Sie die Kraft Ihrer Maustasten"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Ξεκλειδώστε τη δύναμη των κουμπιών του ποντικιού σας"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Unlock the power of your mouse button"
+            "value" : "Unlock the power of your buttons"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "マウスボタンの力を解き放つ"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "마우스 버튼의 강력한 기능 잠금 해제"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Раскройте возможности кнопок мыши"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Fare düğmenizin gücünü açığa çıkarın"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Розкрийте потенціал кнопок миші"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "释放鼠标按键的强大功能"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "釋放滑鼠按鍵的強大功能"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "釋放滑鼠按鍵的強大功能"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "釋放滑鼠按鍵的強大功能"
           }
         }
@@ -2837,7 +2837,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尝试对应用应用单独配置"
+            "value" : "尝试对应用添加独立配置"
           }
         },
         "zh-Hant" : {
@@ -4967,78 +4967,78 @@
       }
     },
     "jaq-Cb-dKM.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Customize your experience with different settings\"; ObjectID = \"jaq-Cb-dKM\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"You can customize different behaviors for each application\"; ObjectID = \"jaq-Cb-dKM\";",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sie können eine separate Konfiguration auf einige Anwendungen anwenden, indem Sie auf die Schaltfläche '+' unten klicken"
+            "value" : "Sie können das Verhalten für jede Anwendung anpassen."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You can apply a separate configuration to some programs by clicking the '+' on below"
+            "value" : "Μπορείτε να προσαρμόσετε τη συμπεριφορά για κάθε εφαρμογή."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You can apply a separate configuration to some apps by clicking the '+' button below"
+            "value" : "You can customize the behaviors for each application."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下の「+」ボタンをクリックして、一部のアプリに個別の設定を適用できます"
+            "value" : "各アプリケーションごとに動作をカスタマイズできます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "아래 '+' 버튼을 클릭하여 몇몇 앱들만의 설정을 하실수 있습니다"
+            "value" : "각 응용 프로그램별로 동작을 사용자 정의할 수 있습니다."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Вы можете применить отдельную конфигурацию к определенным приложениям, нажав кнопку '+'  ниже"
+            "value" : "Вы можете настроить поведение для каждого приложения."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aşağıdaki '+' simgesine tıklayarak bazı programlara ayrı bir yapılandırma uygulayabilirsiniz."
+            "value" : "Her uygulama için davranışları özelleştirebilirsiniz."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ви можете застосувати окрему конфігурацію до деяких програм, натиснувши кнопку '+' нижче"
+            "value" : "Ви можете налаштувати поведінку для кожної програми."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你可以点击下方的 \"+\" 来添加一个应用程序以设置其滚动行为"
+            "value" : "你可以为每个应用程序定制不同的行为。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按下方的「+」加入應用程式並設定其捲動行為"
+            "value" : "你可以為每個應用程式定製不同的行為。"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按下方的「+」加入應用程式並設定其捲動行為"
+            "value" : "你可以為每個應用程式定製不同的行為。"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按下方的「+」加入應用程式並設定其捲動行為"
+            "value" : "你可以為每個應用程式定製不同的行為。"
           }
         }
       }
