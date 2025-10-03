@@ -24,6 +24,10 @@ class Application: Codable, Equatable {
     var scroll = OPTIONS_SCROLL_DEFAULT() {
         didSet { Options.shared.saveOptions() }
     }
+    // 配置: 按钮绑定 (可选表示继承全局配置)
+    var buttons: OPTIONS_BUTTONS_DEFAULT? {
+        didSet { Options.shared.saveOptions() }
+    }
     // 初始化
     init(path: String) {
         self.path = path
@@ -40,6 +44,8 @@ class Application: Codable, Equatable {
         inherit = try container.decodeIfPresent(Bool.self, forKey: .inherit) ?? true
         // 滚动
         scroll = try container.decodeIfPresent(OPTIONS_SCROLL_DEFAULT.self, forKey: .scroll) ?? OPTIONS_SCROLL_DEFAULT()
+        // 按钮绑定
+        buttons = try container.decodeIfPresent(OPTIONS_BUTTONS_DEFAULT.self, forKey: .buttons)
     }
     
     // Equatable
@@ -81,5 +87,9 @@ extension Application {
     func isReverse() -> Bool {
         if !Options.shared.scroll.reverse { return false }
         return scroll.reverse
+    }
+    // 按钮绑定
+    func getButtonBindings() -> [ButtonBinding] {
+        return buttons?.binding ?? Options.shared.buttons.binding
     }
 }

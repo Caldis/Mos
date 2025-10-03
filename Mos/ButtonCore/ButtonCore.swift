@@ -32,8 +32,21 @@ class ButtonCore {
 
     // MARK: - 按钮事件处理
     let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        // 目前先返回原始事件
-        return Unmanaged.passUnretained(event)
+        // 获取当前应用的按钮绑定配置
+        let bindings = ButtonUtils.shared.getButtonBindings()
+
+        // 查找匹配的绑定
+        guard let binding = bindings.first(where: {
+            $0.triggerEvent.matches(event) && $0.isEnabled
+        }) else {
+            return Unmanaged.passUnretained(event)
+        }
+
+        // 执行绑定的系统快捷键
+        ShortcutExecutor.shared.execute(binding.systemShortcutName)
+
+        // 消费事件(不再传递给系统)
+        return nil
     }
     
     // MARK: - 启用和禁用
@@ -48,7 +61,7 @@ class ButtonCore {
                     handleBy: buttonEventCallBack,
                     listenOn: .cgAnnotatedSessionEventTap,
                     placeAt: .tailAppendEventTap,
-                    for: .listenOnly
+                    for: .defaultTap
                 )
                 isActive = true
             } catch {
