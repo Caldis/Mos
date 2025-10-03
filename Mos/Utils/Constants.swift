@@ -55,7 +55,7 @@ struct PANEL_IDENTIFIER {
     static let list = [general, advanced, exception]
 }
 let PANEL_PADDING = CGFloat(42.0) // 顶部导航栏高度
-let TOOLBAR_HEIGHT = CGFloat(38.0) // 偏好的 Toolbar 高度
+let TOOLBAR_HEIGHT = CGFloat(80.0) // 偏好的 Toolbar 高度
 
 // 气泡弹窗
 struct POPOVER_IDENTIFIER {

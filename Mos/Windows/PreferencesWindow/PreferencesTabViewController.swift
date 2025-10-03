@@ -38,7 +38,7 @@ class PreferencesTabViewController: NSTabViewController {
         backgroundVisualEffectView.blendingMode = NSVisualEffectView.BlendingMode.behindWindow
         if #available(OSX 10.14, *) { backgroundVisualEffectView.material = NSVisualEffectView.Material.toolTip }
         view.addSubview(backgroundVisualEffectView, positioned: NSWindow.OrderingMode.below, relativeTo: tabView)
-        backgroundVisualEffectView.frame.size = NSSize(width: 100000, height: 100000) // 只要比预期内容大就行, 不会有额外占用
+        backgroundVisualEffectView.frame.size = NSSize(width: 1000, height: 1000) // 只要比预期内容大就行, 不会有额外占用
         backgroundVisualEffectView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
         backgroundVisualEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true        
     }
@@ -48,7 +48,7 @@ class PreferencesTabViewController: NSTabViewController {
         if let currentWindow = view.window, let currentContentView = tabView.subviews.first {
             let windowSize = currentWindow.frame.size
             let contentSize = currentContentView.frame.size
-            let heightDiff = contentSize.height+TOOLBAR_HEIGHT - windowSize.height
+            let heightDiff = contentSize.height + TOOLBAR_HEIGHT - windowSize.height
             let targetOrigin = NSPoint(x: currentWindow.frame.origin.x, y: currentWindow.frame.origin.y-heightDiff)
             let targetSize = NSSize(width: contentSize.width, height: contentSize.height+TOOLBAR_HEIGHT)
             let targetRect = NSRect(origin: targetOrigin, size: targetSize)

@@ -1,28 +1,40 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
-      "filename" : "StatusBarIcon.pdf"
+      "idiom" : "universal"
     },
     {
+      "filename" : "MenubarIcon-16 1.png",
       "idiom" : "universal",
-      "filename" : "1x.png",
       "scale" : "1x"
     },
     {
+      "filename" : "MenubarIcon-32 1.png",
       "idiom" : "universal",
-      "filename" : "2x.png",
       "scale" : "2x"
     },
     {
+      "filename" : "MenubarIcon-64.png",
       "idiom" : "universal",
-      "filename" : "3x.png",
       "scale" : "3x"
+    },
+    {
+      "idiom" : "mac"
+    },
+    {
+      "filename" : "MenubarIcon-16.png",
+      "idiom" : "mac",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "MenubarIcon-32.png",
+      "idiom" : "mac",
+      "scale" : "2x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   },
   "properties" : {
     "template-rendering-intent" : "template"

@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B02ADB12D38EDA000DE4132 /* DesktopManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B02ADB02D38EDA000DE4132 /* DesktopManager.swift */; };
 		0B12EF1A203AD9C80058B169 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF19203AD9C80058B169 /* Options.swift */; };
 		0B12EF1D203ADD230058B169 /* ScrollUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF1C203ADD230058B169 /* ScrollUtils.swift */; };
 		0B12EF1F203ADFB10058B169 /* Interpolator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12EF1E203ADFB10058B169 /* Interpolator.swift */; };
@@ -21,8 +22,10 @@
 		0B99C5FC2577FC9200021578 /* ScrollPoster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B99C5FB2577FC9200021578 /* ScrollPoster.swift */; };
 		0BB0F1BE20F3A04F00909B7D /* WelcomeWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB0F1BD20F3A04F00909B7D /* WelcomeWindowController.swift */; };
 		0BB0F1C020F3A05D00909B7D /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB0F1BF20F3A05D00909B7D /* WelcomeViewController.swift */; };
+		0BB99B812D4CE9D6006A37AD /* DraggingImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB99B802D4CE9D6006A37AD /* DraggingImageView.swift */; };
 		0BC2AD2F20F3BA090084416B /* PreferencesContributorsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC2AD2E20F3BA090084416B /* PreferencesContributorsViewController.swift */; };
 		0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */; };
+		0BE049E82D4FAE8700796397 /* sparkle.png in Resources */ = {isa = PBXBuildFile; fileRef = 0BE049E72D4FAE8700796397 /* sparkle.png */; };
 		0BE4C93B20617C6E0001EA0E /* ScrollFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE4C93A20617C6E0001EA0E /* ScrollFilter.swift */; };
 		0BE5A292253A1168006D61C0 /* LoginServiceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A291253A1168006D61C0 /* LoginServiceKit */; };
 		0BE5A296253A119C006D61C0 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A295253A119C006D61C0 /* Charts */; };
@@ -58,6 +61,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0B02ADA62D312AB500DE4132 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
+		0B02ADA72D312AB500DE4132 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Localizable.strings; sourceTree = "<group>"; };
+		0B02ADA82D312ABB00DE4132 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Main.strings; sourceTree = "<group>"; };
+		0B02ADA92D312ABB00DE4132 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		0B02ADB02D38EDA000DE4132 /* DesktopManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopManager.swift; sourceTree = "<group>"; };
 		0B0D5B5A2066195A0077C2AC /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		0B0D5B5C206619680077C2AC /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		0B0D5B5D2066197B0077C2AC /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -88,8 +96,10 @@
 		0BAC4073251654C500E8A1FD /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0BB0F1BD20F3A04F00909B7D /* WelcomeWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeWindowController.swift; sourceTree = "<group>"; };
 		0BB0F1BF20F3A05D00909B7D /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
+		0BB99B802D4CE9D6006A37AD /* DraggingImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraggingImageView.swift; sourceTree = "<group>"; };
 		0BC2AD2E20F3BA090084416B /* PreferencesContributorsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesContributorsViewController.swift; sourceTree = "<group>"; };
 		0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItemManager.swift; sourceTree = "<group>"; };
+		0BE049E72D4FAE8700796397 /* sparkle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sparkle.png; sourceTree = "<group>"; };
 		0BE4C93A20617C6E0001EA0E /* ScrollFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollFilter.swift; sourceTree = "<group>"; };
 		22003C6D1E8555F0001220BC /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -219,6 +229,7 @@
 				0B6D3B672041A790004CC064 /* WindowManager.swift */,
 				23BB4D2E21D754D3009B51E9 /* PopoverManager.swift */,
 				0BD39F67204EFC6C000CCC42 /* StatusItemManager.swift */,
+				0B02ADB02D38EDA000DE4132 /* DesktopManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -261,7 +272,9 @@
 				0B12EF28203AE2E00058B169 /* Localization */,
 				22142DA91E25344E00E4BFBF /* Main.storyboard */,
 				23529E0B237087A400806D92 /* Assets.xcassets */,
+				0BE049E72D4FAE8700796397 /* sparkle.png */,
 				22142DAC1E25344E00E4BFBF /* Info.plist */,
+				0BB99B802D4CE9D6006A37AD /* DraggingImageView.swift */,
 			);
 			path = Mos;
 			sourceTree = "<group>";
@@ -345,7 +358,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0930;
-				LastUpgradeCheck = 1420;
+				LastUpgradeCheck = 1620;
 				ORGANIZATIONNAME = Caldis;
 				TargetAttributes = {
 					22142D9F1E25344E00E4BFBF = {
@@ -378,6 +391,8 @@
 				de,
 				"zh-Hant-TW",
 				"zh-Hant-HK",
+				el,
+				uk,
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			packageReferences = (
@@ -398,6 +413,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BE049E82D4FAE8700796397 /* sparkle.png in Resources */,
 				23529E0C237087A400806D92 /* Assets.xcassets in Resources */,
 				22142DAB1E25344E00E4BFBF /* Main.storyboard in Resources */,
 				2225F8E81E3B1A5C0020DD22 /* Localizable.strings in Resources */,
@@ -443,8 +459,10 @@
 				0BD39F68204EFC6C000CCC42 /* StatusItemManager.swift in Sources */,
 				23E9673F23613D1100E652F6 /* PreferencesExceptionInputViewController.swift in Sources */,
 				232E50A7236B372100265C58 /* PreferencesAdvanceWithApplicationViewController.swift in Sources */,
+				0B02ADB12D38EDA000DE4132 /* DesktopManager.swift in Sources */,
 				22A32B331E334B2E00A5CF38 /* PreferencesAboutViewController.swift in Sources */,
 				0BE4C93B20617C6E0001EA0E /* ScrollFilter.swift in Sources */,
+				0BB99B812D4CE9D6006A37AD /* DraggingImageView.swift in Sources */,
 				0B6D3B682041A790004CC064 /* WindowManager.swift in Sources */,
 				0B12EF1A203AD9C80058B169 /* Options.swift in Sources */,
 				228093501E2B5DA90061A00F /* PreferencesGeneralViewController.swift in Sources */,
@@ -474,6 +492,8 @@
 				0B7C970A253F1C0200B26AF3 /* de */,
 				0B6EC89125E8CFFB0073A50B /* zh-Hant-TW */,
 				0B6EC89325E8D0160073A50B /* zh-Hant-HK */,
+				0B02ADA62D312AB500DE4132 /* el */,
+				0B02ADA82D312ABB00DE4132 /* uk */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -491,6 +511,8 @@
 				0B7C970B253F1C0300B26AF3 /* de */,
 				0B6EC89225E8CFFB0073A50B /* zh-Hant-TW */,
 				0B6EC89425E8D0160073A50B /* zh-Hant-HK */,
+				0B02ADA72D312AB500DE4132 /* el */,
+				0B02ADA92D312ABB00DE4132 /* uk */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -626,19 +648,21 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2022.10.08;
+				CURRENT_PROJECT_VERSION = 2024.01.11;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 2H959AEV62;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = Mos/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Mos;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 3.4.1;
+				MARKETING_VERSION = 3.5.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -662,19 +686,21 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2022.10.08;
+				CURRENT_PROJECT_VERSION = 2024.01.11;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 2H959AEV62;
 				ENABLE_HARDENED_RUNTIME = NO;
 				GCC_OPTIMIZATION_LEVEL = fast;
 				INFOPLIST_FILE = Mos/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Mos;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 3.4.1;
+				MARKETING_VERSION = 3.5.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -6,7 +6,7 @@
   Copyright © 2017年 Caldis. All rights reserved.
 */
 
-// Mointor
+// Monitor
 "TUE-3v-CaJ.title" = "Rendering this chart will affect scrolling performance. Close the window when not in use.";
 
 // PreferencesWindow
@@ -76,7 +76,7 @@
 "5cx-xS-eRe.title" = "Just some little job for your mouse.";
 "yDf-dn-Mcz.title" = "Home Page";
 "99M-8D-HLN.title" = "GitHub";
-"AM8-cj-DnH.title" = "Feed 🍥 a fet MEOW";
+"AM8-cj-DnH.title" = "Feed 🍥 a pet MEOW";
 "aPi-cE-maK.title" = "Donate via PayPal";
 "FIh-fA-18k.title" = "Welcome Window";
 "265-WS-XEd.title" = "The Contributors";
@@ -88,7 +88,7 @@
 // IntroductionWindow
 "VWv-6P-9Xp.title" = "Back";
 "E9l-1I-6cD.title" = "Next";
-"11f-uB-gEM.title" = "Introducting";
+"11f-uB-gEM.title" = "Introducing";
 "YHn-dn-A4n.title" = "Mos";
 "yFl-4N-WcD.title" = "Your mouse is about to get a smoother scrolling experience.\nPick up your mouse, there are a few things you need to check.";
 "016-R7-U4x.title" = "You need to...";
@@ -103,10 +103,8 @@
 "Lhk-Nd-CdT.title" = "Before we smoothen your scrolling";
 "7o8-5p-CQX.title" = "There are a few more things to tweak";
 "VsZ-Yn-TgJ.title" = "Turn off the other smooth scrolling applications or extensions";
-"u7p-zc-ERS.title" = "Scientists have proven that running multiple smooth scrolling applications at the same time will lead to incommunicable consequences. Please close or disable the smooth function of- any other applications, such as smooth scrolling in Logitech Options or the SmoothScroll extension on Chrome.";
 "3QI-xO-wPK.title" = "Allow Mos access to Accessibility controls";
-"7bu-fM-Bjm.title" = "The greater the power, the greater the responsibility. To smooth your mouse scrolling, Mos needs to create an intermediate layer between the mouse and your system to optimize your mouse. So we need to access to accessibility controls to get this power.";
-"qGs-TM-PTM.title" = "LDue to the limitations of MacOS, you may need to repeat this authorization when Mos is updated. If, in this circumstance, the entry already exists, please delete and re-add it.";
+"qGs-TM-PTM.title" = "Due to the limitations of MacOS, you may need to repeat this authorization when Mos is updated. If, in this circumstance, the entry already exists, please delete and re-add it.";
 "V9n-HF-Vw9.title" = "Begin Smoothening";
 
 // Popover

@@ -13,17 +13,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // 运行前预处理
     func applicationWillFinishLaunching(_ notification: Notification) {
-        // DEBUG
-        // 清空用户设置
-        // UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
-        // 直接弹出设置窗口
-        // WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
-        
-        // 开始
-        // 禁止重复运行
+        // 禁止重复运行, 结束正在运行的实例
         Utils.preventMultiRunning(killExist: true)
+        
+        // DEBUG: 清空用户设置
+        // UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+        
         // 读取用户设置
         Options.shared.readOptions()
+        
+        // DEBUG: 直接弹出设置窗口
+        // WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
+        
         // 监听用户切换, 在切换用户 session 时停止运行
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
@@ -43,6 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         startWithAccessibilityPermissionsChecker(nil)
     }
 
+    // 用户双击打开应用程序
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         guard !flag else {
             return true
@@ -52,6 +54,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         return false
     }
+    
     // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
         ScrollCore.shared.endHandlingScroll()

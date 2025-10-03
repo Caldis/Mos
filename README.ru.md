@@ -1,6 +1,6 @@
 <p align="center">
   <a href="http://mos.caldis.me/">
-    <img width="320" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/intro.png?raw=true">
+    <img width="320" src="https://github.com/Caldis/Mos/blob/master/dmg/dmg-icon.png?raw=true">
   </a>
 </p>
 
@@ -12,7 +12,8 @@
 
 Бесплатное и простое приложение, позволяющее колесу мыши плавно прокручиваться в macOS.
 
-[中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md)
+[中文](https://github.com/Caldis/Mos/blob/master/README.md) | [English](https://github.com/Caldis/Mos/blob/master/README.enUS.md) |
+[Русский](https://github.com/Caldis/Mos/blob/master/README.ru.md)
 
 
 ## Главная страница
@@ -30,22 +31,6 @@ http://mos.caldis.me/
 - Написано на Swift.
 
 
-## Screenshot
-
-<p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/ru/Mointor.png?raw=true">
-</p>
-<p align="center">
-  <img width="562" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/ru/PreferencesGeneral.png?raw=true">
-</p>
-<p align="center">
-  <img width="562" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/ru/PreferencesAdvanced.png?raw=true">
-</p>
-<p align="center">
-  <img width="562" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/ru/PreferencesException.png?raw=true">
-</p>
-
-
 ## Загрузка & Установка
 
 ### Homebrew
@@ -53,7 +38,7 @@ http://mos.caldis.me/
 Если вы хотите установить приложение с помощью [Homebrew](https://brew.sh):
 
 ```bash
-$ brew install mos
+$ brew install --cask mos
 ```
 
 Приложение будет находится по адресу `/Applications/Mos.app`.
@@ -74,7 +59,7 @@ $ brew reinstall mos
 
 ## Инструкция
 
-- [GithubWiki](https://github.com/Caldis/Mos/wiki)
+- [Wiki](https://github.com/Caldis/Mos/wiki)
 
 
 ## Благодарность

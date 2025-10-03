@@ -1,6 +1,6 @@
 <p align="center">
   <a href="http://mos.caldis.me/">
-    <img width="320" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/intro.png?raw=true">
+    <img width="320" src="https://github.com/Caldis/Mos/blob/master/dmg/dmg-icon.png?raw=true">
   </a>
 </p>
 
@@ -31,22 +31,6 @@ http://mos.caldis.me/
 - 基于 Swift4 构建。
 
 
-## 截图
-
-<p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/Mointor.png?raw=true">
-</p>
-<p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/PreferencesGeneral.png?raw=true">
-</p>
-<p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/PreferencesAdvanced.png?raw=true">
-</p>
-<p align="center">
-  <img width="600" src="https://github.com/Caldis/Mos/blob/master/docs/resources/image/cn/PreferencesExceptionFull.png?raw=true">
-</p>
-
-
 ## 下载及安装
 
 ### Homebrew安装
@@ -54,7 +38,7 @@ http://mos.caldis.me/
 Mos可通过[Homebrew](https://brew.sh)来安装:
 
 ```bash
-$ brew install mos
+$ brew install --cask mos
 ```
 
 应用将被安装至 `/Applications/Mos.app`。
@@ -75,7 +59,7 @@ $ brew reinstall mos
 
 ## 帮助
 
-- [GithubWiki](https://github.com/Caldis/Mos/wiki)
+- [Wiki](https://github.com/Caldis/Mos/wiki)
 
 
 ## 鸣谢

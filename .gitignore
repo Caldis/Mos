@@ -1,14 +1,12 @@
-# RESOURCES
-docs/.idea
-docs/node_modules
-Resource/DMG
-Resource/Designs
+# docs
+website/.idea
+website/.next
+website/node_modules
 
-# SYS
+# macOS
 .DS_Store
 
-# Xcode
+# XCode
 xcuserdata
 *.xcuserstate
 *.xcuserdated
-Mos.xcodeproj/project.xcworkspace/xcuserdata/Caldis.xcuserdatad/UserInterfaceState.xcuserstate
