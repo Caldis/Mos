@@ -26,6 +26,7 @@ class KeyPreview: NSStackView {
     private var keyComponents: [String] = []
     private var status: Status = .normal
     private var keyViews: [NSView] = []
+    private var waitingView: KeyComponentContainer?
 
     // MARK: - Initialization
     override init(frame frameRect: NSRect) {
@@ -77,75 +78,20 @@ class KeyPreview: NSStackView {
     }
 
     /// 显示警告反馈(不可录制的按键)
-    /// 对WAITING_WORDING对应的keyView执行黄色+晃动动画
+    /// 对WAITING_WORDING对应的keyView执行红色+晃动动画
     func shakeWarning() {
-        // 找到WAITING_WORDING对应的view
-        guard let waitingView = findWaitingView() else { return }
-        guard let layer = waitingView.layer else { return }
-
-        // 停止呼吸动画,避免和警告动画冲突
-        layer.removeAnimation(forKey: "breathingAnimation")
-        layer.opacity = 1.0
-
-        // 1. 晃动动画
-        let shakeAnimation = CAKeyframeAnimation(keyPath: "transform.translation.x")
-        shakeAnimation.values = [0, -8, 8, -8, 8, -4, 4, 0]
-        shakeAnimation.duration = 0.4
-        shakeAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut)
-
-        // 2. 背景色变化动画
-        let warningColor: CGColor
-        if Utils.isDarkMode(for: self) {
-            // Dark模式: 较深的红色
-            warningColor = NSColor(calibratedRed: 0.85, green: 0.25, blue: 0.20, alpha: 1.0).cgColor
-        } else {
-            // Light模式: 明亮的红色
-            warningColor = NSColor(calibratedRed: 0.95, green: 0.35, blue: 0.30, alpha: 1.0).cgColor
-        }
-
-        let colorAnimation = CABasicAnimation(keyPath: "backgroundColor")
-        colorAnimation.toValue = warningColor
-        colorAnimation.duration = 0.3
-        colorAnimation.autoreverses = true
-        colorAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut)
-
-        // 执行动画
-        layer.add(shakeAnimation, forKey: "shakeWarning")
-        layer.add(colorAnimation, forKey: "colorWarning")
-
-        // 动画结束后恢复呼吸动画
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
-            // 只有在recording状态才恢复呼吸动画
-            if self.status == .recording {
-                self.startBreathingAnimation(for: waitingView)
-            }
-        }
-    }
-
-    /// 查找WAITING_WORDING对应的keyView
-    private func findWaitingView() -> NSView? {
-        guard let waitingIndex = keyComponents.firstIndex(of: KeyPreview.WAITING_WORDING) else {
-            return nil
-        }
-        guard waitingIndex < keyViews.count else {
-            return nil
-        }
-        return keyViews[waitingIndex]
+        waitingView?.shakeWarning()
     }
 
     // MARK: - View and anim control
     private func clearKeyViews() {
-        // 停止所有动画
-        keyViews.forEach { keyView in
-            keyView.layer?.removeAllAnimations()
-        }
         // 移除所有子视图
         arrangedSubviews.forEach { view in
             removeArrangedSubview(view)
             view.removeFromSuperview()
         }
         keyViews.removeAll()
+        waitingView = nil
     }
     private func createKeyViews() {
         for (index, component) in keyComponents.enumerated() {
@@ -158,14 +104,20 @@ class KeyPreview: NSStackView {
             }
 
             // 创建按键视图
-            let keyView = createSingleKeyView(for: component)
+            let isWaiting = (component == KeyPreview.WAITING_WORDING)
+            let keyView = createSingleKeyView(for: component, isWaiting: isWaiting)
             addArrangedSubview(keyView)
             keyViews.append(keyView)
+
+            // 缓存 waiting view
+            if isWaiting, let container = keyView as? KeyComponentContainer {
+                waitingView = container
+            }
         }
     }
-    private func createSingleKeyView(for text: String) -> NSView {
+    private func createSingleKeyView(for text: String, isWaiting: Bool) -> NSView {
         // 创建一个能动态响应外观变化的容器
-        let container = KeyComponentContainer(keyStatus: status)
+        let container = KeyComponentContainer(keyStatus: status, isWaiting: isWaiting)
 
         // 创建文本标签
         let label = NSTextField(labelWithString: text)
@@ -184,23 +136,7 @@ class KeyPreview: NSStackView {
             container.heightAnchor.constraint(equalToConstant: 20),
         ])
 
-        // 如果是录制状态且内容是 keyWaiting(问号)，添加呼吸动画
-        if status == .recording && text == KeyPreview.WAITING_WORDING {
-            startBreathingAnimation(for: container)
-        }
-
         return container
-    }
-    private func startBreathingAnimation(for view: NSView) {
-        // 创建呼吸动画
-        let animation = CABasicAnimation(keyPath: "opacity")
-        animation.fromValue = 1.0
-        animation.toValue = 0.5
-        animation.duration = 0.5
-        animation.autoreverses = true
-        animation.repeatCount = .infinity
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        view.layer?.add(animation, forKey: "breathingAnimation")
     }
 }
 
@@ -208,12 +144,19 @@ class KeyPreview: NSStackView {
 /// 按键组件容器，通过 updateLayer 动态响应外观变化
 private final class KeyComponentContainer: NSView {
     let keyStatus: KeyPreview.Status
+    let isWaitingPlaceholder: Bool
 
-    init(keyStatus: KeyPreview.Status) {
+    init(keyStatus: KeyPreview.Status, isWaiting: Bool = false) {
         self.keyStatus = keyStatus
+        self.isWaitingPlaceholder = isWaiting
         super.init(frame: .zero)
         wantsLayer = true
         layer?.cornerRadius = 4
+
+        // 如果是录制状态的等待占位符，启动呼吸动画
+        if keyStatus == .recording && isWaitingPlaceholder {
+            startBreathingAnimation()
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -237,6 +180,58 @@ private final class KeyComponentContainer: NSView {
             return Utils.isDarkMode(for: self)
                 ? NSColor(calibratedRed: 0.20, green: 0.50, blue: 0.85, alpha: 1.0)
                 : NSColor(calibratedRed: 0.30, green: 0.60, blue: 0.95, alpha: 1.0)
+        }
+    }
+
+    // MARK: - Animation Management
+    private func startBreathingAnimation() {
+        let animation = CABasicAnimation(keyPath: "opacity")
+        animation.fromValue = 1.0
+        animation.toValue = 0.5
+        animation.duration = 0.5
+        animation.autoreverses = true
+        animation.repeatCount = .infinity
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        layer?.add(animation, forKey: "breathingAnimation")
+    }
+
+    func shakeWarning() {
+        guard let layer = layer else { return }
+
+        // 停止呼吸动画，避免冲突
+        layer.removeAnimation(forKey: "breathingAnimation")
+        layer.opacity = 1.0
+
+        // 1. 晃动动画
+        let shakeAnimation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        shakeAnimation.values = [0, -8, 8, -8, 8, -4, 4, 0]
+        shakeAnimation.duration = 0.4
+        shakeAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut)
+
+        // 2. 背景色变化动画（立即变红，然后褪回原色）
+        let warningColor: CGColor
+        if Utils.isDarkMode(for: self) {
+            warningColor = NSColor(calibratedRed: 0.85, green: 0.25, blue: 0.20, alpha: 1.0).cgColor
+        } else {
+            warningColor = NSColor(calibratedRed: 0.95, green: 0.35, blue: 0.30, alpha: 1.0).cgColor
+        }
+
+        let colorAnimation = CABasicAnimation(keyPath: "backgroundColor")
+        colorAnimation.fromValue = warningColor  // 从红色开始
+        colorAnimation.toValue = layer.backgroundColor  // 褪回原色
+        colorAnimation.duration = 0.8  // 和晃动动画同步
+        colorAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut)
+
+        // 执行动画
+        layer.add(shakeAnimation, forKey: "shakeWarning")
+        layer.add(colorAnimation, forKey: "colorWarning")
+
+        // 动画结束后恢复呼吸动画
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            if self.keyStatus == .recording {
+                self.startBreathingAnimation()
+            }
         }
     }
 }
