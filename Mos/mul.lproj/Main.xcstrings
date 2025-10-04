@@ -80,78 +80,78 @@
       }
     },
     "1su-Cm-MUc.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"The macOS sometimes fails to handle updated app permissions.\\nTry remove Mos from the list first, then to re-authorize by dragging the Mos icon above to the accessibility list.\"; ObjectID = \"1su-Cm-MUc\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"After the update, macOS sometimes fails to authorize correctly.\\nRemove Mos from the list first, and then re-add Mos to authorize. (You can also drag the icon above directly)\"; ObjectID = \"1su-Cm-MUc\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "macOS kann manchmal aktualisierte App-Berechtigungen nicht verarbeiten.\nVersuchen Sie zunächst, Mos aus der Liste zu entfernen und dann erneut zu autorisieren, indem Sie das Mos-Symbol oben in die Bedienungshilfen-Liste ziehen."
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Το macOS μερικές φορές αποτυγχάνει να διαχειριστεί ενημερωμένες άδειες εφαρμογής.\nΔοκιμάστε να αφαιρέσετε πρώτα το Mos από τη λίστα και στη συνέχεια να εξουσιοδοτήσετε ξανά σύροντας το εικονίδιο Mos παραπάνω στη λίστα προσβασιμότητας."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "The macOS sometimes fails to handle updated app permissions.\nTry remove Mos from the list first, then to re-authorize by dragging the Mos icon above to the accessibility list."
+            "value" : "After the update, macOS sometimes fails to authorize correctly.\nRemove Mos from the list first, and then re-add Mos to authorize. (You can also drag the icon above directly)"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "macOS はアプリのアクセス権限の更新に失敗することがあります。\nまずリストから Mos を削除してから、上記の Mos アイコンをアクセシビリティリストにドラッグして再認証してください。"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "macOS가 업데이트된 앱 권한을 처리하지 못하는 경우가 있습니다.\n먼저 목록에서 Mos를 제거한 다음, 위의 Mos 아이콘을 손쉬운 사용 목록으로 드래그하여 다시 인증하십시오."
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "macOS иногда не может обработать обновленные разрешения приложения.\nПопробуйте сначала удалить Mos из списка, затем повторно авторизовать, перетащив значок Mos выше в список универсального доступа."
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "macOS bazen güncellenmiş uygulama izinlerini işleyemez.\nÖnce Mos'u listeden kaldırmayı deneyin, ardından yukarıdaki Mos simgesini erişilebilirlik listesine sürükleyerek yeniden yetkilendirin."
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "macOS іноді не може обробити оновлені дозволи програми.\nСпробуйте спочатку видалити Mos зі списку, потім повторно авторизувати, перетягнувши значок Mos вище до списку доступності."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "macOS 有时无法处理更新的应用权限。\n请先从列表中移除 Mos，然后将上方的 Mos 图标拖到辅助功能列表中以重新授权。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "macOS 有時無法處理更新的應用程式權限。\n請先從列表中移除 Mos，然後將上方的 Mos 圖示拖移到輔助使用列表中以重新授權。"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "macOS 有時無法處理更新的應用程式權限。\n請先從列表中移除 Mos，然後將上方的 Mos 圖示拖移到輔助使用列表中以重新授權。"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "macOS 有時無法處理更新的應用程式權限。\n請先從列表中移除 Mos，然後將上方的 Mos 圖示拖移到輔助使用列表中以重新授權。"
           }
         }
@@ -6662,78 +6662,78 @@
       }
     },
     "t00-ho-RN1.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Not taking effect?\"; ObjectID = \"t00-ho-RN1\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Not effective?\"; ObjectID = \"t00-ho-RN1\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Keine Wirkung?"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Δεν λειτουργεί;"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Not taking effect?"
+            "value" : "Not effective?"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "効果がありませんか？"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "적용되지 않나요?"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Не работает?"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Etkisi yok mu?"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Не працює?"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "未生效？"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "未生效？"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "未生效？"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "未生效？"
           }
         }
