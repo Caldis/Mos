@@ -29,6 +29,8 @@ class PreferencesScrollingViewController: NSViewController {
     @IBOutlet weak var scrollDurationInput: NSTextField!
     @IBOutlet weak var scrollDurationStepper: NSStepper!
     @IBOutlet weak var resetToDefaultsButton: NSButton!
+    // Height constraint for reset button
+    var resetButtonHeightConstraint: NSLayoutConstraint?
     // Constants
     let PopUpButtonPadding = 2 // 减去第一个 Disabled 和分割线的距离
     let DefaultConfigForCompare = OPTIONS_SCROLL_DEFAULT()
@@ -38,6 +40,9 @@ class PreferencesScrollingViewController: NSViewController {
         scrollStepInput.refusesFirstResponder = true
         scrollSpeedInput.refusesFirstResponder = true
         scrollDurationInput.refusesFirstResponder = true
+        // 创建高度约束
+        resetButtonHeightConstraint = resetToDefaultsButton.heightAnchor.constraint(equalToConstant: 24)
+        resetButtonHeightConstraint?.isActive = true
         // 读取设置
         syncViewWithOptions()
     }
@@ -191,8 +196,21 @@ extension PreferencesScrollingViewController {
         scrollDurationStepper.isEnabled = isNotInherit
         scrollDurationInput.stringValue = String(format: "%.2f", duration)
         scrollDurationInput.isEnabled = isNotInherit
-        // 初始化
-        resetToDefaultsButton.isEnabled = isNotInherit && scroll != DefaultConfigForCompare
+        // 更新重置按钮状态
+        updateResetButtonState()
+    }
+    // 更新重置按钮状态与显示
+    func updateResetButtonState() {
+        let isNotInherit = !isTargetApplicationInheritOptions()
+        let scroll = getTargetApplicationScrollOptions()
+        let shouldShowResetButton = isNotInherit && scroll != DefaultConfigForCompare
+        resetToDefaultsButton.isEnabled = shouldShowResetButton
+        resetButtonHeightConstraint?.constant = shouldShowResetButton ? 24 : 0
+        resetToDefaultsButton.alphaValue = shouldShowResetButton ? 1.0 : 0.0
+        // 触发父视图窗口尺寸更新
+        view.needsLayout = true
+        view.layoutSubtreeIfNeeded()
+        (parent as? PreferencesTabViewController)?.updateWindowSize()
     }
     // 获取配置目标 (公共或应用配置)
     func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_DEFAULT {

@@ -47,18 +47,14 @@ class ButtonTableCellView: NSTableCellView {
         guard let rowView = self.superview as? NSTableRowView else { return }
         // 设置高亮色
         let isDarkMode = Utils.isDarkMode(for: rowView)
-        let highlightColor = isDarkMode ? NSColor(white: 1.0, alpha: 0.2) : NSColor(white: 0.0, alpha: 0.15)
+        let highlightColor = isDarkMode ? NSColor(white: 1.0, alpha: 0.2) : NSColor(white: 0.0, alpha: 0.2)
         let originalColor = originalRowBackgroundColor ?? rowView.backgroundColor
         // 高亮
+        rowView.backgroundColor = highlightColor
+        // 恢复
         NSAnimationContext.runAnimationGroup({ context in
-            context.duration = 0
-            rowView.animator().backgroundColor = highlightColor
-        }, completionHandler: {
-            // 恢复
-            NSAnimationContext.runAnimationGroup({ context in
-                context.duration = 1.0
-                rowView.animator().backgroundColor = originalColor
-            })
+            context.duration = 1.5
+            rowView.animator().backgroundColor = originalColor
         })
     }
 
