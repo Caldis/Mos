@@ -301,7 +301,7 @@
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "釋放滑鼠按鍵的強大功能"
           }
         },
@@ -597,6 +597,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Налаштування"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设定"
           }
         }
       }
@@ -6267,79 +6273,78 @@
       }
     },
     "Rgq-87-vjY.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed.\"; ObjectID = \"Rgq-87-vjY\";",
-      "extractionState" : "extracted_with_value",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"暂时性地禁用平滑滚动以提高滚动精度\"; ObjectID = \"Rgq-87-vjY\";",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "In einigen Anwendungen wird der Bildlauf zur Einstellung bestimmter präziser Parameter verwendet (z. B. zum Einstellen der Lautstärke, zum Zoomen der Anzeige usw.), und ein flüssiger Bildlauf kann Störungen verursachen. Sie können eine Blocktaste festlegen, die den reibungslosen Bildlauf vorübergehend deaktiviert, wenn die Taste gedrückt wird."
+            "value" : "Glätten vorübergehend deaktivieren, um die Scrollgenauigkeit zu verbessern"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Σε ορισμένες εφαρμογές, η κύλιση χρησιμοποιείται για προσαρμογή ορισμένων ακριβών παραμέτρων (όπως ρύθμιση της έντασης, μεγέθυνση της οθόνης κ.λπ.) και η ομαλή κύλιση μπορεί να προκαλέσει παρεμβολές. Μπορείτε να ορίσετε ένα πλήκτρο αποκλεισμού που θα απενεργοποιεί προσωρινά την ομαλή κύλιση όταν πατηθεί το πλήκτρο."
+            "value" : "Απενεργοποιήστε προσωρινά την ομαλή κύλιση για βελτίωση της ακρίβειας κύλισης"
           }
         },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "In some applications, scrolling is used to adjust certain precise parameters (such as adjusting the volume, zooming the display, etc.) and smooth scrolling may cause interference. You can set a block key which will temporarily disable smooth scrolling when the key is pressed."
+            "state" : "translated",
+            "value" : "Temporarily disable smooth scrolling to improve scrolling accuracy"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一部のアプリケーションでは、スクロールが特定の精密なパラメータの調整（音量調整、画面のズームなど）に使用されており、スムーズスクロールが干渉を引き起こす可能性があります。キーを押したときにスムーズスクロールを一時的に無効にするブロックキーを設定できます。"
+            "value" : "スクロール精度を向上させるためにスムーズスクロールを一時的に無効化"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "몇몇 애플리케이션의 경우, 스크롤링으로 정확한 매개 변수를 조절(예를 들어 볼륨 조절, 화면크기 조절등)하며, 부드러운 스크롤링은 이에 영향을 미칠수 있습니다. 차단 키를 눌러 이를 미리 방지할 수 있습니다."
+            "value" : "스크롤 정확도를 높이기 위해 부드러운 스크롤링을 일시적으로 비활성화"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "В некоторых приложениях прокрутка используется для настройки определенных точных параметров (таких как регулировка громкости, масштабирование дисплея и т.д.), и плавная прокрутка может вызывать проблемы. Вы можете установить клавишу блокировки, которая будет временно отключать плавную прокрутку при ее нажатии."
+            "value" : "Временно отключить плавную прокрутку для повышения точности прокрутки"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bazı uygulamalarda, belirli kesin parametreleri ayarlamak için kaydırma kullanılır (ses düzeyini ayarlamak, ekranı yakınlaştırmak, vb.) Ve yumuşak kaydırma soruna neden olabilir. Basıldığında yumuşak kaydırmayı geçici olarak devre dışı bırakacak bir engelleme tuşu ayarlayabilirsiniz."
+            "value" : "Kaydırma doğruluğunu artırmak için yumuşak kaydırmayı geçici olarak devre dışı bırakın"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "У деяких програмах прокручування використовується для налаштування певних точних параметрів (наприклад, регулювання гучності, масштабування дисплея тощо), і плавне прокручування може викликати перешкоди. Ви можете встановити клавішу блокування, яка тимчасово вимикатиме плавне прокручування при натисканні клавіші."
+            "value" : "Тимчасово вимкнути плавне прокручування для підвищення точності прокручування"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在某些应用程序中, 鼠标滚动有时会用于执行某些较为精確的操作 (如调节音量或縮放文档), 此时平滑滚动的插值处理会对精确的操作造成不必要的干扰\n你可以指定一个特定按键作为禁用键, 以在进行此类操作時可以通过按下禁用键, 暂时性地禁用对鼠标滚轮的平滑滚动处理"
+            "value" : "暂时性地禁用平滑滚动以提高滚动精度"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在某些應用程式中，「捲動」是用來進行比較精確的調整動作（例如調整音量、縮放顯示大小等），此時平滑滾動的處理方式有可能會造成干擾。您可以將某個特定按鍵設成「停用鍵」，這樣按鍵壓下去之後，平滑捲動即會暫時停用。"
+            "value" : "暫時性地停用平滑捲動以提高捲動精度"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在某些應用程式中，「捲動」是用來進行比較精確的調整動作（例如調整音量、縮放顯示大小等），此時平滑滾動的處理方式有可能會造成干擾。您可以將某個特定按鍵設成「停用鍵」，這樣按鍵壓下去之後，平滑捲動即會暫時停用。"
+            "value" : "暫時性地停用平滑捲動以提高捲動精度"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在某些應用程式中，「捲動」是用來進行比較精確的調整動作（例如調整音量、縮放顯示大小等），此時平滑滾動的處理方式有可能會造成干擾。您可以將某個特定按鍵設成「停用鍵」，這樣按鍵壓下去之後，平滑捲動即會暫時停用。"
+            "value" : "暫時性地停用平滑捲動以提高捲動精度"
           }
         }
       }
