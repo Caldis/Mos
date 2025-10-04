@@ -133,7 +133,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "macOS 有时无法处理更新的应用权限。\n请先从列表中移除 Mos，然后将上方的 Mos 图标拖到辅助功能列表中以重新授权。"
           }
         },
@@ -289,7 +289,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "释放鼠标按键的强大功能"
           }
         },
@@ -548,60 +548,66 @@
       }
     },
     "8By-V1-U9w.headerCell.title" : {
-      "comment" : "Class = \"NSTableColumn\"; headerCell.title = \"Setting\"; ObjectID = \"8By-V1-U9w\";",
+      "comment" : "Class = \"NSTableColumn\"; headerCell.title = \"Scrolling\"; ObjectID = \"8By-V1-U9w\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Einstellung"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Ρυθμίσεις"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Setting"
+            "value" : "Scrolling"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "設定"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "설정"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Настройка"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Ayar"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Налаштування"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滚动"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "设定"
           }
         }
@@ -2375,7 +2381,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "重新运行 Mos 以更改配置"
           }
         },
@@ -5045,6 +5051,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你可以為每個應用程式定製不同的行為。"
+          }
+        }
+      }
+    },
+    "JQK-PN-VMN.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Scrolling\"; ObjectID = \"JQK-PN-VMN\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Scrolling"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滚动"
           }
         }
       }

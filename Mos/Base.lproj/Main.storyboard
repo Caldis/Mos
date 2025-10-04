@@ -237,7 +237,7 @@
                                             <color key="backgroundColor" red="0.11764705882352941" green="0.11764705882352941" blue="0.11764705882352941" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn identifier="Hotkey" width="418" minWidth="40" maxWidth="1000" id="gd2-WO-uk9">
+                                                <tableColumn identifier="Hotkey" width="417.5" minWidth="40" maxWidth="1000" id="gd2-WO-uk9">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Hotkey">
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -521,11 +521,21 @@
                                             <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="XUy-oo-mzG">
                                                 <rect key="frame" x="0.0" y="-2" width="450" height="5"/>
                                             </box>
+                                            <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="W4G-c6-Zmz">
+                                                <rect key="frame" x="361" y="8" width="56" height="14"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Scrolling" id="JQK-PN-VMN">
+                                                    <font key="font" metaFont="systemMedium" size="11"/>
+                                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                </textFieldCell>
+                                            </textField>
                                         </subviews>
                                         <constraints>
+                                            <constraint firstItem="W4G-c6-Zmz" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Dph-wy-8sb" secondAttribute="trailing" constant="8" symbolic="YES" id="0ZH-vo-N8D"/>
                                             <constraint firstItem="Dph-wy-8sb" firstAttribute="centerY" secondItem="ouh-IG-LyJ" secondAttribute="centerY" id="6H6-5z-Sht"/>
-                                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Dph-wy-8sb" secondAttribute="trailing" constant="20" symbolic="YES" id="ASb-HB-fe6"/>
+                                            <constraint firstItem="W4G-c6-Zmz" firstAttribute="centerX" secondItem="ouh-IG-LyJ" secondAttribute="centerX" constant="164" id="9EA-0U-hrm"/>
                                             <constraint firstItem="Dph-wy-8sb" firstAttribute="leading" secondItem="ouh-IG-LyJ" secondAttribute="leading" constant="37" id="JAN-ad-8pf"/>
+                                            <constraint firstItem="W4G-c6-Zmz" firstAttribute="centerY" secondItem="ouh-IG-LyJ" secondAttribute="centerY" id="KjP-Hk-a0i"/>
                                             <constraint firstAttribute="height" constant="30" id="Lth-gv-sxw"/>
                                             <constraint firstAttribute="bottom" secondItem="XUy-oo-mzG" secondAttribute="bottom" id="WI9-RH-ERQ"/>
                                             <constraint firstItem="XUy-oo-mzG" firstAttribute="leading" secondItem="ouh-IG-LyJ" secondAttribute="leading" id="XRb-rf-T5L"/>
@@ -554,7 +564,7 @@
                                             <color key="backgroundColor" red="0.11764705882352941" green="0.11764705882352941" blue="0.11764705882352941" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn identifier="applicationCell" width="328" minWidth="1" maxWidth="1000" id="xfG-Cd-oIk">
+                                                <tableColumn identifier="applicationCell" width="327.5" minWidth="1" maxWidth="1000" id="xfG-Cd-oIk">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title=" Application">
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -601,8 +611,8 @@
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
-                                                <tableColumn identifier="settingCell" width="90" minWidth="10" maxWidth="1000" id="8By-V1-U9w">
-                                                    <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Setting">
+                                                <tableColumn identifier="scrollingCell" width="90" minWidth="10" maxWidth="1000" id="8By-V1-U9w">
+                                                    <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Scrolling">
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </tableHeaderCell>
@@ -613,12 +623,12 @@
                                                     </textFieldCell>
                                                     <prototypeCellViews>
                                                         <tableCellView id="clT-5E-IUd">
-                                                            <rect key="frame" x="344" y="6" width="96" height="45"/>
+                                                            <rect key="frame" x="343.65404075495303" y="6" width="96" height="45"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4qv-B4-GnV">
                                                                     <rect key="frame" x="29" y="10" width="39" height="25"/>
-                                                                    <buttonCell key="cell" type="roundRect" bezelStyle="roundedRect" image="SF.ellipsis.circle" imagePosition="only" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" id="pZj-5N-agR">
+                                                                    <buttonCell key="cell" type="roundRect" bezelStyle="roundedRect" image="SF.circle.dotted.circle" imagePosition="only" lineBreakMode="truncatingTail" state="on" imageScaling="proportionallyDown" inset="2" id="pZj-5N-agR">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                         <font key="font" metaFont="cellTitle"/>
                                                                     </buttonCell>
@@ -877,7 +887,7 @@
                     </items>
                 </menu>
             </objects>
-            <point key="canvasLocation" x="1928" y="1277"/>
+            <point key="canvasLocation" x="1928" y="1276.5"/>
         </scene>
         <!--Application Allowlist hint-->
         <scene sceneID="57E-oo-PEW">
@@ -1058,7 +1068,7 @@
                                 <rect key="frame" x="171" y="370" width="120" height="24"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Vhz-Rn-lcU" id="GDi-oW-nle">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="message"/>
                                     <menu key="menu" id="NGP-wM-KXa">
                                         <items>
                                             <menuItem title="Disabled" state="on" id="Vhz-Rn-lcU">
@@ -1110,7 +1120,7 @@
                                 <rect key="frame" x="171" y="317" width="120" height="24"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cTe-aL-0GQ" id="gkh-s7-kv8">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="message"/>
                                     <menu key="menu" id="pei-BS-BDt">
                                         <items>
                                             <menuItem title="Disabled" state="on" id="cTe-aL-0GQ">
@@ -1162,7 +1172,7 @@
                                 <rect key="frame" x="171" y="264" width="123" height="24"/>
                                 <popUpButtonCell key="cell" type="push" title="Disabled" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="vFk-37-HRU" id="veO-qF-0qO">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
+                                    <font key="font" metaFont="message"/>
                                     <menu key="menu" id="ycb-Tc-24R">
                                         <items>
                                             <menuItem title="Disabled" state="on" id="vFk-37-HRU">
@@ -2790,7 +2800,7 @@ Remove Mos from the list first, and then re-add Mos to authorize. (You can also 
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="GA4-xY-65w"/>
+        <segue reference="i8p-Ht-8EX"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="AlipayLogo" width="432" height="150"/>
@@ -2806,7 +2816,6 @@ Remove Mos from the list first, and then re-add Mos to authorize. (You can also 
         <image name="SF.arrow.triangle.capsulepath" width="135" height="135"/>
         <image name="SF.button.horizontal.top.press" width="135" height="135"/>
         <image name="SF.circle.dotted.circle" width="135" height="135"/>
-        <image name="SF.ellipsis.circle" width="135" height="135"/>
         <image name="SF.gearshape" width="135" height="135"/>
         <image name="SF.lasso.badge.sparkles" width="135" height="135"/>
         <image name="SF.person.crop.circle.dashed" width="135" height="135"/>

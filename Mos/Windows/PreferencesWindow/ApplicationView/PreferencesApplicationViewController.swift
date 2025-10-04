@@ -114,7 +114,7 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     // 每一列在 Storybroad 中的 identifier
     fileprivate enum CellIdentifiers {
         static let applicationCell = "applicationCell"
-        static let settingCell = "settingCell"
+        static let scrollingCell = "scrollingCell"
     }
     // 切换无数据显示
     func toggleNoDataHint() {
@@ -156,7 +156,7 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
                 cell.textField?.stringValue = application.getName()
                 return cell
             // 设定
-            case CellIdentifiers.settingCell:
+            case CellIdentifiers.scrollingCell:
                 let button = cell.subviews[0] as! NSButton
                 button.tag = row
                 button.target = self
