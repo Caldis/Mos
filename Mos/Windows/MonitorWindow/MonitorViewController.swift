@@ -187,7 +187,7 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         }
 
         // 使用 ShortcutManager 构建分级菜单
-        ShortcutManager.buildHierarchicalShortcutMenu(
+        ShortcutManager.buildShortcutMenu(
             into: shortcutMenu,
             target: self,
             action: #selector(onShortcutMenuItemSelected(_:))
