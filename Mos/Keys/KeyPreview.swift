@@ -173,13 +173,9 @@ private final class KeyComponentContainer: NSView {
         case .normal, .recording:
             return NSColor.quaternaryLabelColor
         case .recorded:
-            return Utils.isDarkMode(for: self)
-                ? NSColor(calibratedRed: 0.15, green: 0.65, blue: 0.30, alpha: 1.0)
-                : NSColor(calibratedRed: 0.25, green: 0.70, blue: 0.35, alpha: 1.0)
+            return NSColor.mainGreen
         case .duplicate:
-            return Utils.isDarkMode(for: self)
-                ? NSColor(calibratedRed: 0.20, green: 0.50, blue: 0.85, alpha: 1.0)
-                : NSColor(calibratedRed: 0.30, green: 0.60, blue: 0.95, alpha: 1.0)
+            return NSColor.mainBlue
         }
     }
 

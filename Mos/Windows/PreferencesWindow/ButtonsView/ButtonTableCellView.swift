@@ -56,13 +56,9 @@ class ButtonTableCellView: NSTableCellView {
         let isDarkMode = Utils.isDarkMode(for: rowView)
         let highlightColor: NSColor
         if #available(macOS 10.14, *) {
-            highlightColor = isDarkMode
-                ? NSColor.controlAccentColor.withAlphaComponent(0.3)
-                : NSColor.controlAccentColor.withAlphaComponent(0.2)
+            highlightColor = NSColor.controlAccentColor.withAlphaComponent(1)
         } else {
-            highlightColor = isDarkMode
-                ? NSColor(white: 1.0, alpha: 0.2)
-                : NSColor(white: 0.0, alpha: 0.2)
+            highlightColor = NSColor.mainBlue
         }
         let originalColor = originalRowBackgroundColor ?? rowView.backgroundColor
         // 高亮
