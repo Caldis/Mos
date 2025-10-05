@@ -34,32 +34,33 @@ struct SystemShortcut {
         /// 获取 SF Symbol 图标名称 (macOS 11.0+)
         var symbolName: String {
             switch identifier {
-            // 窗口管理
-            case "minimizeWindow": return "minus.rectangle"
-            case "hideApplication": return "eye.slash"
-            case "hideOthers": return "eye.slash.circle"
-            case "nextWindow": return "arrow.right.square"
-            case "closeWindow": return "xmark.rectangle"
-            case "closeAllWindows": return "xmark.circle.fill"
-            // 应用切换
-            case "switchApp": return "arrow.right.circle"
-            case "switchAppReverse": return "arrow.left.circle"
-            // 系统功能
-            case "spotlight": return "magnifyingglass"
-            case "forceQuit": return "exclamationmark.triangle"
-            case "lockScreen": return "lock.shield"
-            case "screenshot": return "camera.viewfinder"
-            case "screenshotSelection": return "viewfinder.rectangular"
-            case "showDesktop": return "rectangle.on.rectangle"
-            case "moveSpaceLeft": return "arrow.left.to.line"
-            case "moveSpaceRight": return "arrow.right.to.line"
-            // 功能键
-            case "missionControl": return "square.grid.3x2"
-            case "appExpose": return "square.grid.3x3"
-            case "spotlightFn": return "magnifyingglass.circle"
-            case "dictation": return "mic"
-            case "doNotDisturb": return "moon"
-            default: return "questionmark.circle"
+                // 功能键
+                case "missionControl": return "square.grid.3x2"
+                case "appExpose": return "square.grid.3x3"
+                case "spotlightFn": return "magnifyingglass.circle"
+                case "dictation": return "mic"
+                case "doNotDisturb": return "moon"
+                // 应用切换
+                case "switchApp": return "arrow.right.circle"
+                case "switchAppReverse": return "arrow.left.circle"
+                // 系统功能
+                case "spotlight": return "magnifyingglass"
+                case "forceQuit": return "exclamationmark.triangle"
+                case "lockScreen": return "lock.shield"
+                case "screenshot": return "camera.viewfinder"
+                case "screenshotSelection": return "viewfinder.rectangular"
+                case "showDesktop": return "rectangle.on.rectangle"
+                case "moveSpaceLeft": return "arrow.left.to.line"
+                case "moveSpaceRight": return "arrow.right.to.line"
+                // 窗口管理
+                case "minimizeWindow": return "minus.rectangle"
+                case "hideApplication": return "eye.slash"
+                case "hideOthers": return "eye.slash.circle"
+                case "nextWindow": return "arrow.right.square"
+                case "closeWindow": return "xmark.rectangle"
+                case "closeAllWindows": return "xmark.circle.fill"
+                // 其他
+                default: return "questionmark.circle"
             }
         }
 
@@ -113,18 +114,15 @@ struct SystemShortcut {
     }
 
     // MARK: - 快捷键
-    // 窗口管理
-    static let minimizeWindow = Shortcut("minimizeWindow", 46, .command)
-    static let hideApplication = Shortcut("hideApplication", 4, .command)
-    static let hideOthers = Shortcut("hideOthers", 4, [.command, .option])
-    static let nextWindow = Shortcut("nextWindow", 50, .command)
-    static let closeWindow = Shortcut("closeWindow", 13, .command)
-    static let closeAllWindows = Shortcut("closeAllWindows", 13, [.command, .option])
-
+    // 功能键
+    static let missionControl = Shortcut("missionControl", 160, .function)
+    static let appExpose = Shortcut("appExpose", 131, .function)
+    static let spotlight_fn = Shortcut("spotlightFn", 177, .function)
+    static let dictation = Shortcut("dictation", 176, .function)
+    static let doNotDisturb = Shortcut("doNotDisturb", 178, .function)
     // 应用切换
     static let switchApp = Shortcut("switchApp", 48, .command)
     static let switchAppReverse = Shortcut("switchAppReverse", 48, [.command, .shift])
-
     // 系统功能
     static let spotlight = Shortcut("spotlight", 49, .command)
     static let forceQuit = Shortcut("forceQuit", 53, [.command, .option])
@@ -134,34 +132,31 @@ struct SystemShortcut {
     static let showDesktop = Shortcut("showDesktop", 103, .function)
     static let moveSpaceLeft = Shortcut("moveSpaceLeft", 123, .control)
     static let moveSpaceRight = Shortcut("moveSpaceRight", 124, .control)
-
-    // F键快捷键
-    static let missionControl = Shortcut("missionControl", 160, .function)
-    static let appExpose = Shortcut("appExpose", 131, .function)
-    static let spotlight_fn = Shortcut("spotlightFn", 177, .function)
-    static let dictation = Shortcut("dictation", 176, .function)
-    static let doNotDisturb = Shortcut("doNotDisturb", 178, .function)
+    // 窗口管理
+    static let minimizeWindow = Shortcut("minimizeWindow", 46, .command)
+    static let hideApplication = Shortcut("hideApplication", 4, .command)
+    static let hideOthers = Shortcut("hideOthers", 4, [.command, .option])
+    static let nextWindow = Shortcut("nextWindow", 50, .command)
+    static let closeWindow = Shortcut("closeWindow", 13, .command)
+    static let closeAllWindows = Shortcut("closeAllWindows", 13, [.command, .option])
 
     // MARK: - 辅助方法
 
     /// 所有系统快捷键的集合
     static let allShortcuts: [String: Shortcut] = [
-        // 窗口管理
-        "minimizeWindow": minimizeWindow, "hideApplication": hideApplication,
-        "hideOthers": hideOthers, "nextWindow": nextWindow, "closeWindow": closeWindow,
-        "closeAllWindows": closeAllWindows,
-
+        // 功能键
+        "missionControl": missionControl, "appExpose": appExpose,
+        "spotlight_fn": spotlight_fn, "dictation": dictation, "doNotDisturb": doNotDisturb,
         // 应用切换
         "switchApp": switchApp, "switchAppReverse": switchAppReverse,
-
         // 系统功能
         "spotlight": spotlight, "forceQuit": forceQuit, "lockScreen": lockScreen,
         "screenshot": screenshot, "screenshotSelection": screenshotSelection,
         "showDesktop": showDesktop, "moveSpaceLeft": moveSpaceLeft, "moveSpaceRight": moveSpaceRight,
-
-        // F键
-        "missionControl": missionControl, "appExpose": appExpose,
-        "spotlight_fn": spotlight_fn, "dictation": dictation, "doNotDisturb": doNotDisturb
+        // 窗口管理
+        "minimizeWindow": minimizeWindow, "hideApplication": hideApplication,
+        "hideOthers": hideOthers, "nextWindow": nextWindow, "closeWindow": closeWindow,
+        "closeAllWindows": closeAllWindows,
     ]
 
     /// 根据修饰键和按键代码查找快捷键名称
@@ -189,10 +184,18 @@ struct SystemShortcut {
         return Array(allShortcuts.keys).sorted()
     }
 
+    /// 分类显示顺序（定义菜单中的排列顺序）
+    static let categoryOrder: [String] = [
+        "categoryFunctionKeys",
+        "categoryAppSwitching",
+        "categorySystemFunctions",
+        "categoryWindowManagement"
+    ]
+
     /// 按类别分组的快捷键
     static let shortcutsByCategory: [String: [Shortcut]] = [
-        "categoryWindowManagement": [
-            minimizeWindow, hideApplication, hideOthers, nextWindow, closeWindow, closeAllWindows
+        "categoryFunctionKeys": [
+            missionControl, appExpose, spotlight_fn, dictation, doNotDisturb
         ],
         "categoryAppSwitching": [
             switchApp, switchAppReverse
@@ -201,9 +204,9 @@ struct SystemShortcut {
             spotlight, forceQuit, lockScreen, screenshot, screenshotSelection,
             showDesktop, moveSpaceLeft, moveSpaceRight
         ],
-        "categoryFunctionKeys": [
-            missionControl, appExpose, spotlight_fn, dictation, doNotDisturb
-        ]
+        "categoryWindowManagement": [
+            minimizeWindow, hideApplication, hideOthers, nextWindow, closeWindow, closeAllWindows
+        ],
     ]
 
     /// 获取分类的本地化名称

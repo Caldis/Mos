@@ -49,8 +49,9 @@ class ShortcutManager {
 
         var totalShortcuts = 0
 
-        // 按分类构建分级菜单
-        for (categoryIdentifier, shortcuts) in SystemShortcut.shortcutsByCategory.sorted(by: { $0.key < $1.key }) {
+        // 按分类构建分级菜单（使用显式的分类顺序）
+        for categoryIdentifier in SystemShortcut.categoryOrder {
+            guard let shortcuts = SystemShortcut.shortcutsByCategory[categoryIdentifier] else { continue }
 
             // 创建分类主菜单项 (使用本地化名称)
             let categoryName = SystemShortcut.localizedCategoryName(categoryIdentifier)
