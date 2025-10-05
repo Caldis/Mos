@@ -40,16 +40,41 @@ struct SystemShortcut {
                 case "spotlightFn": return "magnifyingglass.circle"
                 case "dictation": return "mic"
                 case "doNotDisturb": return "moon"
+                case "showDesktop": return "rectangle.on.rectangle"
                 // 应用切换
                 case "switchApp": return "arrow.right.circle"
                 case "switchAppReverse": return "arrow.left.circle"
-                // 系统功能
+                // 文档编辑
+                case "copy": return "doc.on.doc"
+                case "paste": return "doc.on.clipboard"
+                case "cut": return "scissors"
+                case "undo": return "arrow.uturn.backward"
+                case "redo": return "arrow.uturn.forward"
+                case "selectAll": return "selection.pin.in.out"
+                case "find": return "magnifyingglass"
+                case "bold": return "bold"
+                case "italic": return "italic"
+                case "underline": return "underline"
+                // Finder 操作
+                case "newFinderWindow": return "macwindow.badge.plus"
+                case "moveToTrash": return "trash"
+                case "emptyTrash": return "trash.slash"
+                case "duplicateFile": return "plus.square.on.square"
+                case "getInfo": return "info.circle"
+                case "newFolder": return "folder.badge.plus"
+                case "goToFolder": return "folder.badge.gearshape"
+                case "viewAsIcons": return "square.grid.2x2"
+                case "viewAsList": return "list.bullet"
+                case "viewAsColumns": return "rectangle.split.3x1"
+                case "viewAsGallery": return "square.grid.3x3.fill.square"
+                // 系统控制
                 case "spotlight": return "magnifyingglass"
                 case "forceQuit": return "exclamationmark.triangle"
                 case "lockScreen": return "lock.shield"
+                case "logout": return "rectangle.portrait.and.arrow.right"
+                case "shutdownDialog": return "power"
                 case "screenshot": return "camera.viewfinder"
                 case "screenshotSelection": return "viewfinder.rectangular"
-                case "showDesktop": return "rectangle.on.rectangle"
                 case "moveSpaceLeft": return "arrow.left.to.line"
                 case "moveSpaceRight": return "arrow.right.to.line"
                 // 窗口管理
@@ -59,6 +84,11 @@ struct SystemShortcut {
                 case "nextWindow": return "arrow.right.square"
                 case "closeWindow": return "xmark.rectangle"
                 case "closeAllWindows": return "xmark.circle.fill"
+                case "quitApp": return "power.circle"
+                // 辅助功能
+                case "invertColors": return "circle.lefthalf.filled.inverse"
+                case "zoomIn": return "plus.magnifyingglass"
+                case "zoomOut": return "minus.magnifyingglass"
                 // 其他
                 default: return "questionmark.circle"
             }
@@ -120,25 +150,61 @@ struct SystemShortcut {
     static let spotlight_fn = Shortcut("spotlightFn", 177, .function)
     static let dictation = Shortcut("dictation", 176, .function)
     static let doNotDisturb = Shortcut("doNotDisturb", 178, .function)
+    static let showDesktop = Shortcut("showDesktop", 103, .function)
+
     // 应用切换
     static let switchApp = Shortcut("switchApp", 48, .command)
     static let switchAppReverse = Shortcut("switchAppReverse", 48, [.command, .shift])
-    // 系统功能
-    static let spotlight = Shortcut("spotlight", 49, .command)
-    static let forceQuit = Shortcut("forceQuit", 53, [.command, .option])
-    static let lockScreen = Shortcut("lockScreen", 12, [.command, .control])
-    static let screenshot = Shortcut("screenshot", 20, [.command, .shift])
-    static let screenshotSelection = Shortcut("screenshotSelection", 21, [.command, .shift])
-    static let showDesktop = Shortcut("showDesktop", 103, .function)
-    static let moveSpaceLeft = Shortcut("moveSpaceLeft", 123, .control)
-    static let moveSpaceRight = Shortcut("moveSpaceRight", 124, .control)
+
+    // 文档编辑
+    static let copy = Shortcut("copy", 8, .command)  // Command-C
+    static let paste = Shortcut("paste", 9, .command)  // Command-V
+    static let cut = Shortcut("cut", 7, .command)  // Command-X
+    static let undo = Shortcut("undo", 6, .command)  // Command-Z
+    static let redo = Shortcut("redo", 6, [.command, .shift])  // Command-Shift-Z
+    static let selectAll = Shortcut("selectAll", 0, .command)  // Command-A
+    static let find = Shortcut("find", 3, .command)  // Command-F
+    static let bold = Shortcut("bold", 11, .command)  // Command-B
+    static let italic = Shortcut("italic", 34, .command)  // Command-I
+    static let underline = Shortcut("underline", 32, .command)  // Command-U
+
+    // Finder 操作
+    static let newFinderWindow = Shortcut("newFinderWindow", 45, .command)  // Command-N
+    static let moveToTrash = Shortcut("moveToTrash", 51, .command)  // Command-Delete
+    static let emptyTrash = Shortcut("emptyTrash", 51, [.command, .shift])  // Command-Shift-Delete
+    static let duplicateFile = Shortcut("duplicateFile", 2, .command)  // Command-D
+    static let getInfo = Shortcut("getInfo", 34, [.command])  // Command-I (Finder only, conflicts with italic)
+    static let newFolder = Shortcut("newFolder", 45, [.command, .shift])  // Command-Shift-N
+    static let goToFolder = Shortcut("goToFolder", 5, [.command, .shift])  // Command-Shift-G
+    static let viewAsIcons = Shortcut("viewAsIcons", 18, .command)  // Command-1
+    static let viewAsList = Shortcut("viewAsList", 19, .command)  // Command-2
+    static let viewAsColumns = Shortcut("viewAsColumns", 20, .command)  // Command-3
+    static let viewAsGallery = Shortcut("viewAsGallery", 21, .command)  // Command-4
+
+    // 系统控制
+    static let spotlight = Shortcut("spotlight", 49, .command)  // Command-Space
+    static let forceQuit = Shortcut("forceQuit", 53, [.command, .option])  // Command-Option-Esc
+    static let lockScreen = Shortcut("lockScreen", 12, [.command, .control])  // Command-Control-Q
+    static let logout = Shortcut("logout", 12, [.command, .shift])  // Command-Shift-Q
+    static let shutdownDialog = Shortcut("shutdownDialog", 6, .control)  // Control-Power (mapped to Control-Z as placeholder)
+    static let screenshot = Shortcut("screenshot", 20, [.command, .shift])  // Command-Shift-3
+    static let screenshotSelection = Shortcut("screenshotSelection", 21, [.command, .shift])  // Command-Shift-4
+    static let moveSpaceLeft = Shortcut("moveSpaceLeft", 123, .control)  // Control-Left
+    static let moveSpaceRight = Shortcut("moveSpaceRight", 124, .control)  // Control-Right
+
     // 窗口管理
-    static let minimizeWindow = Shortcut("minimizeWindow", 46, .command)
-    static let hideApplication = Shortcut("hideApplication", 4, .command)
-    static let hideOthers = Shortcut("hideOthers", 4, [.command, .option])
-    static let nextWindow = Shortcut("nextWindow", 50, .command)
-    static let closeWindow = Shortcut("closeWindow", 13, .command)
-    static let closeAllWindows = Shortcut("closeAllWindows", 13, [.command, .option])
+    static let minimizeWindow = Shortcut("minimizeWindow", 46, .command)  // Command-M
+    static let hideApplication = Shortcut("hideApplication", 4, .command)  // Command-H
+    static let hideOthers = Shortcut("hideOthers", 4, [.command, .option])  // Command-Option-H
+    static let nextWindow = Shortcut("nextWindow", 50, .command)  // Command-`
+    static let closeWindow = Shortcut("closeWindow", 13, .command)  // Command-W
+    static let closeAllWindows = Shortcut("closeAllWindows", 13, [.command, .option])  // Command-Option-W
+    static let quitApp = Shortcut("quitApp", 12, .command)  // Command-Q
+
+    // 辅助功能
+    static let invertColors = Shortcut("invertColors", 28, [.command, .option, .control])  // Command-Option-Control-8
+    static let zoomIn = Shortcut("zoomIn", 24, [.command, .option])  // Command-Option-=
+    static let zoomOut = Shortcut("zoomOut", 27, [.command, .option])  // Command-Option--
 
     // MARK: - 辅助方法
 
@@ -147,16 +213,26 @@ struct SystemShortcut {
         // 功能键
         "missionControl": missionControl, "appExpose": appExpose,
         "spotlight_fn": spotlight_fn, "dictation": dictation, "doNotDisturb": doNotDisturb,
+        "showDesktop": showDesktop,
         // 应用切换
         "switchApp": switchApp, "switchAppReverse": switchAppReverse,
-        // 系统功能
-        "spotlight": spotlight, "forceQuit": forceQuit, "lockScreen": lockScreen,
-        "screenshot": screenshot, "screenshotSelection": screenshotSelection,
-        "showDesktop": showDesktop, "moveSpaceLeft": moveSpaceLeft, "moveSpaceRight": moveSpaceRight,
+        // 文档编辑
+        "copy": copy, "paste": paste, "cut": cut, "undo": undo, "redo": redo,
+        "selectAll": selectAll, "find": find, "bold": bold, "italic": italic, "underline": underline,
+        // Finder 操作
+        "newFinderWindow": newFinderWindow, "moveToTrash": moveToTrash, "emptyTrash": emptyTrash,
+        "duplicateFile": duplicateFile, "getInfo": getInfo, "newFolder": newFolder, "goToFolder": goToFolder,
+        "viewAsIcons": viewAsIcons, "viewAsList": viewAsList, "viewAsColumns": viewAsColumns, "viewAsGallery": viewAsGallery,
+        // 系统控制
+        "spotlight": spotlight, "forceQuit": forceQuit, "lockScreen": lockScreen, "logout": logout,
+        "shutdownDialog": shutdownDialog, "screenshot": screenshot, "screenshotSelection": screenshotSelection,
+        "moveSpaceLeft": moveSpaceLeft, "moveSpaceRight": moveSpaceRight,
         // 窗口管理
         "minimizeWindow": minimizeWindow, "hideApplication": hideApplication,
         "hideOthers": hideOthers, "nextWindow": nextWindow, "closeWindow": closeWindow,
-        "closeAllWindows": closeAllWindows,
+        "closeAllWindows": closeAllWindows, "quitApp": quitApp,
+        // 辅助功能
+        "invertColors": invertColors, "zoomIn": zoomIn, "zoomOut": zoomOut,
     ]
 
     /// 根据修饰键和按键代码查找快捷键名称
@@ -187,25 +263,38 @@ struct SystemShortcut {
     /// 分类显示顺序（定义菜单中的排列顺序）
     static let categoryOrder: [String] = [
         "categoryFunctionKeys",
-        "categoryAppSwitching",
-        "categorySystemFunctions",
-        "categoryWindowManagement"
+        "categoryAppsAndWindows",
+        "categoryDocumentEditing",
+        "categoryFinderActions",
+        "categorySystem",
+        "categoryScreenshot",
+        "categoryAccessibility"
     ]
 
     /// 按类别分组的快捷键
     static let shortcutsByCategory: [String: [Shortcut]] = [
         "categoryFunctionKeys": [
-            missionControl, appExpose, spotlight_fn, dictation, doNotDisturb
+            missionControl, appExpose, spotlight_fn, dictation, doNotDisturb, showDesktop
         ],
-        "categoryAppSwitching": [
-            switchApp, switchAppReverse
+        "categoryAppsAndWindows": [
+            switchApp, switchAppReverse,
+            minimizeWindow, hideApplication, hideOthers, nextWindow, closeWindow, closeAllWindows, quitApp
         ],
-        "categorySystemFunctions": [
-            spotlight, forceQuit, lockScreen, screenshot, screenshotSelection,
-            showDesktop, moveSpaceLeft, moveSpaceRight
+        "categoryDocumentEditing": [
+            copy, paste, cut, undo, redo, selectAll, find, bold, italic, underline
         ],
-        "categoryWindowManagement": [
-            minimizeWindow, hideApplication, hideOthers, nextWindow, closeWindow, closeAllWindows
+        "categoryFinderActions": [
+            newFinderWindow, moveToTrash, emptyTrash, duplicateFile, getInfo, newFolder, goToFolder,
+            viewAsIcons, viewAsList, viewAsColumns, viewAsGallery
+        ],
+        "categorySystem": [
+            spotlight, forceQuit, lockScreen, logout, shutdownDialog, moveSpaceLeft, moveSpaceRight
+        ],
+        "categoryScreenshot": [
+            screenshot, screenshotSelection
+        ],
+        "categoryAccessibility": [
+            invertColors, zoomIn, zoomOut
         ],
     ]
 
@@ -217,11 +306,14 @@ struct SystemShortcut {
     /// 获取分类的 SF Symbol 图标名称 (macOS 11.0+)
     static func categorySymbolName(_ categoryIdentifier: String) -> String {
         switch categoryIdentifier {
-        case "categoryWindowManagement": return "macwindow"
-        case "categoryAppSwitching": return "arrow.left.arrow.right"
-        case "categorySystemFunctions": return "gearshape"
         case "categoryFunctionKeys": return "keyboard"
-        default: return "folder"
+        case "categoryAppsAndWindows": return "macwindow.on.rectangle"
+        case "categoryDocumentEditing": return "doc.text"
+        case "categoryFinderActions": return "folder"
+        case "categorySystem": return "gearshape"
+        case "categoryScreenshot": return "camera.viewfinder"
+        case "categoryAccessibility": return "eye"
+        default: return "questionmark.folder"
         }
     }
 }
