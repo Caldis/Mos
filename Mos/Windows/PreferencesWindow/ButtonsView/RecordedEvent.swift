@@ -82,6 +82,9 @@ struct ButtonBinding: Codable, Equatable {
 
     // MARK: - 数据字段
 
+    /// 唯一标识符
+    let id: UUID
+
     /// 录制的触发事件
     let triggerEvent: RecordedEvent
 
@@ -103,7 +106,8 @@ struct ButtonBinding: Codable, Equatable {
 
     // MARK: - 初始化
 
-    init(triggerEvent: RecordedEvent, systemShortcutName: String, isEnabled: Bool = true) {
+    init(id: UUID = UUID(), triggerEvent: RecordedEvent, systemShortcutName: String, isEnabled: Bool = true) {
+        self.id = id
         self.triggerEvent = triggerEvent
         self.systemShortcutName = systemShortcutName
         self.isEnabled = isEnabled
@@ -113,7 +117,6 @@ struct ButtonBinding: Codable, Equatable {
     // MARK: - Equatable
 
     static func == (lhs: ButtonBinding, rhs: ButtonBinding) -> Bool {
-        return lhs.triggerEvent == rhs.triggerEvent &&
-               lhs.systemShortcutName == rhs.systemShortcutName
+        return lhs.id == rhs.id
     }
 }

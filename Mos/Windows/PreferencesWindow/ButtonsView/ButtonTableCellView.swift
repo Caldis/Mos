@@ -18,17 +18,24 @@ class ButtonTableCellView: NSTableCellView {
     // MARK: - UI Components
     private var keyPreview: KeyPreview!
 
-    // MARK: - Data
-    private weak var viewController: PreferencesButtonsViewController? // 父容器视图
-    private var buttonBinding: ButtonBinding? // 按钮绑定
-    private var row: Int?
-    private var originalRowBackgroundColor: NSColor? // 保存原始行背景色
+    // MARK: - Callbacks
+    private var onShortcutSelected: ((SystemShortcut.Shortcut) -> Void)?
+    private var onDeleteRequested: (() -> Void)?
 
-    // MARK: - 初始化内容
-    func setup(from viewController: PreferencesButtonsViewController, with binding: ButtonBinding, at row: Int) {
-        self.viewController = viewController
-        self.buttonBinding = binding
-        self.row = row
+    // MARK: - Data (只用于UI显示)
+    private var currentShortcut: SystemShortcut.Shortcut?
+    private var originalRowBackgroundColor: NSColor?
+
+    // MARK: - 配置方法
+    func configure(
+        with binding: ButtonBinding,
+        onShortcutSelected: @escaping (SystemShortcut.Shortcut) -> Void,
+        onDeleteRequested: @escaping () -> Void
+    ) {
+        // 保存回调
+        self.onShortcutSelected = onShortcutSelected
+        self.onDeleteRequested = onDeleteRequested
+        self.currentShortcut = binding.systemShortcut
 
         // 保存原始背景色（首次或复用时）
         if originalRowBackgroundColor == nil, let rowView = self.superview as? NSTableRowView {
@@ -39,7 +46,7 @@ class ButtonTableCellView: NSTableCellView {
         setupKeyDisplayView(with: binding.triggerEvent)
 
         // 配置动作选择器
-        setupActionPopUpButton()
+        setupActionPopUpButton(currentShortcut: binding.systemShortcut)
     }
 
     // 高亮该行（重复两次）
@@ -78,7 +85,7 @@ class ButtonTableCellView: NSTableCellView {
     }
     
     // 设置动作按钮
-    private func setupActionPopUpButton() {
+    private func setupActionPopUpButton(currentShortcut: SystemShortcut.Shortcut?) {
         guard let menu = actionPopUpButton.menu else { return }
 
         // 使用 ShortcutManager 构建菜单
@@ -88,16 +95,11 @@ class ButtonTableCellView: NSTableCellView {
             action: #selector(shortcutSelected(_:))
         )
 
-        // 延迟设置当前选择，确保菜单完全构建完成
-        DispatchQueue.main.async { [weak self] in
-            if let binding = self?.buttonBinding,
-               !binding.systemShortcutName.isEmpty,
-               let shortcut = binding.systemShortcut {
-                self?.selectShortcutInMenu(shortcut)
-            } else {
-                // 如果没有绑定快捷键，确保显示默认占位符
-                self?.resetPlaceholder()
-            }
+        // 设置当前选择
+        if let shortcut = currentShortcut {
+            selectShortcutInMenu(shortcut)
+        } else {
+            resetPlaceholder()
         }
     }
     
@@ -201,38 +203,25 @@ class ButtonTableCellView: NSTableCellView {
 
     /// 快捷键选择回调
     @objc private func shortcutSelected(_ sender: NSMenuItem) {
-        guard let shortcut = sender.representedObject as? SystemShortcut.Shortcut,
-              let binding = buttonBinding,
-              let row = self.row else {
-            NSLog("[ButtonTableCellView] 无法获取快捷键或绑定信息")
+        guard let shortcut = sender.representedObject as? SystemShortcut.Shortcut else {
+            NSLog("[ButtonTableCellView] 无法获取快捷键信息")
             return
         }
 
-        // 更新绑定的快捷键
-        let updatedBinding = ButtonBinding(
-            triggerEvent: binding.triggerEvent,
-            systemShortcutName: SystemShortcut.findShortcut(
-                modifiers: shortcut.modifiers,
-                keyCode: shortcut.code
-            ) ?? "copy",
-            isEnabled: true  // 选择快捷键后启用绑定
-        )
-
-        // 更新本地绑定状态
-        self.buttonBinding = updatedBinding
+        // 更新本地状态
+        self.currentShortcut = shortcut
 
         // 设置自定义显示标题和图标
         setCustomTitle(sender.title, image: sender.image)
 
-        // 通知父视图控制器更新
-        viewController?.updateButtonBinding(at: row, with: updatedBinding)
+        // 通知外部更新
+        onShortcutSelected?(shortcut)
 
-        NSLog("[ButtonTableCellView] 当前选择显示: \(actionPopUpButton.titleOfSelectedItem ?? "无")")
+        NSLog("[ButtonTableCellView] 选中快捷键: \(sender.title)")
     }
 
     /// 删除绑定
     @objc private func deleteRecord(_ sender: NSButton) {
-        guard let row = self.row else { return }
-        viewController?.removeButtonBinding(row)
+        onDeleteRequested?()
     }
 }

@@ -96,8 +96,8 @@ extension PreferencesButtonsViewController {
 
         // 如果是重复录制,高亮已存在行
         if isDuplicate {
-            if let existingIndex = buttonBindings.firstIndex(where: { $0.triggerEvent == recordedEvent }) {
-                highlightExistingRow(at: existingIndex)
+            if let existing = buttonBindings.first(where: { $0.triggerEvent == recordedEvent }) {
+                highlightExistingRow(with: existing.id)
             }
             return
         }
@@ -111,7 +111,8 @@ extension PreferencesButtonsViewController {
     }
 
     // 高亮已存在的行 (用于重复录制的视觉反馈)
-    private func highlightExistingRow(at row: Int) {
+    private func highlightExistingRow(with id: UUID) {
+        guard let row = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
         tableView.deselectAll(nil)
         tableView.scrollRowToVisible(row)
         if let cellView = tableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? ButtonTableCellView {
@@ -120,19 +121,31 @@ extension PreferencesButtonsViewController {
     }
 
     // 删除按钮绑定
-    func removeButtonBinding(_ row: Int) {
-        buttonBindings.remove(at: row)
+    func removeButtonBinding(id: UUID) {
+        buttonBindings.removeAll(where: { $0.id == id })
         tableView.reloadData()
         toggleNoDataHint()
         syncViewWithOptions()
     }
 
-    // 更新按钮绑定
-    func updateButtonBinding(at row: Int, with binding: ButtonBinding) {
-        guard row < buttonBindings.count else { return }
-        buttonBindings[row] = binding
-        // 不重载整个表格，避免干扰 UI 状态
-        // tableView.reloadData()
+    // 更新按钮绑定 (用快捷键更新)
+    func updateButtonBinding(id: UUID, with shortcut: SystemShortcut.Shortcut) {
+        guard let index = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
+
+        let oldBinding = buttonBindings[index]
+        let shortcutName = SystemShortcut.findShortcut(
+            modifiers: shortcut.modifiers,
+            keyCode: shortcut.code
+        ) ?? "copy"
+
+        let updatedBinding = ButtonBinding(
+            id: oldBinding.id,
+            triggerEvent: oldBinding.triggerEvent,
+            systemShortcutName: shortcutName,
+            isEnabled: true
+        )
+
+        buttonBindings[index] = updatedBinding
         syncViewWithOptions()
     }
 }
@@ -159,7 +172,17 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
 
         // 创建 Cell
         if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? ButtonTableCellView {
-            cell.setup(from: self, with: buttonBindings[row], at: row)
+            let binding = buttonBindings[row]
+
+            cell.configure(
+                with: binding,
+                onShortcutSelected: { [weak self] shortcut in
+                    self?.updateButtonBinding(id: binding.id, with: shortcut)
+                },
+                onDeleteRequested: { [weak self] in
+                    self?.removeButtonBinding(id: binding.id)
+                }
+            )
             return cell
         }
 
