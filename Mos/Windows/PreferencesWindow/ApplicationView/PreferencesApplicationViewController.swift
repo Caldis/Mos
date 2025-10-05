@@ -129,7 +129,7 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
         view.animator().alphaValue = visible ? 1 : 0
     }
     // 点击设置
-    @objc func settingButtonClick(_ sender: NSButton!) {
+    @objc func settingScrollingButtonClick(_ sender: NSButton!) {
         // 行号
         let row = sender.tag
         // 从 SB 构建内容
@@ -155,12 +155,12 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
                 cell.imageView?.toolTip = application.path
                 cell.textField?.stringValue = application.getName()
                 return cell
-            // 设定
+            // 设定: 滚动
             case CellIdentifiers.scrollingCell:
                 let button = cell.subviews[0] as! NSButton
                 button.tag = row
                 button.target = self
-                button.action = #selector(settingButtonClick)
+                button.action = #selector(settingScrollingButtonClick)
                 return cell
             default: break
         }

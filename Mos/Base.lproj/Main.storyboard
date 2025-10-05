@@ -2030,7 +2030,7 @@
                 </viewController>
                 <customObject id="xas-PE-1Rw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2805" y="1627"/>
+            <point key="canvasLocation" x="2674" y="1627"/>
         </scene>
         <!--Preferences Donate View Controller-->
         <scene sceneID="YcU-UJ-LwR">
@@ -2071,7 +2071,7 @@
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="WechatpayLogo" id="KxG-B6-8jE"/>
                                     </imageView>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" alphaValue="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="3Gz-X2-Fwd">
-                                        <rect key="frame" x="45" y="391" width="150" height="150"/>
+                                        <rect key="frame" x="45" y="389" width="150" height="150"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="150" id="4Hf-VY-Z17"/>
                                             <constraint firstAttribute="width" constant="150" id="XL4-NG-bpE"/>
@@ -2079,7 +2079,7 @@
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="WechatpayQR" id="jdG-KX-g7K"/>
                                     </imageView>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cTQ-RR-Izk">
-                                        <rect key="frame" x="70" y="321" width="100" height="35"/>
+                                        <rect key="frame" x="70" y="319" width="100" height="35"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="100" id="N9C-zu-YJ4"/>
                                             <constraint firstAttribute="height" constant="35" id="rel-Mp-8km"/>
@@ -2087,7 +2087,7 @@
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AlipayLogo" id="dw7-en-g43"/>
                                     </imageView>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" alphaValue="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="PxZ-JL-fgP">
-                                        <rect key="frame" x="45" y="163" width="150" height="150"/>
+                                        <rect key="frame" x="45" y="159" width="150" height="150"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="150" id="Gfq-bZ-TdP"/>
                                             <constraint firstAttribute="width" constant="150" id="n89-cy-bbf"/>
@@ -2095,7 +2095,7 @@
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AlipayQR" id="86z-w2-DQf"/>
                                     </imageView>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WhP-jP-gB6">
-                                        <rect key="frame" x="70" y="89" width="100" height="40"/>
+                                        <rect key="frame" x="70" y="85" width="100" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="100" id="DXX-C2-lHC"/>
                                             <constraint firstAttribute="height" constant="40" id="lU8-H6-EfY"/>
@@ -2103,7 +2103,7 @@
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="PaypalLogo" id="Ho9-ZJ-OXg"/>
                                     </imageView>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EWm-8G-1in">
-                                        <rect key="frame" x="54" y="52" width="132" height="24"/>
+                                        <rect key="frame" x="54" y="48" width="132" height="24"/>
                                         <buttonCell key="cell" type="push" title="Donate via PayPal" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="aPi-cE-maK">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -2122,9 +2122,9 @@
                                     <constraint firstItem="3Gz-X2-Fwd" firstAttribute="centerX" secondItem="QwK-sY-64R" secondAttribute="centerX" id="TrG-7H-2VS"/>
                                     <constraint firstItem="EWm-8G-1in" firstAttribute="top" secondItem="WhP-jP-gB6" secondAttribute="bottom" constant="13" id="WpZ-IN-1ew"/>
                                     <constraint firstAttribute="width" constant="240" id="ZjZ-1H-r8V"/>
-                                    <constraint firstItem="3Gz-X2-Fwd" firstAttribute="top" secondItem="tVv-UV-KC0" secondAttribute="bottom" constant="8" id="c6k-My-yWR"/>
+                                    <constraint firstItem="3Gz-X2-Fwd" firstAttribute="top" secondItem="tVv-UV-KC0" secondAttribute="bottom" constant="10" id="c6k-My-yWR"/>
                                     <constraint firstItem="WhP-jP-gB6" firstAttribute="top" secondItem="PxZ-JL-fgP" secondAttribute="bottom" constant="34" id="fAm-mG-bga"/>
-                                    <constraint firstItem="PxZ-JL-fgP" firstAttribute="top" secondItem="cTQ-RR-Izk" secondAttribute="bottom" constant="8" id="kPv-LG-L0Z"/>
+                                    <constraint firstItem="PxZ-JL-fgP" firstAttribute="top" secondItem="cTQ-RR-Izk" secondAttribute="bottom" constant="10" id="kPv-LG-L0Z"/>
                                     <constraint firstItem="tVv-UV-KC0" firstAttribute="top" secondItem="QwK-sY-64R" secondAttribute="top" constant="35" id="qmn-Z5-n51"/>
                                     <constraint firstItem="WhP-jP-gB6" firstAttribute="centerX" secondItem="QwK-sY-64R" secondAttribute="centerX" id="rQ1-Sd-T09"/>
                                 </constraints>
@@ -2159,7 +2159,7 @@
                 </viewController>
                 <customObject id="HME-8h-VSk" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3396" y="1800"/>
+            <point key="canvasLocation" x="3271" y="1806"/>
         </scene>
         <!--Monitor-->
         <scene sceneID="hIz-AP-VOD">

@@ -29,7 +29,6 @@ class PreferencesScrollingViewController: NSViewController {
     @IBOutlet weak var scrollDurationInput: NSTextField!
     @IBOutlet weak var scrollDurationStepper: NSStepper!
     @IBOutlet weak var resetToDefaultsButton: NSButton!
-    // Height constraint for reset button
     var resetButtonHeightConstraint: NSLayoutConstraint?
     // Constants
     let PopUpButtonPadding = 2 // 减去第一个 Disabled 和分割线的距离
@@ -204,13 +203,19 @@ extension PreferencesScrollingViewController {
         let isNotInherit = !isTargetApplicationInheritOptions()
         let scroll = getTargetApplicationScrollOptions()
         let shouldShowResetButton = isNotInherit && scroll != DefaultConfigForCompare
-        resetToDefaultsButton.isEnabled = shouldShowResetButton
-        resetButtonHeightConstraint?.constant = shouldShowResetButton ? 24 : 0
-        resetToDefaultsButton.alphaValue = shouldShowResetButton ? 1.0 : 0.0
-        // 触发父视图窗口尺寸更新
-        view.needsLayout = true
-        view.layoutSubtreeIfNeeded()
-        (parent as? PreferencesTabViewController)?.updateWindowSize()
+        // 动画过渡
+        NSAnimationContext.runAnimationGroup({ context in
+            context.duration = ANIMATION.duration
+            context.allowsImplicitAnimation = true
+            resetToDefaultsButton.animator().isEnabled = shouldShowResetButton
+            resetToDefaultsButton.animator().alphaValue = shouldShowResetButton ? 1.0 : 0.0
+            resetButtonHeightConstraint?.animator().constant = shouldShowResetButton ? 24 : 0
+        }, completionHandler: {
+            // 触发父视图窗口尺寸更新
+            self.view.needsLayout = true
+            self.view.layoutSubtreeIfNeeded()
+            (self.parent as? PreferencesTabViewController)?.updateWindowSize()
+        })
     }
     // 获取配置目标 (公共或应用配置)
     func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_DEFAULT {
