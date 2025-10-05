@@ -52,9 +52,18 @@ class ButtonTableCellView: NSTableCellView {
     // 高亮该行（重复两次）
     func highlight() {
         guard let rowView = self.superview as? NSTableRowView else { return }
-        // 设置高亮色
+        // 设置主题色高亮
         let isDarkMode = Utils.isDarkMode(for: rowView)
-        let highlightColor = isDarkMode ? NSColor(white: 1.0, alpha: 0.2) : NSColor(white: 0.0, alpha: 0.2)
+        let highlightColor: NSColor
+        if #available(macOS 10.14, *) {
+            highlightColor = isDarkMode
+                ? NSColor.controlAccentColor.withAlphaComponent(0.3)
+                : NSColor.controlAccentColor.withAlphaComponent(0.2)
+        } else {
+            highlightColor = isDarkMode
+                ? NSColor(white: 1.0, alpha: 0.2)
+                : NSColor(white: 0.0, alpha: 0.2)
+        }
         let originalColor = originalRowBackgroundColor ?? rowView.backgroundColor
         // 高亮
         rowView.backgroundColor = highlightColor
