@@ -9,7 +9,7 @@
 
 import Cocoa
 
-class ButtonTableCellView: NSTableCellView {
+class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 
     // MARK: - IBOutlets
     @IBOutlet weak var keyDisplayContainerView: NSView!
@@ -53,7 +53,6 @@ class ButtonTableCellView: NSTableCellView {
     func highlight() {
         guard let rowView = self.superview as? NSTableRowView else { return }
         // 设置主题色高亮
-        let isDarkMode = Utils.isDarkMode(for: rowView)
         let highlightColor: NSColor
         if #available(macOS 10.14, *) {
             highlightColor = NSColor.controlAccentColor.withAlphaComponent(1)
@@ -89,9 +88,16 @@ class ButtonTableCellView: NSTableCellView {
         keyPreview.update(from: recordedEvent.displayComponents, status: .normal)
     }
     
-    // 设置动作按钮
+    /// 设置动作选择器 PopUpButton
+    ///
+    /// 关键设计：
+    /// 1. 每次配置创建新的 NSMenu 实例，避免 cell 复用时共享状态
+    /// 2. 默认禁用所有菜单项的 keyEquivalent，防止与 ButtonCore 触发的快捷键冲突
+    /// 3. 通过 NSMenuDelegate 在菜单打开时临时启用 keyEquivalent（显示快捷键样式）
     private func setupActionPopUpButton(currentShortcut: SystemShortcut.Shortcut?) {
-        guard let menu = actionPopUpButton.menu else { return }
+        // 每次配置时创建新的 menu，避免 cell 复用时共享状态
+        let menu = NSMenu()
+        menu.delegate = self
 
         // 使用 ShortcutManager 构建菜单
         ShortcutManager.buildShortcutMenu(
@@ -99,6 +105,13 @@ class ButtonTableCellView: NSTableCellView {
             target: self,
             action: #selector(shortcutSelected(_:))
         )
+
+        // 初始状态禁用所有 keyEquivalent，防止意外触发
+        // 只在菜单打开时（menuWillOpen）临时启用，以显示快捷键样式
+        disableKeyEquivalents(in: menu)
+
+        // 替换 PopUpButton 的 menu
+        actionPopUpButton.menu = menu
 
         // 设置当前选择
         if let shortcut = currentShortcut {
@@ -124,12 +137,8 @@ class ButtonTableCellView: NSTableCellView {
             for shortcutItem in subMenu.items {
                 if let itemShortcut = shortcutItem.representedObject as? SystemShortcut.Shortcut,
                    itemShortcut == shortcut {
-                    NSLog("[ButtonTableCellView] 找到匹配项: \(shortcutItem.title)")
-
                     // 设置显示标题和图标
                     setCustomTitle(shortcutItem.title, image: shortcutItem.image)
-
-                    NSLog("[ButtonTableCellView] 已设置显示标题: \(shortcutItem.title)")
                     return
                 }
             }
@@ -140,7 +149,6 @@ class ButtonTableCellView: NSTableCellView {
     private func setCustomTitle(_ title: String, image: NSImage?) {
         guard let menu = actionPopUpButton.menu,
               let placeholderItem = menu.items.first else {
-            NSLog("[ButtonTableCellView] 无法找到占位符菜单项")
             return
         }
 
@@ -160,8 +168,6 @@ class ButtonTableCellView: NSTableCellView {
 
         // 选中占位符项
         actionPopUpButton.selectItem(at: 0)
-
-        NSLog("[ButtonTableCellView] 已更新占位符显示: \(title)")
     }
 
     /// 创建带右侧边距的图标 (用于 PopUpButton 显示)
@@ -209,7 +215,6 @@ class ButtonTableCellView: NSTableCellView {
     /// 快捷键选择回调
     @objc private func shortcutSelected(_ sender: NSMenuItem) {
         guard let shortcut = sender.representedObject as? SystemShortcut.Shortcut else {
-            NSLog("[ButtonTableCellView] 无法获取快捷键信息")
             return
         }
 
@@ -221,12 +226,57 @@ class ButtonTableCellView: NSTableCellView {
 
         // 通知外部更新
         onShortcutSelected?(shortcut)
-
-        NSLog("[ButtonTableCellView] 选中快捷键: \(sender.title)")
     }
 
     /// 删除绑定
     @objc private func deleteRecord(_ sender: NSButton) {
         onDeleteRequested?()
+    }
+}
+
+// MARK: - NSMenuDelegate
+/// 通过动态管理  keyEquivalent  解决冲突问题：
+///
+/// 问题：ButtonCore 触发快捷键时（如 ⌃→），NSMenu 会响应相同的 keyEquivalent，
+///      导致错首行作为 firstResponsor 会将 popover 变为所按的快捷键
+///
+/// 解决方案：
+/// - 菜单关闭时：禁用所有 keyEquivalent，防止意外触发
+/// - 菜单打开时：启用 keyEquivalent，显示快捷键样式
+extension ButtonTableCellView {
+
+    func menuWillOpen(_ menu: NSMenu) {
+        enableKeyEquivalents(in: menu)
+    }
+
+    func menuDidClose(_ menu: NSMenu) {
+        disableKeyEquivalents(in: menu)
+    }
+
+    /// 递归启用菜单的 keyEquivalent（从 representedObject 恢复）
+    private func enableKeyEquivalents(in menu: NSMenu) {
+        for item in menu.items {
+            if let shortcut = item.representedObject as? SystemShortcut.Shortcut {
+                let keyEquivalent = shortcut.keyEquivalent
+                item.keyEquivalent = keyEquivalent.keyEquivalent
+                item.keyEquivalentModifierMask = keyEquivalent.modifierMask
+            }
+
+            if let submenu = item.submenu {
+                enableKeyEquivalents(in: submenu)
+            }
+        }
+    }
+
+    /// 递归禁用菜单的 keyEquivalent
+    private func disableKeyEquivalents(in menu: NSMenu) {
+        for item in menu.items {
+            item.keyEquivalent = ""
+            item.keyEquivalentModifierMask = []
+
+            if let submenu = item.submenu {
+                disableKeyEquivalents(in: submenu)
+            }
+        }
     }
 }
