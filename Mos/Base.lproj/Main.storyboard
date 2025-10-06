@@ -372,55 +372,47 @@
                                     <constraint firstItem="eyA-cJ-hnJ" firstAttribute="centerX" secondItem="skg-W8-gS0" secondAttribute="centerX" id="s45-1k-j6V"/>
                                 </constraints>
                             </customView>
-                            <box boxType="custom" borderType="bezel" cornerRadius="7" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="uuZ-tE-wlr" customClass="PrimaryButton" customModule="Mos" customModuleProvider="target">
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="uuZ-tE-wlr" customClass="PrimaryButton" customModule="Mos" customModuleProvider="target">
                                 <rect key="frame" x="40" y="38" width="370" height="60"/>
-                                <view key="contentView" id="C4P-9r-BYO">
-                                    <rect key="frame" x="1" y="1" width="368" height="58"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QAD-KS-uBx">
-                                            <rect key="frame" x="13" y="30" width="98" height="16"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Record Buttons" id="l7O-So-nw1">
-                                                <font key="font" usesAppearanceFont="YES"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ggg-Eq-Gh7">
-                                            <rect key="frame" x="13" y="13" width="236" height="14"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="You can bind the button to a specific action." id="fXu-uF-M3Q">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="djE-pP-ToX">
-                                            <rect key="frame" x="323" y="17" width="25" height="25"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="25" id="0t9-Ni-YdC"/>
-                                                <constraint firstAttribute="height" constant="25" id="CWi-jr-Ib1"/>
-                                            </constraints>
-                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyUpOrDown" image="SF.lasso.badge.sparkles" id="qFF-o8-J7D"/>
-                                        </imageView>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="QAD-KS-uBx" firstAttribute="leading" secondItem="C4P-9r-BYO" secondAttribute="leading" constant="15" id="4oh-9p-l0q"/>
-                                        <constraint firstItem="QAD-KS-uBx" firstAttribute="centerY" secondItem="C4P-9r-BYO" secondAttribute="centerY" constant="-9" id="8qk-QE-zQ4"/>
-                                        <constraint firstItem="djE-pP-ToX" firstAttribute="centerY" secondItem="C4P-9r-BYO" secondAttribute="centerY" id="LUw-ov-uQA"/>
-                                        <constraint firstItem="djE-pP-ToX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ggg-Eq-Gh7" secondAttribute="trailing" constant="8" symbolic="YES" id="X0h-2A-V7I"/>
-                                        <constraint firstItem="Ggg-Eq-Gh7" firstAttribute="leading" secondItem="C4P-9r-BYO" secondAttribute="leading" constant="15" id="Zqf-v7-Q6r"/>
-                                        <constraint firstItem="Ggg-Eq-Gh7" firstAttribute="centerY" secondItem="C4P-9r-BYO" secondAttribute="centerY" constant="9" id="Zu1-PH-kb8"/>
-                                        <constraint firstItem="djE-pP-ToX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="QAD-KS-uBx" secondAttribute="trailing" constant="8" symbolic="YES" id="s81-tB-GM8"/>
-                                        <constraint firstAttribute="trailing" secondItem="djE-pP-ToX" secondAttribute="trailing" constant="20" id="vwG-KS-2n2"/>
-                                    </constraints>
-                                </view>
+                                <subviews>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QAD-KS-uBx">
+                                        <rect key="frame" x="13" y="31" width="98" height="16"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Record Buttons" id="l7O-So-nw1">
+                                            <font key="font" usesAppearanceFont="YES"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ggg-Eq-Gh7">
+                                        <rect key="frame" x="13" y="14" width="236" height="14"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="You can bind the button to a specific action." id="fXu-uF-M3Q">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="djE-pP-ToX">
+                                        <rect key="frame" x="325" y="18" width="25" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="25" id="0t9-Ni-YdC"/>
+                                            <constraint firstAttribute="height" constant="25" id="CWi-jr-Ib1"/>
+                                        </constraints>
+                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyUpOrDown" image="SF.lasso.badge.sparkles" id="qFF-o8-J7D"/>
+                                    </imageView>
+                                </subviews>
                                 <constraints>
+                                    <constraint firstItem="QAD-KS-uBx" firstAttribute="leading" secondItem="uuZ-tE-wlr" secondAttribute="leading" constant="15" id="4oh-9p-l0q"/>
+                                    <constraint firstItem="QAD-KS-uBx" firstAttribute="centerY" secondItem="uuZ-tE-wlr" secondAttribute="centerY" constant="-9" id="8qk-QE-zQ4"/>
                                     <constraint firstAttribute="height" constant="60" id="9cR-Bw-AYg"/>
+                                    <constraint firstItem="djE-pP-ToX" firstAttribute="centerY" secondItem="uuZ-tE-wlr" secondAttribute="centerY" id="LUw-ov-uQA"/>
                                     <constraint firstAttribute="width" constant="370" id="ROH-M2-7yk"/>
+                                    <constraint firstItem="djE-pP-ToX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ggg-Eq-Gh7" secondAttribute="trailing" constant="8" symbolic="YES" id="X0h-2A-V7I"/>
+                                    <constraint firstItem="Ggg-Eq-Gh7" firstAttribute="leading" secondItem="uuZ-tE-wlr" secondAttribute="leading" constant="15" id="Zqf-v7-Q6r"/>
+                                    <constraint firstItem="Ggg-Eq-Gh7" firstAttribute="centerY" secondItem="uuZ-tE-wlr" secondAttribute="centerY" constant="9" id="Zu1-PH-kb8"/>
+                                    <constraint firstItem="djE-pP-ToX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="QAD-KS-uBx" secondAttribute="trailing" constant="8" symbolic="YES" id="s81-tB-GM8"/>
+                                    <constraint firstAttribute="trailing" secondItem="djE-pP-ToX" secondAttribute="trailing" constant="20" id="vwG-KS-2n2"/>
                                 </constraints>
-                                <color key="borderColor" name="systemBlueColor" catalog="System" colorSpace="catalog"/>
-                                <color key="fillColor" name="selectedControlColor" catalog="System" colorSpace="catalog"/>
-                            </box>
+                            </customView>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="y2I-TF-AaH">
                                 <rect key="frame" x="0.0" y="0.0" width="450" height="31"/>
                                 <subviews>
@@ -623,7 +615,7 @@
                                                     </textFieldCell>
                                                     <prototypeCellViews>
                                                         <tableCellView id="clT-5E-IUd">
-                                                            <rect key="frame" x="343.65404075495303" y="6" width="96" height="45"/>
+                                                            <rect key="frame" x="343.5" y="6" width="96" height="45"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4qv-B4-GnV">
@@ -784,55 +776,47 @@
                                     <constraint firstItem="ceK-ED-PfL" firstAttribute="leading" secondItem="2yz-Bt-IMN" secondAttribute="leading" constant="6" id="jhO-JU-hzS"/>
                                 </constraints>
                             </customView>
-                            <box boxType="custom" borderType="bezel" cornerRadius="7" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="lhT-1U-5Xh" customClass="PrimaryButton" customModule="Mos" customModuleProvider="target">
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="lhT-1U-5Xh" customClass="PrimaryButton" customModule="Mos" customModuleProvider="target">
                                 <rect key="frame" x="40" y="38" width="370" height="60"/>
-                                <view key="contentView" id="ai9-fs-0Qc">
-                                    <rect key="frame" x="1" y="1" width="368" height="58"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MPG-5z-OT3">
-                                            <rect key="frame" x="13" y="30" width="100" height="16"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Add Application" id="Gmk-Ru-er7">
-                                                <font key="font" usesAppearanceFont="YES"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="V2s-M6-mOE">
-                                            <rect key="frame" x="13" y="13" width="217" height="14"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Try apply separate configuration to apps" id="DS8-og-1pp">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5uX-Iz-YQ7">
-                                            <rect key="frame" x="328" y="14" width="20" height="31"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="20" id="ALi-rt-jUu"/>
-                                                <constraint firstAttribute="width" constant="20" id="csf-6L-GKj"/>
-                                            </constraints>
-                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyUpOrDown" image="NSTouchBarSearchTemplate" id="4Mt-YO-qUx"/>
-                                        </imageView>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstAttribute="trailing" secondItem="5uX-Iz-YQ7" secondAttribute="trailing" constant="20" id="0lg-LB-HJa"/>
-                                        <constraint firstItem="5uX-Iz-YQ7" firstAttribute="centerY" secondItem="ai9-fs-0Qc" secondAttribute="centerY" id="6lt-qw-e8A"/>
-                                        <constraint firstItem="MPG-5z-OT3" firstAttribute="centerY" secondItem="ai9-fs-0Qc" secondAttribute="centerY" constant="-9" id="H4W-Z9-mEf"/>
-                                        <constraint firstItem="MPG-5z-OT3" firstAttribute="leading" secondItem="ai9-fs-0Qc" secondAttribute="leading" constant="15" id="TQk-wA-dY6"/>
-                                        <constraint firstItem="V2s-M6-mOE" firstAttribute="centerY" secondItem="ai9-fs-0Qc" secondAttribute="centerY" constant="9" id="W9M-LF-h7f"/>
-                                        <constraint firstItem="5uX-Iz-YQ7" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="MPG-5z-OT3" secondAttribute="trailing" constant="8" symbolic="YES" id="amL-O6-1DD"/>
-                                        <constraint firstItem="5uX-Iz-YQ7" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="V2s-M6-mOE" secondAttribute="trailing" constant="8" symbolic="YES" id="o2M-HU-xYe"/>
-                                        <constraint firstItem="V2s-M6-mOE" firstAttribute="leading" secondItem="ai9-fs-0Qc" secondAttribute="leading" constant="15" id="qq6-jH-ejI"/>
-                                    </constraints>
-                                </view>
+                                <subviews>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MPG-5z-OT3">
+                                        <rect key="frame" x="13" y="31" width="100" height="16"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Add Application" id="Gmk-Ru-er7">
+                                            <font key="font" usesAppearanceFont="YES"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="V2s-M6-mOE">
+                                        <rect key="frame" x="13" y="14" width="217" height="14"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Try apply separate configuration to apps" id="DS8-og-1pp">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5uX-Iz-YQ7">
+                                        <rect key="frame" x="330" y="15" width="20" height="31"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="20" id="ALi-rt-jUu"/>
+                                            <constraint firstAttribute="width" constant="20" id="csf-6L-GKj"/>
+                                        </constraints>
+                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyUpOrDown" image="NSTouchBarSearchTemplate" id="4Mt-YO-qUx"/>
+                                    </imageView>
+                                </subviews>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="5uX-Iz-YQ7" secondAttribute="trailing" constant="20" id="0lg-LB-HJa"/>
+                                    <constraint firstItem="5uX-Iz-YQ7" firstAttribute="centerY" secondItem="lhT-1U-5Xh" secondAttribute="centerY" id="6lt-qw-e8A"/>
+                                    <constraint firstItem="MPG-5z-OT3" firstAttribute="centerY" secondItem="lhT-1U-5Xh" secondAttribute="centerY" constant="-9" id="H4W-Z9-mEf"/>
+                                    <constraint firstItem="MPG-5z-OT3" firstAttribute="leading" secondItem="lhT-1U-5Xh" secondAttribute="leading" constant="15" id="TQk-wA-dY6"/>
+                                    <constraint firstItem="V2s-M6-mOE" firstAttribute="centerY" secondItem="lhT-1U-5Xh" secondAttribute="centerY" constant="9" id="W9M-LF-h7f"/>
+                                    <constraint firstItem="5uX-Iz-YQ7" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="MPG-5z-OT3" secondAttribute="trailing" constant="8" symbolic="YES" id="amL-O6-1DD"/>
                                     <constraint firstAttribute="height" constant="60" id="bYK-jU-WEc"/>
                                     <constraint firstAttribute="width" constant="370" id="iNf-4e-Q4K"/>
+                                    <constraint firstItem="5uX-Iz-YQ7" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="V2s-M6-mOE" secondAttribute="trailing" constant="8" symbolic="YES" id="o2M-HU-xYe"/>
+                                    <constraint firstItem="V2s-M6-mOE" firstAttribute="leading" secondItem="lhT-1U-5Xh" secondAttribute="leading" constant="15" id="qq6-jH-ejI"/>
                                 </constraints>
-                                <color key="borderColor" name="systemBlueColor" catalog="System" colorSpace="catalog"/>
-                                <color key="fillColor" name="selectedControlColor" catalog="System" colorSpace="catalog"/>
-                            </box>
+                            </customView>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="2dP-HG-cdi" secondAttribute="trailing" id="6gh-ZQ-gJJ"/>
