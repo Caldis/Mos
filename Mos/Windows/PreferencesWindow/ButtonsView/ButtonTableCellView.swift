@@ -19,7 +19,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
     private var keyPreview: KeyPreview!
 
     // MARK: - Callbacks
-    private var onShortcutSelected: ((SystemShortcut.Shortcut) -> Void)?
+    private var onShortcutSelected: ((SystemShortcut.Shortcut?) -> Void)?
     private var onDeleteRequested: (() -> Void)?
 
     // MARK: - Data (只用于UI显示)
@@ -29,7 +29,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
     // MARK: - 配置方法
     func configure(
         with binding: ButtonBinding,
-        onShortcutSelected: @escaping (SystemShortcut.Shortcut) -> Void,
+        onShortcutSelected: @escaping (SystemShortcut.Shortcut?) -> Void,
         onDeleteRequested: @escaping () -> Void
     ) {
         // 保存回调
@@ -117,7 +117,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         if let shortcut = currentShortcut {
             selectShortcutInMenu(shortcut)
         } else {
-            resetPlaceholder()
+            setPlaceholderToUnbound()
         }
     }
     
@@ -130,14 +130,14 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
             return
         }
 
-        // 首先尝试在子菜单中查找匹配的快捷键
+        // 在子菜单中查找匹配的快捷键
         for categoryItem in menu.items {
             guard let subMenu = categoryItem.submenu else { continue }
 
             for shortcutItem in subMenu.items {
                 if let itemShortcut = shortcutItem.representedObject as? SystemShortcut.Shortcut,
                    itemShortcut == shortcut {
-                    // 设置显示标题和图标
+                    // 将快捷键的标题和图标复制到占位符,然后选中占位符
                     setCustomTitle(shortcutItem.title, image: shortcutItem.image)
                     return
                 }
@@ -172,7 +172,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 
     /// 创建带右侧边距的图标 (用于 PopUpButton 显示)
     private func createImageWithTrailingSpace(_ originalImage: NSImage) -> NSImage {
-        let spacing: CGFloat = 4.0  // 右侧边距
+        let spacing: CGFloat = 2.0  // 右侧边距
         let originalSize = originalImage.size
         let newSize = NSSize(width: originalSize.width + spacing, height: originalSize.height)
 
@@ -195,36 +195,31 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         return newImage
     }
 
-    /// 重置占位符为默认状态
-    private func resetPlaceholder() {
-        guard let menu = actionPopUpButton.menu,
-              let placeholderItem = menu.items.first else {
-            return
-        }
-
-        // 重置为默认占位符文本
-        placeholderItem.title = NSLocalizedString("selectAnAction", comment: "")
-        placeholderItem.isEnabled = false
-
-        // 选中占位符项
-        actionPopUpButton.selectItem(at: 0)
+    /// 设置占位符为"未绑定"状态
+    private func setPlaceholderToUnbound() {
+        setCustomTitle(NSLocalizedString("unbound", comment: ""), image: nil)
     }
 
     // MARK: - Actions
 
     /// 快捷键选择回调
     @objc private func shortcutSelected(_ sender: NSMenuItem) {
-        guard let shortcut = sender.representedObject as? SystemShortcut.Shortcut else {
-            return
-        }
+        // representedObject 为 nil 时表示用户选择了"未绑定"
+        let shortcut = sender.representedObject as? SystemShortcut.Shortcut
 
         // 更新本地状态
         self.currentShortcut = shortcut
 
-        // 设置自定义显示标题和图标
-        setCustomTitle(sender.title, image: sender.image)
+        // 更新占位符显示
+        if let shortcut = shortcut {
+            // 选择了具体快捷键,复制标题和图标到占位符
+            setCustomTitle(sender.title, image: sender.image)
+        } else {
+            // 选择了"未绑定",设置占位符为未绑定状态
+            setPlaceholderToUnbound()
+        }
 
-        // 通知外部更新
+        // 通知外部更新(nil 表示清除绑定)
         onShortcutSelected?(shortcut)
     }
 
@@ -246,11 +241,41 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 extension ButtonTableCellView {
 
     func menuWillOpen(_ menu: NSMenu) {
+        // 动态调整菜单结构
+        adjustMenuStructure(menu)
+        // 启用 keyEquivalent
         enableKeyEquivalents(in: menu)
     }
 
     func menuDidClose(_ menu: NSMenu) {
         disableKeyEquivalents(in: menu)
+    }
+
+    /// 根据当前状态动态调整菜单结构
+    ///
+    /// 根据绑定状态动态调整菜单显示:
+    /// - 未绑定时: 隐藏占位符和第一条分割线,菜单只显示"未绑定"选项
+    /// - 已绑定时: 显示占位符和第一条分割线,将菜单项改为"取消绑定"
+    ///
+    /// 这样避免了"未绑定"选项重复显示的问题
+    private func adjustMenuStructure(_ menu: NSMenu) {
+        guard menu.items.count >= 3 else { return }
+
+        let placeholderItem = menu.items[0]  // 占位符
+        let firstSeparator = menu.items[1]   // 第一条分割线
+        let unboundItem = menu.items[2]      // "未绑定"/"取消绑定"菜单项
+
+        if currentShortcut == nil {
+            // 当前是未绑定状态:隐藏占位符和第一条分割线,显示"未绑定"
+            placeholderItem.isHidden = true
+            firstSeparator.isHidden = true
+            unboundItem.title = NSLocalizedString("unbound", comment: "")
+        } else {
+            // 当前已绑定:显示占位符和第一条分割线,显示"取消绑定"
+            placeholderItem.isHidden = false
+            firstSeparator.isHidden = false
+            unboundItem.title = NSLocalizedString("unbind", comment: "")
+        }
     }
 
     /// 递归启用菜单的 keyEquivalent（从 representedObject 恢复）

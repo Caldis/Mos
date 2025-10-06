@@ -128,22 +128,33 @@ extension PreferencesButtonsViewController {
         syncViewWithOptions()
     }
 
-    // 更新按钮绑定 (用快捷键更新)
-    func updateButtonBinding(id: UUID, with shortcut: SystemShortcut.Shortcut) {
+    /// 更新按钮绑定
+    /// - Parameters:
+    ///   - id: 绑定记录的唯一标识
+    ///   - shortcut: 系统快捷键对象,nil 表示清除绑定
+    func updateButtonBinding(id: UUID, with shortcut: SystemShortcut.Shortcut?) {
         guard let index = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
 
         let oldBinding = buttonBindings[index]
-        let shortcutName = SystemShortcut.findShortcut(
-            modifiers: shortcut.modifiers,
-            keyCode: shortcut.code
-        ) ?? "copy"
 
-        let updatedBinding = ButtonBinding(
-            id: oldBinding.id,
-            triggerEvent: oldBinding.triggerEvent,
-            systemShortcutName: shortcutName,
-            isEnabled: true
-        )
+        let updatedBinding: ButtonBinding
+        if let shortcut = shortcut {
+            // 绑定快捷键:直接使用快捷键的 identifier
+            updatedBinding = ButtonBinding(
+                id: oldBinding.id,
+                triggerEvent: oldBinding.triggerEvent,
+                systemShortcutName: shortcut.identifier,
+                isEnabled: true
+            )
+        } else {
+            // 清除绑定:保持触发事件,清空快捷键名称并禁用
+            updatedBinding = ButtonBinding(
+                id: oldBinding.id,
+                triggerEvent: oldBinding.triggerEvent,
+                systemShortcutName: "",
+                isEnabled: false
+            )
+        }
 
         buttonBindings[index] = updatedBinding
         syncViewWithOptions()

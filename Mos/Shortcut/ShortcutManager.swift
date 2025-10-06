@@ -30,6 +30,14 @@ class ShortcutManager {
 
     // MARK: - 菜单构建
     /// 构建分级快捷键菜单 (按分类组织系统快捷键)
+    ///
+    /// 菜单结构设计:
+    /// - 索引0: 占位符 (disabled) - PopUpButton 显示此项,动态更新标题和图标
+    /// - 索引1: 分割线 #1 - 根据绑定状态动态隐藏/显示
+    /// - 索引2: "未绑定"/"取消绑定" - 可选菜单项,representedObject 为 nil
+    /// - 索引3: 分割线 #2 - 分隔操作区和分类菜单
+    /// - 索引4+: 分类子菜单 (功能键,应用与窗口等)
+    ///
     /// - Parameter menu: 目标菜单对象
     /// - Parameter target: 菜单项点击事件的目标对象
     /// - Parameter action: 菜单项点击事件的选择器
@@ -37,12 +45,23 @@ class ShortcutManager {
         // 清空现有菜单项
         menu.removeAllItems()
 
-        // 添加 placeholder 项
-        let placeholderItem = NSMenuItem(title: NSLocalizedString("selectAnAction", comment: ""), action: nil, keyEquivalent: "")
+        // 添加占位符 (disabled, 用于显示当前选中的快捷键)
+        // NSPopUpButton 不会自动显示子菜单项标题,必须用占位符模式
+        let placeholderItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
         placeholderItem.isEnabled = false
         menu.addItem(placeholderItem)
 
-        // 添加分割线
+        // 添加第一条分割线 (未绑定时会被隐藏)
+        menu.addItem(NSMenuItem.separator())
+
+        // 添加"未绑定"选项 (可选菜单项, representedObject 为 nil)
+        // 标题会在 menuWillOpen 时根据当前状态动态更新为"未绑定"或"取消绑定"
+        let unboundItem = NSMenuItem(title: NSLocalizedString("unbound", comment: ""), action: action, keyEquivalent: "")
+        unboundItem.target = target
+        unboundItem.representedObject = nil  // nil 表示清除绑定
+        menu.addItem(unboundItem)
+
+        // 添加第二条分割线 (分隔"未绑定"操作和分类菜单)
         menu.addItem(NSMenuItem.separator())
 
         var totalShortcuts = 0
