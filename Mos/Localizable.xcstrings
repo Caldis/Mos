@@ -4525,79 +4525,79 @@
         }
       }
     },
-    "spotlightFn": {
+    "spotlightSys": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "Spotlight (System)"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "聚焦搜索 (Fn)"
+            "value": "聚焦搜索(系统)"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "Spotlight (System)"
           }
         },
         "el": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "Spotlight (Σύστημα)"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "Spotlight(システム)"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "Spotlight(시스템)"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "Spotlight (Система)"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "Spotlight (Sistem)"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "Spotlight (Система)"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "聚焦搜尋(系統)"
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "聚焦搜尋(系統)"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spotlight (Fn)"
+            "value": "聚焦搜尋(系統)"
           }
         }
       }

@@ -45,7 +45,7 @@ struct SystemShortcut {
                 // 功能键
                 case "missionControl": return "square.grid.3x2"
                 case "appExpose": return "square.grid.3x3"
-                case "spotlightFn": return "magnifyingglass.circle"
+                case "spotlightSys": return "magnifyingglass.circle"
                 case "dictation": return "mic"
                 case "doNotDisturb": return "moon"
                 case "showDesktop": return "rectangle.on.rectangle"
@@ -157,7 +157,7 @@ struct SystemShortcut {
     // 功能键
     static let missionControl = Shortcut("missionControl", 160, .function)
     static let appExpose = Shortcut("appExpose", 131, .function)
-    static let spotlight_fn = Shortcut("spotlightFn", 177, .function)
+    static let spotlightSys = Shortcut("spotlightSys", 177, .function)
     static let dictation = Shortcut("dictation", 176, .function)
     static let doNotDisturb = Shortcut("doNotDisturb", 178, .function)
     static let showDesktop = Shortcut("showDesktop", 103, .function)
@@ -224,7 +224,7 @@ struct SystemShortcut {
     static let allShortcuts: [String: Shortcut] = [
         // 功能键
         "missionControl": missionControl, "appExpose": appExpose,
-        "spotlight_fn": spotlight_fn, "dictation": dictation, "doNotDisturb": doNotDisturb,
+        "spotlightSys": spotlightSys, "dictation": dictation, "doNotDisturb": doNotDisturb,
         "showDesktop": showDesktop,
         // 应用切换
         "switchApp": switchApp, "switchAppReverse": switchAppReverse,
@@ -277,7 +277,7 @@ struct SystemShortcut {
     /// 按类别分组的快捷键 (有序数组,顺序即菜单显示顺序)
     static let shortcutsByCategory: [(category: String, shortcuts: [Shortcut])] = [
         ("categoryFunctionKeys", [
-            missionControl, appExpose, spotlight_fn, dictation, doNotDisturb, showDesktop,
+            missionControl, appExpose, spotlightSys, dictation, doNotDisturb, showDesktop,
             moveSpaceLeft, moveSpaceRight
         ]),
         ("categoryAppsAndWindows", [
