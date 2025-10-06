@@ -47,10 +47,8 @@ class ShortcutManager {
 
         var totalShortcuts = 0
 
-        // 按分类构建分级菜单（使用显式的分类顺序）
-        for categoryIdentifier in SystemShortcut.categoryOrder {
-            guard let shortcuts = SystemShortcut.shortcutsByCategory[categoryIdentifier] else { continue }
-
+        // 按分类构建分级菜单（顺序由 shortcutsByCategory 数组定义）
+        for (categoryIdentifier, shortcuts) in SystemShortcut.shortcutsByCategory {
             // 创建分类主菜单项 (使用本地化名称)
             let categoryName = SystemShortcut.localizedCategoryName(categoryIdentifier)
             let categoryMenuItem = NSMenuItem(title: categoryName, action: nil, keyEquivalent: "")
@@ -66,10 +64,9 @@ class ShortcutManager {
             // 创建子菜单
             let subMenu = NSMenu(title: categoryName)
 
-            // 添加该分类下的所有快捷键到子菜单(过滤掉当前系统不支持的)
+            // 添加该分类下的所有快捷键到子菜单(过滤掉当前系统不支持的,保持原始顺序)
             let availableShortcuts = shortcuts.filter { $0.isAvailable }
-            let sortedShortcuts = availableShortcuts.sorted { $0.localizedName < $1.localizedName }
-            for shortcut in sortedShortcuts {
+            for shortcut in availableShortcuts {
                 let menuKeyEquivalent = shortcut.keyEquivalent
 
                 let shortcutMenuItem = NSMenuItem(

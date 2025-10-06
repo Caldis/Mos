@@ -77,6 +77,7 @@ struct SystemShortcut {
                 case "viewAsGallery": return "square.grid.3x3.fill.square"
                 // 系统控制
                 case "spotlight": return "magnifyingglass"
+                case "characterViewer": return "face.smiling"
                 case "forceQuit": return "exclamationmark.triangle"
                 case "lockScreen": return "lock.shield"
                 case "logout": return "rectangle.portrait.and.arrow.right"
@@ -192,6 +193,7 @@ struct SystemShortcut {
 
     // 系统控制
     static let spotlight = Shortcut("spotlight", 49, .command)  // Command-Space
+    static let characterViewer = Shortcut("characterViewer", 49, [.control, .command])  // Control-Command-Space (macOS 10.9+)
     static let forceQuit = Shortcut("forceQuit", 53, [.command, .option])  // Command-Option-Esc
     static let lockScreen = Shortcut("lockScreen", 12, [.command, .control])  // Command-Control-Q
     static let logout = Shortcut("logout", 12, [.command, .shift])  // Command-Shift-Q
@@ -234,7 +236,8 @@ struct SystemShortcut {
         "duplicateFile": duplicateFile, "getInfo": getInfo, "newFolder": newFolder, "goToFolder": goToFolder,
         "viewAsIcons": viewAsIcons, "viewAsList": viewAsList, "viewAsColumns": viewAsColumns, "viewAsGallery": viewAsGallery,
         // 系统控制
-        "spotlight": spotlight, "forceQuit": forceQuit, "lockScreen": lockScreen, "logout": logout,
+        "spotlight": spotlight, "characterViewer": characterViewer,
+        "forceQuit": forceQuit, "lockScreen": lockScreen, "logout": logout,
         "shutdownDialog": shutdownDialog, "screenshot": screenshot, "screenshotSelection": screenshotSelection,
         "screenshotAndRecording": screenshotAndRecording,
         "moveSpaceLeft": moveSpaceLeft, "moveSpaceRight": moveSpaceRight,
@@ -271,42 +274,32 @@ struct SystemShortcut {
         return Array(allShortcuts.keys).sorted()
     }
 
-    /// 分类显示顺序（定义菜单中的排列顺序）
-    static let categoryOrder: [String] = [
-        "categoryFunctionKeys",
-        "categoryAppsAndWindows",
-        "categoryDocumentEditing",
-        "categoryFinderActions",
-        "categorySystem",
-        "categoryScreenshot",
-        // "categoryAccessibility" // 暂时不提供, 有问题
-    ]
-
-    /// 按类别分组的快捷键
-    static let shortcutsByCategory: [String: [Shortcut]] = [
-        "categoryFunctionKeys": [
-            missionControl, appExpose, spotlight_fn, dictation, doNotDisturb, showDesktop
-        ],
-        "categoryAppsAndWindows": [
+    /// 按类别分组的快捷键 (有序数组,顺序即菜单显示顺序)
+    static let shortcutsByCategory: [(category: String, shortcuts: [Shortcut])] = [
+        ("categoryFunctionKeys", [
+            missionControl, appExpose, spotlight_fn, dictation, doNotDisturb, showDesktop,
+            moveSpaceLeft, moveSpaceRight
+        ]),
+        ("categoryAppsAndWindows", [
             switchApp, switchAppReverse,
             minimizeWindow, hideApplication, hideOthers, nextWindow, closeWindow, closeAllWindows, quitApp
-        ],
-        "categoryDocumentEditing": [
+        ]),
+        ("categoryDocumentEditing", [
             copy, paste, cut, undo, redo, selectAll, find, bold, italic, underline
-        ],
-        "categoryFinderActions": [
+        ]),
+        ("categoryFinderActions", [
             newFinderWindow, moveToTrash, emptyTrash, duplicateFile, getInfo, newFolder, goToFolder,
             viewAsIcons, viewAsList, viewAsColumns, viewAsGallery
-        ],
-        "categorySystem": [
-            spotlight, forceQuit, lockScreen, logout, shutdownDialog, moveSpaceLeft, moveSpaceRight
-        ],
-        "categoryScreenshot": [
+        ]),
+        ("categorySystem", [
+            spotlight, characterViewer, forceQuit, lockScreen, logout, shutdownDialog
+        ]),
+        ("categoryScreenshot", [
             screenshot, screenshotSelection, screenshotAndRecording
-        ],
-        "categoryAccessibility": [
-            invertColors, zoomIn, zoomOut
-        ],
+        ]),
+        // ("categoryAccessibility", [  // 暂时不提供, 有问题
+        //     invertColors, zoomIn, zoomOut
+        // ]),
     ]
 
     /// 获取分类的本地化名称
