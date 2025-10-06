@@ -189,8 +189,8 @@ struct SystemShortcut {
     static let shutdownDialog = Shortcut("shutdownDialog", 6, .control)  // Control-Power (mapped to Control-Z as placeholder)
     static let screenshot = Shortcut("screenshot", 20, [.command, .shift])  // Command-Shift-3
     static let screenshotSelection = Shortcut("screenshotSelection", 21, [.command, .shift])  // Command-Shift-4
-    static let moveSpaceLeft = Shortcut("moveSpaceLeft", 123, .control)  // Control-Left
-    static let moveSpaceRight = Shortcut("moveSpaceRight", 124, .control)  // Control-Right
+    static let moveSpaceLeft = Shortcut("moveSpaceLeft", 123, [.control, .function])  // Fn-Control-Left
+    static let moveSpaceRight = Shortcut("moveSpaceRight", 124, [.control, .function])  // Fn-Control-Right
 
     // 窗口管理
     static let minimizeWindow = Shortcut("minimizeWindow", 46, .command)  // Command-M
@@ -315,5 +315,81 @@ struct SystemShortcut {
         case "categoryAccessibility": return "eye"
         default: return "questionmark.folder"
         }
+    }
+}
+
+// MARK: - System Configuration Resolver
+
+/// 从symbolichotkeys动态解析系统快捷键配置
+extension SystemShortcut {
+
+    /// 系统快捷键ID映射表 (symbolichotkeys -> 快捷键名称)
+    private static let symbolicHotkeyMapping: [Int: String] = [
+        79: "moveSpaceLeft",   // Move left a space (default: Control-Left)
+        80: "moveSpaceLeft",   // Move left a space with shift modifier
+        81: "moveSpaceRight",  // Move right a space (default: Control-Right)
+        82: "moveSpaceRight",  // Move right a space with shift modifier
+    ]
+
+    /// 缓存的已解析快捷键配置
+    private static var resolvedCache: [String: (code: CGKeyCode, modifiers: UInt64)] = {
+        loadSystemShortcuts()
+    }()
+
+    /// 获取解析后的系统快捷键配置
+    /// - Parameter name: 快捷键名称 (如 "moveSpaceLeft")
+    /// - Returns: (keyCode, modifiers) 或 nil
+    static func resolveSystemShortcut(_ name: String) -> (code: CGKeyCode, modifiers: UInt64)? {
+        return resolvedCache[name]
+    }
+
+    /// 重新加载系统快捷键配置
+    static func reloadSystemShortcuts() {
+        resolvedCache = loadSystemShortcuts()
+        NSLog("SystemShortcut: Reloaded system config, \(resolvedCache.count) shortcuts resolved")
+    }
+
+    /// 从系统配置加载快捷键
+    private static func loadSystemShortcuts() -> [String: (code: CGKeyCode, modifiers: UInt64)] {
+        var resolved: [String: (code: CGKeyCode, modifiers: UInt64)] = [:]
+
+        // 读取系统快捷键配置
+        guard let symbolicHotkeys = UserDefaults.standard.persistentDomain(forName: "com.apple.symbolichotkeys"),
+              let hotkeys = symbolicHotkeys["AppleSymbolicHotKeys"] as? [String: Any] else {
+            NSLog("SystemShortcut: Failed to read com.apple.symbolichotkeys")
+            return resolved
+        }
+
+        // 解析每个感兴趣的快捷键
+        for (hotkeyID, shortcutName) in symbolicHotkeyMapping {
+            guard let hotkeyConfig = hotkeys[String(hotkeyID)] as? [String: Any],
+                  let enabled = hotkeyConfig["enabled"] as? Bool,
+                  enabled,
+                  let value = hotkeyConfig["value"] as? [String: Any],
+                  let parameters = value["parameters"] as? [Any],
+                  parameters.count >= 3 else {
+                continue
+            }
+
+            // 提取参数
+            // parameters[0]: Unicode character (65535 for non-printable)
+            // parameters[1]: Virtual key code
+            // parameters[2]: Modifier flags
+            guard let keyCode = parameters[1] as? Int,
+                  let modifiers = parameters[2] as? Int else {
+                continue
+            }
+
+            // 只保存主快捷键(ID较小的),避免重复
+            // Hotkey 79/81 是主快捷键, 80/82 是带额外修饰键的变体
+            if hotkeyID == 79 || hotkeyID == 81 {
+                if resolved[shortcutName] == nil {
+                    resolved[shortcutName] = (CGKeyCode(keyCode), UInt64(modifiers))
+                    NSLog("SystemShortcut: Loaded \(shortcutName) = keyCode:\(keyCode), modifiers:0x\(String(modifiers, radix: 16))")
+                }
+            }
+        }
+
+        return resolved
     }
 }
