@@ -19,11 +19,19 @@ struct SystemShortcut {
         let identifier: String  // 本地化键名(如 "minimizeWindow")
         let code: UInt16
         let modifiers: NSEvent.ModifierFlags
+        let minimumVersion: OperatingSystemVersion?  // 最低系统版本要求(可选)
 
-        init(_ identifier: String, _ code: UInt16, _ modifiers: NSEvent.ModifierFlags) {
+        init(_ identifier: String, _ code: UInt16, _ modifiers: NSEvent.ModifierFlags, minimumVersion: OperatingSystemVersion? = nil) {
             self.identifier = identifier
             self.code = code
             self.modifiers = modifiers
+            self.minimumVersion = minimumVersion
+        }
+
+        /// 检查当前系统是否支持此快捷键
+        var isAvailable: Bool {
+            guard let minVersion = minimumVersion else { return true }
+            return ProcessInfo.processInfo.isOperatingSystemAtLeast(minVersion)
         }
 
         /// 获取本地化显示名称
@@ -75,6 +83,7 @@ struct SystemShortcut {
                 case "shutdownDialog": return "power"
                 case "screenshot": return "camera.viewfinder"
                 case "screenshotSelection": return "viewfinder.rectangular"
+                case "screenshotAndRecording": return "camera.metering.center.weighted"
                 case "moveSpaceLeft": return "arrow.left.to.line"
                 case "moveSpaceRight": return "arrow.right.to.line"
                 // 窗口管理
@@ -189,6 +198,7 @@ struct SystemShortcut {
     static let shutdownDialog = Shortcut("shutdownDialog", 6, .control)  // Control-Power (mapped to Control-Z as placeholder)
     static let screenshot = Shortcut("screenshot", 20, [.command, .shift])  // Command-Shift-3
     static let screenshotSelection = Shortcut("screenshotSelection", 21, [.command, .shift])  // Command-Shift-4
+    static let screenshotAndRecording = Shortcut("screenshotAndRecording", 23, [.command, .shift], minimumVersion: OperatingSystemVersion(majorVersion: 10, minorVersion: 14, patchVersion: 0))  // Command-Shift-5 (macOS 10.14+)
     static let moveSpaceLeft = Shortcut("moveSpaceLeft", 123, [.control, .function])  // Fn-Control-Left
     static let moveSpaceRight = Shortcut("moveSpaceRight", 124, [.control, .function])  // Fn-Control-Right
 
@@ -226,6 +236,7 @@ struct SystemShortcut {
         // 系统控制
         "spotlight": spotlight, "forceQuit": forceQuit, "lockScreen": lockScreen, "logout": logout,
         "shutdownDialog": shutdownDialog, "screenshot": screenshot, "screenshotSelection": screenshotSelection,
+        "screenshotAndRecording": screenshotAndRecording,
         "moveSpaceLeft": moveSpaceLeft, "moveSpaceRight": moveSpaceRight,
         // 窗口管理
         "minimizeWindow": minimizeWindow, "hideApplication": hideApplication,
@@ -291,7 +302,7 @@ struct SystemShortcut {
             spotlight, forceQuit, lockScreen, logout, shutdownDialog, moveSpaceLeft, moveSpaceRight
         ],
         "categoryScreenshot": [
-            screenshot, screenshotSelection
+            screenshot, screenshotSelection, screenshotAndRecording
         ],
         "categoryAccessibility": [
             invertColors, zoomIn, zoomOut
