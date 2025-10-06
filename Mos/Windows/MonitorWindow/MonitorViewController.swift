@@ -201,8 +201,10 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
             NSLog("[MonitorView] 无法获取快捷键信息")
             return
         }
-        // 使用 ShortcutManager 触发快捷键
-        ShortcutManager.triggerShortcut(shortcut, delay: 1.0)
+        // 使用 ShortcutExecutor 触发快捷键
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            ShortcutExecutor.shared.execute(shortcut)
+        }
     }
     
 

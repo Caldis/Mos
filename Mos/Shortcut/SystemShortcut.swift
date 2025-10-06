@@ -268,7 +268,7 @@ struct SystemShortcut {
         "categoryFinderActions",
         "categorySystem",
         "categoryScreenshot",
-        "categoryAccessibility"
+        // "categoryAccessibility" // 暂时不提供, 有问题
     ]
 
     /// 按类别分组的快捷键

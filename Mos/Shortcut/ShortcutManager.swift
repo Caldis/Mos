@@ -9,9 +9,7 @@
 import Cocoa
 
 /// 快捷键管理器
-/// 职责:
-/// 1. 构建分级快捷键菜单 (PopUpButton 使用)
-/// 2. 触发系统快捷键 (模拟键盘事件)
+/// 职责: 构建分级快捷键菜单 (PopUpButton 使用)
 class ShortcutManager {
 
     // MARK: - 版本检测
@@ -99,108 +97,6 @@ class ShortcutManager {
 
             // 将分类菜单项添加到主菜单
             menu.addItem(categoryMenuItem)
-        }
-    }
-
-    // MARK: - 事件创建与发送
-
-    /// 触发系统快捷键
-    /// - Parameter shortcut: 要触发的快捷键
-    /// - Parameter completion: 完成回调
-    static func triggerShortcut(_ shortcut: SystemShortcut.Shortcut, completion: ((Bool) -> Void)? = nil) {
-        do {
-            // 构造键盘按下事件 (keyDown)
-            guard let keyDownEvent = createKeyEvent(
-                type: .keyDown,
-                keyCode: shortcut.code,
-                modifiers: shortcut.modifiers
-            ) else {
-                throw NSError(domain: "ShortcutManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "keyDown 事件构造失败"])
-            }
-
-            // 构造键盘抬起事件 (keyUp)
-            guard let keyUpEvent = createKeyEvent(
-                type: .keyUp,
-                keyCode: shortcut.code,
-                modifiers: shortcut.modifiers
-            ) else {
-                throw NSError(domain: "ShortcutManager", code: 2, userInfo: [NSLocalizedDescriptionKey: "keyUp 事件构造失败"])
-            }
-
-            // 发送事件
-            postKeyboardEvents(keyDownEvent: keyDownEvent, keyUpEvent: keyUpEvent) { success in
-                completion?(success)
-            }
-
-        } catch {
-            NSLog("[ShortcutManager] 快捷键触发失败: \(error.localizedDescription)")
-            completion?(false)
-        }
-    }
-
-    /// 延迟触发系统快捷键
-    /// - Parameter shortcut: 要触发的快捷键
-    /// - Parameter delay: 延迟时间(秒)
-    /// - Parameter completion: 完成回调
-    static func triggerShortcut(_ shortcut: SystemShortcut.Shortcut, delay: TimeInterval, completion: ((Bool) -> Void)? = nil) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            Self.triggerShortcut(shortcut, completion: completion)
-        }
-    }
-
-    // MARK: - 私有方法
-
-
-    /// 创建键盘事件
-    static func createKeyEvent(type: CGEventType, keyCode: UInt16, modifiers: NSEvent.ModifierFlags) -> CGEvent? {
-        // 创建基础键盘事件
-        guard let event = CGEvent(
-            keyboardEventSource: nil,
-            virtualKey: keyCode,
-            keyDown: type == .keyDown
-        ) else {
-            NSLog("[ShortcutManager] 无法创建基础键盘事件")
-            return nil
-        }
-
-        // 设置修饰键
-        var cgFlags: CGEventFlags = []
-
-        if modifiers.contains(.command) {
-            cgFlags.insert(.maskCommand)
-        }
-        if modifiers.contains(.shift) {
-            cgFlags.insert(.maskShift)
-        }
-        if modifiers.contains(.option) {
-            cgFlags.insert(.maskAlternate)
-        }
-        if modifiers.contains(.control) {
-            cgFlags.insert(.maskControl)
-        }
-        if modifiers.contains(.function) {
-            cgFlags.insert(.maskSecondaryFn)
-        }
-
-        event.flags = cgFlags
-        event.timestamp = CGEventTimestamp(mach_absolute_time())
-
-        return event
-    }
-
-    /// 发送键盘事件到系统
-    static func postKeyboardEvents(keyDownEvent: CGEvent, keyUpEvent: CGEvent, completion: ((Bool) -> Void)? = nil) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            // 发送 keyDown 事件
-            keyDownEvent.post(tap: .cghidEventTap)
-
-            // 短暂延迟，模拟真实按键时序
-            usleep(10000) // 10ms
-
-            // 发送 keyUp 事件
-            keyUpEvent.post(tap: .cghidEventTap)
-
-            DispatchQueue.main.async { completion?(true) }
         }
     }
 

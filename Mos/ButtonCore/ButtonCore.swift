@@ -43,7 +43,7 @@ class ButtonCore {
         }
 
         // 执行绑定的系统快捷键
-        ShortcutExecutor.shared.execute(binding.systemShortcutName)
+        ShortcutExecutor.shared.execute(named: binding.systemShortcutName)
 
         // 消费事件(不再传递给系统)
         return nil
