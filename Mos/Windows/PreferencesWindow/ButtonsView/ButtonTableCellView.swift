@@ -211,7 +211,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         self.currentShortcut = shortcut
 
         // 更新占位符显示
-        if let shortcut = shortcut {
+        if shortcut != nil {
             // 选择了具体快捷键,复制标题和图标到占位符
             setCustomTitle(sender.title, image: sender.image)
         } else {

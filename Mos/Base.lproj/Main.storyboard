@@ -499,7 +499,7 @@
                             <visualEffectView appearanceType="inheritedVibrantLight" blendingMode="behindWindow" material="underWindowBackground" state="active" translatesAutoresizingMaskIntoConstraints="NO" id="VAL-LC-T3T">
                                 <rect key="frame" x="0.0" y="291" width="450" height="30"/>
                                 <subviews>
-                                    <visualEffectView blendingMode="behindWindow" material="appearanceBased" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="ouh-IG-LyJ">
+                                    <visualEffectView blendingMode="behindWindow" material="toolTip" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="ouh-IG-LyJ">
                                         <rect key="frame" x="0.0" y="0.0" width="450" height="30"/>
                                         <subviews>
                                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="Dph-wy-8sb">
@@ -615,7 +615,7 @@
                                                     </textFieldCell>
                                                     <prototypeCellViews>
                                                         <tableCellView id="clT-5E-IUd">
-                                                            <rect key="frame" x="343.5" y="6" width="96" height="45"/>
+                                                            <rect key="frame" x="343.69032254231729" y="6" width="96" height="45"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4qv-B4-GnV">
