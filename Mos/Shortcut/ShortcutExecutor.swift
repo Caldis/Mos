@@ -22,10 +22,11 @@ class ShortcutExecutor {
     /// - Parameters:
     ///   - code: 虚拟键码
     ///   - flags: 修饰键flags (UInt64原始值)
-    func execute(code: CGKeyCode, flags: UInt64) {
+    ///   - preserveFlagsOnKeyUp: KeyUp 时是否保留修饰键 flags (默认 false)
+    func execute(code: CGKeyCode, flags: UInt64, preserveFlagsOnKeyUp: Bool = false) {
         // 创建事件源
         guard let source = CGEventSource(stateID: .hidSystemState) else {
-            NSLog("ShortcutExecutor: Failed to create event source")
+            // NSLog("ShortcutExecutor: Failed to create event source")
             return
         }
 
@@ -37,6 +38,9 @@ class ShortcutExecutor {
 
         // 发送按键抬起事件
         if let keyUp = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: false) {
+            if preserveFlagsOnKeyUp {
+                keyUp.flags = CGEventFlags(rawValue: flags)
+            }
             keyUp.post(tap: .cghidEventTap)
         }
     }
@@ -44,8 +48,8 @@ class ShortcutExecutor {
     /// 执行系统快捷键 (从SystemShortcut.Shortcut对象)
     /// - Parameter shortcut: SystemShortcut.Shortcut对象
     func execute(_ shortcut: SystemShortcut.Shortcut) {
-        NSLog("ShortcutExecutor: Executing '\(shortcut.identifier)' (code: \(shortcut.code), modifiers: \(shortcut.modifiers))")
-        execute(code: shortcut.code, flags: UInt64(shortcut.modifiers.rawValue))
+        // NSLog("ShortcutExecutor: Executing '\(shortcut.identifier)' (code: \(shortcut.code), modifiers: \(shortcut.modifiers))")
+        execute(code: shortcut.code, flags: UInt64(shortcut.modifiers.rawValue), preserveFlagsOnKeyUp: shortcut.preserveFlagsOnKeyUp)
     }
 
     /// 执行系统快捷键 (从名称解析, 支持动态读取系统配置)
@@ -53,14 +57,14 @@ class ShortcutExecutor {
     func execute(named shortcutName: String) {
         // 优先使用系统实际配置 (对于Mission Control相关快捷键)
         if let resolved = SystemShortcut.resolveSystemShortcut(shortcutName) {
-            NSLog("ShortcutExecutor: Using system config for '\(shortcutName)' (code: \(resolved.code), modifiers: 0x\(String(resolved.modifiers, radix: 16)))")
+            // NSLog("ShortcutExecutor: Using system config for '\(shortcutName)' (code: \(resolved.code), modifiers: 0x\(String(resolved.modifiers, radix: 16)))")
             execute(code: resolved.code, flags: resolved.modifiers)
             return
         }
 
         // Fallback到内置快捷键定义
         guard let shortcut = SystemShortcut.getShortcut(named: shortcutName) else {
-            NSLog("ShortcutExecutor: Unknown shortcut '\(shortcutName)'")
+            // NSLog("ShortcutExecutor: Unknown shortcut '\(shortcutName)'")
             return
         }
 

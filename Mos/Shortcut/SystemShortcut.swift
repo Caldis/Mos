@@ -20,12 +20,14 @@ struct SystemShortcut {
         let code: UInt16
         let modifiers: NSEvent.ModifierFlags
         let minimumVersion: OperatingSystemVersion?  // 最低系统版本要求(可选)
+        let preserveFlagsOnKeyUp: Bool  // KeyUp 时是否保留修饰键 flags (用于 Command+Tab 等需要保持修饰键的快捷键)
 
-        init(_ identifier: String, _ code: UInt16, _ modifiers: NSEvent.ModifierFlags, minimumVersion: OperatingSystemVersion? = nil) {
+        init(_ identifier: String, _ code: UInt16, _ modifiers: NSEvent.ModifierFlags, minimumVersion: OperatingSystemVersion? = nil, preserveFlagsOnKeyUp: Bool = false) {
             self.identifier = identifier
             self.code = code
             self.modifiers = modifiers
             self.minimumVersion = minimumVersion
+            self.preserveFlagsOnKeyUp = preserveFlagsOnKeyUp
         }
 
         /// 检查当前系统是否支持此快捷键
@@ -163,8 +165,10 @@ struct SystemShortcut {
     static let showDesktop = Shortcut("showDesktop", 103, .function)
 
     // 应用切换
-    static let switchApp = Shortcut("switchApp", 48, .command)
-    static let switchAppReverse = Shortcut("switchAppReverse", 48, [.command, .shift])
+    // preserveFlagsOnKeyUp: 用于确保 KeyUp 时携带 flag, 才能触发 App Switcher
+    // @see https://stackoverflow.com/questions/36375080/cocoa-simulating-commandtab-in-cgevent
+    static let switchApp = Shortcut("switchApp", 48, .command, preserveFlagsOnKeyUp: true)
+    static let switchAppReverse = Shortcut("switchAppReverse", 48, [.command, .shift], preserveFlagsOnKeyUp: true)
 
     // 文档编辑
     static let copy = Shortcut("copy", 8, .command)  // Command-C
