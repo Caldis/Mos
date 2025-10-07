@@ -129,6 +129,12 @@ class ScrollCore {
     // MARK: - 热键事件处理
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         let keyCode = event.keyCode
+
+        // 记录按键时的目标应用
+        if event.isKeyDown && ScrollCore.shared.currentApplication == nil {
+            ScrollCore.shared.currentApplication = ScrollCore.shared.application
+        }
+
         // Dash
         let (dashKeyCode, dashKeyMask) = ScrollUtils.shared.optionsDashKey(application: ScrollCore.shared.application)
         if keyCode == dashKeyCode {

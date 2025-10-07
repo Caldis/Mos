@@ -120,12 +120,16 @@ class ScrollUtils {
     }
 
     // 滚动参数: 热键
+    // 使用 0xFFFF 作为未配置的标识, 避免与 keyCode=0 (A键) 或其他功能键冲突
     func optionsDashKey(application: Application?) -> (CGKeyCode, CGEventFlags) {
         var code: CGKeyCode
         if let targetApplication = application {
-            code = CGKeyCode(targetApplication.inherit ? Options.shared.scroll.dash ?? 0 : targetApplication.scroll.dash ?? 0)
+            let keyValue = targetApplication.inherit ? Options.shared.scroll.dash : targetApplication.scroll.dash
+            // 0 或 nil 都视为未配置,返回不可能的 keyCode
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         } else {
-            code = CGKeyCode(Options.shared.scroll.dash ?? 0)
+            let keyValue = Options.shared.scroll.dash
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         }
         let mask = KeyCode.getKeyMask(code)
         return (code, mask)
@@ -133,9 +137,11 @@ class ScrollUtils {
     func optionsToggleKey(application: Application?) -> (CGKeyCode, CGEventFlags) {
         var code: CGKeyCode
         if let targetApplication = application {
-            code = CGKeyCode(targetApplication.inherit ? Options.shared.scroll.toggle ?? 0 : targetApplication.scroll.toggle ?? 0)
+            let keyValue = targetApplication.inherit ? Options.shared.scroll.toggle : targetApplication.scroll.toggle
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         } else {
-            code = CGKeyCode(Options.shared.scroll.toggle ?? 0)
+            let keyValue = Options.shared.scroll.toggle
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         }
         let mask = KeyCode.getKeyMask(code)
         return (code, mask)
@@ -143,9 +149,11 @@ class ScrollUtils {
     func optionsBlockKey(application: Application?) -> (CGKeyCode, CGEventFlags) {
         var code: CGKeyCode
         if let targetApplication = application {
-            code = CGKeyCode(targetApplication.inherit ? Options.shared.scroll.block ?? 0 : targetApplication.scroll.block ?? 0)
+            let keyValue = targetApplication.inherit ? Options.shared.scroll.block : targetApplication.scroll.block
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         } else {
-            code = CGKeyCode(Options.shared.scroll.block ?? 0)
+            let keyValue = Options.shared.scroll.block
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         }
         let mask = KeyCode.getKeyMask(code)
         return (code, mask)
