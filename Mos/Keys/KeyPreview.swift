@@ -11,7 +11,8 @@ import Cocoa
 class KeyPreview: NSStackView {
 
     // MARK: - Constants
-    static let FONT_SIZE = CGFloat(9)
+    static let VIEW_SIZE = CGFloat(25)
+    static let FONT_SIZE = CGFloat(11)
     static let WAITING_WORDING = "?"
 
     // MARK: - Configuration
@@ -132,8 +133,8 @@ class KeyPreview: NSStackView {
             label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
             label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
             container.widthAnchor.constraint(greaterThanOrEqualTo: label.widthAnchor, constant: 12),
-            container.widthAnchor.constraint(greaterThanOrEqualToConstant: 20),
-            container.heightAnchor.constraint(equalToConstant: 20),
+            container.widthAnchor.constraint(greaterThanOrEqualToConstant: KeyPreview.VIEW_SIZE),
+            container.heightAnchor.constraint(equalToConstant: KeyPreview.VIEW_SIZE),
         ])
 
         return container

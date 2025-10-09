@@ -32,7 +32,7 @@ class ShortcutManager {
     /// 构建分级快捷键菜单 (按分类组织系统快捷键)
     ///
     /// 菜单结构设计:
-    /// - 索引0: 占位符 (disabled) - PopUpButton 显示此项,动态更新标题和图标
+    /// - 索引0: 占位符 PopUpButton 显示此项,动态更新标题和图标
     /// - 索引1: 分割线 #1 - 根据绑定状态动态隐藏/显示
     /// - 索引2: "未绑定"/"取消绑定" - 可选菜单项,representedObject 为 nil
     /// - 索引3: 分割线 #2 - 分隔操作区和分类菜单
@@ -45,10 +45,9 @@ class ShortcutManager {
         // 清空现有菜单项
         menu.removeAllItems()
 
-        // 添加占位符 (disabled, 用于显示当前选中的快捷键)
+        // 添加占位符 (用于显示当前选中的快捷键)
         // NSPopUpButton 不会自动显示子菜单项标题,必须用占位符模式
         let placeholderItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
-        placeholderItem.isEnabled = false
         menu.addItem(placeholderItem)
 
         // 添加第一条分割线 (未绑定时会被隐藏)

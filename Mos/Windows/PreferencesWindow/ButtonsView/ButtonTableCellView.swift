@@ -17,6 +17,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 
     // MARK: - UI Components
     private var keyPreview: KeyPreview!
+    private var dashedLineLayer: CAShapeLayer?
 
     // MARK: - Callbacks
     private var onShortcutSelected: ((SystemShortcut.Shortcut?) -> Void)?
@@ -47,6 +48,11 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 
         // 配置动作选择器
         setupActionPopUpButton(currentShortcut: binding.systemShortcut)
+
+        // 绘制虚线分隔符(延迟到下一个 runloop,等 AutoLayout 完成布局)
+        DispatchQueue.main.async {
+            self.setupDashedLine()
+        }
     }
 
     // 高亮该行（重复两次）
@@ -87,7 +93,58 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         // 设置事件内容
         keyPreview.update(from: recordedEvent.displayComponents, status: .normal)
     }
-    
+
+    /// 绘制虚线分隔符
+    ///
+    /// 在 keyPreview 和 actionPopUpButton 之间绘制垂直居中的虚线
+    /// 虚线使用淡灰色,兼容 macOS 10.13+
+    private func setupDashedLine() {
+        // 清理旧的虚线层(Cell复用时)
+        dashedLineLayer?.removeFromSuperlayer()
+
+        // 获取父容器层级
+        guard let keyBox = keyDisplayContainerView.superview,
+              let contentView = keyBox.superview else {
+            return
+        }
+
+        // 确保 contentView 有 layer（Core Animation 必需）
+        contentView.wantsLayer = true
+
+        // 计算虚线的起点和终点坐标
+        // 需要将 keyPreview 的坐标从 keyDisplayContainerView 转换到 contentView 坐标系
+        let keyPreviewFrameInContentView = keyDisplayContainerView.convert(keyPreview.frame, to: contentView)
+        let buttonFrame = actionPopUpButton.frame
+
+        // 左右边距
+        let horizontalMargin: CGFloat = 8.0
+
+        // 起点: keyPreview 右边缘 + 边距
+        let startX = keyPreviewFrameInContentView.maxX + horizontalMargin
+        // 终点: actionPopUpButton 左边缘 - 边距
+        let endX = buttonFrame.minX - horizontalMargin
+        // 垂直居中
+        let centerY = contentView.bounds.height / 2
+
+        // 创建虚线路径
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: startX, y: centerY))
+        path.addLine(to: CGPoint(x: endX, y: centerY))
+
+        // 创建 CAShapeLayer 绘制虚线
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = path
+        shapeLayer.strokeColor = NSColor(calibratedWhite: 0.5, alpha: 0.2).cgColor
+        shapeLayer.lineWidth = 1.0
+        shapeLayer.lineDashPattern = [2, 2]  // 虚线样式: 4pt 实线, 4pt 间隔
+
+        // 添加到 contentView 的 layer
+        contentView.layer?.addSublayer(shapeLayer)
+
+        // 保存引用,便于下次清理
+        dashedLineLayer = shapeLayer
+    }
+
     /// 设置动作选择器 PopUpButton
     ///
     /// 关键设计：

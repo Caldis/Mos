@@ -260,19 +260,19 @@
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <box boxType="custom" borderWidth="0.0" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="ei3-vh-6kV">
-                                                                                <rect key="frame" x="12" y="5" width="248" height="30"/>
+                                                                                <rect key="frame" x="12" y="5" width="250" height="30"/>
                                                                                 <view key="contentView" id="UjE-iu-X41">
-                                                                                    <rect key="frame" x="0.0" y="0.0" width="248" height="30"/>
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="250" height="30"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 </view>
                                                                                 <color key="borderColor" red="1" green="1" blue="1" alpha="0.10068822230879106" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                 <color key="fillColor" red="0.96062562677481145" green="0.96754766589999996" blue="0.93064895263721903" alpha="0.0" colorSpace="custom" customColorSpace="displayP3"/>
                                                                             </box>
                                                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3eO-mD-7ue">
-                                                                                <rect key="frame" x="285" y="10" width="120" height="20"/>
-                                                                                <popUpButtonCell key="cell" type="push" title="No Action" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="epU-lS-atX" id="DPN-ii-WxE">
+                                                                                <rect key="frame" x="287" y="8" width="120" height="24"/>
+                                                                                <popUpButtonCell key="cell" type="push" title="No Action" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="epU-lS-atX" id="DPN-ii-WxE">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                                    <font key="font" metaFont="system"/>
                                                                                     <menu key="menu" id="Q8S-vA-nvS">
                                                                                         <items>
                                                                                             <menuItem title="No Action" state="on" id="epU-lS-atX"/>
@@ -286,7 +286,7 @@
                                                                             </popUpButton>
                                                                         </subviews>
                                                                         <constraints>
-                                                                            <constraint firstAttribute="trailing" secondItem="3eO-mD-7ue" secondAttribute="trailing" constant="6" id="2eY-s6-2qh"/>
+                                                                            <constraint firstAttribute="trailing" secondItem="3eO-mD-7ue" secondAttribute="trailing" constant="4" id="2eY-s6-2qh"/>
                                                                             <constraint firstAttribute="bottom" secondItem="ei3-vh-6kV" secondAttribute="bottom" constant="5" id="FN4-2W-Rm1"/>
                                                                             <constraint firstItem="ei3-vh-6kV" firstAttribute="top" secondItem="sUm-mF-Rt9" secondAttribute="top" constant="5" id="Ga7-qB-xL0"/>
                                                                             <constraint firstItem="3eO-mD-7ue" firstAttribute="centerY" secondItem="sUm-mF-Rt9" secondAttribute="centerY" id="I7g-BJ-jVc"/>
@@ -615,7 +615,7 @@
                                                     </textFieldCell>
                                                     <prototypeCellViews>
                                                         <tableCellView id="clT-5E-IUd">
-                                                            <rect key="frame" x="343.69032254231729" y="6" width="96" height="45"/>
+                                                            <rect key="frame" x="343.5" y="6" width="96" height="45"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4qv-B4-GnV">
