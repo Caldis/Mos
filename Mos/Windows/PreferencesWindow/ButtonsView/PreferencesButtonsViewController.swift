@@ -51,12 +51,9 @@ class PreferencesButtonsViewController: NSViewController {
     @IBAction func removeItemClick(_ sender: NSButton) {
         // 确保选择了行
         guard tableView.selectedRow != -1 else { return }
-        // 删除
-        buttonBindings.remove(at: tableView.selectedRow)
-        // 重新加载
-        tableView.reloadData()
-        // 立即更新空状态显示
-        toggleNoDataHint()
+        // 统一通过 removeButtonBinding 处理删除逻辑
+        let binding = buttonBindings[tableView.selectedRow]
+        removeButtonBinding(id: binding.id)
         // 更新删除按钮状态
         updateDelButtonState()
     }
