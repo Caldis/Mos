@@ -134,7 +134,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         // 创建 CAShapeLayer 绘制虚线
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = path
-        shapeLayer.strokeColor = NSColor(calibratedWhite: 0.5, alpha: 0.2).cgColor
+        shapeLayer.strokeColor = NSColor.getMainLightBlack(for: self).cgColor
         shapeLayer.lineWidth = 1.0
         shapeLayer.lineDashPattern = [2, 2]  // 虚线样式: 4pt 实线, 4pt 间隔
 

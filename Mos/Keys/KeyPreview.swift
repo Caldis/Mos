@@ -172,7 +172,7 @@ private final class KeyComponentContainer: NSView {
     private func getBackgroundColor() -> NSColor {
         switch keyStatus {
         case .normal, .recording:
-            return NSColor.quaternaryLabelColor
+            return NSColor.getMainLightBlack(for: self)
         case .recorded:
             return NSColor.mainGreen
         case .duplicate:
@@ -206,13 +206,7 @@ private final class KeyComponentContainer: NSView {
         shakeAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut)
 
         // 2. 背景色变化动画（立即变红，然后褪回原色）
-        let warningColor: CGColor
-        if Utils.isDarkMode(for: self) {
-            warningColor = NSColor(calibratedRed: 0.85, green: 0.25, blue: 0.20, alpha: 1.0).cgColor
-        } else {
-            warningColor = NSColor(calibratedRed: 0.95, green: 0.35, blue: 0.30, alpha: 1.0).cgColor
-        }
-
+        let warningColor: CGColor = NSColor.getWarningColor(for: self).cgColor
         let colorAnimation = CABasicAnimation(keyPath: "backgroundColor")
         colorAnimation.fromValue = warningColor  // 从红色开始
         colorAnimation.toValue = layer.backgroundColor  // 褪回原色
