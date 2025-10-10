@@ -220,9 +220,6 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
             placeholderItem.image = nil
         }
 
-        // 确保占位符保持 disabled 状态
-        placeholderItem.isEnabled = false
-
         // 选中占位符项
         actionPopUpButton.selectItem(at: 0)
     }
