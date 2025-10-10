@@ -93,7 +93,7 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
     var toggle:Int? = 56 {
         didSet {Options.shared.saveOptions()}
     }
-    var block:Int? = 0 {
+    var block:Int? = 55 {
         didSet {Options.shared.saveOptions()}
     }
     var step = 35.0 {
