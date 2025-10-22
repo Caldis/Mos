@@ -127,21 +127,18 @@ class ScrollPhase {
         pendingPhaseAfterDelivery = nil
     }
     
-    /// 每次检测到鼠标滚轮输入时调用, 返回需要补发的阶段序列以及当前帧应处于的阶段
-    func onManualInputDetected() -> TransitionPlan {
-        switch phase {
-        case .Idle, .Hold, .Leave, .TrackingEnd, .MomentumEnd:
-            return plan(target: (.TrackingBegin, .TrackingOngoing))
-        case .TrackingBegin:
-            return plan(target: (.TrackingOngoing, nil))
-        case .TrackingOngoing:
-            return plan(target: (.TrackingOngoing, nil))
-        case .MomentumBegin, .MomentumOngoing:
+    /// 每次检测到鼠标滚轮输入时调用, 根据是否被视为独立滚动返回阶段序列
+    func onManualInputDetected(isSeparated: Bool) -> TransitionPlan {
+        if phase == .MomentumBegin || phase == .MomentumOngoing {
             return plan(
                 extra: [(Phase.MomentumEnd, Phase.Idle)],
                 target: (.TrackingBegin, .TrackingOngoing)
             )
         }
+        if !isSeparated && (phase == .TrackingBegin || phase == .TrackingOngoing) {
+            return plan(target: (.TrackingOngoing, nil))
+        }
+        return plan(target: (.TrackingBegin, .TrackingOngoing))
     }
     
     /// 在滚轮输入停止后调用, 将阶段切到 TrackingEnd

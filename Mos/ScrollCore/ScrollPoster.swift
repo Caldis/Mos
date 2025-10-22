@@ -29,7 +29,10 @@ class ScrollPoster {
     private var lastManualEventTime: CFTimeInterval = 0.0
     private var manualInputEnded = true
     private var momentumActive = false
-    private let manualSilenceThreshold: CFTimeInterval = 0.05
+    // 阈值: 鼠标滚轮事件间隔低于 continuationThreshold 视为持续跟随
+    //      介于 continuationThreshold 与 separationThreshold 之间模拟惯性衔接
+    private let manualContinuationThreshold: CFTimeInterval = 0.18
+    private let manualSeparationThreshold: CFTimeInterval = 0.45
     // 外部依赖
     var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
 }
@@ -56,9 +59,15 @@ extension ScrollPoster {
             current.x = 0.0
         }
         delta = (y: y, x: x)
-        let plan = ScrollPhase.shared.onManualInputDetected()
+        let now = CFAbsoluteTimeGetCurrent()
+        let interval = lastManualEventTime > 0.0 ? now - lastManualEventTime : nil
+        let separatedByTime = interval == nil ? true : interval! >= manualSeparationThreshold
+        let phase = ScrollPhase.shared.phase
+        let separatedPhase = (phase == .Idle || phase == .Leave || phase == .MomentumEnd || phase == .TrackingEnd)
+        let separated = manualInputEnded || separatedByTime || separatedPhase
+        let plan = ScrollPhase.shared.onManualInputDetected(isSeparated: separated)
         perform(plan, emitTargetImmediately: false)
-        lastManualEventTime = CFAbsoluteTimeGetCurrent()
+        lastManualEventTime = now
         manualInputEnded = false
         momentumActive = false
         return self
@@ -224,7 +233,7 @@ private extension ScrollPoster {
         // 变换滚动结果
         let shiftedValue = shift(with: filledValue)
         let now = CFAbsoluteTimeGetCurrent()
-        if !manualInputEnded && lastManualEventTime > 0.0 && now - lastManualEventTime > manualSilenceThreshold {
+        if !manualInputEnded && lastManualEventTime > 0.0 && now - lastManualEventTime > manualContinuationThreshold {
             let endPlan = ScrollPhase.shared.onManualInputEnded()
             if !(endPlan.queue.isEmpty && endPlan.target == nil) {
                 perform(endPlan, emitTargetImmediately: true)
@@ -297,7 +306,11 @@ private extension ScrollPoster {
             // 是否连续滚动: 始终为 1.0
             eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
 
-            // EventTapProxy 说明参见上文注释
+            // EventTapProxy:
+            // 标识了 EventTapCallback 在事件流中接收到事件的特定位置, 其粒度小于 tap 本身
+            // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
+            // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 会被所有后续的 EventTap 接收
+            // fixed by @shichangone MR: https://github.com/Caldis/Mos/pull/523
             DispatchQueue.main.async { eventClone.tapPostEvent(proxy) }
             ScrollPhase.shared.didDeliverFrame()
         }
