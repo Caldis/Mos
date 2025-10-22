@@ -100,65 +100,104 @@ class ScrollPhase {
     static let shared = ScrollPhase()
     init() { NSLog("Module initialized: ScrollPhase") }
     
-    var phase: Phase = Phase.Idle
+    private(set) var phase: Phase = .Idle
     
-    // MARK: - 惯性
-    // 将状态重设为 Momentun, 通过防抖来延迟其调用, 并向下采样降低防抖开销
-    var debounceApplyMomentumCallSamplingRate = 3
-    var debounceApplyMomentumCallSamplingCount = 2
-    let debouncedApplyMomentumOngoing = Utils.debounce(delay: 100) {
-        ScrollPhase.shared.phase = Phase.MomentumOngoing
-        ScrollPhase.shared.debounceApplyMomentumCallSamplingCount = ScrollPhase.shared.debounceApplyMomentumCallSamplingRate - 1
+    // 下一帧发送完毕后自动切换到的阶段
+    private var pendingPhaseAfterDelivery: Phase? = nil
+    
+    // 记录在开始新的 Tracking 前是否需要补发额外阶段 (比如在惯性中断时时补发 MomentumEnd)
+    struct TransitionPlan {
+        let queue: [(Phase, Phase?)]
+        let target: (Phase, Phase?)?
     }
-    func applyMomentum() {
-        debounceApplyMomentumCallSamplingCount += 1
-        if debounceApplyMomentumCallSamplingCount % debounceApplyMomentumCallSamplingRate == 0 {
-            debouncedApplyMomentumOngoing()
+    
+    // MARK: - 工具方法
+    private func transition(to next: Phase, autoAdvance: Phase? = nil) {
+        phase = next
+        pendingPhaseAfterDelivery = autoAdvance
+    }
+    
+    private func plan(extra queue: [(Phase, Phase?)] = [], target: (Phase, Phase?)? = nil) -> TransitionPlan {
+        return TransitionPlan(queue: queue, target: target)
+    }
+    
+    // MARK: - 对外接口
+    func reset() {
+        phase = .Idle
+        pendingPhaseAfterDelivery = nil
+    }
+    
+    /// 每次检测到鼠标滚轮输入时调用, 返回需要补发的阶段序列以及当前帧应处于的阶段
+    func onManualInputDetected() -> TransitionPlan {
+        switch phase {
+        case .Idle, .Hold, .Leave, .TrackingEnd, .MomentumEnd:
+            return plan(target: (.TrackingBegin, .TrackingOngoing))
+        case .TrackingBegin:
+            return plan(target: (.TrackingOngoing, nil))
+        case .TrackingOngoing:
+            return plan(target: (.TrackingOngoing, nil))
+        case .MomentumBegin, .MomentumOngoing:
+            return plan(
+                extra: [(Phase.MomentumEnd, Phase.Idle)],
+                target: (.TrackingBegin, .TrackingOngoing)
+            )
         }
     }
     
-    // MARK: - 介入
-    let kickInPhaseTransition: [Phase: Phase] = [
-        .Idle: .TrackingBegin,
-        .Hold: .TrackingBegin,
-        .TrackingBegin: .TrackingOngoing,
-        .TrackingOngoing: .TrackingEnd,
-        .TrackingEnd: .MomentumBegin,
-        .MomentumBegin: .MomentumOngoing,
-        .MomentumOngoing: .MomentumEnd,
-        .MomentumEnd: .TrackingBegin,
-        .Leave: .TrackingBegin,
-    ]
-    func kickIn() {
-        // 阶段转换
-        if let nextPhase = kickInPhaseTransition[phase] {
+    /// 在滚轮输入停止后调用, 将阶段切到 TrackingEnd
+    func onManualInputEnded() -> TransitionPlan {
+        switch phase {
+        case .TrackingBegin, .TrackingOngoing:
+            return plan(target: (.TrackingEnd, nil))
+        default:
+            return plan()
+        }
+    }
+    
+    /// 在检测到需要进入惯性滚动时调用
+    func onMomentumStart() -> TransitionPlan {
+        switch phase {
+        case .TrackingEnd, .MomentumEnd:
+            return plan(target: (.MomentumBegin, .MomentumOngoing))
+        case .MomentumBegin:
+            return plan(target: (.MomentumOngoing, nil))
+        default:
+            return plan()
+        }
+    }
+    
+    /// 惯性滚动中持续调用, 保持阶段为 MomentumOngoing
+    func onMomentumOngoing() -> TransitionPlan {
+        switch phase {
+        case .MomentumBegin:
+            return plan(target: (.MomentumOngoing, nil))
+        default:
+            return plan()
+        }
+    }
+    
+    /// 惯性或滚动停止时调用
+    func onMomentumFinish() -> TransitionPlan {
+        switch phase {
+        case .MomentumBegin, .MomentumOngoing:
+            return plan(target: (.MomentumEnd, .Idle))
+        case .TrackingBegin, .TrackingOngoing, .TrackingEnd:
+            return plan(target: (.TrackingEnd, .Idle))
+        default:
+            return plan()
+        }
+    }
+    
+    /// 在滚动帧发送后调用, 处理自动阶段切换
+    func didDeliverFrame() {
+        if let nextPhase = pendingPhaseAfterDelivery {
             phase = nextPhase
-        }
-        // 应用惯性
-        applyMomentum()
-    }
-    
-    // MARK: - 转阶段
-    let transfromPhaseTransition: [Phase: Phase] = [
-        .Idle: .TrackingBegin,
-        .Hold: .TrackingBegin,
-        .TrackingBegin: .TrackingOngoing,
-        .TrackingOngoing: .TrackingEnd,
-        .TrackingEnd: .MomentumBegin,
-        .MomentumBegin: .MomentumOngoing,
-        .MomentumOngoing: .MomentumEnd,
-        .MomentumEnd: .TrackingBegin,
-        .Leave: .TrackingBegin,
-    ]
-    func transfrom() {
-        if let nextPhase = transfromPhaseTransition[phase] {
-            phase = nextPhase
+            pendingPhaseAfterDelivery = nil
         }
     }
     
-    // MARK: - 停止
-    func stop(_ nextPhase: Phase = Phase.MomentumEnd) {
-        phase = nextPhase
+    /// 直接设置阶段 (用于补发额外帧)
+    func apply(phase next: Phase, autoAdvance: Phase? = nil) {
+        transition(to: next, autoAdvance: autoAdvance)
     }
-
 }

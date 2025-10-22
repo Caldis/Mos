@@ -25,6 +25,11 @@ class ScrollPoster {
     // 滚动配置
     private var shifting = false
     private var duration = Options.shared.scroll.durationTransition
+    // 输入节奏追踪
+    private var lastManualEventTime: CFTimeInterval = 0.0
+    private var manualInputEnded = true
+    private var momentumActive = false
+    private let manualSilenceThreshold: CFTimeInterval = 0.05
     // 外部依赖
     var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
 }
@@ -51,6 +56,11 @@ extension ScrollPoster {
             current.x = 0.0
         }
         delta = (y: y, x: x)
+        let plan = ScrollPhase.shared.onManualInputDetected()
+        perform(plan, emitTargetImmediately: false)
+        lastManualEventTime = CFAbsoluteTimeGetCurrent()
+        manualInputEnded = false
+        momentumActive = false
         return self
     }
     func updateShifting(enable: Bool) {
@@ -72,6 +82,9 @@ extension ScrollPoster {
     }
     func brake() {
         ScrollPoster.shared.buffer = ScrollPoster.shared.current
+        perform(ScrollPhase.shared.onMomentumFinish(), emitTargetImmediately: true)
+        manualInputEnded = true
+        momentumActive = false
     }
     func reset() {
         // 重置数值
@@ -81,6 +94,10 @@ extension ScrollPoster {
         buffer = ( y: 0.0, x: 0.0 )
         // 重置插值器
         filter.reset()
+        ScrollPhase.shared.reset()
+        manualInputEnded = true
+        momentumActive = false
+        lastManualEventTime = 0.0
     }
 }
 
@@ -119,27 +136,18 @@ extension ScrollPoster {
                 ? Options.shared.scroll.smoothSimTrackpad
                 : application.scroll.smoothSimTrackpad
         }
-
-        // 设置停止阶段
-        // 规则: 只有当前为 Momentum 才允许用 MomentumEnd
-        let currentPhase = ScrollPhase.shared.phase
-        if requestedPhase == Phase.MomentumEnd && currentPhase == Phase.MomentumOngoing {
-            ScrollPhase.shared.stop(Phase.MomentumEnd)
+        let plan: ScrollPhase.TransitionPlan
+        if requestedPhase == Phase.MomentumEnd {
+            plan = ScrollPhase.shared.onMomentumFinish()
         } else {
-            ScrollPhase.shared.stop(Phase.TrackingEnd)
+            plan = ScrollPhase.shared.onManualInputEnded()
         }
 
         // 发送结束事件
         if enableSimTrackpad {
-            // 触控板模拟启用: 发送正确的 Phase 结束事件
-            // MomentumEnded (0, 3) 或 Cancelled (4, 0)
-            if ref.event != nil {
-                post(ref, (y: 0.0, x: 0.0))
-            }
+            perform(plan, emitTargetImmediately: true)
         } else {
-            // 触控板模拟未启用: 保留 Chrome 特殊处理
             if let validEvent = ref.event, ScrollUtils.shared.isEventTargetingChrome(validEvent) {
-                // 需要附加特定的阶段数据, 只有 Phase.PauseManual 对应的 [4.0, 0.0] 可以正确使 Chrome 恢复
                 validEvent
                     .setDoubleValueField(
                         .scrollWheelEventScrollPhase,
@@ -149,6 +157,8 @@ extension ScrollPoster {
                 post(ref, (y: 0.0, x: 0.0))
             }
         }
+        manualInputEnded = true
+        momentumActive = false
         // 重置参数
         reset()
     }
@@ -156,6 +166,47 @@ extension ScrollPoster {
 
 // MARK: - 数据处理及发送
 private extension ScrollPoster {
+    func perform(_ plan: ScrollPhase.TransitionPlan, emitTargetImmediately: Bool, delta: (y: Double, x: Double) = (0.0, 0.0)) {
+        if plan.queue.isEmpty && plan.target == nil {
+            return
+        }
+        for item in plan.queue {
+            emitPhase(item, delta: delta)
+        }
+        if let target = plan.target {
+            if emitTargetImmediately {
+                emitPhase(target, delta: delta)
+            } else {
+                ScrollPhase.shared.apply(phase: target.0, autoAdvance: target.1)
+            }
+        }
+    }
+
+    func emitPhase(_ item: (Phase, Phase?), delta: (y: Double, x: Double)) {
+        ScrollPhase.shared.apply(phase: item.0, autoAdvance: item.1)
+        guard let proxy = ref.proxy, let eventClone = ref.event?.copy() else {
+            ScrollPhase.shared.didDeliverFrame()
+            return
+        }
+        var enableSimTrackpad = Options.shared.scroll.smoothSimTrackpad
+        if let application = ScrollCore.shared.application {
+            enableSimTrackpad = application.inherit ? Options.shared.scroll.smoothSimTrackpad : application.scroll.smoothSimTrackpad
+        }
+        if enableSimTrackpad {
+            if let scrollValue = PhaseValueMapping[item.0]?[PhaseItem.Scroll], let momentumValue = PhaseValueMapping[item.0]?[PhaseItem.Momentum] {
+                eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: scrollValue)
+                eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: momentumValue)
+            }
+        }
+        eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: delta.y)
+        eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: delta.x)
+        eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: 0.0)
+        eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0.0)
+        eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
+        DispatchQueue.main.async { eventClone.tapPostEvent(proxy) }
+        ScrollPhase.shared.didDeliverFrame()
+    }
+
     // 处理滚动事件
     func processing() {
         // 计算插值
@@ -172,6 +223,28 @@ private extension ScrollPoster {
         let filledValue = filter.fill(with: frame)
         // 变换滚动结果
         let shiftedValue = shift(with: filledValue)
+        let now = CFAbsoluteTimeGetCurrent()
+        if !manualInputEnded && lastManualEventTime > 0.0 && now - lastManualEventTime > manualSilenceThreshold {
+            let endPlan = ScrollPhase.shared.onManualInputEnded()
+            if !(endPlan.queue.isEmpty && endPlan.target == nil) {
+                perform(endPlan, emitTargetImmediately: true)
+            }
+            manualInputEnded = true
+        }
+        let residualY = buffer.y - current.y
+        let residualX = buffer.x - current.x
+        let residualMagnitude = max(residualY.magnitude, residualX.magnitude)
+        let precision = Options.shared.scroll.precision
+        if manualInputEnded && residualMagnitude > precision {
+            if !momentumActive {
+                perform(ScrollPhase.shared.onMomentumStart(), emitTargetImmediately: false)
+                momentumActive = true
+            } else {
+                perform(ScrollPhase.shared.onMomentumOngoing(), emitTargetImmediately: false)
+            }
+        } else if momentumActive && residualMagnitude <= precision {
+            momentumActive = false
+        }
         // 发送滚动结果
         post(ref, shiftedValue)
         // 如果临近目标距离小于精确度门限则暂停滚动
@@ -192,23 +265,41 @@ private extension ScrollPoster {
             // 设置阶段数据和触控板特征字段
             if enableSimTrackpad {
                 let currentPhase = ScrollPhase.shared.phase
-                eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: PhaseValueMapping[currentPhase]![PhaseItem.Scroll]!)
-                eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: PhaseValueMapping[currentPhase]![PhaseItem.Momentum]!)
-                ScrollPhase.shared.transfrom()
+                if let scrollValue = PhaseValueMapping[currentPhase]?[.Scroll], let momentumValue = PhaseValueMapping[currentPhase]?[.Momentum] {
+                    eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: scrollValue)
+                    eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: momentumValue)
+                }
             }
             // 设置滚动数据
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: v.y)
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: v.x)
-            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: 0.0)
-            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0.0)
+
+            // 计算 FixedPtDelta: 与 PointDelta 成比例
+            let fixedY: Double
+            if v.y == 0.0 {
+                fixedY = 0.0
+            } else if abs(v.y) >= 1.0 {
+                fixedY = v.y * 0.1
+            } else {
+                fixedY = v.y > 0 ? 0.1 : -0.1
+            }
+            let fixedX: Double
+            if v.x == 0.0 {
+                fixedX = 0.0
+            } else if abs(v.x) >= 1.0 {
+                fixedX = v.x * 0.1
+            } else {
+                fixedX = v.x > 0 ? 0.1 : -0.1
+            }
+            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: fixedY)
+            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: fixedX)
+
             // 是否连续滚动: 始终为 1.0
             eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
-            // EventTapProxy:
-            // 标识了 EventTapCallback 在事件流中接收到事件的特定位置, 其粒度小于 tap 本身
-            // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
-            // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 也如同 EventTapCallback 所处理的事件, 会被所有后续的 EventTap 接收
-            // fixed by @shichangone MR: https://github.com/Caldis/Mos/pull/523
+
+            // EventTapProxy 说明参见上文注释
             DispatchQueue.main.async { eventClone.tapPostEvent(proxy) }
+            ScrollPhase.shared.didDeliverFrame()
         }
     }
 }
