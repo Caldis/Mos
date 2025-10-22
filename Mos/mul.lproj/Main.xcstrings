@@ -5906,6 +5906,18 @@
         }
       }
     },
+    "nK8-tc-t6s.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Simulate Trackpad\"; ObjectID = \"nK8-tc-t6s\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Simulate Trackpad"
+          }
+        }
+      }
+    },
     "PIa-ES-2Sf.title" : {
       "comment" : "Class = \"NSMenuItem\"; title = \"⇧ Shift\"; ObjectID = \"PIa-ES-2Sf\";",
       "extractionState" : "extracted_with_value",
@@ -7465,78 +7477,78 @@
       }
     },
     "vcQ-FZ-z8x.placeholderString" : {
-      "comment" : "Class = \"NSTextFieldCell\"; placeholderString = \"10-100\"; ObjectID = \"vcQ-FZ-z8x\";",
+      "comment" : "Class = \"NSTextFieldCell\"; placeholderString = \"0.1-100\"; ObjectID = \"vcQ-FZ-z8x\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "10-100"
+            "value" : "0.1-100"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "10-100"
           }
         }

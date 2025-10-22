@@ -53,28 +53,42 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         return Unmanaged.passUnretained(event)
     }
     // 更新面板
+    var prevScrollWheelEventScrollPhase = 0.0
+    var prevScrollWheelEventMomentumPhase = 0.0
     @objc private func updateScrollEventData(notification: NSNotification) {
         let event = notification.object as! CGEvent
         // 更新图表
         if let data = lineChart.data {
-            // 原有的两个轴数据
+            // scrollWheelEventPointDelta
             data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)), toDataSet: 0)
             data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)), toDataSet: 1)
-            
-            // 新增的四个字段
-            // scrollWheelEventIsContinuous (转换为数值：连续=1，非连续=0)
-            let isContinuous = event.getIntegerValueField(.scrollWheelEventIsContinuous) != 0 ? 1.0 : 0.0
+
+            // scrollWheelEventIsContinuous
+            let isContinuous = Double(event.getIntegerValueField(.scrollWheelEventIsContinuous))
             data.appendEntry(ChartDataEntry(x: lineChartCount, y: isContinuous), toDataSet: 2)
             
             // scrollWheelEventScrollCount
             data.appendEntry(ChartDataEntry(x: lineChartCount, y: Double(event.getIntegerValueField(.scrollWheelEventScrollCount))), toDataSet: 3)
             
             // scrollWheelEventScrollPhase
-            data.appendEntry(ChartDataEntry(x: lineChartCount, y: Double(event.getIntegerValueField(.scrollWheelEventScrollPhase))), toDataSet: 4)
-            
+            let scrollPhase = Double(event.getIntegerValueField(.scrollWheelEventScrollPhase))
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: scrollPhase), toDataSet: 4)
+
             // scrollWheelEventMomentumPhase
-            data.appendEntry(ChartDataEntry(x: lineChartCount, y: Double(event.getIntegerValueField(.scrollWheelEventMomentumPhase))), toDataSet: 5)
-            
+            let momentumPhase = Double(event.getIntegerValueField(.scrollWheelEventMomentumPhase))
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: momentumPhase), toDataSet: 5)
+
+            // Logs
+            if prevScrollWheelEventScrollPhase != scrollPhase || prevScrollWheelEventMomentumPhase != momentumPhase {
+                if prevScrollWheelEventScrollPhase != scrollPhase {
+                    prevScrollWheelEventScrollPhase = scrollPhase
+                }
+                if prevScrollWheelEventMomentumPhase != momentumPhase {
+                    prevScrollWheelEventMomentumPhase = momentumPhase
+                }
+                NSLog("Phase updated -> prevScrollWheelEventScrollPhase: \(scrollPhase), prevScrollWheelEventMomentumPhase: \(momentumPhase)")
+            }
+
             lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 100.0)
             lineChart.moveViewToX(lineChartCount)
             lineChart.notifyDataSetChanged()

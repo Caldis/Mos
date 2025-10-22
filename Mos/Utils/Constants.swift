@@ -112,6 +112,9 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
     var precision = 1.00 {
         didSet {Options.shared.saveOptions()}
     }
+    var smoothSimTrackpad = false {
+        didSet {Options.shared.saveOptions()}
+    }
     // 工具
     static func generateDurationTransition(with duration: Double) -> Double {
         // 上界, 此处需要与界面的 Slider 上界保持同步, 并添加 0.2 的偏移令结果不为 0
@@ -134,7 +137,8 @@ extension OPTIONS_SCROLL_DEFAULT: Equatable {
             l.speed == r.speed &&
             l.duration == r.duration &&
             l.durationTransition == r.durationTransition &&
-            l.precision == r.precision
+            l.precision == r.precision &&
+            l.smoothSimTrackpad == r.smoothSimTrackpad
         )
     }
 }

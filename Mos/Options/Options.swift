@@ -26,6 +26,7 @@ struct OptionItem {
         static let Speed = "speed"
         static let Duration = "duration"
         static let Precision = "precision"
+        static let SmoothSimTrackpad = "smoothSimTrackpad"
     }
 
     struct Button {
@@ -91,6 +92,7 @@ extension Options {
         scroll.duration = UserDefaults.standard.double(forKey: OptionItem.Scroll.Duration)
         scroll.durationTransition = OPTIONS_SCROLL_DEFAULT.generateDurationTransition(with: scroll.duration)
         scroll.precision = UserDefaults.standard.double(forKey: OptionItem.Scroll.Precision)
+        scroll.smoothSimTrackpad = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothSimTrackpad)
         // 按钮绑定
         buttons.binding = loadButtonsData()
         // 应用
@@ -117,6 +119,7 @@ extension Options {
             UserDefaults.standard.set(scroll.speed, forKey: OptionItem.Scroll.Speed)
             UserDefaults.standard.set(scroll.duration, forKey: OptionItem.Scroll.Duration)
             UserDefaults.standard.set(scroll.precision, forKey: OptionItem.Scroll.Precision)
+            UserDefaults.standard.set(scroll.smoothSimTrackpad, forKey: OptionItem.Scroll.SmoothSimTrackpad)
             // 应用
             UserDefaults.standard.set(application.allowlist, forKey: OptionItem.Application.Allowlist)
             if let applicationsData = application.applications.json() {
