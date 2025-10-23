@@ -130,12 +130,19 @@ class ScrollPhase {
     /// 每次检测到鼠标滚轮输入时调用, 根据是否被视为独立滚动返回阶段序列
     func onManualInputDetected(isSeparated: Bool) -> TransitionPlan {
         if phase == .MomentumBegin || phase == .MomentumOngoing {
-            return plan(
-                extra: [(Phase.MomentumEnd, Phase.Idle)],
-                target: (.TrackingBegin, .TrackingOngoing)
-            )
+            if isSeparated {
+                return plan(extra: [(Phase.MomentumEnd, Phase.Idle), (Phase.TrackingBegin, Phase.TrackingOngoing)])
+            } else {
+                return plan(
+                    extra: [(Phase.MomentumEnd, Phase.Idle)],
+                    target: (.TrackingBegin, .TrackingOngoing)
+                )
+            }
         }
-        if !isSeparated && (phase == .TrackingBegin || phase == .TrackingOngoing) {
+        if isSeparated {
+            return plan(extra: [(Phase.TrackingBegin, Phase.TrackingOngoing)])
+        }
+        if phase == .TrackingBegin || phase == .TrackingOngoing {
             return plan(target: (.TrackingOngoing, nil))
         }
         return plan(target: (.TrackingBegin, .TrackingOngoing))

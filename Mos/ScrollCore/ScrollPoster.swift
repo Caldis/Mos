@@ -29,10 +29,12 @@ class ScrollPoster {
     private var lastManualEventTime: CFTimeInterval = 0.0
     private var manualInputEnded = true
     private var momentumActive = false
+    private var momentumEndScheduledTime: CFTimeInterval? = nil
     // 阈值: 鼠标滚轮事件间隔低于 continuationThreshold 视为持续跟随
     //      介于 continuationThreshold 与 separationThreshold 之间模拟惯性衔接
     private let manualContinuationThreshold: CFTimeInterval = 0.18
     private let manualSeparationThreshold: CFTimeInterval = 0.45
+    private let momentumEndDelay: CFTimeInterval = 0.35
     // 外部依赖
     var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
 }
@@ -70,6 +72,7 @@ extension ScrollPoster {
         lastManualEventTime = now
         manualInputEnded = false
         momentumActive = false
+        momentumEndScheduledTime = nil
         return self
     }
     func updateShifting(enable: Bool) {
@@ -94,6 +97,7 @@ extension ScrollPoster {
         perform(ScrollPhase.shared.onMomentumFinish(), emitTargetImmediately: true)
         manualInputEnded = true
         momentumActive = false
+        momentumEndScheduledTime = nil
     }
     func reset() {
         // 重置数值
@@ -107,6 +111,7 @@ extension ScrollPoster {
         manualInputEnded = true
         momentumActive = false
         lastManualEventTime = 0.0
+        momentumEndScheduledTime = nil
     }
 }
 
@@ -164,6 +169,7 @@ extension ScrollPoster {
                     )
                 validEvent.setDoubleValueField(.scrollWheelEventMomentumPhase, value: PhaseValueMapping[Phase.TrackingEnd]![PhaseItem.Momentum]!)
                 post(ref, (y: 0.0, x: 0.0))
+                NSLog("Chrome>>> 发送结束事件")
             }
         }
         manualInputEnded = true
@@ -251,17 +257,26 @@ private extension ScrollPoster {
             } else {
                 perform(ScrollPhase.shared.onMomentumOngoing(), emitTargetImmediately: false)
             }
+            momentumEndScheduledTime = nil
         } else if momentumActive && residualMagnitude <= precision {
-            momentumActive = false
+            if momentumEndScheduledTime == nil {
+                momentumEndScheduledTime = now + momentumEndDelay
+            }
+        } else {
+            momentumEndScheduledTime = nil
+            if momentumActive {
+                momentumActive = false
+            }
         }
         // 发送滚动结果
         post(ref, shiftedValue)
-        // 如果临近目标距离小于精确度门限则暂停滚动
-        if (
-            frame.y.magnitude <= Options.shared.scroll.precision &&
-            frame.x.magnitude <= Options.shared.scroll.precision
-        ) {
-            stop(Phase.MomentumEnd)
+        if let scheduled = momentumEndScheduledTime, momentumActive {
+            if now >= scheduled {
+                momentumEndScheduledTime = nil
+                momentumActive = false
+                stop(Phase.MomentumEnd)
+                return
+            }
         }
     }
     func post(_ r: (event: CGEvent?, proxy: CGEventTapProxy?), _ v: (y: Double, x: Double)) {
