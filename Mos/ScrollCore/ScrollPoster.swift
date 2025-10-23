@@ -30,10 +30,12 @@ class ScrollPoster {
     private var manualInputEnded = true
     private var momentumActive = false
     private var momentumEndScheduledTime: CFTimeInterval? = nil
+    private var trackingEndScheduledTime: CFTimeInterval? = nil
     // 阈值: 鼠标滚轮事件间隔低于 continuationThreshold 视为持续跟随
     //      介于 continuationThreshold 与 separationThreshold 之间模拟惯性衔接
     private let manualContinuationThreshold: CFTimeInterval = 0.18
     private let manualSeparationThreshold: CFTimeInterval = 0.45
+    private let trackingEndAdvance: CFTimeInterval = 0.04
     private let momentumEndDelay: CFTimeInterval = 0.35
     // 外部依赖
     var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
@@ -169,7 +171,6 @@ extension ScrollPoster {
                     )
                 validEvent.setDoubleValueField(.scrollWheelEventMomentumPhase, value: PhaseValueMapping[Phase.TrackingEnd]![PhaseItem.Momentum]!)
                 post(ref, (y: 0.0, x: 0.0))
-                NSLog("Chrome>>> 发送结束事件")
             }
         }
         manualInputEnded = true
@@ -215,11 +216,32 @@ private extension ScrollPoster {
         }
         eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: delta.y)
         eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: delta.x)
-        eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: 0.0)
-        eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0.0)
+        let fixedDelta = computeFixedDelta(from: delta)
+        eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: fixedDelta.y)
+        eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: fixedDelta.x)
         eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
         DispatchQueue.main.async { eventClone.tapPostEvent(proxy) }
         ScrollPhase.shared.didDeliverFrame()
+    }
+
+    func computeFixedDelta(from delta: (y: Double, x: Double)) -> (y: Double, x: Double) {
+        let fixedY: Double
+        if delta.y == 0.0 {
+            fixedY = 0.0
+        } else if abs(delta.y) >= 1.0 {
+            fixedY = delta.y * 0.1
+        } else {
+            fixedY = delta.y > 0 ? 0.1 : -0.1
+        }
+        let fixedX: Double
+        if delta.x == 0.0 {
+            fixedX = 0.0
+        } else if abs(delta.x) >= 1.0 {
+            fixedX = delta.x * 0.1
+        } else {
+            fixedX = delta.x > 0 ? 0.1 : -0.1
+        }
+        return (fixedY, fixedX)
     }
 
     // 处理滚动事件
@@ -299,24 +321,9 @@ private extension ScrollPoster {
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: v.x)
 
             // 计算 FixedPtDelta: 与 PointDelta 成比例
-            let fixedY: Double
-            if v.y == 0.0 {
-                fixedY = 0.0
-            } else if abs(v.y) >= 1.0 {
-                fixedY = v.y * 0.1
-            } else {
-                fixedY = v.y > 0 ? 0.1 : -0.1
-            }
-            let fixedX: Double
-            if v.x == 0.0 {
-                fixedX = 0.0
-            } else if abs(v.x) >= 1.0 {
-                fixedX = v.x * 0.1
-            } else {
-                fixedX = v.x > 0 ? 0.1 : -0.1
-            }
-            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: fixedY)
-            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: fixedX)
+            let fixedDelta = computeFixedDelta(from: v)
+            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: fixedDelta.y)
+            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: fixedDelta.x)
 
             // 是否连续滚动: 始终为 1.0
             eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
