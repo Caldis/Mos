@@ -216,32 +216,9 @@ private extension ScrollPoster {
         }
         eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: delta.y)
         eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: delta.x)
-        let fixedDelta = computeFixedDelta(from: delta)
-        eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: fixedDelta.y)
-        eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: fixedDelta.x)
         eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
         DispatchQueue.main.async { eventClone.tapPostEvent(proxy) }
         ScrollPhase.shared.didDeliverFrame()
-    }
-
-    func computeFixedDelta(from delta: (y: Double, x: Double)) -> (y: Double, x: Double) {
-        let fixedY: Double
-        if delta.y == 0.0 {
-            fixedY = 0.0
-        } else if abs(delta.y) >= 1.0 {
-            fixedY = delta.y * 0.1
-        } else {
-            fixedY = delta.y > 0 ? 0.1 : -0.1
-        }
-        let fixedX: Double
-        if delta.x == 0.0 {
-            fixedX = 0.0
-        } else if abs(delta.x) >= 1.0 {
-            fixedX = delta.x * 0.1
-        } else {
-            fixedX = delta.x > 0 ? 0.1 : -0.1
-        }
-        return (fixedY, fixedX)
     }
 
     // 处理滚动事件
@@ -308,6 +285,7 @@ private extension ScrollPoster {
             if let application = ScrollCore.shared.application {
                 enableSimTrackpad = application.inherit ? Options.shared.scroll.smoothSimTrackpad : application.scroll.smoothSimTrackpad
             }
+            
             // 设置阶段数据和触控板特征字段
             if enableSimTrackpad {
                 let currentPhase = ScrollPhase.shared.phase
@@ -316,14 +294,10 @@ private extension ScrollPoster {
                     eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: momentumValue)
                 }
             }
+
             // 设置滚动数据
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: v.y)
             eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: v.x)
-
-            // 计算 FixedPtDelta: 与 PointDelta 成比例
-            let fixedDelta = computeFixedDelta(from: v)
-            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: fixedDelta.y)
-            eventClone.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: fixedDelta.x)
 
             // 是否连续滚动: 始终为 1.0
             eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
@@ -334,6 +308,8 @@ private extension ScrollPoster {
             // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 会被所有后续的 EventTap 接收
             // fixed by @shichangone MR: https://github.com/Caldis/Mos/pull/523
             DispatchQueue.main.async { eventClone.tapPostEvent(proxy) }
+
+            // 更新阶段切换帧
             ScrollPhase.shared.didDeliverFrame()
         }
     }

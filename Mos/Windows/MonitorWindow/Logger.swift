@@ -22,6 +22,12 @@ class Logger {
     
     // 滚动方向信息
     class func getScrollLog(form event: CGEvent) -> String {
+        // scrollWheelEventDeltaAxis1 基于 scrollWheelEventFixedPtDeltaAxis1 计算, 当大于1时向下取整, 小于1时向上取整
+        // scrollWheelEventDeltaAxis2 同上
+        // scrollWheelEventPointDeltaAxis1 高精度滚动数据, 带有滚轮加速
+        // scrollWheelEventPointDeltaAxis2 高精度滚动数据, 带有滚轮加速
+        // scrollWheelEventFixedPtDeltaAxis1 Y 轴数据 (垂直)
+        // scrollWheelEventFixedPtDeltaAxis2 X 轴数据 (水平)
         return """
         scrollWheelEventDeltaAxis1 (FixY): \(event.getDoubleValueField(.scrollWheelEventDeltaAxis1))
         scrollWheelEventDeltaAxis2 (FixX): \(event.getDoubleValueField(.scrollWheelEventDeltaAxis2))
