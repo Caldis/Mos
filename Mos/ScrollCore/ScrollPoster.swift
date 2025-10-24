@@ -36,7 +36,7 @@ class ScrollPoster {
     private let manualContinuationThreshold: CFTimeInterval = 0.18
     private let manualSeparationThreshold: CFTimeInterval = 0.45
     private let trackingEndAdvance: CFTimeInterval = 0.04
-    private let momentumEndDelay: CFTimeInterval = 0.35
+    private let momentumEndDelay: CFTimeInterval = 0.13
     // 外部依赖
     var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
 }
@@ -75,6 +75,7 @@ extension ScrollPoster {
         manualInputEnded = false
         momentumActive = false
         momentumEndScheduledTime = nil
+        trackingEndScheduledTime = nil
         return self
     }
     func updateShifting(enable: Bool) {
@@ -114,6 +115,7 @@ extension ScrollPoster {
         momentumActive = false
         lastManualEventTime = 0.0
         momentumEndScheduledTime = nil
+        trackingEndScheduledTime = nil
     }
 }
 
@@ -244,6 +246,9 @@ private extension ScrollPoster {
                 perform(endPlan, emitTargetImmediately: true)
             }
             manualInputEnded = true
+            if trackingEndScheduledTime == nil {
+                trackingEndScheduledTime = now + trackingEndAdvance
+            }
         }
         let residualY = buffer.y - current.y
         let residualX = buffer.x - current.x
@@ -257,6 +262,7 @@ private extension ScrollPoster {
                 perform(ScrollPhase.shared.onMomentumOngoing(), emitTargetImmediately: false)
             }
             momentumEndScheduledTime = nil
+            trackingEndScheduledTime = nil
         } else if momentumActive && residualMagnitude <= precision {
             if momentumEndScheduledTime == nil {
                 momentumEndScheduledTime = now + momentumEndDelay
@@ -276,6 +282,17 @@ private extension ScrollPoster {
                 stop(Phase.MomentumEnd)
                 return
             }
+        }
+        if manualInputEnded && !momentumActive && residualMagnitude <= precision {
+            let pendingStop = trackingEndScheduledTime != nil && now >= trackingEndScheduledTime!
+            let outputSettled = abs(shiftedValue.y) <= precision && abs(shiftedValue.x) <= precision
+            if pendingStop && outputSettled {
+                trackingEndScheduledTime = nil
+                stop(.TrackingEnd)
+                return
+            }
+        } else {
+            trackingEndScheduledTime = nil
         }
     }
     func post(_ r: (event: CGEvent?, proxy: CGEventTapProxy?), _ v: (y: Double, x: Double)) {
