@@ -2016,78 +2016,78 @@
       }
     },
     "bsq-Pe-sDy.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Make the mouse wheel smoothly\"; ObjectID = \"bsq-Pe-sDy\";",
+      "comment" : "Class = \"NSButtonCell\"; title = \"Make scrolling seamless\"; ObjectID = \"bsq-Pe-sDy\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Mausrad sanft machen"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Κάντε τη ρόδα του ποντικιού ομαλή"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Make the mouse wheel smoothly"
+            "value" : "Make scrolling seamless"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "マウスホイールを滑らかにする"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "마우스 휠을 부드럽게 만들기"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Сделать колесо мыши плавным"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Fare tekerleğini yumuşat"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Зробити колесо миші плавним"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "让鼠标滚轮更平滑"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "讓滑鼠滾輪更平滑"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "讓滑鼠滾輪更平滑"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "讓滑鼠滾輪更平滑"
           }
         }
@@ -3960,6 +3960,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "加入應用程式"
+          }
+        }
+      }
+    },
+    "GtT-zh-x8d.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Vertical Smooth\"; ObjectID = \"GtT-zh-x8d\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Vertical Smooth"
           }
         }
       }
@@ -5906,14 +5918,26 @@
         }
       }
     },
-    "nK8-tc-t6s.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Simulate Trackpad\"; ObjectID = \"nK8-tc-t6s\";",
+    "Nh1-iw-yGN.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Horizontal Smooth\"; ObjectID = \"Nh1-iw-yGN\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Simulate Trackpad"
+            "value" : "Horizontal Smooth"
+          }
+        }
+      }
+    },
+    "p7Y-SJ-d6t.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Simulate Trackpad (Beta)\"; ObjectID = \"p7Y-SJ-d6t\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Simulate Trackpad (Beta)"
           }
         }
       }
@@ -6309,7 +6333,7 @@
       }
     },
     "Rgq-87-vjY.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"暂时性地禁用平滑滚动以提高滚动精度\"; ObjectID = \"Rgq-87-vjY\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Temporarily disable smooth scrolling to improve scrolling accuracy.\"; ObjectID = \"Rgq-87-vjY\";",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7940,6 +7964,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "反轉滑鼠滾輪方向"
+          }
+        }
+      }
+    },
+    "W2z-NX-9UO.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"May affect the scrolling behavior.\"; ObjectID = \"W2z-NX-9UO\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "May affect the scrolling behavior."
           }
         }
       }

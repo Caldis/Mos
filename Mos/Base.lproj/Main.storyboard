@@ -214,7 +214,7 @@
                 </viewController>
                 <customObject id="KsC-af-ap0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="460" y="1172"/>
+            <point key="canvasLocation" x="460" y="1168"/>
         </scene>
         <!--Buttons-->
         <scene sceneID="BTN-SC-123">
@@ -979,11 +979,11 @@
                 <customObject id="T8g-3J-WxE" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
                 <viewController title="Scrolling" storyboardIdentifier="scrolling" id="iW5-CD-5OC" customClass="PreferencesScrollingViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" wantsLayer="YES" blendingMode="behindWindow" material="toolTip" state="followsWindowActiveState" id="Jsi-ke-bNZ">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="525"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="501"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="DQH-h2-1Zk">
-                                <rect key="frame" x="18" y="491" width="140" height="14"/>
+                                <rect key="frame" x="18" y="467" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="uRN-Fz-sJm"/>
                                 </constraints>
@@ -994,13 +994,12 @@
                                 </textFieldCell>
                             </textField>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="1Hp-EF-wSq">
-                                <rect key="frame" x="171" y="491" width="260" height="14"/>
-                                <buttonCell key="cell" type="check" title="Make the mouse wheel smoothly" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="bsq-Pe-sDy">
+                                <rect key="frame" x="171" y="467" width="169" height="14"/>
+                                <buttonCell key="cell" type="check" title="Make scrolling seamless" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="bsq-Pe-sDy">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="260" id="1U9-gg-pb3"/>
                                     <constraint firstAttribute="height" constant="14" id="UgX-oA-88C"/>
                                 </constraints>
                                 <connections>
@@ -1384,22 +1383,19 @@
                                     <segue destination="mUR-85-jNE" kind="popover" popoverAnchorView="h1E-p9-RLl" popoverBehavior="t" preferredEdge="maxY" id="u4M-db-BuY"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="StG-yU-Shz">
-                                <rect key="frame" x="171" y="465" width="135" height="16"/>
-                                <buttonCell key="cell" type="check" title="Simulate Trackpad" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="nK8-tc-t6s">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="scrollSmoothSimTrackpadClick:" target="iW5-CD-5OC" id="dGY-oQ-CuU"/>
-                                </connections>
-                            </button>
-                            <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="anP-yI-tnj">
-                                <rect key="frame" x="312" y="465" width="16" height="16"/>
-                                <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" controlSize="mini" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4cd-iI-fmv">
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="gxK-T9-rTz">
+                                <rect key="frame" x="348" y="464" width="15" height="18"/>
+                                <buttonCell key="cell" type="inline" bezelStyle="inline" image="NSIconViewTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Zby-Nv-Yli">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="miniSystem"/>
+                                    <font key="font" metaFont="smallSystemBold"/>
                                 </buttonCell>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="18" id="8SU-Sv-w3Z"/>
+                                    <constraint firstAttribute="width" constant="15" id="9m6-75-HDu"/>
+                                </constraints>
+                                <connections>
+                                    <segue destination="6NY-mX-uto" kind="popover" popoverAnchorView="gxK-T9-rTz" popoverBehavior="t" preferredEdge="maxY" id="NkJ-8R-pRc"/>
+                                </connections>
                             </button>
                         </subviews>
                         <constraints>
@@ -1407,12 +1403,9 @@
                             <constraint firstItem="9Nm-TC-llN" firstAttribute="leading" secondItem="Jsi-ke-bNZ" secondAttribute="leading" constant="20" id="0Vg-xD-9k8"/>
                             <constraint firstItem="1Hp-EF-wSq" firstAttribute="leading" secondItem="DQH-h2-1Zk" secondAttribute="trailing" constant="15" id="0uZ-4R-HgZ"/>
                             <constraint firstItem="U62-ME-IJk" firstAttribute="leading" secondItem="YRx-cZ-Ol5" secondAttribute="leading" id="0w0-3f-SLg"/>
-                            <constraint firstItem="anP-yI-tnj" firstAttribute="centerY" secondItem="StG-yU-Shz" secondAttribute="centerY" id="24X-XZ-erl"/>
-                            <constraint firstItem="StG-yU-Shz" firstAttribute="leading" secondItem="1Hp-EF-wSq" secondAttribute="leading" id="2LX-2T-1nH"/>
                             <constraint firstItem="1Hp-EF-wSq" firstAttribute="top" secondItem="Jsi-ke-bNZ" secondAttribute="top" constant="20" id="2ci-KM-kFp"/>
                             <constraint firstItem="ILS-hD-J9N" firstAttribute="top" secondItem="U62-ME-IJk" secondAttribute="bottom" constant="20" id="3II-QN-1Fz"/>
                             <constraint firstItem="YRx-cZ-Ol5" firstAttribute="centerY" secondItem="fAk-N9-naX" secondAttribute="centerY" id="3W1-LQ-kGl"/>
-                            <constraint firstItem="PIE-3y-0sa" firstAttribute="top" secondItem="StG-yU-Shz" secondAttribute="bottom" constant="16" id="3qJ-f9-MxM"/>
                             <constraint firstItem="Nbg-QY-VXM" firstAttribute="centerY" secondItem="fAk-N9-naX" secondAttribute="centerY" id="44n-Jg-xY8"/>
                             <constraint firstItem="1eQ-Un-ZLh" firstAttribute="leading" secondItem="fHe-ME-GTY" secondAttribute="leading" id="543-GX-514"/>
                             <constraint firstItem="TU2-J4-KYA" firstAttribute="leading" secondItem="zKw-pT-YRj" secondAttribute="trailing" constant="15" id="5Rs-fL-Fg2"/>
@@ -1462,8 +1455,8 @@
                             <constraint firstAttribute="trailing" secondItem="Y3e-Q9-7Ip" secondAttribute="trailing" constant="159" id="Ym8-eY-2hM"/>
                             <constraint firstItem="Y3e-Q9-7Ip" firstAttribute="leading" secondItem="9Nm-TC-llN" secondAttribute="trailing" constant="15" id="aQ0-ue-Vxs"/>
                             <constraint firstItem="d2K-LV-vnb" firstAttribute="centerY" secondItem="z8H-6h-kRv" secondAttribute="centerY" id="bsK-hu-vWG"/>
+                            <constraint firstItem="gxK-T9-rTz" firstAttribute="centerY" secondItem="1Hp-EF-wSq" secondAttribute="centerY" constant="1" id="bzy-gX-zKN"/>
                             <constraint firstAttribute="trailing" secondItem="fHe-ME-GTY" secondAttribute="trailing" constant="159" id="dlU-C0-qjD"/>
-                            <constraint firstItem="StG-yU-Shz" firstAttribute="top" secondItem="1Hp-EF-wSq" secondAttribute="bottom" constant="10" id="eay-YH-GRF"/>
                             <constraint firstItem="Y3e-Q9-7Ip" firstAttribute="centerY" secondItem="9Nm-TC-llN" secondAttribute="centerY" id="ecw-LT-KdQ"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="h1E-p9-RLl" secondAttribute="trailing" constant="20" symbolic="YES" id="efF-OS-F4F"/>
                             <constraint firstItem="45l-vw-E0o" firstAttribute="leading" secondItem="fHe-ME-GTY" secondAttribute="leading" id="elv-mv-D2b"/>
@@ -1472,6 +1465,8 @@
                             <constraint firstItem="YRx-cZ-Ol5" firstAttribute="leading" secondItem="fAk-N9-naX" secondAttribute="trailing" constant="15" id="geC-Vo-c6H"/>
                             <constraint firstItem="PIE-3y-0sa" firstAttribute="centerY" secondItem="aV7-KP-bgw" secondAttribute="centerY" id="gkh-p7-Xf5"/>
                             <constraint firstItem="gSx-dp-Tvn" firstAttribute="top" secondItem="Y3e-Q9-7Ip" secondAttribute="bottom" constant="6" id="hbh-vr-zHd"/>
+                            <constraint firstItem="gxK-T9-rTz" firstAttribute="leading" secondItem="1Hp-EF-wSq" secondAttribute="trailing" constant="8" id="hl2-gp-Goo"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="gxK-T9-rTz" secondAttribute="trailing" constant="74" id="hn9-AF-A85"/>
                             <constraint firstAttribute="trailing" secondItem="gSx-dp-Tvn" secondAttribute="trailing" constant="20" id="i0c-P1-3nv"/>
                             <constraint firstItem="sat-Nx-2q9" firstAttribute="leading" secondItem="ILS-hD-J9N" secondAttribute="leading" id="i4R-S6-InG"/>
                             <constraint firstItem="lh7-BV-xfD" firstAttribute="leading" secondItem="TU2-J4-KYA" secondAttribute="trailing" constant="8" id="jGV-sG-OUj"/>
@@ -1480,7 +1475,6 @@
                             <constraint firstItem="mKO-0m-Vb0" firstAttribute="leading" secondItem="Jsi-ke-bNZ" secondAttribute="leading" constant="20" id="luf-Zr-r7W"/>
                             <constraint firstItem="iLA-i9-HEO" firstAttribute="leading" secondItem="Jsi-ke-bNZ" secondAttribute="leading" constant="20" id="m0c-Kl-2LN"/>
                             <constraint firstAttribute="trailing" secondItem="iLA-i9-HEO" secondAttribute="trailing" constant="20" id="mOI-wr-L2y"/>
-                            <constraint firstItem="anP-yI-tnj" firstAttribute="leading" secondItem="StG-yU-Shz" secondAttribute="trailing" constant="6" id="nMm-a1-7kN"/>
                             <constraint firstItem="ET3-bp-TfD" firstAttribute="top" secondItem="TU2-J4-KYA" secondAttribute="bottom" constant="6" id="p88-uc-Qe1"/>
                             <constraint firstItem="S6c-kz-cql" firstAttribute="centerX" secondItem="a9X-MM-XsO" secondAttribute="centerX" id="pHy-Zr-c2E"/>
                             <constraint firstItem="1Hp-EF-wSq" firstAttribute="centerY" secondItem="DQH-h2-1Zk" secondAttribute="centerY" id="pJk-Od-Xub"/>
@@ -1494,9 +1488,9 @@
                             <constraint firstItem="lh7-BV-xfD" firstAttribute="leading" secondItem="yLh-Cc-KrW" secondAttribute="leading" id="wIA-gp-ZRk"/>
                             <constraint firstItem="1eQ-Un-ZLh" firstAttribute="top" secondItem="u9d-n2-6b5" secondAttribute="bottom" constant="6" id="x8A-dt-XfG"/>
                             <constraint firstItem="U62-ME-IJk" firstAttribute="top" secondItem="YRx-cZ-Ol5" secondAttribute="bottom" constant="6" id="xJO-bU-dmn"/>
-                            <constraint firstAttribute="trailing" secondItem="1Hp-EF-wSq" secondAttribute="trailing" constant="19" id="xlF-l3-vnO"/>
                             <constraint firstItem="fHe-ME-GTY" firstAttribute="leading" secondItem="mKO-0m-Vb0" secondAttribute="trailing" constant="15" id="yfL-RB-OOp"/>
                             <constraint firstItem="Nbg-QY-VXM" firstAttribute="leading" secondItem="YRx-cZ-Ol5" secondAttribute="trailing" constant="8" id="zKX-aV-Ng7"/>
+                            <constraint firstItem="PIE-3y-0sa" firstAttribute="top" secondItem="1Hp-EF-wSq" secondAttribute="bottom" constant="18" id="zXK-ZB-H4d"/>
                         </constraints>
                     </visualEffectView>
                     <connections>
@@ -1508,7 +1502,6 @@
                         <outlet property="scrollDurationStepper" destination="d2K-LV-vnb" id="wG5-7L-Anh"/>
                         <outlet property="scrollReverseCheckBox" destination="PIE-3y-0sa" id="fCm-8y-9iP"/>
                         <outlet property="scrollSmoothCheckBox" destination="1Hp-EF-wSq" id="2pe-uw-PEU"/>
-                        <outlet property="scrollSmoothSimTrackpadCheckBox" destination="StG-yU-Shz" id="iUR-PR-SP9"/>
                         <outlet property="scrollSpeedInput" destination="Nbg-QY-VXM" id="xh0-Qi-lLL"/>
                         <outlet property="scrollSpeedSlider" destination="YRx-cZ-Ol5" id="rnP-xz-Yv7"/>
                         <outlet property="scrollSpeedStepper" destination="S6c-kz-cql" id="IoA-M2-f1Y"/>
@@ -1519,7 +1512,7 @@
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="955" y="1378"/>
+            <point key="canvasLocation" x="954" y="1367"/>
         </scene>
         <!--Adaptive Popover-->
         <scene sceneID="79I-rH-ZaI">
@@ -1531,7 +1524,7 @@
                         <subviews>
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zrl-5e-XRk">
                                 <rect key="frame" x="10" y="10" width="371" height="14"/>
-                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="left" title="暂时性地禁用平滑滚动以提高滚动精度" id="Rgq-87-vjY">
+                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="left" title="Temporarily disable smooth scrolling to improve scrolling accuracy." id="Rgq-87-vjY">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1548,7 +1541,80 @@
                 </viewController>
                 <customObject id="9YO-Hc-WUu" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="956" y="1871"/>
+            <point key="canvasLocation" x="954.5" y="1882"/>
+        </scene>
+        <!--Scroll Smooth Detail Settings Popover View Controller-->
+        <scene sceneID="cWM-rm-1Zc">
+            <objects>
+                <viewController id="6NY-mX-uto" customClass="ScrollSmoothDetailSettingsPopoverViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="Ii6-1I-pb4">
+                        <rect key="frame" x="0.0" y="0.0" width="215" height="108"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Yww-b9-vE7">
+                                <rect key="frame" x="20" y="78" width="175" height="14"/>
+                                <buttonCell key="cell" type="check" title="Simulate Trackpad (Beta)" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="p7Y-SJ-d6t">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="smallSystem"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="simulateTrackpadToggle:" target="6NY-mX-uto" id="r6j-t3-d9L"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xHE-gD-zSo">
+                                <rect key="frame" x="20" y="40" width="175" height="14"/>
+                                <buttonCell key="cell" type="check" title="Vertical Smooth" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="GtT-zh-x8d">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="smallSystem"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="verticalSmoothToggle:" target="6NY-mX-uto" id="xb6-7W-W0E"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="k59-to-Z4j">
+                                <rect key="frame" x="20" y="16" width="175" height="14"/>
+                                <buttonCell key="cell" type="check" title="Horizontal Smooth" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="Nh1-iw-yGN">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="smallSystem"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="horizontalSmoothToggle:" target="6NY-mX-uto" id="XJ8-cd-9ho"/>
+                                </connections>
+                            </button>
+                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="T2A-GP-RAS">
+                                <rect key="frame" x="38" y="62" width="159" height="11"/>
+                                <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="May affect the scrolling behavior." id="W2z-NX-9UO">
+                                    <font key="font" metaFont="miniSystem"/>
+                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="T2A-GP-RAS" firstAttribute="leading" secondItem="Yww-b9-vE7" secondAttribute="leading" constant="20" id="7JZ-0X-goA"/>
+                            <constraint firstAttribute="bottom" secondItem="k59-to-Z4j" secondAttribute="bottom" constant="16" id="9xj-ml-DBF"/>
+                            <constraint firstItem="xHE-gD-zSo" firstAttribute="leading" secondItem="Yww-b9-vE7" secondAttribute="leading" id="AxM-Zj-Spf"/>
+                            <constraint firstItem="T2A-GP-RAS" firstAttribute="trailing" secondItem="Yww-b9-vE7" secondAttribute="trailing" id="GsC-lv-t6H"/>
+                            <constraint firstItem="xHE-gD-zSo" firstAttribute="trailing" secondItem="Yww-b9-vE7" secondAttribute="trailing" id="IJ1-Oz-Fxt"/>
+                            <constraint firstItem="Yww-b9-vE7" firstAttribute="leading" secondItem="Ii6-1I-pb4" secondAttribute="leading" constant="20" id="JzO-U7-bKh"/>
+                            <constraint firstAttribute="trailing" secondItem="Yww-b9-vE7" secondAttribute="trailing" constant="20" id="a9h-0H-3kI"/>
+                            <constraint firstItem="Yww-b9-vE7" firstAttribute="top" secondItem="Ii6-1I-pb4" secondAttribute="top" constant="16" id="bf1-fs-knO"/>
+                            <constraint firstItem="k59-to-Z4j" firstAttribute="top" secondItem="xHE-gD-zSo" secondAttribute="bottom" constant="10" id="iBr-mq-zbi"/>
+                            <constraint firstItem="k59-to-Z4j" firstAttribute="leading" secondItem="Yww-b9-vE7" secondAttribute="leading" id="lMD-I6-m6x"/>
+                            <constraint firstItem="k59-to-Z4j" firstAttribute="trailing" secondItem="Yww-b9-vE7" secondAttribute="trailing" id="lUg-L7-QDu"/>
+                            <constraint firstItem="xHE-gD-zSo" firstAttribute="top" secondItem="T2A-GP-RAS" secondAttribute="bottom" constant="8" id="m0k-ZN-rfF"/>
+                            <constraint firstItem="T2A-GP-RAS" firstAttribute="top" secondItem="Yww-b9-vE7" secondAttribute="bottom" constant="5" id="rcX-pt-2Pv"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="horizontalSmooth" destination="k59-to-Z4j" id="h4G-3M-qMA"/>
+                        <outlet property="simulateTrackpadCheckBox" destination="Yww-b9-vE7" id="K2i-qm-Qml"/>
+                        <outlet property="vertivalSmooth" destination="xHE-gD-zSo" id="kA0-Us-rIW"/>
+                    </connections>
+                </viewController>
+                <customObject id="dcu-MQ-byg" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1310" y="1919"/>
         </scene>
         <!--Preferences Scrolling With Application View Controller-->
         <scene sceneID="brY-DW-5LE">
@@ -1633,7 +1699,7 @@
                 </viewController>
                 <customObject id="jKt-Ae-8x9" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1928" y="2193"/>
+            <point key="canvasLocation" x="1710" y="2090"/>
         </scene>
         <!--About-->
         <scene sceneID="cHd-3e-zIv">
@@ -2811,6 +2877,7 @@ Remove Mos from the list first, and then re-add Mos to authorize. (You can also 
         <image name="MEOW" width="680" height="1080"/>
         <image name="NSAddTemplate" width="18" height="17"/>
         <image name="NSApplicationIcon" width="32" height="32"/>
+        <image name="NSIconViewTemplate" width="19" height="18"/>
         <image name="NSRemoveTemplate" width="18" height="5"/>
         <image name="NSTouchBarSearchTemplate" width="20" height="20"/>
         <image name="PaypalLogo" width="200" height="51"/>

@@ -15,18 +15,32 @@ class AdaptivePopover: NSViewController {
         updatePreferredContentSize()
     }
 
-    private func updatePreferredContentSize() {
-        guard let contentView = view.subviews.first else { return }
+    override func viewDidLayout() {
+        super.viewDidLayout()
+        updatePreferredContentSize()
+    }
 
-        // Calculate the intrinsic size of the first subview
-        let contentSize = contentView.intrinsicContentSize
+    func updatePreferredContentSize() {
+        view.layoutSubtreeIfNeeded()
 
-        // Add padding (12pt horizontal, 10pt vertical based on constraints)
-        let width = contentSize.width + 24
-        let height = contentSize.height + 20
+        let subviews = view.subviews
 
-        // Update preferred content size for the popover
-        preferredContentSize = NSSize(width: width, height: height)
+        if subviews.count == 1 {
+            let contentView = subviews.first!
+            var contentSize = contentView.intrinsicContentSize
+            if contentSize.equalTo(.zero) {
+                contentSize = contentView.fittingSize
+            }
+
+            // Add padding (12pt horizontal, 10pt vertical based on constraints)
+            let width = contentSize.width + 24
+            let height = contentSize.height + 20
+
+            preferredContentSize = NSSize(width: width, height: height)
+        } else {
+            let contentSize = view.fittingSize
+            preferredContentSize = NSSize(width: contentSize.width, height: contentSize.height)
+        }
     }
 
 }

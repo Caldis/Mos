@@ -1,7 +1,7 @@
 //
 //  PreferencesScrollingWithApplicationViewController.swift
 //  Mos
-//
+//  滚动窗口容器
 //  Created by Caldis on 31/10/2019.
 //  Copyright © 2019 Caldis. All rights reserved.
 //

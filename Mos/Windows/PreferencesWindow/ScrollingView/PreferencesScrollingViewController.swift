@@ -8,14 +8,14 @@
 
 import Cocoa
 
-class PreferencesScrollingViewController: NSViewController {
+class PreferencesScrollingViewController: NSViewController, ScrollOptionsContextProviding {
     
     // Target application
     // - Using when the VC is inside the Application Setting Popup
     var currentTargetApplication: Application?
     // UI Elements
     @IBOutlet weak var scrollSmoothCheckBox: NSButton!
-    @IBOutlet weak var scrollSmoothSimTrackpadCheckBox: NSButton!
+    @IBOutlet weak var scrollSmoothSimTrackpadCheckBox: NSButton?
     @IBOutlet weak var scrollReverseCheckBox: NSButton!
     @IBOutlet weak var dashKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var toggleKeyPopUpButton: NSPopUpButton!
@@ -45,6 +45,17 @@ class PreferencesScrollingViewController: NSViewController {
         resetButtonHeightConstraint?.isActive = true
         // 读取设置
         syncViewWithOptions()
+    }
+
+    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        guard let simulatePopover = segue.destinationController as? ScrollSmoothDetailSettingsPopoverViewController else {
+            return
+        }
+        simulatePopover.currentTargetApplication = currentTargetApplication
+        simulatePopover.onOptionsChanged = { [weak self] in
+            self?.syncViewWithOptions()
+        }
     }
     
     // 平滑
@@ -155,8 +166,7 @@ extension PreferencesScrollingViewController {
         scrollSmoothCheckBox.state = NSControl.StateValue(rawValue: scroll.smooth ? 1 : 0)
         scrollSmoothCheckBox.isEnabled = isNotInherit
         // 模拟触控板
-        scrollSmoothSimTrackpadCheckBox.state = NSControl.StateValue(rawValue: scroll.smoothSimTrackpad ? 1 : 0)
-        scrollSmoothSimTrackpadCheckBox.isEnabled = isNotInherit && scroll.smooth
+        updateSimulateTrackpadControl(scrollSmoothSimTrackpadCheckBox)
         // 翻转
         scrollReverseCheckBox.state = NSControl.StateValue(rawValue: scroll.reverse ? 1 : 0)
         scrollReverseCheckBox.isEnabled = isNotInherit
@@ -226,19 +236,5 @@ extension PreferencesScrollingViewController {
             self.view.layoutSubtreeIfNeeded()
             (self.parent as? PreferencesTabViewController)?.updateWindowSize()
         })
-    }
-    // 获取配置目标 (公共或应用配置)
-    func getTargetApplicationScrollOptions() -> OPTIONS_SCROLL_DEFAULT {
-        if let validCurrentTargetApplication = currentTargetApplication, validCurrentTargetApplication.inherit == false  {
-            return validCurrentTargetApplication.scroll
-        }
-        return Options.shared.scroll
-    }
-    // 是否继承全局设置
-    func isTargetApplicationInheritOptions() -> Bool {
-        if let validCurrentTargetApplication = currentTargetApplication {
-            return validCurrentTargetApplication.inherit
-        }
-        return false
     }
 }
