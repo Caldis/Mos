@@ -224,14 +224,49 @@
                         <rect key="frame" x="0.0" y="0.0" width="450" height="321"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
+                            <visualEffectView blendingMode="behindWindow" material="toolTip" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="2W2-hM-ME3">
+                                <rect key="frame" x="0.0" y="291" width="450" height="30"/>
+                                <subviews>
+                                    <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="c5F-kF-CwS">
+                                        <rect key="frame" x="29" y="8" width="40" height="14"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Button" id="AbN-7n-hF7">
+                                            <font key="font" metaFont="systemMedium" size="11"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Wa1-F9-Eyt">
+                                        <rect key="frame" x="0.0" y="-2" width="450" height="5"/>
+                                    </box>
+                                    <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="xNC-sb-7wF">
+                                        <rect key="frame" x="384" y="8" width="43" height="14"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Action" id="sdr-Ih-rCr">
+                                            <font key="font" metaFont="systemMedium" size="11"/>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="c5F-kF-CwS" firstAttribute="centerY" secondItem="2W2-hM-ME3" secondAttribute="centerY" id="4XX-7s-FJL"/>
+                                    <constraint firstItem="c5F-kF-CwS" firstAttribute="leading" secondItem="2W2-hM-ME3" secondAttribute="leading" constant="31" id="8dG-MJ-pMB"/>
+                                    <constraint firstAttribute="height" constant="30" id="I6t-Sp-fUx"/>
+                                    <constraint firstAttribute="bottom" secondItem="Wa1-F9-Eyt" secondAttribute="bottom" id="bWd-WO-ava"/>
+                                    <constraint firstAttribute="trailing" secondItem="Wa1-F9-Eyt" secondAttribute="trailing" id="eZC-lp-tCf"/>
+                                    <constraint firstItem="xNC-sb-7wF" firstAttribute="centerX" secondItem="2W2-hM-ME3" secondAttribute="centerX" constant="180" id="fxl-KY-Jzc"/>
+                                    <constraint firstItem="xNC-sb-7wF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="c5F-kF-CwS" secondAttribute="trailing" constant="8" symbolic="YES" id="g18-i4-Vrz"/>
+                                    <constraint firstItem="Wa1-F9-Eyt" firstAttribute="leading" secondItem="2W2-hM-ME3" secondAttribute="leading" id="lQj-um-iK7"/>
+                                    <constraint firstItem="xNC-sb-7wF" firstAttribute="centerY" secondItem="2W2-hM-ME3" secondAttribute="centerY" id="vl7-7z-Qn5"/>
+                                </constraints>
+                            </visualEffectView>
                             <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="52" horizontalPageScroll="10" verticalLineScroll="52" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" findBarPosition="aboveHorizontalRuler" translatesAutoresizingMaskIntoConstraints="NO" id="ftV-jh-kjD">
-                                <rect key="frame" x="0.0" y="31" width="450" height="290"/>
+                                <rect key="frame" x="0.0" y="31" width="450" height="260"/>
                                 <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="9qm-Wz-Rwq">
-                                    <rect key="frame" x="0.0" y="0.0" width="450" height="290"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="450" height="260"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="none" tableStyle="inset" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="52" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" id="tU8-ze-w7X">
-                                            <rect key="frame" x="0.0" y="0.0" width="450" height="290"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="450" height="260"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <size key="intercellSpacing" width="17" height="0.0"/>
                                             <color key="backgroundColor" red="0.11764705882352941" green="0.11764705882352941" blue="0.11764705882352941" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -320,7 +355,7 @@
                                 </clipView>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="450" id="O6a-JW-Ptw"/>
-                                    <constraint firstAttribute="height" constant="290" id="wgU-xJ-cqJ"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="260" id="wgU-xJ-cqJ"/>
                                 </constraints>
                                 <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="R1g-hj-G0Y">
                                     <rect key="frame" x="-100" y="-100" width="450" height="15"/>
@@ -336,7 +371,7 @@
                                 <subviews>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AtR-B3-Yvi">
                                         <rect key="frame" x="18" y="20" width="349" height="14"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Unlock the power of your buttons" id="2hV-f7-8yO">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Customize mouse buttons to enhance your experience" id="2hV-f7-8yO">
                                             <font key="font" metaFont="menu" size="11"/>
                                             <color key="textColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -344,7 +379,7 @@
                                     </textField>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EvW-FY-pRc">
                                         <rect key="frame" x="18" y="39" width="349" height="19"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Some button need to work" id="tum-Lo-TC6">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="No buttons are set up yet" id="tum-Lo-TC6">
                                             <font key="font" metaFont="system" size="16"/>
                                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -376,16 +411,16 @@
                                 <rect key="frame" x="40" y="38" width="370" height="60"/>
                                 <subviews>
                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="QAD-KS-uBx">
-                                        <rect key="frame" x="13" y="31" width="98" height="16"/>
-                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Record Buttons" id="l7O-So-nw1">
+                                        <rect key="frame" x="13" y="31" width="91" height="16"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Record Button" id="l7O-So-nw1">
                                             <font key="font" usesAppearanceFont="YES"/>
                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ggg-Eq-Gh7">
-                                        <rect key="frame" x="13" y="14" width="236" height="14"/>
-                                        <textFieldCell key="cell" lineBreakMode="clipping" title="You can bind the button to a specific action." id="fXu-uF-M3Q">
+                                        <rect key="frame" x="13" y="14" width="189" height="14"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Assign a button to a specific action" id="fXu-uF-M3Q">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -461,15 +496,21 @@
                             </customView>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="ftV-jh-kjD" firstAttribute="top" secondItem="2W2-hM-ME3" secondAttribute="bottom" id="7nE-RF-MKB"/>
                             <constraint firstItem="skg-W8-gS0" firstAttribute="centerX" secondItem="BTN-VW-123" secondAttribute="centerX" id="8H6-YI-eq0"/>
+                            <constraint firstItem="2W2-hM-ME3" firstAttribute="leading" secondItem="BTN-VW-123" secondAttribute="leading" id="BdG-ja-NoC"/>
                             <constraint firstItem="y2I-TF-AaH" firstAttribute="leading" secondItem="BTN-VW-123" secondAttribute="leading" id="Dcd-bE-nqo"/>
-                            <constraint firstItem="ftV-jh-kjD" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" id="LpE-Wt-vtt"/>
+                            <constraint firstItem="2W2-hM-ME3" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" id="F0I-ER-NKs"/>
                             <constraint firstAttribute="trailing" secondItem="ftV-jh-kjD" secondAttribute="trailing" id="P8Z-6N-CpR"/>
+                            <constraint firstAttribute="trailing" secondItem="2W2-hM-ME3" secondAttribute="trailing" id="Q4P-LZ-2vh"/>
+                            <constraint firstItem="2W2-hM-ME3" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" id="R11-z5-pFR"/>
                             <constraint firstItem="uuZ-tE-wlr" firstAttribute="centerX" secondItem="BTN-VW-123" secondAttribute="centerX" id="SwX-zy-m7I"/>
+                            <constraint firstItem="2W2-hM-ME3" firstAttribute="leading" secondItem="BTN-VW-123" secondAttribute="leading" id="bBi-x6-hqs"/>
                             <constraint firstItem="ftV-jh-kjD" firstAttribute="leading" secondItem="BTN-VW-123" secondAttribute="leading" id="eF6-ka-pvJ"/>
                             <constraint firstItem="y2I-TF-AaH" firstAttribute="top" secondItem="ftV-jh-kjD" secondAttribute="bottom" id="fZW-Om-hhT"/>
                             <constraint firstAttribute="bottom" secondItem="y2I-TF-AaH" secondAttribute="bottom" id="r1G-z8-ouo"/>
                             <constraint firstItem="skg-W8-gS0" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" constant="40" id="tBg-oX-ddF"/>
+                            <constraint firstAttribute="trailing" secondItem="2W2-hM-ME3" secondAttribute="trailing" id="uOc-MD-2UB"/>
                             <constraint firstAttribute="bottom" secondItem="uuZ-tE-wlr" secondAttribute="bottom" constant="38" id="vG8-OX-AKv"/>
                             <constraint firstAttribute="trailing" secondItem="y2I-TF-AaH" secondAttribute="trailing" id="w3a-c5-36o"/>
                         </constraints>
@@ -480,12 +521,13 @@
                         <outlet property="delButton" destination="4Ef-t4-sPm" id="80m-Qy-Vdg"/>
                         <outlet property="tableEmpty" destination="skg-W8-gS0" id="eHD-Fa-Gdk"/>
                         <outlet property="tableFoot" destination="y2I-TF-AaH" id="1nE-Ft-HI6"/>
+                        <outlet property="tableHead" destination="2W2-hM-ME3" id="Y4J-wc-n9g"/>
                         <outlet property="tableView" destination="tU8-ze-w7X" id="CbL-cb-u12"/>
                     </connections>
                 </viewController>
                 <customObject id="BTN-FR-123" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1442" y="1276.5"/>
+            <point key="canvasLocation" x="1443" y="1277"/>
         </scene>
         <!--Application-->
         <scene sceneID="UqT-28-MT6">
@@ -663,7 +705,7 @@
                                 <subviews>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OKC-Nf-egM">
                                         <rect key="frame" x="18" y="20" width="349" height="14"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="You can customize different behaviors for each application" id="jaq-Cb-dKM">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="Customize individual settings for each app" id="jaq-Cb-dKM">
                                             <font key="font" metaFont="menu" size="11"/>
                                             <color key="textColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -671,7 +713,7 @@
                                     </textField>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JG0-5p-fCy">
                                         <rect key="frame" x="18" y="39" width="349" height="19"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="No One is Special" id="ThS-Rm-st2">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="No application is Special" id="ThS-Rm-st2">
                                             <font key="font" metaFont="system" size="16"/>
                                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -788,8 +830,8 @@
                                         </textFieldCell>
                                     </textField>
                                     <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="V2s-M6-mOE">
-                                        <rect key="frame" x="13" y="14" width="217" height="14"/>
-                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Try apply separate configuration to apps" id="DS8-og-1pp">
+                                        <rect key="frame" x="13" y="14" width="254" height="14"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Create a custom configuration for specific apps" id="DS8-og-1pp">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -994,8 +1036,8 @@
                                 </textFieldCell>
                             </textField>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="1Hp-EF-wSq">
-                                <rect key="frame" x="171" y="467" width="169" height="14"/>
-                                <buttonCell key="cell" type="check" title="Make scrolling seamless" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="bsq-Pe-sDy">
+                                <rect key="frame" x="171" y="467" width="178" height="14"/>
+                                <buttonCell key="cell" type="check" title="Enable seamless scrolling" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="bsq-Pe-sDy">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1018,8 +1060,8 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="PIE-3y-0sa">
-                                <rect key="frame" x="171" y="435" width="187" height="14"/>
-                                <buttonCell key="cell" type="check" title="Reverse the scroll direction" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="vjK-Rg-us9">
+                                <rect key="frame" x="171" y="435" width="153" height="14"/>
+                                <buttonCell key="cell" type="check" title="Invert wheel direction" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="vjK-Rg-us9">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1384,7 +1426,7 @@
                                 </connections>
                             </button>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="gxK-T9-rTz">
-                                <rect key="frame" x="348" y="464" width="15" height="18"/>
+                                <rect key="frame" x="357" y="464" width="15" height="18"/>
                                 <buttonCell key="cell" type="inline" bezelStyle="inline" image="NSIconViewTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Zby-Nv-Yli">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystemBold"/>
@@ -1398,7 +1440,7 @@
                                 </connections>
                             </button>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="W1h-Ae-pqa">
-                                <rect key="frame" x="366" y="433" width="15" height="18"/>
+                                <rect key="frame" x="332" y="433" width="15" height="18"/>
                                 <buttonCell key="cell" type="inline" bezelStyle="inline" image="NSIconViewTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ef3-I4-vMD">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
@@ -1528,7 +1570,7 @@
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="954" y="1367"/>
+            <point key="canvasLocation" x="954" y="1366"/>
         </scene>
         <!--Adaptive Popover-->
         <scene sceneID="79I-rH-ZaI">
@@ -1557,7 +1599,7 @@
                 </viewController>
                 <customObject id="9YO-Hc-WUu" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="954.5" y="1882"/>
+            <point key="canvasLocation" x="955" y="1882"/>
         </scene>
         <!--Scroll Smooth Detail Settings Popover View Controller-->
         <scene sceneID="cWM-rm-1Zc">
@@ -2915,8 +2957,8 @@ Remove Mos from the list first, and then re-add Mos to authorize. (You can also 
                         <constraints>
                             <constraint firstItem="8a7-bc-h9m" firstAttribute="top" secondItem="TFF-pD-Z2q" secondAttribute="bottom" constant="10" id="8Sa-Tm-9e7"/>
                             <constraint firstAttribute="bottom" secondItem="8a7-bc-h9m" secondAttribute="bottom" constant="20" symbolic="YES" id="JYp-3Y-gsM"/>
-                            <constraint firstItem="TFF-pD-Z2q" firstAttribute="leading" secondItem="WvQ-ub-c9c" secondAttribute="leading" constant="20" symbolic="YES" id="SIf-SC-tDT"/>
-                            <constraint firstAttribute="trailing" secondItem="TFF-pD-Z2q" secondAttribute="trailing" constant="20" symbolic="YES" id="Sq4-ET-ycg"/>
+                            <constraint firstItem="TFF-pD-Z2q" firstAttribute="leading" secondItem="WvQ-ub-c9c" secondAttribute="leading" constant="20" id="SIf-SC-tDT"/>
+                            <constraint firstAttribute="trailing" secondItem="TFF-pD-Z2q" secondAttribute="trailing" constant="20" id="Sq4-ET-ycg"/>
                             <constraint firstItem="8a7-bc-h9m" firstAttribute="trailing" secondItem="TFF-pD-Z2q" secondAttribute="trailing" id="fbv-wR-tVm"/>
                             <constraint firstItem="8a7-bc-h9m" firstAttribute="leading" secondItem="TFF-pD-Z2q" secondAttribute="leading" id="pFG-is-DeP"/>
                             <constraint firstItem="TFF-pD-Z2q" firstAttribute="top" secondItem="WvQ-ub-c9c" secondAttribute="top" constant="20" symbolic="YES" id="pwe-4v-3Qi"/>
@@ -2933,7 +2975,7 @@ Remove Mos from the list first, and then re-add Mos to authorize. (You can also 
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="i8p-Ht-8EX"/>
+        <segue reference="GA4-xY-65w"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="AlipayLogo" width="432" height="150"/>

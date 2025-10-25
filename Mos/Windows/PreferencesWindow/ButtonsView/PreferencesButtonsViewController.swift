@@ -18,6 +18,7 @@ class PreferencesButtonsViewController: NSViewController {
 
     // MARK: - UI Elements
     // 表格
+    @IBOutlet weak var tableHead: NSVisualEffectView!
     @IBOutlet weak var tableView: NSTableView!
     @IBOutlet weak var tableEmpty: NSView!
     @IBOutlet weak var tableFoot: NSView!
@@ -167,6 +168,7 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
         let hasData = buttonBindings.count != 0
         updateViewVisibility(view: createButton, visible: !hasData)
         updateViewVisibility(view: tableEmpty, visible: !hasData)
+        updateViewVisibility(view: tableHead, visible: hasData)
         updateViewVisibility(view: tableFoot, visible: hasData)
     }
     private func updateViewVisibility(view: NSView, visible: Bool) {
