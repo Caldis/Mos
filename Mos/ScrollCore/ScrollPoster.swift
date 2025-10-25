@@ -273,8 +273,12 @@ private extension ScrollPoster {
                 momentumActive = false
             }
         }
-        // 发送滚动结果
-        post(ref, shiftedValue)
+        // 发送滚动结果 - 只有当输出值超过精度阈值时才发送
+        let outputMagnitude = max(abs(shiftedValue.y), abs(shiftedValue.x))
+        if outputMagnitude > precision {
+            post(ref, shiftedValue)
+        }
+
         if let scheduled = momentumEndScheduledTime, momentumActive {
             if now >= scheduled {
                 momentumEndScheduledTime = nil
@@ -285,7 +289,7 @@ private extension ScrollPoster {
         }
         if manualInputEnded && !momentumActive && residualMagnitude <= precision {
             let pendingStop = trackingEndScheduledTime != nil && now >= trackingEndScheduledTime!
-            let outputSettled = abs(shiftedValue.y) <= precision && abs(shiftedValue.x) <= precision
+            let outputSettled = outputMagnitude <= precision
             if pendingStop && outputSettled {
                 trackingEndScheduledTime = nil
                 stop(.TrackingEnd)
