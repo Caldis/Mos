@@ -1,18 +1,10 @@
-//
-//  SimulateTrackpadPopoverViewController.swift
-//  Mos
-//  Popover wrapper that reuses scroll option logic for the Simulate Trackpad feature.
-//  Created by Caldis on 10/25/2025.
-//  Copyright © 2025 Caldis. All rights reserved.
-//
-
 import Cocoa
 
 class ScrollSmoothDetailSettingsPopoverViewController: AdaptivePopover, ScrollOptionsContextProviding {
 
+    @IBOutlet weak var verticalSmoothCheckBox: NSButton?
+    @IBOutlet weak var horizontalSmoothCheckBox: NSButton?
     @IBOutlet weak var simulateTrackpadCheckBox: NSButton?
-    @IBOutlet weak var vertivalSmooth: NSButton!
-    @IBOutlet weak var horizontalSmooth: NSButton!
 
     var currentTargetApplication: Application?
     var onOptionsChanged: (() -> Void)?
@@ -32,19 +24,28 @@ class ScrollSmoothDetailSettingsPopoverViewController: AdaptivePopover, ScrollOp
         updatePreferredContentSize()
     }
 
+    @IBAction func verticalSmoothToggle(_ sender: NSButton) {
+        getTargetApplicationScrollOptions().smoothVertical = sender.state == .on
+        syncViewWithOptions()
+        onOptionsChanged?()
+    }
+
+    @IBAction func horizontalSmoothToggle(_ sender: NSButton) {
+        getTargetApplicationScrollOptions().smoothHorizontal = sender.state == .on
+        syncViewWithOptions()
+        onOptionsChanged?()
+    }
+
     @IBAction func simulateTrackpadToggle(_ sender: NSButton) {
         getTargetApplicationScrollOptions().smoothSimTrackpad = sender.state == .on
         syncViewWithOptions()
         onOptionsChanged?()
     }
 
-    @IBAction func verticalSmoothToggle(_ sender: NSButton) {
-    }
-
-    @IBAction func horizontalSmoothToggle(_ sender: NSButton) {
-    }
-    
-    func syncViewWithOptions() {
+    private func syncViewWithOptions() {
         updateSimulateTrackpadControl(simulateTrackpadCheckBox)
+        let scroll = getTargetApplicationScrollOptions()
+        updateSmoothDependentControl(verticalSmoothCheckBox, isOn: scroll.smoothVertical)
+        updateSmoothDependentControl(horizontalSmoothCheckBox, isOn: scroll.smoothHorizontal)
     }
 }

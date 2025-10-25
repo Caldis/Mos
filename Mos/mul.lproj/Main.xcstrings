@@ -3262,6 +3262,18 @@
         }
       }
     },
+    "eVu-TE-yMr.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Horizontal Reverse\"; ObjectID = \"eVu-TE-yMr\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Horizontal Reverse"
+          }
+        }
+      }
+    },
     "EWu-DP-7Gj.title" : {
       "comment" : "Class = \"NSViewController\"; title = \"Updates\"; ObjectID = \"EWu-DP-7Gj\";",
       "extractionState" : "extracted_with_value",
@@ -6020,6 +6032,18 @@
         }
       }
     },
+    "qjy-uD-jMy.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Vertical Reverse\"; ObjectID = \"qjy-uD-jMy\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Vertical Reverse"
+          }
+        }
+      }
+    },
     "Qse-ik-rgy.placeholderString" : {
       "comment" : "Class = \"NSTextFieldCell\"; placeholderString = \"1-5\"; ObjectID = \"Qse-ik-rgy\";",
       "extractionState" : "extracted_with_value",
@@ -7891,91 +7915,91 @@
       }
     },
     "vjK-Rg-us9.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Reverse the mouse wheel direction\"; ObjectID = \"vjK-Rg-us9\";",
+      "comment" : "Class = \"NSButtonCell\"; title = \"Reverse the scroll direction\"; ObjectID = \"vjK-Rg-us9\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Mausradrichtung umkehren"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Αντιστροφή κατεύθυνσης ρόδας ποντικιού"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Reverse the mouse wheel direction"
+            "value" : "Reverse the scroll direction"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "マウスホイールの方向を逆にする"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "마우스 휠 방향 반전"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Изменить направление колеса мыши"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Fare tekerleği yönünü tersine çevir"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Змінити напрямок колеса миші"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "反转鼠标滚轮方向"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "反轉滑鼠滾輪方向"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "反轉滑鼠滾輪方向"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "反轉滑鼠滾輪方向"
           }
         }
       }
     },
     "W2z-NX-9UO.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"May affect the scrolling behavior.\"; ObjectID = \"W2z-NX-9UO\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"May affect the scrolling behavior\"; ObjectID = \"W2z-NX-9UO\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "May affect the scrolling behavior."
+            "value" : "May affect the scrolling behavior"
           }
         }
       }

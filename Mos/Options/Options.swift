@@ -19,6 +19,8 @@ struct OptionItem {
     struct Scroll {
         static let Smooth = "smooth"
         static let Reverse = "reverse"
+        static let ReverseVertical = "reverseVertical"
+        static let ReverseHorizontal = "reverseHorizontal"
         static let Dash = "dash"
         static let Toggle = "toggle"
         static let Block = "block"
@@ -27,6 +29,8 @@ struct OptionItem {
         static let Duration = "duration"
         static let Precision = "precision"
         static let SmoothSimTrackpad = "smoothSimTrackpad"
+        static let SmoothVertical = "smoothVertical"
+        static let SmoothHorizontal = "smoothHorizontal"
     }
 
     struct Button {
@@ -84,6 +88,16 @@ extension Options {
         // 滚动
         scroll.smooth = UserDefaults.standard.bool(forKey: OptionItem.Scroll.Smooth)
         scroll.reverse = UserDefaults.standard.bool(forKey: OptionItem.Scroll.Reverse)
+        if UserDefaults.standard.object(forKey: OptionItem.Scroll.ReverseVertical) == nil {
+            scroll.reverseVertical = true
+        } else {
+            scroll.reverseVertical = UserDefaults.standard.bool(forKey: OptionItem.Scroll.ReverseVertical)
+        }
+        if UserDefaults.standard.object(forKey: OptionItem.Scroll.ReverseHorizontal) == nil {
+            scroll.reverseHorizontal = true
+        } else {
+            scroll.reverseHorizontal = UserDefaults.standard.bool(forKey: OptionItem.Scroll.ReverseHorizontal)
+        }
         scroll.dash = UserDefaults.standard.integer(forKey: OptionItem.Scroll.Dash)
         scroll.toggle = UserDefaults.standard.integer(forKey: OptionItem.Scroll.Toggle)
         scroll.block = UserDefaults.standard.integer(forKey: OptionItem.Scroll.Block)
@@ -93,6 +107,16 @@ extension Options {
         scroll.durationTransition = OPTIONS_SCROLL_DEFAULT.generateDurationTransition(with: scroll.duration)
         scroll.precision = UserDefaults.standard.double(forKey: OptionItem.Scroll.Precision)
         scroll.smoothSimTrackpad = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothSimTrackpad)
+        if UserDefaults.standard.object(forKey: OptionItem.Scroll.SmoothVertical) == nil {
+            scroll.smoothVertical = true
+        } else {
+            scroll.smoothVertical = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothVertical)
+        }
+        if UserDefaults.standard.object(forKey: OptionItem.Scroll.SmoothHorizontal) == nil {
+            scroll.smoothHorizontal = true
+        } else {
+            scroll.smoothHorizontal = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothHorizontal)
+        }
         // 按钮绑定
         buttons.binding = loadButtonsData()
         // 应用
@@ -112,6 +136,8 @@ extension Options {
             // 滚动
             UserDefaults.standard.set(scroll.smooth, forKey: OptionItem.Scroll.Smooth)
             UserDefaults.standard.set(scroll.reverse, forKey: OptionItem.Scroll.Reverse)
+            UserDefaults.standard.set(scroll.reverseVertical, forKey: OptionItem.Scroll.ReverseVertical)
+            UserDefaults.standard.set(scroll.reverseHorizontal, forKey: OptionItem.Scroll.ReverseHorizontal)
             UserDefaults.standard.set(scroll.dash, forKey: OptionItem.Scroll.Dash)
             UserDefaults.standard.set(scroll.toggle, forKey: OptionItem.Scroll.Toggle)
             UserDefaults.standard.set(scroll.block, forKey: OptionItem.Scroll.Block)
@@ -120,6 +146,8 @@ extension Options {
             UserDefaults.standard.set(scroll.duration, forKey: OptionItem.Scroll.Duration)
             UserDefaults.standard.set(scroll.precision, forKey: OptionItem.Scroll.Precision)
             UserDefaults.standard.set(scroll.smoothSimTrackpad, forKey: OptionItem.Scroll.SmoothSimTrackpad)
+            UserDefaults.standard.set(scroll.smoothVertical, forKey: OptionItem.Scroll.SmoothVertical)
+            UserDefaults.standard.set(scroll.smoothHorizontal, forKey: OptionItem.Scroll.SmoothHorizontal)
             // 应用
             UserDefaults.standard.set(application.allowlist, forKey: OptionItem.Application.Allowlist)
             if let applicationsData = application.applications.json() {

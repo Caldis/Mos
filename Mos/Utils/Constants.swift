@@ -87,6 +87,12 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
     var reverse = true {
         didSet {Options.shared.saveOptions()}
     }
+    var reverseVertical = true {
+        didSet {Options.shared.saveOptions()}
+    }
+    var reverseHorizontal = true {
+        didSet {Options.shared.saveOptions()}
+    }
     var dash:Int? = 0 {
         didSet {Options.shared.saveOptions()}
     }
@@ -115,6 +121,12 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
     var smoothSimTrackpad = false {
         didSet {Options.shared.saveOptions()}
     }
+    var smoothVertical = true {
+        didSet {Options.shared.saveOptions()}
+    }
+    var smoothHorizontal = true {
+        didSet {Options.shared.saveOptions()}
+    }
     // 工具
     static func generateDurationTransition(with duration: Double) -> Double {
         // 上界, 此处需要与界面的 Slider 上界保持同步, 并添加 0.2 的偏移令结果不为 0
@@ -130,6 +142,8 @@ extension OPTIONS_SCROLL_DEFAULT: Equatable {
         return (
             l.smooth == r.smooth &&
             l.reverse == r.smooth &&
+            l.reverseVertical == r.reverseVertical &&
+            l.reverseHorizontal == r.reverseHorizontal &&
             l.dash == r.dash &&
             l.toggle == r.toggle &&
             l.block == r.block &&
@@ -138,7 +152,9 @@ extension OPTIONS_SCROLL_DEFAULT: Equatable {
             l.duration == r.duration &&
             l.durationTransition == r.durationTransition &&
             l.precision == r.precision &&
-            l.smoothSimTrackpad == r.smoothSimTrackpad
+            l.smoothSimTrackpad == r.smoothSimTrackpad &&
+            l.smoothVertical == r.smoothVertical &&
+            l.smoothHorizontal == r.smoothHorizontal
         )
     }
 }

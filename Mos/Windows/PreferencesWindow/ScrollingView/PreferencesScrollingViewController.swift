@@ -49,12 +49,16 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
 
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
-        guard let simulatePopover = segue.destinationController as? ScrollSmoothDetailSettingsPopoverViewController else {
-            return
-        }
-        simulatePopover.currentTargetApplication = currentTargetApplication
-        simulatePopover.onOptionsChanged = { [weak self] in
-            self?.syncViewWithOptions()
+        if let smoothPopover = segue.destinationController as? ScrollSmoothDetailSettingsPopoverViewController {
+            smoothPopover.currentTargetApplication = currentTargetApplication
+            smoothPopover.onOptionsChanged = { [weak self] in
+                self?.syncViewWithOptions()
+            }
+        } else if let reversePopover = segue.destinationController as? ScrollReverseDetailSettingsPopoverViewController {
+            reversePopover.currentTargetApplication = currentTargetApplication
+            reversePopover.onOptionsChanged = { [weak self] in
+                self?.syncViewWithOptions()
+            }
         }
     }
     

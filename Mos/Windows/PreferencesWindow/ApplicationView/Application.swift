@@ -82,14 +82,46 @@ extension Application {
     func isSmooth(_ block: Bool) -> Bool {
         if block { return false }
         if !Options.shared.scroll.smooth { return false }
-        return scroll.smooth
+        return resolvedScrollOptions().smooth
     }
     func isReverse() -> Bool {
         if !Options.shared.scroll.reverse { return false }
-        return scroll.reverse
+        return resolvedScrollOptions().reverse
+    }
+    func isReverseVertical() -> Bool {
+        if !Options.shared.scroll.reverse { return false }
+        if !Options.shared.scroll.reverseVertical { return false }
+        let target = resolvedScrollOptions()
+        return target.reverse && target.reverseVertical
+    }
+    func isReverseHorizontal() -> Bool {
+        if !Options.shared.scroll.reverse { return false }
+        if !Options.shared.scroll.reverseHorizontal { return false }
+        let target = resolvedScrollOptions()
+        return target.reverse && target.reverseHorizontal
+    }
+    func isSmoothVertical(_ block: Bool) -> Bool {
+        if block { return false }
+        if !Options.shared.scroll.smooth { return false }
+        if !Options.shared.scroll.smoothVertical { return false }
+        let target = resolvedScrollOptions()
+        return target.smooth && target.smoothVertical
+    }
+    func isSmoothHorizontal(_ block: Bool) -> Bool {
+        if block { return false }
+        if !Options.shared.scroll.smooth { return false }
+        if !Options.shared.scroll.smoothHorizontal { return false }
+        let target = resolvedScrollOptions()
+        return target.smooth && target.smoothHorizontal
     }
     // 按钮绑定
     func getButtonBindings() -> [ButtonBinding] {
         return buttons?.binding ?? Options.shared.buttons.binding
+    }
+}
+
+private extension Application {
+    func resolvedScrollOptions() -> OPTIONS_SCROLL_DEFAULT {
+        return inherit ? Options.shared.scroll : scroll
     }
 }
