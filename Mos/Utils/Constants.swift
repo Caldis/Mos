@@ -102,18 +102,17 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
     var block:Int? = 55 {
         didSet {Options.shared.saveOptions()}
     }
-    var step = 35.0 {
+    var step = 33.6 {
         didSet {Options.shared.saveOptions()}
     }
-    var speed = 3.00 {
+    var speed = 2.70 {
         didSet {Options.shared.saveOptions()}
     }
-    var duration = 3.90 {
-        willSet {self.durationTransition = OPTIONS_SCROLL_DEFAULT.generateDurationTransition(with: newValue)}
+    var duration = 4.35 {
         didSet {Options.shared.saveOptions()}
     }
-    var durationTransition = 0.1340 {
-        didSet {}
+    var durationTransition: Double {
+        OPTIONS_SCROLL_DEFAULT.generateDurationTransition(with: duration)
     }
     var precision = 1.00 {
         didSet {Options.shared.saveOptions()}
@@ -150,7 +149,6 @@ extension OPTIONS_SCROLL_DEFAULT: Equatable {
             l.step == r.step &&
             l.speed == r.speed &&
             l.duration == r.duration &&
-            l.durationTransition == r.durationTransition &&
             l.precision == r.precision &&
             l.smoothSimTrackpad == r.smoothSimTrackpad &&
             l.smoothVertical == r.smoothVertical &&

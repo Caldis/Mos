@@ -104,7 +104,6 @@ extension Options {
         scroll.step = UserDefaults.standard.double(forKey: OptionItem.Scroll.Step)
         scroll.speed = UserDefaults.standard.double(forKey: OptionItem.Scroll.Speed)
         scroll.duration = UserDefaults.standard.double(forKey: OptionItem.Scroll.Duration)
-        scroll.durationTransition = OPTIONS_SCROLL_DEFAULT.generateDurationTransition(with: scroll.duration)
         scroll.precision = UserDefaults.standard.double(forKey: OptionItem.Scroll.Precision)
         scroll.smoothSimTrackpad = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothSimTrackpad)
         if UserDefaults.standard.object(forKey: OptionItem.Scroll.SmoothVertical) == nil {
