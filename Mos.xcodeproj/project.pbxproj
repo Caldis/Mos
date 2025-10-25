@@ -317,7 +317,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = "4.0.0 (Beta)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				"OTHER_SWIFT_FLAGS[arch=*]" = "-DDEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos;
@@ -355,7 +355,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = "4.0.0 (Beta)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
