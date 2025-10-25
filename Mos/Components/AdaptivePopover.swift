@@ -25,22 +25,17 @@ class AdaptivePopover: NSViewController {
 
         let subviews = view.subviews
 
-        if subviews.count == 1 {
-            let contentView = subviews.first!
-            var contentSize = contentView.intrinsicContentSize
-            if contentSize.equalTo(.zero) {
-                contentSize = contentView.fittingSize
-            }
-
-            // Add padding (12pt horizontal, 10pt vertical based on constraints)
-            let width = contentSize.width + 24
-            let height = contentSize.height + 20
-
-            preferredContentSize = NSSize(width: width, height: height)
-        } else {
-            let contentSize = view.fittingSize
-            preferredContentSize = NSSize(width: contentSize.width, height: contentSize.height)
+        let contentView = subviews.first!
+        var contentSize = contentView.intrinsicContentSize
+        if contentSize.equalTo(.zero) {
+            contentSize = contentView.fittingSize
         }
+
+        // Add padding (12pt horizontal, 10pt vertical based on constraints)
+        let width = contentSize.width + 24
+        let height = contentSize.height + 20
+
+        preferredContentSize = NSSize(width: width, height: height)
     }
 
 }
