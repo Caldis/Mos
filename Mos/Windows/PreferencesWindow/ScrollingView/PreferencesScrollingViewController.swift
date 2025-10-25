@@ -15,7 +15,6 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     var currentTargetApplication: Application?
     // UI Elements
     @IBOutlet weak var scrollSmoothCheckBox: NSButton!
-    @IBOutlet weak var scrollSmoothSimTrackpadCheckBox: NSButton?
     @IBOutlet weak var scrollReverseCheckBox: NSButton!
     @IBOutlet weak var dashKeyPopUpButton: NSPopUpButton!
     @IBOutlet weak var toggleKeyPopUpButton: NSPopUpButton!
@@ -65,12 +64,6 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     // 平滑
     @IBAction func scrollSmoothClick(_ sender: NSButton) {
         getTargetApplicationScrollOptions().smooth = sender.state.rawValue != 0
-        syncViewWithOptions()
-    }
-
-    // 模拟触控板
-    @IBAction func scrollSmoothSimTrackpadClick(_ sender: NSButton) {
-        getTargetApplicationScrollOptions().smoothSimTrackpad = sender.state.rawValue != 0
         syncViewWithOptions()
     }
 
@@ -169,8 +162,6 @@ extension PreferencesScrollingViewController {
         // 平滑
         scrollSmoothCheckBox.state = NSControl.StateValue(rawValue: scroll.smooth ? 1 : 0)
         scrollSmoothCheckBox.isEnabled = isNotInherit
-        // 模拟触控板
-        updateSimulateTrackpadControl(scrollSmoothSimTrackpadCheckBox)
         // 翻转
         scrollReverseCheckBox.state = NSControl.StateValue(rawValue: scroll.reverse ? 1 : 0)
         scrollReverseCheckBox.isEnabled = isNotInherit
