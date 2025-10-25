@@ -236,7 +236,7 @@
       }
     },
     "2hV-f7-8yO.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Unlock the power of your buttons\"; ObjectID = \"2hV-f7-8yO\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Customize mouse buttons to enhance your experience\"; ObjectID = \"2hV-f7-8yO\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
@@ -254,7 +254,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Unlock the power of your buttons"
+            "value" : "Customize mouse buttons to enhance your experience"
           }
         },
         "ja" : {
@@ -289,7 +289,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "释放鼠标按键的强大功能"
           }
         },
@@ -301,7 +301,7 @@
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "釋放滑鼠按鍵的強大功能"
           }
         },
@@ -1158,6 +1158,18 @@
         }
       }
     },
+    "AbN-7n-hF7.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Button\"; ObjectID = \"AbN-7n-hF7\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Button"
+          }
+        }
+      }
+    },
     "AGU-43-8RD.title" : {
       "comment" : "Class = \"NSTextFieldCell\"; title = \"Status Bar Icon\"; ObjectID = \"AGU-43-8RD\";",
       "extractionState" : "extracted_with_value",
@@ -1806,7 +1818,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アプリケーション"
+            "value" : "アプリ"
           }
         },
         "ko" : {
@@ -2016,79 +2028,79 @@
       }
     },
     "bsq-Pe-sDy.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Make scrolling seamless\"; ObjectID = \"bsq-Pe-sDy\";",
+      "comment" : "Class = \"NSButtonCell\"; title = \"Enable seamless scrolling\"; ObjectID = \"bsq-Pe-sDy\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mausrad sanft machen"
+            "state" : "translated",
+            "value" : "Nahtlos scrollen"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Κάντε τη ρόδα του ποντικιού ομαλή"
+            "state" : "translated",
+            "value" : "Απρόσκοπτη κύλιση"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Make scrolling seamless"
+            "value" : "Enable seamless scrolling"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "マウスホイールを滑らかにする"
+            "state" : "translated",
+            "value" : "シームレススクロール"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "마우스 휠을 부드럽게 만들기"
+            "state" : "translated",
+            "value" : "매끄러운 스크롤"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Сделать колесо мыши плавным"
+            "state" : "translated",
+            "value" : "Плавная прокрутка"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fare tekerleğini yumuşat"
+            "state" : "translated",
+            "value" : "Kesintisiz kaydırma"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Зробити колесо миші плавним"
+            "state" : "translated",
+            "value" : "Безшовна прокрутка"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "让鼠标滚轮更平滑"
+            "state" : "translated",
+            "value" : "启用流畅滚动"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "讓滑鼠滾輪更平滑"
+            "state" : "translated",
+            "value" : "啟用順暢捲動"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "讓滑鼠滾輪更平滑"
+            "state" : "translated",
+            "value" : "啟用順暢捲動"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "讓滑鼠滾輪更平滑"
+            "state" : "translated",
+            "value" : "啟用順暢捲動"
           }
         }
       }
@@ -2795,78 +2807,78 @@
       }
     },
     "DS8-og-1pp.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Try apply separate configuration to apps\"; ObjectID = \"DS8-og-1pp\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Create a custom configuration for specific apps\"; ObjectID = \"DS8-og-1pp\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Versuchen Sie, separate Konfigurationen auf Apps anzuwenden"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Δοκιμάστε να εφαρμόσετε ξεχωριστή διαμόρφωση σε εφαρμογές"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Try apply separate configuration to apps"
+            "value" : "Create a custom configuration for specific apps"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "アプリごとに個別の設定を適用する"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "앱에 개별 구성 적용 시도"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Попробуйте применить отдельную конфигурацию к приложениям"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Uygulamalara ayrı yapılandırma uygulamayı deneyin"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Спробуйте застосувати окрему конфігурацію до програм"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "尝试对应用添加独立配置"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "嘗試對應用程式套用個別設定"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "嘗試對應用程式套用個別設定"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "嘗試對應用程式套用個別設定"
           }
         }
@@ -3264,12 +3276,77 @@
     },
     "eVu-TE-yMr.title" : {
       "comment" : "Class = \"NSButtonCell\"; title = \"Horizontal Reverse\"; ObjectID = \"eVu-TE-yMr\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Horizontale Umkehrung"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αντιστροφή οριζόντιας κύλισης"
+          }
+        },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : "Horizontal Reverse"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "水平スクロールを反転"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가로 스크롤 반전"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Инверсия горизонтальной прокрутки"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yatay kaydırmayı ters çevir"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Інвертувати горизонтальну прокрутку"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反转水平滚动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉水平捲動"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉水平捲動"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉水平捲動"
           }
         }
       }
@@ -3299,7 +3376,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アップデート"
+            "value" : "更新"
           }
         },
         "ko" : {
@@ -3587,78 +3664,78 @@
       }
     },
     "fXu-uF-M3Q.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"You can bind the button to a specific action.\"; ObjectID = \"fXu-uF-M3Q\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Assign a button to a specific action\"; ObjectID = \"fXu-uF-M3Q\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Sie können die Taste an eine bestimmte Aktion binden."
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Μπορείτε να συνδέσετε το κουμπί με μια συγκεκριμένη ενέργεια."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "You can bind the button to a specific action."
+            "value" : "Assign a button to a specific action"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "ボタンを特定のアクションにバインドできます。"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "버튼을 특정 작업에 바인딩할 수 있습니다."
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Вы можете привязать кнопку к определенному действию."
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Düğmeyi belirli bir eyleme bağlayabilirsiniz."
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Ви можете прив'язати кнопку до певної дії."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "您可以将按钮绑定到特定操作。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "您可以將按鍵綁定到特定操作。"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "您可以將按鍵綁定到特定操作。"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "您可以將按鍵綁定到特定操作。"
           }
         }
@@ -3978,12 +4055,77 @@
     },
     "GtT-zh-x8d.title" : {
       "comment" : "Class = \"NSButtonCell\"; title = \"Vertical Smooth\"; ObjectID = \"GtT-zh-x8d\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vertikales Glätten"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ομαλή κατακόρυφη κύλιση"
+          }
+        },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : "Vertical Smooth"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "垂直スクロールを滑らかに"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "세로 스크롤 부드럽게"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Плавная вертикальная прокрутка"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Düşey kaydırmayı yumuşat"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Згладити вертикальну прокрутку"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平滑垂直滚动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平滑垂直捲動"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平滑垂直捲動"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平滑垂直捲動"
           }
         }
       }
@@ -5003,7 +5145,7 @@
       }
     },
     "jaq-Cb-dKM.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"You can customize different behaviors for each application\"; ObjectID = \"jaq-Cb-dKM\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Customize individual settings for each app\"; ObjectID = \"jaq-Cb-dKM\";",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -5331,78 +5473,78 @@
       }
     },
     "l7O-So-nw1.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Record Buttons\"; ObjectID = \"l7O-So-nw1\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Record Button\"; ObjectID = \"l7O-So-nw1\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Tasten aufzeichnen"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Καταγραφή Κουμπιών"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Record Buttons"
+            "value" : "Record Button"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "ボタンを記録"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "버튼 기록"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Записать кнопки"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Düğmeleri Kaydet"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Записати кнопки"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "录制按钮"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "錄製按鍵"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "錄製按鍵"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "錄製按鍵"
           }
         }
@@ -5932,12 +6074,77 @@
     },
     "Nh1-iw-yGN.title" : {
       "comment" : "Class = \"NSButtonCell\"; title = \"Horizontal Smooth\"; ObjectID = \"Nh1-iw-yGN\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Horizontales Glätten"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ομαλή οριζόντια κύλιση"
+          }
+        },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : "Horizontal Smooth"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "水平スクロールを滑らかに"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가로 스크롤 부드럽게"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Плавная горизонтальная прокрутка"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yatay kaydırmayı yumuşat"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Згладити горизонтальну прокрутку"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平滑水平滚动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平滑水平捲動"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平滑水平捲動"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平滑水平捲動"
           }
         }
       }
@@ -5946,10 +6153,76 @@
       "comment" : "Class = \"NSButtonCell\"; title = \"Simulate Trackpad (Beta)\"; ObjectID = \"p7Y-SJ-d6t\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trackpad simulieren (Beta)"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Προσομοίωση trackpad (Beta)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "Simulate Trackpad (Beta)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トラックパッドをシミュレート (ベータ)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "트랙패드를 시뮬레이션 (베타)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Симулировать трекпад (бета)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trackpad’i simüle et (Beta)"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Імітація трекпада (бета)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模拟触控板 (Beta)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模擬觸控板 (Beta)"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模擬觸控板 (Beta)"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模擬觸控板 (Beta)"
           }
         }
       }
@@ -6034,12 +6307,77 @@
     },
     "qjy-uD-jMy.title" : {
       "comment" : "Class = \"NSButtonCell\"; title = \"Vertical Reverse\"; ObjectID = \"qjy-uD-jMy\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vertikale Umkehrung"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αντιστροφή κατακόρυφης κύλισης"
+          }
+        },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : "Vertical Reverse"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "垂直スクロールを反転"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "세로 스크롤 반전"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Инверсия вертикальной прокрутки"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Düşey kaydırmayı ters çevir"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Інвертувати вертикальну прокрутку"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反转垂直滚动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉垂直捲動"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉垂直捲動"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反轉垂直捲動"
           }
         }
       }
@@ -6429,6 +6767,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暫時性地停用平滑捲動以提高捲動精度"
+          }
+        }
+      }
+    },
+    "sdr-Ih-rCr.title" : {
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Action\"; ObjectID = \"sdr-Ih-rCr\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Action"
           }
         }
       }
@@ -6980,78 +7330,78 @@
       }
     },
     "ThS-Rm-st2.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"No One is Special\"; ObjectID = \"ThS-Rm-st2\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"No application is Special\"; ObjectID = \"ThS-Rm-st2\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Niemand ist besonders"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Κανείς δεν είναι Ιδιαίτερος"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "No One is Special"
+            "value" : "No application is Special"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "誰も特別ではありません"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "아무 것도 특별하지 않네요"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Ничего не выбрано"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Kimse Özel Değil"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Ніхто не особливий"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "没有任何应用程序遭到不平等对待"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "沒有應用程式被區別對待"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "沒有應用程式被區別對待"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "沒有應用程式被區別對待"
           }
         }
@@ -7214,78 +7564,78 @@
       }
     },
     "tum-Lo-TC6.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Some button need to work\"; ObjectID = \"tum-Lo-TC6\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"No buttons are set up yet\"; ObjectID = \"tum-Lo-TC6\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Einige Tasten müssen funktionieren"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Κάποια κουμπιά πρέπει να λειτουργήσουν"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Some button need to work"
+            "value" : "No buttons are set up yet"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "一部のボタンが機能する必要があります"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "일부 버튼이 작동해야 합니다"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Некоторые кнопки должны работать"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Bazı düğmelerin çalışması gerekiyor"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Деякі кнопки повинні працювати"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "某些按钮需要工作"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "某些按鍵需要工作"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "某些按鍵需要工作"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "某些按鍵需要工作"
           }
         }
@@ -7915,91 +8265,156 @@
       }
     },
     "vjK-Rg-us9.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Reverse the scroll direction\"; ObjectID = \"vjK-Rg-us9\";",
+      "comment" : "Class = \"NSButtonCell\"; title = \"Invert wheel direction\"; ObjectID = \"vjK-Rg-us9\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mausradrichtung umkehren"
+            "state" : "translated",
+            "value" : "Radrichtung umkehren"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αντιστροφή κατεύθυνσης ρόδας ποντικιού"
+            "state" : "translated",
+            "value" : "Αντιστροφή τροχού"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Reverse the scroll direction"
+            "value" : "Invert wheel direction"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "マウスホイールの方向を逆にする"
+            "state" : "translated",
+            "value" : "ホイール反転"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "마우스 휠 방향 반전"
+            "state" : "translated",
+            "value" : "휠 방향 반전"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Изменить направление колеса мыши"
+            "state" : "translated",
+            "value" : "Инверсия колеса"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fare tekerleği yönünü tersine çevir"
+            "state" : "translated",
+            "value" : "Teker yönünü ters çevir"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Змінити напрямок колеса миші"
+            "state" : "translated",
+            "value" : "Інвертувати колесо"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "反转鼠标滚轮方向"
+            "state" : "translated",
+            "value" : "反转滚轮方向"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "反轉滑鼠滾輪方向"
+            "state" : "translated",
+            "value" : "反轉滾輪方向"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "反轉滑鼠滾輪方向"
+            "state" : "translated",
+            "value" : "反轉滾輪方向"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "反轉滑鼠滾輪方向"
+            "state" : "translated",
+            "value" : "反轉滾輪方向"
           }
         }
       }
     },
     "W2z-NX-9UO.title" : {
       "comment" : "Class = \"NSTextFieldCell\"; title = \"May affect the scrolling behavior\"; ObjectID = \"W2z-NX-9UO\";",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kann das Scrollverhalten beeinflussen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Μπορεί να επηρεάσει τη συμπεριφορά κύλισης."
+          }
+        },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "May affect the scrolling behavior"
+            "state" : "needs_review",
+            "value" : "May affect the scrolling behavior."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スクロールの動作に影響する場合があります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스크롤 동작에 영향을 줄 수 있습니다."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Может повлиять на поведение прокрутки."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaydırma davranışını etkileyebilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Може вплинути на поведінку прокручування."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可能会影响滚动行为。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可能會影響捲動行為。"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可能會影響捲動行為。"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可能會影響捲動行為。"
           }
         }
       }
@@ -8502,7 +8917,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开机启动"
+            "value" : "在开机时启动"
           }
         },
         "zh-Hant" : {
