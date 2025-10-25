@@ -1441,7 +1441,7 @@
                             </button>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="W1h-Ae-pqa">
                                 <rect key="frame" x="332" y="433" width="15" height="18"/>
-                                <buttonCell key="cell" type="inline" bezelStyle="inline" image="NSIconViewTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ef3-I4-vMD">
+                                <buttonCell key="cell" type="inline" bezelStyle="inline" image="NSIconViewTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ef3-I4-vMD">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>

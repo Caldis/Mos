@@ -21,7 +21,7 @@ class AdaptivePopover: NSViewController {
     }
 
     func updatePreferredContentSize() {
-        view.layoutSubtreeIfNeeded()
+        view.layout()
 
         let subviews = view.subviews
 

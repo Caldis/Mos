@@ -290,7 +290,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义鼠标按钮以提升体验"
+            "value" : "自定义鼠标按键以提升体验"
           }
         },
         "zh-Hant" : {
@@ -1213,7 +1213,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按钮"
+            "value" : "按键"
           }
         },
         "zh-Hant" : {
@@ -3784,7 +3784,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "为按钮分配特定操作"
+            "value" : "为按键分配特定操作"
           }
         },
         "zh-Hant" : {
@@ -5594,7 +5594,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "录制按钮"
+            "value" : "录制按键"
           }
         },
         "zh-Hant" : {
@@ -7751,7 +7751,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尚未设置按钮"
+            "value" : "尚未设置按键"
           }
         },
         "zh-Hant" : {

@@ -228,7 +228,7 @@ extension PreferencesScrollingViewController {
         }, completionHandler: {
             // 触发父视图窗口尺寸更新
             self.view.needsLayout = true
-            self.view.layoutSubtreeIfNeeded()
+            self.view.layout()
             (self.parent as? PreferencesTabViewController)?.updateWindowSize()
         })
     }
