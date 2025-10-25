@@ -241,14 +241,14 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Entfesseln Sie die Kraft Ihrer Maustasten"
+            "state" : "translated",
+            "value" : "Passen Sie Maustasten an, um Ihr Erlebnis zu verbessern"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ξεκλειδώστε τη δύναμη των κουμπιών του ποντικιού σας"
+            "state" : "translated",
+            "value" : "Προσαρμόστε τα κουμπιά του ποντικιού για καλύτερη εμπειρία"
           }
         },
         "en" : {
@@ -259,56 +259,56 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "マウスボタンの力を解き放つ"
+            "state" : "translated",
+            "value" : "マウスボタンをカスタマイズして使いやすくする"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "마우스 버튼의 강력한 기능 잠금 해제"
+            "state" : "translated",
+            "value" : "마우스 버튼을 사용자화하여 경험을 개선하세요"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Раскройте возможности кнопок мыши"
+            "state" : "translated",
+            "value" : "Настройте кнопки мыши для улучшения работы"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Fare düğmenizin gücünü açığa çıkarın"
+            "state" : "translated",
+            "value" : "Deneyiminizi geliştirmek için fare düğmelerini özelleştirin"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Розкрийте потенціал кнопок миші"
+            "state" : "translated",
+            "value" : "Налаштуйте кнопки миші для покращення роботи"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "释放鼠标按键的强大功能"
+            "state" : "translated",
+            "value" : "自定义鼠标按钮以提升体验"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "釋放滑鼠按鍵的強大功能"
+            "state" : "translated",
+            "value" : "自訂滑鼠按鍵以提升體驗"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "釋放滑鼠按鍵的強大功能"
+            "state" : "translated",
+            "value" : "自訂滑鼠按鍵以提升體驗"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "釋放滑鼠按鍵的強大功能"
+            "state" : "translated",
+            "value" : "自訂滑鼠按鍵以提升體驗"
           }
         }
       }
@@ -1162,10 +1162,76 @@
       "comment" : "Class = \"NSTextFieldCell\"; title = \"Button\"; ObjectID = \"AbN-7n-hF7\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taste"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Κουμπί"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "Button"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ボタン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버튼"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кнопка"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Düğme"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кнопка"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按钮"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按鍵"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按鍵"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按鍵"
           }
         }
       }
@@ -2812,14 +2878,14 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Versuchen Sie, separate Konfigurationen auf Apps anzuwenden"
+            "state" : "translated",
+            "value" : "Erstellen Sie eine benutzerdefinierte Konfiguration für bestimmte Apps"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Δοκιμάστε να εφαρμόσετε ξεχωριστή διαμόρφωση σε εφαρμογές"
+            "state" : "translated",
+            "value" : "Δημιουργήστε προσαρμοσμένη διαμόρφωση για συγκεκριμένες εφαρμογές"
           }
         },
         "en" : {
@@ -2830,56 +2896,56 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "アプリごとに個別の設定を適用する"
+            "state" : "translated",
+            "value" : "特定のアプリ用にカスタム設定を作成"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "앱에 개별 구성 적용 시도"
+            "state" : "translated",
+            "value" : "특정 앱에 대한 사용자 구성을 만드세요"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Попробуйте применить отдельную конфигурацию к приложениям"
+            "state" : "translated",
+            "value" : "Создайте конфигурацию для определенных приложений"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Uygulamalara ayrı yapılandırma uygulamayı deneyin"
+            "state" : "translated",
+            "value" : "Belirli uygulamalar için özel yapılandırma oluşturun"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Спробуйте застосувати окрему конфігурацію до програм"
+            "state" : "translated",
+            "value" : "Створіть конфігурацію для певних програм"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "尝试对应用添加独立配置"
+            "state" : "translated",
+            "value" : "为特定应用创建自定义配置"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "嘗試對應用程式套用個別設定"
+            "state" : "translated",
+            "value" : "為特定應用程式建立自訂設定"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "嘗試對應用程式套用個別設定"
+            "state" : "translated",
+            "value" : "為特定應用程式建立自訂設定"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "嘗試對應用程式套用個別設定"
+            "state" : "translated",
+            "value" : "為特定應用程式建立自訂設定"
           }
         }
       }
@@ -3669,14 +3735,14 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sie können die Taste an eine bestimmte Aktion binden."
+            "state" : "translated",
+            "value" : "Weisen Sie einer Taste eine bestimmte Aktion zu"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Μπορείτε να συνδέσετε το κουμπί με μια συγκεκριμένη ενέργεια."
+            "state" : "translated",
+            "value" : "Αντιστοιχίστε κουμπί σε συγκεκριμένη ενέργεια"
           }
         },
         "en" : {
@@ -3687,56 +3753,56 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "ボタンを特定のアクションにバインドできます。"
+            "state" : "translated",
+            "value" : "ボタンを特定のアクションに割り当てる"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "버튼을 특정 작업에 바인딩할 수 있습니다."
+            "state" : "translated",
+            "value" : "버튼을 특정 작업에 할당하세요"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Вы можете привязать кнопку к определенному действию."
+            "state" : "translated",
+            "value" : "Назначьте кнопке определенное действие"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Düğmeyi belirli bir eyleme bağlayabilirsiniz."
+            "state" : "translated",
+            "value" : "Bir düğmeye belirli bir eylem atayın"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ви можете прив'язати кнопку до певної дії."
+            "state" : "translated",
+            "value" : "Призначте кнопці певну дію"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "您可以将按钮绑定到特定操作。"
+            "state" : "translated",
+            "value" : "为按钮分配特定操作"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "您可以將按鍵綁定到特定操作。"
+            "state" : "translated",
+            "value" : "為按鍵分配特定操作"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "您可以將按鍵綁定到特定操作。"
+            "state" : "translated",
+            "value" : "為按鍵分配特定操作"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "您可以將按鍵綁定到特定操作。"
+            "state" : "translated",
+            "value" : "為按鍵分配特定操作"
           }
         }
       }
@@ -5146,77 +5212,78 @@
     },
     "jaq-Cb-dKM.title" : {
       "comment" : "Class = \"NSTextFieldCell\"; title = \"Customize individual settings for each app\"; ObjectID = \"jaq-Cb-dKM\";",
+      "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sie können das Verhalten für jede Anwendung anpassen."
+            "value" : "Passen Sie Einstellungen für jede App individuell an"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Μπορείτε να προσαρμόσετε τη συμπεριφορά για κάθε εφαρμογή."
+            "value" : "Προσαρμόστε μεμονωμένες ρυθμίσεις για κάθε εφαρμογή"
           }
         },
         "en" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "You can customize the behaviors for each application."
+            "state" : "new",
+            "value" : "Customize individual settings for each app"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "各アプリケーションごとに動作をカスタマイズできます。"
+            "value" : "アプリごとに個別の設定をカスタマイズ"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "각 응용 프로그램별로 동작을 사용자 정의할 수 있습니다."
+            "value" : "각 앱에 대한 개별 설정을 사용자화하세요"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Вы можете настроить поведение для каждого приложения."
+            "value" : "Настройте параметры для каждого приложения"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Her uygulama için davranışları özelleştirebilirsiniz."
+            "value" : "Her uygulama için ayrı ayarları özelleştirin"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ви можете налаштувати поведінку для кожної програми."
+            "value" : "Налаштуйте параметри для кожної програми"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你可以为每个应用程序定制不同的行为。"
+            "value" : "为每个应用自定义各自设置"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你可以為每個應用程式定製不同的行為。"
+            "value" : "為每個應用程式自訂各自設定"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你可以為每個應用程式定製不同的行為。"
+            "value" : "為每個應用程式自訂各自設定"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你可以為每個應用程式定製不同的行為。"
+            "value" : "為每個應用程式自訂各自設定"
           }
         }
       }
@@ -5478,14 +5545,14 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Tasten aufzeichnen"
+            "state" : "translated",
+            "value" : "Taste aufzeichnen"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Καταγραφή Κουμπιών"
+            "state" : "translated",
+            "value" : "Εγγραφή κουμπιού"
           }
         },
         "en" : {
@@ -5496,55 +5563,55 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "ボタンを記録"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "버튼 기록"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Записать кнопки"
+            "state" : "translated",
+            "value" : "Записать кнопку"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Düğmeleri Kaydet"
+            "state" : "translated",
+            "value" : "Düğme kaydet"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Записати кнопки"
+            "state" : "translated",
+            "value" : "Записати кнопку"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "录制按钮"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "錄製按鍵"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "錄製按鍵"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "錄製按鍵"
           }
         }
@@ -6775,10 +6842,76 @@
       "comment" : "Class = \"NSTextFieldCell\"; title = \"Action\"; ObjectID = \"sdr-Ih-rCr\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktion"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ενέργεια"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "Action"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクション"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "작업"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Действие"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eylem"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дія"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作"
           }
         }
       }
@@ -7335,14 +7468,14 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Niemand ist besonders"
+            "state" : "translated",
+            "value" : "Keine App ist speziell"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Κανείς δεν είναι Ιδιαίτερος"
+            "state" : "translated",
+            "value" : "Καμία εφαρμογή δεν είναι ειδική"
           }
         },
         "en" : {
@@ -7353,56 +7486,56 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "誰も特別ではありません"
+            "state" : "translated",
+            "value" : "特別なアプリケーションはありません"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "아무 것도 특별하지 않네요"
+            "state" : "translated",
+            "value" : "특별한 애플리케이션이 없습니다"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ничего не выбрано"
+            "state" : "translated",
+            "value" : "Нет особых приложений"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kimse Özel Değil"
+            "state" : "translated",
+            "value" : "Özel uygulama yok"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ніхто не особливий"
+            "state" : "translated",
+            "value" : "Немає особливих програм"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "没有任何应用程序遭到不平等对待"
+            "state" : "translated",
+            "value" : "没有特殊应用"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "沒有應用程式被區別對待"
+            "state" : "translated",
+            "value" : "沒有特殊應用程式"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "沒有應用程式被區別對待"
+            "state" : "translated",
+            "value" : "沒有特殊應用程式"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "沒有應用程式被區別對待"
+            "state" : "translated",
+            "value" : "沒有特殊應用程式"
           }
         }
       }
@@ -7569,14 +7702,14 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Einige Tasten müssen funktionieren"
+            "state" : "translated",
+            "value" : "Noch keine Tasten eingerichtet"
           }
         },
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Κάποια κουμπιά πρέπει να λειτουργήσουν"
+            "state" : "translated",
+            "value" : "Δεν έχουν ρυθμιστεί ακόμα κουμπιά"
           }
         },
         "en" : {
@@ -7587,56 +7720,56 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "一部のボタンが機能する必要があります"
+            "state" : "translated",
+            "value" : "まだボタンが設定されていません"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "일부 버튼이 작동해야 합니다"
+            "state" : "translated",
+            "value" : "아직 버튼이 설정되지 않았습니다"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Некоторые кнопки должны работать"
+            "state" : "translated",
+            "value" : "Кнопки еще не настроены"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bazı düğmelerin çalışması gerekiyor"
+            "state" : "translated",
+            "value" : "Henüz düğme ayarlanmadı"
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Деякі кнопки повинні працювати"
+            "state" : "translated",
+            "value" : "Кнопки ще не налаштовані"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "某些按钮需要工作"
+            "state" : "translated",
+            "value" : "尚未设置按钮"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "某些按鍵需要工作"
+            "state" : "translated",
+            "value" : "尚未設定按鍵"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "某些按鍵需要工作"
+            "state" : "translated",
+            "value" : "尚未設定按鍵"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "某些按鍵需要工作"
+            "state" : "translated",
+            "value" : "尚未設定按鍵"
           }
         }
       }
