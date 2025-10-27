@@ -27,7 +27,7 @@ struct OptionItem {
         static let Step = "step"
         static let Speed = "speed"
         static let Duration = "duration"
-        static let Precision = "precision"
+        static let DeadZone = "deadZone"
         static let SmoothSimTrackpad = "smoothSimTrackpad"
         static let SmoothVertical = "smoothVertical"
         static let SmoothHorizontal = "smoothHorizontal"
@@ -104,7 +104,11 @@ extension Options {
         scroll.step = UserDefaults.standard.double(forKey: OptionItem.Scroll.Step)
         scroll.speed = UserDefaults.standard.double(forKey: OptionItem.Scroll.Speed)
         scroll.duration = UserDefaults.standard.double(forKey: OptionItem.Scroll.Duration)
-        scroll.precision = UserDefaults.standard.double(forKey: OptionItem.Scroll.Precision)
+        if let storedDeadZone = UserDefaults.standard.object(forKey: OptionItem.Scroll.DeadZone) as? Double {
+            scroll.deadZone = storedDeadZone
+        } else {
+            scroll.deadZone = OPTIONS_SCROLL_DEFAULT().deadZone
+        }
         scroll.smoothSimTrackpad = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothSimTrackpad)
         if UserDefaults.standard.object(forKey: OptionItem.Scroll.SmoothVertical) == nil {
             scroll.smoothVertical = true
@@ -143,7 +147,7 @@ extension Options {
             UserDefaults.standard.set(scroll.step, forKey: OptionItem.Scroll.Step)
             UserDefaults.standard.set(scroll.speed, forKey: OptionItem.Scroll.Speed)
             UserDefaults.standard.set(scroll.duration, forKey: OptionItem.Scroll.Duration)
-            UserDefaults.standard.set(scroll.precision, forKey: OptionItem.Scroll.Precision)
+            UserDefaults.standard.set(scroll.deadZone, forKey: OptionItem.Scroll.DeadZone)
             UserDefaults.standard.set(scroll.smoothSimTrackpad, forKey: OptionItem.Scroll.SmoothSimTrackpad)
             UserDefaults.standard.set(scroll.smoothVertical, forKey: OptionItem.Scroll.SmoothVertical)
             UserDefaults.standard.set(scroll.smoothHorizontal, forKey: OptionItem.Scroll.SmoothHorizontal)

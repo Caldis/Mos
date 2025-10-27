@@ -237,9 +237,10 @@ private extension ScrollPoster {
         )
         // 平滑滚动结果
         let filledValue = filter.fill(with: frame)
-        // 变换滚动结果
+        // 变换滚动结果，将滤波后的插值映射到当前姿态（考虑灵敏度、方向等因素）
         let shiftedValue = shift(with: filledValue)
         let now = CFAbsoluteTimeGetCurrent()
+        // 检测是否已经超过手动输入的持续时间阈值，准备结束手动阶段
         if !manualInputEnded && lastManualEventTime > 0.0 && now - lastManualEventTime > manualContinuationThreshold {
             let endPlan = ScrollPhase.shared.onManualInputEnded()
             if !(endPlan.queue.isEmpty && endPlan.target == nil) {
@@ -250,11 +251,12 @@ private extension ScrollPoster {
                 trackingEndScheduledTime = now + trackingEndAdvance
             }
         }
+        // 计算缓冲值与当前位置的剩余距离，用于判断滚动是否已收敛
         let residualY = buffer.y - current.y
         let residualX = buffer.x - current.x
         let residualMagnitude = max(residualY.magnitude, residualX.magnitude)
-        let precision = Options.shared.scroll.precision
-        if manualInputEnded && residualMagnitude > precision {
+        let deadZone = Options.shared.scroll.deadZone
+        if manualInputEnded && residualMagnitude > deadZone {
             if !momentumActive {
                 perform(ScrollPhase.shared.onMomentumStart(), emitTargetImmediately: false)
                 momentumActive = true
@@ -263,7 +265,7 @@ private extension ScrollPoster {
             }
             momentumEndScheduledTime = nil
             trackingEndScheduledTime = nil
-        } else if momentumActive && residualMagnitude <= precision {
+        } else if momentumActive && residualMagnitude <= deadZone {
             if momentumEndScheduledTime == nil {
                 momentumEndScheduledTime = now + momentumEndDelay
             }
@@ -273,9 +275,9 @@ private extension ScrollPoster {
                 momentumActive = false
             }
         }
-        // 发送滚动结果 - 只有当输出值超过精度阈值时才发送
+        // 发送滚动结果 - 只有当输出值超过死区阈值时才发送
         let outputMagnitude = max(abs(shiftedValue.y), abs(shiftedValue.x))
-        if outputMagnitude > precision {
+        if outputMagnitude > deadZone {
             post(ref, shiftedValue)
         }
 
@@ -287,9 +289,9 @@ private extension ScrollPoster {
                 return
             }
         }
-        if manualInputEnded && !momentumActive && residualMagnitude <= precision {
+        if manualInputEnded && !momentumActive && residualMagnitude <= deadZone {
             let pendingStop = trackingEndScheduledTime != nil && now >= trackingEndScheduledTime!
-            let outputSettled = outputMagnitude <= precision
+            let outputSettled = outputMagnitude <= deadZone
             if pendingStop && outputSettled {
                 trackingEndScheduledTime = nil
                 stop(.TrackingEnd)
@@ -303,12 +305,13 @@ private extension ScrollPoster {
         if let proxy = r.proxy, let eventClone = r.event?.copy() {
             // 判断是否需要模拟触控板 Phase
             var enableSimTrackpad = Options.shared.scroll.smoothSimTrackpad
-            if let application = ScrollCore.shared.application {
-                enableSimTrackpad = application.inherit ? Options.shared.scroll.smoothSimTrackpad : application.scroll.smoothSimTrackpad
+            if let application = ScrollCore.shared.application, !application.inherit {
+                enableSimTrackpad = application.scroll.smoothSimTrackpad
             }
             
             // 设置阶段数据和触控板特征字段
             if enableSimTrackpad {
+                // 获取当前 phase 值, 然后更新对应 proxy 值
                 let currentPhase = ScrollPhase.shared.phase
                 if let scrollValue = PhaseValueMapping[currentPhase]?[.Scroll], let momentumValue = PhaseValueMapping[currentPhase]?[.Momentum] {
                     eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: scrollValue)

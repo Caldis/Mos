@@ -114,7 +114,7 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
     var durationTransition: Double {
         OPTIONS_SCROLL_DEFAULT.generateDurationTransition(with: duration)
     }
-    var precision = 1.00 {
+    var deadZone = 1.00 {
         didSet {Options.shared.saveOptions()}
     }
     var smoothSimTrackpad = false {
@@ -149,7 +149,7 @@ extension OPTIONS_SCROLL_DEFAULT: Equatable {
             l.step == r.step &&
             l.speed == r.speed &&
             l.duration == r.duration &&
-            l.precision == r.precision &&
+            l.deadZone == r.deadZone &&
             l.smoothSimTrackpad == r.smoothSimTrackpad &&
             l.smoothVertical == r.smoothVertical &&
             l.smoothHorizontal == r.smoothHorizontal
