@@ -57,6 +57,10 @@ struct SPECIAL_EVENT_SOURCE_APPLICATION {
     static let logitechOptions = "com.logitech.manager.daemon"
 }
 
+enum ScrollDurationLimits {
+    static let simulateTrackpadDefault: Double = 4.75
+}
+
 /// 默认设置项
 // 常规
 class OPTIONS_GENERAL_DEFAULT {
@@ -126,6 +130,9 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
     var smoothHorizontal = true {
         didSet {Options.shared.saveOptions()}
     }
+    var durationBeforeSimTrackpadLock: Double? {
+        didSet {Options.shared.saveOptions()}
+    }
     // 工具
     static func generateDurationTransition(with duration: Double) -> Double {
         // 上界, 此处需要与界面的 Slider 上界保持同步, 并添加 0.2 的偏移令结果不为 0
@@ -152,7 +159,8 @@ extension OPTIONS_SCROLL_DEFAULT: Equatable {
             l.deadZone == r.deadZone &&
             l.smoothSimTrackpad == r.smoothSimTrackpad &&
             l.smoothVertical == r.smoothVertical &&
-            l.smoothHorizontal == r.smoothHorizontal
+            l.smoothHorizontal == r.smoothHorizontal &&
+            l.durationBeforeSimTrackpadLock == r.durationBeforeSimTrackpadLock
         )
     }
 }

@@ -1426,27 +1426,27 @@
                                 </connections>
                             </button>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="gxK-T9-rTz">
-                                <rect key="frame" x="357" y="464" width="15" height="18"/>
+                                <rect key="frame" x="357" y="464" width="18" height="18"/>
                                 <buttonCell key="cell" type="inline" bezelStyle="inline" image="NSIconViewTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Zby-Nv-Yli">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystemBold"/>
                                 </buttonCell>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="18" id="8SU-Sv-w3Z"/>
-                                    <constraint firstAttribute="width" constant="15" id="9m6-75-HDu"/>
+                                    <constraint firstAttribute="width" constant="18" id="9m6-75-HDu"/>
                                 </constraints>
                                 <connections>
                                     <segue destination="6NY-mX-uto" kind="popover" popoverAnchorView="gxK-T9-rTz" popoverBehavior="t" preferredEdge="maxY" id="NkJ-8R-pRc"/>
                                 </connections>
                             </button>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="W1h-Ae-pqa">
-                                <rect key="frame" x="332" y="433" width="15" height="18"/>
+                                <rect key="frame" x="332" y="433" width="18" height="18"/>
                                 <buttonCell key="cell" type="inline" bezelStyle="inline" image="NSIconViewTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ef3-I4-vMD">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="15" id="Xox-dE-i6e"/>
+                                    <constraint firstAttribute="width" constant="18" id="Xox-dE-i6e"/>
                                     <constraint firstAttribute="height" constant="18" id="hSz-2Y-8FF"/>
                                 </constraints>
                                 <connections>
@@ -1555,6 +1555,7 @@
                         <outlet property="dashKeyPopUpButton" destination="fHe-ME-GTY" id="hZo-h0-LYz"/>
                         <outlet property="disableKeyPopUpButton" destination="u9d-n2-6b5" id="HNg-CF-z5h"/>
                         <outlet property="resetToDefaultsButton" destination="JjW-7S-QNG" id="bxA-s3-U5j"/>
+                        <outlet property="scrollDurationDescriptionLabel" destination="sat-Nx-2q9" id="JPP-VY-Tch"/>
                         <outlet property="scrollDurationInput" destination="yLh-Cc-KrW" id="KB1-tR-39d"/>
                         <outlet property="scrollDurationSlider" destination="ILS-hD-J9N" id="LZW-wb-dCh"/>
                         <outlet property="scrollDurationStepper" destination="d2K-LV-vnb" id="wG5-7L-Anh"/>
