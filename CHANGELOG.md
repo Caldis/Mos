@@ -1,21 +1,36 @@
 # 4.0.0
 
-> 时代变了, AI 确实很强
+> 
 
 ## 新功能
-- 「按钮」面板终于毕业：现在可以直接录制鼠标/键盘事件，并绑定你想要的快捷键。🎉
-- 「滚动」现在可以基于垂直、水平方向独立调味了。
-- 「滚动」加入「模拟触控板」模式，我不知道有什么用, 但有点新鲜感总不是坏事 😜。
+- 全新加入「按钮」模块：现在可以直接将鼠标按键绑定到你想要的快捷动作。🎉
+- 加入「模拟触控板」模式，我不知道有什么用, 但有点新鲜感总不是坏事 😜
+- 现在可以在「滚动」中基于垂直、水平方向独立调味了
 
 ## 优化
 - 欢迎指引、辅助功能授权流程 UI 翻新。
-- 偏好设置 UI 更新, 除了新功能, 肯定还有新 BUG。
-- 翻译迁移到 string catalogs, 再也不需要面对, 恶心的 identify string 了
+- 翻译迁移到 string catalogs, 再也不需要面对 identify string 了
 - 基于 AI 补充了一些缺失的的多语言文本。(如果你觉得翻译有任何问题, 非常欢迎帮忙纠正!)
 
 ## 修复
-- 修复部分场景下的滚动异常问题
-- 修复欢迎指引、辅助功能授权流程中偶尔不同步的提示，第一次启动也能顺顺利利。
+- 修复部分场景下的滚动平滑滚动异常问题
+- 修复欢迎指引、辅助功能授权流程中偶尔不同步的问题，希望你启动时能顺顺利利。
+
+---
+
+## New
+- Brand-new Buttons module: record mouse and bind them to whatever shortcut you like. 🎉
+- Added Simulate Trackpad mode. Unsure how useful it is yet, but it seems fun. 😜
+- Vertical and horizontal scrolling can now be tuned independently inside the Scroll tab.
+
+## Improvements
+- Refreshed the welcome guide and accessibility permission in intro flow.
+- Translations now power by string catalogs, no more identify strings.
+- Filled a few missing translationg with a little help from AI. (If you find any problems with the translation, feel free to let us know!)
+
+## Fixes
+- Fixed the smooth scrolling issue in certain scenarios.
+- Fixed the intro flow sync logic, so first launch might go more smoothly.
 
 # [3.5.0](https://github.com/Caldis/Mos/releases/tag/3.5.0)
 
