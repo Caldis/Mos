@@ -1,8 +1,8 @@
 "use client";
 
-import { Modal } from "@/app/components/Modal";
-import { Language, useI18n } from "@/app/i18n/context";
-import { useModal } from "@/app/components/Modal/hooks";
+import { Modal } from '@/app/components/Modal';
+import { useModal } from '@/app/components/Modal/hooks';
+import { Language, useI18n } from '@/app/i18n/context';
 
 const LANGUAGES: {
   code: Language
@@ -18,6 +18,7 @@ const LANGUAGES: {
   { code: "el", name: "Ελληνικά" },
   { code: "tr", name: "Türkçe" },
   { code: "uk", name: "Українська" },
+  { code: "id", name: "Bahasa" },
 ];
 
 export function LanguageSelector() {
