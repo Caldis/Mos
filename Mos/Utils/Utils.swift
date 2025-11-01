@@ -11,7 +11,32 @@ import LoginServiceKit
 
 // 实用方法
 public class Utils {
-    
+
+    /// Determines whether the app is currently in Dark Mode.
+    /// - Parameter view: An optional view to help infer appearance on macOS 10.13 and earlier.
+    /// - Returns: `true` if the effective appearance is dark-like, otherwise `false`.
+    class func isDarkMode(for view: NSView?) -> Bool {
+        if #available(macOS 10.14, *) {
+            // 10.14+ Use effectiveAppearance to determine dark mode
+            let appearance = NSApp.effectiveAppearance
+            return appearance
+                .bestMatch(
+                    from: [
+                        .darkAqua,
+                        .vibrantDark,
+                        .accessibilityHighContrastDarkAqua,
+                        .accessibilityHighContrastVibrantDark
+                    ]
+                ) != nil
+        } else {
+            // 10.13 and earlier: approximate using window or view appearance name
+            let appearance = view?.window?.appearance ?? view?.appearance
+            let name = appearance?.name.rawValue.lowercased() ?? ""
+            return name.contains("vibrantdark") || name.contains("dark")
+        }
+    }
+
+
     // 切换自启
     class func launchAtStartup(on: Bool) {
         let bundlePath = Bundle.main.bundlePath
@@ -158,23 +183,6 @@ public class Utils {
         } catch {
             return target
         }
-    }
-    
-    // 检测按键
-    class func isKey(_ event: CGEvent, _ keyCodes: [CGKeyCode]) -> Bool {
-        return keyCodes.contains(CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode)))
-    }
-    class func isMaskRetain(_ event: CGEvent, _ mask: CGEventFlags) -> Bool {
-        return event.flags.rawValue & mask.rawValue != 0
-    }
-    class func isMaskRelease(_ event: CGEvent, _ mask: CGEventFlags) -> Bool {
-        return event.flags.rawValue & mask.rawValue == 0
-    }
-    class func isKeyDown(_ event: CGEvent, _ set: ( codes: [CGKeyCode], mask: CGEventFlags )) -> Bool {
-        return isKey(event, set.codes) && isMaskRetain(event, set.mask)
-    }
-    class func isKeyUp(_ event: CGEvent, _ set: ( codes: [CGKeyCode], mask: CGEventFlags )) -> Bool {
-        return isKey(event, set.codes) && isMaskRelease(event, set.mask)
     }
     
     // 从路径获取应用图标

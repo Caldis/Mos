@@ -13,25 +13,6 @@ struct ANIMATION {
     static let duration = 0.3
 }
 
-// 修饰键
-struct MODIFIER_KEY {
-    static let controlLeft = CGKeyCode(59)
-    static let controlRight = CGKeyCode(62)
-    static let optionLeft = CGKeyCode(58)
-    static let optionRight = CGKeyCode(61)
-    static let commandLeft = CGKeyCode(55)
-    static let commandRight = CGKeyCode(54)
-    static let shiftLeft = CGKeyCode(56)
-    static let shiftRight = CGKeyCode(60)
-}
-struct MODIFIER_KEY_SET {
-    static let all = ( codes: [MODIFIER_KEY.controlLeft, MODIFIER_KEY.optionLeft, MODIFIER_KEY.commandLeft, MODIFIER_KEY.shiftLeft] , mask: [] )
-    static let control = ( codes: [MODIFIER_KEY.controlLeft, MODIFIER_KEY.controlRight], mask: CGEventFlags.maskControl )
-    static let option = ( codes: [MODIFIER_KEY.optionLeft, MODIFIER_KEY.optionRight], mask: CGEventFlags.maskAlternate )
-    static let command = ( codes: [MODIFIER_KEY.commandLeft, MODIFIER_KEY.commandRight], mask: CGEventFlags.maskCommand )
-    static let shift = ( codes: [MODIFIER_KEY.shiftLeft, MODIFIER_KEY.shiftRight], mask: CGEventFlags.maskShift )
-}
-
 // 窗口
 struct WINDOW_IDENTIFIER {
     static let introductionWindowController = "introductionWindowController"
@@ -48,14 +29,22 @@ struct VIEW_IDENTIFIER {
 // 视图
 struct PANEL_IDENTIFIER {
     static let general = "general"
-    static let advanced = "advanced"
-    static let advancedWithApplication = "advancedWithApplication"
-    static let exception = "exception"
-    static let exceptionInput = "exceptionInput"
-    static let list = [general, advanced, exception]
+    static let scrolling = "scrolling"
+    static let scrollingWithApplication = "scrollingWithApplication"
+    static let buttons = "buttons"
+    static let application = "application"
+    static let list = [general, scrolling, buttons, application]
 }
 let PANEL_PADDING = CGFloat(42.0) // 顶部导航栏高度
 let TOOLBAR_HEIGHT = CGFloat(80.0) // 偏好的 Toolbar 高度
+// macOS 版本补偿高度 - 只在特定版本生效
+var MACOS_TAHOE_COMPENSATE: CGFloat {
+    if #available(macOS 26.0, *) {
+        return CGFloat(8) // 26 版本的额外高度, 否则底部会被吃掉一部分
+    } else {
+        return CGFloat(0) // 其他版本不需要补偿
+    }
+}
 
 // 气泡弹窗
 struct POPOVER_IDENTIFIER {
@@ -68,8 +57,12 @@ struct SPECIAL_EVENT_SOURCE_APPLICATION {
     static let logitechOptions = "com.logitech.manager.daemon"
 }
 
-// 默认设置项
-// 全局参数
+enum ScrollDurationLimits {
+    static let simulateTrackpadDefault: Double = 4.75
+}
+
+/// 默认设置项
+// 常规
 class OPTIONS_GENERAL_DEFAULT {
     // 自启
     var autoLaunch = false {
@@ -81,51 +74,63 @@ class OPTIONS_GENERAL_DEFAULT {
         willSet {newValue ? StatusItemManager.hideStatusItem() : StatusItemManager.showStatusItem()}
         didSet {Options.shared.saveOptions()}
     }
-    // 例外
-    var allowlist = false {
-        didSet {Options.shared.saveOptions()}
-    }
-    var applications = EnhanceArray<ExceptionalApplication>(
-        matchKey: "path",
-        forObserver: {() in Options.shared.saveOptions()}
-    )
 }
-// 滚动参数
-class OPTIONS_SCROLL_BASIC_DEFAULT: Codable {
-    // 基础
+
+// 按键
+class OPTIONS_BUTTONS_DEFAULT: Codable {
+    var binding:[ButtonBinding] = [] {
+        didSet { Options.shared.saveOptions() }
+    }
+}
+
+// 滚动
+class OPTIONS_SCROLL_DEFAULT: Codable {
     var smooth = true {
         didSet {Options.shared.saveOptions()}
     }
     var reverse = true {
         didSet {Options.shared.saveOptions()}
     }
-}
-// 滚动参数
-class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
-    // 高级
+    var reverseVertical = true {
+        didSet {Options.shared.saveOptions()}
+    }
+    var reverseHorizontal = true {
+        didSet {Options.shared.saveOptions()}
+    }
     var dash:Int? = 0 {
         didSet {Options.shared.saveOptions()}
     }
-    var toggle:Int? = 0 {
+    var toggle:Int? = 56 {
         didSet {Options.shared.saveOptions()}
     }
-    var block:Int? = 0 {
+    var block:Int? = 55 {
         didSet {Options.shared.saveOptions()}
     }
-    var step = 35.0 {
+    var step = 33.6 {
         didSet {Options.shared.saveOptions()}
     }
-    var speed = 3.00 {
+    var speed = 2.70 {
         didSet {Options.shared.saveOptions()}
     }
-    var duration = 3.90 {
-        willSet {self.durationTransition = OPTIONS_SCROLL_ADVANCED_DEFAULT.generateDurationTransition(with: newValue)}
+    var duration = 4.35 {
         didSet {Options.shared.saveOptions()}
     }
-    var durationTransition = 0.1340 {
-        didSet {}
+    var durationTransition: Double {
+        OPTIONS_SCROLL_DEFAULT.generateDurationTransition(with: duration)
     }
-    var precision = 1.00 {
+    var deadZone = 1.00 {
+        didSet {Options.shared.saveOptions()}
+    }
+    var smoothSimTrackpad = false {
+        didSet {Options.shared.saveOptions()}
+    }
+    var smoothVertical = true {
+        didSet {Options.shared.saveOptions()}
+    }
+    var smoothHorizontal = true {
+        didSet {Options.shared.saveOptions()}
+    }
+    var durationBeforeSimTrackpadLock: Double? {
         didSet {Options.shared.saveOptions()}
     }
     // 工具
@@ -138,17 +143,35 @@ class OPTIONS_SCROLL_ADVANCED_DEFAULT: Codable {
         return Double(round(1000 * val)/1000)
     }
 }
-extension OPTIONS_SCROLL_ADVANCED_DEFAULT: Equatable {
-    static func == (l: OPTIONS_SCROLL_ADVANCED_DEFAULT, r: OPTIONS_SCROLL_ADVANCED_DEFAULT) -> Bool {
+extension OPTIONS_SCROLL_DEFAULT: Equatable {
+    static func == (l: OPTIONS_SCROLL_DEFAULT, r: OPTIONS_SCROLL_DEFAULT) -> Bool {
         return (
+            l.smooth == r.smooth &&
+            l.reverse == r.smooth &&
+            l.reverseVertical == r.reverseVertical &&
+            l.reverseHorizontal == r.reverseHorizontal &&
             l.dash == r.dash &&
             l.toggle == r.toggle &&
             l.block == r.block &&
             l.step == r.step &&
             l.speed == r.speed &&
             l.duration == r.duration &&
-            l.durationTransition == r.durationTransition &&
-            l.precision == r.precision
+            l.deadZone == r.deadZone &&
+            l.smoothSimTrackpad == r.smoothSimTrackpad &&
+            l.smoothVertical == r.smoothVertical &&
+            l.smoothHorizontal == r.smoothHorizontal &&
+            l.durationBeforeSimTrackpadLock == r.durationBeforeSimTrackpadLock
         )
     }
+}
+
+// 例外应用
+class OPTIONS_APPLICATION_DEFAULT {
+    var allowlist = false {
+        didSet {Options.shared.saveOptions()}
+    }
+    var applications = EnhanceArray<Application>(
+        matchKey: "path",
+        forObserver: {() in Options.shared.saveOptions()}
+    )
 }

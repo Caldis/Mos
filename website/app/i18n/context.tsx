@@ -1,19 +1,21 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { en } from "./en";
-import { zh } from "./zh";
-import { ru } from "./ru";
-import { tr } from "./tr";
-import { ko } from "./ko";
-import { de } from "./de";
-import { el } from "./el";
-import { uk } from "./uk";
-import { ja } from "./ja";
-import { zhHant } from "./zh-Hant";
-import { pl } from "./pl";
+import { createContext, useContext, useEffect, useState } from 'react';
 
-export type Language = "en" | "zh" | "ru" | "tr" | "ko" | "de" | "el" | "uk" | "ja" | "zh-Hant" | "pl";
+import { de } from './de';
+import { el } from './el';
+import { en } from './en';
+import { id } from './id';
+import { ja } from './ja';
+import { ko } from './ko';
+import { ru } from './ru';
+import { tr } from './tr';
+import { uk } from './uk';
+import { zh } from './zh';
+import { pl } from "./pl";
+import { zhHant } from './zh-Hant';
+
+export type Language = "en" | "zh" | "ru" | "tr" | "ko" | "de" | "el" | "uk" | "ja" | "zh-Hant" | "id" | "pl";
 export type Translations = typeof en;
 
 interface I18nContextType {
@@ -72,6 +74,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       ja,
       "zh-Hant": zhHant,
       pl
+      id,
     }[language] || en;
     setTranslations(translations);
     // 保存语言偏好到本地存储

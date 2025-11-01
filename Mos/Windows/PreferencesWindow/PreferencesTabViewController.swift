@@ -45,12 +45,17 @@ class PreferencesTabViewController: NSTabViewController {
 
     override func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {
         // Tab 切换后同步窗口尺寸
+        updateWindowSize()
+    }
+
+    // 更新窗口尺寸以适应当前内容
+    func updateWindowSize() {
         if let currentWindow = view.window, let currentContentView = tabView.subviews.first {
             let windowSize = currentWindow.frame.size
             let contentSize = currentContentView.frame.size
-            let heightDiff = contentSize.height + TOOLBAR_HEIGHT - windowSize.height
-            let targetOrigin = NSPoint(x: currentWindow.frame.origin.x, y: currentWindow.frame.origin.y-heightDiff)
-            let targetSize = NSSize(width: contentSize.width, height: contentSize.height+TOOLBAR_HEIGHT)
+            let heightDiff = contentSize.height + TOOLBAR_HEIGHT + MACOS_TAHOE_COMPENSATE - windowSize.height
+            let targetOrigin = NSPoint(x: currentWindow.frame.origin.x, y: currentWindow.frame.origin.y - heightDiff)
+            let targetSize = NSSize(width: contentSize.width, height: contentSize.height + TOOLBAR_HEIGHT + MACOS_TAHOE_COMPENSATE)
             let targetRect = NSRect(origin: targetOrigin, size: targetSize)
             Utils.groupAnimatorContainer({(context) in
                 currentWindow.setFrame(targetRect, display: true)

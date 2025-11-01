@@ -23,12 +23,20 @@ http://mos.caldis.me/
 
 ## Features
 
-- Let the mouse wheel scroll smoothly just like using a touchpad.
-- Allows customizing scroll behavior, such as the speed and acceleration.
-- Allows customizing the scrolling behavior for touchpad and mouse wheel separately.
-- Provides an informative graph that shows the scroll events.
-- Built-in per app block/allow list support.
-- Coded with Swift.
+- Smooth out your mouse wheel and customize acceleration and easing curves.
+- Configure touchpad and mouse wheel independently, including per-axis smooth & reverse settings.
+- Simulate trackpad scrolling on a regular mouse for a continuous, touch-like experience.
+- New “Buttons” panel records mouse or keyboard events and binds them to system shortcuts with one click.
+- The “Application” module lets each app inherit or override scroll, shortcut, and button-binding rules.
+- Scroll and button monitors visualize live events to help with troubleshooting.
+
+## What’s new in 4.0
+
+- Preferences got a fresh redesign: PrimaryButton, table views, and popovers now feel consistent in both light and dark mode.
+- Button bindings persist automatically, surface duplicate recordings, and highlight existing entries for quick editing.
+- The shortcut catalog now includes screenshots, screen recording, space switching, and more—default mappings are smarter out of the box.
+- Localization moved to Xcode string catalogs; new strings for buttons and shortcuts land alongside a multilingual website refresh.
+- Mission Control, app switching, and other edge cases no longer break smooth scrolling, making daily use more reliable.
 
 
 ## Download & Install

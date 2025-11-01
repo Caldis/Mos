@@ -156,4 +156,31 @@ extension ScrollEvent {
     }
     static let normalizeX = normalize(axis: axisType.X)
     static let normalizeY = normalize(axis: axisType.Y)
+
+    // 清除指定轴的数据 (用于返回原始事件时禁用某轴)
+    class func clear(axis: axisType) -> (ScrollEvent) -> () {
+        if axis == axisType.Y {
+            return { scrollEvent in
+                scrollEvent.event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: 0)
+                scrollEvent.event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: 0.0)
+                scrollEvent.event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: 0.0)
+                scrollEvent.Y.scrollFix = 0
+                scrollEvent.Y.scrollPt = 0.0
+                scrollEvent.Y.scrollFixPt = 0.0
+                scrollEvent.Y.usableValue = 0.0
+            }
+        } else {
+            return { scrollEvent in
+                scrollEvent.event.setIntegerValueField(.scrollWheelEventDeltaAxis2, value: 0)
+                scrollEvent.event.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: 0.0)
+                scrollEvent.event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0.0)
+                scrollEvent.X.scrollFix = 0
+                scrollEvent.X.scrollPt = 0.0
+                scrollEvent.X.scrollFixPt = 0.0
+                scrollEvent.X.usableValue = 0.0
+            }
+        }
+    }
+    static let clearX = clear(axis: axisType.X)
+    static let clearY = clear(axis: axisType.Y)
 }

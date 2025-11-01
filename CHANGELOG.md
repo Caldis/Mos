@@ -1,3 +1,507 @@
+# 4.0.0
+
+> 
+
+## 新功能
+- 全新加入「按钮」模块：现在可以直接将鼠标按键绑定到你想要的快捷动作。🎉
+- 加入「模拟触控板」模式，我不知道有什么用, 但有点新鲜感总不是坏事 😜
+- 现在可以在「滚动」中基于垂直、水平方向独立调味了
+
+## 优化
+- 欢迎指引、辅助功能授权流程 UI 翻新。
+- 翻译迁移到 string catalogs, 再也不需要面对 identify string 了
+- 基于 AI 补充了一些缺失的的多语言文本。(如果你觉得翻译有任何问题, 非常欢迎帮忙纠正!)
+
+## 修复
+- 修复部分场景下的滚动平滑滚动异常问题
+- 修复欢迎指引、辅助功能授权流程中偶尔不同步的问题，希望你启动时能顺顺利利。
+
+---
+
+## New
+- Brand-new Buttons module: record mouse and bind them to whatever shortcut you like. 🎉
+- Added Simulate Trackpad mode. Unsure how useful it is yet, but it seems fun. 😜
+- Vertical and horizontal scrolling can now be tuned independently inside the Scroll tab.
+
+## Improvements
+- Refreshed the welcome guide and accessibility permission in intro flow.
+- Translations now power by string catalogs, no more identify strings.
+- Filled a few missing translationg with a little help from AI. (If you find any problems with the translation, feel free to let us know!)
+
+## Fixes
+- Fixed the smooth scrolling issue in certain scenarios.
+- Fixed the intro flow sync logic, so first launch might go more smoothly.
+
+# [3.5.0](https://github.com/Caldis/Mos/releases/tag/3.5.0)
+
+![IMG_8987](https://github.com/user-attachments/assets/55fac01c-d774-46f3-b118-6eebc50bdcc9)
+
+> 由于 macOS 的安全性限制, 你需要允许 Mos 访问系统的辅助功能的访问权限以确保其正常运行
+
+若 Mos 已在辅助功能的授权列表中, 只需取消勾选后再度勾选即可; 如果仍然无效, 请尝试将其从列表中移除再添加
+可以在此处查看帮助: [无法正确获取辅助功能权限](https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C#%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%8E%B7%E5%8F%96%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E6%9D%83%E9%99%90)
+
+> 如果在初次启动应用时被系统阻止, 你可以查看帮助: [如果应用无法正常运行](https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C#%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%8E%B7%E5%8F%96%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E6%9D%83%E9%99%90)
+
+> [如果想看大咪点这里](https://meow.caldis.me)
+
+## 新特性
+
+- 希腊语支持, 感谢 @Valamorde 
+- 乌克兰语支持, 感谢 @dittohead 
+- 应用图标及状态栏图标更新
+
+## 修正
+ 
+- 在 Catalyst 应用中停止滚动后立即触发滚动无法被应用正常响应的问题, 包括 Maps / Messages / Weather 等 ... 
+
+## 其他
+
+- App 文本校对, @novialriptide @udanfacy22 
+- 网站文本校对, 感谢 @kant @jfrsa
+
+---
+
+> Limited by macOS security strategy, you need to allow Mos to access to Accessibility Control to ensure that it is working properly.
+If Mos already in the Accessibility Control list, just uncheck it and toggle it again. If it still doesn't work, try removing it from the list and adding it again.
+You can check this for help: [Can't get access to accessibility correctly](https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly#cant-get-access-to-accessibility-correctly)
+
+> If the macOS preventing the application running, you can check this for help: [If the App not work properly](https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly)
+
+> [meow meow meow](https://meow.caldis.me)
+
+## New features
+
+- Greek language support, thanks to @Valamorde
+
+- Ukrainian language support, thanks to @dittohead
+
+- Updated application icon and status bar icon
+
+## Fix
+
+- In Catalyst apps, scrolling is not properly responded to immediately after scrolling stops, including Maps/Messages/Weather, etc...
+
+## Other
+
+- Wording improvement for App, @novialriptide @udanfacy22
+
+- Wording improvement for Web, thanks to @kant @jfrsa
+
+# [3.4.1](https://github.com/Caldis/Mos/releases/tag/3.4.1)
+
+![IMG_1565](https://user-images.githubusercontent.com/3529490/194695642-39b0e9dd-0094-4f02-8b2c-68a5445577fa.jpg)
+
+> 由于 macOS 的安全性限制, 你需要允许 Mos 访问系统的辅助功能的访问权限以确保其正常运行
+若 Mos 已在辅助功能的授权列表中, 只需取消勾选后再度勾选即可; 如果仍然无效, 请尝试将其从列表中移除再添加
+可以在此处查看帮助: [无法正确获取辅助功能权限](https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C#%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%8E%B7%E5%8F%96%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E6%9D%83%E9%99%90)
+
+> 如果在初次启动应用时被系统阻止, 你可以查看帮助: [如果应用无法正常运行](https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C#%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%8E%B7%E5%8F%96%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E6%9D%83%E9%99%90)
+
+> [如果想看大咪点这里](https://meow.caldis.me)
+
+## 修正
+ 
+- 隐藏状态栏图标功能无效的问题
+
+---
+
+> Limited by macOS security strategy, you need to allow Mos to access to Accessibility Control to ensure that it is working properly.
+If Mos already in the Accessibility Control list, just uncheck it and toggle it again. If it still doesn't work, try removing it from the list and adding it again.
+You can check this for help: [Can't get access to accessibility correctly](https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly#cant-get-access-to-accessibility-correctly)
+
+> If the macOS preventing the application running, you can check this for help: [If the App not work properly](https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly)
+
+> [meow meow meow](https://meow.caldis.me)
+
+## Bug fix
+
+- Fixed an issue will cause the hide status bar icon not working
+
+# [3.4.0](https://github.com/Caldis/Mos/releases/tag/3.4.0)
+
+![dji_fly_20220905_173318_321_1662372322759_pano](https://user-images.githubusercontent.com/3529490/193414140-26513387-606b-4a63-b88f-7402854038de.jpg)
+
+> 由于 macOS 的安全性限制, 你需要允许 Mos 访问系统的辅助功能的访问权限以确保其正常运行
+若 Mos 已在辅助功能的授权列表中, 只需取消勾选后再度勾选即可; 如果仍然无效, 请尝试将其从列表中移除再添加
+可以在此处查看帮助: [无法正确获取辅助功能权限](https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C#%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%8E%B7%E5%8F%96%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E6%9D%83%E9%99%90)
+
+> 如果在初次启动应用时被系统阻止, 你可以查看帮助: [如果应用无法正常运行](https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C#%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%8E%B7%E5%8F%96%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E6%9D%83%E9%99%90)
+
+> [如果想看大咪点这里](https://meow.caldis.me)
+
+## 优化
+
+- 少许性能优化
+- 繁體中文 (台灣) / 繁體中文 (香港) 的文本优化, 感谢 @pan93412 @ralphchung 的贡献
+- 德语文本优化, 感谢 @mmairle 的贡献
+- 英文文本优化, "white list" -> "allow list", 感谢 @tmchow 的贡献
+- README 更新, 感谢 @kant @Goooler 的贡献
+
+## 修正
+ 
+- 降低了一些了由于内存泄露导致应用异常崩溃的概率 (实在是找不到哪里漏了)
+
+---
+
+> Limited by macOS security strategy, you need to allow Mos to access to Accessibility Control to ensure that it is working properly.
+If Mos already in the Accessibility Control list, just uncheck it and toggle it again. If it still doesn't work, try removing it from the list and adding it again.
+You can check this for help: [Can't get access to accessibility correctly](https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly#cant-get-access-to-accessibility-correctly)
+
+> If the macOS preventing the application running, you can check this for help: [If the App not work properly](https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly)
+
+> [meow meow meow](https://meow.caldis.me)
+
+## Improvement
+
+- Some performance optimizations
+- Traditional Chinese (Taiwan) / Traditional Chinese (Hong Kong) language improvement, thanks to @pan93412 @ralphchung
+- German language improvement, thanks to @mmairle
+- English transition improvement, from term "white list" -> "allow list", thanks to @tmchow 
+- README update, thanks to @kant @Goooler
+
+## Bug fix
+
+- Slightly reduced the probability of the application crash abnormally due to a memory leak
+
+# [3.3.2](https://github.com/Caldis/Mos/releases/tag/3.3.2)
+
+> 由于 macOS 的安全性限制, 你需要允许 Mos 访问系统的辅助功能的访问权限以确保其正常运行
+若 Mos 已在辅助功能的授权列表中, 只需取消勾选后再度勾选即可; 如果仍然无效, 请尝试将其从列表中移除再添加
+可以在此处查看帮助: [无法正确获取辅助功能权限](https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C#%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%8E%B7%E5%8F%96%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E6%9D%83%E9%99%90)
+
+> 如果在初次启动应用时被系统阻止, 你可以查看帮助: [如果应用无法正常运行](https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C#%E6%97%A0%E6%B3%95%E6%AD%A3%E7%A1%AE%E8%8E%B7%E5%8F%96%E8%BE%85%E5%8A%A9%E5%8A%9F%E8%83%BD%E6%9D%83%E9%99%90)
+
+## 修正
+
+- 修复了禁用键无法生效的问题
+- 修复恢复为预设值的状态不一致的问题
+- 修复了例外列表的样式偏移问题
+
+---
+
+> Limited by macOS security strategy, you need to allow Mos to access to Accessibility Control to ensure that it is working properly.
+If Mos already in the Accessibility Control list, just uncheck it and toggle it again. If it still doesn't work, try removing it from the list and adding it again.
+You can check this for help: [Can't get access to accessibility correctly](https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly#cant-get-access-to-accessibility-correctly)
+
+> If the macOS preventing the application running, you can check this for help: [If the App not work properly](https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly)
+
+## Bug Fix
+
+- Fixed an issue that the disabled key cannot take effect
+- Fixed inconsistent status of restoring to preset value
+- Fixed the style offset problem of exception list
+
+# [3.3.1](https://github.com/Caldis/Mos/releases/tag/3.3.1)
+
+![2020-12-13 8a214628](https://user-images.githubusercontent.com/3529490/108588794-028cc280-7396-11eb-9f8a-bddb5795f5b1.jpg)
+---
+
+> 由于 macOS 的安全性限制, 你需要允许 Mos 访问系统的辅助功能的访问权限以确保其正常运行
+若 Mos 已在辅助功能的授权列表中, 只需取消勾选后再度勾选即可
+
+> 如果在初次启动应用时被系统阻止, 你可以查看帮助: [如果你无法执行应用](https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E4%BD%A0%E6%97%A0%E6%B3%95%E6%89%A7%E8%A1%8C%E5%BA%94%E7%94%A8)
+
+## 新特性
+
+- 适配 BigSur 界面
+- 适配 M1 芯片设备
+由于我还没有相应设备, 我们仅仅重新编译了 Universual 的代码来适配, 目前尚存在一些兼容性问题, 您可以追踪 https://github.com/Caldis/Mos/issues/333 来获取最新动态, 如果您可以协助测试, 也十分欢迎在问题单内留言
+- 例外应用的设置界面现在可以正确匹配其状态
+- 例外应用可以正确地添加任何非 Bundle 类型的应用, 如 MineCraft 这类 Java 应用, 或某些来自 Steam 的游戏可执行文件
+此外, 例外应用已经基于执行路径而不是 BundleID 匹配, 这意味着, 一旦你改变了应用的存放路径, 你需要重新配置其设置
+这一变更可能会影响某些已添加的例外应用, 你或许需要重新添加并配置它们
+- 例外应用现在可以修改显示的名称
+- 滚动时点击鼠标左键可以停止滚动
+- 俄文支持, 感谢 @mclvren 的翻译
+- 韩文支持, 感谢 @readingsnail 的翻译
+- 土耳其语支持, 感谢 @LeaveNhA Leav 的翻译
+- 德语支持, 感谢 @lima0 Seli 的翻译
+
+## 优化
+
+- 滚动行为现在不会被携带到其他目标窗口
+- 繁体中文文本优化, 感谢 @crizant 的翻译
+- 英文文本优化, 感谢 @flash76 的翻译
+- 文档支持, 感谢 @jackdcasey 的翻译
+
+## 修正
+
+- 修复了 BigSur 下状态栏图标无法完全隐藏的问题
+- 修复了例外应用在某些情况下无法正确生效的问题
+- 修复了在 Chrome 刷新时执行滚动导致页面被移出屏幕的问题
+- 修复了 Logitech MX Master 系列鼠标的拇指轮无法被正确识别的问题
+
+## 杂项
+
+- 通过 BundleID 添加例外应用的方式被移除
+- 现在使用 Swift Package 代替 CocoaPods
+
+---
+
+> Limited by macOS security strategy, you need to allow Mos to access to Accessibility Control to ensure that it is working properly.
+If Mos already in the Accessibility Control list, just uncheck it and toggle it again.
+
+> If the macOS preventing the application running, you can check this for help: [If the App isn’t allowed to open](https://github.com/Caldis/Mos/wiki/If-the-App-isn%E2%80%99t-allowed-to-open)
+
+## New Features
+
+- BigSur UI adaptation
+- Adaptation to M1 chip
+Since I don't have the latest device yet, we just recompile the Universual code for adaptation, so there are still some compatibility issues, you can track https://github.com/Caldis/Mos/issues/333 to get the latest news, if you can help to test, you are also very welcome in the questionnaire Leave a comment
+- The exceptions settings screen now correctly matches its status
+- Exceptions can correctly add any non-Bundle type application, such as Java applications like MineCraft, or certain game executables from Steam
+In addition, the exceptions have been matched based on the execution path rather than the BundleID, which means that once you change the path where the app is stored, you will need to reconfigure its settings
+This change may affect some of the exception apps that have been added, and you may need to re-add and reconfigure them
+- Exceptional apps can change the displayed name now
+- Scrolling can be stopped by clicking the left mouse button when scrolling
+- Russian support, thanks to @mclvren for the translation
+- Korean support, thanks to @readingsnail for the translation
+- Turkish support, thanks to @LeaveNhA Leav for the translation
+- German support, thanks to @lima0Seli for the translation
+
+## Improvement
+
+- Scrolling behavior is now not carried to other target windows
+- Traditional Chinese text optimization, thanks to @crizant for translation
+- English text optimization, thanks to @flash76 for translation
+- Documentation support, thanks to @jackdcasey for the translation
+
+## Bug Fix
+
+- Fixed an issue  that the status bar icon could not be completely hidden under BigSur
+- Fixed an issue where the exception application did not work correctly in some cases
+- Fixed an issue that caused pages to be moved off the screen when performing scrolling on Chrome refresh
+- Fixed an issue where the thumbwheel on Logitech MX Master series mouse was not recognized correctly
+
+## Miscellaneous
+
+- Adding exception apps via BundleID has been removed
+- Now uses Swift Package instead of CocoaPods
+
+# [3.1.0](https://github.com/Caldis/Mos/releases/tag/3.1.0)
+
+![DJI_0236-HDR](https://user-images.githubusercontent.com/3529490/69168252-54122600-0b31-11ea-94c7-5074a35eba6d.jpg)
+----
+
+```
+由于 macOS 的安全性限制, 你需要允许 Mos 访问系统的辅助功能的访问权限以确保其正常运行
+如果 Mos 已在辅助功能的授权列表中却无法正常使用, 只需取消勾选后再度勾选即可
+```
+
+```
+若系统提示 “程序已损坏” ，你需要在 “系统偏好设置 -> 安全性与隐私 -> 通用” 中允许程序运行
+对于高版本的系统，你可能还需要借助命令行来编辑应用的 “com.apple.quarantine” 属性以允许程序的运行，请参考
+https://superuser.com/questions/28384/what-should-i-do-about-com-apple-quarantine
+```
+
+## 新特性
+
+- 现在你可以指定一个按钮为**加速键**, 按下后只需要轻轻滑动滚轮就可以在页面中来回冲刺
+- 你现在可以为每个例外应用程序设定单独的滚动行为了。
+- 在例外应用列表中, 你可以直接从正在运行的窗口程序中选择并添加爱。
+- 在例外应用列表中, 现在可以手动输入应用程序的识别信息。如果你先前无法通过从文件选择的方式添加一个应用到例外列表中, 不妨用这个试试。不过使用这个路径添加的应用，列表将无法正确展示其图标。
+- 在设置中增加了一个用于隐藏状态栏图标的选项。
+
+## 优化
+
+- 图标更新。
+- 导览界面更新。
+- 偏好设置界面更新。
+- 考虑到**滚动监控**的使用频率, 现在它被雪藏了, 只有在按下 **Options** 并点击状态栏的图标后才能看到滚动监控的选项。
+
+## 修正
+
+- 重写了热键功能, (应该)修复了在某些情况下会卡住的问题。
+- 在 macOS Catalina 下无法正常识别 Launchpad 的问题。
+- 一些 UI 问题。
+- 版本号过低的问题。
+
+---
+
+```
+Limited by macOS security strategy, you need to allow Mos to access to Accessibility Control to ensure that it is working properly.
+If Mos is not working properly when it's in the Accessibility Control list, just uncheck it and toggle it again.
+```
+
+```
+If the system says "The program is damaged", you need to allow the program to run in "System Preferences -> Security and Privacy -> General"
+For higher version systems, you may also need to edit the "com.apple.quarantine" property of the application with the help of the command line to allow the program to run, please refer to
+https://superuser.com/questions/28384/what-should-i-do-about-com-apple-quarantine
+```
+
+## New Features
+
+- Now you can specify a button for the **Acceleration button**. After enabled, you just need to scroll the wheel gracefully and you can swipe the page rapidly.
+- You can now set its own independent scrolling behavior for each exception application.
+- In the Exceptions application list, you can now select directly from the running window program.
+- In the Exceptions application list, you can now manually enter the identification information for your application. If you can't add an app to the exception list by selecting it from a file, try this with a try. But for this reason, the list will not display its icon correctly.
+- Added an option to hide the status bar icon.
+
+## Improvement
+
+- New icon.
+- Improved introduction interface.
+- Improved preferences interface.
+- Since **Rolling Monitor** is used less frequently, it is now hidden. You can only see the options for scrolling monitoring when you press **Options** and click on the icon in the status bar.
+
+## Bug Fix
+
+- Rewritten the hotkey function, (should) fix the problem that will get stuck in some cases.
+- Fix an issue with macOS Catalina that is not working properly due to its security policy
+- There are some problems that are not there.
+
+# [2.4.0-beta](https://github.com/Caldis/Mos/releases/tag/2.4.0-beta)
+
+```
+由于 macOS 10.14 的限制, Mos 只有在获取了辅助功能的访问权限后才可正常使用
+更新版本后，你需要重新在设置的辅助功能中再次给 Mos 授权
+如果已授权，请取消勾选并重新勾选一次
+```
+
+## 修正
+
+亮色模式下的部分样式的问题
+
+部分在例外应用程序列表中的应用程序无法被正确检测到的问题 
+- 一般情况下, Mos 会检测指针所在位置的应用程序是否在例外应用列表中, 不管该窗口是否被激活或前置显示. 但部分应用程序无法通过该方式被识别, 如 Adobe Acrobat DC 等. 对于该类应用程序, 只有在其被激活或前置显示时, 才能被识别为例外应用程序.
+- https://github.com/Caldis/Mos/issues/100, https://github.com/Caldis/Mos/issues/107
+
+---
+
+```
+Limited by macOS 10.14, you need to allow Mos to access to Accessibility control.
+After update Mos, you need to go to the System Preferences to allow Mos access Accessibility again.
+If the entry has been checked, uncheck it and tick again.
+```
+
+## Fixed
+
+Fixed some style problem in brightness mode
+
+Fixed an issue will cause the applications in the exceptions application list are not correctly detected.
+- In general, Mos will detect if the application at the location of the cursor is in the exception application list, regardless of whether the window is activated. However, some applications cannot be identified in this way, such as Adobe Acrobat DC, etc. This type of application can only be recognized as an exception application when it is activated.
+- https://github.com/Caldis/Mos/issues/100, https://github.com/Caldis/Mos/issues/107
+
+# [2.3.0](https://github.com/Caldis/Mos/releases/tag/2.3.0)
+
+![img_8813](https://user-images.githubusercontent.com/3529490/42519702-3391c15a-8497-11e8-8358-9a551bc0c863.jpg)
+
+```
+由于 macOS 10.14 的限制, Mos 只有在获取到了辅助功能的访问权限后才可正常使用
+更新版本后，你需要重新在设置的辅助功能中再次给 Mos 授权
+如果已授权，请取消勾选并重新勾选一次
+```
+
+## 新功能
+
+现已支持 MacOS 10.14 的 Dark Mode
+
+现在, 首次启动 Mos 时将会有一个引导界面提供相关的使用指引, 并指导你开启辅助功能权限
+
+## 优化
+
+於偏好设置的关于页内增加了贡献者名单
+
+翻转/禁用键现在将不会对新用户默认启用
+
+## 修正
+
+修正长时间使用的内存泄漏问题 https://github.com/Caldis/Mos/issues/85
+
+---
+
+```
+Limited by macOS 10.14, you need to allow Mos to access to Accessibility control.
+After update Mos, you need to go to the System Preferences to allow Mos access Accessibility again.
+If the entry has been checked, uncheck it and tick again.
+```
+
+## New Feature
+
+Support Dark Mode in macOS 10.14
+
+Will show a Welcome Window when Mos first launch or just updated.
+
+## Enhancement
+
+Add contributors list in Preferences - About
+
+The Toggle/Block Key is changed to disabled for new users
+
+## Fixed
+
+Fixed an issue will cause the memory leak when scrolling. https://github.com/Caldis/Mos/issues/85
+
+# [2.2.6](https://github.com/Caldis/Mos/releases/tag/2.2.6)
+
+```
+更新版本后，你需要重新在设置的辅助功能中再次给 Mos 授权
+如果已授权，请取消勾选并重新勾选一次, 否则例外应用检测功能将会失效
+```
+
+## 优化
+
+优化了窗口检测机制，降低 CPU 占用，同时减少了平滑滚动失效的概率
+
+优化了英文的界面文本，非常感谢 🎉 @godly-devotion 👏
+
+你现在可以直接在偏好设置面板中直接输入数值来调整参数
+- https://github.com/Caldis/Mos/issues/76
+
+打开偏好设置面板或监控面板时将于 Dock 显示应用图标
+- https://github.com/Caldis/Mos/issues/76
+
+---
+
+```
+After update Mos, you need to go to the System Preferences to allow Mos access Accessibility again.
+If the entry has been checked, uncheck it and tick again, otherwise the Exceptional setting will not apply.
+```
+
+## Enhancement
+
+Improved the application detection mechanism, reduced CPU usage.
+
+Improved English translation, thanks for contribution of 🎉 @godly-devotion 👏.
+
+You can now directly enter values in the Preferences to adjust parameters.
+- https://github.com/Caldis/Mos/issues/76
+
+Shows the app icon on the Dock when opening the Preferences and Scroll Monitor
+- https://github.com/Caldis/Mos/issues/76
+
+# [2.2.2](https://github.com/Caldis/Mos/releases/tag/2.2.2)
+
+![28113313528_b66f14fcb3_h](https://user-images.githubusercontent.com/3529490/39876445-c451acea-54a5-11e8-987e-f4523ba66a62.jpg)
+- via [Playstation Blog](https://blog.us.playstation.com/2018/05/09/photo-mode-comes-to-god-of-war-today)
+
+---
+
+### 更新版本后, 你需要重新在设置的辅助功能中给 Mos 授权, 否则例外应用将会失效
+
+## 修正
+
+修复了在某些情况下可能导致平滑滚动失效的问题
+- https://github.com/Caldis/Mos/issues/63
+- https://github.com/Caldis/Mos/issues/69
+
+修复了水平滚动无效的问题
+- https://github.com/Caldis/Mos/issues/67
+
+---
+
+### After you update Mos, you need to go to the System Preferences to allow Mos access Accessibility again., otherwise the Exceptional Application's setting will not apply
+
+## Fixed
+
+Fixed an issue will cause smooth scrolling core crash in some situation.
+- https://github.com/Caldis/Mos/issues/63
+- https://github.com/Caldis/Mos/issues/69
+
+Fixed an issue will cause horizon scrolling unprocessed. 
+- https://github.com/Caldis/Mos/issues/67
+
 # [2.2.0](https://github.com/Caldis/Mos/releases/tag/2.2.0)
 
 真帅
