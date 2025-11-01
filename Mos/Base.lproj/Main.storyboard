@@ -1829,17 +1829,17 @@
                             </button>
                             <button wantsLayer="YES" springLoaded="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0Uz-Dg-331">
                                 <rect key="frame" x="20" y="15" width="140" height="18"/>
-                                <buttonCell key="cell" type="roundRect" title="The Contributors" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="265-WS-XEd">
+                                <buttonCell key="cell" type="roundRect" title="Contributors" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="265-WS-XEd">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="systemLight" size="12"/>
+                                    <connections>
+                                        <action selector="contributorsListClick:" target="RfV-Ow-3mF" id="flh-r9-5Aq"/>
+                                    </connections>
                                 </buttonCell>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="140" id="En8-TA-RUc"/>
                                     <constraint firstAttribute="height" constant="18" id="ZPu-Cw-1AX"/>
                                 </constraints>
-                                <connections>
-                                    <segue destination="zex-mK-IcT" kind="popover" popoverAnchorView="0Uz-Dg-331" popoverBehavior="t" preferredEdge="maxY" id="TrE-GL-WCn"/>
-                                </connections>
                             </button>
                             <button wantsLayer="YES" springLoaded="YES" horizontalHuggingPriority="249" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uow-FV-SZv">
                                 <rect key="frame" x="236" y="47" width="166" height="18"/>
@@ -2158,7 +2158,7 @@
                 </viewController>
                 <customObject id="xas-PE-1Rw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2674" y="1627"/>
+            <point key="canvasLocation" x="2678" y="1627"/>
         </scene>
         <!--Preferences Donate View Controller-->
         <scene sceneID="YcU-UJ-LwR">

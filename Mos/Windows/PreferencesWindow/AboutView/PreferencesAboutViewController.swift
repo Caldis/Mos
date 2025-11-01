@@ -26,6 +26,10 @@ class PreferencesAboutViewController: NSViewController {
     @IBAction func githubButtonClick(_ sender: NSButton) {
         NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos?from=MosApplication&version=\(version as! String)")!)
     }
+    // 贡献
+    @IBAction func contributorsListClick(_ sender: NSButtonCell) {
+        NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos/graphs/contributors?from=MosApplication&version=\(version as! String)")!)
+    }
     // 帮助
     @IBAction func helpButtonClick(_ sender: NSButton) {
         NSWorkspace.shared.open(URL(string: "https://github.com/Caldis/Mos/wiki?from=MosApplication&version=\(version as! String)")!)
