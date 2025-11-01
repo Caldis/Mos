@@ -97,6 +97,13 @@ struct SystemShortcut {
                 case "closeWindow": return "xmark.rectangle"
                 case "closeAllWindows": return "xmark.circle.fill"
                 case "quitApp": return "power.circle"
+                // 标签与导航
+                case "navigateBack": return "chevron.backward"
+                case "navigateForward": return "chevron.forward"
+                case "nextTab": return "rectangle.on.rectangle"
+                case "previousTab": return "rectangle.fill.on.rectangle.fill"
+                case "switchTabRight": return "arrow.right.circle"
+                case "switchTabLeft": return "arrow.left.circle"
                 // 辅助功能
                 case "invertColors": return "circle.lefthalf.filled.inverse"
                 case "zoomIn": return "plus.magnifyingglass"
@@ -217,6 +224,14 @@ struct SystemShortcut {
     static let closeAllWindows = Shortcut("closeAllWindows", 13, [.command, .option])  // Command-Option-W
     static let quitApp = Shortcut("quitApp", 12, .command)  // Command-Q
 
+    // 标签导航
+    static let navigateBack = Shortcut("navigateBack", 33, .command)  // Command-[
+    static let navigateForward = Shortcut("navigateForward", 30, .command)  // Command-]
+    static let nextTab = Shortcut("nextTab", 30, [.command, .shift])  // Command-Shift-]
+    static let previousTab = Shortcut("previousTab", 33, [.command, .shift])  // Command-Shift-[
+    static let switchTabRight = Shortcut("switchTabRight", 124, [.command, .option])  // Command-Option-Right
+    static let switchTabLeft = Shortcut("switchTabLeft", 123, [.command, .option])  // Command-Option-Left
+
     // 辅助功能
     static let invertColors = Shortcut("invertColors", 28, [.command, .option, .control])  // Command-Option-Control-8
     static let zoomIn = Shortcut("zoomIn", 24, [.command, .option])  // Command-Option-=
@@ -249,6 +264,10 @@ struct SystemShortcut {
         "minimizeWindow": minimizeWindow, "hideApplication": hideApplication,
         "hideOthers": hideOthers, "nextWindow": nextWindow, "closeWindow": closeWindow,
         "closeAllWindows": closeAllWindows, "quitApp": quitApp,
+        // 标签导航
+        "navigateBack": navigateBack, "navigateForward": navigateForward,
+        "nextTab": nextTab, "previousTab": previousTab,
+        "switchTabLeft": switchTabLeft, "switchTabRight": switchTabRight,
         // 辅助功能
         "invertColors": invertColors, "zoomIn": zoomIn, "zoomOut": zoomOut,
     ]
@@ -301,6 +320,9 @@ struct SystemShortcut {
         ("categoryScreenshot", [
             screenshot, screenshotSelection, screenshotAndRecording
         ]),
+        ("categoryNavigation", [
+            navigateBack, navigateForward, previousTab, nextTab, switchTabLeft, switchTabRight
+        ]),
         // ("categoryAccessibility", [  // 暂时不提供, 有问题
         //     invertColors, zoomIn, zoomOut
         // ]),
@@ -320,6 +342,7 @@ struct SystemShortcut {
         case "categoryFinderActions": return "folder"
         case "categorySystem": return "gearshape"
         case "categoryScreenshot": return "camera.viewfinder"
+        case "categoryNavigation": return "arrow.left.and.right"
         case "categoryAccessibility": return "eye"
         default: return "questionmark.folder"
         }

@@ -279,7 +279,7 @@ private extension ScrollPoster {
         let outputMagnitude = max(abs(shiftedValue.y), abs(shiftedValue.x))
         if outputMagnitude > deadZone {
             post(ref, shiftedValue)
-        }
+}
 
         if let scheduled = momentumEndScheduledTime, momentumActive {
             if now >= scheduled {
