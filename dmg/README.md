@@ -4,7 +4,9 @@
 
 先安装 https://github.com/create-dmg/create-dmg
 
-然后东西都丢到 Mos 的 dmg 目录下
+如果 command 报错记得 chmod +x 一下
+
+然后确保 dmg 目录下东西都在:
 
 - dmg-bg.png DMG 的背景图, 分辨率 700x400
 
