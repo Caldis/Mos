@@ -73,7 +73,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       uk,
       ja,
       "zh-Hant": zhHant,
-      pl
+      pl,
       id,
     }[language] || en;
     setTranslations(translations);
