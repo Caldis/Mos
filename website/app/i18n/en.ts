@@ -1,8 +1,8 @@
 export const en = {
-  nav_docs: "docs",
+  nav_docs: "Docs",
   nav_github: "Github",
   hero_title: "Scroll smoothly with Mos",
-  hero_description: "Mos is powerful tools allow your mouse to scroll smoothly on macOS.",
+  hero_description: "Mos is a powerful tool improving scroll behavior on macOS.",
   download_button: "Download Now",
   download_releaseNotes: "Release Notes",
   footer_systemRequirement: "Requires macOS 10.13+",
@@ -10,5 +10,5 @@ export const en = {
   homebrew_title: "Install via Homebrew",
   homebrew_description: "Run the following command in your terminal:",
   homebrew_copy: "Copy",
-  homebrew_copied: "Copied!"
-}
+  homebrew_copied: "Copied!",
+};
