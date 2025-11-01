@@ -1,0 +1,26 @@
+{
+  "servers": [
+    {
+      "extensions": [
+        "c",
+        "cpp",
+        "cc",
+        "h",
+        "hpp"
+      ],
+      "command": [
+        "clangd"
+      ],
+      "rootDir": "."
+    },
+    {
+      "extensions": [
+        "swift"
+      ],
+      "command": [
+        "sourcekit-lsp"
+      ],
+      "rootDir": "."
+    }
+  ]
+}

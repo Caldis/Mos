@@ -23,8 +23,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Options.shared.readOptions()
         
         // DEBUG: 直接弹出设置窗口
-        // WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
-        
+        #if DEBUG
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
+        #endif
+
         // 监听用户切换, 在切换用户 session 时停止运行
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
@@ -57,8 +59,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
-        ScrollCore.shared.endHandlingScroll()
-        NSLog("ScrollCore End: Terminate")
+        ScrollCore.shared.disable()
+        ButtonCore.shared.disable()
     }
     
     // 检查是否有访问 accessibility 权限, 如果有则启动滚动处理, 并结束计时器
@@ -69,12 +71,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if Utils.isHadAccessibilityPermissions() {
                 validTimer.invalidate()
                 NSLog("First Initialization (Accessibility Authorization Needed)")
-                ScrollCore.shared.startHandlingScroll()
+                ScrollCore.shared.enable()
+                ButtonCore.shared.enable()
             }
         } else {
             if Utils.isHadAccessibilityPermissions() {
-                NSLog("Normal Initialization")
-                ScrollCore.shared.startHandlingScroll()
+                NSLog("Regular Initialization")
+                ScrollCore.shared.enable()
+                ButtonCore.shared.enable()
             } else {
                 // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
                 WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.introductionWindowController, withTitle: "")
@@ -92,11 +96,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // 在切换用户时停止滚动处理
     @objc func sessionDidActive(notification: NSNotification){
-        ScrollCore.shared.startHandlingScroll()
-        NSLog("ScrollCore Start: Session Active")
+        ScrollCore.shared.enable()
+        ButtonCore.shared.enable()
     }
     @objc func sessionDidResign(notification: NSNotification){
-        ScrollCore.shared.endHandlingScroll()
-        NSLog("ScrollCore End: Session Resign")
+        ScrollCore.shared.disable()
+        ButtonCore.shared.disable()
     }
 }

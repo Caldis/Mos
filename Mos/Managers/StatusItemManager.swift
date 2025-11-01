@@ -7,15 +7,7 @@
 //
 import Cocoa
 
-enum STATUS_ITEM_TYPE {
-    case menu
-    case popover
-}
-
 class StatusItemManager: NSMenu, NSMenuDelegate {
-    
-    // 状态栏类型
-    let TYPE = STATUS_ITEM_TYPE.menu
     
     // 状态栏引用
     static let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -25,22 +17,10 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
     override func awakeFromNib() {
         NSLog("Module initialized: StatusItemManager")
         // 设置图标/行为
-        item.image = #imageLiteral(resourceName: "AppStatusBarIcon")
+        item.button?.image = #imageLiteral(resourceName: "AppStatusBarIcon")
         // 设置事件响应
-        switch TYPE {
-            // 类型: 菜单
-            case STATUS_ITEM_TYPE.menu:
-                // 设置菜单代理
-                item.menu = self
-                item.menu?.delegate = self
-                break
-            // 类型: 弹出面板
-            case STATUS_ITEM_TYPE.popover:
-                // 点击事件 (需要设置 target 才能响应此处方法)
-                item.button?.action = #selector(onMenuClick)
-                item.button?.target = self
-                break
-        }
+        item.menu = self
+        item.menu?.delegate = self
     }
     
 }
@@ -60,22 +40,18 @@ extension StatusItemManager {
                 buildRequireAccessibilityMenu()
                 return
             }
+            // DEBUG: 直接弹出设置窗口
+            #if DEBUG
+            buildOptionMenu()
+            #else
             // 当按下 option 键显示特殊菜单
             guard !event.modifierFlags.contains(.option) else {
                 buildOptionMenu()
                 return
             }
-            // 根据类型弹出菜单
-            switch TYPE {
-                // 类型: 菜单
-                case STATUS_ITEM_TYPE.menu:
-                    buildNormalMenu()
-                    break
-                // 类型: 弹出面板
-                case STATUS_ITEM_TYPE.popover:
-                    PopoverManager.shared.togglePopover(withIdentifier: POPOVER_IDENTIFIER.statusItemPopoverViewController, relativeTo: item.button!)
-                    break
-            }
+            // 弹出菜单
+            buildNormalMenu()
+            #endif
         }
     }
 }
@@ -88,9 +64,9 @@ extension StatusItemManager {
     @objc func buildRequireAccessibilityMenu() {
         if let menu = item.menu {
             menu.removeAllItems()
-            menu.addItem(withTitle: i18n.needsAccessToAccessibilityControls, action: #selector(accessibilityRequire), keyEquivalent: "").target = self
+            menu.addItem(withTitle: NSLocalizedString("Needs access to Accessibility controls", comment: ""), action: #selector(accessibilityRequire), keyEquivalent: "").target = self
             // Quit
-            Utils.addMenuItemWithSeparator(to: menu, title: i18n.quit, icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
+            Utils.addMenuItemWithSeparator(to: menu, title: NSLocalizedString("Quit", comment: ""), icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
         }
     }
     @objc func accessibilityRequire() {
@@ -102,11 +78,11 @@ extension StatusItemManager {
             // Reset
             menu.removeAllItems()
             // Monitor
-            Utils.addMenuItem(to: menu, title: i18n.monitor, icon: #imageLiteral(resourceName: "SF.square.stack.3d.down.right"), action: #selector(monitorClick))
+            Utils.addMenuItem(to: menu, title: NSLocalizedString("Event Monitor", comment: ""), icon: #imageLiteral(resourceName: "SF.square.stack.3d.down.right"), action: #selector(monitorClick))
             // Preferences
-            Utils.addMenuItem(to: menu, title: i18n.preferences, icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
+            Utils.addMenuItem(to: menu, title: NSLocalizedString("Preferences", comment: ""), icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
             // Quit
-            Utils.addMenuItemWithSeparator(to: menu, title: i18n.quit, icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
+            Utils.addMenuItemWithSeparator(to: menu, title: NSLocalizedString("Quit", comment: ""), icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
         }
     }
     // 常规菜单
@@ -115,9 +91,9 @@ extension StatusItemManager {
             // Reset
             menu.removeAllItems()
             // Preferences
-            Utils.addMenuItem(to: menu, title: i18n.preferences, icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
+            Utils.addMenuItem(to: menu, title: NSLocalizedString("Preferences", comment: ""), icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
             // Quit
-            Utils.addMenuItemWithSeparator(to: menu, title: i18n.quit, icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
+            Utils.addMenuItemWithSeparator(to: menu, title: NSLocalizedString("Quit", comment: ""), icon: #imageLiteral(resourceName: "SF.escape"), action: #selector(quitClick))
         }
     }
     @objc func monitorClick() {

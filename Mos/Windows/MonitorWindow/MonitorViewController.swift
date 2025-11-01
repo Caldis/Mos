@@ -9,63 +9,274 @@
 import Cocoa
 import Charts
 
+let scrollEventName = NSNotification.Name(rawValue: "ScrollEvent")
+let buttonEventName = NSNotification.Name(rawValue: "ButtonEvent")
+
 class MonitorViewController: NSViewController, ChartViewDelegate {
     
-    // 图表相关
+    // MARK: - UI: 图表
     var lineChartCount = 0.0
     @IBOutlet weak var lineChart: LineChartView!
     
-    // 文字Log区域相关
+    // MARK: - UI: Log 文本
     @IBOutlet var parsedLogTextField: NSTextView!
     @IBOutlet var scrollLogTextField: NSTextView!
     @IBOutlet var scrollDetailLogTextField: NSTextView!
+    @IBOutlet var buttonEventLogTextField: NSTextView!
     @IBOutlet var processLogTextField: NSTextView!
     @IBOutlet var mouseLogTextField: NSTextView!
-    @IBOutlet var tabletEventLogTextField: NSTextView!
-    @IBOutlet var tabletProximityLogTextField: NSTextView!
+
+    // MARK: - UI: 事件触发器
+    @IBOutlet weak var shortcutMenu: NSMenu!
+    @IBOutlet weak var shortcutPopUpButton: NSPopUpButton!
+
+    // MARK: - 生命周期
+    override func viewWillAppear() {
+        initCharts()
+        initScrollObserver()
+        initButtonObserver()
+        setupShortcutMenu()
+    }
+    override func viewWillDisappear() {
+        uninitScrollObserver()
+        uninitButtonObserver()
+        NotificationCenter.default.removeObserver(self)
+    }
     
-    // 监听相关
-    var scrollInterceptor: Interceptor?
-    let mask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
-    let eventCallBack: CGEventTapCallBack = {
-        (proxy, type, event, refcon) in
+    // MARK: - 监听: 滚动
+    var scrollEventInterceptor: Interceptor?
+    let scrollEventMask = ScrollCore.shared.scrollEventMask
+    let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // 发送 ScrollWheelEventUpdate 通知
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "ScrollEvent"), object: event)
+        NotificationCenter.default.post(name: scrollEventName, object: event)
         // 返回事件对象
         return Unmanaged.passUnretained(event)
     }
+    // 更新面板
+    var prevScrollWheelEventScrollPhase = 0.0
+    var prevScrollWheelEventMomentumPhase = 0.0
+    @objc private func updateScrollEventData(notification: NSNotification) {
+        let event = notification.object as! CGEvent
+        // 更新图表
+        if let data = lineChart.data {
+            // scrollWheelEventPointDelta
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)), toDataSet: 0)
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)), toDataSet: 1)
 
-    override func viewWillAppear() {
-        // 初始化图表
-        initCharts()
-        // 初始化监听
-        initObserver()
+            // scrollWheelEventIsContinuous
+            let isContinuous = Double(event.getIntegerValueField(.scrollWheelEventIsContinuous))
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: isContinuous), toDataSet: 2)
+            
+            // scrollWheelEventScrollCount
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: Double(event.getIntegerValueField(.scrollWheelEventScrollCount))), toDataSet: 3)
+            
+            // scrollWheelEventScrollPhase
+            let scrollPhase = Double(event.getIntegerValueField(.scrollWheelEventScrollPhase))
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: scrollPhase), toDataSet: 4)
+
+            // scrollWheelEventMomentumPhase
+            let momentumPhase = Double(event.getIntegerValueField(.scrollWheelEventMomentumPhase))
+            data.appendEntry(ChartDataEntry(x: lineChartCount, y: momentumPhase), toDataSet: 5)
+
+            // Logs
+            if prevScrollWheelEventScrollPhase != scrollPhase || prevScrollWheelEventMomentumPhase != momentumPhase {
+                if prevScrollWheelEventScrollPhase != scrollPhase {
+                    prevScrollWheelEventScrollPhase = scrollPhase
+                }
+                if prevScrollWheelEventMomentumPhase != momentumPhase {
+                    prevScrollWheelEventMomentumPhase = momentumPhase
+                }
+                NSLog("Phase updated -> prevScrollWheelEventScrollPhase: \(scrollPhase), prevScrollWheelEventMomentumPhase: \(momentumPhase)")
+            }
+
+            lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 100.0)
+            lineChart.moveViewToX(lineChartCount)
+            lineChart.notifyDataSetChanged()
+            lineChartCount += 1.0
+        }
+        // 更新 Log
+        parsedLogTextField.string = Logger.getParsedLog(form: event)
+        scrollLogTextField.string = Logger.getScrollLog(form: event)
+        scrollDetailLogTextField.string = Logger.getScrollDetailLog(form: event)
+        processLogTextField.string = Logger.getProcessLog(form: event)
+        mouseLogTextField.string = Logger.getMouseLog(form: event)
     }
-    override func viewWillDisappear() {
-        uninitObserver()
+    // 初始化监听
+    func initScrollObserver() {
+        // 监听内部事件
+        NotificationCenter.default.addObserver(self, selector: #selector(updateScrollEventData), name: scrollEventName, object: nil)
+        // 启动事件拦截
+        do {
+            scrollEventInterceptor = try Interceptor(
+                event: scrollEventMask,
+                handleBy: scrollEventCallBack,
+                listenOn: .cgAnnotatedSessionEventTap,
+                placeAt: .tailAppendEventTap,
+                for: .listenOnly
+            )
+        } catch {
+            NSLog("[MonitorView] Create scroll interceptor failure: \(error)")
+        }
+    }
+    // 停止
+    func uninitScrollObserver() {
+        scrollEventInterceptor?.stop()
     }
     
-    // 图表
+    // MARK: - 监听: 按键
+    var buttonEventInterceptor: Interceptor?
+    var buttonEventMask: CGEventMask {
+        ButtonCore.shared.leftDown |
+        ButtonCore.shared.rightDown |
+        ButtonCore.shared.otherDown |
+        ButtonCore.shared.keyDown |
+        ButtonCore.shared.flagsChanged
+    }
+    let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        // 发送按钮事件通知
+        NotificationCenter.default.post(name: buttonEventName, object: event)
+        // 返回事件对象
+        return Unmanaged.passUnretained(event)
+    }
+    // 按钮日志
+    private var buttonEventLog: String = ""
+    private let maxButtonLogLines = 50
+    // 更新面板
+    @objc private func updateButtonEventData(notification: NSNotification) {
+        let event = notification.object as! CGEvent
+
+        // 添加按钮标识符信息到描述中
+        let logLine = "[\(event.timestampFormatted)] \(event.displayName) keyCode: \(event.keyCode), mouseCode: \(event.mouseCode)"
+
+        // 将新事件插入到日志开头，确保新事件在首行
+        var logLines = buttonEventLog.isEmpty ? [] : buttonEventLog.components(separatedBy: "\n")
+        logLines.insert(logLine, at: 0)
+        
+        // 管理日志行数，保持最新的 maxButtonLogLines 行（从开头保留）
+        if logLines.count > maxButtonLogLines {
+            logLines = Array(logLines.prefix(maxButtonLogLines))
+        }
+        
+        buttonEventLog = logLines.joined(separator: "\n")
+        
+        // 更新按钮事件专用日志文本框
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self else { return }
+            
+            if let textView = strongSelf.buttonEventLogTextField {
+                // 使用专用按钮事件文本框
+                textView.string = strongSelf.buttonEventLog
+                // 滚动到顶部以显示最新插入的事件（在首行）
+                textView.scrollRangeToVisible(NSRange(location: 0, length: 0))
+            }
+        }
+    }
+    // 初始化
+    func initButtonObserver() {
+        // 监听内部事件
+        NotificationCenter.default.addObserver(self, selector: #selector(updateButtonEventData), name: buttonEventName, object: nil)
+        // 启动事件拦截
+        do {
+            buttonEventInterceptor = try Interceptor(
+                event: buttonEventMask,
+                handleBy: buttonEventCallBack,
+                listenOn: .cgAnnotatedSessionEventTap,
+                placeAt: .tailAppendEventTap,
+                for: .listenOnly
+            )
+        } catch {
+            NSLog("[MonitorView] Create button interceptor failure: \(error)")
+        }
+    }
+    // 停止
+    func uninitButtonObserver() {
+        buttonEventInterceptor?.stop()
+    }
+
+    // MARK: - 按键事件处理
+    func setupShortcutMenu() {
+        guard shortcutMenu != nil else {
+            NSLog("[MonitorView] shortcutMenu 未连接，无法构建菜单")
+            return
+        }
+
+        // 使用 ShortcutManager 构建分级菜单
+        ShortcutManager.buildShortcutMenu(
+            into: shortcutMenu,
+            target: self,
+            action: #selector(onShortcutMenuItemSelected(_:))
+        )
+
+        // 设置默认选择 placeholder
+        shortcutPopUpButton?.selectItem(at: 0)
+    }
+    @objc func onShortcutMenuItemSelected(_ sender: NSMenuItem) {
+        guard let shortcut = sender.representedObject as? SystemShortcut.Shortcut else {
+            NSLog("[MonitorView] 无法获取快捷键信息")
+            return
+        }
+        // 使用 ShortcutExecutor 触发快捷键
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            ShortcutExecutor.shared.execute(shortcut)
+        }
+    }
+    
+
+    // MARK: - 图表管理
+    // 初始化
     func initCharts() {
         // 定义颜色
         let green = NSUIColor(red: 96.0/255.0, green: 198.0/255.0, blue: 85.0/255.0, alpha: 1.0)
         let yellow = NSUIColor(red: 246.0/255.0, green: 191.0/255.0, blue: 79.0/255.0, alpha: 1.0)
+        let blue = NSUIColor(red: 52.0/255.0, green: 152.0/255.0, blue: 219.0/255.0, alpha: 1.0)
+        let purple = NSUIColor(red: 155.0/255.0, green: 89.0/255.0, blue: 182.0/255.0, alpha: 1.0)
+        let orange = NSUIColor(red: 230.0/255.0, green: 126.0/255.0, blue: 34.0/255.0, alpha: 1.0)
+        let red = NSUIColor(red: 231.0/255.0, green: 76.0/255.0, blue: 60.0/255.0, alpha: 1.0)
+        
         // 设置代理
         lineChart.delegate = self
         // 初始化图表数据
         lineChartCount = 0.0
+        
         // 设置数据集
         let verticalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Vertical")
         verticalData.valueTextColor = NSColor.labelColor
         verticalData.colors = [green]
         verticalData.circleRadius = 1.5
         verticalData.circleColors = [green]
+        
         let horizontalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Horizontal")
         horizontalData.valueTextColor = NSColor.labelColor
         horizontalData.colors = [yellow]
         horizontalData.circleRadius = 1.5
         horizontalData.circleColors = [yellow]
-        lineChart.data = LineChartData(dataSets: [verticalData, horizontalData])
+        
+        let isContinuousData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "IsContinuous")
+        isContinuousData.valueTextColor = NSColor.labelColor
+        isContinuousData.colors = [blue]
+        isContinuousData.circleRadius = 1.5
+        isContinuousData.circleColors = [blue]
+        
+        let scrollCountData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "ScrollCount")
+        scrollCountData.valueTextColor = NSColor.labelColor
+        scrollCountData.colors = [purple]
+        scrollCountData.circleRadius = 1.5
+        scrollCountData.circleColors = [purple]
+        
+        let scrollPhaseData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "ScrollPhase")
+        scrollPhaseData.valueTextColor = NSColor.labelColor
+        scrollPhaseData.colors = [orange]
+        scrollPhaseData.circleRadius = 1.5
+        scrollPhaseData.circleColors = [orange]
+        
+        let momentumPhaseData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "MomentumPhase")
+        momentumPhaseData.valueTextColor = NSColor.labelColor
+        momentumPhaseData.colors = [red]
+        momentumPhaseData.circleRadius = 1.5
+        momentumPhaseData.circleColors = [red]
+        
+        lineChart.data = LineChartData(dataSets: [verticalData, horizontalData, isContinuousData, scrollCountData, scrollPhaseData, momentumPhaseData])
+        
         // 设置图表样式
         lineChart.noDataTextColor = NSColor.labelColor
         lineChart.chartDescription.text = ""
@@ -76,55 +287,11 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         lineChart.drawBordersEnabled = true
         lineChart.borderColor = NSColor.secondaryLabelColor
     }
-    // 初始化监听
-    func initObserver() {
-        // 移除原有
-        NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateMonitorData), name:NSNotification.Name(rawValue: "ScrollEvent"), object: nil)
-        // 开始截取事件
-        do {
-            scrollInterceptor = try Interceptor(
-                event: mask,
-                handleBy: eventCallBack,
-                listenOn: .cgAnnotatedSessionEventTap,
-                placeAt: .tailAppendEventTap,
-                for: .listenOnly
-            )
-        } catch {
-            print("[MonitorView] Create Interceptor failure: \(error)")
-        }
-    }
-    func uninitObserver() {
-        // 停止截取
-        scrollInterceptor?.stop()
-        // 停止监听
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    // 根据数据更新 Monitor 呈现
-    @objc private func updateMonitorData(notification: NSNotification) {
-        let event = notification.object as! CGEvent
-        // 更新图表数据
-        if let data = lineChart.data {
-            data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)), toDataSet: 0)
-            data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)), toDataSet: 1)
-            lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 100.0)
-            lineChart.moveViewToX(lineChartCount)
-            lineChart.notifyDataSetChanged()
-            lineChartCount += 1.0
-        }
-        // 更新Log区域
-        parsedLogTextField.string = Logger.getParsedLog(form: event)
-        scrollLogTextField.string = Logger.getScrollLog(form: event)
-        scrollDetailLogTextField.string = Logger.getScrollDetailLog(form: event)
-        processLogTextField.string = Logger.getProcessLog(form: event)
-        mouseLogTextField.string = Logger.getMouseLog(form: event)
-        tabletEventLogTextField.string = Logger.getTabletEventLog(form: event)
-        tabletProximityLogTextField.string = Logger.getTabletProximityLog(form: event)
-    }
-    
-    // 刷新图表
+    // 刷新内容
     @IBAction func refreshChart(_ sender: Any) {
         initCharts()
+        // 清空按钮事件日志
+        buttonEventLog = ""
+        buttonEventLogTextField?.string = ""
     }
 }

@@ -107,38 +107,55 @@ class ScrollUtils {
         return launchpadActiveCache
     }
 
-    // 从 exceptionalApplications 中取回符合传入的 key 的 ExceptionalApplication 对象
-    // Key 在 applications 初始化时指定于 ExceptionalApplication 中
-    func getExceptionalApplication(from runningApplication: NSRunningApplication?) -> ExceptionalApplication? {
-        if let applicationByBundlePath = Options.shared.general.applications.get(by: runningApplication?.bundleURL?.path) {
+    // 从 Applications 中取回符合传入的 key 的 Application 对象
+    // Key 在 applications 初始化时指定于 Application 中
+    func getTargetApplication(from runningApplication: NSRunningApplication?) -> Application? {
+        if let applicationByBundlePath = Options.shared.application.applications.get(by: runningApplication?.bundleURL?.path) {
             return applicationByBundlePath
         }
-        if let applicationByExecutablePath = Options.shared.general.applications.get(by: runningApplication?.executableURL?.path) {
+        if let applicationByExecutablePath = Options.shared.application.applications.get(by: runningApplication?.executableURL?.path) {
             return applicationByExecutablePath
         }
         return nil
     }
 
     // 滚动参数: 热键
-    func optionsDashOn(application: ExceptionalApplication?) -> CGKeyCode {
+    // 使用 0xFFFF 作为未配置的标识, 避免与 keyCode=0 (A键) 或其他功能键冲突
+    func optionsDashKey(application: Application?) -> (CGKeyCode, CGEventFlags) {
+        var code: CGKeyCode
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scrollAdvanced.dash ?? 0 : targetApplication.scrollAdvanced.dash ?? 0)
+            let keyValue = targetApplication.inherit ? Options.shared.scroll.dash : targetApplication.scroll.dash
+            // 0 或 nil 都视为未配置,返回不可能的 keyCode
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         } else {
-            return CGKeyCode(Options.shared.scrollAdvanced.dash ?? 0)
+            let keyValue = Options.shared.scroll.dash
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         }
+        let mask = KeyCode.getKeyMask(code)
+        return (code, mask)
     }
-    func optionsToggleOn(application: ExceptionalApplication?) -> CGKeyCode {
+    func optionsToggleKey(application: Application?) -> (CGKeyCode, CGEventFlags) {
+        var code: CGKeyCode
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scrollAdvanced.toggle ?? 0 : targetApplication.scrollAdvanced.toggle ?? 0)
+            let keyValue = targetApplication.inherit ? Options.shared.scroll.toggle : targetApplication.scroll.toggle
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         } else {
-            return CGKeyCode(Options.shared.scrollAdvanced.toggle ?? 0)
+            let keyValue = Options.shared.scroll.toggle
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         }
+        let mask = KeyCode.getKeyMask(code)
+        return (code, mask)
     }
-    func optionsBlockOn(application: ExceptionalApplication?) -> CGKeyCode {
+    func optionsBlockKey(application: Application?) -> (CGKeyCode, CGEventFlags) {
+        var code: CGKeyCode
         if let targetApplication = application {
-            return CGKeyCode(targetApplication.inherit ? Options.shared.scrollAdvanced.block ?? 0 : targetApplication.scrollAdvanced.block ?? 0)
+            let keyValue = targetApplication.inherit ? Options.shared.scroll.block : targetApplication.scroll.block
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         } else {
-            return CGKeyCode(Options.shared.scrollAdvanced.block ?? 0)
+            let keyValue = Options.shared.scroll.block
+            code = (keyValue == nil || keyValue == 0) ? CGKeyCode(0xFFFF) : CGKeyCode(keyValue!)
         }
+        let mask = KeyCode.getKeyMask(code)
+        return (code, mask)
     }
 }
