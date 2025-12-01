@@ -9,12 +9,9 @@
 import Cocoa
 
 class PreferencesDonateViewController: NSViewController {
-    
-    // Constants
-    let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
-    
     // 打开肥猫链接
     @IBAction func fatCatClick(_ sender: NSButton) {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
         if let url = URL(string: "https://meow.caldis.me?from=MosApplication&version=\(version as! String)") {
             NSWorkspace.shared.open(url)
         }
@@ -26,5 +23,11 @@ class PreferencesDonateViewController: NSViewController {
             NSWorkspace.shared.open(url)
         }
     }
-    
+
+    // 打开 Buy me a coffee 捐赠链接
+    @IBAction func donateByBuyMeACoffee(_ sender: NSButton) {
+        if let url = URL(string: "https://buymeacoffee.com/caldis") {
+            NSWorkspace.shared.open(url)
+        }
+    }
 }

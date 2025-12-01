@@ -289,22 +289,22 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <box boxType="custom" cornerRadius="5" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="Hcf-QN-htP">
-                                                                    <rect key="frame" x="0.0" y="5" width="413" height="42"/>
+                                                                    <rect key="frame" x="0.0" y="5" width="412" height="42"/>
                                                                     <view key="contentView" wantsLayer="YES" id="sUm-mF-Rt9">
-                                                                        <rect key="frame" x="1" y="1" width="411" height="40"/>
+                                                                        <rect key="frame" x="1" y="1" width="410" height="40"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <box boxType="custom" borderWidth="0.0" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="ei3-vh-6kV">
-                                                                                <rect key="frame" x="12" y="5" width="250" height="30"/>
+                                                                                <rect key="frame" x="12" y="5" width="249" height="30"/>
                                                                                 <view key="contentView" id="UjE-iu-X41">
-                                                                                    <rect key="frame" x="0.0" y="0.0" width="250" height="30"/>
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="249" height="30"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 </view>
                                                                                 <color key="borderColor" red="1" green="1" blue="1" alpha="0.10068822230879106" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                 <color key="fillColor" red="0.96062562677481145" green="0.96754766589999996" blue="0.93064895263721903" alpha="0.0" colorSpace="custom" customColorSpace="displayP3"/>
                                                                             </box>
                                                                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3eO-mD-7ue">
-                                                                                <rect key="frame" x="287" y="8" width="120" height="24"/>
+                                                                                <rect key="frame" x="286" y="8" width="120" height="24"/>
                                                                                 <popUpButtonCell key="cell" type="push" title="No Action" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="epU-lS-atX" id="DPN-ii-WxE">
                                                                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                                     <font key="font" metaFont="message"/>
@@ -623,7 +623,7 @@
                                                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="QQO-uS-6gC"/>
                                                                 </imageView>
                                                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Fv1-rI-t5W">
-                                                                    <rect key="frame" x="47" y="15" width="284" height="16"/>
+                                                                    <rect key="frame" x="47" y="15" width="283" height="16"/>
                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="Application Name" id="XjY-7g-GLL">
                                                                         <font key="font" metaFont="system"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -963,11 +963,11 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button wantsLayer="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4kr-7i-Wm2">
+                            <button wantsLayer="YES" springLoaded="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4kr-7i-Wm2">
                                 <rect key="frame" x="171" y="39" width="130" height="18"/>
-                                <buttonCell key="cell" type="roundRect" title="Check Now" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="T9f-TL-GYj">
+                                <buttonCell key="cell" type="roundRect" title="Check Now" bezelStyle="roundedRect" alignment="center" state="on" borderStyle="border" allowsMixedState="YES" imageScaling="proportionallyDown" inset="2" id="T9f-TL-GYj">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system" size="10"/>
+                                    <font key="font" metaFont="systemLight" size="12"/>
                                 </buttonCell>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="18" id="eCL-n5-Cbk"/>
@@ -2158,24 +2158,24 @@
                 </viewController>
                 <customObject id="xas-PE-1Rw" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2678" y="1627"/>
+            <point key="canvasLocation" x="2688" y="1627"/>
         </scene>
         <!--Preferences Donate View Controller-->
         <scene sceneID="YcU-UJ-LwR">
             <objects>
                 <viewController storyboardIdentifier="donate" id="HYX-CS-fYi" customClass="PreferencesDonateViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="NWm-eD-Q0k">
-                        <rect key="frame" x="0.0" y="0.0" width="629" height="690"/>
+                    <view key="view" misplaced="YES" id="NWm-eD-Q0k">
+                        <rect key="frame" x="0.0" y="0.0" width="701" height="691"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <box horizontalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Xfu-49-XDZ">
-                                <rect key="frame" x="238" y="0.0" width="5" height="617"/>
+                                <rect key="frame" x="238" y="0.0" width="5" height="618"/>
                             </box>
                             <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="qDd-Su-rN7">
-                                <rect key="frame" x="0.0" y="615" width="629" height="5"/>
+                                <rect key="frame" x="0.0" y="616" width="705" height="5"/>
                             </box>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ky1-pk-TF3">
-                                <rect key="frame" x="40" y="638" width="549" height="32"/>
+                                <rect key="frame" x="24" y="639" width="657" height="32"/>
                                 <buttonCell key="cell" type="bevel" title="How fat is the cat ?" bezelStyle="regularSquare" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="D0v-Oj-ekP">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -2188,10 +2188,10 @@
                                 </connections>
                             </button>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="QwK-sY-64R">
-                                <rect key="frame" x="0.0" y="0.0" width="240" height="617"/>
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="618"/>
                                 <subviews>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="tVv-UV-KC0">
-                                        <rect key="frame" x="70" y="549" width="100" height="33"/>
+                                        <rect key="frame" x="70" y="555" width="100" height="33"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="100" id="Dok-25-nvd"/>
                                             <constraint firstAttribute="height" constant="33" id="lgC-Xf-35h"/>
@@ -2199,15 +2199,15 @@
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="WechatpayLogo" id="KxG-B6-8jE"/>
                                     </imageView>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" alphaValue="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="3Gz-X2-Fwd">
-                                        <rect key="frame" x="45" y="389" width="150" height="150"/>
+                                        <rect key="frame" x="45" y="435" width="150" height="110"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="150" id="4Hf-VY-Z17"/>
+                                            <constraint firstAttribute="height" constant="110" id="4Hf-VY-Z17"/>
                                             <constraint firstAttribute="width" constant="150" id="XL4-NG-bpE"/>
                                         </constraints>
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="WechatpayQR" id="jdG-KX-g7K"/>
                                     </imageView>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cTQ-RR-Izk">
-                                        <rect key="frame" x="70" y="319" width="100" height="35"/>
+                                        <rect key="frame" x="70" y="370" width="100" height="35"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="100" id="N9C-zu-YJ4"/>
                                             <constraint firstAttribute="height" constant="35" id="rel-Mp-8km"/>
@@ -2215,15 +2215,15 @@
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AlipayLogo" id="dw7-en-g43"/>
                                     </imageView>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" alphaValue="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="PxZ-JL-fgP">
-                                        <rect key="frame" x="45" y="159" width="150" height="150"/>
+                                        <rect key="frame" x="45" y="250" width="150" height="110"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="150" id="Gfq-bZ-TdP"/>
+                                            <constraint firstAttribute="height" constant="110" id="Gfq-bZ-TdP"/>
                                             <constraint firstAttribute="width" constant="150" id="n89-cy-bbf"/>
                                         </constraints>
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="AlipayQR" id="86z-w2-DQf"/>
                                     </imageView>
                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WhP-jP-gB6">
-                                        <rect key="frame" x="70" y="85" width="100" height="40"/>
+                                        <rect key="frame" x="70" y="180" width="100" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="100" id="DXX-C2-lHC"/>
                                             <constraint firstAttribute="height" constant="40" id="lU8-H6-EfY"/>
@@ -2231,7 +2231,7 @@
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="PaypalLogo" id="Ho9-ZJ-OXg"/>
                                     </imageView>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EWm-8G-1in">
-                                        <rect key="frame" x="54" y="48" width="132" height="24"/>
+                                        <rect key="frame" x="54" y="143" width="132" height="24"/>
                                         <buttonCell key="cell" type="push" title="Donate via PayPal" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="aPi-cE-maK">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -2240,54 +2240,77 @@
                                             </connections>
                                         </buttonCell>
                                     </button>
+                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Mhg-yQ-c8y">
+                                        <rect key="frame" x="50" y="73" width="140" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="140" id="j8T-vL-CpA"/>
+                                            <constraint firstAttribute="height" constant="40" id="qkm-pT-zjz"/>
+                                        </constraints>
+                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="BuyMeACoffee" id="NJs-VC-Wfv"/>
+                                    </imageView>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YT3-5c-vQO">
+                                        <rect key="frame" x="59" y="36" width="122" height="24"/>
+                                        <buttonCell key="cell" type="push" title="Buy me a coffee" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="u2R-oy-a1c">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="donateByBuyMeACoffee:" target="HYX-CS-fYi" id="e5c-ad-DGA"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="cTQ-RR-Izk" firstAttribute="top" secondItem="3Gz-X2-Fwd" secondAttribute="bottom" constant="35" id="73h-Sc-fgO"/>
+                                    <constraint firstItem="cTQ-RR-Izk" firstAttribute="top" secondItem="3Gz-X2-Fwd" secondAttribute="bottom" constant="30" id="73h-Sc-fgO"/>
                                     <constraint firstItem="EWm-8G-1in" firstAttribute="centerX" secondItem="QwK-sY-64R" secondAttribute="centerX" id="AV9-rz-pyP"/>
                                     <constraint firstItem="PxZ-JL-fgP" firstAttribute="centerX" secondItem="QwK-sY-64R" secondAttribute="centerX" id="C8m-tb-WdG"/>
                                     <constraint firstItem="tVv-UV-KC0" firstAttribute="centerX" secondItem="QwK-sY-64R" secondAttribute="centerX" id="F5m-ys-Oou"/>
+                                    <constraint firstItem="YT3-5c-vQO" firstAttribute="centerX" secondItem="QwK-sY-64R" secondAttribute="centerX" id="GmA-2m-pnD"/>
                                     <constraint firstItem="cTQ-RR-Izk" firstAttribute="centerX" secondItem="QwK-sY-64R" secondAttribute="centerX" id="KAk-cD-yYQ"/>
                                     <constraint firstItem="3Gz-X2-Fwd" firstAttribute="centerX" secondItem="QwK-sY-64R" secondAttribute="centerX" id="TrG-7H-2VS"/>
+                                    <constraint firstItem="Mhg-yQ-c8y" firstAttribute="centerX" secondItem="QwK-sY-64R" secondAttribute="centerX" id="UBT-QU-guo"/>
                                     <constraint firstItem="EWm-8G-1in" firstAttribute="top" secondItem="WhP-jP-gB6" secondAttribute="bottom" constant="13" id="WpZ-IN-1ew"/>
+                                    <constraint firstItem="YT3-5c-vQO" firstAttribute="top" secondItem="Mhg-yQ-c8y" secondAttribute="bottom" constant="13" id="Zf9-4f-Zwx"/>
                                     <constraint firstAttribute="width" constant="240" id="ZjZ-1H-r8V"/>
                                     <constraint firstItem="3Gz-X2-Fwd" firstAttribute="top" secondItem="tVv-UV-KC0" secondAttribute="bottom" constant="10" id="c6k-My-yWR"/>
-                                    <constraint firstItem="WhP-jP-gB6" firstAttribute="top" secondItem="PxZ-JL-fgP" secondAttribute="bottom" constant="34" id="fAm-mG-bga"/>
+                                    <constraint firstItem="WhP-jP-gB6" firstAttribute="top" secondItem="PxZ-JL-fgP" secondAttribute="bottom" constant="30" id="fAm-mG-bga"/>
                                     <constraint firstItem="PxZ-JL-fgP" firstAttribute="top" secondItem="cTQ-RR-Izk" secondAttribute="bottom" constant="10" id="kPv-LG-L0Z"/>
-                                    <constraint firstItem="tVv-UV-KC0" firstAttribute="top" secondItem="QwK-sY-64R" secondAttribute="top" constant="35" id="qmn-Z5-n51"/>
+                                    <constraint firstItem="Mhg-yQ-c8y" firstAttribute="top" secondItem="EWm-8G-1in" secondAttribute="bottom" constant="30" id="oOc-5Q-qqv"/>
+                                    <constraint firstItem="tVv-UV-KC0" firstAttribute="top" secondItem="QwK-sY-64R" secondAttribute="top" constant="30" id="qmn-Z5-n51"/>
                                     <constraint firstItem="WhP-jP-gB6" firstAttribute="centerX" secondItem="QwK-sY-64R" secondAttribute="centerX" id="rQ1-Sd-T09"/>
                                 </constraints>
                             </customView>
                             <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mcC-tE-xEK">
-                                <rect key="frame" x="241" y="0.0" width="388" height="617"/>
+                                <rect key="frame" x="241" y="0.0" width="464" height="618"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="388" id="4HX-y0-5Yx"/>
-                                    <constraint firstAttribute="height" constant="617" id="JS8-7d-Qp2"/>
+                                    <constraint firstAttribute="width" constant="464" id="4HX-y0-5Yx"/>
+                                    <constraint firstAttribute="height" constant="618" id="bJY-Dg-eeE"/>
                                 </constraints>
-                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="MEOW" id="ubJ-HX-ab4"/>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyUpOrDown" image="MEOW" id="ubJ-HX-ab4"/>
                             </imageView>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="mcC-tE-xEK" firstAttribute="top" secondItem="qDd-Su-rN7" secondAttribute="bottom" id="3O4-RU-qVK"/>
                             <constraint firstAttribute="bottom" secondItem="QwK-sY-64R" secondAttribute="bottom" id="BQN-D1-fgP"/>
-                            <constraint firstAttribute="bottom" secondItem="mcC-tE-xEK" secondAttribute="bottom" id="Bva-SW-JAA"/>
                             <constraint firstAttribute="trailing" secondItem="qDd-Su-rN7" secondAttribute="trailing" id="CbA-K5-oU2"/>
                             <constraint firstAttribute="trailing" secondItem="mcC-tE-xEK" secondAttribute="trailing" id="D5G-QQ-1Yq"/>
                             <constraint firstItem="Xfu-49-XDZ" firstAttribute="leading" secondItem="QwK-sY-64R" secondAttribute="trailing" id="Dgs-xh-SiG"/>
                             <constraint firstItem="mcC-tE-xEK" firstAttribute="leading" secondItem="Xfu-49-XDZ" secondAttribute="trailing" id="NW9-46-Y90"/>
                             <constraint firstItem="qDd-Su-rN7" firstAttribute="leading" secondItem="NWm-eD-Q0k" secondAttribute="leading" id="Oem-ZB-d9Z"/>
+                            <constraint firstAttribute="bottom" secondItem="mcC-tE-xEK" secondAttribute="bottom" id="P5y-Hl-hnQ"/>
                             <constraint firstItem="QwK-sY-64R" firstAttribute="top" secondItem="qDd-Su-rN7" secondAttribute="bottom" id="Qq0-Y4-NDY"/>
                             <constraint firstItem="Xfu-49-XDZ" firstAttribute="top" secondItem="qDd-Su-rN7" secondAttribute="bottom" id="VZl-dT-7xh"/>
-                            <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Ky1-pk-TF3" secondAttribute="trailing" constant="40" id="WeV-Wl-c1e"/>
+                            <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Ky1-pk-TF3" secondAttribute="trailing" constant="24" id="WeV-Wl-c1e"/>
                             <constraint firstAttribute="bottom" secondItem="Xfu-49-XDZ" secondAttribute="bottom" id="ZM9-lU-kVj"/>
                             <constraint firstItem="Ky1-pk-TF3" firstAttribute="top" secondItem="NWm-eD-Q0k" secondAttribute="top" constant="20" id="dYF-3s-FGF"/>
                             <constraint firstItem="QwK-sY-64R" firstAttribute="leading" secondItem="NWm-eD-Q0k" secondAttribute="leading" id="diK-g1-JTM"/>
                             <constraint firstItem="qDd-Su-rN7" firstAttribute="top" secondItem="Ky1-pk-TF3" secondAttribute="bottom" constant="20" id="kag-bL-c3S"/>
-                            <constraint firstItem="Ky1-pk-TF3" firstAttribute="leading" relation="lessThanOrEqual" secondItem="NWm-eD-Q0k" secondAttribute="leading" constant="40" id="w9S-qZ-fdW"/>
+                            <constraint firstItem="Ky1-pk-TF3" firstAttribute="leading" relation="lessThanOrEqual" secondItem="NWm-eD-Q0k" secondAttribute="leading" constant="24" id="w9S-qZ-fdW"/>
                         </constraints>
                     </view>
                 </viewController>
                 <customObject id="HME-8h-VSk" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3271" y="1806"/>
+            <point key="canvasLocation" x="3339" y="1807"/>
         </scene>
         <!--Monitor-->
         <scene sceneID="hIz-AP-VOD">
@@ -2981,7 +3004,8 @@ Remove Mos from the list first, and then re-add Mos to authorize. (You can also 
     <resources>
         <image name="AlipayLogo" width="432" height="150"/>
         <image name="AlipayQR" width="256" height="256"/>
-        <image name="MEOW" width="680" height="1080"/>
+        <image name="BuyMeACoffee" width="195" height="40"/>
+        <image name="MEOW" width="3024" height="4032"/>
         <image name="NSAddTemplate" width="18" height="17"/>
         <image name="NSApplicationIcon" width="32" height="32"/>
         <image name="NSIconViewTemplate" width="19" height="18"/>

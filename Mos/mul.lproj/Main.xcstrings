@@ -7858,6 +7858,42 @@
         }
       }
     },
+    "u2R-oy-a1c.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Buy me a coffee\"; ObjectID = \"u2R-oy-a1c\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Buy me a coffee"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请我喝咖"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請我喝咖"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請我飲咖"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請我喝咖"
+          }
+        }
+      }
+    },
     "UJ4-y2-HO8.title" : {
       "comment" : "Class = \"NSMenuItem\"; title = \"⌥ Option\"; ObjectID = \"UJ4-y2-HO8\";",
       "extractionState" : "extracted_with_value",
