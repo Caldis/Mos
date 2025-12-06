@@ -163,5 +163,5 @@ struct KeyCode {
         14: "🖱14", 15: "🖱15", 16: "🖱16", 17: "🖱17", 18: "🖱18",
         19: "🖱19", 20: "🖱20"
     ]
-    static let mouseMainKeys: [UInt16] = [0,1,2]
+    static let mouseMainKeys: [UInt16] = [0,1]  // Only protect left/right clicks, allow middle button without modifiers
 }
