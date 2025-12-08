@@ -23,6 +23,12 @@
             "value" : "⌥ Option"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌥ Option"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -101,6 +107,12 @@
             "value" : "After the update, macOS sometimes fails to authorize correctly.\nRemove Mos from the list first, and then re-add Mos to authorize. (You can also drag the icon above directly)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Après la mise à jour, macOS échoue parfois à autoriser correctement l’application.\nRetirez d’abord Mos de la liste, puis ajoutez-la de nouveau pour l’autoriser.\n(Vous pouvez aussi faire glisser l’icône ci-dessus directement.)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -176,6 +188,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Mos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Mos"
           }
         },
@@ -257,6 +275,12 @@
             "value" : "Customize mouse buttons to enhance your experience"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personnalisez les boutons de souris pour améliorer votre expérience"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -332,6 +356,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Andrew Mclaren(@mclvren)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Andrew Mclaren(@mclvren)"
           }
         },
@@ -413,6 +443,12 @@
             "value" : "Just some little job for your mouse."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un petit job pour votre souris."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -489,6 +525,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Korean"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coréen"
           }
         },
         "ja" : {
@@ -569,6 +611,12 @@
             "value" : "Scrolling"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Défilement"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -632,6 +680,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌃ Control"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌃ Control"
           }
         },
@@ -712,6 +766,12 @@
             "value" : "Introducing"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Découvrez"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -787,6 +847,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌘ Command"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌘ Command"
           }
         },
@@ -868,6 +934,12 @@
             "value" : "Application"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Application"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -943,6 +1015,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "GitHub"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "GitHub"
           }
         },
@@ -1024,6 +1102,12 @@
             "value" : "Contributors"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contributeurs"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1100,6 +1184,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Application Name"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de l’application"
           }
         },
         "ja" : {
@@ -1180,6 +1270,12 @@
             "value" : "Button"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bouton"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1258,6 +1354,12 @@
             "value" : "Status Bar Icon"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Icône dans la barre de statut"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1333,6 +1435,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Feed 🍥 a pet MEOW"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nourrissez 🍥 un animal MIAOU"
           }
         },
         "ja" : {
@@ -1413,6 +1521,12 @@
             "value" : "Donate via PayPal"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Donnez via PayPal"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1489,6 +1603,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Current Version"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version actuelle"
           }
         },
         "ja" : {
@@ -1569,6 +1689,12 @@
             "value" : "Main Menu"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menu principal"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1645,6 +1771,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Sets scrolling acceleration"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir l’accélération du défilement"
           }
         },
         "ja" : {
@@ -1725,6 +1857,12 @@
             "value" : "Step"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etape"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1803,6 +1941,12 @@
             "value" : "Re-run Mos again to show the hidden Icon"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relancez Mos pour afficher l’icône masquée"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1878,6 +2022,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Application"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Application"
           }
         },
@@ -1959,6 +2109,12 @@
             "value" : "Duration"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durée"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2035,6 +2191,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Toggle Key"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touche de bascule"
           }
         },
         "ja" : {
@@ -2115,6 +2277,12 @@
             "value" : "Enable seamless scrolling"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer défilement fluide"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2193,6 +2361,12 @@
             "value" : "Buttons"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boutons"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2268,6 +2442,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌘ Command"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌘ Command"
           }
         },
@@ -2349,6 +2529,12 @@
             "value" : "Turkish"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turc"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2425,6 +2611,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "You need to re-run Mos to change the settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous devez relancer Mos pour prendre en compte ce paramétrage"
           }
         },
         "ja" : {
@@ -2505,6 +2697,12 @@
             "value" : "Disabled"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactivé"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2583,6 +2781,12 @@
             "value" : "Preferences"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préférences"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2658,6 +2862,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "How fat is this cat?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A quel point ce chat est gros ?"
           }
         },
         "ja" : {
@@ -2738,6 +2948,12 @@
             "value" : "Manually Select From Finder"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionner depuis le Finder"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2813,6 +3029,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌃ Control"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌃ Control"
           }
         },
@@ -2894,6 +3116,12 @@
             "value" : "Create a custom configuration for specific apps"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personnalisez la configuration pour des apps spécifiques"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2970,6 +3198,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Sets the duration of the scroll animation"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la durée de l’animation du défilement"
           }
         },
         "ja" : {
@@ -3050,6 +3284,12 @@
             "value" : "Allow to access"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser l’accès"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3126,6 +3366,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Startup"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrage"
           }
         },
         "ja" : {
@@ -3206,6 +3452,12 @@
             "value" : "Block Key"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touche de blocage"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3284,6 +3536,12 @@
             "value" : "No Action"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune action"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3359,6 +3617,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Horizontal Reverse"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inversion horizontale"
           }
         },
         "ja" : {
@@ -3439,6 +3703,12 @@
             "value" : "Updates"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mises à jour"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3514,6 +3784,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "1-10"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "1-10"
           }
         },
@@ -3595,6 +3871,12 @@
             "value" : "3.00"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3.00"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3671,6 +3953,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Welcome Window"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fenêtre de bienvenue"
           }
         },
         "ja" : {
@@ -3751,6 +4039,12 @@
             "value" : "Assign a button to a specific action"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assigner un bouton à une action spécifique"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3827,6 +4121,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Russian"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Russe"
           }
         },
         "ja" : {
@@ -3907,6 +4207,12 @@
             "value" : "Speed"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vitesse"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3983,6 +4289,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Hotkey"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raccourci"
           }
         },
         "ja" : {
@@ -4063,6 +4375,12 @@
             "value" : "Add Application"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter Application"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4138,6 +4456,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Vertical Smooth"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Défilement doux vertical"
           }
         },
         "ja" : {
@@ -4218,6 +4542,12 @@
             "value" : "Contributors List"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liste des contributeurs"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4294,6 +4624,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "German"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allemand"
           }
         },
         "ja" : {
@@ -4374,6 +4710,12 @@
             "value" : "Scroll Reverse"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inverser le défilement"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4450,6 +4792,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Hide Status Bar Icon"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquer l’icône dans la barre des tâches"
           }
         },
         "ja" : {
@@ -4530,6 +4878,12 @@
             "value" : "Select an action"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir une action"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4608,6 +4962,12 @@
             "value" : "Dash Key"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touche d’accélération"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4683,6 +5043,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌃ Control"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌃ Control"
           }
         },
@@ -4764,6 +5130,12 @@
             "value" : "Wang Yudong(@wyudong)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wang Yudong(@wyudong)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4842,6 +5214,12 @@
             "value" : "Temporarily block smooth scrolling"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloquer temporairement le défilement doux"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4917,6 +5295,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : " jrthsr700tmax(@jrthsr700tmax), Crizant(@crizant)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : " jrthsr700tmax(@jrthsr700tmax), Crizant(@crizant)"
           }
         },
@@ -4998,6 +5382,12 @@
             "value" : "General"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Général"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5074,6 +5464,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Scrolling"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Défilement"
           }
         },
         "ja" : {
@@ -5154,6 +5550,12 @@
             "value" : "Sets the minimum scroll distance"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définir la distance de défilement minimale"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5232,6 +5634,12 @@
             "value" : "Customize individual settings for each app"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personnaliser le paramétrage pour chaque app"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5298,6 +5706,12 @@
             "value" : "Scrolling"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Défilement"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5332,6 +5746,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Traditional Chinese"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chinois traditionnel"
           }
         },
         "ja" : {
@@ -5412,6 +5832,12 @@
             "value" : "Change vertical scrolling to horizontal scrolling"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remplacer le défilement vertical par le défilement horizontal"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5487,6 +5913,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Allowlist Mode"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode liste autorisée"
           }
         },
         "ja" : {
@@ -5567,6 +5999,12 @@
             "value" : "Record Button"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bouton d’enregistrement"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5645,6 +6083,12 @@
             "value" : "Translation"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traduction"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5720,6 +6164,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "*"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "*"
           }
         },
@@ -5801,6 +6251,12 @@
             "value" : "© 2017-2025 Caldis. All rights reserved."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "© 2017-2025 Caldis. Tous droits réservés."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5852,6 +6308,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌥ Option"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌥ Option"
           }
         },
@@ -5933,6 +6395,12 @@
             "value" : "Seçkin Kükrer(@LeaveNhA)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçkin Kükrer(@LeaveNhA)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6009,6 +6477,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Smooth Scrolling"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Défilement doux"
           }
         },
         "ja" : {
@@ -6089,6 +6563,12 @@
             "value" : "Selim(@lima0)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selim(@lima0)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6164,6 +6644,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Horizontal Smooth"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fluidité horizontale"
           }
         },
         "ja" : {
@@ -6244,6 +6730,12 @@
             "value" : "Simulate Trackpad (Beta)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simuler Trackpad (Beta)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6319,6 +6811,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⇧ Shift"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⇧ Shift"
           }
         },
@@ -6399,6 +6897,12 @@
             "value" : "Vertical Reverse"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inversion verticale"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6474,6 +6978,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "1-5"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "1-5"
           }
         },
@@ -6555,6 +7065,12 @@
             "value" : "3.90"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3.90"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6631,6 +7147,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Running Applications"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applications en cours d’exécution"
           }
         },
         "ja" : {
@@ -6711,6 +7233,12 @@
             "value" : "About"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A propos"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6788,6 +7316,12 @@
             "value" : "Temporarily disable smooth scrolling to improve scrolling accuracy"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactiver temporairement le défilement doux pour améliorer la précision du défilement"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6863,6 +7397,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Action"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Action"
           }
         },
@@ -6944,6 +7484,12 @@
             "value" : "⇧ Shift"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇧ Shift"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7019,6 +7565,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⇧ Shift"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⇧ Shift"
           }
         },
@@ -7100,6 +7652,12 @@
             "value" : "Joshua Park(@godly-devotion), OrcaXS(@OrcaXS) ..."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joshua Park(@godly-devotion), OrcaXS(@OrcaXS) ..."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7176,6 +7734,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Other"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autre"
           }
         },
         "ja" : {
@@ -7256,6 +7820,12 @@
             "value" : "Not effective?"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas effectif ?"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7332,6 +7902,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Reset to defaults"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinitialiser tout"
           }
         },
         "ja" : {
@@ -7412,6 +7988,12 @@
             "value" : "Check Now"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier maintenant"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7490,6 +8072,12 @@
             "value" : "No application is Special"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune application n’est Spéciale"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7565,6 +8153,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Woosuk Park(@readingsnail)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Woosuk Park(@readingsnail)"
           }
         },
@@ -7646,6 +8240,12 @@
             "value" : "Rendering this chart will affect scrolling performance. Close the window when not in use."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La génération de ce graphique impacte les performances du défilement. Fermez la fenêtre lorsque vous ne l’utilisez pas."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7722,6 +8322,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "No buttons are set up yet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun bouton configuré actuellement"
           }
         },
         "ja" : {
@@ -7802,6 +8408,12 @@
             "value" : "Running Applications"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applications en cours d’exécution"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7868,6 +8480,12 @@
             "value" : "Buy me a coffee"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payez-moi un café"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7913,6 +8531,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌥ Option"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌥ Option"
           }
         },
@@ -7993,6 +8617,12 @@
             "value" : "The allowlist mode will make Mos only apply to apps within the application list."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le mode liste autorisée fait que Mos ne s’applique qu’aux apps de la liste."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8068,6 +8698,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "0.1-100"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "0.1-100"
           }
         },
@@ -8149,6 +8785,12 @@
             "value" : "35.00"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "35.00"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8225,6 +8867,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Check for updates:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier mises à jour :"
           }
         },
         "ja" : {
@@ -8305,6 +8953,12 @@
             "value" : "Disabled"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactivé"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8381,6 +9035,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Disabled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactivé"
           }
         },
         "ja" : {
@@ -8461,6 +9121,12 @@
             "value" : "Invert wheel direction"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inverser le sens de la roue"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8536,6 +9202,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "May affect the scrolling behavior."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peut affecter le comportement du défilement"
           }
         },
         "ja" : {
@@ -8616,6 +9288,12 @@
             "value" : "Inherit Global Settings"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramétrage Global Hérité"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8692,6 +9370,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "English"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anglais"
           }
         },
         "ja" : {
@@ -8772,6 +9456,12 @@
             "value" : " Application"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Application"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8848,6 +9538,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Application Name"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom de l’application"
           }
         },
         "ja" : {
@@ -8928,6 +9624,12 @@
             "value" : "Getting trouble ?"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un problème ?"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9006,6 +9708,12 @@
             "value" : "Waiting for you"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous attend"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9057,6 +9765,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Launch on Login"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer avec la session"
           }
         },
         "ja" : {
@@ -9137,6 +9851,12 @@
             "value" : "Home Page"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Page d'accueil"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9214,6 +9934,12 @@
             "value" : "Your mouse is about to get a smoother scrolling experience.\nPick up your mouse, there are a few things you need to check."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre souris est sur le point de vous faire bénéficier d’une meilleure expérience de défilement. Munissez-vous d’elle, il y a d’abord quelques détails à vérifier."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9289,6 +10015,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Mos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Mos"
           }
         },
@@ -9370,6 +10102,12 @@
             "value" : "Increase scrolling speed on long pages"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Augmenter la vitesse de défilement sur les longues pages"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9446,6 +10184,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Contributors"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contributeurs"
           }
         },
         "ja" : {
@@ -9526,6 +10270,12 @@
             "value" : "Simplified Chinese"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chinois simplifié"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9601,6 +10351,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌘ Command"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌘ Command"
           }
         },
