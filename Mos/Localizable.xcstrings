@@ -22,6 +22,12 @@
             "value" : "Launchpad"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Launchpad"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -98,6 +104,12 @@
             "value" : "Auth"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -172,6 +184,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Authorized"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorisé"
           }
         },
         "ja" : {
@@ -251,6 +269,12 @@
             "value" : "Bold"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gras"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -326,6 +350,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accessibility"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accessibilité"
           }
         },
         "ja" : {
@@ -405,6 +435,12 @@
             "value" : "Apps & Windows"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apps & fenêtres"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -480,6 +516,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "App Switching"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bascule d’apps"
           }
         },
         "ja" : {
@@ -559,6 +601,12 @@
             "value" : "Document Editing"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edition de document"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -634,6 +682,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Finder Actions"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actions du finder"
           }
         },
         "ja" : {
@@ -713,6 +767,12 @@
             "value" : "Function Keys"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touches de fonction"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -785,6 +845,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigation"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Navigation"
@@ -867,6 +933,12 @@
             "value" : "Screenshot"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capture d’écran"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -942,6 +1014,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "System"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Système"
           }
         },
         "ja" : {
@@ -1021,6 +1099,12 @@
             "value" : "System Functions"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fonctions système"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1096,6 +1180,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Window Management"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestion de fenêtre"
           }
         },
         "ja" : {
@@ -1175,6 +1265,12 @@
             "value" : "Emoji & Symbols"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emoji & symboles"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1250,6 +1346,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Close All Windows"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer toutes les fenêtres"
           }
         },
         "ja" : {
@@ -1329,6 +1431,12 @@
             "value" : "Close Window"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer la fenêtre"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1406,6 +1514,12 @@
             "value" : "Copy"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1474,6 +1588,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Τρέχουσα Έκδοση"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version actuelle"
           }
         },
         "ja" : {
@@ -1553,6 +1673,12 @@
             "value" : "Cut"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couper"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1628,6 +1754,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dictation"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dictée"
           }
         },
         "ja" : {
@@ -1707,6 +1839,12 @@
             "value" : "Do Not Disturb"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ne pas déranger"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1782,6 +1920,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Duplicate"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dupliquer"
           }
         },
         "ja" : {
@@ -1861,6 +2005,12 @@
             "value" : "Empty Trash"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vider la corbeille"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1935,6 +2085,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : " Event Monitor"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestionnaire d’évènements"
           }
         },
         "ja" : {
@@ -2014,6 +2170,12 @@
             "value" : "Find"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trouver"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2089,6 +2251,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Force Quit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forcer à quitter"
           }
         },
         "ja" : {
@@ -2168,6 +2336,12 @@
             "value" : "Get Info"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voir les informations"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2243,6 +2417,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Go to Folder"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aller au répertoire"
           }
         },
         "ja" : {
@@ -2322,6 +2502,12 @@
             "value" : "Hide Application"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquer l’applicaton"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2397,6 +2583,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hide Others"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquer les autres"
           }
         },
         "ja" : {
@@ -2476,6 +2668,12 @@
             "value" : "Invert Colors"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inverser les couleurs"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2551,6 +2749,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Italic"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Italique"
           }
         },
         "ja" : {
@@ -2630,6 +2834,12 @@
             "value" : "Lock Screen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verrouiller l’écran"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2705,6 +2915,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Log Out"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se déconnecter"
           }
         },
         "ja" : {
@@ -2784,6 +3000,12 @@
             "value" : "Minimize Window"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réduire la fenêtre"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2856,6 +3078,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mission Control"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mission Control"
@@ -2938,6 +3166,12 @@
             "value" : "Move Space Left"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Déplacer l’espace à gauche"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3013,6 +3247,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Move Space Right"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Déplacer l’espace à droite"
           }
         },
         "ja" : {
@@ -3092,6 +3332,12 @@
             "value" : "Move to Trash"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Déplacer vers la corbeille"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3167,6 +3413,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Back"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Précédent"
           }
         },
         "ja" : {
@@ -3246,6 +3498,12 @@
             "value" : "Forward"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suivant"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3314,6 +3572,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Χρειάζεται πρόσβαση στον Έλεγχο Προσβασιμότητας"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nécessite un accès aux contrôles d’accessibilité"
           }
         },
         "ja" : {
@@ -3393,6 +3657,12 @@
             "value" : "New Finder Window"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouvelle fenêtre du finder"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3468,6 +3738,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "New Folder"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveau dossier"
           }
         },
         "ja" : {
@@ -3547,6 +3823,12 @@
             "value" : "Next Tab"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onglet suivant"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3622,6 +3904,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Next Window"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prochaine fenêtre"
           }
         },
         "ja" : {
@@ -3701,6 +3989,12 @@
             "value" : "Paste"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coller"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3775,6 +4069,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : " Preferences"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préférences"
           }
         },
         "ja" : {
@@ -3854,6 +4154,12 @@
             "value" : "Previous Tab"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onglet précédent"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3928,6 +4234,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : " Quit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitter"
           }
         },
         "ja" : {
@@ -4007,6 +4319,12 @@
             "value" : "Quit Application"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitter l’application"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4082,6 +4400,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Redo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refaire"
           }
         },
         "ja" : {
@@ -4161,6 +4485,12 @@
             "value" : "Screenshot"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capture d’écran"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4236,6 +4566,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Screenshot and Recording Options"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capture d’écran et options d’enregistrement"
           }
         },
         "ja" : {
@@ -4315,6 +4651,12 @@
             "value" : "Screenshot Selection"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélection de capture d’écran"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4390,6 +4732,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Simulate Trackpad locks duration"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durée de verrouillage de la simulation de trackpad"
           }
         },
         "ja" : {
@@ -4469,6 +4817,12 @@
             "value" : "Select All"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionner tout"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4544,6 +4898,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select an action"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionner une action"
           }
         },
         "ja" : {
@@ -4623,6 +4983,12 @@
             "value" : "Show Desktop"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher le bureau"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4700,6 +5066,12 @@
             "value" : "Shutdown Dialog"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boîte de dialogue Arrêt"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4772,6 +5144,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spotlight"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Spotlight"
@@ -4854,6 +5232,12 @@
             "value" : "Spotlight (System)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spotlight (Système)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4929,6 +5313,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Switch Application"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basculer application"
           }
         },
         "ja" : {
@@ -5008,6 +5398,12 @@
             "value" : "Switch Application (Reverse)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basculer application (inversé)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5083,6 +5479,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Switch Tab Left"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bascule l’onglet de gauche"
           }
         },
         "ja" : {
@@ -5162,6 +5564,12 @@
             "value" : "Switch Tab Right"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bascule l’onglet de droite"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5237,6 +5645,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unbind"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Détacher"
           }
         },
         "ja" : {
@@ -5316,6 +5730,12 @@
             "value" : "Unbound"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Détaché"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5391,6 +5811,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Underline"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Souligné"
           }
         },
         "ja" : {
@@ -5470,6 +5896,12 @@
             "value" : "Undo"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5545,6 +5977,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "View as Columns"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "par colonnes"
           }
         },
         "ja" : {
@@ -5624,6 +6062,12 @@
             "value" : "View as Gallery"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par galerie d’icônes"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5699,6 +6143,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "View as Icons"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par icônes"
           }
         },
         "ja" : {
@@ -5778,6 +6228,12 @@
             "value" : "View as List"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par liste"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5855,6 +6311,12 @@
             "value" : "Zoom In"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoomer"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5930,6 +6392,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zoom Out"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dézoomer"
           }
         },
         "ja" : {
