@@ -224,11 +224,14 @@ struct SystemShortcut {
     static let closeAllWindows = Shortcut("closeAllWindows", 13, [.command, .option])  // Command-Option-W
     static let quitApp = Shortcut("quitApp", 12, .command)  // Command-Q
 
-    // 标签导航
-    static let navigateBack = Shortcut("navigateBack", 33, .command)  // Command-[
-    static let navigateForward = Shortcut("navigateForward", 30, .command)  // Command-]
-    static let nextTab = Shortcut("nextTab", 30, [.command, .shift])  // Command-Shift-]
-    static let previousTab = Shortcut("previousTab", 33, [.command, .shift])  // Command-Shift-[
+    // FIX: Back/Forward - Use Command + Arrow Keys
+    // Replaces Brackets (33/30) which are broken on German keyboards.
+    static let navigateBack = Shortcut("navigateBack", 123, .command)  // Command-LeftArrow
+    static let navigateForward = Shortcut("navigateForward", 124, .command)  // Command-RightArrow
+    // FIX: Next/Prev Tab - Use Command + Shift + Arrow Keys
+    // Replaces Command+Shift+Brackets.
+    static let nextTab = Shortcut("nextTab", 124, [.command, .shift])  // Command-Shift-RightArrow
+    static let previousTab = Shortcut("previousTab", 123, [.command, .shift])  // Command-Shift-LeftArrow
     static let switchTabRight = Shortcut("switchTabRight", 124, [.command, .option])  // Command-Option-Right
     static let switchTabLeft = Shortcut("switchTabLeft", 123, [.command, .option])  // Command-Option-Left
 
