@@ -26,6 +26,8 @@ class PreferencesButtonsViewController: NSViewController {
     @IBOutlet weak var createButton: PrimaryButton!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var delButton: NSButton!
+    // 帮助按钮 (programmatically added)
+    private var helpButton: NSButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,8 +35,92 @@ class PreferencesButtonsViewController: NSViewController {
         recorder.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
+        // 添加额外的表头标签
+        setupAdditionalHeaderLabels()
+        // 添加帮助按钮
+        setupHelpButton()
         // 读取设置
         loadOptionsToView()
+    }
+    
+    // 列位置常量 (从右边缘计算的中心点位置)
+    // 这些值会在 ButtonTableCellView 中使用相同的值以保持对齐
+    static let appColumnCenterFromTrailing: CGFloat = 20      // Apps 列中心距右边缘
+    static let defaultColumnCenterFromTrailing: CGFloat = 70  // Default 列中心距右边缘
+    static let actionColumnTrailingFromTrailing: CGFloat = 100  // Action 列右边缘距右边缘
+    static let actionColumnCenterFromTrailing: CGFloat = 160  // Action 列中心距右边缘 (用于标题居中)
+    
+    /// 添加额外的表头标签 (Action, Default, Apps)
+    /// 使用固定位置以确保与单元格控件对齐
+    private func setupAdditionalHeaderLabels() {
+        // 隐藏 storyboard 中原有的 "Action" 标签
+        for subview in tableHead.subviews {
+            if let textField = subview as? NSTextField,
+               textField.stringValue == "Action" {
+                textField.isHidden = true
+            }
+        }
+        
+        // 创建 Apps 标签
+        let appsLabel = NSTextField(labelWithString: NSLocalizedString("button.header.app", comment: ""))
+        appsLabel.font = NSFont.systemFont(ofSize: 11, weight: .medium)
+        appsLabel.textColor = NSColor.secondaryLabelColor
+        appsLabel.alignment = .center
+        appsLabel.translatesAutoresizingMaskIntoConstraints = false
+        tableHead.addSubview(appsLabel)
+        
+        // 创建 Default 标签
+        let defaultLabel = NSTextField(labelWithString: NSLocalizedString("button.header.default", comment: ""))
+        defaultLabel.font = NSFont.systemFont(ofSize: 11, weight: .medium)
+        defaultLabel.textColor = NSColor.secondaryLabelColor
+        defaultLabel.alignment = .center
+        defaultLabel.translatesAutoresizingMaskIntoConstraints = false
+        tableHead.addSubview(defaultLabel)
+        
+        // 创建 Action 标签
+        let actionLabel = NSTextField(labelWithString: NSLocalizedString("button.header.action", comment: ""))
+        actionLabel.font = NSFont.systemFont(ofSize: 11, weight: .medium)
+        actionLabel.textColor = NSColor.secondaryLabelColor
+        actionLabel.alignment = .center
+        actionLabel.translatesAutoresizingMaskIntoConstraints = false
+        tableHead.addSubview(actionLabel)
+        
+        // 布局约束 - 使用固定位置
+        NSLayoutConstraint.activate([
+            // Apps 标签
+            appsLabel.centerXAnchor.constraint(equalTo: tableHead.trailingAnchor, constant: -Self.appColumnCenterFromTrailing),
+            appsLabel.centerYAnchor.constraint(equalTo: tableHead.centerYAnchor),
+            
+            // Default 标签
+            defaultLabel.centerXAnchor.constraint(equalTo: tableHead.trailingAnchor, constant: -Self.defaultColumnCenterFromTrailing),
+            defaultLabel.centerYAnchor.constraint(equalTo: tableHead.centerYAnchor),
+            
+            // Action 标签
+            actionLabel.centerXAnchor.constraint(equalTo: tableHead.trailingAnchor, constant: -Self.actionColumnCenterFromTrailing),
+            actionLabel.centerYAnchor.constraint(equalTo: tableHead.centerYAnchor),
+        ])
+    }
+    
+    /// 添加帮助按钮到 tableFoot 的右下角
+    /// 参考 PreferencesApplicationViewController 中的实现方式
+    private func setupHelpButton() {
+        // 创建帮助按钮，使用与 Application 视图相同的样式
+        helpButton = NSButton()
+        helpButton.setButtonType(.momentaryPushIn)
+        helpButton.bezelStyle = .helpButton
+        helpButton.title = ""
+        helpButton.target = self
+        helpButton.action = #selector(helpButtonClick(_:))
+        helpButton.translatesAutoresizingMaskIntoConstraints = false
+        helpButton.controlSize = .mini
+        tableFoot.addSubview(helpButton)
+        
+        NSLayoutConstraint.activate([
+            helpButton.trailingAnchor.constraint(equalTo: tableFoot.trailingAnchor, constant: -8),
+            helpButton.centerYAnchor.constraint(equalTo: tableFoot.centerYAnchor),
+            helpButton.widthAnchor.constraint(equalToConstant: 16),
+            helpButton.heightAnchor.constraint(equalToConstant: 16),
+        ])
     }
     
     override func viewWillAppear() {
@@ -57,6 +143,13 @@ class PreferencesButtonsViewController: NSViewController {
         removeButtonBinding(id: binding.id)
         // 更新删除按钮状态
         updateDelButtonState()
+    }
+    
+    // 帮助按钮 - 显示帮助信息弹出窗口
+    /// 参考 Application 视图中的 segue 方式，这里用程序化方式实现相同效果
+    @objc private func helpButtonClick(_ sender: NSButton) {
+        let helpViewController = ButtonsHelpPopoverViewController()
+        present(helpViewController, asPopoverRelativeTo: sender.bounds, of: sender, preferredEdge: .maxY, behavior: .transient)
     }
 }
 
@@ -92,16 +185,18 @@ extension PreferencesButtonsViewController {
     private func addRecordedEvent(_ event: CGEvent, isDuplicate: Bool) {
         let recordedEvent = RecordedEvent(from: event)
 
-        // 如果是重复录制,高亮已存在行
-        if isDuplicate {
-            if let existing = buttonBindings.first(where: { $0.triggerEvent == recordedEvent }) {
-                highlightExistingRow(with: existing.id)
-            }
-            return
-        }
-
-        // 新录制的事件不设置默认快捷键，等待用户选择
-        let binding = ButtonBinding(triggerEvent: recordedEvent, systemShortcutName: "", isEnabled: false)
+        // 检查是否有相同触发事件的绑定
+        let hasExistingBinding = buttonBindings.contains(where: { $0.triggerEvent == recordedEvent })
+        
+        // 新录制的事件:
+        // - 如果已有相同按钮的绑定, 则新绑定的 isDefaultEnabled = false
+        // - 如果是全新的按钮, 则新绑定的 isDefaultEnabled = true
+        let binding = ButtonBinding(
+            triggerEvent: recordedEvent,
+            systemShortcutName: "",
+            isEnabled: false,
+            isDefaultEnabled: !hasExistingBinding  // 如果已有相同按钮的绑定, 新绑定默认关闭
+        )
         buttonBindings.append(binding)
         tableView.reloadData()
         toggleNoDataHint()
@@ -142,7 +237,10 @@ extension PreferencesButtonsViewController {
                 id: oldBinding.id,
                 triggerEvent: oldBinding.triggerEvent,
                 systemShortcutName: shortcut.identifier,
-                isEnabled: true
+                isEnabled: true,
+                isDefaultEnabled: oldBinding.isDefaultEnabled,
+                disabledApplications: oldBinding.disabledApplications,
+                enabledApplications: oldBinding.enabledApplications
             )
         } else {
             // 清除绑定:保持触发事件,清空快捷键名称并禁用
@@ -150,12 +248,75 @@ extension PreferencesButtonsViewController {
                 id: oldBinding.id,
                 triggerEvent: oldBinding.triggerEvent,
                 systemShortcutName: "",
-                isEnabled: false
+                isEnabled: false,
+                isDefaultEnabled: oldBinding.isDefaultEnabled,
+                disabledApplications: oldBinding.disabledApplications,
+                enabledApplications: oldBinding.enabledApplications
             )
         }
 
         buttonBindings[index] = updatedBinding
         syncViewWithOptions()
+    }
+    
+    /// 更新按钮绑定的默认启用状态
+    /// - Parameters:
+    ///   - id: 绑定记录的唯一标识
+    ///   - isDefaultEnabled: 是否默认启用
+    func updateButtonBindingDefaultMode(id: UUID, isDefaultEnabled: Bool) {
+        guard let index = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
+        
+        var binding = buttonBindings[index]
+        
+        // 如果启用默认模式,需要禁用同一触发事件的其他绑定的默认模式
+        if isDefaultEnabled {
+            let triggerEvent = binding.triggerEvent
+            for i in 0..<buttonBindings.count {
+                if buttonBindings[i].triggerEvent == triggerEvent && buttonBindings[i].id != id {
+                    buttonBindings[i].isDefaultEnabled = false
+                }
+            }
+        }
+        
+        binding.isDefaultEnabled = isDefaultEnabled
+        buttonBindings[index] = binding
+        syncViewWithOptions()
+        
+        // 刷新表格以更新其他行的显示
+        tableView.reloadData()
+    }
+    
+    /// 更新按钮绑定的禁用应用列表
+    /// - Parameters:
+    ///   - id: 绑定记录的唯一标识
+    ///   - apps: 禁用应用列表
+    func updateButtonBindingDisabledApps(id: UUID, apps: [ButtonApplicationRule]) {
+        guard let index = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
+        
+        var binding = buttonBindings[index]
+        binding.disabledApplications = apps
+        buttonBindings[index] = binding
+        syncViewWithOptions()
+    }
+    
+    /// 更新按钮绑定的启用应用列表
+    /// - Parameters:
+    ///   - id: 绑定记录的唯一标识
+    ///   - apps: 启用应用列表
+    func updateButtonBindingEnabledApps(id: UUID, apps: [ButtonApplicationRule]) {
+        guard let index = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
+        
+        var binding = buttonBindings[index]
+        binding.enabledApplications = apps
+        buttonBindings[index] = binding
+        syncViewWithOptions()
+    }
+    
+    /// 获取指定绑定
+    /// - Parameter id: 绑定记录的唯一标识
+    /// - Returns: ButtonBinding 对象,如果不存在返回 nil
+    func getButtonBinding(id: UUID) -> ButtonBinding? {
+        return buttonBindings.first { $0.id == id }
     }
 }
 
@@ -191,12 +352,43 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
                 },
                 onDeleteRequested: { [weak self] in
                     self?.removeButtonBinding(id: binding.id)
+                },
+                onDefaultToggleChanged: { [weak self] isDefaultEnabled in
+                    self?.updateButtonBindingDefaultMode(id: binding.id, isDefaultEnabled: isDefaultEnabled)
+                },
+                onAppSettingsRequested: { [weak self] in
+                    self?.showAppSettingsPopover(for: binding, from: cell)
                 }
             )
             return cell
         }
 
         return nil
+    }
+    
+    /// 显示应用设置弹出窗口
+    private func showAppSettingsPopover(for binding: ButtonBinding, from cell: ButtonTableCellView) {
+        // 获取最新的 binding 数据，而不是使用 cell 配置时捕获的旧数据
+        guard let freshBinding = getButtonBinding(id: binding.id) else { return }
+        
+        let popoverVC = ButtonAppSettingsPopoverViewController()
+        popoverVC.configure(
+            with: freshBinding,
+            onDisabledAppsChanged: { [weak self] apps in
+                self?.updateButtonBindingDisabledApps(id: binding.id, apps: apps)
+            },
+            onEnabledAppsChanged: { [weak self] apps in
+                self?.updateButtonBindingEnabledApps(id: binding.id, apps: apps)
+            },
+            onDefaultModeChanged: { [weak self] isDefaultEnabled in
+                self?.updateButtonBindingDefaultMode(id: binding.id, isDefaultEnabled: isDefaultEnabled)
+                // 刷新 cell 显示
+                self?.tableView.reloadData()
+            }
+        )
+        
+        // 使用 .semitransient 允许在弹窗中交互而不自动关闭
+        present(popoverVC, asPopoverRelativeTo: cell.bounds, of: cell, preferredEdge: .maxX, behavior: .semitransient)
     }
     
     // 行高
@@ -226,18 +418,18 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
 
 // MARK: - EventRecorderDelegate
 extension PreferencesButtonsViewController: KeyRecorderDelegate {
-    // 验证录制的事件是否重复
+    // 验证录制的事件是否重复 - 现在允许重复,始终返回 true
     func validateRecordedEvent(_ recorder: KeyRecorder, event: CGEvent) -> Bool {
-        let recordedEvent = RecordedEvent(from: event)
-        // 返回 true = 新录制(绿色), false = 重复(蓝色)
-        return !buttonBindings.contains(where: { $0.triggerEvent == recordedEvent })
+        // 始终返回 true,允许为同一个按钮添加多个绑定
+        return true
     }
 
-    // Record 回调 (isDuplicate 由 KeyRecorder 传递,避免重复验证)
+    // Record 回调
     func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: CGEvent, isDuplicate: Bool) {
         // 添加延迟后调用, 确保不要太早消失
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.66) { [weak self] in
-            self?.addRecordedEvent(event, isDuplicate: isDuplicate)
+            // isDuplicate 参数现在忽略,因为我们允许重复
+            self?.addRecordedEvent(event, isDuplicate: false)
         }
     }
 }

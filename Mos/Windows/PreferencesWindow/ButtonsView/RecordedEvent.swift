@@ -76,6 +76,51 @@ struct RecordedEvent: Codable, Equatable {
     }
 }
 
+// MARK: - ButtonApplicationRule
+/// 按钮绑定的分应用规则 - 定义特定应用下的启用/禁用状态
+struct ButtonApplicationRule: Codable, Equatable {
+    
+    // MARK: - 数据字段
+    
+    /// 唯一标识符
+    let id: UUID
+    
+    /// 应用程序路径 (executablePath 或 bundlePath)
+    let applicationPath: String
+    
+    /// 应用程序显示名称 (可选, 用于 UI 显示)
+    var displayName: String?
+    
+    // MARK: - 初始化
+    
+    init(id: UUID = UUID(), applicationPath: String, displayName: String? = nil) {
+        self.id = id
+        self.applicationPath = applicationPath
+        self.displayName = displayName
+    }
+    
+    // MARK: - 工具方法
+    
+    /// 获取应用图标
+    func getIcon() -> NSImage {
+        return Utils.getApplicationIcon(fromPath: applicationPath)
+    }
+    
+    /// 获取显示名称
+    func getName() -> String {
+        if let name = displayName, name.count > 0 {
+            return name
+        }
+        return Utils.getApplicationName(fromPath: applicationPath)
+    }
+    
+    // MARK: - Equatable
+    
+    static func == (lhs: ButtonApplicationRule, rhs: ButtonApplicationRule) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
 // MARK: - ButtonBinding
 /// 按钮绑定 - 将录制的事件与系统快捷键关联
 struct ButtonBinding: Codable, Equatable {
@@ -96,6 +141,15 @@ struct ButtonBinding: Codable, Equatable {
 
     /// 创建时间
     let createdAt: Date
+    
+    /// 是否默认启用 (true = 默认对所有应用生效, false = 默认不生效)
+    var isDefaultEnabled: Bool
+    
+    /// 禁用该绑定的应用列表 (这些应用中绑定不生效)
+    var disabledApplications: [ButtonApplicationRule]
+    
+    /// 启用该绑定的应用列表 (这些应用中绑定生效, 即使默认关闭)
+    var enabledApplications: [ButtonApplicationRule]
 
     // MARK: - 计算属性
 
@@ -106,17 +160,99 @@ struct ButtonBinding: Codable, Equatable {
 
     // MARK: - 初始化
 
-    init(id: UUID = UUID(), triggerEvent: RecordedEvent, systemShortcutName: String, isEnabled: Bool = true) {
+    init(id: UUID = UUID(), triggerEvent: RecordedEvent, systemShortcutName: String, isEnabled: Bool = true, isDefaultEnabled: Bool = true, disabledApplications: [ButtonApplicationRule] = [], enabledApplications: [ButtonApplicationRule] = []) {
         self.id = id
         self.triggerEvent = triggerEvent
         self.systemShortcutName = systemShortcutName
         self.isEnabled = isEnabled
         self.createdAt = Date()
+        self.isDefaultEnabled = isDefaultEnabled
+        self.disabledApplications = disabledApplications
+        self.enabledApplications = enabledApplications
+    }
+    
+    // MARK: - Codable (兼容旧数据)
+    
+    private enum CodingKeys: String, CodingKey {
+        case id, triggerEvent, systemShortcutName, isEnabled, createdAt, isDefaultEnabled, applicationRules, disabledApplications, enabledApplications
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        triggerEvent = try container.decode(RecordedEvent.self, forKey: .triggerEvent)
+        systemShortcutName = try container.decode(String.self, forKey: .systemShortcutName)
+        isEnabled = try container.decode(Bool.self, forKey: .isEnabled)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        // 兼容旧数据
+        isDefaultEnabled = try container.decodeIfPresent(Bool.self, forKey: .isDefaultEnabled) ?? true
+        // 新格式: disabledApplications 和 enabledApplications
+        disabledApplications = try container.decodeIfPresent([ButtonApplicationRule].self, forKey: .disabledApplications) ?? []
+        enabledApplications = try container.decodeIfPresent([ButtonApplicationRule].self, forKey: .enabledApplications) ?? []
+        // 兼容旧格式: 迁移 applicationRules 到新字段
+        if let oldRules = try container.decodeIfPresent([ButtonApplicationRule].self, forKey: .applicationRules), !oldRules.isEmpty {
+            if isDefaultEnabled {
+                disabledApplications = oldRules
+            } else {
+                enabledApplications = oldRules
+            }
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(triggerEvent, forKey: .triggerEvent)
+        try container.encode(systemShortcutName, forKey: .systemShortcutName)
+        try container.encode(isEnabled, forKey: .isEnabled)
+        try container.encode(createdAt, forKey: .createdAt)
+        try container.encode(isDefaultEnabled, forKey: .isDefaultEnabled)
+        try container.encode(disabledApplications, forKey: .disabledApplications)
+        try container.encode(enabledApplications, forKey: .enabledApplications)
+        // 不再编码 applicationRules (已废弃)
     }
 
     // MARK: - Equatable
 
     static func == (lhs: ButtonBinding, rhs: ButtonBinding) -> Bool {
         return lhs.id == rhs.id
+    }
+    
+    // MARK: - 应用规则方法
+    
+    /// 检查指定应用是否在禁用列表中
+    func isApplicationDisabled(path: String) -> Bool {
+        return disabledApplications.contains { $0.applicationPath == path }
+    }
+    
+    /// 检查指定应用是否在启用列表中
+    func isApplicationEnabled(path: String) -> Bool {
+        return enabledApplications.contains { $0.applicationPath == path }
+    }
+    
+    /// 判断该绑定是否对指定应用生效
+    /// - Parameter applicationPath: 应用程序路径
+    /// - Returns: 是否生效
+    func isActiveForApplication(_ applicationPath: String?) -> Bool {
+        // 如果绑定本身未启用, 直接返回 false
+        guard isEnabled else { return false }
+        
+        // 如果没有指定应用路径, 使用默认设置
+        guard let path = applicationPath else {
+            return isDefaultEnabled
+        }
+        
+        // 检查是否在禁用列表中 (优先级最高)
+        if isApplicationDisabled(path: path) {
+            return false
+        }
+        
+        // 检查是否在启用列表中
+        if isApplicationEnabled(path: path) {
+            return true
+        }
+        
+        // 使用默认设置
+        return isDefaultEnabled
     }
 }
