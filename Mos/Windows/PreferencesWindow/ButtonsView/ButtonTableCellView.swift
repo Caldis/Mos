@@ -18,25 +18,35 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
     // MARK: - UI Components
     private var keyPreview: KeyPreview!
     private var dashedLineLayer: CAShapeLayer?
+    private var defaultToggle: NSButton!  // Using NSButton for compatibility with macOS < 10.15
+    private var appSettingsButton: NSButton!
 
     // MARK: - Callbacks
     private var onShortcutSelected: ((SystemShortcut.Shortcut?) -> Void)?
     private var onDeleteRequested: (() -> Void)?
+    private var onDefaultToggleChanged: ((Bool) -> Void)?
+    private var onAppSettingsRequested: (() -> Void)?
 
     // MARK: - Data (只用于UI显示)
     private var currentShortcut: SystemShortcut.Shortcut?
+    private var currentBinding: ButtonBinding?
     private var originalRowBackgroundColor: NSColor?
 
     // MARK: - 配置方法
     func configure(
         with binding: ButtonBinding,
         onShortcutSelected: @escaping (SystemShortcut.Shortcut?) -> Void,
-        onDeleteRequested: @escaping () -> Void
+        onDeleteRequested: @escaping () -> Void,
+        onDefaultToggleChanged: @escaping (Bool) -> Void,
+        onAppSettingsRequested: @escaping () -> Void
     ) {
         // 保存回调
         self.onShortcutSelected = onShortcutSelected
         self.onDeleteRequested = onDeleteRequested
+        self.onDefaultToggleChanged = onDefaultToggleChanged
+        self.onAppSettingsRequested = onAppSettingsRequested
         self.currentShortcut = binding.systemShortcut
+        self.currentBinding = binding
 
         // 保存原始背景色（首次或复用时）
         if originalRowBackgroundColor == nil, let rowView = self.superview as? NSTableRowView {
@@ -48,11 +58,29 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 
         // 配置动作选择器
         setupActionPopUpButton(currentShortcut: binding.systemShortcut)
+        
+        // 配置默认开关和应用设置按钮
+        setupDefaultToggleAndAppSettings(binding: binding)
 
         // 绘制虚线分隔符(延迟到下一个 runloop,等 AutoLayout 完成布局)
         DispatchQueue.main.async {
             self.setupDashedLine()
         }
+    }
+    
+    // 兼容旧的 configure 方法
+    func configure(
+        with binding: ButtonBinding,
+        onShortcutSelected: @escaping (SystemShortcut.Shortcut?) -> Void,
+        onDeleteRequested: @escaping () -> Void
+    ) {
+        configure(
+            with: binding,
+            onShortcutSelected: onShortcutSelected,
+            onDeleteRequested: onDeleteRequested,
+            onDefaultToggleChanged: { _ in },
+            onAppSettingsRequested: { }
+        )
     }
 
     // 高亮该行（重复两次）
@@ -176,6 +204,94 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         } else {
             setPlaceholderToUnbound()
         }
+    }
+    
+    // 列位置常量 (与 PreferencesButtonsViewController 中的值保持一致)
+    // 从 cell 的右边缘计算各列中心位置
+    private static let appColumnCenterFromTrailing: CGFloat = 20
+    private static let defaultColumnCenterFromTrailing: CGFloat = 70
+    private static let actionColumnTrailingFromTrailing: CGFloat = 100  // Action 列右边缘距 cell 右边缘
+    
+    /// 设置默认开关和应用设置按钮
+    private func setupDefaultToggleAndAppSettings(binding: ButtonBinding) {
+        // 移除旧的开关和按钮 (cell 复用时)
+        defaultToggle?.removeFromSuperview()
+        appSettingsButton?.removeFromSuperview()
+        
+        // 获取 actionPopUpButton 的父容器 (contentView inside Box)
+        guard let contentView = actionPopUpButton.superview else { return }
+        
+        // 调整 actionPopUpButton 位置
+        // 不要修改 storyboard 的约束，只调整 trailing 约束的 constant
+        for constraint in contentView.constraints {
+            // 找到 actionPopUpButton 的 trailing 约束并调整
+            if constraint.firstAttribute == .trailing,
+               let secondItem = constraint.secondItem as? NSPopUpButton,
+               secondItem == actionPopUpButton {
+                constraint.constant = Self.actionColumnTrailingFromTrailing
+            }
+        }
+        
+        // 创建默认开关 (使用 NSButton 以兼容旧版本 macOS)
+        defaultToggle = NSButton(checkboxWithTitle: "", target: self, action: #selector(defaultToggleChanged(_:)))
+        defaultToggle.translatesAutoresizingMaskIntoConstraints = false
+        defaultToggle.state = binding.isDefaultEnabled ? .on : .off
+        defaultToggle.toolTip = NSLocalizedString("button.default.tooltip", comment: "")
+        contentView.addSubview(defaultToggle)
+        
+        // 创建应用设置按钮 (使用与滚动设置相同的图标样式)
+        appSettingsButton = NSButton(frame: .zero)
+        appSettingsButton.translatesAutoresizingMaskIntoConstraints = false
+        appSettingsButton.bezelStyle = .inline
+        appSettingsButton.setButtonType(.momentaryPushIn)
+        appSettingsButton.image = NSImage(named: NSImage.iconViewTemplateName)
+        appSettingsButton.imagePosition = .imageOnly
+        appSettingsButton.imageScaling = .scaleProportionallyDown
+        appSettingsButton.target = self
+        appSettingsButton.action = #selector(appSettingsButtonClicked(_:))
+        
+        // 设置 tooltip 显示应用规则数量
+        let disabledCount = binding.disabledApplications.count
+        let enabledCount = binding.enabledApplications.count
+        let totalCount = disabledCount + enabledCount
+        if totalCount > 0 {
+            var parts: [String] = []
+            if disabledCount > 0 {
+                parts.append("\(disabledCount) \(NSLocalizedString("button.exceptions.disabled", comment: ""))")
+            }
+            if enabledCount > 0 {
+                parts.append("\(enabledCount) \(NSLocalizedString("button.exceptions.enabled", comment: ""))")
+            }
+            appSettingsButton.toolTip = parts.joined(separator: ", ")
+        } else {
+            appSettingsButton.toolTip = NSLocalizedString("button.app.settings.tooltip", comment: "")
+        }
+        contentView.addSubview(appSettingsButton)
+        
+        // 布局约束 - 使用 contentView 的 trailing anchor
+        // contentView 是 Box 内的 content view，与 actionPopUpButton 在同一层级
+        NSLayoutConstraint.activate([
+            // Apps 按钮: 距 contentView trailing 20pt
+            appSettingsButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            appSettingsButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            appSettingsButton.widthAnchor.constraint(equalToConstant: 20),
+            appSettingsButton.heightAnchor.constraint(equalToConstant: 20),
+            
+            // Default 开关: 在 Apps 按钮左边
+            defaultToggle.trailingAnchor.constraint(equalTo: appSettingsButton.leadingAnchor, constant: -30),
+            defaultToggle.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+        ])
+    }
+    
+    // MARK: - Actions for toggle and settings
+    
+    @objc private func defaultToggleChanged(_ sender: NSButton) {
+        let isEnabled = sender.state == .on
+        onDefaultToggleChanged?(isEnabled)
+    }
+    
+    @objc private func appSettingsButtonClicked(_ sender: NSButton) {
+        onAppSettingsRequested?()
     }
     
     // MARK: - 私有方法

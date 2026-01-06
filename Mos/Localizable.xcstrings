@@ -5792,6 +5792,370 @@
         }
       }
     },
+    "button.default.tooltip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default: ON = active for all apps, OFF = only for specified apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认: 开启 = 对所有应用生效, 关闭 = 仅对指定应用生效"
+          }
+        }
+      }
+    },
+    "button.app.settings.tooltip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure per-app settings"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置分应用设置"
+          }
+        }
+      }
+    },
+    "button.app.settings.tooltip.count" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d app(s) %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d 个应用 %@"
+          }
+        }
+      }
+    },
+    "button.exceptions.disabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "禁用"
+          }
+        }
+      }
+    },
+    "button.exceptions.enabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "enabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用"
+          }
+        }
+      }
+    },
+    "button.app.settings.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per-App Settings"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分应用设置"
+          }
+        }
+      }
+    },
+    "button.header.action" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Action"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作"
+          }
+        }
+      }
+    },
+    "button.header.default" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认"
+          }
+        }
+      }
+    },
+    "button.header.app" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用"
+          }
+        }
+      }
+    },
+    "button.mode.default.on.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active for all apps. Add exceptions below to disable for specific apps."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对所有应用生效。在下方添加例外应用以禁用。"
+          }
+        }
+      }
+    },
+    "button.mode.default.off.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inactive by default. Add apps below to enable for specific apps."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认不生效。在下方添加应用以启用。"
+          }
+        }
+      }
+    },
+    "button.app.settings.disabled.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disabled in these apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在这些应用中禁用"
+          }
+        }
+      }
+    },
+    "button.app.settings.disabled.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No apps disabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂无禁用的应用"
+          }
+        }
+      }
+    },
+    "button.app.settings.enabled.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enabled in these apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在这些应用中启用"
+          }
+        }
+      }
+    },
+    "button.app.settings.enabled.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No apps enabled"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂无启用的应用"
+          }
+        }
+      }
+    },
+    "button.app.settings.select.finder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select from Finder..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从访达中选择..."
+          }
+        }
+      }
+    },
+    "button.help.tooltip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Help"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帮助"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "說明"
+          }
+        }
+      }
+    },
+    "button.help.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How Default and Per-App Settings Work"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认设置与分应用设置的工作原理"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "預設設定與分應用程式設定的運作原理"
+          }
+        }
+      }
+    },
+    "button.help.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default Toggle:\nWhen ON, the button action works in all applications except those in the \"Disabled Apps\" list.\nWhen OFF, the button action only works in applications listed in the \"Enabled Apps\" list.\n\nNote: Only one binding can have Default ON for each button. If you enable Default for a binding, others will be turned OFF automatically.\n\nPer-App Settings:\nClick the Apps icon button to configure which applications should have the button action enabled or disabled.\n\n• Disabled Apps: Applications where the action will NOT work (when Default is ON)\n• Enabled Apps: Applications where the action WILL work (when Default is OFF)\n\nTip: You can create multiple bindings for the same button with different per-app settings to have fine-grained control over when each action triggers."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认开关：\n开启时，按钮操作在所有应用中生效，除了「禁用应用列表」中的应用。\n关闭时，按钮操作仅在「启用应用列表」中的应用中生效。\n\n注意：每个按钮只能有一个绑定的默认开关为开启状态。如果您为一个绑定开启默认，其他绑定的默认开关将自动关闭。\n\n分应用设置：\n点击应用图标按钮来配置哪些应用应该启用或禁用该按钮操作。\n\n• 禁用应用：按钮操作不会生效的应用（当默认开关为开启时）\n• 启用应用：按钮操作会生效的应用（当默认开关为关闭时）\n\n提示：您可以为同一个按钮创建多个绑定，并为每个绑定配置不同的应用设置，以实现精细化的控制。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "預設開關：\n開啟時，按鈕操作在所有應用程式中生效，除了「停用應用程式清單」中的應用程式。\n關閉時，按鈕操作僅在「啟用應用程式清單」中的應用程式中生效。\n\n注意：每個按鈕只能有一個綁定的預設開關為開啟狀態。如果您為一個綁定開啟預設，其他綁定的預設開關將自動關閉。\n\n分應用程式設定：\n點擊應用程式圖示按鈕來配置哪些應用程式應該啟用或停用該按鈕操作。\n\n• 停用應用程式：按鈕操作不會生效的應用程式（當預設開關為開啟時）\n• 啟用應用程式：按鈕操作會生效的應用程式（當預設開關為關閉時）\n\n提示：您可以為同一個按鈕建立多個綁定，並為每個綁定配置不同的應用程式設定，以實現精細化的控制。"
+          }
+        }
+      }
+    },
+    "button.help.ok" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "确定"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確定"
+          }
+        }
+      }
+    },
     "underline" : {
       "extractionState" : "manual",
       "localizations" : {
