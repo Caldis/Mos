@@ -7127,6 +7127,18 @@
         }
       }
     },
+    "Qx7-hF-cCG.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Including beta version\"; ObjectID = \"Qx7-hF-cCG\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Including beta version"
+          }
+        }
+      }
+    },
     "R0d-21-g6W.title" : {
       "comment" : "Class = \"NSMenuItem\"; title = \"Running Applications\"; ObjectID = \"R0d-21-g6W\";",
       "extractionState" : "extracted_with_value",
@@ -10076,6 +10088,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mos"
+          }
+        }
+      }
+    },
+    "Yj9-j0-202.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Check on app start\"; ObjectID = \"Yj9-j0-202\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Check on app start"
           }
         }
       }

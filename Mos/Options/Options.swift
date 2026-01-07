@@ -16,6 +16,11 @@ struct OptionItem {
         static let HideStatusItem = "hideStatusItem"
     }
 
+    struct Update {
+        static let CheckOnAppStart = "updateCheckOnAppStart"
+        static let IncludingBetaVersion = "updateIncludingBetaVersion"
+    }
+
     struct Scroll {
         static let Smooth = "smooth"
         static let Reverse = "reverse"
@@ -57,6 +62,8 @@ class Options {
     
     // 常规
     var general = OPTIONS_GENERAL_DEFAULT()
+    // 更新
+    var update = OPTIONS_UPDATE_DEFAULT()
     // 滚动
     var scroll = OPTIONS_SCROLL_DEFAULT() {
         didSet { Options.shared.saveOptions() }
@@ -85,6 +92,9 @@ extension Options {
         // 常规
         general.autoLaunch = LoginServiceKit.isExistLoginItems(at: Bundle.main.bundlePath)
         general.hideStatusItem = UserDefaults.standard.bool(forKey: OptionItem.General.HideStatusItem)
+        // 更新
+        update.checkOnAppStart = UserDefaults.standard.bool(forKey: OptionItem.Update.CheckOnAppStart)
+        update.includingBetaVersion = UserDefaults.standard.bool(forKey: OptionItem.Update.IncludingBetaVersion)
         // 滚动
         scroll.smooth = UserDefaults.standard.bool(forKey: OptionItem.Scroll.Smooth)
         scroll.reverse = UserDefaults.standard.bool(forKey: OptionItem.Scroll.Reverse)
@@ -136,6 +146,9 @@ extension Options {
             UserDefaults.standard.set("optionsExist", forKey: OptionItem.General.OptionsExist)
             // 常规
             UserDefaults.standard.set(general.hideStatusItem, forKey: OptionItem.General.HideStatusItem)
+            // 更新
+            UserDefaults.standard.set(update.checkOnAppStart, forKey: OptionItem.Update.CheckOnAppStart)
+            UserDefaults.standard.set(update.includingBetaVersion, forKey: OptionItem.Update.IncludingBetaVersion)
             // 滚动
             UserDefaults.standard.set(scroll.smooth, forKey: OptionItem.Scroll.Smooth)
             UserDefaults.standard.set(scroll.reverse, forKey: OptionItem.Scroll.Reverse)

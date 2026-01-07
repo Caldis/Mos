@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build && rm -rf ../docs/* && mv out/* ../docs && cp CNAME ../docs/ && touch ../docs/.nojekyll",
+    "build": "next build && rm -rf ../docs/* && mv out/* ../docs && cp CNAME ../docs/ && touch ../docs/.nojekyll && test -f ../updates/appcast.xml && cp ../updates/appcast.xml ../docs/appcast.xml",
     "start": "next start",
     "lint": "next lint"
   },

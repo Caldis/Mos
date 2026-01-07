@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0BE5A292253A1168006D61C0 /* LoginServiceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A291253A1168006D61C0 /* LoginServiceKit */; };
 		0BE5A296253A119C006D61C0 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A295253A119C006D61C0 /* Charts */; };
+		0BE5A29A2F7A1C5B006D61C0 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A29B2F7A1C5B006D61C0 /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 			files = (
 				0BE5A292253A1168006D61C0 /* LoginServiceKit in Frameworks */,
 				0BE5A296253A119C006D61C0 /* Charts in Frameworks */,
+				0BE5A29A2F7A1C5B006D61C0 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +82,7 @@
 			packageProductDependencies = (
 				0BE5A291253A1168006D61C0 /* LoginServiceKit */,
 				0BE5A295253A119C006D61C0 /* Charts */,
+				0BE5A29B2F7A1C5B006D61C0 /* Sparkle */,
 			);
 			productName = Mos;
 			productReference = 22142DA01E25344E00E4BFBF /* Mos.app */;
@@ -134,6 +137,7 @@
 			packageReferences = (
 				0BE5A290253A1168006D61C0 /* XCRemoteSwiftPackageReference "LoginServiceKit" */,
 				0BE5A294253A119C006D61C0 /* XCRemoteSwiftPackageReference "Charts" */,
+				0BE5A29C2F7A1C5B006D61C0 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			productRefGroup = 22142DA11E25344E00E4BFBF /* Products */;
 			projectDirPath = "";
@@ -307,7 +311,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = "2025.12.01 · beta";
+				CURRENT_PROJECT_VERSION = "2026.01.07 · beta";
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -353,7 +357,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = "2025.12.01 · beta";
+				CURRENT_PROJECT_VERSION = "2026.01.07 · beta";
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = N7Z52F27XK;
@@ -424,6 +428,14 @@
 				version = 4.1.0;
 			};
 		};
+		0BE5A29C2F7A1C5B006D61C0 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -436,6 +448,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0BE5A294253A119C006D61C0 /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = Charts;
+		};
+		0BE5A29B2F7A1C5B006D61C0 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0BE5A29C2F7A1C5B006D61C0 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

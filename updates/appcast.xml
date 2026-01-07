@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+    xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Mos</title>
+    <link>https://mos.caldis.me/</link>
+    <description>Mos Updates</description>
+    <language>en</language>
+
+    <item sparkle:channel="beta">
+      <title>Mos 4.0.0-beta</title>
+      <pubDate>Wed, 07 Jan 2026 15:49:11 +0000</pubDate>
+      <sparkle:releaseNotesLink>https://github.com/Caldis/Mos/releases</sparkle:releaseNotesLink>
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.0.0-beta-20260107/Mos.Versions.4.0.0-beta-20260107.zip"
+        length="11321950"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.0.0"
+        sparkle:version="2026.01.07 · beta"
+        sparkle:edSignature="E1TqY5y3r1GVqu+/+0G2+5GJ23xLzZ83bbzWwBj08bc4F+qujlJIqXFBE6TXG63oujkJ7FYq1EsrnlZIjZKfDA=="
+      />
+    </item>
+  </channel>
+</rss>

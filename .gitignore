@@ -10,3 +10,6 @@ website/node_modules
 xcuserdata
 *.xcuserstate
 *.xcuserdated
+
+# Sparkle signing keys (keep private!)
+sparkle_private_key.txt

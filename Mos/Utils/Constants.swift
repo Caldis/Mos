@@ -76,6 +76,19 @@ class OPTIONS_GENERAL_DEFAULT {
     }
 }
 
+// 更新
+class OPTIONS_UPDATE_DEFAULT {
+    // 启动时自动检查更新
+    var checkOnAppStart = false {
+        didSet { Options.shared.saveOptions() }
+    }
+
+    // 包含 beta 版本
+    var includingBetaVersion = false {
+        didSet { Options.shared.saveOptions() }
+    }
+}
+
 // 按键
 class OPTIONS_BUTTONS_DEFAULT: Codable {
     var binding:[ButtonBinding] = [] {

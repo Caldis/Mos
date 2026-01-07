@@ -44,6 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // 运行后启动滚动处理
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         startWithAccessibilityPermissionsChecker(nil)
+        UpdateManager.shared.scheduleCheckOnAppStartIfNeeded()
     }
 
     // 用户双击打开应用程序
