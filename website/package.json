@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build && rm -rf ../docs/* && mv out/* ../docs && cp CNAME ../docs/ && touch ../docs/.nojekyll && test -f ../updates/appcast.xml && cp ../updates/appcast.xml ../docs/appcast.xml",
+    "build": "next build && APPCAST_TMP=.appcast.xml.tmp && (test -f ../build/appcast.xml && cp ../build/appcast.xml $APPCAST_TMP || test -f ../docs/appcast.xml && cp ../docs/appcast.xml $APPCAST_TMP || true) && rm -rf ../docs/* && mv out/* ../docs && cp CNAME ../docs/ && touch ../docs/.nojekyll && (test -f $APPCAST_TMP && mv $APPCAST_TMP ../docs/appcast.xml || true)",
     "start": "next start",
     "lint": "next lint"
   },

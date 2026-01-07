@@ -6230,61 +6230,61 @@
       }
     },
     "MI6-Tq-Nev.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"© 2017-2025 Caldis. All rights reserved.\"; ObjectID = \"MI6-Tq-Nev\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"© 2017-2026 Caldis. All rights reserved.\"; ObjectID = \"MI6-Tq-Nev\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "© 2017-2025 Caldis. Alle Rechte vorbehalten."
+            "value" : "© 2017-2026 Caldis. Alle Rechte vorbehalten."
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "© 2017-2025 Caldis. All rights reserved."
+            "value" : "© 2017-2026 Caldis. All rights reserved."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "© 2017-2025 Caldis. All rights reserved."
+            "value" : "© 2017-2026 Caldis. All rights reserved."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "© 2017-2025 Caldis. Tous droits réservés."
+            "value" : "© 2017-2026 Caldis. Tous droits réservés."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "© 2017-2025 Caldis. All rights reserved."
+            "value" : "© 2017-2026 Caldis. All rights reserved."
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "© 2017-2025 Caldis. All rights reserved."
+            "value" : "© 2017-2026 Caldis. All rights reserved."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "© 2017-2025 Caldis. Все права защищены."
+            "value" : "© 2017-2026 Caldis. Все права защищены."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "© 2017-2025 Caldis. Tüm hakları saklıdır."
+            "value" : "© 2017-2026 Caldis. Tüm hakları saklıdır."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "© 2017-2025 Caldis. Усі права захищено."
+            "value" : "© 2017-2026 Caldis. Усі права захищено."
           }
         }
       }

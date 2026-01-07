@@ -10,15 +10,42 @@
 
     <item sparkle:channel="beta">
       <title>Mos 4.0.0-beta</title>
-      <pubDate>Wed, 07 Jan 2026 15:49:11 +0000</pubDate>
+
+      <description><![CDATA[<blockquote>这是测试版本，一些功能或内容可能会在正式版本中变更。</blockquote>
+<blockquote>如果应用无法启动或遇到权限问题，请参考 <a href="https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C">Wiki: 如果应用无法正常运行</a></blockquote>
+
+<h2>新功能</h2>
+<ul><li>新增应用内更新检查（Sparkle），并支持 Beta 渠道开关。</li></ul>
+
+<h2>改进</h2>
+<ul><li>更新法语本地化翻译。</li></ul>
+
+<h2>修复</h2>
+<ul><li>允许在不按修饰键的情况下绑定鼠标中键。</li><li>修复部分非 US 键盘布局下的快捷键问题。</li></ul>
+
+
+<hr/>
+
+<blockquote>This is a beta version; some features or content may change in the official release.</blockquote>
+<blockquote>If the application fails to start or encounters permission issues, please refer to <a href="https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly">Wiki: If the App not work properly</a></blockquote>
+
+<h2>New Feature</h2>
+<ul><li>Added in-app update checking via Sparkle, with an optional beta channel toggle.</li></ul>
+
+<h2>Improvements</h2>
+<ul><li>Updated French localization.</li></ul>
+
+<h2>Fixes</h2>
+<ul><li>Allowed binding the middle mouse button without modifier keys.</li><li>Fixed some shortcut issues on non‑US keyboard layouts.</li></ul>]]></description>
+      <pubDate>Wed, 07 Jan 2026 17:11:02 +0000</pubDate>
       <sparkle:releaseNotesLink>https://github.com/Caldis/Mos/releases</sparkle:releaseNotesLink>
       <enclosure
-        url="https://github.com/Caldis/Mos/releases/download/v4.0.0-beta-202501071145/Mos.Versions.4.0.0-beta-202501071145.zip"
-        length="11321950"
+        url="https://github.com/Caldis/Mos/releases/download/4.0.0-beta-20260108.1/Mos.Versions.4.0.0-beta-20260108.1.zip"
+        length="11322045"
         type="application/octet-stream"
-        sparkle:shortVersionString="4.0.0"
-        sparkle:version="2026.01.07 · beta"
-        sparkle:edSignature="E1TqY5y3r1GVqu+/+0G2+5GJ23xLzZ83bbzWwBj08bc4F+qujlJIqXFBE6TXG63oujkJ7FYq1EsrnlZIjZKfDA=="
+        sparkle:shortVersionString="4.0.0-beta"
+        sparkle:version="20260108.1"
+        sparkle:edSignature="+zuoPzpX6ubZK7eBJHWBxdT+v+W/v1ah4cxJeFG9T5LtQlVCL78yWh/yPDELNDwxeGp6Aqe4tCGLbLHqMtxsAw=="
       />
     </item>
   </channel>
