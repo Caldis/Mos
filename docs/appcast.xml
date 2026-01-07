@@ -8,8 +8,10 @@
     <description>Mos Updates</description>
     <language>en</language>
 
-    <item sparkle:channel="beta">
+    <item>
       <title>Mos 4.0.0-beta</title>
+
+      <sparkle:channel>beta</sparkle:channel>
 
       <description><![CDATA[<blockquote>这是测试版本，一些功能或内容可能会在正式版本中变更。</blockquote>
 <blockquote>如果应用无法启动或遇到权限问题，请参考 <a href="https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C">Wiki: 如果应用无法正常运行</a></blockquote>
@@ -37,7 +39,7 @@
 
 <h2>Fixes</h2>
 <ul><li>Allowed binding the middle mouse button without modifier keys.</li><li>Fixed some shortcut issues on non‑US keyboard layouts.</li></ul>]]></description>
-      <pubDate>Wed, 07 Jan 2026 17:11:02 +0000</pubDate>
+      <pubDate>Wed, 07 Jan 2026 17:22:48 +0000</pubDate>
       <sparkle:releaseNotesLink>https://github.com/Caldis/Mos/releases</sparkle:releaseNotesLink>
       <enclosure
         url="https://github.com/Caldis/Mos/releases/download/4.0.0-beta-20260108.1/Mos.Versions.4.0.0-beta-20260108.1.zip"
@@ -46,6 +48,7 @@
         sparkle:shortVersionString="4.0.0-beta"
         sparkle:version="20260108.1"
         sparkle:edSignature="+zuoPzpX6ubZK7eBJHWBxdT+v+W/v1ah4cxJeFG9T5LtQlVCL78yWh/yPDELNDwxeGp6Aqe4tCGLbLHqMtxsAw=="
+        sparkle:channel="beta"
       />
     </item>
   </channel>

@@ -384,8 +384,12 @@ APPCAST_BUILD="$BUILD_DIR/appcast.xml"
 APPCAST_DOCS="$DOCS_DIR/appcast.xml"
 
 item_attrs=""
+channel_element=""
+enclosure_channel_attr=""
 if [[ "$BETA_FLAG" == "true" ]]; then
-  item_attrs=' sparkle:channel="beta"'
+  # Sparkle channel filtering is easiest/most compatible when the channel is declared explicitly.
+  channel_element=$'\n      <sparkle:channel>beta</sparkle:channel>'
+  enclosure_channel_attr=$'\n        sparkle:channel="beta"'
 fi
 
 description_block=$'\n      <description><![CDATA['"$RELEASE_NOTES_HTML"$']]></description>'
@@ -403,6 +407,7 @@ cat >"$APPCAST_BUILD" <<EOF
 
     <item${item_attrs}>
       <title>Mos ${SHORT_VERSION}</title>
+${channel_element}
 ${description_block}
       <pubDate>${PUB_DATE}</pubDate>
       <sparkle:releaseNotesLink>${RELEASES_BASE_URL}</sparkle:releaseNotesLink>
@@ -412,7 +417,7 @@ ${description_block}
         type="application/octet-stream"
         sparkle:shortVersionString="${SHORT_VERSION}"
         sparkle:version="${BUNDLE_VERSION}"
-        sparkle:edSignature="${ED_SIGNATURE}"
+        sparkle:edSignature="${ED_SIGNATURE}"${enclosure_channel_attr}
       />
     </item>
   </channel>
@@ -427,4 +432,3 @@ info "Download URL: $DOWNLOAD_URL"
 info "Wrote:        $APPCAST_BUILD"
 info "Copied:       $APPCAST_DOCS"
 info "Done"
-
