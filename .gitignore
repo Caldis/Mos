@@ -13,3 +13,6 @@ xcuserdata
 
 # Sparkle signing keys (keep private!)
 sparkle_private_key.txt
+
+# build
+build
