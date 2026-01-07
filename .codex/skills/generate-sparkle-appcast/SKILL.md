@@ -25,5 +25,5 @@ Use this skill when the user wants to publish a new Mos release (stable or beta)
 **Notes**
 
 - The script produces Sparkle-compatible HTML inside `<description><![CDATA[...]]></description>` following the provided bilingual template (Chinese + English, with beta warnings when applicable).
+- By default, the script does **not** emit `<sparkle:releaseNotesLink>`, so Sparkle will show the inline `<description>` instead of opening a WebView. If you want a WebView, set `RELEASE_NOTES_LINK` when running the script.
 - If the zip changes in any way (repacked/re-signed), you must re-run the script to regenerate `sparkle:edSignature`.
-

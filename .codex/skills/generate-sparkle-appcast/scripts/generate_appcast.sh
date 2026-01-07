@@ -8,6 +8,7 @@ KEY_FILE="$ROOT_DIR/sparkle_private_key.txt"
 
 GITHUB_REPO="Caldis/Mos"
 RELEASES_BASE_URL="https://github.com/${GITHUB_REPO}/releases"
+RELEASE_NOTES_LINK="${RELEASE_NOTES_LINK:-}"
 SINCE_COMMIT="${RELEASE_NOTES_SINCE_COMMIT:-}"
 
 die() {
@@ -393,6 +394,11 @@ if [[ "$BETA_FLAG" == "true" ]]; then
 fi
 
 description_block=$'\n      <description><![CDATA['"$RELEASE_NOTES_HTML"$']]></description>'
+release_notes_link_block=""
+if [[ -n "$RELEASE_NOTES_LINK" ]]; then
+  # If sparkle:releaseNotesLink is present, Sparkle typically renders it in a WebView instead of using <description>.
+  release_notes_link_block=$'\n      <sparkle:releaseNotesLink>'"$RELEASE_NOTES_LINK"$'</sparkle:releaseNotesLink>'
+fi
 
 cat >"$APPCAST_BUILD" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -410,7 +416,7 @@ cat >"$APPCAST_BUILD" <<EOF
 ${channel_element}
 ${description_block}
       <pubDate>${PUB_DATE}</pubDate>
-      <sparkle:releaseNotesLink>${RELEASES_BASE_URL}</sparkle:releaseNotesLink>
+${release_notes_link_block}
       <enclosure
         url="${DOWNLOAD_URL}"
         length="${FILE_LENGTH}"

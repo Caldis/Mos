@@ -39,8 +39,8 @@
 
 <h2>Fixes</h2>
 <ul><li>Allowed binding the middle mouse button without modifier keys.</li><li>Fixed some shortcut issues on non‑US keyboard layouts.</li></ul>]]></description>
-      <pubDate>Wed, 07 Jan 2026 17:22:48 +0000</pubDate>
-      <sparkle:releaseNotesLink>https://github.com/Caldis/Mos/releases</sparkle:releaseNotesLink>
+      <pubDate>Wed, 07 Jan 2026 17:25:12 +0000</pubDate>
+
       <enclosure
         url="https://github.com/Caldis/Mos/releases/download/4.0.0-beta-20260108.1/Mos.Versions.4.0.0-beta-20260108.1.zip"
         length="11322045"
