@@ -15,4 +15,4 @@ xcuserdata
 sparkle_private_key.txt
 
 # build
-build
+build/*.zip
