@@ -299,30 +299,14 @@ for commit in commits:
     else:
         add("improvement", f"commit-{commit[:7]}", f"改进：{subj}", f"Improved: {subj}")
 
-ZH_WARNING = (
-    "<blockquote>这是测试版本，一些功能或内容可能会在正式版本中变更。</blockquote>\n"
-    "<blockquote>如果应用无法启动或遇到权限问题，请参考 "
-    '<a href="https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C">'
-    "Wiki: 如果应用无法正常运行</a></blockquote>\n\n"
-)
-
-EN_WARNING = (
-    "<blockquote>This is a beta version; some features or content may change in the official release.</blockquote>\n"
-    "<blockquote>If the application fails to start or encounters permission issues, please refer to "
-    '<a href="https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly">'
-    "Wiki: If the App not work properly</a></blockquote>\n\n"
-)
-
 def render_section(title: str, bullets: list[str]) -> str:
     if not bullets:
         return ""
     li = "".join(f"<li>{html.escape(b)}</li>" for b in bullets)
     return f"<h2>{html.escape(title)}</h2>\n<ul>{li}</ul>\n\n"
 
-def render_lang(warning_html: str, titles: dict[str, str], use_zh: bool) -> str:
+def render_lang(titles: dict[str, str], use_zh: bool) -> str:
     parts: list[str] = []
-    if is_beta:
-        parts.append(warning_html)
     for cat in ("feature", "improvement", "fix"):
         bullets = [(zh if use_zh else en) for (zh, en) in items[cat].values()]
         section = render_section(titles[cat], bullets)
@@ -332,8 +316,8 @@ def render_lang(warning_html: str, titles: dict[str, str], use_zh: bool) -> str:
         parts.append("<p>No changes.</p>")
     return "".join(parts)
 
-zh_html = render_lang(ZH_WARNING, {"feature": "新功能", "improvement": "改进", "fix": "修复"}, True)
-en_html = render_lang(EN_WARNING, {"feature": "New Feature", "improvement": "Improvements", "fix": "Fixes"}, False)
+zh_html = render_lang({"feature": "新功能", "improvement": "改进", "fix": "修复"}, True)
+en_html = render_lang({"feature": "New Feature", "improvement": "Improvements", "fix": "Fixes"}, False)
 
 body = zh_html + "\n<hr/>\n\n" + en_html
 body = body.replace("]]>", "]]&gt;")
