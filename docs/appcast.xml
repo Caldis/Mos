@@ -13,8 +13,7 @@
 
       <sparkle:channel>beta</sparkle:channel>
 
-      <description><![CDATA[
-<h2>新功能</h2>
+      <description><![CDATA[<h2>新功能</h2>
 <ul><li>新增应用内更新检查（Sparkle），并支持 Beta 渠道开关。</li></ul>
 
 <h2>改进</h2>
@@ -22,6 +21,7 @@
 
 <h2>修复</h2>
 <ul><li>允许在不按修饰键的情况下绑定鼠标中键。</li><li>修复部分非 US 键盘布局下的快捷键问题。</li></ul>
+
 
 <hr/>
 
@@ -33,10 +33,12 @@
 
 <h2>Fixes</h2>
 <ul><li>Allowed binding the middle mouse button without modifier keys.</li><li>Fixed some shortcut issues on non‑US keyboard layouts.</li></ul>]]></description>
-      <pubDate>Wed, 07 Jan 2026 17:25:12 +0000</pubDate>
+      <pubDate>Fri, 09 Jan 2026 16:12:17 +0000</pubDate>
 
+      <sparkle:releaseNotesLink xml:lang="zh">https://mos.caldis.me/release-notes/4.0.0-beta-20260108.1.zh.html</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://mos.caldis.me/release-notes/4.0.0-beta-20260108.1.en.html</sparkle:releaseNotesLink>
       <enclosure
-        url="https://github.com/Caldis/meow/releases/download/init/Mos.Versions.4.0.0-beta-20260108.1.zip"
+        url="https://github.com/Caldis/Mos/releases/download/4.0.0-beta-20260108.1/Mos.Versions.4.0.0-beta-20260108.1.zip"
         length="11322045"
         type="application/octet-stream"
         sparkle:shortVersionString="4.0.0-beta"
