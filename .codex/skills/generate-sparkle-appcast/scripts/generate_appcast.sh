@@ -339,41 +339,17 @@ NOTES_EN_BUILD="${RELEASE_NOTES_EN_FILE:-$NOTES_EN_BUILD_DEFAULT}"
 
 if [[ ! -s "$NOTES_ZH_BUILD" || ! -s "$NOTES_EN_BUILD" ]]; then
   # Split bilingual HTML into two pages following the same structure, but language-specific.
-  printf '%s' "$RELEASE_NOTES_HTML" | python3 -c '
+  NOTES_HTML="$RELEASE_NOTES_HTML" python3 -c '
+import os
 import sys
 
-is_beta = sys.argv[1].lower() == "true"
-zh_out = sys.argv[2]
-en_out = sys.argv[3]
+zh_out = sys.argv[1]
+en_out = sys.argv[2]
 
-ZH_WARNING = (
-    "<blockquote>这是测试版本，一些功能或内容可能会在正式版本中变更。</blockquote>\n"
-    "<blockquote>如果应用无法启动或遇到权限问题，请参考 "
-    "<a href=\"https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C\">"
-    "Wiki: 如果应用无法正常运行</a></blockquote>\n\n"
-)
-
-EN_WARNING = (
-    "<blockquote>This is a beta version; some features or content may change in the official release.</blockquote>\n"
-    "<blockquote>If the application fails to start or encounters permission issues, please refer to "
-    "<a href=\"https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly\">"
-    "Wiki: If the App not work properly</a></blockquote>\n\n"
-)
-
-content = sys.stdin.read()
+content = os.environ.get("NOTES_HTML", "")
 parts = content.split("<hr/>")
 zh_body = parts[0].strip()
 en_body = parts[1].strip() if len(parts) > 1 else ""
-
-if is_beta:
-    if zh_body and not zh_body.startswith("<blockquote>"):
-        zh_body = ZH_WARNING + zh_body
-    elif not zh_body:
-        zh_body = ZH_WARNING
-    if en_body and not en_body.startswith("<blockquote>"):
-        en_body = EN_WARNING + en_body
-    elif not en_body:
-        en_body = EN_WARNING
 
 def wrap_page(body: str, lang: str) -> str:
     return (
@@ -385,7 +361,6 @@ def wrap_page(body: str, lang: str) -> str:
         "  <title>Mos Release Notes</title>\n"
         "  <style>\n"
         "    body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.5;padding:20px;max-width:900px;margin:0 auto;}\n"
-        "    blockquote{margin:0 0 12px 0;padding:10px 12px;border-left:4px solid #6b7280;background:#f3f4f6;border-radius:6px;}\n"
         "    h2{margin:18px 0 8px 0;}\n"
         "    ul{margin:6px 0 14px 18px;}\n"
         "    code{background:#f3f4f6;padding:0 4px;border-radius:4px;}\n"
@@ -403,7 +378,7 @@ with open(zh_out, "w", encoding="utf-8") as f:
     f.write(wrap_page(zh_body, "zh"))
 with open(en_out, "w", encoding="utf-8") as f:
     f.write(wrap_page(en_body, "en"))
-' "$BETA_FLAG" "$NOTES_ZH_BUILD" "$NOTES_EN_BUILD"
+' "$NOTES_ZH_BUILD" "$NOTES_EN_BUILD"
 fi
 
 # Copy release notes into docs for publishing

@@ -33,7 +33,7 @@
 
 <h2>Fixes</h2>
 <ul><li>Allowed binding the middle mouse button without modifier keys.</li><li>Fixed some shortcut issues on non‑US keyboard layouts.</li></ul>]]></description>
-      <pubDate>Fri, 09 Jan 2026 16:12:17 +0000</pubDate>
+      <pubDate>Fri, 09 Jan 2026 17:10:52 +0000</pubDate>
 
       <sparkle:releaseNotesLink xml:lang="zh">https://mos.caldis.me/release-notes/4.0.0-beta-20260108.1.zh.html</sparkle:releaseNotesLink>
       <sparkle:releaseNotesLink>https://mos.caldis.me/release-notes/4.0.0-beta-20260108.1.en.html</sparkle:releaseNotesLink>
