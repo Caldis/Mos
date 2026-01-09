@@ -13,9 +13,7 @@
 
       <sparkle:channel>beta</sparkle:channel>
 
-      <description><![CDATA[<blockquote>这是测试版本，一些功能或内容可能会在正式版本中变更。</blockquote>
-<blockquote>如果应用无法启动或遇到权限问题，请参考 <a href="https://github.com/Caldis/Mos/wiki/%E5%A6%82%E6%9E%9C%E5%BA%94%E7%94%A8%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%BF%90%E8%A1%8C">Wiki: 如果应用无法正常运行</a></blockquote>
-
+      <description><![CDATA[
 <h2>新功能</h2>
 <ul><li>新增应用内更新检查（Sparkle），并支持 Beta 渠道开关。</li></ul>
 
@@ -25,11 +23,7 @@
 <h2>修复</h2>
 <ul><li>允许在不按修饰键的情况下绑定鼠标中键。</li><li>修复部分非 US 键盘布局下的快捷键问题。</li></ul>
 
-
 <hr/>
-
-<blockquote>This is a beta version; some features or content may change in the official release.</blockquote>
-<blockquote>If the application fails to start or encounters permission issues, please refer to <a href="https://github.com/Caldis/Mos/wiki/If-the-App-not-work-properly">Wiki: If the App not work properly</a></blockquote>
 
 <h2>New Feature</h2>
 <ul><li>Added in-app update checking via Sparkle, with an optional beta channel toggle.</li></ul>
