@@ -36,7 +36,7 @@
       <pubDate>Wed, 07 Jan 2026 17:25:12 +0000</pubDate>
 
       <enclosure
-        url="https://github.com/Caldis/Mos/releases/download/untagged-697fcd30ffc89504ff14/Mos.Versions.4.0.0-beta-20260108.1.zip"
+        url="https://github.com/Caldis/meow/releases/download/init/Mos.Versions.4.0.0-beta-20260108.1.zip"
         length="11322045"
         type="application/octet-stream"
         sparkle:shortVersionString="4.0.0-beta"
