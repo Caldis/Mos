@@ -100,6 +100,8 @@ struct SystemShortcut {
                 // 标签与导航
                 case "navigateBack": return "chevron.backward"
                 case "navigateForward": return "chevron.forward"
+                case "beginOfLine": return "arrow.left.to.line"
+                case "endOfLine": return "arrow.right.to.line"
                 case "nextTab": return "rectangle.on.rectangle"
                 case "previousTab": return "rectangle.fill.on.rectangle.fill"
                 case "switchTabRight": return "arrow.right.circle"
@@ -224,12 +226,14 @@ struct SystemShortcut {
     static let closeAllWindows = Shortcut("closeAllWindows", 13, [.command, .option])  // Command-Option-W
     static let quitApp = Shortcut("quitApp", 12, .command)  // Command-Q
 
-    // FIX: Back/Forward - Use Command + Arrow Keys
+    // Navigation: Back/Forward with brackets
+    static let navigateBack = Shortcut("navigateBack", 33, .command)  // Command-[ (Left Bracket)
+    static let navigateForward = Shortcut("navigateForward", 30, .command)  // Command-] (Right Bracket)
+    // FIX: Back/Forward - Use Command + Arrow Keys, which can also be used as navigateBack and navigateForward.
     // Replaces Brackets (33/30) which are broken on German keyboards.
-    static let navigateBack = Shortcut("navigateBack", 123, .command)  // Command-LeftArrow
-    static let navigateForward = Shortcut("navigateForward", 124, .command)  // Command-RightArrow
-    // FIX: Next/Prev Tab - Use Command + Shift + Arrow Keys
-    // Replaces Command+Shift+Brackets.
+    static let beginOfLine = Shortcut("beginOfLine", 123, .command)  // Command-LeftArrow (Begin of line / Back)
+    static let endOfLine = Shortcut("endOfLine", 124, .command)  // Command-RightArrow (End of line / Forward)
+    // Tab navigation
     static let nextTab = Shortcut("nextTab", 124, [.command, .shift])  // Command-Shift-RightArrow
     static let previousTab = Shortcut("previousTab", 123, [.command, .shift])  // Command-Shift-LeftArrow
     static let switchTabRight = Shortcut("switchTabRight", 124, [.command, .option])  // Command-Option-Right
@@ -269,6 +273,7 @@ struct SystemShortcut {
         "closeAllWindows": closeAllWindows, "quitApp": quitApp,
         // 标签导航
         "navigateBack": navigateBack, "navigateForward": navigateForward,
+        "beginOfLine": beginOfLine, "endOfLine": endOfLine,
         "nextTab": nextTab, "previousTab": previousTab,
         "switchTabLeft": switchTabLeft, "switchTabRight": switchTabRight,
         // 辅助功能
@@ -324,7 +329,7 @@ struct SystemShortcut {
             screenshot, screenshotSelection, screenshotAndRecording
         ]),
         ("categoryNavigation", [
-            navigateBack, navigateForward, previousTab, nextTab, switchTabLeft, switchTabRight
+            navigateBack, navigateForward, beginOfLine, endOfLine, previousTab, nextTab, switchTabLeft, switchTabRight
         ]),
         // ("categoryAccessibility", [  // 暂时不提供, 有问题
         //     invertColors, zoomIn, zoomOut
