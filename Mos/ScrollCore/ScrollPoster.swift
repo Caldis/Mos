@@ -39,14 +39,18 @@ class ScrollPoster {
     private let momentumEndDelay: CFTimeInterval = 0.13
     // 外部依赖
     var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
+    // 线程同步锁 - 保护 ref 的跨线程访问
+    private var refLock = os_unfair_lock()
 }
 
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
     func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
-        // 更新依赖数据
+        // 更新依赖数据（加锁保护，防止与 CVDisplayLink 线程竞争）
+        os_unfair_lock_lock(&refLock)
         ref.event = event
         ref.proxy = proxy
+        os_unfair_lock_unlock(&refLock)
         // 更新滚动配置
         self.duration = duration
         // 更新滚动数据
@@ -103,8 +107,10 @@ extension ScrollPoster {
         momentumEndScheduledTime = nil
     }
     func reset() {
-        // 重置数值
+        // 重置数值（加锁保护，防止与 CVDisplayLink 线程竞争）
+        os_unfair_lock_lock(&refLock)
         ref = (event: nil, proxy: nil)
+        os_unfair_lock_unlock(&refLock)
         current = ( y: 0.0, x: 0.0 )
         delta = ( y: 0.0, x: 0.0 )
         buffer = ( y: 0.0, x: 0.0 )
@@ -165,14 +171,18 @@ extension ScrollPoster {
         if enableSimTrackpad {
             perform(plan, emitTargetImmediately: true)
         } else {
-            if let validEvent = ref.event, ScrollUtils.shared.isEventTargetingChrome(validEvent) {
+            // 加锁获取 ref 快照，防止竞争条件
+            os_unfair_lock_lock(&refLock)
+            let refSnapshot = (event: ref.event, proxy: ref.proxy)
+            os_unfair_lock_unlock(&refLock)
+            if let validEvent = refSnapshot.event, ScrollUtils.shared.isEventTargetingChrome(validEvent) {
                 validEvent
                     .setDoubleValueField(
                         .scrollWheelEventScrollPhase,
                         value: PhaseValueMapping[Phase.TrackingEnd]![PhaseItem.Scroll]!
                     )
                 validEvent.setDoubleValueField(.scrollWheelEventMomentumPhase, value: PhaseValueMapping[Phase.TrackingEnd]![PhaseItem.Momentum]!)
-                post(ref, (y: 0.0, x: 0.0))
+                post(refSnapshot, (y: 0.0, x: 0.0))
             }
         }
         manualInputEnded = true
@@ -202,7 +212,12 @@ private extension ScrollPoster {
 
     func emitPhase(_ item: (Phase, Phase?), delta: (y: Double, x: Double)) {
         ScrollPhase.shared.apply(phase: item.0, autoAdvance: item.1)
-        guard let proxy = ref.proxy, let eventClone = ref.event?.copy() else {
+        // 加锁获取 ref 快照并立即拷贝，防止竞争条件
+        os_unfair_lock_lock(&refLock)
+        let proxy = ref.proxy
+        let eventClone = ref.event?.copy()
+        os_unfair_lock_unlock(&refLock)
+        guard let validProxy = proxy, let validEventClone = eventClone else {
             ScrollPhase.shared.didDeliverFrame()
             return
         }
@@ -212,14 +227,14 @@ private extension ScrollPoster {
         }
         if enableSimTrackpad {
             if let scrollValue = PhaseValueMapping[item.0]?[PhaseItem.Scroll], let momentumValue = PhaseValueMapping[item.0]?[PhaseItem.Momentum] {
-                eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: scrollValue)
-                eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: momentumValue)
+                validEventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: scrollValue)
+                validEventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: momentumValue)
             }
         }
-        eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: delta.y)
-        eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: delta.x)
-        eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
-        DispatchQueue.main.async { eventClone.tapPostEvent(proxy) }
+        validEventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: delta.y)
+        validEventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: delta.x)
+        validEventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
+        DispatchQueue.main.async { validEventClone.tapPostEvent(validProxy) }
         ScrollPhase.shared.didDeliverFrame()
     }
 
@@ -278,8 +293,12 @@ private extension ScrollPoster {
         // 发送滚动结果 - 只有当输出值超过死区阈值时才发送
         let outputMagnitude = max(abs(shiftedValue.y), abs(shiftedValue.x))
         if outputMagnitude > deadZone {
-            post(ref, shiftedValue)
-}
+            // 加锁获取 ref 快照，防止竞争条件
+            os_unfair_lock_lock(&refLock)
+            let refSnapshot = (event: ref.event, proxy: ref.proxy)
+            os_unfair_lock_unlock(&refLock)
+            post(refSnapshot, shiftedValue)
+        }
 
         if let scheduled = momentumEndScheduledTime, momentumActive {
             if now >= scheduled {
