@@ -49,6 +49,7 @@ class KeyRecorder: NSObject {
     private var invalidKeyPressCount = 0 // 无效按键计数
     private let invalidKeyThreshold = 5 // 显示 ESC 提示的阈值
     private var recordingMode: KeyRecordingMode = .combination // 当前录制模式
+    private var allowMouseEvents: Bool = true // 是否允许录制鼠标事件
     // UI 组件
     private var keyPopover: KeyPopover?
     
@@ -73,11 +74,13 @@ class KeyRecorder: NSObject {
     /// - Parameters:
     ///   - sourceView: 触发录制的视图，用于显示 Popover
     ///   - mode: 录制模式，默认为组合键模式
-    func startRecording(from sourceView: NSView, mode: KeyRecordingMode = .combination) {
+    ///   - allowMouseEvents: 是否允许录制鼠标事件，默认为 true
+    func startRecording(from sourceView: NSView, mode: KeyRecordingMode = .combination, allowMouseEvents: Bool = true) {
         // Guard: 防止重复执行
         guard !isRecording else { return }
         isRecording = true
         recordingMode = mode
+        self.allowMouseEvents = allowMouseEvents
         // Log
         NSLog("[EventRecorder] Starting in \(mode) mode")
         // 确保清理任何存在的录制界面
@@ -244,8 +247,7 @@ class KeyRecorder: NSObject {
     /// - 允许单独的修饰键 (Control, Option, Command, Shift)
     /// - 允许 F 键
     /// - 允许普通键盘按键
-    /// - 允许鼠标侧键
-    /// - 不允许鼠标左右键
+    /// - 鼠标事件: 根据 allowMouseEvents 设置决定
     private func isRecordableAsSingleKey(_ event: CGEvent) -> Bool {
         // 修饰键事件 (flagsChanged)
         if event.type == .flagsChanged {
@@ -259,6 +261,10 @@ class KeyRecorder: NSObject {
         }
         // 鼠标事件
         if event.isMouseEvent {
+            // 如果不允许鼠标事件，直接拒绝
+            if !allowMouseEvents {
+                return false
+            }
             // 左右键不允许
             if KeyCode.mouseMainKeys.contains(event.mouseCode) {
                 return false

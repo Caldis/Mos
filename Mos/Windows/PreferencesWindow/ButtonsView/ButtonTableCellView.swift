@@ -312,8 +312,8 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         NSLog("[ButtonTableCellView] Starting custom key recording")
         // 设置 KeyRecorder 的 delegate
         keyRecorder.delegate = self
-        // 开始录制 (单键模式 - 支持单个按键、修饰键、组合键等)
-        keyRecorder.startRecording(from: actionPopUpButton, mode: .singleKey)
+        // 开始录制 (单键模式 - 支持单个按键、修饰键、组合键等，但不允许鼠标事件)
+        keyRecorder.startRecording(from: actionPopUpButton, mode: .singleKey, allowMouseEvents: false)
     }
     
     /// 在占位符中显示自定义快捷键
@@ -416,10 +416,16 @@ extension ButtonTableCellView: KeyRecorderDelegate {
             return
         }
         
-        NSLog("[ButtonTableCellView] Custom key recorded successfully")
-        
         // 创建 RecordedEvent
         let customShortcut = RecordedEvent(from: event)
+        
+        // 拒绝鼠标事件（不支持将鼠标侧键绑定到鼠标事件）
+        guard customShortcut.type != .mouse else {
+            NSLog("[ButtonTableCellView] Mouse events not supported for custom shortcuts")
+            return
+        }
+        
+        NSLog("[ButtonTableCellView] Custom key recorded successfully")
         
         // 更新本地状态
         self.currentCustomShortcut = customShortcut
