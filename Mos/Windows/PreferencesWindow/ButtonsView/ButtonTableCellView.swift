@@ -21,22 +21,30 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 
     // MARK: - Callbacks
     private var onShortcutSelected: ((SystemShortcut.Shortcut?) -> Void)?
+    private var onCustomShortcutSelected: ((RecordedEvent?) -> Void)?
     private var onDeleteRequested: (() -> Void)?
 
     // MARK: - Data (只用于UI显示)
     private var currentShortcut: SystemShortcut.Shortcut?
+    private var currentCustomShortcut: RecordedEvent?
     private var originalRowBackgroundColor: NSColor?
+    
+    // MARK: - KeyRecorder
+    private let keyRecorder = KeyRecorder()
 
     // MARK: - 配置方法
     func configure(
         with binding: ButtonBinding,
         onShortcutSelected: @escaping (SystemShortcut.Shortcut?) -> Void,
+        onCustomShortcutSelected: @escaping (RecordedEvent?) -> Void,
         onDeleteRequested: @escaping () -> Void
     ) {
         // 保存回调
         self.onShortcutSelected = onShortcutSelected
+        self.onCustomShortcutSelected = onCustomShortcutSelected
         self.onDeleteRequested = onDeleteRequested
         self.currentShortcut = binding.systemShortcut
+        self.currentCustomShortcut = binding.customShortcut
 
         // 保存原始背景色（首次或复用时）
         if originalRowBackgroundColor == nil, let rowView = self.superview as? NSTableRowView {
@@ -47,7 +55,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         setupKeyDisplayView(with: binding.triggerEvent)
 
         // 配置动作选择器
-        setupActionPopUpButton(currentShortcut: binding.systemShortcut)
+        setupActionPopUpButton(currentShortcut: binding.systemShortcut, currentCustomShortcut: binding.customShortcut)
 
         // 绘制虚线分隔符(延迟到下一个 runloop,等 AutoLayout 完成布局)
         DispatchQueue.main.async {
@@ -151,7 +159,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
     /// 1. 每次配置创建新的 NSMenu 实例，避免 cell 复用时共享状态
     /// 2. 默认禁用所有菜单项的 keyEquivalent，防止与 ButtonCore 触发的快捷键冲突
     /// 3. 通过 NSMenuDelegate 在菜单打开时临时启用 keyEquivalent（显示快捷键样式）
-    private func setupActionPopUpButton(currentShortcut: SystemShortcut.Shortcut?) {
+    private func setupActionPopUpButton(currentShortcut: SystemShortcut.Shortcut?, currentCustomShortcut: RecordedEvent?) {
         // 每次配置时创建新的 menu，避免 cell 复用时共享状态
         let menu = NSMenu()
         menu.delegate = self
@@ -162,6 +170,21 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
             target: self,
             action: #selector(shortcutSelected(_:))
         )
+        
+        // 在"未绑定"选项之后插入"自定义按键"选项
+        // 菜单结构: [0] 占位符, [1] 分割线#1, [2] 未绑定, [3] 分割线#2, [4+] 分类菜单
+        if menu.items.count >= 4 {
+            let customKeyItem = NSMenuItem(
+                title: NSLocalizedString("customKeyBinding", comment: ""),
+                action: #selector(recordCustomKey(_:)),
+                keyEquivalent: ""
+            )
+            customKeyItem.target = self
+            // 使用特殊标记来区分自定义按键选项
+            customKeyItem.representedObject = "CUSTOM_KEY_MARKER"
+            // 插入到索引3的位置（在"未绑定"之后，分割线#2之前）
+            menu.insertItem(customKeyItem, at: 3)
+        }
 
         // 初始状态禁用所有 keyEquivalent，防止意外触发
         // 只在菜单打开时（menuWillOpen）临时启用，以显示快捷键样式
@@ -171,9 +194,14 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         actionPopUpButton.menu = menu
 
         // 设置当前选择
-        if let shortcut = currentShortcut {
+        if let customShortcut = currentCustomShortcut {
+            // 显示自定义快捷键
+            setCustomShortcutInPlaceholder(customShortcut)
+        } else if let shortcut = currentShortcut {
+            // 显示系统快捷键
             selectShortcutInMenu(shortcut)
         } else {
+            // 未绑定
             setPlaceholderToUnbound()
         }
     }
@@ -263,6 +291,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 
         // 更新本地状态
         self.currentShortcut = shortcut
+        self.currentCustomShortcut = nil // 清除自定义快捷键状态
 
         // 更新占位符显示
         if shortcut != nil {
@@ -275,6 +304,25 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 
         // 通知外部更新(nil 表示清除绑定)
         onShortcutSelected?(shortcut)
+        onCustomShortcutSelected?(nil) // 同时清除自定义快捷键
+    }
+    
+    /// 录制自定义按键
+    @objc private func recordCustomKey(_ sender: NSMenuItem) {
+        NSLog("[ButtonTableCellView] Starting custom key recording")
+        // 设置 KeyRecorder 的 delegate
+        keyRecorder.delegate = self
+        // 开始录制 (单键模式 - 支持单个按键、修饰键、组合键等)
+        keyRecorder.startRecording(from: actionPopUpButton, mode: .singleKey)
+    }
+    
+    /// 在占位符中显示自定义快捷键
+    private func setCustomShortcutInPlaceholder(_ customShortcut: RecordedEvent) {
+        // 使用 displayComponents 构建显示文本
+        let displayText = customShortcut.displayComponents.joined(separator: " ")
+        
+        // 更新占位符
+        setCustomTitle(displayText, image: nil)
     }
 
     /// 删除绑定
@@ -357,5 +405,31 @@ extension ButtonTableCellView {
                 disableKeyEquivalents(in: submenu)
             }
         }
+    }
+}
+
+// MARK: - KeyRecorderDelegate
+extension ButtonTableCellView: KeyRecorderDelegate {
+    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: CGEvent, isDuplicate: Bool) {
+        guard !isDuplicate else {
+            NSLog("[ButtonTableCellView] Duplicate custom key recording ignored")
+            return
+        }
+        
+        NSLog("[ButtonTableCellView] Custom key recorded successfully")
+        
+        // 创建 RecordedEvent
+        let customShortcut = RecordedEvent(from: event)
+        
+        // 更新本地状态
+        self.currentCustomShortcut = customShortcut
+        self.currentShortcut = nil // 清除系统快捷键状态
+        
+        // 更新占位符显示
+        setCustomShortcutInPlaceholder(customShortcut)
+        
+        // 通知外部更新
+        onCustomShortcutSelected?(customShortcut)
+        onShortcutSelected?(nil) // 同时清除系统快捷键
     }
 }

@@ -142,6 +142,7 @@ extension PreferencesButtonsViewController {
                 id: oldBinding.id,
                 triggerEvent: oldBinding.triggerEvent,
                 systemShortcutName: shortcut.identifier,
+                customShortcut: nil, // 清除自定义快捷键
                 isEnabled: true
             )
         } else {
@@ -150,6 +151,41 @@ extension PreferencesButtonsViewController {
                 id: oldBinding.id,
                 triggerEvent: oldBinding.triggerEvent,
                 systemShortcutName: "",
+                customShortcut: nil,
+                isEnabled: false
+            )
+        }
+
+        buttonBindings[index] = updatedBinding
+        syncViewWithOptions()
+    }
+    
+    /// 更新按钮绑定（自定义快捷键版本）
+    /// - Parameters:
+    ///   - id: 绑定记录的唯一标识
+    ///   - customShortcut: 自定义快捷键对象,nil 表示清除绑定
+    func updateButtonBinding(id: UUID, withCustomShortcut customShortcut: RecordedEvent?) {
+        guard let index = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
+
+        let oldBinding = buttonBindings[index]
+
+        let updatedBinding: ButtonBinding
+        if let customShortcut = customShortcut {
+            // 绑定自定义快捷键
+            updatedBinding = ButtonBinding(
+                id: oldBinding.id,
+                triggerEvent: oldBinding.triggerEvent,
+                systemShortcutName: "", // 清除系统快捷键名称
+                customShortcut: customShortcut,
+                isEnabled: true
+            )
+        } else {
+            // 清除绑定
+            updatedBinding = ButtonBinding(
+                id: oldBinding.id,
+                triggerEvent: oldBinding.triggerEvent,
+                systemShortcutName: "",
+                customShortcut: nil,
                 isEnabled: false
             )
         }
@@ -188,6 +224,9 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
                 with: binding,
                 onShortcutSelected: { [weak self] shortcut in
                     self?.updateButtonBinding(id: binding.id, with: shortcut)
+                },
+                onCustomShortcutSelected: { [weak self] customShortcut in
+                    self?.updateButtonBinding(id: binding.id, withCustomShortcut: customShortcut)
                 },
                 onDeleteRequested: { [weak self] in
                     self?.removeButtonBinding(id: binding.id)

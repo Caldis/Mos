@@ -154,7 +154,7 @@ struct RecordedEvent: Codable, Equatable {
 }
 
 // MARK: - ButtonBinding
-/// 按钮绑定 - 将录制的事件与系统快捷键关联
+/// 按钮绑定 - 将录制的事件与系统快捷键或自定义快捷键关联
 struct ButtonBinding: Codable, Equatable {
 
     // MARK: - 数据字段
@@ -167,6 +167,9 @@ struct ButtonBinding: Codable, Equatable {
 
     /// 绑定的系统快捷键名称
     let systemShortcutName: String
+
+    /// 自定义快捷键 (可选, 如果设置了此项则优先使用自定义快捷键)
+    var customShortcut: RecordedEvent?
 
     /// 是否启用
     var isEnabled: Bool
@@ -181,12 +184,18 @@ struct ButtonBinding: Codable, Equatable {
         return SystemShortcut.getShortcut(named: systemShortcutName)
     }
 
+    /// 判断是否使用自定义快捷键
+    var isCustomShortcut: Bool {
+        return customShortcut != nil
+    }
+
     // MARK: - 初始化
 
-    init(id: UUID = UUID(), triggerEvent: RecordedEvent, systemShortcutName: String, isEnabled: Bool = true) {
+    init(id: UUID = UUID(), triggerEvent: RecordedEvent, systemShortcutName: String, customShortcut: RecordedEvent? = nil, isEnabled: Bool = true) {
         self.id = id
         self.triggerEvent = triggerEvent
         self.systemShortcutName = systemShortcutName
+        self.customShortcut = customShortcut
         self.isEnabled = isEnabled
         self.createdAt = Date()
     }
