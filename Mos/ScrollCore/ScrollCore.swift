@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import os
 
 class ScrollCore {
     
@@ -14,22 +15,90 @@ class ScrollCore {
     static let shared = ScrollCore()
     init() { NSLog("Module initialized: ScrollCore") }
     
-    // 执行状态
-    var isActive = false
-    // 热键数据
-    var dashScroll = false
-    var dashAmplification = 1.0
-    var toggleScroll = false {
-        didSet { ScrollPoster.shared.updateShifting(enable: toggleScroll) }
+    // 线程同步锁
+    private var _lock = os_unfair_lock()
+    
+    private func withLock<T>(_ body: () -> T) -> T {
+        os_unfair_lock_lock(&_lock)
+        defer { os_unfair_lock_unlock(&_lock) }
+        return body()
     }
-    var blockSmooth = false
+    
+    // 执行状态
+    private var _isActive = false
+    var isActive: Bool {
+        get { return withLock { _isActive } }
+        set { withLock { _isActive = newValue } }
+    }
+    // 热键数据
+    private var _dashScroll = false
+    var dashScroll: Bool {
+        get { return withLock { _dashScroll } }
+        set { withLock { _dashScroll = newValue } }
+    }
+    private var _dashAmplification = 1.0
+    var dashAmplification: Double {
+        get { return withLock { _dashAmplification } }
+        set { withLock { _dashAmplification = newValue } }
+    }
+    private var _toggleScroll = false
+    var toggleScroll: Bool {
+        get { return withLock { _toggleScroll } }
+        set {
+            withLock { _toggleScroll = newValue }
+            ScrollPoster.shared.updateShifting(enable: newValue)
+        }
+    }
+    private var _blockSmooth = false
+    var blockSmooth: Bool {
+        get { return withLock { _blockSmooth } }
+        set { withLock { _blockSmooth = newValue } }
+    }
     // 非修饰键热键的按下状态跟踪
-    var dashKeyHeld = false
-    var toggleKeyHeld = false
-    var blockKeyHeld = false
+    private var _dashKeyHeld = false
+    var dashKeyHeld: Bool {
+        get { return withLock { _dashKeyHeld } }
+        set { withLock { _dashKeyHeld = newValue } }
+    }
+    private var _toggleKeyHeld = false
+    var toggleKeyHeld: Bool {
+        get { return withLock { _toggleKeyHeld } }
+        set { withLock { _toggleKeyHeld = newValue } }
+    }
+    private var _blockKeyHeld = false
+    var blockKeyHeld: Bool {
+        get { return withLock { _blockKeyHeld } }
+        set { withLock { _blockKeyHeld = newValue } }
+    }
     // 例外应用数据
-    var application: Application?
-    var currentApplication: Application? // 用于区分按下热键及抬起时的作用目标
+    private var _application: Application?
+    var application: Application? {
+        get { return withLock { _application } }
+        set { withLock { _application = newValue } }
+    }
+    private var _currentApplication: Application? // 用于区分按下热键及抬起时的作用目标
+    var currentApplication: Application? {
+        get { return withLock { _currentApplication } }
+        set { withLock { _currentApplication = newValue } }
+    }
+    
+    func snapshotScrollState() -> (blockSmooth: Bool, toggleScroll: Bool, dashAmplification: Double, application: Application?) {
+        return withLock { (_blockSmooth, _toggleScroll, _dashAmplification, _application) }
+    }
+    
+    func resetHotkeyState() {
+        withLock {
+            _dashScroll = false
+            _dashAmplification = 1.0
+            _toggleScroll = false
+            _blockSmooth = false
+            _dashKeyHeld = false
+            _toggleKeyHeld = false
+            _blockKeyHeld = false
+            _currentApplication = nil
+        }
+        ScrollPoster.shared.updateShifting(enable: false)
+    }
     // 拦截层
     var scrollEventInterceptor: Interceptor?
     var hotkeyEventInterceptor: Interceptor?
@@ -62,7 +131,10 @@ class ScrollCore {
         // 获取事件目标
         let targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
         // 获取列表中应用程序的列外设置信息
-        ScrollCore.shared.application = ScrollUtils.shared.getTargetApplication(from: targetRunningApplication)
+        let targetApplication = ScrollUtils.shared.getTargetApplication(from: targetRunningApplication)
+        ScrollCore.shared.application = targetApplication
+        // 原子快照读取热键状态
+        let state = ScrollCore.shared.snapshotScrollState()
         // 平滑/翻转
         var enableSmooth = false,
             enableSmoothVertical = false,
@@ -72,17 +144,17 @@ class ScrollCore {
         var step = Options.shared.scroll.step,
             speed = Options.shared.scroll.speed,
             duration = Options.shared.scroll.durationTransition
-        if let targetApplication = ScrollCore.shared.application {
-            enableSmooth = targetApplication.isSmooth(ScrollCore.shared.blockSmooth)
-            enableSmoothVertical = targetApplication.isSmoothVertical(ScrollCore.shared.blockSmooth)
-            enableSmoothHorizontal = targetApplication.isSmoothHorizontal(ScrollCore.shared.blockSmooth)
+        if let targetApplication = targetApplication {
+            enableSmooth = targetApplication.isSmooth(state.blockSmooth)
+            enableSmoothVertical = targetApplication.isSmoothVertical(state.blockSmooth)
+            enableSmoothHorizontal = targetApplication.isSmoothHorizontal(state.blockSmooth)
             enableReverseVertical = targetApplication.isReverseVertical()
             enableReverseHorizontal = targetApplication.isReverseHorizontal()
             step = targetApplication.getStep()
             speed = targetApplication.getSpeed()
             duration = targetApplication.getDuration()
         } else if !Options.shared.application.allowlist {
-            enableSmooth = Options.shared.scroll.smooth && !ScrollCore.shared.blockSmooth
+            enableSmooth = Options.shared.scroll.smooth && !state.blockSmooth
             enableSmoothVertical = enableSmooth && Options.shared.scroll.smoothVertical
             enableSmoothHorizontal = enableSmooth && Options.shared.scroll.smoothHorizontal
             let allowReverse = Options.shared.scroll.reverse
@@ -99,7 +171,7 @@ class ScrollCore {
         let scrollEvent = ScrollEvent(with: event)
         let hasVerticalDelta = scrollEvent.Y.valid && scrollEvent.Y.usableValue != 0.0
         let hasHorizontalDelta = scrollEvent.X.valid && scrollEvent.X.usableValue != 0.0
-        let willShiftVerticalToHorizontal = ScrollCore.shared.toggleScroll && hasVerticalDelta && !hasHorizontalDelta
+        let willShiftVerticalToHorizontal = state.toggleScroll && hasVerticalDelta && !hasHorizontalDelta
         let verticalReversePreference = willShiftVerticalToHorizontal ? enableReverseHorizontal : enableReverseVertical
         if hasVerticalDelta && verticalReversePreference {
             ScrollEvent.reverseY(scrollEvent)
@@ -146,7 +218,7 @@ class ScrollCore {
                 y: smoothedY,
                 x: smoothedX,
                 speed: speed,
-                amplification: ScrollCore.shared.dashAmplification
+                amplification: state.dashAmplification
             ).tryStart()
         }
 
@@ -224,17 +296,7 @@ class ScrollCore {
         let isAppTargetChanged = ScrollCore.shared.currentApplication != ScrollCore.shared.application
         let isAnyKeyUp = event.isKeyUp || isKeyUp
         if isAppTargetChanged && isAnyKeyUp {
-            // 关闭全部
-            ScrollCore.shared.dashScroll = false
-            ScrollCore.shared.dashAmplification = 1.0
-            ScrollCore.shared.toggleScroll = false
-            ScrollCore.shared.blockSmooth = false
-            // 重置按键状态
-            ScrollCore.shared.dashKeyHeld = false
-            ScrollCore.shared.toggleKeyHeld = false
-            ScrollCore.shared.blockKeyHeld = false
-            // 并更新记录器
-            ScrollCore.shared.currentApplication = nil
+            ScrollCore.shared.resetHotkeyState()
         }
         // 不返回原始事件
         return nil
