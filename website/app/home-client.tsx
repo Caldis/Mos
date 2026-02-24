@@ -283,7 +283,7 @@ export default function HomeClient() {
   };
 
   return (
-    <div className="min-h-screen min-h-[100svh] text-[color:var(--fg0)]">
+    <div className="min-h-[100dvh] text-[color:var(--fg0)]">
       <a
         href="#content"
         className="sr-only focus:not-sr-only focus:fixed focus:z-[100] focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:rounded-xl focus:bg-black/70 focus:text-white focus:outline-none"
