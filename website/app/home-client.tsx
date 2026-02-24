@@ -12,6 +12,8 @@ import { CopyButton } from "./components/CopyButton/CopyButton";
 import { useI18n } from "./i18n/context";
 import { format } from "./i18n/format";
 import { useGithubRelease } from "./services/github";
+import { motion, useReducedMotion } from "framer-motion";
+import { HeroCurvePanel } from "./components/HeroCurvePanel/HeroCurvePanel";
 
 const FALLBACK_RELEASE_LINK = "https://github.com/Caldis/Mos/releases/latest";
 
@@ -155,8 +157,19 @@ function pickDownloadUrl(release: unknown): string {
   return byExt(".zip")?.url || byExt(".dmg")?.url || assets[0]?.url || FALLBACK_RELEASE_LINK;
 }
 
+const HERO_SPRING = { type: "spring" as const, stiffness: 100, damping: 20 };
+
+function heroMotion(delayS: number, shouldReduceMotion: boolean | null) {
+  return {
+    initial: shouldReduceMotion ? (false as const) : { opacity: 0, y: 24 },
+    animate: { opacity: 1, y: 0 },
+    transition: { ...HERO_SPRING, delay: delayS },
+  };
+}
+
 export default function HomeClient() {
   const { t } = useI18n();
+  const shouldReduceMotion = useReducedMotion();
   const { data: release } = useGithubRelease();
 
   const [axesDemo, setAxesDemo] = useState<Record<Axis, Record<AxisSetting, boolean>>>(() => ({
@@ -328,109 +341,114 @@ export default function HomeClient() {
       </header>
 
       <main id="content" className="mx-auto max-w-6xl px-4 sm:px-6">
-        <section className="relative min-h-screen min-h-[100svh] pt-28 sm:pt-36 pb-10 sm:pb-12 flex flex-col">
+        <section className="relative min-h-[100dvh] pt-28 sm:pt-36 pb-10 sm:pb-12 flex flex-col">
           <div className="flex-1 flex items-center">
-            <div className="w-full">
-            <div
-              className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-xs text-white/70 shadow-elevated motion-safe:animate-[hero-in_900ms_var(--ease-out)_both]"
-              style={{ animationDelay: "40ms" }}
-            >
-	              <span className="inline-flex items-center gap-2">
-	                <span className="h-2 w-2 rounded-full bg-[color:var(--accent)] shadow-[0_0_22px_rgba(255,255,255,0.35)]" />
-	                {t.hero.badgeLine1}
-	              </span>
-	              <span className="hidden sm:inline text-white/35">•</span>
-	              <span className="hidden sm:inline font-mono text-white/45">
-	                {t.hero.badgeLine2}
-	              </span>
-	            </div>
+            <div className="w-full grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 lg:gap-20 items-center">
 
-            <h1
-              className="mt-7 font-display text-balance text-[42px] leading-[1.02] sm:text-[72px] md:text-[84px] text-white motion-safe:animate-[hero-in_1000ms_var(--ease-out)_both]"
-              style={{ animationDelay: "110ms" }}
-	            >
-	              {t.hero.titleLine1}
-	              <span className="block">
-	                {t.hero.titleLine2Before}
-	                <span
-	                  className="inline-block text-flow"
-	                  style={{ textShadow: "0 0 42px rgba(255,255,255,0.08)" }}
-	                >
-	                  {t.hero.titleLine2Highlight}
-	                </span>
-	                {t.hero.titleLine2After}
-	              </span>
-	            </h1>
-
-            <p
-              className="mt-5 max-w-2xl text-balance text-[15px] sm:text-lg text-white/72 leading-relaxed motion-safe:animate-[hero-in_1000ms_var(--ease-out)_both]"
-              style={{ animationDelay: "180ms" }}
-	            >
-	              {t.hero.lead}
-	            </p>
-
-            <div
-              className="mt-8 flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 motion-safe:animate-[hero-in_1050ms_var(--ease-out)_both]"
-              style={{ animationDelay: "250ms" }}
-            >
-              <div className="flex flex-col items-start w-fit">
-                <Magnetic strength={22}>
-                  <a
-                    href={downloadUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group relative overflow-hidden rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-black shadow-elevated border border-black/10 inline-flex items-center justify-center"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.84) 100%)",
-                    }}
-	                  >
-	                    <span className="relative z-10">{t.hero.ctaDownload}</span>
-	                    <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 [background:radial-gradient(800px_240px_at_30%_0%,rgba(0,0,0,0.18),transparent_55%)]" />
-	                  </a>
-	                </Magnetic>
-                <a
-                  href="#homebrew"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToHomebrew();
-	                  }}
-	                  className="mt-2 self-center text-xs font-mono text-white/50 hover:text-white/75 transition-colors underline decoration-white/15 hover:decoration-white/35 underline-offset-4"
-	                >
-	                  {t.hero.ctaInstallHomebrew}
-	                </a>
-	              </div>
-
-              <Magnetic strength={14}>
-                <a
-                  href="https://github.com/Caldis/Mos"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
+              {/* Left column */}
+              <div>
+                <motion.div
+                  className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-xs text-white/70 shadow-elevated"
+                  {...heroMotion(0, shouldReduceMotion)}
                 >
-                  <span className="mr-2 opacity-70 group-hover:opacity-100 transition-opacity">
-                    ↗
-	                  </span>
-	                  <span>{t.hero.ctaViewGitHub}</span>
-	                </a>
-	              </Magnetic>
+                  <span className="inline-flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[color:var(--accent)] shadow-[0_0_22px_rgba(255,255,255,0.35)]" />
+                    {t.hero.badgeLine1}
+                  </span>
+                  <span className="hidden sm:inline text-white/35">•</span>
+                  <span className="hidden sm:inline font-mono text-white/45">
+                    {t.hero.badgeLine2}
+                  </span>
+                </motion.div>
 
-	              <div className="sm:ml-auto sm:self-center text-xs text-white/45">
-	                <div className="font-mono">{t.hero.requirementsLine1}</div>
-	                <div className="font-mono">{t.hero.requirementsLine2}</div>
-	              </div>
-	            </div>
+                <motion.h1
+                  className="mt-7 font-display text-balance text-[52px] leading-[0.95] tracking-[-0.02em] sm:text-[88px] md:text-[108px] lg:text-[124px] text-white"
+                  {...heroMotion(0.08, shouldReduceMotion)}
+                >
+                  {t.hero.titleLine1}
+                  <span className="block">
+                    {t.hero.titleLine2Before}
+                    <span
+                      className="inline-block text-flow"
+                      style={{ textShadow: "0 0 42px rgba(255,255,255,0.08)" }}
+                    >
+                      {t.hero.titleLine2Highlight}
+                    </span>
+                    {t.hero.titleLine2After}
+                  </span>
+                </motion.h1>
+
+                <motion.p
+                  className="mt-5 max-w-2xl text-balance text-[15px] sm:text-lg text-white/72 leading-[1.7]"
+                  {...heroMotion(0.18, shouldReduceMotion)}
+                >
+                  {t.hero.lead}
+                </motion.p>
+
+                <motion.div
+                  className="mt-8 flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4"
+                  {...heroMotion(0.26, shouldReduceMotion)}
+                >
+                  <div className="flex flex-col items-start w-fit">
+                    <Magnetic strength={22}>
+                      <a
+                        href={downloadUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group relative overflow-hidden rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-black shadow-elevated border border-black/10 inline-flex items-center justify-center"
+                        style={{
+                          background:
+                            "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.84) 100%)",
+                        }}
+                      >
+                        <span className="relative z-10">{t.hero.ctaDownload}</span>
+                        <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 [background:radial-gradient(800px_240px_at_30%_0%,rgba(0,0,0,0.18),transparent_55%)]" />
+                      </a>
+                    </Magnetic>
+                    <a
+                      href="#homebrew"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToHomebrew();
+                      }}
+                      className="mt-2 self-center text-xs font-mono text-white/50 hover:text-white/75 transition-colors underline decoration-white/15 hover:decoration-white/35 underline-offset-4"
+                    >
+                      {t.hero.ctaInstallHomebrew}
+                    </a>
+                  </div>
+
+                  <Magnetic strength={14}>
+                    <a
+                      href="https://github.com/Caldis/Mos"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
+                    >
+                      <span className="mr-2 opacity-70 group-hover:opacity-100 transition-opacity">↗</span>
+                      <span>{t.hero.ctaViewGitHub}</span>
+                    </a>
+                  </Magnetic>
+
+                  <div className="sm:ml-auto sm:self-center text-xs text-white/45">
+                    <div className="font-mono tabular-nums">{t.hero.requirementsLine1}</div>
+                    <div className="font-mono">{t.hero.requirementsLine2}</div>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Right column — HeroCurvePanel is hidden md: internally */}
+              <HeroCurvePanel />
             </div>
           </div>
 
           <div className="mt-8 sm:mt-10 flex items-center gap-3 text-white/40">
             <div className="h-[1px] flex-1 hairline" />
-	            <div className="font-mono text-[11px] tracking-[0.18em] uppercase">
-	              {t.hero.scrollHint}
-	            </div>
-	            <div className="h-[1px] flex-1 hairline" />
-	          </div>
-	        </section>
+            <div className="font-mono text-[11px] tracking-[0.18em] uppercase">
+              {t.hero.scrollHint}
+            </div>
+            <div className="h-[1px] flex-1 hairline" />
+          </div>
+        </section>
 
         <section className="py-16 sm:py-24">
           <Reveal>
