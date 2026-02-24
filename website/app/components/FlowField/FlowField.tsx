@@ -122,7 +122,7 @@ export function FlowField({ className = "" }: FlowFieldProps) {
       const scroll = clamp(window.scrollY / scrollMax, 0, 1);
 
       // Persistent trails.
-      ctx.fillStyle = `rgba(0, 0, 0, ${0.12 + scroll * 0.06})`;
+      ctx.fillStyle = `rgba(0, 0, 0, ${0.08 + scroll * 0.05})`;
       ctx.fillRect(0, 0, cssW, cssH);
 
       ctx.save();
