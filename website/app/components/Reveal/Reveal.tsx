@@ -6,8 +6,8 @@ import { ReactNode, useRef } from "react";
 const SPRING = { type: "spring" as const, stiffness: 100, damping: 20 };
 
 const variants = {
-  hidden: { opacity: 0, y: 24, filter: "blur(12px)" },
-  visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0 },
 };
 
 export function Reveal({

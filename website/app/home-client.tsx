@@ -465,7 +465,7 @@ export default function HomeClient() {
 
           <div className="mt-10 grid grid-cols-1 md:grid-cols-12 gap-4">
             {/* Row 1: Easing (7) + Axes (5) */}
-            <Reveal className="md:col-span-7" delayMs={140}>
+            <Reveal className="md:col-span-7 h-full" delayMs={140}>
               <BentoCard>
                 <div className="relative p-6 sm:p-8">
                   <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
@@ -482,7 +482,7 @@ export default function HomeClient() {
               </BentoCard>
             </Reveal>
 
-            <Reveal className="md:col-span-5" delayMs={200}>
+            <Reveal className="md:col-span-5 h-full" delayMs={200}>
               <BentoCard>
                 <div className="relative p-6 sm:p-8">
                   <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
@@ -538,7 +538,7 @@ export default function HomeClient() {
             </Reveal>
 
             {/* Row 2: Per-App (5) + Buttons (7) — taller than row 1 */}
-            <Reveal className="md:col-span-5" delayMs={260}>
+            <Reveal className="md:col-span-5 h-full" delayMs={260}>
               <BentoCard>
                 <div className="relative p-6 sm:p-8 min-h-[360px]">
                   <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
@@ -583,7 +583,7 @@ export default function HomeClient() {
               </BentoCard>
             </Reveal>
 
-            <Reveal className="md:col-span-7" delayMs={320}>
+            <Reveal className="md:col-span-7 h-full" delayMs={320}>
               <BentoCard>
                 <div className="relative p-6 sm:p-8 min-h-[360px]">
                   <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
@@ -627,7 +627,7 @@ export default function HomeClient() {
                       <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 px-3 py-2 opacity-60">
                         <div className="flex items-center gap-2">
                           <span className="relative flex h-1.5 w-1.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
+                            <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
                             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/40" />
                           </span>
                           <div className="font-mono text-xs text-white/45">—</div>

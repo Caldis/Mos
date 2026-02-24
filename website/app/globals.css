@@ -342,4 +342,7 @@ body::before {
     animation: none;
     opacity: 0;
   }
+  .orb {
+    animation: none;
+  }
 }

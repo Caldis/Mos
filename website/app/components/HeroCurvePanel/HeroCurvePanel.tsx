@@ -90,10 +90,12 @@ export function HeroCurvePanel() {
               strokeLinejoin="round"
               pathLength={1}
               strokeDasharray={1}
-              strokeDashoffset={1}
-              style={{
-                animation: "stroke-in 1200ms var(--ease-out) 500ms both",
-              }}
+              strokeDashoffset={shouldReduceMotion ? 0 : 1}
+              style={
+                shouldReduceMotion
+                  ? {}
+                  : { animation: "stroke-in 1200ms var(--ease-out) 500ms both" }
+              }
             />
           </svg>
         </div>
