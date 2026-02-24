@@ -14,6 +14,7 @@ import { format } from "./i18n/format";
 import { useGithubRelease } from "./services/github";
 import { motion, useReducedMotion } from "framer-motion";
 import { HeroCurvePanel } from "./components/HeroCurvePanel/HeroCurvePanel";
+import { BentoCard } from "./components/BentoCard/BentoCard";
 
 const FALLBACK_RELEASE_LINK = "https://github.com/Caldis/Mos/releases/latest";
 
@@ -297,26 +298,26 @@ export default function HomeClient() {
         <div className="orb left-[12vw] bottom-[-220px] w-[520px] h-[520px] bg-[color:var(--accent2)] [animation-delay:-2.1s]" />
       </div>
 
-	      <header className="fixed left-0 right-0 top-0 z-50 px-4 sm:px-6">
-	        <nav className="mx-auto mt-4 sm:mt-6 max-w-6xl rounded-[var(--radius-xl)] glass ring-accent">
-		          <div className="flex items-center justify-between px-4 sm:px-5 py-3">
-		            <div className="flex items-center gap-3">
-		              <Image
-		                src={logo512}
-		                alt={t.a11y.appIconAlt}
-		                width={40}
-		                height={40}
-		                className="object-contain rounded-[14px]"
-		                priority
-		              />
-		              <div className="text-lg sm:text-xl font-extrabold tracking-[0.015em] text-white">
-		                Mos
-		              </div>
-		            </div>
+      <header className="fixed left-0 right-0 top-0 z-50 px-4 sm:px-6">
+        <nav className="mx-auto mt-4 sm:mt-6 max-w-6xl rounded-[var(--radius-xl)] glass ring-accent">
+          <div className="flex items-center justify-between px-4 sm:px-5 py-3">
+            <div className="flex items-center gap-3">
+              <Image
+                src={logo512}
+                alt={t.a11y.appIconAlt}
+                width={40}
+                height={40}
+                className="object-contain rounded-[14px]"
+                priority
+              />
+              <div className="text-lg sm:text-xl font-extrabold tracking-[0.015em] text-white">
+                Mos
+              </div>
+            </div>
 
-		            <div className="flex items-center gap-3">
-		              <LanguageSelector />
-		              <Magnetic strength={14}>
+            <div className="flex items-center gap-3">
+              <LanguageSelector />
+              <Magnetic strength={14}>
                 <a
                   href="https://github.com/Caldis/Mos"
                   target="_blank"
@@ -452,163 +453,168 @@ export default function HomeClient() {
 
         <section className="py-16 sm:py-24">
           <Reveal>
-	            <h2 className="font-display text-balance text-3xl sm:text-5xl text-white leading-tight">
-	              {t.sectionFeel.title}
-	            </h2>
-	          </Reveal>
-	          <Reveal delayMs={90}>
-	            <p className="mt-4 max-w-3xl text-white/68 leading-relaxed">
-	              {t.sectionFeel.lead}
-	            </p>
-	          </Reveal>
+            <h2 className="font-display text-balance text-3xl sm:text-5xl text-white leading-tight">
+              {t.sectionFeel.title}
+            </h2>
+          </Reveal>
+          <Reveal delayMs={90}>
+            <p className="mt-4 max-w-3xl text-white/68 leading-relaxed">
+              {t.sectionFeel.lead}
+            </p>
+          </Reveal>
 
           <div className="mt-10 grid grid-cols-1 md:grid-cols-12 gap-4">
-            <Reveal className="md:col-span-12" delayMs={140}>
-              <div className="group relative h-full rounded-[var(--radius-xl)] glass shadow-elevated overflow-hidden border border-white/10">
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 [background:radial-gradient(900px_420px_at_20%_0%,rgba(255,255,255,0.10),transparent_55%)]" />
+            {/* Row 1: Easing (7) + Axes (5) */}
+            <Reveal className="md:col-span-7" delayMs={140}>
+              <BentoCard>
                 <div className="relative p-6 sm:p-8">
-	                  <div className="font-display text-sm tracking-[0.18em] uppercase text-white/70">
-	                    {t.sectionFeel.cards.curves.kicker}
-	                  </div>
-	                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
-	                    {t.sectionFeel.cards.curves.title}
-	                  </div>
-	                  <p className="mt-3 text-white/66 leading-relaxed">
-	                    {t.sectionFeel.cards.curves.body}
-	                  </p>
-	                  <EasingPlayground className="mt-6" />
-	                </div>
-	              </div>
-	            </Reveal>
+                  <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
+                    {t.sectionFeel.cards.curves.kicker}
+                  </div>
+                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
+                    {t.sectionFeel.cards.curves.title}
+                  </div>
+                  <p className="mt-3 text-white/62 leading-[1.7]">
+                    {t.sectionFeel.cards.curves.body}
+                  </p>
+                  <EasingPlayground className="mt-6" />
+                </div>
+              </BentoCard>
+            </Reveal>
 
-            <Reveal className="md:col-span-6" delayMs={180}>
-              <div className="group relative h-full rounded-[var(--radius-xl)] glass shadow-elevated overflow-hidden border border-white/10">
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 [background:radial-gradient(900px_420px_at_80%_0%,rgba(255,255,255,0.08),transparent_55%)]" />
+            <Reveal className="md:col-span-5" delayMs={200}>
+              <BentoCard>
                 <div className="relative p-6 sm:p-8">
-	                  <div className="font-display text-sm tracking-[0.18em] uppercase text-white/70">
-	                    {t.sectionFeel.cards.axes.kicker}
-	                  </div>
-	                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
-	                    {t.sectionFeel.cards.axes.title}
-	                  </div>
-	                  <p className="mt-3 text-white/66 leading-relaxed">
-	                    {t.sectionFeel.cards.axes.body}
-	                  </p>
+                  <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
+                    {t.sectionFeel.cards.axes.kicker}
+                  </div>
+                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
+                    {t.sectionFeel.cards.axes.title}
+                  </div>
+                  <p className="mt-3 text-white/62 leading-[1.7]">
+                    {t.sectionFeel.cards.axes.body}
+                  </p>
 
-		                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5">
-		                    <div className="space-y-3">
-		                      {(["Y", "X"] as const).map((axis) => {
-		                        const row = axesDemo[axis];
-		                        return (
-		                        <div key={axis} className="flex items-center gap-3">
-		                          <div className="h-10 w-10 rounded-2xl border border-white/10 bg-white/5 grid place-items-center">
-		                            <span className="font-mono text-xs text-white/60">{axis}</span>
-		                          </div>
+                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5">
+                    <div className="space-y-3">
+                      {(["Y", "X"] as const).map((axis) => {
+                        const row = axesDemo[axis];
+                        return (
+                          <div key={axis} className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-2xl border border-white/10 bg-white/5 grid place-items-center">
+                              <span className="font-mono text-xs text-white/60">{axis}</span>
+                            </div>
 
-		                          <div className="flex flex-1 flex-wrap gap-2">
-		                            <div className="flex min-w-[170px] flex-1 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-		                              <span className="font-mono text-[11px] text-white/60">
-		                                {t.sectionFeel.cards.axes.smooth}
-		                              </span>
-		                              <MiniToggle
-		                                checked={row.smooth}
-		                                onToggle={() => toggleAxis(axis, "smooth")}
-		                                ariaLabel={`${axis} ${t.sectionFeel.cards.axes.smooth}`}
-		                              />
-		                            </div>
+                            <div className="flex flex-1 flex-wrap gap-2">
+                              <div className="flex min-w-[150px] flex-1 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                                <span className="font-mono text-[11px] text-white/60">
+                                  {t.sectionFeel.cards.axes.smooth}
+                                </span>
+                                <MiniToggle
+                                  checked={row.smooth}
+                                  onToggle={() => toggleAxis(axis, "smooth")}
+                                  ariaLabel={`${axis} ${t.sectionFeel.cards.axes.smooth}`}
+                                />
+                              </div>
 
-		                            <div className="flex min-w-[170px] flex-1 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-		                              <span className="font-mono text-[11px] text-white/60">
-		                                {t.sectionFeel.cards.axes.reverse}
-		                              </span>
-		                              <MiniToggle
-		                                checked={row.reverse}
-		                                onToggle={() => toggleAxis(axis, "reverse")}
-		                                ariaLabel={`${axis} ${t.sectionFeel.cards.axes.reverse}`}
-		                              />
-		                            </div>
-		                          </div>
-		                        </div>
-		                        );
-		                      })}
-		                    </div>
-		                  </div>
-		                </div>
-		              </div>
-		            </Reveal>
+                              <div className="flex min-w-[150px] flex-1 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                                <span className="font-mono text-[11px] text-white/60">
+                                  {t.sectionFeel.cards.axes.reverse}
+                                </span>
+                                <MiniToggle
+                                  checked={row.reverse}
+                                  onToggle={() => toggleAxis(axis, "reverse")}
+                                  ariaLabel={`${axis} ${t.sectionFeel.cards.axes.reverse}`}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </BentoCard>
+            </Reveal>
 
-            <Reveal className="md:col-span-6" delayMs={210}>
-              <div className="group relative h-full rounded-[var(--radius-xl)] glass shadow-elevated overflow-hidden border border-white/10">
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 [background:radial-gradient(900px_420px_at_40%_0%,rgba(255,255,255,0.09),transparent_55%)]" />
-                <div className="relative p-6 sm:p-8">
-	                  <div className="font-display text-sm tracking-[0.18em] uppercase text-white/70">
-	                    {t.sectionFeel.cards.perApp.kicker}
-	                  </div>
-	                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
-	                    {t.sectionFeel.cards.perApp.title}
-	                  </div>
-	                  <p className="mt-3 text-white/66 leading-relaxed">
-	                    {t.sectionFeel.cards.perApp.body}
-	                  </p>
+            {/* Row 2: Per-App (5) + Buttons (7) — taller than row 1 */}
+            <Reveal className="md:col-span-5" delayMs={260}>
+              <BentoCard>
+                <div className="relative p-6 sm:p-8 min-h-[360px]">
+                  <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
+                    {t.sectionFeel.cards.perApp.kicker}
+                  </div>
+                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
+                    {t.sectionFeel.cards.perApp.title}
+                  </div>
+                  <p className="mt-3 text-white/62 leading-[1.7]">
+                    {t.sectionFeel.cards.perApp.body}
+                  </p>
 
-			                  <div className="mt-6 grid grid-cols-3 gap-2">
-			                    {APP_PROFILES.map((a) => (
-			                      <div
-			                        key={a.id}
-			                        className="rounded-2xl border border-white/10 bg-white/5 p-3"
-			                      >
-			                        <div className="h-10 w-10 rounded-xl border border-white/10 bg-black/20 overflow-hidden">
-			                          <Image
-			                            src={a.icon}
-			                            alt=""
-		                            width={40}
-		                            height={40}
-	                            className="h-full w-full object-cover"
-		                          />
-			                        </div>
-			                        <div className="mt-2 font-mono text-[11px] text-white/55">
-			                          {a.name}
-			                        </div>
-			                      </div>
-		                    ))}
-		                  </div>
-	                </div>
-	              </div>
-	            </Reveal>
+                  {/* 2-column grid with larger 48px icons + smooth badge */}
+                  <div className="mt-6 grid grid-cols-2 gap-3">
+                    {APP_PROFILES.map((a) => (
+                      <div
+                        key={a.id}
+                        className="rounded-2xl border border-white/10 bg-white/5 p-3 flex items-center gap-3"
+                      >
+                        <div className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-black/20 overflow-hidden">
+                          <Image
+                            src={a.icon}
+                            alt=""
+                            width={48}
+                            height={48}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <div className="font-mono text-[11px] text-white/65">{a.name}</div>
+                          {a.axes.Y.smooth && (
+                            <div className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-white/8 border border-white/10 px-1.5 py-0.5">
+                              <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
+                              <span className="font-mono text-[9px] text-white/50">smooth</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </BentoCard>
+            </Reveal>
 
-	            <Reveal className="md:col-span-12" delayMs={240}>
-	              <div className="group relative h-full rounded-[var(--radius-xl)] glass shadow-elevated overflow-hidden border border-white/10">
-	                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 [background:radial-gradient(900px_420px_at_60%_0%,rgba(255,255,255,0.07),transparent_55%)]" />
-	                <div className="relative p-6 sm:p-8">
-	                  <div className="font-display text-sm tracking-[0.18em] uppercase text-white/70">
-	                    {t.sectionFeel.cards.buttons.kicker}
-	                  </div>
-	                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
-	                    {t.sectionFeel.cards.buttons.title}
-	                  </div>
-	                  <p className="mt-3 text-white/66 leading-relaxed">
-	                    {t.sectionFeel.cards.buttons.body}
-	                  </p>
+            <Reveal className="md:col-span-7" delayMs={320}>
+              <BentoCard>
+                <div className="relative p-6 sm:p-8 min-h-[360px]">
+                  <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
+                    {t.sectionFeel.cards.buttons.kicker}
+                  </div>
+                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
+                    {t.sectionFeel.cards.buttons.title}
+                  </div>
+                  <p className="mt-3 text-white/62 leading-[1.7]">
+                    {t.sectionFeel.cards.buttons.body}
+                  </p>
 
-	                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5">
-	                    <div className="font-mono text-xs text-white/45">
-	                      {t.sectionFeel.cards.buttons.quickBind}
-	                    </div>
-	                    <div className="mt-3 grid gap-2">
-	                      {[
-	                        {
-	                          k: t.sectionFeel.cards.buttons.rows.button4,
-	                          v: t.sectionFeel.cards.buttons.rows.missionControl,
-	                        },
-	                        {
-	                          k: t.sectionFeel.cards.buttons.rows.button5,
-	                          v: t.sectionFeel.cards.buttons.rows.nextSpace,
-	                        },
-	                        {
-	                          k: t.sectionFeel.cards.buttons.rows.wheelClick,
-	                          v: t.sectionFeel.cards.buttons.rows.appSwitcher,
-	                        },
-	                      ].map((row) => (
+                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5">
+                    <div className="font-mono text-xs text-white/45">
+                      {t.sectionFeel.cards.buttons.quickBind}
+                    </div>
+                    <div className="mt-3 grid gap-2">
+                      {[
+                        {
+                          k: t.sectionFeel.cards.buttons.rows.button4,
+                          v: t.sectionFeel.cards.buttons.rows.missionControl,
+                        },
+                        {
+                          k: t.sectionFeel.cards.buttons.rows.button5,
+                          v: t.sectionFeel.cards.buttons.rows.nextSpace,
+                        },
+                        {
+                          k: t.sectionFeel.cards.buttons.rows.wheelClick,
+                          v: t.sectionFeel.cards.buttons.rows.appSwitcher,
+                        },
+                      ].map((row) => (
                         <div
                           key={row.k}
                           className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2"
@@ -617,10 +623,21 @@ export default function HomeClient() {
                           <div className="font-mono text-xs text-white/45">{row.v}</div>
                         </div>
                       ))}
+                      {/* Pulsing "recording" placeholder row */}
+                      <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 px-3 py-2 opacity-60">
+                        <div className="flex items-center gap-2">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/40" />
+                          </span>
+                          <div className="font-mono text-xs text-white/45">—</div>
+                        </div>
+                        <div className="font-mono text-[10px] text-white/30 italic">recording…</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </BentoCard>
             </Reveal>
           </div>
         </section>
@@ -628,35 +645,35 @@ export default function HomeClient() {
         <section className="pt-0 pb-16 sm:pb-24">
           <div className="rounded-[28px] glass shadow-elevated border border-white/10 overflow-hidden">
             <div className="px-6 sm:px-10 py-10 sm:py-14">
-	              <Reveal>
-	                <h3 className="font-display text-balance text-3xl sm:text-6xl text-white leading-tight">
-	                  {t.download.title}
-	                </h3>
-	              </Reveal>
-	              <Reveal delayMs={90}>
-	                <p className="mt-4 max-w-3xl text-white/68 leading-relaxed">
-	                  {t.download.body}
-	                </p>
-	              </Reveal>
+              <Reveal>
+                <h3 className="font-display text-balance text-3xl sm:text-6xl text-white leading-tight">
+                  {t.download.title}
+                </h3>
+              </Reveal>
+              <Reveal delayMs={90}>
+                <p className="mt-4 max-w-3xl text-white/68 leading-relaxed">
+                  {t.download.body}
+                </p>
+              </Reveal>
 
               <Reveal delayMs={160}>
                 <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-3">
                   <Magnetic strength={22}>
                     <a
-                        href={downloadUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative overflow-hidden rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-black shadow-elevated border border-black/10 inline-flex items-center justify-center"
-                        style={{
-                          background:
-                            "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.84) 100%)",
-                        }}
-                      >
-	                      <span className="relative z-10">
-	                        {t.download.ctaDownload}
-	                      </span>
-                        <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 [background:radial-gradient(900px_260px_at_30%_0%,rgba(0,0,0,0.18),transparent_55%)]" />
-                      </a>
+                      href={downloadUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative overflow-hidden rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-black shadow-elevated border border-black/10 inline-flex items-center justify-center"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.84) 100%)",
+                      }}
+                    >
+                      <span className="relative z-10">
+                        {t.download.ctaDownload}
+                      </span>
+                      <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 [background:radial-gradient(900px_260px_at_30%_0%,rgba(0,0,0,0.18),transparent_55%)]" />
+                    </a>
                   </Magnetic>
 
                   <Magnetic strength={14}>
@@ -664,24 +681,24 @@ export default function HomeClient() {
                       href="https://github.com/Caldis/Mos/releases"
                       target="_blank"
                       rel="noopener noreferrer"
-	                      className="inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
-	                    >
-	                      {t.download.releaseNotes}
-	                    </a>
-	                  </Magnetic>
+                      className="inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
+                    >
+                      {t.download.releaseNotes}
+                    </a>
+                  </Magnetic>
 
                   <Magnetic strength={14}>
                     <a
                       href="https://github.com/Caldis/Mos/wiki"
                       target="_blank"
                       rel="noopener noreferrer"
-	                      className="inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
-	                    >
-	                      {t.download.docs}
-	                    </a>
-	                  </Magnetic>
-	                </div>
-	              </Reveal>
+                      className="inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
+                    >
+                      {t.download.docs}
+                    </a>
+                  </Magnetic>
+                </div>
+              </Reveal>
 
               <Reveal delayMs={220}>
                 <div
@@ -690,80 +707,80 @@ export default function HomeClient() {
                   className="mt-8 scroll-mt-28 rounded-[22px] border border-white/10 bg-black/35 p-5 sm:p-6"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-	                    <div>
-	                      <div className="font-display text-sm tracking-[0.18em] uppercase text-white/70">
-	                        {t.homebrew.title}
-	                      </div>
+                    <div>
+                      <div className="font-display text-sm tracking-[0.18em] uppercase text-white/70">
+                        {t.homebrew.title}
+                      </div>
                       <div className="mt-2 font-mono text-sm text-white/75">
                         brew install --cask mos
                       </div>
                     </div>
-	                    <CopyButton
-	                      value="brew install --cask mos"
-	                      className="self-start sm:self-auto rounded-2xl px-4 py-2.5 text-sm font-semibold border border-white/12 bg-white/5 hover:bg-white/8 transition-colors text-white/85"
-	                      copiedLabel={t.homebrew.copied}
-	                    >
-	                      {t.homebrew.copy}
-	                    </CopyButton>
-	                  </div>
-	                  <div className="mt-4 font-mono text-xs text-white/45">
-	                    {(() => {
-	                      const tpl = t.homebrew.tip;
-	                      const marker = "{cask}";
-	                      const idx = tpl.indexOf(marker);
-	                      if (idx === -1) return tpl;
-	                      const before = tpl.slice(0, idx);
-	                      const after = tpl.slice(idx + marker.length);
-	                      return (
-	                        <>
-	                          {before}
-	                          <span className="text-white/70">mos@beta</span>
-	                          {after}
-	                        </>
-	                      );
-	                    })()}
-	                  </div>
-	                </div>
-	              </Reveal>
+                    <CopyButton
+                      value="brew install --cask mos"
+                      className="self-start sm:self-auto rounded-2xl px-4 py-2.5 text-sm font-semibold border border-white/12 bg-white/5 hover:bg-white/8 transition-colors text-white/85"
+                      copiedLabel={t.homebrew.copied}
+                    >
+                      {t.homebrew.copy}
+                    </CopyButton>
+                  </div>
+                  <div className="mt-4 font-mono text-xs text-white/45">
+                    {(() => {
+                      const tpl = t.homebrew.tip;
+                      const marker = "{cask}";
+                      const idx = tpl.indexOf(marker);
+                      if (idx === -1) return tpl;
+                      const before = tpl.slice(0, idx);
+                      const after = tpl.slice(idx + marker.length);
+                      return (
+                        <>
+                          {before}
+                          <span className="text-white/70">mos@beta</span>
+                          {after}
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </Reveal>
             </div>
 
-	            <div className="px-6 sm:px-10 py-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white/45">
-	              <div className="font-mono text-xs">
-	                {(versionLabel
-	                  ? format(t.footer.latestVersion, { version: versionLabel })
-	                  : t.footer.latestRelease) +
-	                  " · " +
-	                  t.footer.requiresMacos}
-	              </div>
-	              <div className="flex items-center gap-4 font-mono text-xs">
+            <div className="px-6 sm:px-10 py-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white/45">
+              <div className="font-mono text-xs">
+                {(versionLabel
+                  ? format(t.footer.latestVersion, { version: versionLabel })
+                  : t.footer.latestRelease) +
+                  " · " +
+                  t.footer.requiresMacos}
+              </div>
+              <div className="flex items-center gap-4 font-mono text-xs">
                 <a
                   href="https://github.com/Caldis/Mos"
                   target="_blank"
-	                  rel="noopener noreferrer"
-	                  className="hover:text-white/80 transition-colors"
-	                >
-	                  {t.footer.github}
-	                </a>
+                  rel="noopener noreferrer"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  {t.footer.github}
+                </a>
                 <a
                   href="https://github.com/Caldis/Mos/wiki"
                   target="_blank"
-	                  rel="noopener noreferrer"
-	                  className="hover:text-white/80 transition-colors"
-	                >
-	                  {t.footer.wiki}
-	                </a>
+                  rel="noopener noreferrer"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  {t.footer.wiki}
+                </a>
                 <a
                   href="https://github.com/Caldis/Mos/releases"
                   target="_blank"
-	                  rel="noopener noreferrer"
-	                  className="hover:text-white/80 transition-colors"
-	                >
-	                  {t.footer.releases}
-	                </a>
-	              </div>
-	            </div>
-	          </div>
-	        </section>
+                  rel="noopener noreferrer"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  {t.footer.releases}
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
