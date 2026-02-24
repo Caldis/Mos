@@ -453,12 +453,12 @@ export default function HomeClient() {
 
         <section className="py-16 sm:py-24">
           <Reveal>
-            <h2 className="font-display text-balance text-3xl sm:text-5xl text-white leading-tight">
+            <h2 className="font-display text-balance text-3xl sm:text-5xl text-white leading-[0.95] tracking-[-0.01em]">
               {t.sectionFeel.title}
             </h2>
           </Reveal>
           <Reveal delayMs={90}>
-            <p className="mt-4 max-w-3xl text-white/68 leading-relaxed">
+            <p className="mt-4 max-w-3xl text-white/68 leading-[1.7]">
               {t.sectionFeel.lead}
             </p>
           </Reveal>
@@ -646,12 +646,12 @@ export default function HomeClient() {
           <div className="rounded-[28px] glass shadow-elevated border border-white/10 overflow-hidden">
             <div className="px-6 sm:px-10 py-10 sm:py-14">
               <Reveal>
-                <h3 className="font-display text-balance text-3xl sm:text-6xl text-white leading-tight">
+                <h3 className="font-display text-balance text-3xl sm:text-6xl text-white leading-[0.95] tracking-[-0.015em]">
                   {t.download.title}
                 </h3>
               </Reveal>
               <Reveal delayMs={90}>
-                <p className="mt-4 max-w-3xl text-white/68 leading-relaxed">
+                <p className="mt-4 max-w-3xl text-white/68 leading-[1.7]">
                   {t.download.body}
                 </p>
               </Reveal>
