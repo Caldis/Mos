@@ -10,16 +10,16 @@
   --fg2: rgba(255, 255, 255, 0.52);
   --border: rgba(255, 255, 255, 0.12);
 
-  /* Keep the variable names so components don't need rewrites; make them monochrome. */
   --accent: #ffffff;
   --accent2: #a1a1aa;
   --accent3: #52525b;
 
-  --radius-xl: 22px;
+  --radius-xl: 26px;
+  --radius-card: 32px;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --noise-opacity: 0.045;
+  --noise-opacity: 0.065;
 }
 
 html,
@@ -30,9 +30,9 @@ body {
 body {
   color: var(--fg0);
   background:
-    radial-gradient(1100px 680px at 18% 12%, rgba(255, 255, 255, 0.10), transparent 55%),
-    radial-gradient(900px 620px at 82% 18%, rgba(255, 255, 255, 0.06), transparent 55%),
-    radial-gradient(1100px 820px at 58% 88%, rgba(255, 255, 255, 0.045), transparent 60%),
+    radial-gradient(1100px 680px at 5% 8%, rgba(255, 255, 255, 0.10), transparent 55%),
+    radial-gradient(900px 620px at 88% 14%, rgba(255, 255, 255, 0.06), transparent 55%),
+    radial-gradient(1100px 820px at 45% 92%, rgba(255, 255, 255, 0.045), transparent 60%),
     linear-gradient(180deg, var(--bg0), var(--bg1));
   font-family:
     var(--font-body),
@@ -217,10 +217,14 @@ body::before {
   }
 
   .glass {
-    background: rgba(10, 11, 16, 0.55);
+    background: rgba(8, 9, 14, 0.60);
     border: 1px solid var(--border);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.06) inset,
+      0 1px 0 rgba(255,255,255,0.12) inset,
+      0 32px 120px rgba(0,0,0,0.8);
   }
 
   .ring-accent {
@@ -232,34 +236,17 @@ body::before {
 
   .shadow-elevated {
     box-shadow:
-      0 24px 80px rgba(0, 0, 0, 0.65),
-      0 1px 0 rgba(255, 255, 255, 0.06) inset;
+      0 32px 120px rgba(0, 0, 0, 0.80),
+      0 1px 0 rgba(255, 255, 255, 0.08) inset;
   }
 
   .orb {
     position: absolute;
     border-radius: 999px;
     filter: blur(28px);
-    opacity: 0.18;
+    opacity: 0.10;
     transform: translateZ(0);
     animation: float-slow 7s var(--ease-out) infinite alternate;
-  }
-
-  .reveal {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0) rotateX(6deg);
-    filter: blur(12px);
-    transition:
-      opacity 900ms var(--ease-out),
-      transform 900ms var(--ease-out),
-      filter 900ms var(--ease-out);
-    will-change: transform, opacity, filter;
-  }
-
-  .reveal.in-view {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) rotateX(0deg);
-    filter: blur(0);
   }
 
   .hairline {
@@ -352,14 +339,6 @@ body::before {
       color: transparent;
       -webkit-text-fill-color: transparent;
     }
-  }
-}
-
-@media (scripting: none) {
-  .reveal {
-    opacity: 1;
-    transform: none;
-    filter: none;
   }
 }
 
