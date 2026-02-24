@@ -1,6 +1,14 @@
 "use client";
 
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import { ReactNode, useRef } from "react";
+
+const SPRING = { type: "spring" as const, stiffness: 100, damping: 20 };
+
+const variants = {
+  hidden: { opacity: 0, y: 24, filter: "blur(12px)" },
+  visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+};
 
 export function Reveal({
   children,
@@ -12,63 +20,22 @@ export function Reveal({
   delayMs?: number;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const firedRef = useRef(false);
-  const [inView, setInView] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-    if (reduced) {
-      const raf = window.requestAnimationFrame(() => {
-        firedRef.current = true;
-        setInView(true);
-      });
-      return () => window.cancelAnimationFrame(raf);
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            firedRef.current = true;
-            setInView(true);
-            observer.disconnect();
-            break;
-          }
-        }
-      },
-      {
-        root: null,
-        threshold: 0.14,
-        rootMargin: "40px 0px -10% 0px",
-      }
-    );
-
-    observer.observe(el);
-
-    // Safety timeout: force reveal if IntersectionObserver fails silently.
-    const timer = window.setTimeout(() => {
-      if (!firedRef.current) {
-        firedRef.current = true;
-        setInView(true);
-      }
-    }, 3000 + delayMs);
-
-    return () => {
-      observer.disconnect();
-      window.clearTimeout(timer);
-    };
-  }, [delayMs]);
+  const shouldReduceMotion = useReducedMotion();
+  const inView = useInView(ref, {
+    once: true,
+    margin: "40px 0px -10% 0px",
+  });
 
   return (
-    <div
+    <motion.div
       ref={ref}
-      className={`reveal ${inView ? "in-view" : ""} ${className}`}
-      style={{ transitionDelay: `${delayMs}ms` }}
+      className={className}
+      variants={variants}
+      initial={shouldReduceMotion ? "visible" : "hidden"}
+      animate={inView ? "visible" : "hidden"}
+      transition={{ ...SPRING, delay: delayMs / 1000 }}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
