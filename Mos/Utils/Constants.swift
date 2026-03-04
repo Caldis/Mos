@@ -75,6 +75,7 @@ struct REMOTE_CONTROL_APPLICATION {
         "com.microsoft.rdc.macos",  // Microsoft Remote Desktop
         "com.realvnc.vncviewer",
         "com.tigervnc.vncviewer",
+        "com.netease.uuremote",  // UU 远程桌面
     ]
 }
 
