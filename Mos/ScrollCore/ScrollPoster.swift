@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import os
 
 class ScrollPoster {
 
@@ -37,16 +38,19 @@ class ScrollPoster {
     private let manualSeparationThreshold: CFTimeInterval = 0.45
     private let trackingEndAdvance: CFTimeInterval = 0.04
     private let momentumEndDelay: CFTimeInterval = 0.13
-    // 外部依赖
-    var ref: (event: CGEvent?, proxy: CGEventTapProxy?) = (event: nil, proxy: nil)
+    // 状态锁和投递上下文
+    private var stateLock = os_unfair_lock_s()
+    private let dispatchContext = ScrollDispatchContext.shared
 }
 
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
     func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
-        // 更新依赖数据
-        ref.event = event
-        ref.proxy = proxy
+        guard dispatchContext.capture(event: event, proxy: proxy) else {
+            return self
+        }
+        os_unfair_lock_lock(&stateLock)
+        defer { os_unfair_lock_unlock(&stateLock) }
         // 更新滚动配置
         self.duration = duration
         // 更新滚动数据
@@ -79,7 +83,9 @@ extension ScrollPoster {
         return self
     }
     func updateShifting(enable: Bool) {
+        os_unfair_lock_lock(&stateLock)
         shifting = enable
+        os_unfair_lock_unlock(&stateLock)
     }
     func shift(with nextValue: ( y: Double, x: Double )) -> (y: Double, x: Double) {
         // 如果按下 Shift, 则始终将滚动转为横向
@@ -96,15 +102,34 @@ extension ScrollPoster {
         }
     }
     func brake() {
-        ScrollPoster.shared.buffer = ScrollPoster.shared.current
+        os_unfair_lock_lock(&stateLock)
+        buffer = current
         perform(ScrollPhase.shared.onMomentumFinish(), emitTargetImmediately: true)
         manualInputEnded = true
         momentumActive = false
         momentumEndScheduledTime = nil
+        os_unfair_lock_unlock(&stateLock)
     }
     func reset() {
+        dispatchContext.invalidateAll()
+        os_unfair_lock_lock(&stateLock)
+        resetUnlocked()
+        os_unfair_lock_unlock(&stateLock)
+    }
+
+#if DEBUG
+    func recordSkippedSyntheticEvent() {
+        dispatchContext.recordSkippedSyntheticEvent()
+    }
+
+    func diagnosticsSnapshot() -> (postedFrames: UInt64, droppedFramesByGeneration: UInt64, droppedFramesByTTL: UInt64, skippedSyntheticEvents: UInt64, updateSnapshotFailures: UInt64) {
+        dispatchContext.diagnosticsSnapshot()
+    }
+#endif
+
+    private func resetUnlocked() {
         // 重置数值
-        ref = (event: nil, proxy: nil)
+        dispatchContext.clearContext()
         current = ( y: 0.0, x: 0.0 )
         delta = ( y: 0.0, x: 0.0 )
         buffer = ( y: 0.0, x: 0.0 )
@@ -146,6 +171,9 @@ extension ScrollPoster {
         if let validPoster = poster {
             CVDisplayLinkStop(validPoster)
         }
+        // 失效旧会话异步帧，收尾帧使用新代次
+        dispatchContext.advanceGeneration()
+        os_unfair_lock_lock(&stateLock)
 
         // 判断是否启用触控板模拟
         var enableSimTrackpad = Options.shared.scroll.smoothSimTrackpad
@@ -165,20 +193,30 @@ extension ScrollPoster {
         if enableSimTrackpad {
             perform(plan, emitTargetImmediately: true)
         } else {
-            if let validEvent = ref.event, ScrollUtils.shared.isEventTargetingChrome(validEvent) {
-                validEvent
-                    .setDoubleValueField(
-                        .scrollWheelEventScrollPhase,
-                        value: PhaseValueMapping[Phase.TrackingEnd]![PhaseItem.Scroll]!
-                    )
-                validEvent.setDoubleValueField(.scrollWheelEventMomentumPhase, value: PhaseValueMapping[Phase.TrackingEnd]![PhaseItem.Momentum]!)
-                post(ref, (y: 0.0, x: 0.0))
+            if let snapshot = dispatchContext.preparePostingSnapshot(),
+               ScrollUtils.shared.isEventTargetingChrome(snapshot.event),
+               let phaseValues = phaseValues(for: .TrackingEnd) {
+                _ = post(
+                    snapshot,
+                    (y: 0.0, x: 0.0),
+                    phaseOverride: phaseValues,
+                    fallbackToCurrentPhase: false
+                )
             }
         }
         manualInputEnded = true
         momentumActive = false
-        // 重置参数
-        reset()
+        // 重置参数 (不递增 generation, 保留本次收尾帧有效性)
+        resetUnlocked()
+        os_unfair_lock_unlock(&stateLock)
+#if DEBUG
+        let diag = diagnosticsSnapshot()
+        if diag.droppedFramesByGeneration > 0 || diag.droppedFramesByTTL > 0 || diag.updateSnapshotFailures > 0 {
+            NSLog("[ScrollPoster] diag: posted=%llu dropGen=%llu dropTTL=%llu skipSynth=%llu snapFail=%llu",
+                  diag.postedFrames, diag.droppedFramesByGeneration, diag.droppedFramesByTTL,
+                  diag.skippedSyntheticEvents, diag.updateSnapshotFailures)
+        }
+#endif
     }
 }
 
@@ -202,29 +240,18 @@ private extension ScrollPoster {
 
     func emitPhase(_ item: (Phase, Phase?), delta: (y: Double, x: Double)) {
         ScrollPhase.shared.apply(phase: item.0, autoAdvance: item.1)
-        guard let proxy = ref.proxy, let eventClone = ref.event?.copy() else {
+        guard let snapshot = dispatchContext.preparePostingSnapshot() else {
             ScrollPhase.shared.didDeliverFrame()
             return
         }
-        var enableSimTrackpad = Options.shared.scroll.smoothSimTrackpad
-        if let application = ScrollCore.shared.application {
-            enableSimTrackpad = application.inherit ? Options.shared.scroll.smoothSimTrackpad : application.scroll.smoothSimTrackpad
-        }
-        if enableSimTrackpad {
-            if let scrollValue = PhaseValueMapping[item.0]?[PhaseItem.Scroll], let momentumValue = PhaseValueMapping[item.0]?[PhaseItem.Momentum] {
-                eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: scrollValue)
-                eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: momentumValue)
-            }
-        }
-        eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: delta.y)
-        eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: delta.x)
-        eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
-        DispatchQueue.main.async { eventClone.tapPostEvent(proxy) }
-        ScrollPhase.shared.didDeliverFrame()
+        let phaseOverride = resolveSimTrackpadEnabled() ? phaseValues(for: item.0) : nil
+        _ = post(snapshot, delta, phaseOverride: phaseOverride, fallbackToCurrentPhase: false)
     }
 
     // 处理滚动事件
     func processing() {
+        var pendingStopPhase: Phase?
+        os_unfair_lock_lock(&stateLock)
         // 计算插值
         let frame = (
             y: Interpolator.lerp(src: current.y, dest: buffer.y, trans: duration),
@@ -278,63 +305,84 @@ private extension ScrollPoster {
         // 发送滚动结果 - 只有当输出值超过死区阈值时才发送
         let outputMagnitude = max(abs(shiftedValue.y), abs(shiftedValue.x))
         if outputMagnitude > deadZone {
-            post(ref, shiftedValue)
-}
+            _ = post(shiftedValue)
+        }
 
         if let scheduled = momentumEndScheduledTime, momentumActive {
             if now >= scheduled {
                 momentumEndScheduledTime = nil
                 momentumActive = false
-                stop(Phase.MomentumEnd)
-                return
+                pendingStopPhase = .MomentumEnd
             }
         }
-        if manualInputEnded && !momentumActive && residualMagnitude <= deadZone {
+        if pendingStopPhase == nil && manualInputEnded && !momentumActive && residualMagnitude <= deadZone {
             let pendingStop = trackingEndScheduledTime != nil && now >= trackingEndScheduledTime!
             let outputSettled = outputMagnitude <= deadZone
             if pendingStop && outputSettled {
                 trackingEndScheduledTime = nil
-                stop(.TrackingEnd)
-                return
+                pendingStopPhase = .TrackingEnd
             }
         } else {
             trackingEndScheduledTime = nil
         }
-    }
-    func post(_ r: (event: CGEvent?, proxy: CGEventTapProxy?), _ v: (y: Double, x: Double)) {
-        if let proxy = r.proxy, let eventClone = r.event?.copy() {
-            // 判断是否需要模拟触控板 Phase
-            var enableSimTrackpad = Options.shared.scroll.smoothSimTrackpad
-            if let application = ScrollCore.shared.application, !application.inherit {
-                enableSimTrackpad = application.scroll.smoothSimTrackpad
-            }
-            
-            // 设置阶段数据和触控板特征字段
-            if enableSimTrackpad {
-                // 获取当前 phase 值, 然后更新对应 proxy 值
-                let currentPhase = ScrollPhase.shared.phase
-                if let scrollValue = PhaseValueMapping[currentPhase]?[.Scroll], let momentumValue = PhaseValueMapping[currentPhase]?[.Momentum] {
-                    eventClone.setDoubleValueField(.scrollWheelEventScrollPhase, value: scrollValue)
-                    eventClone.setDoubleValueField(.scrollWheelEventMomentumPhase, value: momentumValue)
-                }
-            }
-
-            // 设置滚动数据
-            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: v.y)
-            eventClone.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: v.x)
-
-            // 是否连续滚动: 始终为 1.0
-            eventClone.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
-
-            // EventTapProxy:
-            // 标识了 EventTapCallback 在事件流中接收到事件的特定位置, 其粒度小于 tap 本身
-            // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
-            // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 会被所有后续的 EventTap 接收
-            // fixed by @shichangone MR: https://github.com/Caldis/Mos/pull/523
-            DispatchQueue.main.async { eventClone.tapPostEvent(proxy) }
-
-            // 更新阶段切换帧
-            ScrollPhase.shared.didDeliverFrame()
+        os_unfair_lock_unlock(&stateLock)
+        if let phase = pendingStopPhase {
+            stop(phase)
+            return
         }
+    }
+
+    func resolveSimTrackpadEnabled() -> Bool {
+        if let application = ScrollCore.shared.application, !application.inherit {
+            return application.scroll.smoothSimTrackpad
+        }
+        return Options.shared.scroll.smoothSimTrackpad
+    }
+
+    func phaseValues(for phase: Phase) -> (scroll: Double, momentum: Double)? {
+        guard let scrollValue = PhaseValueMapping[phase]?[.Scroll],
+              let momentumValue = PhaseValueMapping[phase]?[.Momentum] else {
+            return nil
+        }
+        return (scroll: scrollValue, momentum: momentumValue)
+    }
+
+    @discardableResult
+    func post(_ snapshot: ScrollDispatchContext.PostingSnapshot, _ v: (y: Double, x: Double), phaseOverride: (scroll: Double, momentum: Double)? = nil, fallbackToCurrentPhase: Bool = true) -> Bool {
+        if let override = phaseOverride {
+            snapshot.event.setDoubleValueField(.scrollWheelEventScrollPhase, value: override.scroll)
+            snapshot.event.setDoubleValueField(.scrollWheelEventMomentumPhase, value: override.momentum)
+        } else if fallbackToCurrentPhase,
+                  resolveSimTrackpadEnabled(),
+                  let currentPhaseValues = phaseValues(for: ScrollPhase.shared.phase) {
+            snapshot.event.setDoubleValueField(.scrollWheelEventScrollPhase, value: currentPhaseValues.scroll)
+            snapshot.event.setDoubleValueField(.scrollWheelEventMomentumPhase, value: currentPhaseValues.momentum)
+        }
+        snapshot.event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: v.y)
+        snapshot.event.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: v.x)
+        // 是否连续滚动: 始终为 1.0
+        snapshot.event.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
+        ScrollUtils.shared.markSyntheticSmoothEvent(snapshot.event)
+        // EventTapProxy:
+        // 标识了 EventTapCallback 在事件流中接收到事件的特定位置, 其粒度小于 tap 本身
+        // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
+        // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 会被所有后续的 EventTap 接收
+        // fixed by @shichangone MR: https://github.com/Caldis/Mos/pull/523
+        dispatchContext.enqueue(snapshot)
+        ScrollPhase.shared.didDeliverFrame()
+        return true
+    }
+
+    @discardableResult
+    func post(_ v: (y: Double, x: Double), phaseOverride: (scroll: Double, momentum: Double)? = nil, fallbackToCurrentPhase: Bool = true) -> Bool {
+        guard let snapshot = dispatchContext.preparePostingSnapshot() else {
+            return false
+        }
+        return post(
+            snapshot,
+            v,
+            phaseOverride: phaseOverride,
+            fallbackToCurrentPhase: fallbackToCurrentPhase
+        )
     }
 }

@@ -102,6 +102,7 @@ extension Interceptor {
     
     public func restart() {
         stop()
+        ScrollPoster.shared.stop(.TrackingEnd)
         // 保存 timer 的引用以防止提前释放
         keeper = Timer.scheduledTimer(
             timeInterval: 0.5,
