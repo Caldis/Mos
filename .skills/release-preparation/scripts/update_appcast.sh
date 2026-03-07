@@ -47,6 +47,8 @@ import json, plistlib, sys, zipfile
 with zipfile.ZipFile(sys.argv[1]) as z:
     candidates = [n for n in z.namelist() if n.endswith(".app/Contents/Info.plist")]
     if not candidates: raise SystemExit("No Info.plist in zip")
+    # Prefer shortest path (root app plist, not nested framework plists)
+    candidates.sort(key=len)
     plist = plistlib.loads(z.read(candidates[0]))
     print(json.dumps({
         "short": plist.get("CFBundleShortVersionString", ""),
@@ -92,7 +94,6 @@ ${CHANNEL_ELEMENT}
       />
     </item>
 EOF
-)
 )
 
 # Merge into existing appcast (prepend new item, dedup by version)

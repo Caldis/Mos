@@ -33,7 +33,7 @@ if gh release view "$TAG" --repo "$GITHUB_REPO" >/dev/null 2>&1; then
     --draft \
     --title "$TAG" \
     --notes-file "$NOTES_FILE" \
-    "${PRERELEASE[@]}"
+    ${PRERELEASE[@]+"${PRERELEASE[@]}"}
   # Upload/replace asset
   gh release upload "$TAG" "$ZIP_PATH" --repo "$GITHUB_REPO" --clobber
 else
@@ -42,7 +42,7 @@ else
     --draft \
     --notes-file "$NOTES_FILE" \
     --title "$TAG" \
-    "${PRERELEASE[@]}"
+    ${PRERELEASE[@]+"${PRERELEASE[@]}"}
 fi
 
 echo "[release] Draft created: https://github.com/${GITHUB_REPO}/releases/tag/${TAG}"

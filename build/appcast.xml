@@ -9,6 +9,30 @@
     <language>en</language>
 
     <item>
+      <title>Mos 4.0.1</title>
+
+      <description><![CDATA[<h2>新功能</h2>
+<ul>
+<li>添加 UU 远程桌面（UU远程桌面）支持，防止主机与客户端同时安装 Mos 时出现双重平滑问题，感谢 @jijiamoer (#879)</li>
+</ul>
+<h2>修复</h2>
+<ul>
+<li>修复滚动事件派发问题，引入 ScrollDispatchContext 重构 ScrollPoster，解决部分场景下滚动异常 (#868, #826)</li>
+<li>修复 macOS 26+ 上 LaunchPad 检测逻辑，避免影响 Dock 文件夹弹出视图，感谢 @Lezheng2333 反馈 (#878)</li>
+</ul>]]></description>
+      <pubDate>Sat, 07 Mar 2026 17:22:44 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.0.1/Mos.Versions.4.0.1-20260308.1.zip"
+        length="11429683"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.0.1"
+        sparkle:version="20260308.1"
+        sparkle:edSignature="XKVIyw8EvJtGtcoiVIvGF7uyTBfx3ptAGRt2KLdlHZPHYhtqFbyC3rfzCEvOEc5PVIlPCos12Ci5hNcF1M5iDQ=="
+      />
+    </item>
+
+    <item>
       <title>Mos 4.0.0</title>
 
       <description><![CDATA[<h2>新功能</h2>
