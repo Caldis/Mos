@@ -18,3 +18,4 @@ sparkle_private_key.txt
 # build
 build/*.zip
 /build
+/spec
