@@ -45,8 +45,8 @@ class ScrollPoster {
 
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
-    func update(event: CGEvent, proxy: CGEventTapProxy, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
-        guard dispatchContext.capture(event: event, proxy: proxy) else {
+    func update(event: CGEvent, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
+        guard dispatchContext.capture(event: event) else {
             return self
         }
         os_unfair_lock_lock(&stateLock)
@@ -363,11 +363,9 @@ private extension ScrollPoster {
         // 是否连续滚动: 始终为 1.0
         snapshot.event.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
         ScrollUtils.shared.markSyntheticSmoothEvent(snapshot.event)
-        // EventTapProxy:
-        // 标识了 EventTapCallback 在事件流中接收到事件的特定位置, 其粒度小于 tap 本身
-        // 使用 tapPostEvent 可以将自定义的事件发布到 proxy 标识的位置, 避免被 EventTapCallback 本身重复接收或处理
-        // 新发布的事件将早于 EventTapCallback 所处理的事件进入系统, 会被所有后续的 EventTap 接收
-        // fixed by @shichangone MR: https://github.com/Caldis/Mos/pull/523
+        // 通过 CGEventPostToPid 直投目标进程:
+        // 不依赖 proxy (消除崩溃), 不经过 tap 链重新路由 (动量不跟随光标)
+        // ref: @shichangone MR: https://github.com/Caldis/Mos/pull/523, issue #868
         dispatchContext.enqueue(snapshot)
         ScrollPhase.shared.didDeliverFrame()
         return true

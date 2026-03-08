@@ -157,7 +157,6 @@ class ScrollCore {
         if shouldSmoothAny {
             ScrollPoster.shared.update(
                 event: event,
-                proxy: proxy,
                 duration: duration,
                 y: smoothedY,
                 x: smoothedX,
