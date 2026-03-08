@@ -39,7 +39,8 @@ digraph release {
 
 1. **Bump version** in `Mos.xcodeproj/project.pbxproj`:
    - `MARKETING_VERSION` — e.g., `4.0.2` (appears twice, use `replace_all`)
-   - `CURRENT_PROJECT_VERSION` — build number, optional to update
+   - `CURRENT_PROJECT_VERSION` — build number in `YYYYMMDD.N` format (appears twice, use `replace_all`).
+     **CRITICAL**: Every release MUST have a unique `CURRENT_PROJECT_VERSION`. Sparkle uses this value (`sparkle:version`) to detect updates — if two releases share the same build number, users on the older version will never see the update. Always bump this even for hotfix releases.
    - Commit the version bump.
 
 2. **Archive**:
@@ -74,7 +75,7 @@ digraph release {
    ```
    If export fails with "network connection was lost", retry — Apple's notarization service can be flaky.
 
-4. **Notarize** (if Xcode export didn't auto-notarize):
+4. **Notarize** (`xcodebuild -exportArchive` does NOT auto-notarize via CLI — must always do manually):
    ```bash
    ditto -c -k --keepParent /tmp/MosExport/Mos.app /tmp/Mos-notarize.zip
    xcrun notarytool submit /tmp/Mos-notarize.zip --keychain-profile "notarytool" --wait
@@ -85,8 +86,8 @@ digraph release {
    ```bash
    codesign -dvv /tmp/MosExport/Mos.app 2>&1 | grep Authority
    # Should show: Developer ID Application: BIAO CHEN (N7Z52F27XK)
-   spctl --assess --type execute /tmp/MosExport/Mos.app
-   # Should pass (exit 0)
+   spctl --assess --type execute --verbose /tmp/MosExport/Mos.app
+   # Should show: accepted, source=Notarized Developer ID
    ```
 
 The notarized app at `/tmp/MosExport/Mos.app` is used for Step 1.
@@ -98,6 +99,14 @@ bash .claude/skills/release-preparation/scripts/prepare_zip.sh /tmp/MosExport/Mo
 ```
 
 Returns JSON with `zip_path`, `version`, `build`, `tag`, `zip_name`, `length`.
+
+**IMPORTANT — AppleDouble / Gatekeeper**: The script uses `ditto -c -k --norsrc --noextattr --keepParent` to create the zip. The `--norsrc --noextattr` flags are **mandatory** — without them, `ditto` serializes macOS extended attributes as AppleDouble (`._*`) files inside the zip. When users extract via Finder/Archive Utility (not `ditto -x -k`), these `._*` entries appear as real files in embedded framework root directories (e.g., `Sparkle.framework/._Autoupdate`), causing Gatekeeper to reject with "unsealed contents present in the root directory of an embedded framework". This issue is **not detectable** by `spctl --assess` on the build machine because `ditto -x -k` correctly reconverts `._*` files back to xattrs — only Finder extraction triggers the failure.
+
+After packaging, verify the zip is clean:
+```bash
+# Must show NO ._* entries
+zipinfo -1 "$ZIP_PATH" | grep '/\._' && echo "ERROR: AppleDouble files found!" || echo "OK: no AppleDouble files"
+```
 
 ### Step 2: Generate Changelog
 
@@ -203,3 +212,6 @@ This pushes the appcast update so Sparkle auto-update can find it.
 | Developer ID cert missing from `security find-identity` | Download from Apple Developer portal or use Xcode → Settings → Accounts → Manage Certificates |
 | Appcast URL mismatch | Verify GH release tag matches appcast `<enclosure>` URL path |
 | Changelog out of sync | Always edit markdown first, then regenerate HTML before updating appcast |
+| Sparkle update not detected | Each release MUST have a unique `CURRENT_PROJECT_VERSION` (= `sparkle:version`). Sparkle compares this value, not `MARKETING_VERSION`. If two releases share the same build number, users will never see the update. |
+| Gatekeeper rejects downloaded app ("Apple 无法验证") | Zip likely contains AppleDouble `._*` files. Verify with `zipinfo -1 <zip> \| grep '/\._'`. Fix: use `ditto -c -k --norsrc --noextattr --keepParent` (already in `prepare_zip.sh`). Note: `spctl --assess` on build machine won't catch this — only Finder extraction triggers failure. |
+| `COPYFILE_DISABLE=1` doesn't work with `ditto` | This env var only works with `cp`, `tar`, etc. For `ditto`, use `--norsrc --noextattr` flags instead. |
