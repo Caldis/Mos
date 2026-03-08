@@ -9,26 +9,28 @@
     <language>en</language>
 
     <item>
-      <title>Mos 4.0.1</title>
+      <title>Mos 4.0.2</title>
 
-      <description><![CDATA[<h2>新功能</h2>
+      <description><![CDATA[<h2>修复 / Fixes</h2>
 <ul>
-<li>添加 UU 远程桌面（UU远程桌面）支持，防止主机与客户端同时安装 Mos 时出现双重平滑问题，感谢 @jijiamoer (#879)</li>
+<li>修复平滑滚动导致的崩溃问题 / Fix crash caused by smooth scrolling (#868, #826, #699, #687, #665, #510, #512, #499, #368, #597, #859)
+<ul>
+<li>使用 CGEventPostToPid 直接投递合成滚动事件到目标进程, 彻底消除 processEventTapData 中的 use-after-free 崩溃</li>
+<li>Use CGEventPostToPid to deliver synthetic scroll events directly to the target process, eliminating the processEventTapData use-after-free crash</li>
+<li>动量阶段移动鼠标不再将滚动事件"带到"其他窗口</li>
+<li>Moving the mouse during momentum scrolling no longer redirects scroll events to other windows</li>
 </ul>
-<h2>修复</h2>
-<ul>
-<li>修复滚动事件派发问题，引入 ScrollDispatchContext 重构 ScrollPoster，解决部分场景下滚动异常 (#868, #826)</li>
-<li>修复 macOS 26+ 上 LaunchPad 检测逻辑，避免影响 Dock 文件夹弹出视图，感谢 @Lezheng2333 反馈 (#878)</li>
+</li>
 </ul>]]></description>
-      <pubDate>Sat, 07 Mar 2026 17:22:44 +0000</pubDate>
+      <pubDate>Sun, 08 Mar 2026 12:04:41 +0000</pubDate>
 
       <enclosure
-        url="https://github.com/Caldis/Mos/releases/download/4.0.1/Mos.Versions.4.0.1-20260308.1.zip"
-        length="11429683"
+        url="https://github.com/Caldis/Mos/releases/download/4.0.2/Mos.Versions.4.0.2-20260308.1.zip"
+        length="11429703"
         type="application/octet-stream"
-        sparkle:shortVersionString="4.0.1"
+        sparkle:shortVersionString="4.0.2"
         sparkle:version="20260308.1"
-        sparkle:edSignature="XKVIyw8EvJtGtcoiVIvGF7uyTBfx3ptAGRt2KLdlHZPHYhtqFbyC3rfzCEvOEc5PVIlPCos12Ci5hNcF1M5iDQ=="
+        sparkle:edSignature="OyDmc7SDE65uJGsk2ThaQPkSxwELe8NyxjL+Wgx8dEx6zAjXI5hdfoEySaNg1aUqDun8y/bEp5//6Q0b2mq+Ag=="
       />
     </item>
 
