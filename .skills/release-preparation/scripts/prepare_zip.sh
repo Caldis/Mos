@@ -42,8 +42,13 @@ ZIP_NAME="Mos.Versions.${SHORT_VERSION}${CHANNEL_SUFFIX}-${BUNDLE_VERSION}.zip"
 mkdir -p "$BUILD_DIR"
 ZIP_PATH="$BUILD_DIR/$ZIP_NAME"
 
-# Create zip (ditto preserves macOS metadata)
-ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
+# Create zip without AppleDouble (._*) resource fork metadata.
+# ditto -c -k serializes extended attributes as ._* files inside the zip.
+# When extracted via Finder/Archive Utility, these appear as real files in
+# embedded framework root directories, causing Gatekeeper to reject with
+# "unsealed contents present in the root directory of an embedded framework".
+# --norsrc --noextattr prevent this entirely.
+ditto -c -k --norsrc --noextattr --keepParent "$APP_PATH" "$ZIP_PATH"
 
 FILE_LENGTH=$(wc -c < "$ZIP_PATH" | tr -d '[:space:]')
 
