@@ -1,6 +1,6 @@
 ---
 name: release-preparation
-description: Use when preparing a new Mos release (stable, beta, or alpha) - covers build, notarize, zip packaging, changelog generation, appcast signing, and GitHub release draft creation.
+description: Use when preparing a new Mos release (stable, beta, or alpha) - covers version bump, xcodebuild archive, Developer ID signing, notarization, zip packaging, changelog generation, Sparkle appcast signing, and GitHub release draft creation. Trigger this skill whenever the user mentions releasing, publishing, shipping a new version, bumping version, updating appcast, or creating a release build of Mos.
 ---
 
 # Release Preparation
@@ -77,6 +77,8 @@ digraph release {
 
 4. **Notarize** (`xcodebuild -exportArchive` does NOT auto-notarize via CLI — must always do manually):
    ```bash
+   # Note: this zip is only for notarization submission, not for distribution.
+   # AppleDouble flags (--norsrc --noextattr) are not needed here — only in prepare_zip.sh for the release zip.
    ditto -c -k --keepParent /tmp/MosExport/Mos.app /tmp/Mos-notarize.zip
    xcrun notarytool submit /tmp/Mos-notarize.zip --keychain-profile "notarytool" --wait
    xcrun stapler staple /tmp/MosExport/Mos.app
@@ -95,7 +97,7 @@ The notarized app at `/tmp/MosExport/Mos.app` is used for Step 1.
 ### Step 1: Package Zip
 
 ```bash
-bash .claude/skills/release-preparation/scripts/prepare_zip.sh /tmp/MosExport/Mos.app [--channel beta]
+bash .skills/release-preparation/scripts/prepare_zip.sh /tmp/MosExport/Mos.app [--channel beta]
 ```
 
 Returns JSON with `zip_path`, `version`, `build`, `tag`, `zip_name`, `length`.
@@ -136,7 +138,20 @@ zipinfo -1 "$ZIP_PATH" | grep '/\._' && echo "ERROR: AppleDouble files found!" |
      ## Fixes
      - ...
      ```
-   - **HTML** → `/tmp/changelog-{version}.html` (for appcast CDATA, `<h2>` + `<ul><li>`)
+   - **HTML** → `/tmp/changelog-{version}.html` (for appcast CDATA). Use `<h2>` + `<ul><li>`, with `<hr/>` separating Chinese and English:
+     ```html
+     <h2>修复</h2>
+     <ul>
+     <li>修复平滑滚动导致的崩溃问题</li>
+     </ul>
+
+     <hr/>
+
+     <h2>Fixes</h2>
+     <ul>
+     <li>Fix crash caused by smooth scrolling</li>
+     </ul>
+     ```
 
 ### Step 3: Interactive Confirm
 
@@ -147,7 +162,7 @@ After confirmation, sync any user edits from markdown back to HTML. Always keep 
 ### Step 4: Sign & Update Appcast
 
 ```bash
-bash .claude/skills/release-preparation/scripts/update_appcast.sh <zip_path> /tmp/changelog-{version}.html [--tag TAG]
+bash .skills/release-preparation/scripts/update_appcast.sh <zip_path> /tmp/changelog-{version}.html [--tag TAG]
 ```
 
 Uses Sparkle `sign_update` from Xcode DerivedData (reads EdDSA key from Keychain). If key missing, guide user:
@@ -171,7 +186,7 @@ git commit -m "chore: update appcast for {version}"
 ### Step 6: Create GitHub Draft
 
 ```bash
-bash .claude/skills/release-preparation/scripts/create_gh_draft.sh <tag> <zip_path> ~/Desktop/release-notes-{version}.md [--prerelease]
+bash .skills/release-preparation/scripts/create_gh_draft.sh <tag> <zip_path> ~/Desktop/release-notes-{version}.md [--prerelease]
 ```
 
 Add `--prerelease` for beta/alpha channels. This creates a **draft** — never publish without user approval.
