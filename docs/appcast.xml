@@ -22,15 +22,15 @@
 </ul>
 </li>
 </ul>]]></description>
-      <pubDate>Sun, 08 Mar 2026 12:04:41 +0000</pubDate>
+      <pubDate>Sun, 08 Mar 2026 14:51:04 +0000</pubDate>
 
       <enclosure
-        url="https://github.com/Caldis/Mos/releases/download/4.0.2/Mos.Versions.4.0.2-20260308.1.zip"
-        length="11429703"
+        url="https://github.com/Caldis/Mos/releases/download/4.0.2/Mos.Versions.4.0.2-20260308.2.zip"
+        length="11429721"
         type="application/octet-stream"
         sparkle:shortVersionString="4.0.2"
-        sparkle:version="20260308.1"
-        sparkle:edSignature="OyDmc7SDE65uJGsk2ThaQPkSxwELe8NyxjL+Wgx8dEx6zAjXI5hdfoEySaNg1aUqDun8y/bEp5//6Q0b2mq+Ag=="
+        sparkle:version="20260308.2"
+        sparkle:edSignature="Zdz+uJb+iQdn8gxxgUoRmAJtXj85CKt/mN1E4jLu9oZ//VOikWf0wnGOtmQhhl3t1VFYUUmBtNS2yfePfMuMDg=="
       />
     </item>
 
