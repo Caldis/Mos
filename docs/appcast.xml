@@ -11,16 +11,16 @@
     <item>
       <title>Mos 4.0.2</title>
 
-      <description><![CDATA[<h2>修复 / Fixes</h2>
+      <description><![CDATA[<h2>修复</h2>
 <ul>
-<li>修复平滑滚动导致的崩溃问题 / Fix crash caused by smooth scrolling (#868, #826, #699, #687, #665, #510, #512, #499, #368, #597, #859)
-<ul>
-<li>使用 CGEventPostToPid 直接投递合成滚动事件到目标进程, 彻底消除 processEventTapData 中的 use-after-free 崩溃</li>
-<li>Use CGEventPostToPid to deliver synthetic scroll events directly to the target process, eliminating the processEventTapData use-after-free crash</li>
-<li>动量阶段移动鼠标不再将滚动事件"带到"其他窗口</li>
-<li>Moving the mouse during momentum scrolling no longer redirects scroll events to other windows</li>
+<li>进一步尝试修复平滑滚动导致的崩溃问题 (感谢 #868, #826, #699, #687, #665, #510, #512, #499, #368, #597, #859 提供的日志)</li>
 </ul>
-</li>
+
+<hr/>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fix crash caused by smooth scrolling (#868, #826, #699, #687, #665, #510, #512, #499, #368, #597, #859)</li>
 </ul>]]></description>
       <pubDate>Sun, 08 Mar 2026 15:35:15 +0000</pubDate>
 
