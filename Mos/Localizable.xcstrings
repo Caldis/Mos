@@ -4,6 +4,12 @@
     "appExpose" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Launchpad"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -86,6 +92,12 @@
     },
     "Auth" : {
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorizovat"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -168,6 +180,12 @@
     },
     "Authorized" : {
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorizováno"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -251,6 +269,12 @@
     "bold" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tučný"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -334,6 +358,12 @@
     "categoryAccessibility" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přístupnost"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -417,6 +447,12 @@
     "categoryAppsAndWindows" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aplikace a Okna"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -500,6 +536,12 @@
     "categoryAppSwitching" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přepínání Aplikací"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -583,6 +625,12 @@
     "categoryDocumentEditing" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editace Dokumentů"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -666,6 +714,12 @@
     "categoryFinderActions" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rychlé Akce"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -749,6 +803,12 @@
     "categoryFunctionKeys" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Funkční Klávesy"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -832,6 +892,12 @@
     "categoryNavigation" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navigace"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -915,6 +981,12 @@
     "categoryScreenshot" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snímky Obrazovky"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -998,6 +1070,12 @@
     "categorySystem" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Systém"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1081,6 +1159,12 @@
     "categorySystemFunctions" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Systémové Funkce"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1164,6 +1248,12 @@
     "categoryWindowManagement" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Správa Oken"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1247,6 +1337,12 @@
     "characterViewer" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emoji a Symboly"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1330,6 +1426,12 @@
     "closeAllWindows" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zavřít Všechna Okna"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1413,6 +1515,12 @@
     "closeWindow" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zavřít Okno"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1496,6 +1604,12 @@
     "copy" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopírovat"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1578,6 +1692,12 @@
     },
     "Current Version" : {
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktuální Verze"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1655,6 +1775,12 @@
     "cut" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vyjmout"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1738,6 +1864,12 @@
     "dictation" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diktování"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1818,9 +1950,105 @@
         }
       }
     },
+    "Disabled" : {
+      "comment" : "Hotkey disabled state",
+      "extractionState" : "manual",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deaktivováno"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deaktiviert"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Απενεργοποιημένο"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disabled"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactivé"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無効"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비활성화됨"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отключено"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devre dışı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вимкнено"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未设置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定"
+          }
+        }
+      }
+    },
     "doNotDisturb" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nerušit"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1904,6 +2132,12 @@
     "duplicateFile" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplikát"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1987,6 +2221,12 @@
     "emptyTrash" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vysypat Koš"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2069,6 +2309,12 @@
     },
     "Event Monitor" : {
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitor Událostí"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2152,6 +2398,12 @@
     "find" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Najít"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2235,6 +2487,12 @@
     "forceQuit" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vynutit Vypnutí"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2318,6 +2576,12 @@
     "getInfo" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Získat Informace"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2401,6 +2665,12 @@
     "goToFolder" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přejít na složku"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2484,6 +2754,12 @@
     "hideApplication" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skrýt Aplikaci"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2567,6 +2843,12 @@
     "hideOthers" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skrýt Ostatní"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2650,6 +2932,12 @@
     "invertColors" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invertovat Barvy"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2733,6 +3021,12 @@
     "italic" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kurzíva"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2816,6 +3110,12 @@
     "lockScreen" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zamknout Obrazovku"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2899,6 +3199,12 @@
     "logout" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odhlásit"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2982,6 +3288,12 @@
     "minimizeWindow" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minimalizovat Okno"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3065,6 +3377,12 @@
     "missionControl" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mission Control"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3148,6 +3466,12 @@
     "moveSpaceLeft" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posunout Mezeru Doleva"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3231,6 +3555,12 @@
     "moveSpaceRight" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Posunout Mezeru Doprava"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3314,6 +3644,12 @@
     "moveToTrash" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přesunout Do Koše"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3397,6 +3733,12 @@
     "navigateBack" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zpět"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3480,6 +3822,12 @@
     "navigateForward" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vpřed"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3562,6 +3910,12 @@
     },
     "Needs access to Accessibility controls" : {
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vyžaduje přístup k Zpřístupnění"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3639,6 +3993,12 @@
     "newFinderWindow" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nové Okno Finderu"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3722,6 +4082,12 @@
     "newFolder" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nová složka"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3805,6 +4171,12 @@
     "nextTab" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Další Panel"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3888,6 +4260,12 @@
     "nextWindow" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Další Okno"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3971,6 +4349,12 @@
     "paste" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vložit"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4053,6 +4437,12 @@
     },
     "Preferences" : {
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preference"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4133,9 +4523,104 @@
         }
       }
     },
+    "Press ESC to cancel recording" : {
+      "comment" : "ESC hint in key recording popover",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stiskněte ESC pro zrušení"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ESC drücken zum Abbrechen"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Πατήστε ESC για ακύρωση"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Press ESC to cancel"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appuyez sur ESC pour annuler"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ESC を押してキャンセル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ESC를 눌러 취소"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите ESC для отмены"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İptal için ESC'ye basın"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Натисніть ESC для скасування"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下 ESC 退出录制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下 ESC 退出錄製"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下 ESC 退出錄製"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下 ESC 退出錄製"
+          }
+        }
+      }
+    },
     "previousTab" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Předchozí Panel"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4218,6 +4703,12 @@
     },
     "Quit" : {
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukončit"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4301,6 +4792,12 @@
     "quitApp" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukončit Aplikaci"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4381,9 +4878,105 @@
         }
       }
     },
+    "Record Custom Key..." : {
+      "comment" : "Menu item to record a custom hotkey",
+      "extractionState" : "manual",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaznamenat vlastní klávesu…"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eigene Taste aufnehmen..."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εγγραφή προσαρμοσμένου πλήκτρου..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Record Custom Key..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enregistrer une touche personnalisée..."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カスタムキーを録音..."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용자 정의 키 녹음..."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записать свою клавишу..."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Özel tuş kaydet..."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Записати власну клавішу..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "录入自定义按键..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "錄入自訂按鍵..."
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "錄入自訂按鍵..."
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "錄入自訂按鍵..."
+          }
+        }
+      }
+    },
     "redo" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opakovat"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4467,6 +5060,12 @@
     "screenshot" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snímek Obrazovky"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4550,6 +5149,12 @@
     "screenshotAndRecording" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Možnosti snímků obrazovky a nahrávání"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4633,6 +5238,12 @@
     "screenshotSelection" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Výběr Snímku Obrazovky"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4716,6 +5327,12 @@
     "scrollDurationLockedMessage" : {
       "comment" : "Message shown when simulate trackpad locks the duration setting",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simulovat dobu trvání uzamčení trackpadu"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -4796,177 +5413,15 @@
         }
       }
     },
-    "Disabled" : {
-      "comment" : "Hotkey disabled state",
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deaktiviert"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Απενεργοποιημένο"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Disabled"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Désactivé"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無効"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "비활성화됨"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Отключено"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Devre dışı"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Вимкнено"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未设置"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未設定"
-          }
-        },
-        "zh-Hant-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未設定"
-          }
-        },
-        "zh-Hant-TW" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未設定"
-          }
-        }
-      }
-    },
-    "Record Custom Key..." : {
-      "comment" : "Menu item to record a custom hotkey",
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eigene Taste aufnehmen..."
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Εγγραφή προσαρμοσμένου πλήκτρου..."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Record Custom Key..."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enregistrer une touche personnalisée..."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "カスタムキーを録音..."
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사용자 정의 키 녹음..."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Записать свою клавишу..."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Özel tuş kaydet..."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Записати власну клавішу..."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "录入自定义按键..."
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "錄入自訂按鍵..."
-          }
-        },
-        "zh-Hant-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "錄入自訂按鍵..."
-          }
-        },
-        "zh-Hant-TW" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "錄入自訂按鍵..."
-          }
-        }
-      }
-    },
     "selectAll" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vybrat Vše"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5050,6 +5505,12 @@
     "selectAnAction" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vybrat Akci"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5133,6 +5594,12 @@
     "showDesktop" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazit Plochu"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5216,6 +5683,12 @@
     "shutdownDialog" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dialogové okno pro vypnutí"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5299,6 +5772,12 @@
     "spotlight" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spotlight"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5382,6 +5861,12 @@
     "spotlightSys" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spotlight (Systém)"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5465,6 +5950,12 @@
     "switchApp" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přepnout Aplikaci"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5548,6 +6039,12 @@
     "switchAppReverse" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přepnout Aplikaci (Obráceně)"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5631,6 +6128,12 @@
     "switchTabLeft" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přepnout Panel Vlevo"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5714,6 +6217,12 @@
     "switchTabRight" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přepnout Panel Vpravo"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5797,6 +6306,12 @@
     "unbind" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odebrat Přiřazení"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5880,6 +6395,12 @@
     "unbound" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nepřiřazený"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5963,6 +6484,12 @@
     "underline" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podtržení"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6046,6 +6573,12 @@
     "undo" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zpět"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6129,6 +6662,12 @@
     "viewAsColumns" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazit jako Sloupce"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6212,6 +6751,12 @@
     "viewAsGallery" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazit jako Galerii"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6295,6 +6840,12 @@
     "viewAsIcons" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazit jako Ikony"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6378,6 +6929,12 @@
     "viewAsList" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobrazit jako List"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6461,6 +7018,12 @@
     "zoomIn" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přiblížit"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6544,6 +7107,12 @@
     "zoomOut" : {
       "extractionState" : "manual",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oddálit"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6620,89 +7189,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "縮小"
-          }
-        }
-      }
-    },
-    "Press ESC to cancel recording" : {
-      "comment" : "ESC hint in key recording popover",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ESC drücken zum Abbrechen"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Πατήστε ESC για ακύρωση"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Press ESC to cancel"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appuyez sur ESC pour annuler"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ESC を押してキャンセル"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ESC를 눌러 취소"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Нажмите ESC для отмены"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "İptal için ESC'ye basın"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Натисніть ESC для скасування"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按下 ESC 退出录制"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按下 ESC 退出錄製"
-          }
-        },
-        "zh-Hant-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按下 ESC 退出錄製"
-          }
-        },
-        "zh-Hant-TW" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按下 ESC 退出錄製"
           }
         }
       }
