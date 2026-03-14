@@ -32,6 +32,11 @@ class ButtonCore {
 
     // MARK: - 按钮事件处理
     let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        // 跳过由 Mos 合成的鼠标导航事件，避免无限循环
+        if ShortcutExecutor.isMosNavigationEvent(event) {
+            return Unmanaged.passUnretained(event)
+        }
+
         // 获取当前应用的按钮绑定配置
         let bindings = ButtonUtils.shared.getButtonBindings()
 
