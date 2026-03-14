@@ -131,6 +131,11 @@ struct SystemShortcut {
                 return ("", [])
             }
 
+            // 后退/前进导航使用鼠标按钮事件，不存在对应的键盘快捷键
+            if identifier == "navigateBack" || identifier == "navigateForward" {
+                return ("", [])
+            }
+
             // 获取主键字符
             var keyEquivalent = ""
             if let keyName = KeyCode.keyMap[code] {
@@ -224,10 +229,12 @@ struct SystemShortcut {
     static let closeAllWindows = Shortcut("closeAllWindows", 13, [.command, .option])  // Command-Option-W
     static let quitApp = Shortcut("quitApp", 12, .command)  // Command-Q
 
-    // FIX: Back/Forward - Use Command + Arrow Keys
-    // Replaces Brackets (33/30) which are broken on German keyboards.
-    static let navigateBack = Shortcut("navigateBack", 123, .command)  // Command-LeftArrow
-    static let navigateForward = Shortcut("navigateForward", 124, .command)  // Command-RightArrow
+    // 后退/前进导航：使用鼠标按钮事件 (按钮3/4) 而非键盘快捷键
+    // 鼠标按钮事件与键盘布局无关，并可在所有支持鼠标导航的应用中正常工作
+    // (Safari, Chrome, Finder, VSCode 等)。keycode/modifiers 为占位值，
+    // 不参与实际执行 (由 ShortcutExecutor.executeMouseNavigation(isBack:) 处理)。
+    static let navigateBack = Shortcut("navigateBack", 0, [])   // 执行时使用鼠标按钮3
+    static let navigateForward = Shortcut("navigateForward", 0, [])  // 执行时使用鼠标按钮4
     // FIX: Next/Prev Tab - Use Command + Shift + Arrow Keys
     // Replaces Command+Shift+Brackets.
     static let nextTab = Shortcut("nextTab", 124, [.command, .shift])  // Command-Shift-RightArrow
