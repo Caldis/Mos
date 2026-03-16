@@ -41,6 +41,7 @@ class LogitechDeviceSession {
     private var reprogControlCount: Int = 0
     private var reprogQueryIndex: Int = 0
     private var discoveredControls: [ControlInfo] = []
+    private var reprogInitComplete: Bool = false  // init 完成后, function 0 = button event 而非 GetControlCount
 
     struct ControlInfo {
         let cid: UInt16
@@ -255,10 +256,20 @@ class LogitechDeviceSession {
 
         // REPROG_CONTROLS_V4
         if let reprogIdx = featureIndex[Self.featureReprogV4], featureIdx == reprogIdx {
-            switch functionId {
-            case 0: handleGetControlCountResponse(report)
-            case 1: handleGetControlInfoResponse(report)
-            default: handleDivertedButtonEvent(report)
+            if reprogInitComplete {
+                // init 完成后: 所有 REPROG 消息都是 button event (function 0 = divertedButtonsEvent)
+                if functionId == 0 {
+                    handleDivertedButtonEvent(report)
+                }
+                // function 3 = SetControlReporting ACK, 忽略
+                // function 1/2 等也忽略
+            } else {
+                // init 阶段: 按 function ID 路由
+                switch functionId {
+                case 0: handleGetControlCountResponse(report)
+                case 1: handleGetControlInfoResponse(report)
+                default: break  // ACK 等直接忽略, 不当作 button event
+                }
             }
             return
         }
@@ -312,6 +323,10 @@ class LogitechDeviceSession {
         for c in divertable {
             setControlReporting(featureIndex: idx, cid: c.cid, divert: true)
         }
+        // 标记 init 完成: 此后 REPROG function 0 = divertedButtonsEvent
+        reprogInitComplete = true
+        lastActiveCIDs.removeAll()  // 清除 init 期间的残留状态
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Init complete, listening for button events")
     }
 
     private func handleDivertedButtonEvent(_ report: [UInt8]) {
