@@ -326,13 +326,11 @@ extension PreferencesScrollingViewController {
 
 // MARK: - KeyRecorderDelegate
 extension PreferencesScrollingViewController: KeyRecorderDelegate {
-    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: CGEvent, isDuplicate: Bool) {
+    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: MosInputEvent, isDuplicate: Bool) {
         guard let popup = currentRecordingPopup else { return }
 
-        // 从事件创建 ScrollHotkey
         let hotkey = ScrollHotkey(from: event)
 
-        // 保存设置
         if popup === dashKeyBindButton {
             getTargetApplicationScrollOptions().dash = hotkey
         } else if popup === toggleKeyBindButton {
