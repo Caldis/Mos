@@ -124,7 +124,7 @@ class LogitechDeviceSession {
         }
         let result = IOHIDDeviceSetReport(
             hidDevice,
-            UInt32(kIOHIDReportTypeOutput),
+            kIOHIDReportTypeOutput,
             CFIndex(report[0]),
             report,
             report.count
