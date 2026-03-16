@@ -97,6 +97,7 @@ struct RecordedEvent: Codable, Equatable {
     let code: UInt16 // 按键代码
     let modifiers: UInt // 修饰键
     let displayComponents: [String] // 展示用名称组件
+    let deviceFilter: DeviceFilter?
 
     // MARK: - 计算属性
 
@@ -124,6 +125,16 @@ struct RecordedEvent: Codable, Equatable {
         }
         // 展示用名称
         self.displayComponents = event.displayComponents
+        self.deviceFilter = nil
+    }
+
+    /// 从 MosInputEvent 构造
+    init(from event: MosInputEvent, deviceFilter: DeviceFilter? = nil) {
+        self.type = event.type
+        self.code = event.code
+        self.modifiers = UInt(event.modifiers.rawValue)
+        self.deviceFilter = deviceFilter
+        self.displayComponents = event.displayComponents
     }
 
     // MARK: - 匹配方法
@@ -145,6 +156,23 @@ struct RecordedEvent: Codable, Equatable {
                 return code == Int(event.getIntegerValueField(.mouseEventButtonNumber))
         }
     }
+    /// 匹配 MosInputEvent (供 MosInputProcessor 使用)
+    func matchesMosInput(_ event: MosInputEvent) -> Bool {
+        guard UInt(event.modifiers.rawValue) == modifiers else { return false }
+        guard event.type == type else { return false }
+        switch type {
+        case .keyboard:
+            guard event.phase == .down else { return false }
+            guard code == event.code else { return false }
+        case .mouse:
+            guard code == event.code else { return false }
+        }
+        if let filter = deviceFilter {
+            guard filter.matches(event.device) else { return false }
+        }
+        return true
+    }
+
     /// Equatable
     static func == (lhs: RecordedEvent, rhs: RecordedEvent) -> Bool {
         return lhs.type == rhs.type &&
@@ -195,5 +223,14 @@ struct ButtonBinding: Codable, Equatable {
 
     static func == (lhs: ButtonBinding, rhs: ButtonBinding) -> Bool {
         return lhs.id == rhs.id
+    }
+}
+
+// MARK: - ScrollHotkey + MosInputEvent
+extension ScrollHotkey {
+    /// 从 MosInputEvent 构造
+    init(from event: MosInputEvent) {
+        self.type = event.type
+        self.code = event.code
     }
 }
