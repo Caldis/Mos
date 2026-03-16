@@ -220,11 +220,13 @@ class KeyRecorder: NSObject {
         guard isRecording else { return }
 
         // 统一转换为 MosInputEvent
+        // 注意: 先检查 MosInputEvent (value type), 再检查 CGEvent (CoreFoundation type)
+        // CGEvent 的 as? 对 Any 总是成功, 所以必须后检查
         let mosEvent: MosInputEvent
-        if let cgEvent = notification.object as? CGEvent {
-            mosEvent = MosInputEvent(fromCGEvent: cgEvent)
-        } else if let hidEvent = notification.object as? MosInputEvent {
+        if let hidEvent = notification.object as? MosInputEvent {
             mosEvent = hidEvent
+        } else if let cgEvent = notification.object, CFGetTypeID(cgEvent as CFTypeRef) == CGEvent.typeID {
+            mosEvent = MosInputEvent(fromCGEvent: cgEvent as! CGEvent)
         } else {
             NSLog("[EventRecorder] Unknown event type in notification")
             return

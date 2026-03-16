@@ -7,7 +7,7 @@
 //  Copyright © 2026 Caldis. All rights reserved.
 //
 
-import Foundation
+import Cocoa
 import IOKit
 import IOKit.hid
 
@@ -124,7 +124,7 @@ class LogitechDeviceSession {
         }
         let result = IOHIDDeviceSetReport(
             hidDevice,
-            IOHIDReportType(kIOHIDReportTypeOutput),
+            UInt32(kIOHIDReportTypeOutput),
             CFIndex(report[0]),
             report,
             report.count
