@@ -10,7 +10,7 @@ import Cocoa
 import IOKit
 import IOKit.hid
 
-class LogitechHIDDebugPanel {
+class LogitechHIDDebugPanel: NSObject {
     static let shared = LogitechHIDDebugPanel()
 
     private var window: NSWindow?
@@ -154,7 +154,7 @@ class LogitechHIDDebugPanel {
         let tv = NSTextView()
         tv.isEditable = false
         tv.isSelectable = true
-        tv.font = NSFont.monospacedSystemFont(ofSize: 11, weight: .regular)
+        tv.font = NSFont.userFixedPitchFont(ofSize: 11)!
         tv.backgroundColor = NSColor.textBackgroundColor
         tv.textColor = NSColor.textColor
         tv.autoresizingMask = [.width]
@@ -249,7 +249,7 @@ class LogitechHIDDebugPanel {
             tv.textStorage?.append(NSAttributedString(
                 string: line + "\n",
                 attributes: [
-                    .font: NSFont.monospacedSystemFont(ofSize: 11, weight: .regular),
+                    .font: NSFont.userFixedPitchFont(ofSize: 11)!,
                     .foregroundColor: NSColor.textColor
                 ]
             ))
@@ -314,16 +314,16 @@ extension LogitechHIDDebugPanel: NSTableViewDelegate, NSTableViewDataSource {
         } else {
             cell = NSTextField(labelWithString: "")
             cell.identifier = cellId
-            cell.font = NSFont.monospacedSystemFont(ofSize: 11, weight: .regular)
+            cell.font = NSFont.userFixedPitchFont(ofSize: 11)!
             cell.lineBreakMode = .byTruncatingTail
         }
 
         cell.stringValue = text
         // Section headers bold
         if entry.0.hasPrefix("---") {
-            cell.font = NSFont.monospacedSystemFont(ofSize: 11, weight: .bold)
+            cell.font = NSFont.boldSystemFont(ofSize: 11)
         } else {
-            cell.font = NSFont.monospacedSystemFont(ofSize: 11, weight: .regular)
+            cell.font = NSFont.userFixedPitchFont(ofSize: 11)!
         }
         return cell
     }
