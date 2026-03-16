@@ -161,54 +161,68 @@ class LogitechDeviceSession {
 
     // MARK: - HID++ Send
 
+    /// 发送 HID++ 请求 (尝试多种方法, 即使 IOKit 报错也不中止 -- 数据可能已到达设备)
     private func sendShortRequest(featureIndex: UInt8, functionId: UInt8, params: [UInt8] = []) {
-        var report = [UInt8](repeating: 0, count: 7)
-        report[0] = Self.hidppShortReportId
-        report[1] = deviceIndex
-        report[2] = featureIndex
-        report[3] = (functionId << 4) | 0x01
+        // 构造 short report (7 bytes)
+        var shortReport = [UInt8](repeating: 0, count: 7)
+        shortReport[0] = Self.hidppShortReportId
+        shortReport[1] = deviceIndex
+        shortReport[2] = featureIndex
+        shortReport[3] = (functionId << 4) | 0x01
         for (i, p) in params.prefix(3).enumerated() {
-            report[4 + i] = p
+            shortReport[4 + i] = p
         }
 
-        let hex = report.map { String(format: "%02X", $0) }.joined(separator: " ")
+        // 构造 long report (20 bytes, 同内容但更长)
+        var longReport = [UInt8](repeating: 0, count: 20)
+        longReport[0] = Self.hidppLongReportId  // 0x11
+        for i in 1..<7 { longReport[i] = shortReport[i] }
+
+        let hex = shortReport.map { String(format: "%02X", $0) }.joined(separator: " ")
         let tag = "[\(deviceInfo.name)]"
+        var anySent = false
 
-        // IOHIDDeviceSetReport: reportID 是独立参数, data 不含 report ID
-        let reportId = CFIndex(report[0])
-        let payload = Array(report.dropFirst())
+        // Method 1: Short OUTPUT (标准方法, payload 不含 report ID)
+        let shortPayload = Array(shortReport.dropFirst())
+        var r = IOHIDDeviceSetReport(hidDevice, kIOHIDReportTypeOutput, CFIndex(shortReport[0]), shortPayload, shortPayload.count)
+        LogitechHIDDebugPanel.log("\(tag) TX short/OUTPUT: \(hex) -> \(r == kIOReturnSuccess ? "OK" : String(format: "0x%08x", r))")
+        if r == kIOReturnSuccess { anySent = true }
 
-        // 尝试 OUTPUT
-        var result = IOHIDDeviceSetReport(
-            hidDevice, kIOHIDReportTypeOutput, reportId, payload, payload.count
-        )
-        if result == kIOReturnSuccess {
-            LogitechHIDDebugPanel.log("\(tag) TX(OUTPUT): \(hex) -> OK")
-            return
+        // Method 2: Short FEATURE
+        if !anySent {
+            r = IOHIDDeviceSetReport(hidDevice, kIOHIDReportTypeFeature, CFIndex(shortReport[0]), shortPayload, shortPayload.count)
+            LogitechHIDDebugPanel.log("\(tag) TX short/FEATURE: -> \(r == kIOReturnSuccess ? "OK" : String(format: "0x%08x", r))")
+            if r == kIOReturnSuccess { anySent = true }
         }
-        LogitechHIDDebugPanel.log("\(tag) TX(OUTPUT): \(hex) -> FAILED \(String(format: "0x%08x", result))")
 
-        // 尝试 FEATURE (BLE 可能需要)
-        result = IOHIDDeviceSetReport(
-            hidDevice, kIOHIDReportTypeFeature, reportId, payload, payload.count
-        )
-        if result == kIOReturnSuccess {
-            LogitechHIDDebugPanel.log("\(tag) TX(FEATURE): \(hex) -> OK")
-            return
+        // Method 3: Long OUTPUT (BLE 设备可能只支持 long report)
+        if !anySent {
+            let longPayload = Array(longReport.dropFirst())
+            r = IOHIDDeviceSetReport(hidDevice, kIOHIDReportTypeOutput, CFIndex(longReport[0]), longPayload, longPayload.count)
+            let longHex = longReport.prefix(10).map { String(format: "%02X", $0) }.joined(separator: " ")
+            LogitechHIDDebugPanel.log("\(tag) TX long/OUTPUT: \(longHex)... -> \(r == kIOReturnSuccess ? "OK" : String(format: "0x%08x", r))")
+            if r == kIOReturnSuccess { anySent = true }
         }
-        LogitechHIDDebugPanel.log("\(tag) TX(FEATURE): \(hex) -> FAILED \(String(format: "0x%08x", result))")
 
-        // 最后尝试: 包含 report ID 在 payload 中 (某些驱动的兼容行为)
-        result = IOHIDDeviceSetReport(
-            hidDevice, kIOHIDReportTypeOutput, reportId, report, report.count
-        )
-        if result == kIOReturnSuccess {
-            LogitechHIDDebugPanel.log("\(tag) TX(OUTPUT+ID): \(hex) -> OK")
-            return
+        // Method 4: Long FEATURE
+        if !anySent {
+            let longPayload = Array(longReport.dropFirst())
+            r = IOHIDDeviceSetReport(hidDevice, kIOHIDReportTypeFeature, CFIndex(longReport[0]), longPayload, longPayload.count)
+            LogitechHIDDebugPanel.log("\(tag) TX long/FEATURE: -> \(r == kIOReturnSuccess ? "OK" : String(format: "0x%08x", r))")
+            if r == kIOReturnSuccess { anySent = true }
         }
-        LogitechHIDDebugPanel.log("\(tag) TX(OUTPUT+ID): \(hex) -> FAILED \(String(format: "0x%08x", result))")
 
-        LogitechHIDDebugPanel.log("\(tag) ALL TX methods failed for this request")
+        // Method 5: Short OUTPUT with report ID in payload (某些驱动的兼容行为)
+        if !anySent {
+            r = IOHIDDeviceSetReport(hidDevice, kIOHIDReportTypeOutput, CFIndex(shortReport[0]), shortReport, shortReport.count)
+            LogitechHIDDebugPanel.log("\(tag) TX short/OUTPUT+ID: -> \(r == kIOReturnSuccess ? "OK" : String(format: "0x%08x", r))")
+            if r == kIOReturnSuccess { anySent = true }
+        }
+
+        if !anySent {
+            // IOKit 报错不一定意味着数据没发出 (USB Receiver 会报错但实际收到了)
+            LogitechHIDDebugPanel.log("\(tag) All TX methods returned errors - waiting for response anyway")
+        }
     }
 
     // MARK: - Feature Discovery
