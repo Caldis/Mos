@@ -32,21 +32,14 @@ class ButtonCore {
 
     // MARK: - 按钮事件处理
     let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        // 获取当前应用的按钮绑定配置
-        let bindings = ButtonUtils.shared.getButtonBindings()
-
-        // 查找匹配的绑定
-        guard let binding = bindings.first(where: {
-            $0.triggerEvent.matches(event) && $0.isEnabled
-        }) else {
+        let mosEvent = MosInputEvent(fromCGEvent: event)
+        let result = MosInputProcessor.shared.process(mosEvent)
+        switch result {
+        case .consumed:
+            return nil
+        case .passthrough:
             return Unmanaged.passUnretained(event)
         }
-
-        // 执行绑定的系统快捷键
-        ShortcutExecutor.shared.execute(named: binding.systemShortcutName)
-
-        // 消费事件(不再传递给系统)
-        return nil
     }
     
     // MARK: - 启用和禁用
