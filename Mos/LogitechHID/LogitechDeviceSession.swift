@@ -60,7 +60,15 @@ class LogitechDeviceSession {
     func setup() {
         let usagePage = IOHIDDeviceGetProperty(hidDevice, kIOHIDPrimaryUsagePageKey as CFString) as? Int ?? 0
         let usage = IOHIDDeviceGetProperty(hidDevice, kIOHIDPrimaryUsageKey as CFString) as? Int ?? 0
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Setting up session (usagePage: \(String(format: "0x%04X", usagePage)), usage: \(String(format: "0x%04X", usage)))")
+        let transport = IOHIDDeviceGetProperty(hidDevice, kIOHIDTransportKey as CFString) as? String ?? ""
+
+        // BLE 直连: device index = 0xFF (Solaar 确认)
+        // USB Receiver: device index = 0x01~0x06 (按配对槽位)
+        if transport.lowercased().contains("bluetooth") {
+            deviceIndex = 0xFF
+        }
+
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Setting up (usagePage: \(String(format: "0x%04X", usagePage)), usage: \(String(format: "0x%04X", usage)), transport: \(transport), devIdx: \(String(format: "0x%02X", deviceIndex)))")
 
         // 分配稳定的 report buffer
         reportBufferPtr = .allocate(capacity: Self.reportBufferSize)
