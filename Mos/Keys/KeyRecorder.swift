@@ -17,18 +17,19 @@ enum KeyRecordingMode {
     case singleKey
 }
 
-@objc protocol KeyRecorderDelegate: AnyObject {
+protocol KeyRecorderDelegate: AnyObject {
     /// 录制完成回调
-    /// - Parameters:
-    ///   - recorder: 录制器实例
-    ///   - event: 录制的事件
-    ///   - isDuplicate: 是否为重复录制 (true = 重复, false = 新录制)
-    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: CGEvent, isDuplicate: Bool)
+    func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: MosInputEvent, isDuplicate: Bool)
 
-    /// 可选方法: 验证录制的事件是否为重复
-    /// - Returns: true = 新录制, false = 重复录制
-    /// - Note: 如果不实现此方法,默认返回 true (视为新录制,向后兼容)
-    @objc optional func validateRecordedEvent(_ recorder: KeyRecorder, event: CGEvent) -> Bool
+    /// 验证录制的事件是否为重复
+    func validateRecordedEvent(_ recorder: KeyRecorder, event: MosInputEvent) -> Bool
+}
+
+/// 默认实现 (替代 @objc optional 语义)
+extension KeyRecorderDelegate {
+    func validateRecordedEvent(_ recorder: KeyRecorder, event: MosInputEvent) -> Bool {
+        return true
+    }
 }
 
 class KeyRecorder: NSObject {
@@ -49,6 +50,7 @@ class KeyRecorder: NSObject {
     private var invalidKeyPressCount = 0 // 无效按键计数
     private let invalidKeyThreshold = 5 // 显示 ESC 提示的阈值
     private var recordingMode: KeyRecordingMode = .combination // 当前录制模式
+    private var hidEventObserver: NSObjectProtocol?  // HID++ 事件监听 (录制期间)
     // UI 组件
     private var keyPopover: KeyPopover?
     
@@ -155,6 +157,20 @@ class KeyRecorder: NSObject {
                 placeAt: CGEventTapPlacement.headInsertEventTap,
                 for: CGEventTapOptions.defaultTap
             )
+            // 监听 HID++ 事件 (如果 LogitechHIDManager 已启动)
+            hidEventObserver = NotificationCenter.default.addObserver(
+                forName: NSNotification.Name("LogitechHIDButtonEvent"),
+                object: nil,
+                queue: .main
+            ) { [weak self] notification in
+                guard let self = self, self.isRecording, !self.isRecorded else { return }
+                guard let mosEvent = notification.userInfo?["event"] as? MosInputEvent else { return }
+                guard mosEvent.phase == .down else { return }
+                NotificationCenter.default.post(
+                    name: KeyRecorder.FINISH_NOTI_NAME,
+                    object: mosEvent
+                )
+            }
             // 展示录制界面
             keyPopover = KeyPopover()
             keyPopover?.show(at: sourceView)
@@ -200,74 +216,50 @@ class KeyRecorder: NSObject {
         NSLog("[EventRecorder] Recording cancelled by ESC key")
         stopRecording()
     }
-    // 通知事件处理
     @objc private func handleRecordedEvent(_ notification: NSNotification) {
-        // Guard: 需要 Recording 才进行后续处理
         guard isRecording else { return }
-        // Guard: 获取 RecordedEvent
-        let event = notification.object as! CGEvent
-        // Guard: 检查事件有效性 (根据录制模式使用不同的验证规则)
+
+        // 统一转换为 MosInputEvent
+        let mosEvent: MosInputEvent
+        if let cgEvent = notification.object as? CGEvent {
+            mosEvent = MosInputEvent(fromCGEvent: cgEvent)
+        } else if let hidEvent = notification.object as? MosInputEvent {
+            mosEvent = hidEvent
+        } else {
+            NSLog("[EventRecorder] Unknown event type in notification")
+            return
+        }
+
+        // 检查事件有效性 (根据录制模式)
         let isValid = recordingMode == .singleKey
-            ? isRecordableAsSingleKey(event)
-            : event.isRecordable
+            ? mosEvent.isRecordableAsSingleKey
+            : mosEvent.isRecordable
         guard isValid else {
-            NSLog("[EventRecorder] Invalid event ignored: \(event)")
-            // 触发警告动画反馈
+            NSLog("[EventRecorder] Invalid event ignored")
             keyPopover?.keyPreview.shakeWarning()
-            // 计数无效按键，达到阈值时显示 ESC 提示
             invalidKeyPressCount += 1
             if invalidKeyPressCount >= invalidKeyThreshold {
                 keyPopover?.showEscHint()
             }
             return
         }
-        // 更新记录标识
+
         guard !isRecorded else { return }
         isRecorded = true
-        // 验证是否为重复录制 (如果 delegate 没实现验证方法,默认为新录制)
-        let isNew = self.delegate?.validateRecordedEvent?(self, event: event) ?? true
+
+        let isNew = self.delegate?.validateRecordedEvent(self, event: mosEvent) ?? true
         let isDuplicate = !isNew
         let status: KeyPreview.Status = isNew ? .recorded : .duplicate
-        // 显示录制完成的按键
+
         keyPopover?.keyPreview
-            .update(from: event.displayComponents, status: status)
-        // 将结果发给 delegate (携带验证结果,避免下游重复检查)
-        self.delegate?.onEventRecorded(self, didRecordEvent: event, isDuplicate: isDuplicate)
-        // 停止录制 (延迟 300ms 确保能看完提示
+            .update(from: mosEvent.displayComponents, status: status)
+        self.delegate?.onEventRecorded(self, didRecordEvent: mosEvent, isDuplicate: isDuplicate)
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
             self?.stopRecording()
         }
     }
 
-    // MARK: - Single Key Mode Validation
-    /// 单键模式下的事件有效性检查
-    /// - 允许单独的修饰键 (Control, Option, Command, Shift)
-    /// - 允许 F 键
-    /// - 允许普通键盘按键
-    /// - 允许鼠标侧键
-    /// - 不允许鼠标左右键
-    private func isRecordableAsSingleKey(_ event: CGEvent) -> Bool {
-        // 修饰键事件 (flagsChanged)
-        if event.type == .flagsChanged {
-            // 只有按下时才录制，抬起时忽略
-            return event.isKeyDown && event.isModifiers
-        }
-        // 键盘事件
-        if event.isKeyboardEvent {
-            // 任何键盘按键都允许 (ESC 已在上游处理)
-            return true
-        }
-        // 鼠标事件
-        if event.isMouseEvent {
-            // 左右键不允许
-            if KeyCode.mouseMainKeys.contains(event.mouseCode) {
-                return false
-            }
-            // 侧键等允许
-            return true
-        }
-        return false
-    }
     // 停止记录
     func stopRecording() {
         // Guard: 需要 Recording 才进行后续处理
@@ -285,6 +277,10 @@ class KeyRecorder: NSObject {
         NotificationCenter.default.removeObserver(self, name: KeyRecorder.FINISH_NOTI_NAME, object: nil)
         NotificationCenter.default.removeObserver(self, name: KeyRecorder.FLAG_CHANGE_NOTI_NAME, object: nil)
         NotificationCenter.default.removeObserver(self, name: KeyRecorder.CANCEL_NOTI_NAME, object: nil)
+        if let observer = hidEventObserver {
+            NotificationCenter.default.removeObserver(observer)
+            hidEventObserver = nil
+        }
         // 重置状态 (添加延迟确保 Popover 结束动画完成, 避免多个 popover 重复出现导致卡住)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.isRecording = false
