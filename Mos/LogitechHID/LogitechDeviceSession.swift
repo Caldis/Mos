@@ -152,23 +152,19 @@ class LogitechDeviceSession {
         let hex = report.map { String(format: "%02X", $0) }.joined(separator: " ")
         LogitechHIDDebugPanel.log("[\(deviceInfo.name)] TX: \(hex)")
 
+        // IOHIDDeviceSetReport: reportID 作为独立参数, data 不含 report ID
+        // 与 hidapi 一致: IOHIDDeviceSetReport(dev, type, data[0], data+1, len-1)
+        let reportId = CFIndex(report[0])
+        let payload = Array(report.dropFirst())
+
         // BLE: 先尝试 OUTPUT, 失败则 fallback 到 FEATURE report
-        // BLE HID 没有 interrupt OUT endpoint, 有些设备只接受 Feature Report
         var result = IOHIDDeviceSetReport(
-            hidDevice,
-            kIOHIDReportTypeOutput,
-            CFIndex(report[0]),
-            report,
-            report.count
+            hidDevice, kIOHIDReportTypeOutput, reportId, payload, payload.count
         )
         if result != kIOReturnSuccess && isBLE {
             LogitechHIDDebugPanel.log("[\(deviceInfo.name)] OUTPUT failed (\(String(format: "0x%08x", result))), trying FEATURE")
             result = IOHIDDeviceSetReport(
-                hidDevice,
-                kIOHIDReportTypeFeature,
-                CFIndex(report[0]),
-                report,
-                report.count
+                hidDevice, kIOHIDReportTypeFeature, reportId, payload, payload.count
             )
         }
         if result != kIOReturnSuccess {
