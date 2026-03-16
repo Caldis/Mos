@@ -161,75 +161,37 @@ class LogitechDeviceSession {
 
     // MARK: - HID++ Send
 
-    /// 发送 HID++ 请求 (尝试多种方法, 即使 IOKit 报错也不中止 -- 数据可能已到达设备)
-    private func sendShortRequest(featureIndex: UInt8, functionId: UInt8, params: [UInt8] = []) {
-        // 构造 short report (7 bytes)
-        var shortReport = [UInt8](repeating: 0, count: 7)
-        shortReport[0] = Self.hidppShortReportId
-        shortReport[1] = deviceIndex
-        shortReport[2] = featureIndex
-        shortReport[3] = (functionId << 4) | 0x01
-        for (i, p) in params.prefix(3).enumerated() {
-            shortReport[4 + i] = p
+    /// 发送 HID++ 请求
+    /// hidapi 兼容: report ID 包含在 payload 中, 使用 long report (20 bytes)
+    /// IOHIDDeviceSetReport(dev, OUTPUT, data[0], data, data.count)
+    private func sendRequest(featureIndex: UInt8, functionId: UInt8, params: [UInt8] = []) {
+        // 始终使用 long report (20 bytes), BLE 设备不支持 short report
+        var report = [UInt8](repeating: 0, count: 20)
+        report[0] = Self.hidppLongReportId  // 0x11
+        report[1] = deviceIndex
+        report[2] = featureIndex
+        report[3] = (functionId << 4) | 0x01  // FuncID | SwID
+        for (i, p) in params.prefix(16).enumerated() {
+            report[4 + i] = p
         }
 
-        // 构造 long report (20 bytes, 同内容但更长)
-        var longReport = [UInt8](repeating: 0, count: 20)
-        longReport[0] = Self.hidppLongReportId  // 0x11
-        for i in 1..<7 { longReport[i] = shortReport[i] }
+        let hex = report.prefix(8).map { String(format: "%02X", $0) }.joined(separator: " ")
 
-        let hex = shortReport.map { String(format: "%02X", $0) }.joined(separator: " ")
-        let tag = "[\(deviceInfo.name)]"
-        var anySent = false
-
-        // Method 1: Short OUTPUT (标准方法, payload 不含 report ID)
-        let shortPayload = Array(shortReport.dropFirst())
-        var r = IOHIDDeviceSetReport(hidDevice, kIOHIDReportTypeOutput, CFIndex(shortReport[0]), shortPayload, shortPayload.count)
-        LogitechHIDDebugPanel.log("\(tag) TX short/OUTPUT: \(hex) -> \(r == kIOReturnSuccess ? "OK" : String(format: "0x%08x", r))")
-        if r == kIOReturnSuccess { anySent = true }
-
-        // Method 2: Short FEATURE
-        if !anySent {
-            r = IOHIDDeviceSetReport(hidDevice, kIOHIDReportTypeFeature, CFIndex(shortReport[0]), shortPayload, shortPayload.count)
-            LogitechHIDDebugPanel.log("\(tag) TX short/FEATURE: -> \(r == kIOReturnSuccess ? "OK" : String(format: "0x%08x", r))")
-            if r == kIOReturnSuccess { anySent = true }
-        }
-
-        // Method 3: Long OUTPUT (BLE 设备可能只支持 long report)
-        if !anySent {
-            let longPayload = Array(longReport.dropFirst())
-            r = IOHIDDeviceSetReport(hidDevice, kIOHIDReportTypeOutput, CFIndex(longReport[0]), longPayload, longPayload.count)
-            let longHex = longReport.prefix(10).map { String(format: "%02X", $0) }.joined(separator: " ")
-            LogitechHIDDebugPanel.log("\(tag) TX long/OUTPUT: \(longHex)... -> \(r == kIOReturnSuccess ? "OK" : String(format: "0x%08x", r))")
-            if r == kIOReturnSuccess { anySent = true }
-        }
-
-        // Method 4: Long FEATURE
-        if !anySent {
-            let longPayload = Array(longReport.dropFirst())
-            r = IOHIDDeviceSetReport(hidDevice, kIOHIDReportTypeFeature, CFIndex(longReport[0]), longPayload, longPayload.count)
-            LogitechHIDDebugPanel.log("\(tag) TX long/FEATURE: -> \(r == kIOReturnSuccess ? "OK" : String(format: "0x%08x", r))")
-            if r == kIOReturnSuccess { anySent = true }
-        }
-
-        // Method 5: Short OUTPUT with report ID in payload (某些驱动的兼容行为)
-        if !anySent {
-            r = IOHIDDeviceSetReport(hidDevice, kIOHIDReportTypeOutput, CFIndex(shortReport[0]), shortReport, shortReport.count)
-            LogitechHIDDebugPanel.log("\(tag) TX short/OUTPUT+ID: -> \(r == kIOReturnSuccess ? "OK" : String(format: "0x%08x", r))")
-            if r == kIOReturnSuccess { anySent = true }
-        }
-
-        if !anySent {
-            // IOKit 报错不一定意味着数据没发出 (USB Receiver 会报错但实际收到了)
-            LogitechHIDDebugPanel.log("\(tag) All TX methods returned errors - waiting for response anyway")
-        }
+        // hidapi 兼容: data 包含 report ID, length = 全长
+        let result = IOHIDDeviceSetReport(
+            hidDevice, kIOHIDReportTypeOutput,
+            CFIndex(report[0]),  // report ID
+            report,              // data (含 report ID)
+            report.count         // 20 bytes
+        )
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] TX: \(hex)... -> \(result == kIOReturnSuccess ? "OK" : String(format: "0x%08x", result))")
     }
 
     // MARK: - Feature Discovery
 
     private func discoverFeature(featureId: UInt16, completion: @escaping (UInt8?) -> Void) {
         let params: [UInt8] = [UInt8(featureId >> 8), UInt8(featureId & 0xFF)]
-        sendShortRequest(featureIndex: 0x00, functionId: 0, params: params)
+        sendRequest(featureIndex: 0x00, functionId: 0, params: params)
         pendingDiscovery[featureId] = completion
 
         discoveryTimer?.invalidate()
@@ -246,17 +208,17 @@ class LogitechDeviceSession {
 
     private func sendGetControlCount(featureIndex: UInt8) {
         LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Sending GetControlCount")
-        sendShortRequest(featureIndex: featureIndex, functionId: 0)
+        sendRequest(featureIndex: featureIndex, functionId: 0)
     }
 
     private func sendGetControlInfo(featureIndex: UInt8, index: Int) {
         LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Sending GetControlInfo(\(index))")
-        sendShortRequest(featureIndex: featureIndex, functionId: 1, params: [UInt8(index)])
+        sendRequest(featureIndex: featureIndex, functionId: 1, params: [UInt8(index)])
     }
 
     private func setControlReporting(featureIndex: UInt8, cid: UInt16, divert: Bool) {
         let flagsByte: UInt8 = divert ? 0x01 : 0x00
-        sendShortRequest(featureIndex: featureIndex, functionId: 3,
+        sendRequest(featureIndex: featureIndex, functionId: 3,
                          params: [UInt8(cid >> 8), UInt8(cid & 0xFF), flagsByte])
         if divert { divertedCIDs.insert(cid) } else { divertedCIDs.remove(cid) }
         LogitechHIDDebugPanel.log("[\(deviceInfo.name)] CID \(String(format: "0x%04X", cid)) divert=\(divert ? "ON" : "OFF")")
