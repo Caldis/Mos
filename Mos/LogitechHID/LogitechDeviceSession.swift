@@ -58,7 +58,9 @@ class LogitechDeviceSession {
     // MARK: - Setup / Teardown
 
     func setup() {
-        NSLog("[LogitechHID:%@] Setting up session", deviceInfo.name)
+        let usagePage = IOHIDDeviceGetProperty(hidDevice, kIOHIDPrimaryUsagePageKey as CFString) as? Int ?? 0
+        let usage = IOHIDDeviceGetProperty(hidDevice, kIOHIDPrimaryUsageKey as CFString) as? Int ?? 0
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Setting up session (usagePage: \(String(format: "0x%04X", usagePage)), usage: \(String(format: "0x%04X", usage)))")
 
         // 分配稳定的 report buffer
         reportBufferPtr = .allocate(capacity: Self.reportBufferSize)
@@ -77,17 +79,17 @@ class LogitechDeviceSession {
         // Feature Discovery: 查找 REPROG_CONTROLS_V4
         discoverFeature(featureId: Self.featureReprogV4) { [weak self] index in
             guard let self = self, let index = index else {
-                NSLog("[LogitechHID] Device does not support REPROG_CONTROLS_V4, skipping button divert")
+                LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] REPROG_CONTROLS_V4 not supported, skipping")
                 return
             }
             self.featureIndex[Self.featureReprogV4] = index
-            NSLog("[LogitechHID:%@] REPROG_CONTROLS_V4 at index 0x%02X", self.deviceInfo.name, index)
+            LogitechHIDDebugPanel.log("[\(self.deviceInfo.name)] REPROG_CONTROLS_V4 found at index \(String(format: "0x%02X", index))")
             self.queryAndDivertButtons(featureIndex: index)
         }
     }
 
     func teardown() {
-        NSLog("[LogitechHID:%@] Tearing down session", deviceInfo.name)
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Tearing down session")
         discoveryTimer?.invalidate()
         discoveryTimer = nil
         pendingDiscovery.removeAll()
@@ -122,6 +124,10 @@ class LogitechDeviceSession {
         for (i, p) in params.prefix(3).enumerated() {
             report[4 + i] = p
         }
+
+        let hex = report.map { String(format: "%02X", $0) }.joined(separator: " ")
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] TX: \(hex)")
+
         let result = IOHIDDeviceSetReport(
             hidDevice,
             kIOHIDReportTypeOutput,
@@ -130,7 +136,7 @@ class LogitechDeviceSession {
             report.count
         )
         if result != kIOReturnSuccess {
-            NSLog("[LogitechHID:%@] SetReport failed: 0x%08x", deviceInfo.name, result)
+            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] SetReport failed: \(String(format: "0x%08x", result))")
         }
     }
 
@@ -145,7 +151,7 @@ class LogitechDeviceSession {
         discoveryTimer = Timer.scheduledTimer(withTimeInterval: Self.discoveryTimeout, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             if let pending = self.pendingDiscovery.removeValue(forKey: featureId) {
-                NSLog("[LogitechHID:%@] Feature discovery timed out for 0x%04X", self.deviceInfo.name, featureId)
+                LogitechHIDDebugPanel.log("[\(self.deviceInfo.name)] Feature discovery timed out for \(String(format: "0x%04X", featureId))")
                 pending(nil)
             }
         }
@@ -169,7 +175,7 @@ class LogitechDeviceSession {
         } else {
             divertedCIDs.remove(cid)
         }
-        NSLog("[LogitechHID:%@] CID 0x%04X divert=%@", deviceInfo.name, cid, divert ? "ON" : "OFF")
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] CID \(String(format: "0x%04X", cid)) divert=\(divert ? "ON" : "OFF")")
     }
 
     // MARK: - Report Parsing
@@ -178,13 +184,15 @@ class LogitechDeviceSession {
         guard report.count >= 7 else { return }
         guard report[0] == Self.hidppShortReportId || report[0] == Self.hidppLongReportId else { return }
 
+        let hex = report.prefix(min(report.count, 20)).map { String(format: "%02X", $0) }.joined(separator: " ")
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] RX: \(hex)")
+
         let featureIdx = report[2]
 
         // Error report
         if featureIdx == Self.hidppErrorFeatureIdx {
             let errorCode = report.count > 6 ? report[6] : 0
-            NSLog("[LogitechHID:%@] Error report: featureIdx=0x%02X errorCode=0x%02X",
-                  deviceInfo.name, report[3], errorCode)
+            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Error report: featureIdx=\(String(format: "0x%02X", report[3])) errorCode=\(String(format: "0x%02X", errorCode))")
             for (featureId, callback) in pendingDiscovery {
                 callback(nil)
                 pendingDiscovery.removeValue(forKey: featureId)
@@ -236,9 +244,11 @@ class LogitechDeviceSession {
         lastActiveCIDs = activeCIDs
 
         for cid in newlyPressed {
+            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Button DOWN: CID \(String(format: "0x%04X", cid))")
             dispatchButtonEvent(cid: cid, isDown: true)
         }
         for cid in newlyReleased {
+            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Button UP: CID \(String(format: "0x%04X", cid))")
             dispatchButtonEvent(cid: cid, isDown: false)
         }
     }

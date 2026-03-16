@@ -27,11 +27,11 @@ class LogitechHIDManager {
 
     func start() {
         guard !isActive else { return }
-        NSLog("[LogitechHID] Starting")
+        LogitechHIDDebugPanel.log("[LogitechHID] Starting")
 
         hidManager = IOHIDManagerCreate(kCFAllocatorDefault, IOOptionBits(kIOHIDOptionsTypeNone))
         guard let manager = hidManager else {
-            NSLog("[LogitechHID] Failed to create IOHIDManager")
+            LogitechHIDDebugPanel.log("[LogitechHID] Failed to create IOHIDManager")
             return
         }
 
@@ -51,17 +51,17 @@ class LogitechHIDManager {
 
         let result = IOHIDManagerOpen(manager, IOOptionBits(kIOHIDOptionsTypeNone))
         if result != kIOReturnSuccess {
-            NSLog("[LogitechHID] Failed to open IOHIDManager: 0x%08x", result)
+            LogitechHIDDebugPanel.log("[LogitechHID] Failed to open IOHIDManager: \(String(format: "0x%08x", result))")
             return
         }
 
         isActive = true
-        NSLog("[LogitechHID] Started")
+        LogitechHIDDebugPanel.log("[LogitechHID] Started")
     }
 
     func stop() {
         guard isActive else { return }
-        NSLog("[LogitechHID] Stopping")
+        LogitechHIDDebugPanel.log("[LogitechHID] Stopping")
 
         // 清理所有设备会话
         for (_, session) in sessions {
@@ -75,7 +75,7 @@ class LogitechHIDManager {
         }
         hidManager = nil
         isActive = false
-        NSLog("[LogitechHID] Stopped")
+        LogitechHIDDebugPanel.log("[LogitechHID] Stopped")
     }
 
     // MARK: - Device Callbacks (C function pointers)
@@ -100,7 +100,7 @@ class LogitechHIDManager {
         let productId = IOHIDDeviceGetProperty(device, kIOHIDProductIDKey as CFString) as? Int ?? 0
         let productName = IOHIDDeviceGetProperty(device, kIOHIDProductKey as CFString) as? String ?? "Unknown"
 
-        NSLog("[LogitechHID] Device connected: %@ (VID: 0x%04X, PID: 0x%04X)", productName, vendorId, productId)
+        LogitechHIDDebugPanel.log("[LogitechHID] Device connected: \(productName) (VID: \(String(format: "0x%04X", vendorId)), PID: \(String(format: "0x%04X", productId)))")
 
         // 避免重复会话
         guard sessions[device] == nil else { return }
@@ -113,7 +113,7 @@ class LogitechHIDManager {
 
     private func deviceDisconnected(_ device: IOHIDDevice) {
         guard let session = sessions.removeValue(forKey: device) else { return }
-        NSLog("[LogitechHID] Device disconnected: %@", session.deviceInfo.name)
+        LogitechHIDDebugPanel.log("[LogitechHID] Device disconnected: \(session.deviceInfo.name)")
         session.teardown()
     }
 
