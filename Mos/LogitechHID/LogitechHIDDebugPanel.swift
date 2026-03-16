@@ -19,6 +19,8 @@ class LogitechHIDDebugPanel: NSObject {
     private var deviceEntries: [(String, String)] = []  // (property, value) pairs
     private var logLines: [String] = []
     private static let maxLogLines = 500
+    // 全局日志缓冲 -- 在面板打开前也能收集日志
+    private static var logBuffer: [String] = []
 
     // MARK: - Notification
     static let logNotification = NSNotification.Name("LogitechHIDDebugLog")
@@ -33,6 +35,10 @@ class LogitechHIDDebugPanel: NSObject {
         }
         createWindow()
         refreshDevices()
+        // 加载历史日志
+        for line in LogitechHIDDebugPanel.logBuffer {
+            appendLog(line)
+        }
         startObserving()
         window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
@@ -50,6 +56,11 @@ class LogitechHIDDebugPanel: NSObject {
         let timestamp = LogitechHIDDebugPanel.timestamp()
         let line = "[\(timestamp)] \(message)"
         NSLog("[LogitechHID] %@", message)
+        // 存入全局缓冲 (面板打开前也能收集)
+        logBuffer.append(line)
+        if logBuffer.count > maxLogLines {
+            logBuffer.removeFirst(logBuffer.count - maxLogLines)
+        }
         NotificationCenter.default.post(
             name: LogitechHIDDebugPanel.logNotification,
             object: nil,

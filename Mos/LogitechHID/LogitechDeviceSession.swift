@@ -22,6 +22,7 @@ class LogitechDeviceSession {
     private var divertedCIDs: Set<UInt16> = []
     private var lastActiveCIDs: Set<UInt16> = []
     private var deviceIndex: UInt8 = 0x01
+    private var isBLE: Bool = false
 
     // MARK: - Report Buffer
     private var reportBufferPtr: UnsafeMutablePointer<UInt8>?
@@ -76,7 +77,8 @@ class LogitechDeviceSession {
 
         // BLE 直连: device index = 0xFF (Solaar 确认)
         // USB Receiver: device index = 0x01~0x06 (按配对槽位)
-        if transport.lowercased().contains("bluetooth") {
+        isBLE = transport.lowercased().contains("bluetooth")
+        if isBLE {
             deviceIndex = 0xFF
         }
 
@@ -150,13 +152,25 @@ class LogitechDeviceSession {
         let hex = report.map { String(format: "%02X", $0) }.joined(separator: " ")
         LogitechHIDDebugPanel.log("[\(deviceInfo.name)] TX: \(hex)")
 
-        let result = IOHIDDeviceSetReport(
+        // BLE: 先尝试 OUTPUT, 失败则 fallback 到 FEATURE report
+        // BLE HID 没有 interrupt OUT endpoint, 有些设备只接受 Feature Report
+        var result = IOHIDDeviceSetReport(
             hidDevice,
             kIOHIDReportTypeOutput,
             CFIndex(report[0]),
             report,
             report.count
         )
+        if result != kIOReturnSuccess && isBLE {
+            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] OUTPUT failed (\(String(format: "0x%08x", result))), trying FEATURE")
+            result = IOHIDDeviceSetReport(
+                hidDevice,
+                kIOHIDReportTypeFeature,
+                CFIndex(report[0]),
+                report,
+                report.count
+            )
+        }
         if result != kIOReturnSuccess {
             LogitechHIDDebugPanel.log("[\(deviceInfo.name)] SetReport failed: \(String(format: "0x%08x", result))")
         }
