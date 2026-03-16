@@ -291,7 +291,8 @@ class LogitechDeviceSession {
         let flags1 = report[8]
         let flags2: UInt8 = report.count > 12 ? report[12] : 0
         let flags = UInt16(flags1) | (UInt16(flags2) << 8)
-        let isDivertable = (flags & 0x08) != 0
+        // Solaar: bit 4 = reprogrammable (0x10), bit 5 = divertable (0x20)
+        let isDivertable = (flags & 0x20) != 0
 
         discoveredControls.append(ControlInfo(cid: cid, taskId: taskId, flags: flags, isDivertable: isDivertable))
         LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Control[\(reprogQueryIndex)]: CID=\(String(format: "0x%04X", cid)) flags=\(String(format: "0x%04X", flags)) divertable=\(isDivertable)")
