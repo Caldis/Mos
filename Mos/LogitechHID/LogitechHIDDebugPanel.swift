@@ -223,8 +223,14 @@ class LogitechHIDDebugPanel: NSObject {
 
             // HID++ 兼容性判断
             let usagePage = IOHIDDeviceGetProperty(device, kIOHIDPrimaryUsagePageKey as CFString) as? Int ?? 0
-            let isHIDPP = usagePage == 0xFF00 || usagePage == 0xFF43 || usagePage == 0xFFC0
-            deviceEntries.append(("HID++ Compatible?", isHIDPP ? "YES (vendor-specific usage page)" : "NO (standard HID)"))
+            let transport = IOHIDDeviceGetProperty(device, kIOHIDTransportKey as CFString) as? String ?? ""
+            let isBLE = transport.lowercased().contains("bluetooth")
+            let isVendorPage = usagePage == 0xFF00 || usagePage == 0xFF43 || usagePage == 0xFFC0
+            // BLE 下 HID++ 复用标准 HID 接口 (usage page 0x0001), 所以 BLE + mouse usage 也算兼容
+            let isBLEMouse = isBLE && usagePage == 0x0001
+            let isHIDPP = isVendorPage || isBLEMouse
+            let reason = isVendorPage ? "vendor-specific usage page" : isBLEMouse ? "BLE HID++ over standard HID" : "standard HID, no HID++"
+            deviceEntries.append(("HID++ Compatible?", isHIDPP ? "YES (\(reason))" : "NO (\(reason))"))
             deviceEntries.append(("", ""))
         }
 
