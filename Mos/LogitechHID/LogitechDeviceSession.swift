@@ -24,7 +24,6 @@ class LogitechDeviceSession {
     private var deviceIndex: UInt8 = 0x01
 
     // MARK: - Report Buffer
-    // 必须用堆指针, Swift Array 是 value type, copy-on-write 时地址会变
     private var reportBufferPtr: UnsafeMutablePointer<UInt8>?
     private static let reportBufferSize = 64
 
@@ -32,6 +31,19 @@ class LogitechDeviceSession {
     private var pendingDiscovery: [UInt16: (UInt8?) -> Void] = [:]
     private var discoveryTimer: Timer?
     private static let discoveryTimeout: TimeInterval = 5.0
+
+    // MARK: - Reprog Controls State
+    private var reprogControlCount: Int = 0
+    private var reprogQueryIndex: Int = 0       // 当前正在查询的 control index
+    private var discoveredControls: [ControlInfo] = []
+
+    /// 单个可重编程按键的信息
+    struct ControlInfo {
+        let cid: UInt16
+        let taskId: UInt16
+        let flags: UInt16       // flags1 | (flags2 << 8)
+        let isDivertable: Bool  // flags bit 0: 可 divert
+    }
 
     // MARK: - HID++ Constants
     private static let featureIRoot: UInt16 = 0x0000
@@ -92,7 +104,8 @@ class LogitechDeviceSession {
             }
             self.featureIndex[Self.featureReprogV4] = index
             LogitechHIDDebugPanel.log("[\(self.deviceInfo.name)] REPROG_CONTROLS_V4 found at index \(String(format: "0x%02X", index))")
-            self.queryAndDivertButtons(featureIndex: index)
+            // 开始 GetControlCount
+            self.sendGetControlCount(featureIndex: index)
         }
     }
 
@@ -102,7 +115,7 @@ class LogitechDeviceSession {
         discoveryTimer = nil
         pendingDiscovery.removeAll()
 
-        // 取消 divert (恢复按键的默认行为)
+        // 取消所有 divert (恢复按键的默认行为)
         if let reprogIdx = featureIndex[Self.featureReprogV4] {
             for cid in divertedCIDs {
                 setControlReporting(featureIndex: reprogIdx, cid: cid, divert: false)
@@ -110,6 +123,7 @@ class LogitechDeviceSession {
         }
         divertedCIDs.removeAll()
         lastActiveCIDs.removeAll()
+        discoveredControls.removeAll()
     }
 
     // MARK: - Input Report Callback (C function pointer)
@@ -165,19 +179,30 @@ class LogitechDeviceSession {
         }
     }
 
-    // MARK: - Button Divert
+    // MARK: - REPROG_CONTROLS_V4 Complete Flow
+    // Step 1: GetControlCount (function 0) → count
+    // Step 2: GetControlInfo (function 1, param=index) × N → CID + flags per control
+    // Step 3: SetControlReporting (function 3, CID + divert flag) for each divertable CID
 
-    private func queryAndDivertButtons(featureIndex: UInt8) {
-        // GetControlCount: function 0
+    /// Step 1: 发送 GetControlCount
+    private func sendGetControlCount(featureIndex: UInt8) {
         sendShortRequest(featureIndex: featureIndex, functionId: 0)
-        // 响应在 handleInputReport 中处理
     }
 
+    /// Step 2: 发送 GetControlInfo(index)
+    private func sendGetControlInfo(featureIndex: UInt8, index: Int) {
+        sendShortRequest(featureIndex: featureIndex, functionId: 1, params: [UInt8(index)])
+    }
+
+    /// Step 3: SetControlReporting (divert on/off)
     private func setControlReporting(featureIndex: UInt8, cid: UInt16, divert: Bool) {
-        // SetControlReporting: function 3
-        let flags: UInt8 = divert ? 0x01 : 0x00
-        let params: [UInt8] = [UInt8(cid >> 8), UInt8(cid & 0xFF), flags]
-        sendShortRequest(featureIndex: featureIndex, functionId: 3, params: params)
+        // Solaar: function 3, params = CID(2) + flags(1) + targetCID(2)
+        // flags bit 0 = divert (temporaryDiverted)
+        // flags bit 4 = persistentDivert
+        // 我们只设 bit 0 (临时 divert, app 退出后自动恢复)
+        let flagsByte: UInt8 = divert ? 0x01 : 0x00
+        sendShortRequest(featureIndex: featureIndex, functionId: 3,
+                         params: [UInt8(cid >> 8), UInt8(cid & 0xFF), flagsByte])
         if divert {
             divertedCIDs.insert(cid)
         } else {
@@ -196,11 +221,12 @@ class LogitechDeviceSession {
         LogitechHIDDebugPanel.log("[\(deviceInfo.name)] RX: \(hex)")
 
         let featureIdx = report[2]
+        let functionId = report[3] >> 4   // 高 4 位 = function ID
 
-        // Error report
+        // Error report (feature index = 0xFF)
         if featureIdx == Self.hidppErrorFeatureIdx {
             let errorCode = report.count > 6 ? report[6] : 0
-            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Error report: featureIdx=\(String(format: "0x%02X", report[3])) errorCode=\(String(format: "0x%02X", errorCode))")
+            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] HID++ Error: featureIdx=\(String(format: "0x%02X", report[3])) errorCode=\(String(format: "0x%02X", errorCode))")
             for (featureId, callback) in pendingDiscovery {
                 callback(nil)
                 pendingDiscovery.removeValue(forKey: featureId)
@@ -214,12 +240,24 @@ class LogitechDeviceSession {
             return
         }
 
-        // REPROG_CONTROLS_V4 events
+        // REPROG_CONTROLS_V4 responses & notifications
         if let reprogIdx = featureIndex[Self.featureReprogV4], featureIdx == reprogIdx {
-            handleReprogEvent(report)
+            switch functionId {
+            case 0:
+                // GetControlCount response: byte[4] = count
+                handleGetControlCountResponse(report)
+            case 1:
+                // GetControlInfo response: bytes[4..12] = control info
+                handleGetControlInfoResponse(report)
+            default:
+                // divertedButtonsEvent notification (function varies) or other events
+                handleDivertedButtonEvent(report)
+            }
             return
         }
     }
+
+    // MARK: - IRoot Response
 
     private func handleDiscoveryResponse(_ report: [UInt8]) {
         let discoveredIndex = report[4]
@@ -235,8 +273,66 @@ class LogitechDeviceSession {
         }
     }
 
-    private func handleReprogEvent(_ report: [UInt8]) {
-        // Parse CID pairs from divertedButtonsEvent notification
+    // MARK: - REPROG_CONTROLS_V4 Response Handlers
+
+    /// GetControlCount response: byte[4] = count
+    private func handleGetControlCountResponse(_ report: [UInt8]) {
+        reprogControlCount = Int(report[4])
+        reprogQueryIndex = 0
+        discoveredControls.removeAll()
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] GetControlCount = \(reprogControlCount)")
+
+        // 开始逐个查询 control info
+        if reprogControlCount > 0, let reprogIdx = featureIndex[Self.featureReprogV4] {
+            sendGetControlInfo(featureIndex: reprogIdx, index: 0)
+        }
+    }
+
+    /// GetControlInfo response: bytes[4..12]
+    /// Format: CID(2) + TaskID(2) + Flags1(1) + Pos(1) + Group(1) + GMask(1) + Flags2(1)
+    private func handleGetControlInfoResponse(_ report: [UInt8]) {
+        guard report.count >= 11 else { return }
+
+        let cid = (UInt16(report[4]) << 8) | UInt16(report[5])
+        let taskId = (UInt16(report[6]) << 8) | UInt16(report[7])
+        let flags1 = report[8]
+        let flags2: UInt8 = report.count > 12 ? report[12] : 0
+        let flags = UInt16(flags1) | (UInt16(flags2) << 8)
+        // Solaar: bit 0 of flags = reprogrammable, bit 3 = divertable (raw_XY capable uses bit 5)
+        let isDivertable = (flags & 0x08) != 0  // bit 3
+
+        let control = ControlInfo(cid: cid, taskId: taskId, flags: flags, isDivertable: isDivertable)
+        discoveredControls.append(control)
+
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Control[\(reprogQueryIndex)]: CID=\(String(format: "0x%04X", cid)) TaskID=\(String(format: "0x%04X", taskId)) flags=\(String(format: "0x%04X", flags)) divertable=\(isDivertable)")
+
+        reprogQueryIndex += 1
+
+        if reprogQueryIndex < reprogControlCount, let reprogIdx = featureIndex[Self.featureReprogV4] {
+            // 查询下一个 control
+            sendGetControlInfo(featureIndex: reprogIdx, index: reprogQueryIndex)
+        } else {
+            // 全部查询完毕, 对所有 divertable 的按键执行 divert
+            divertAllControls()
+        }
+    }
+
+    /// 对所有 divertable 的 control 执行 divert
+    private func divertAllControls() {
+        guard let reprogIdx = featureIndex[Self.featureReprogV4] else { return }
+
+        let divertable = discoveredControls.filter { $0.isDivertable }
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Diverting \(divertable.count)/\(discoveredControls.count) controls")
+
+        for control in divertable {
+            setControlReporting(featureIndex: reprogIdx, cid: control.cid, divert: true)
+        }
+    }
+
+    // MARK: - Diverted Button Event
+
+    /// divertedButtonsEvent: CID pairs 从 byte[4] 开始, 0x0000 结束
+    private func handleDivertedButtonEvent(_ report: [UInt8]) {
         var activeCIDs: Set<UInt16> = []
         var offset = 4
         while offset + 1 < report.count {
@@ -275,10 +371,8 @@ class LogitechDeviceSession {
             device: deviceInfo
         )
 
-        // 处理事件
         let _ = MosInputProcessor.shared.process(mosEvent)
 
-        // 发送通知 (供 KeyRecorder 录制监听)
         NotificationCenter.default.post(
             name: LogitechHIDManager.buttonEventNotification,
             object: nil,
