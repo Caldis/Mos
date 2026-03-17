@@ -20,6 +20,20 @@ class LogitechDeviceSession {
     let usage: Int
     let transport: String
 
+    // MARK: - Connection Mode
+    /// 连接模式: 决定传输格式、device index 策略、divert flags
+    enum ConnectionMode {
+        /// BLE 直连: long report + ID in payload, devIdx=0xFF, divert flags=0x03
+        case bleDirect
+        /// USB Receiver (Unifying/Bolt): vendor-specific interface, devIdx=slot(0x01~0x06)
+        /// TODO: 需要实现槽位发现 (HID++ 1.0 枚举配对设备)
+        case receiver
+        /// 未知/不支持
+        case unsupported
+    }
+
+    private(set) var connectionMode: ConnectionMode = .unsupported
+
     // MARK: - HID++ State
     private var featureIndex: [UInt16: UInt8] = [:]
     private var divertedCIDs: Set<UInt16> = []
@@ -94,15 +108,32 @@ class LogitechDeviceSession {
     var debugDeviceIndex: UInt8 { deviceIndex }
     var debugIsBLE: Bool { isBLE }
     var debugDeviceOpened: Bool { deviceOpened }
+    var debugConnectionMode: String {
+        switch connectionMode {
+        case .bleDirect: return "BLE Direct"
+        case .receiver: return "Receiver (Unifying/Bolt)"
+        case .unsupported: return "Unsupported"
+        }
+    }
 
     // MARK: - Setup / Teardown
 
     func setup() {
         isBLE = transport.lowercased().contains("bluetooth")
-        if isBLE { deviceIndex = 0xFF }
+
+        // 确定连接模式
+        if isBLE {
+            connectionMode = .bleDirect
+            deviceIndex = 0xFF
+        } else if usagePage == 0xFF00 || usagePage == 0xFF43 || usagePage == 0xFFC0 {
+            connectionMode = .receiver
+            deviceIndex = 0x01  // TODO: 通过 HID++ 1.0 枚举槽位确定实际 index
+        } else {
+            connectionMode = .unsupported
+        }
 
         let tag = "[\(deviceInfo.name):\(String(format: "0x%04X", usagePage))/\(String(format: "0x%04X", usage))]"
-        LogitechHIDDebugPanel.log("\(tag) Setup: transport=\(transport), devIdx=\(String(format: "0x%02X", deviceIndex)), isCandidate=\(isHIDPPCandidate)")
+        LogitechHIDDebugPanel.log("\(tag) Setup: transport=\(transport), mode=\(connectionMode), devIdx=\(String(format: "0x%02X", deviceIndex)), isCandidate=\(isHIDPPCandidate)")
 
         // 只对 HID++ 候选接口进行协议通信
         guard isHIDPPCandidate else {
@@ -172,28 +203,47 @@ class LogitechDeviceSession {
     // MARK: - HID++ Send
 
     /// 发送 HID++ 请求
-    /// hidapi 兼容: report ID 包含在 payload 中, 使用 long report (20 bytes)
-    /// IOHIDDeviceSetReport(dev, OUTPUT, data[0], data, data.count)
+    /// BLE 直连: long report (20 bytes) + report ID in payload (hidapi 兼容)
+    /// Receiver: TODO - 可能需要不同格式, 待 Bolt/Unifying 测试后实现
     private func sendRequest(featureIndex: UInt8, functionId: UInt8, params: [UInt8] = []) {
-        // 始终使用 long report (20 bytes), BLE 设备不支持 short report
-        var report = [UInt8](repeating: 0, count: 20)
-        report[0] = Self.hidppLongReportId  // 0x11
-        report[1] = deviceIndex
-        report[2] = featureIndex
-        report[3] = (functionId << 4) | 0x01  // FuncID | SwID
-        for (i, p) in params.prefix(16).enumerated() {
-            report[4 + i] = p
+        var report: [UInt8]
+        let result: IOReturn
+
+        switch connectionMode {
+        case .bleDirect:
+            // BLE: long report, hidapi 兼容 (report ID in payload)
+            report = [UInt8](repeating: 0, count: 20)
+            report[0] = Self.hidppLongReportId
+            report[1] = deviceIndex
+            report[2] = featureIndex
+            report[3] = (functionId << 4) | 0x01
+            for (i, p) in params.prefix(16).enumerated() { report[4 + i] = p }
+            result = IOHIDDeviceSetReport(
+                hidDevice, kIOHIDReportTypeOutput,
+                CFIndex(report[0]), report, report.count
+            )
+
+        case .receiver:
+            // TODO: Unifying/Bolt receiver 传输
+            // 可能需要: short report (7 bytes), 不同的 payload 格式
+            // 需要先实现 HID++ 1.0 槽位枚举
+            report = [UInt8](repeating: 0, count: 20)
+            report[0] = Self.hidppLongReportId
+            report[1] = deviceIndex
+            report[2] = featureIndex
+            report[3] = (functionId << 4) | 0x01
+            for (i, p) in params.prefix(16).enumerated() { report[4 + i] = p }
+            result = IOHIDDeviceSetReport(
+                hidDevice, kIOHIDReportTypeOutput,
+                CFIndex(report[0]), report, report.count
+            )
+
+        case .unsupported:
+            LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .warning, message: "Cannot send: unsupported connection mode")
+            return
         }
 
         let hex = report.prefix(8).map { String(format: "%02X", $0) }.joined(separator: " ")
-
-        // hidapi 兼容: data 包含 report ID, length = 全长
-        let result = IOHIDDeviceSetReport(
-            hidDevice, kIOHIDReportTypeOutput,
-            CFIndex(report[0]),  // report ID
-            report,              // data (含 report ID)
-            report.count         // 20 bytes
-        )
         let resultStr = result == kIOReturnSuccess ? "OK" : String(format: "0x%08x", result)
         let decoded = decodeRequest(featureIndex: featureIndex, functionId: functionId, params: params)
         LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .tx, message: "TX: \(hex)... -> \(resultStr)", decoded: decoded)
@@ -229,11 +279,22 @@ class LogitechDeviceSession {
     }
 
     private func setControlReporting(featureIndex: UInt8, cid: UInt16, divert: Bool) {
-        // BLE 设备需要 tmpDiverted(bit0) + persistDivert(bit1) 同时设置才生效
-        // 同时必须提供 targetCID = 原始 CID (自映射), 否则设备忽略
-        let flagsByte: UInt8 = divert ? 0x03 : 0x00
         let cidH = UInt8(cid >> 8)
         let cidL = UInt8(cid & 0xFF)
+
+        let flagsByte: UInt8
+        switch connectionMode {
+        case .bleDirect:
+            // BLE: 必须 tmpDiverted(bit0) + persistDivert(bit1) = 0x03
+            flagsByte = divert ? 0x03 : 0x00
+        case .receiver:
+            // Receiver (Unifying/Bolt): TODO - 可能只需 tmpDiverted(bit0) = 0x01
+            flagsByte = divert ? 0x01 : 0x00
+        case .unsupported:
+            return
+        }
+
+        // params: CID(2) + flags(1) + targetCID(2) (自映射)
         sendRequest(featureIndex: featureIndex, functionId: 3,
                          params: [cidH, cidL, flagsByte, cidH, cidL])
         if divert { divertedCIDs.insert(cid) } else { divertedCIDs.remove(cid) }

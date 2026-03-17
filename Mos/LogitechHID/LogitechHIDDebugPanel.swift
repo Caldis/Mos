@@ -423,6 +423,7 @@ class LogitechHIDDebugPanel: NSObject {
             ("Usage Page", String(format: "0x%04X", s.usagePage), usagePageName),
             ("Usage", String(format: "0x%04X", s.usage), usageName),
             ("Transport", s.transport, s.debugIsBLE ? "Bluetooth Low Energy" : "USB"),
+            ("Connection Mode", s.debugConnectionMode, "BLE Direct / Receiver (Unifying-Bolt) / Unsupported"),
             ("Device Index", String(format: "0x%02X", s.debugDeviceIndex), s.debugIsBLE ? "0xFF = BLE direct" : "0x01-0x06 = Receiver slot"),
             ("Device Opened", s.debugDeviceOpened ? "YES" : "NO", "IOHIDDeviceOpen result"),
             ("HID++ Candidate", s.isHIDPPCandidate ? "YES" : "NO", "Eligible for HID++ protocol"),
