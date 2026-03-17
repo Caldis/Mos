@@ -71,14 +71,14 @@ struct LogitechCIDMap {
 
     static func displayName(forCode code: UInt16) -> String {
         switch code {
-        case 1000: return "Gesture (HID++)"
-        case 1001: return "SmartShift (HID++)"
-        case 1002: return "DPI (HID++)"
-        case 1003: return "Left Click (HID++)"
-        case 1004: return "Right Click (HID++)"
-        case 1005: return "Middle Click (HID++)"
-        case 1006: return "Back (HID++)"
-        case 1007: return "Forward (HID++)"
+        case 1000: return "Gesture"
+        case 1001: return "SmartShift"
+        case 1002: return "DPI"
+        case 1003: return "Left Click"
+        case 1004: return "Right Click"
+        case 1005: return "Middle Click"
+        case 1006: return "Back"
+        case 1007: return "Forward"
         default:   return "Logi(\(code))"
         }
     }
@@ -156,6 +156,7 @@ struct MosInputEvent {
         case .mouse:
             if LogitechCIDMap.isLogitechCode(code) {
                 components.append(LogitechCIDMap.displayName(forCode: code))
+                components.append("[Logi]")  // 特殊标记, KeyPreview 渲染为 tag
             } else {
                 components.append(KeyCode.mouseMap[code] ?? "Mouse(\(code))")
             }

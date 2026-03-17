@@ -94,14 +94,27 @@ class KeyPreview: NSStackView {
         keyViews.removeAll()
         waitingView = nil
     }
+    private static let logiTagMarker = "[Logi]"
+
     private func createKeyViews() {
         for (index, component) in keyComponents.enumerated() {
+            // [Logi] 标记: 渲染为小 tag, 不加 "+" 分隔符
+            if component == KeyPreview.logiTagMarker {
+                let tag = createLogiTag()
+                addArrangedSubview(tag)
+                continue
+            }
+
             // 添加分隔符
             if index > 0 {
-                let plusLabel = NSTextField(labelWithString: "+")
-                plusLabel.font = NSFont.systemFont(ofSize: KeyPreview.FONT_SIZE)
-                plusLabel.textColor = NSColor.secondaryLabelColor
-                addArrangedSubview(plusLabel)
+                // 下一个不是 [Logi] 才加 "+"
+                let nextIsLogiTag = (index + 1 < keyComponents.count && keyComponents[index + 1] == KeyPreview.logiTagMarker)
+                if !nextIsLogiTag {
+                    let plusLabel = NSTextField(labelWithString: "+")
+                    plusLabel.font = NSFont.systemFont(ofSize: KeyPreview.FONT_SIZE)
+                    plusLabel.textColor = NSColor.secondaryLabelColor
+                    addArrangedSubview(plusLabel)
+                }
             }
 
             // 创建按键视图
@@ -115,6 +128,31 @@ class KeyPreview: NSStackView {
                 waitingView = container
             }
         }
+    }
+
+    /// 创建 Logi 小标签 (#00FDCF 主题色背景)
+    private func createLogiTag() -> NSView {
+        let container = NSView()
+        container.wantsLayer = true
+        container.layer?.cornerRadius = 3
+        container.layer?.backgroundColor = NSColor(calibratedRed: 0.0, green: 0.992, blue: 0.812, alpha: 1.0).cgColor  // #00FDCF
+        container.translatesAutoresizingMaskIntoConstraints = false
+
+        let label = NSTextField(labelWithString: "Logi")
+        label.font = NSFont.systemFont(ofSize: 8, weight: .bold)
+        label.textColor = NSColor(calibratedWhite: 0.15, alpha: 1.0)  // 深色文字
+        label.alignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(label)
+
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            container.widthAnchor.constraint(equalTo: label.widthAnchor, constant: 6),
+            container.heightAnchor.constraint(equalToConstant: 14),
+        ])
+
+        return container
     }
     private func createSingleKeyView(for text: String, isWaiting: Bool) -> NSView {
         // 创建一个能动态响应外观变化的容器
