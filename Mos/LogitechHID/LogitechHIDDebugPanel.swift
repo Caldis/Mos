@@ -206,36 +206,44 @@ class LogitechHIDDebugPanel: NSObject {
         }
         content.addSubview(toolbar)
 
-        // Main split view (below toolbar)
-        let split = NSSplitView(frame: NSRect(x: 0, y: 0, width: cw, height: ch - 36))
-        split.isVertical = false
-        split.dividerStyle = .thin
-        split.autoresizingMask = [.width, .height]
+        // 固定布局: 4 个区域, 从上到下
+        let bodyH = ch - 36
+        let s1H: CGFloat = 130   // Device Info
+        let s2H: CGFloat = 60    // Feature Table
+        let s3H: CGFloat = 100   // Controls
+        let s4H: CGFloat = bodyH - s1H - s2H - s3H  // Protocol Log (剩余)
 
         // Section 1: Device Info
         let s1 = makeTableSection(
             columns: [("Property", 140), ("Value", 280), ("Annotation", 400)],
             tag: 1
         )
-        split.addSubview(s1)
+        s1.frame = NSRect(x: 0, y: bodyH - s1H, width: cw, height: s1H)
+        s1.autoresizingMask = [.width, .minYMargin]
+        content.addSubview(s1)
 
         // Section 2: Feature Table
         let s2 = makeTableSection(
             columns: [("Index", 60), ("Feature ID", 90), ("Name", 180), ("Purpose", 400)],
             tag: 2
         )
-        split.addSubview(s2)
+        s2.frame = NSRect(x: 0, y: bodyH - s1H - s2H, width: cw, height: s2H)
+        s2.autoresizingMask = [.width, .minYMargin]
+        content.addSubview(s2)
 
         // Section 3: Controls
         let s3 = makeTableSection(
             columns: [("Idx", 35), ("CID", 65), ("Name", 120), ("TaskID", 65), ("Flags", 200), ("Dvrt?", 45), ("Status", 55)],
             tag: 3
         )
-        split.addSubview(s3)
+        s3.frame = NSRect(x: 0, y: bodyH - s1H - s2H - s3H, width: cw, height: s3H)
+        s3.autoresizingMask = [.width, .minYMargin]
+        content.addSubview(s3)
 
-        // Section 4: Protocol Log
+        // Section 4: Protocol Log (填满剩余空间)
         let logScroll = NSScrollView()
         logScroll.hasVerticalScroller = true
+        logScroll.frame = NSRect(x: 0, y: 0, width: cw, height: s4H)
         logScroll.autoresizingMask = [.width, .height]
         let tv = NSTextView()
         tv.isEditable = false
@@ -250,14 +258,7 @@ class LogitechHIDDebugPanel: NSObject {
         tv.textContainer?.containerSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         logScroll.documentView = tv
         self.logTextView = tv
-        split.addSubview(logScroll)
-
-        content.addSubview(split)
-
-        // Set split positions
-        split.setPosition(120, ofDividerAt: 0)
-        split.setPosition(200, ofDividerAt: 1)
-        split.setPosition(330, ofDividerAt: 2)
+        content.addSubview(logScroll)
 
         self.window = w
     }
