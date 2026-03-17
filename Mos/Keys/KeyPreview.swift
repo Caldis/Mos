@@ -140,14 +140,14 @@ class KeyPreview: NSStackView {
 
         let label = NSTextField(labelWithString: "Logi")
         label.font = NSFont.systemFont(ofSize: 8, weight: .bold)
-        label.textColor = NSColor(calibratedWhite: 0.15, alpha: 1.0)  // 深色文字
+        label.textColor = NSColor(calibratedWhite: 0.15, alpha: 1.0)
         label.alignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
 
         NSLayoutConstraint.activate([
             label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            label.centerYAnchor.constraint(equalTo: container.centerYAnchor, constant: -0.5),
             container.widthAnchor.constraint(equalTo: label.widthAnchor, constant: 6),
             container.heightAnchor.constraint(equalToConstant: 14),
         ])
