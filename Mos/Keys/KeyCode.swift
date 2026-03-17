@@ -164,6 +164,8 @@ struct KeyCode {
         19: "🖱19", 20: "🖱20",
         // Logitech HID++ 专有按键
         1000: "Gesture", 1001: "SmartShift", 1002: "DPI",
+        1003: "Left Click (HID++)", 1004: "Right Click (HID++)",
+        1005: "Middle Click (HID++)", 1006: "Back (HID++)", 1007: "Forward (HID++)",
     ]
     static let mouseMainKeys: [UInt16] = [0,1]  // Only protect left/right clicks, allow middle button without modifiers
 }

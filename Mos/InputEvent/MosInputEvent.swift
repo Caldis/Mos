@@ -53,6 +53,11 @@ struct DeviceFilter: Codable, Equatable {
 /// 标准 CGEvent 鼠标按钮: 0~31, Logitech HID++ 专有: 1000+
 struct LogitechCIDMap {
     private static let cidToCode: [UInt16: UInt16] = [
+        0x0050: 1003,  // Left Click (diverted)
+        0x0051: 1004,  // Right Click (diverted)
+        0x0052: 1005,  // Middle Click (diverted)
+        0x0053: 1006,  // Back (diverted)
+        0x0056: 1007,  // Forward (diverted)
         0x00C3: 1000,  // Gesture Button
         0x00C4: 1001,  // SmartShift
         0x00D7: 1002,  // DPI Change Button
@@ -69,6 +74,11 @@ struct LogitechCIDMap {
         case 1000: return "Gesture"
         case 1001: return "SmartShift"
         case 1002: return "DPI"
+        case 1003: return "Left Click (HID++)"
+        case 1004: return "Right Click (HID++)"
+        case 1005: return "Middle Click (HID++)"
+        case 1006: return "Back (HID++)"
+        case 1007: return "Forward (HID++)"
         default:   return "Logi(\(code))"
         }
     }
