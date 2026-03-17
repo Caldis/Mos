@@ -101,6 +101,7 @@ class LogitechHIDDebugPanel: NSObject {
     private var featureTable: NSTableView?
     private var controlsTable: NSTableView?
     private var logTextView: NSTextView?
+    private var deviceSelector: NSPopUpButton?
 
     // Data
     private var deviceInfoRows: [(String, String, String)] = []   // (property, value, annotation)
@@ -204,6 +205,13 @@ class LogitechHIDDebugPanel: NSObject {
             toolbar.addSubview(btn)
             bx += btn.frame.width + 4
         }
+        // Device selector
+        let selector = NSPopUpButton(frame: NSRect(x: bx + 20, y: 6, width: 200, height: 24), pullsDown: false)
+        selector.target = self
+        selector.action = #selector(deviceSelectorChanged)
+        toolbar.addSubview(selector)
+        self.deviceSelector = selector
+
         content.addSubview(toolbar)
 
         // NSSplitView: 可拖动分隔条
@@ -308,15 +316,21 @@ class LogitechHIDDebugPanel: NSObject {
         default: break
         }
 
-        // 布局: 标题在底部, 表格在上方 (macOS 坐标系 y 向上)
         container.addSubview(scroll)
         container.addSubview(titleLabel)
 
-        // 用 autoresizingMask 让 scroll 填满 container (减去标题高度)
-        scroll.frame = NSRect(x: 0, y: 16, width: 900, height: 100)
-        scroll.autoresizingMask = [.width, .height]
-        titleLabel.frame = NSRect(x: 6, y: 0, width: 400, height: 16)
-        titleLabel.autoresizingMask = [.width, .maxYMargin]
+        // macOS 坐标系: y=0 在底部. 标题在顶部, 表格在下方
+        // 使用 autoresizingMask 回调来动态布局
+        container.postsFrameChangedNotifications = true
+        NotificationCenter.default.addObserver(forName: NSView.frameDidChangeNotification, object: container, queue: .main) { _ in
+            let h = container.bounds.height
+            titleLabel.frame = NSRect(x: 6, y: h - 16, width: container.bounds.width - 12, height: 16)
+            scroll.frame = NSRect(x: 0, y: 0, width: container.bounds.width, height: h - 16)
+        }
+        // 初始布局
+        let h = container.bounds.height > 0 ? container.bounds.height : 100
+        titleLabel.frame = NSRect(x: 6, y: h - 16, width: 900, height: 16)
+        scroll.frame = NSRect(x: 0, y: 0, width: 900, height: h - 16)
 
         return container
     }
@@ -344,10 +358,34 @@ class LogitechHIDDebugPanel: NSObject {
         logTextView?.string = ""
     }
 
-    private func refreshAll() {
-        // Find the first active HID++ candidate session
+    @objc private func deviceSelectorChanged() {
         let sessions = LogitechHIDManager.shared.activeSessions
-        currentSession = sessions.first(where: { $0.isHIDPPCandidate })
+        let idx = deviceSelector?.indexOfSelectedItem ?? 0
+        if idx < sessions.count {
+            currentSession = sessions[idx]
+        }
+        refreshDeviceInfo()
+        refreshFeatureTable()
+        refreshControls()
+    }
+
+    private func refreshAll() {
+        let sessions = LogitechHIDManager.shared.activeSessions
+
+        // 更新设备选择器
+        deviceSelector?.removeAllItems()
+        for s in sessions {
+            let label = "\(s.deviceInfo.name) (\(s.transport) \(String(format: "0x%04X/0x%04X", s.usagePage, s.usage)))"
+            deviceSelector?.addItem(withTitle: label)
+        }
+
+        // 选择第一个 HID++ candidate, 或保持当前选择
+        if currentSession == nil || !sessions.contains(where: { $0 === currentSession }) {
+            currentSession = sessions.first(where: { $0.isHIDPPCandidate }) ?? sessions.first
+            if let cs = currentSession, let idx = sessions.firstIndex(where: { $0 === cs }) {
+                deviceSelector?.selectItem(at: idx)
+            }
+        }
 
         refreshDeviceInfo()
         refreshFeatureTable()
