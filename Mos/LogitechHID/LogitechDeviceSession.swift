@@ -778,11 +778,45 @@ class LogitechDeviceSession {
             source: .hidPlusPlus,
             device: deviceInfo
         )
+
+        // 匹配 binding, 如果是 logi* 动作则在当前 session 执行 (设备隔离)
+        if isDown {
+            let bindings = ButtonUtils.shared.getButtonBindings()
+            if let binding = bindings.first(where: { $0.triggerEvent.matchesMosInput(mosEvent) && $0.isEnabled }) {
+                if binding.systemShortcutName.hasPrefix("logi") {
+                    // Logi 动作: 在触发按键所在的 session 上执行, 不绕到 ShortcutExecutor
+                    executeLogiAction(binding.systemShortcutName)
+                } else {
+                    // 键盘快捷键/鼠标按键: 走 ShortcutExecutor
+                    ShortcutExecutor.shared.execute(named: binding.systemShortcutName)
+                }
+                // 不再走 MosInputProcessor (已处理)
+                return
+            }
+        }
+
+        // 未匹配的事件仍然走 MosInputProcessor (兼容 CGEventTap 路径)
         let _ = MosInputProcessor.shared.process(mosEvent)
+
+        // 通知 KeyRecorder (录制用)
         NotificationCenter.default.post(
             name: LogitechHIDManager.buttonEventNotification,
             object: nil,
             userInfo: ["event": mosEvent]
         )
+    }
+
+    /// 在当前 session 上执行 Logi 动作
+    private func executeLogiAction(_ name: String) {
+        switch name {
+        case "logiSmartShiftToggle":
+            executeSmartShiftToggle()
+        case "logiDPICycleUp":
+            executeDPICycle(direction: .up)
+        case "logiDPICycleDown":
+            executeDPICycle(direction: .down)
+        default:
+            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Unknown Logi action: \(name)")
+        }
     }
 }
