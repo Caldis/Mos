@@ -205,6 +205,25 @@ class LogitechHIDDebugPanel: NSObject {
             toolbar.addSubview(btn)
             bx += btn.frame.width + 4
         }
+        // 分隔线
+        bx += 8
+        let sep = NSBox(frame: NSRect(x: bx, y: 8, width: 1, height: 20))
+        sep.boxType = .separator
+        toolbar.addSubview(sep)
+        bx += 8
+        // Logi 动作测试按钮
+        let testDefs: [(String, Selector)] = [
+            ("SmartShift", #selector(testSmartShiftClicked)),
+            ("DPI+", #selector(testDPIUpClicked)),
+            ("DPI-", #selector(testDPIDownClicked)),
+        ]
+        for (title, action) in testDefs {
+            let btn = NSButton(title: title, target: self, action: action)
+            btn.bezelStyle = .rounded
+            btn.frame = NSRect(x: bx, y: 6, width: CGFloat(title.count * 9 + 20), height: 24)
+            toolbar.addSubview(btn)
+            bx += btn.frame.width + 4
+        }
         // Device selector
         let selector = NSPopUpButton(frame: NSRect(x: bx + 20, y: 6, width: 200, height: 24), pullsDown: false)
         selector.target = self
@@ -356,6 +375,23 @@ class LogitechHIDDebugPanel: NSObject {
 
     @objc private func clearLogClicked() {
         logTextView?.string = ""
+    }
+
+    // MARK: - Logi Action Tests
+
+    @objc private func testSmartShiftClicked() {
+        LogitechHIDDebugPanel.log(device: "", type: .info, message: ">>> TEST: SmartShift Toggle")
+        LogitechHIDManager.shared.executeSmartShiftToggle()
+    }
+
+    @objc private func testDPIUpClicked() {
+        LogitechHIDDebugPanel.log(device: "", type: .info, message: ">>> TEST: DPI Cycle Up")
+        LogitechHIDManager.shared.executeDPICycle(direction: .up)
+    }
+
+    @objc private func testDPIDownClicked() {
+        LogitechHIDDebugPanel.log(device: "", type: .info, message: ">>> TEST: DPI Cycle Down")
+        LogitechHIDManager.shared.executeDPICycle(direction: .down)
     }
 
     @objc private func deviceSelectorChanged() {
