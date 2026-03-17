@@ -229,9 +229,13 @@ class LogitechDeviceSession {
     }
 
     private func setControlReporting(featureIndex: UInt8, cid: UInt16, divert: Bool) {
-        let flagsByte: UInt8 = divert ? 0x01 : 0x00
+        // BLE 设备需要 tmpDiverted(bit0) + persistDivert(bit1) 同时设置才生效
+        // 同时必须提供 targetCID = 原始 CID (自映射), 否则设备忽略
+        let flagsByte: UInt8 = divert ? 0x03 : 0x00
+        let cidH = UInt8(cid >> 8)
+        let cidL = UInt8(cid & 0xFF)
         sendRequest(featureIndex: featureIndex, functionId: 3,
-                         params: [UInt8(cid >> 8), UInt8(cid & 0xFF), flagsByte])
+                         params: [cidH, cidL, flagsByte, cidH, cidL])
         if divert { divertedCIDs.insert(cid) } else { divertedCIDs.remove(cid) }
         LogitechHIDDebugPanel.log("[\(deviceInfo.name)] CID \(String(format: "0x%04X", cid)) divert=\(divert ? "ON" : "OFF")")
     }
