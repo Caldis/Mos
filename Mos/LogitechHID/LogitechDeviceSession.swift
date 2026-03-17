@@ -575,30 +575,41 @@ class LogitechDeviceSession {
         // DPI list response (getSensorDpiList, function 1)
         if let listQuery = pendingDPIListQuery, featureIdx == listQuery.featureIndex && functionId == 1 {
             pendingDPIListQuery = nil
-            // byte[4]=sensorIdx, byte[5-6]=dpiStep, byte[7-8..]=dpi values
-            dpiStepSize = (UInt16(report[5]) << 8) | UInt16(report[6])
             dpiSteps.removeAll()
+            dpiStepSize = 0
 
-            if dpiStepSize > 0 {
-                // 范围模式: byte[7-8]=min, byte[9-10]=max
-                let dpiMin = (UInt16(report[7]) << 8) | UInt16(report[8])
-                let dpiMax = (UInt16(report[9]) << 8) | UInt16(report[10])
-                // 生成步进列表
+            // 从 byte[5] 开始读取 UInt16 值序列 (byte[4]=sensorIdx)
+            // Solaar 规则: 值 > 0xE000 是步进标记 (step = value - 0xE000)
+            // 格式: [minDPI, 0xE000+step, maxDPI, 0x0000(end)]
+            // 或: [dpi1, dpi2, dpi3, ..., 0x0000] (离散列表)
+            var values: [UInt16] = []
+            var step: UInt16 = 0
+            var offset = 5
+            while offset + 1 < report.count {
+                let val = (UInt16(report[offset]) << 8) | UInt16(report[offset + 1])
+                if val == 0 { break }
+                if val > 0xE000 {
+                    step = val - 0xE000
+                } else {
+                    values.append(val)
+                }
+                offset += 2
+            }
+
+            if step > 0 && values.count >= 2 {
+                // 范围模式: values[0]=min, values[1]=max
+                let dpiMin = values[0]
+                let dpiMax = values[1]
+                dpiStepSize = step
                 var dpi = dpiMin
                 while dpi <= dpiMax {
                     dpiSteps.append(dpi)
-                    dpi += dpiStepSize
+                    dpi += step
                 }
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI range: \(dpiMin)-\(dpiMax) step \(dpiStepSize) (\(dpiSteps.count) levels)")
+                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI range: \(dpiMin)-\(dpiMax) step \(step) (\(dpiSteps.count) levels)")
             } else {
-                // 列表模式: 逐个读取 DPI 值
-                var offset = 7
-                while offset + 1 < report.count {
-                    let dpi = (UInt16(report[offset]) << 8) | UInt16(report[offset + 1])
-                    if dpi == 0 { break }
-                    dpiSteps.append(dpi)
-                    offset += 2
-                }
+                // 离散列表模式
+                dpiSteps = values
                 LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI list: \(dpiSteps)")
             }
 
