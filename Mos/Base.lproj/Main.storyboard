@@ -455,7 +455,7 @@
                                         <rect key="frame" x="0.0" y="28" width="450" height="5"/>
                                     </box>
                                     <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4Ef-t4-sPm">
-                                        <rect key="frame" x="36" y="4" width="30" height="25"/>
+                                        <rect key="frame" x="36" y="4" width="30.5" height="25"/>
                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSRemoveTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" enabled="NO" state="on" inset="2" id="SGK-IN-m4l">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -469,7 +469,7 @@
                                         </connections>
                                     </button>
                                     <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xql-gm-0mI">
-                                        <rect key="frame" x="6" y="-1" width="30" height="34"/>
+                                        <rect key="frame" x="6" y="-0.5" width="30.5" height="34"/>
                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSAddTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" inset="2" id="Io4-fW-e2U">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -748,7 +748,7 @@
                                         <rect key="frame" x="0.0" y="28" width="450" height="5"/>
                                     </box>
                                     <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ceK-ED-PfL">
-                                        <rect key="frame" x="6" y="-1" width="30" height="34"/>
+                                        <rect key="frame" x="6" y="-0.5" width="30.5" height="34"/>
                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSAddTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" inset="2" id="ivF-Bk-aLA">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -762,7 +762,7 @@
                                         </connections>
                                     </button>
                                     <button imageHugsTitle="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HZK-yc-ptT">
-                                        <rect key="frame" x="36" y="4" width="30" height="25"/>
+                                        <rect key="frame" x="36" y="4" width="30.5" height="25"/>
                                         <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSRemoveTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" enabled="NO" state="on" inset="2" id="dnI-fa-wgE">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -838,7 +838,7 @@
                                         </textFieldCell>
                                     </textField>
                                     <imageView wantsLayer="YES" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5uX-Iz-YQ7">
-                                        <rect key="frame" x="330" y="16" width="20" height="30"/>
+                                        <rect key="frame" x="330" y="15" width="20" height="31"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="ALi-rt-jUu"/>
                                             <constraint firstAttribute="width" constant="20" id="csf-6L-GKj"/>
@@ -3009,12 +3009,12 @@ Remove Mos from the list first, and then re-add Mos to authorize. (You can also 
         <image name="AlipayQR" width="256" height="256"/>
         <image name="BuyMeACoffee" width="195" height="40"/>
         <image name="MEOW" width="3024" height="4032"/>
-        <image name="NSAddTemplate" width="18" height="16"/>
+        <image name="NSAddTemplate" width="18" height="17"/>
         <image name="NSApplicationIcon" width="32" height="32"/>
-        <image name="NSIconViewTemplate" width="19" height="17"/>
-        <image name="NSRemoveTemplate" width="18" height="4"/>
-        <image name="NSStopProgressFreestandingTemplate" width="19" height="19"/>
-        <image name="NSTouchBarSearchTemplate" width="20" height="19"/>
+        <image name="NSIconViewTemplate" width="19" height="18"/>
+        <image name="NSRemoveTemplate" width="18" height="5"/>
+        <image name="NSStopProgressFreestandingTemplate" width="20" height="20"/>
+        <image name="NSTouchBarSearchTemplate" width="20" height="20"/>
         <image name="PaypalLogo" width="200" height="51"/>
         <image name="SF.app.background.dotted" width="135" height="135"/>
         <image name="SF.arrow.clockwise" width="135" height="135"/>

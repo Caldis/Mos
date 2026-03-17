@@ -439,6 +439,66 @@ class LogitechDeviceSession {
         return nil
     }
 
+    // MARK: - Logi Action Execution
+
+    private var pendingSmartShiftToggle: UInt8? = nil
+    private var pendingDPICycle: (featureIndex: UInt8, direction: LogitechHIDManager.DPICycleDirection)? = nil
+    private var currentDPI: UInt16 = 1000
+    private let dpiSteps: [UInt16] = [400, 800, 1000, 1600, 2000, 3200, 4000]
+
+    /// SmartShift 切换
+    func executeSmartShiftToggle() {
+        // SmartShift feature ID = 0x2110
+        let smartShiftFeatureId: UInt16 = 0x2110
+        if let idx = featureIndex[smartShiftFeatureId] {
+            // 已知 feature index, 直接切换
+            toggleSmartShift(featureIndex: idx)
+        } else {
+            // 先发现 feature
+            discoverFeature(featureId: smartShiftFeatureId) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] SmartShift feature not supported")
+                    return
+                }
+                self.featureIndex[smartShiftFeatureId] = idx
+                self.toggleSmartShift(featureIndex: idx)
+            }
+        }
+    }
+
+    private func toggleSmartShift(featureIndex: UInt8) {
+        // getRatchetControlMode: function 0
+        // 响应: byte[4] = wheelMode (1=freewheel, 2=ratchet)
+        sendRequest(featureIndex: featureIndex, functionId: 0)
+        // 响应在 handleInputReport 中处理 -> handleSmartShiftResponse
+        pendingSmartShiftToggle = featureIndex
+    }
+
+    /// DPI 循环
+    func executeDPICycle(direction: LogitechHIDManager.DPICycleDirection) {
+        // AdjustableDPI feature ID = 0x2201
+        let dpiFeatureId: UInt16 = 0x2201
+        if let idx = featureIndex[dpiFeatureId] {
+            cycleDPI(featureIndex: idx, direction: direction)
+        } else {
+            discoverFeature(featureId: dpiFeatureId) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] AdjustableDPI feature not supported")
+                    return
+                }
+                self.featureIndex[dpiFeatureId] = idx
+                self.cycleDPI(featureIndex: idx, direction: direction)
+            }
+        }
+    }
+
+    private func cycleDPI(featureIndex: UInt8, direction: LogitechHIDManager.DPICycleDirection) {
+        // getSensorDpi: function 2, param sensorIdx=0
+        // 响应: byte[4-5] = currentDPI (big-endian)
+        sendRequest(featureIndex: featureIndex, functionId: 2, params: [0x00])
+        pendingDPICycle = (featureIndex, direction)
+    }
+
     // MARK: - Report Parsing
 
     func handleInputReport(_ report: [UInt8]) {
@@ -485,6 +545,42 @@ class LogitechDeviceSession {
                 case 1: handleGetControlInfoResponse(report)
                 default: break  // ACK 等直接忽略, 不当作 button event
                 }
+            }
+            return
+        }
+
+        // SmartShift response (pending toggle)
+        if let smartShiftIdx = pendingSmartShiftToggle, featureIdx == smartShiftIdx && functionId == 0 {
+            pendingSmartShiftToggle = nil
+            let currentMode = report[4]  // 1=freewheel, 2=ratchet
+            let newMode: UInt8 = (currentMode == 2) ? 1 : 2
+            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] SmartShift: \(currentMode == 2 ? "ratchet" : "freewheel") -> \(newMode == 2 ? "ratchet" : "freewheel")")
+            // setRatchetControlMode: function 1, params: wheelMode
+            sendRequest(featureIndex: smartShiftIdx, functionId: 1, params: [newMode])
+            return
+        }
+
+        // DPI response (pending cycle)
+        if let dpiInfo = pendingDPICycle, featureIdx == dpiInfo.featureIndex && functionId == 2 {
+            pendingDPICycle = nil
+            let curDPI = (UInt16(report[4]) << 8) | UInt16(report[5])
+            currentDPI = curDPI
+
+            // Find next/prev DPI step
+            let sortedSteps = dpiSteps.sorted()
+            let newDPI: UInt16
+            if dpiInfo.direction == .up {
+                newDPI = sortedSteps.first(where: { $0 > curDPI }) ?? sortedSteps.last ?? curDPI
+            } else {
+                newDPI = sortedSteps.last(where: { $0 < curDPI }) ?? sortedSteps.first ?? curDPI
+            }
+
+            if newDPI != curDPI {
+                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI: \(curDPI) -> \(newDPI)")
+                // setSensorDpi: function 3, params: sensorIdx(1) + dpi(2)
+                sendRequest(featureIndex: dpiInfo.featureIndex, functionId: 3, params: [0x00, UInt8(newDPI >> 8), UInt8(newDPI & 0xFF)])
+            } else {
+                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI: \(curDPI) (already at limit)")
             }
             return
         }

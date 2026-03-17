@@ -46,8 +46,11 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         // 配置按键显示组件
         setupKeyDisplayView(with: binding.triggerEvent)
 
+        // 判断是否为 Logi 按键 (code >= 1000)
+        let isLogiTrigger = binding.triggerEvent.type == .mouse && LogitechCIDMap.isLogitechCode(binding.triggerEvent.code)
+
         // 配置动作选择器
-        setupActionPopUpButton(currentShortcut: binding.systemShortcut)
+        setupActionPopUpButton(currentShortcut: binding.systemShortcut, showLogiActions: isLogiTrigger)
 
         // 绘制虚线分隔符(延迟到下一个 runloop,等 AutoLayout 完成布局)
         DispatchQueue.main.async {
@@ -151,7 +154,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
     /// 1. 每次配置创建新的 NSMenu 实例，避免 cell 复用时共享状态
     /// 2. 默认禁用所有菜单项的 keyEquivalent，防止与 ButtonCore 触发的快捷键冲突
     /// 3. 通过 NSMenuDelegate 在菜单打开时临时启用 keyEquivalent（显示快捷键样式）
-    private func setupActionPopUpButton(currentShortcut: SystemShortcut.Shortcut?) {
+    private func setupActionPopUpButton(currentShortcut: SystemShortcut.Shortcut?, showLogiActions: Bool = false) {
         // 每次配置时创建新的 menu，避免 cell 复用时共享状态
         let menu = NSMenu()
         menu.delegate = self
@@ -160,7 +163,8 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         ShortcutManager.buildShortcutMenu(
             into: menu,
             target: self,
-            action: #selector(shortcutSelected(_:))
+            action: #selector(shortcutSelected(_:)),
+            showLogiActions: showLogiActions
         )
 
         // 初始状态禁用所有 keyEquivalent，防止意外触发

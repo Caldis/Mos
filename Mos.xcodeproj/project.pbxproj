@@ -13,7 +13,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		22142DA01E25344E00E4BFBF /* Mos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mos.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		22142DA01E25344E00E4BFBF /* Mos Debug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mos Debug.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -55,7 +55,7 @@
 		22142DA11E25344E00E4BFBF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				22142DA01E25344E00E4BFBF /* Mos.app */,
+				22142DA01E25344E00E4BFBF /* Mos Debug.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -85,7 +85,7 @@
 				0BE5A29B2F7A1C5B006D61C0 /* Sparkle */,
 			);
 			productName = Mos;
-			productReference = 22142DA01E25344E00E4BFBF /* Mos.app */;
+			productReference = 22142DA01E25344E00E4BFBF /* Mos Debug.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

@@ -41,7 +41,7 @@ class ShortcutManager {
     /// - Parameter menu: 目标菜单对象
     /// - Parameter target: 菜单项点击事件的目标对象
     /// - Parameter action: 菜单项点击事件的选择器
-    static func buildShortcutMenu(into menu: NSMenu, target: AnyObject, action: Selector) {
+    static func buildShortcutMenu(into menu: NSMenu, target: AnyObject, action: Selector, showLogiActions: Bool = false) {
         // 清空现有菜单项
         menu.removeAllItems()
 
@@ -114,6 +114,73 @@ class ShortcutManager {
             // 将分类菜单项添加到主菜单
             menu.addItem(categoryMenuItem)
         }
+
+        // 鼠标按键分类 (始终显示)
+        addCategoryToMenu(
+            menu: menu,
+            category: SystemShortcut.mouseButtonsCategory,
+            target: target,
+            action: action,
+            totalShortcuts: &totalShortcuts
+        )
+
+        // Logi 专有动作分类 (仅当触发键为 Logi 按键时显示)
+        if showLogiActions {
+            addCategoryToMenu(
+                menu: menu,
+                category: SystemShortcut.logiActionsCategory,
+                target: target,
+                action: action,
+                totalShortcuts: &totalShortcuts
+            )
+        }
+    }
+
+    /// 将一个分类添加到菜单
+    private static func addCategoryToMenu(
+        menu: NSMenu,
+        category: (category: String, shortcuts: [SystemShortcut.Shortcut]),
+        target: AnyObject,
+        action: Selector,
+        totalShortcuts: inout Int
+    ) {
+        let categoryName = SystemShortcut.localizedCategoryName(category.category)
+        let categoryMenuItem = NSMenuItem(title: categoryName, action: nil, keyEquivalent: "")
+
+        if supportsSFSymbols {
+            if #available(macOS 11.0, *) {
+                let symbolName = SystemShortcut.categorySymbolName(category.category)
+                categoryMenuItem.image = createSymbolImage(symbolName)
+            }
+        }
+
+        let subMenu = NSMenu(title: categoryName)
+        let availableShortcuts = category.shortcuts.filter { $0.isAvailable }
+        for shortcut in availableShortcuts {
+            let menuKeyEquivalent = shortcut.keyEquivalent
+
+            let shortcutMenuItem = NSMenuItem(
+                title: shortcut.localizedName,
+                action: action,
+                keyEquivalent: menuKeyEquivalent.keyEquivalent
+            )
+            shortcutMenuItem.keyEquivalentModifierMask = menuKeyEquivalent.modifierMask
+            shortcutMenuItem.target = target
+            shortcutMenuItem.representedObject = shortcut
+            shortcutMenuItem.toolTip = shortcut.localizedName
+
+            if supportsSFSymbols {
+                if #available(macOS 11.0, *) {
+                    shortcutMenuItem.image = createSymbolImage(shortcut.symbolName)
+                }
+            }
+
+            subMenu.addItem(shortcutMenuItem)
+            totalShortcuts += 1
+        }
+
+        categoryMenuItem.submenu = subMenu
+        menu.addItem(categoryMenuItem)
     }
 
 }
