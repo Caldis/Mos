@@ -155,4 +155,34 @@ class LogitechHIDManager {
             session.restoreDivertToBindings()
         }
     }
+
+    // MARK: - Logi Action Execution
+
+    enum DPICycleDirection { case up, down }
+
+    /// 获取最佳活跃 session (优先已完成 init 的, 其次 BLE)
+    private var primarySession: LogitechDeviceSession? {
+        // 优先: 已完成 init 的 session
+        if let ready = sessions.values.first(where: { $0.isHIDPPCandidate && $0.debugReprogInitComplete }) {
+            return ready
+        }
+        // 其次: BLE 候选
+        if let ble = sessions.values.first(where: { $0.isHIDPPCandidate && $0.debugIsBLE }) {
+            return ble
+        }
+        // 最后: 任意候选
+        return sessions.values.first(where: { $0.isHIDPPCandidate })
+    }
+
+    /// SmartShift 切换: 读取当前模式, 取反
+    func executeSmartShiftToggle() {
+        guard let session = primarySession else { return }
+        session.executeSmartShiftToggle()
+    }
+
+    /// DPI 循环
+    func executeDPICycle(direction: DPICycleDirection) {
+        guard let session = primarySession else { return }
+        session.executeDPICycle(direction: direction)
+    }
 }
