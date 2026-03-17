@@ -380,18 +380,21 @@ class LogitechHIDDebugPanel: NSObject {
     // MARK: - Logi Action Tests
 
     @objc private func testSmartShiftClicked() {
-        LogitechHIDDebugPanel.log(device: "", type: .info, message: ">>> TEST: SmartShift Toggle")
-        LogitechHIDManager.shared.executeSmartShiftToggle()
+        guard let session = currentSession else { return }
+        LogitechHIDDebugPanel.log(device: session.deviceInfo.name, type: .info, message: ">>> TEST: SmartShift Toggle")
+        session.executeSmartShiftToggle()
     }
 
     @objc private func testDPIUpClicked() {
-        LogitechHIDDebugPanel.log(device: "", type: .info, message: ">>> TEST: DPI Cycle Up")
-        LogitechHIDManager.shared.executeDPICycle(direction: .up)
+        guard let session = currentSession else { return }
+        LogitechHIDDebugPanel.log(device: session.deviceInfo.name, type: .info, message: ">>> TEST: DPI Cycle Up")
+        session.executeDPICycle(direction: .up)
     }
 
     @objc private func testDPIDownClicked() {
-        LogitechHIDDebugPanel.log(device: "", type: .info, message: ">>> TEST: DPI Cycle Down")
-        LogitechHIDManager.shared.executeDPICycle(direction: .down)
+        guard let session = currentSession else { return }
+        LogitechHIDDebugPanel.log(device: session.deviceInfo.name, type: .info, message: ">>> TEST: DPI Cycle Down")
+        session.executeDPICycle(direction: .down)
     }
 
     @objc private func deviceSelectorChanged() {
