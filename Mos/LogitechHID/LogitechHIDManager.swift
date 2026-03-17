@@ -109,12 +109,14 @@ class LogitechHIDManager {
         let session = LogitechDeviceSession(hidDevice: device)
         sessions[device] = session
         session.setup()
+        NotificationCenter.default.post(name: Self.sessionChangedNotification, object: nil)
     }
 
     private func deviceDisconnected(_ device: IOHIDDevice) {
         guard let session = sessions.removeValue(forKey: device) else { return }
         LogitechHIDDebugPanel.log("[LogitechHID] Device disconnected: \(session.deviceInfo.name)")
         session.teardown()
+        NotificationCenter.default.post(name: Self.sessionChangedNotification, object: nil)
     }
 
     // MARK: - Query
@@ -123,4 +125,11 @@ class LogitechHIDManager {
     var connectedDevices: [MosInputDevice] {
         return sessions.values.map { $0.deviceInfo }
     }
+
+    /// Debug: 暴露活跃的设备会话
+    var activeSessions: [LogitechDeviceSession] {
+        return Array(sessions.values)
+    }
+
+    static let sessionChangedNotification = NSNotification.Name("LogitechHIDSessionChanged")
 }

@@ -86,6 +86,15 @@ class LogitechDeviceSession {
         return usagePage == 0x0001 && usage == 0x0002
     }
 
+    // MARK: - Debug Accessors (for HID++ debug panel)
+    var debugFeatureIndex: [UInt16: UInt8] { featureIndex }
+    var debugDiscoveredControls: [ControlInfo] { discoveredControls }
+    var debugDivertedCIDs: Set<UInt16> { divertedCIDs }
+    var debugReprogInitComplete: Bool { reprogInitComplete }
+    var debugDeviceIndex: UInt8 { deviceIndex }
+    var debugIsBLE: Bool { isBLE }
+    var debugDeviceOpened: Bool { deviceOpened }
+
     // MARK: - Setup / Teardown
 
     func setup() {
@@ -185,7 +194,9 @@ class LogitechDeviceSession {
             report,              // data (含 report ID)
             report.count         // 20 bytes
         )
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] TX: \(hex)... -> \(result == kIOReturnSuccess ? "OK" : String(format: "0x%08x", result))")
+        let resultStr = result == kIOReturnSuccess ? "OK" : String(format: "0x%08x", result)
+        let decoded = decodeRequest(featureIndex: featureIndex, functionId: functionId, params: params)
+        LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .tx, message: "TX: \(hex)... -> \(resultStr)", decoded: decoded)
     }
 
     // MARK: - Feature Discovery
@@ -225,6 +236,145 @@ class LogitechDeviceSession {
         LogitechHIDDebugPanel.log("[\(deviceInfo.name)] CID \(String(format: "0x%04X", cid)) divert=\(divert ? "ON" : "OFF")")
     }
 
+    // MARK: - Debug Operations (interactive divert control)
+
+    func rediscoverFeatures() {
+        featureIndex.removeAll()
+        discoveredControls.removeAll()
+        reprogInitComplete = false
+        reprogControlCount = 0
+        reprogQueryIndex = 0
+        divertedCIDs.removeAll()
+        lastActiveCIDs.removeAll()
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Re-discovering features...")
+        discoverFeature(featureId: Self.featureReprogV4) { [weak self] index in
+            guard let self = self, let index = index else {
+                LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] REPROG_CONTROLS_V4 not available")
+                return
+            }
+            self.featureIndex[Self.featureReprogV4] = index
+            LogitechHIDDebugPanel.log("[\(self.deviceInfo.name)] REPROG_CONTROLS_V4 at index \(String(format: "0x%02X", index))")
+            self.sendGetControlCount(featureIndex: index)
+        }
+    }
+
+    func redivertAllControls() {
+        guard let idx = featureIndex[Self.featureReprogV4] else { return }
+        lastActiveCIDs.removeAll()
+        for c in discoveredControls where c.isDivertable {
+            setControlReporting(featureIndex: idx, cid: c.cid, divert: true)
+        }
+        reprogInitComplete = true
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Re-diverted all controls")
+    }
+
+    func undivertAllControls() {
+        guard let idx = featureIndex[Self.featureReprogV4] else { return }
+        for cid in divertedCIDs {
+            setControlReporting(featureIndex: idx, cid: cid, divert: false)
+        }
+        reprogInitComplete = false
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Undiverted all controls")
+    }
+
+    func toggleDivert(cid: UInt16) {
+        guard let idx = featureIndex[Self.featureReprogV4] else { return }
+        let currentlyDiverted = divertedCIDs.contains(cid)
+        setControlReporting(featureIndex: idx, cid: cid, divert: !currentlyDiverted)
+    }
+
+    // MARK: - Report Decoding (for debug panel)
+
+    private func decodeRequest(featureIndex: UInt8, functionId: UInt8, params: [UInt8]) -> String {
+        if featureIndex == 0x00 && functionId == 0 && params.count >= 2 {
+            let featId = (UInt16(params[0]) << 8) | UInt16(params[1])
+            let name = HIDPPInfo.featureNames[featId]?.0 ?? "0x\(String(format: "%04X", featId))"
+            return "IRoot.GetFeature(\(name))"
+        }
+        if featureIndex == 0x00 && functionId == 1 {
+            return "IRoot.Ping (GetProtocolVersion)"
+        }
+        if let reprogIdx = self.featureIndex[Self.featureReprogV4], featureIndex == reprogIdx {
+            switch functionId {
+            case 0: return "REPROG.GetControlCount()"
+            case 1:
+                let idx = params.first.map { "\($0)" } ?? "?"
+                return "REPROG.GetControlInfo(index=\(idx))"
+            case 3:
+                if params.count >= 3 {
+                    let cid = (UInt16(params[0]) << 8) | UInt16(params[1])
+                    let cidName = HIDPPInfo.cidNames[cid] ?? "?"
+                    let divert = params[2] & 0x01 != 0
+                    return "REPROG.SetControlReporting(CID=\(String(format: "0x%04X", cid)) \(cidName), divert=\(divert ? "ON" : "OFF"))"
+                }
+                return "REPROG.SetControlReporting"
+            default: return "REPROG.func\(functionId)"
+            }
+        }
+        return "Feature[0x\(String(format: "%02X", featureIndex))].func\(functionId)"
+    }
+
+    private func decodeReport(_ report: [UInt8]) -> String {
+        guard report.count >= 7 else { return "short report" }
+        let featIdx = report[2]
+        let funcId = report[3] >> 4
+
+        if featIdx == Self.hidppErrorFeatureIdx {
+            let errCode = report.count > 6 ? report[6] : 0
+            let errName = HIDPPInfo.errorNames[errCode] ?? "0x\(String(format: "%02X", errCode))"
+            return "HID++ ERROR: \(errName)"
+        }
+        if featIdx == 0x00 {
+            if funcId == 0 {
+                let idx = report[4]
+                return idx == 0 ? "IRoot: feature not found" : "IRoot: feature at index 0x\(String(format: "%02X", idx))"
+            }
+            if funcId == 1 {
+                return "IRoot: protocol \(report[4]).\(report[5])"
+            }
+        }
+        if let reprogIdx = featureIndex[Self.featureReprogV4], featIdx == reprogIdx {
+            if !reprogInitComplete && funcId == 0 {
+                return "REPROG.ControlCount = \(report[4])"
+            }
+            if funcId == 1 {
+                let cid = (UInt16(report[4]) << 8) | UInt16(report[5])
+                let name = HIDPPInfo.cidNames[cid] ?? "?"
+                return "REPROG.ControlInfo: CID=\(String(format: "0x%04X", cid)) (\(name))"
+            }
+            if reprogInitComplete && funcId == 0 {
+                // divertedButtonsEvent
+                var cids: [String] = []
+                var offset = 4
+                while offset + 1 < report.count {
+                    let cid = (UInt16(report[offset]) << 8) | UInt16(report[offset + 1])
+                    if cid == 0 { break }
+                    let name = HIDPPInfo.cidNames[cid] ?? "?"
+                    cids.append("\(String(format: "0x%04X", cid))(\(name))")
+                    offset += 2
+                }
+                return cids.isEmpty ? "BUTTON EVENT: all released" : "BUTTON EVENT: \(cids.joined(separator: " + "))"
+            }
+            if funcId == 3 {
+                return "REPROG.SetControlReporting ACK"
+            }
+        }
+        // SmartShift or other feature notifications
+        if let name = findFeatureName(forIndex: featIdx) {
+            return "\(name) notification (func=\(funcId))"
+        }
+        return "Feature[0x\(String(format: "%02X", featIdx))].func\(funcId)"
+    }
+
+    private func findFeatureName(forIndex idx: UInt8) -> String? {
+        for (featId, featIdx) in featureIndex {
+            if featIdx == idx {
+                return HIDPPInfo.featureNames[featId]?.0
+            }
+        }
+        return nil
+    }
+
     // MARK: - Report Parsing
 
     func handleInputReport(_ report: [UInt8]) {
@@ -232,10 +382,11 @@ class LogitechDeviceSession {
         guard report[0] == Self.hidppShortReportId || report[0] == Self.hidppLongReportId else { return }
 
         let hex = report.prefix(min(report.count, 20)).map { String(format: "%02X", $0) }.joined(separator: " ")
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] RX: \(hex)")
-
         let featureIdx = report[2]
         let functionId = report[3] >> 4
+        let rxDecoded = decodeReport(report)
+        let rxType: LogEntryType = featureIdx == Self.hidppErrorFeatureIdx ? .error : .rx
+        LogitechHIDDebugPanel.log(device: deviceInfo.name, type: rxType, message: "RX: \(hex)", decoded: rxDecoded)
 
         // Error report
         if featureIdx == Self.hidppErrorFeatureIdx {
@@ -342,11 +493,13 @@ class LogitechDeviceSession {
         let newlyReleased = lastActiveCIDs.subtracting(activeCIDs)
         lastActiveCIDs = activeCIDs
         for cid in newlyPressed {
-            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Button DOWN: CID \(String(format: "0x%04X", cid))")
+            let cidName = HIDPPInfo.cidNames[cid] ?? "Unknown"
+            LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .buttonEvent, message: "Button DOWN: CID \(String(format: "0x%04X", cid)) (\(cidName))")
             dispatchButtonEvent(cid: cid, isDown: true)
         }
         for cid in newlyReleased {
-            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Button UP: CID \(String(format: "0x%04X", cid))")
+            let cidName = HIDPPInfo.cidNames[cid] ?? "Unknown"
+            LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .buttonEvent, message: "Button UP: CID \(String(format: "0x%04X", cid)) (\(cidName))")
             dispatchButtonEvent(cid: cid, isDown: false)
         }
     }
