@@ -132,4 +132,27 @@ class LogitechHIDManager {
     }
 
     static let sessionChangedNotification = NSNotification.Name("LogitechHIDSessionChanged")
+
+    // MARK: - Divert Control
+
+    /// 绑定变更后调用: 同步所有会话的 divert 状态
+    func syncDivertWithBindings() {
+        for (_, session) in sessions where session.isHIDPPCandidate {
+            session.syncDivertWithBindings()
+        }
+    }
+
+    /// 录制模式: 临时 divert 所有按键
+    func temporarilyDivertAll() {
+        for (_, session) in sessions where session.isHIDPPCandidate {
+            session.temporarilyDivertAll()
+        }
+    }
+
+    /// 录制结束: 恢复到只 divert 有绑定的按键
+    func restoreDivertToBindings() {
+        for (_, session) in sessions where session.isHIDPPCandidate {
+            session.restoreDivertToBindings()
+        }
+    }
 }

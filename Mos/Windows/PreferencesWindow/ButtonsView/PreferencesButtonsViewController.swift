@@ -71,9 +71,11 @@ extension PreferencesButtonsViewController {
         toggleNoDataHint()
     }
 
-    // 保存界面到 Options
+    // 保存界面到 Options, 并同步 divert 状态
     func syncViewWithOptions() {
         Options.shared.buttons.binding = buttonBindings
+        // 绑定变更后同步 HID++ divert: 只 divert 有绑定的按键
+        LogitechHIDManager.shared.syncDivertWithBindings()
     }
 
     // 更新删除按钮状态

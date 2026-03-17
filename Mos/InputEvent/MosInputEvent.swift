@@ -87,6 +87,18 @@ struct LogitechCIDMap {
     static func isLogitechCode(_ code: UInt16) -> Bool {
         return code >= 1000
     }
+
+    /// 反向映射: Mos code → CID
+    static func toCID(_ mosCode: UInt16) -> UInt16? {
+        if let entry = cidToCode.first(where: { $0.value == mosCode }) {
+            return entry.key
+        }
+        // 反向 fallback (2000 + cid)
+        if mosCode >= 2000 {
+            return mosCode - 2000
+        }
+        return nil
+    }
 }
 
 // MARK: - MosInputEvent

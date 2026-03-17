@@ -82,6 +82,8 @@ class KeyRecorder: NSObject {
         recordingMode = mode
         // Log
         NSLog("[EventRecorder] Starting in \(mode) mode")
+        // 录制时临时 divert 所有 Logitech 按键, 以便捕获 HID++ 专有按键
+        LogitechHIDManager.shared.temporarilyDivertAll()
         // 确保清理任何存在的录制界面
         keyPopover?.hide()
         keyPopover = nil
@@ -283,6 +285,8 @@ class KeyRecorder: NSObject {
             NotificationCenter.default.removeObserver(observer)
             hidEventObserver = nil
         }
+        // 录制结束: 恢复到只 divert 有绑定的按键
+        LogitechHIDManager.shared.restoreDivertToBindings()
         // 重置状态 (添加延迟确保 Popover 结束动画完成, 避免多个 popover 重复出现导致卡住)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.isRecording = false

@@ -326,13 +326,10 @@ class LogitechDeviceSession {
     }
 
     func redivertAllControls() {
-        guard let idx = featureIndex[Self.featureReprogV4] else { return }
         lastActiveCIDs.removeAll()
-        for c in discoveredControls where c.isDivertable {
-            setControlReporting(featureIndex: idx, cid: c.cid, divert: true)
-        }
         reprogInitComplete = true
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Re-diverted all controls")
+        syncDivertWithBindings()
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Re-synced divert with bindings")
     }
 
     func undivertAllControls() {
@@ -530,21 +527,63 @@ class LogitechDeviceSession {
         if reprogQueryIndex < reprogControlCount, let idx = featureIndex[Self.featureReprogV4] {
             sendGetControlInfo(featureIndex: idx, index: reprogQueryIndex)
         } else {
-            divertAllControls()
+            divertBoundControls()
         }
     }
 
-    private func divertAllControls() {
+    /// 初始化完成后: 根据当前绑定只 divert 有绑定的按键
+    private func divertBoundControls() {
+        reprogInitComplete = true
+        lastActiveCIDs.removeAll()
+        syncDivertWithBindings()
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Init complete, listening for button events")
+    }
+
+    /// 同步 divert 状态: 只 divert 有绑定的按键, un-divert 没有绑定的
+    func syncDivertWithBindings() {
+        guard let idx = featureIndex[Self.featureReprogV4] else { return }
+
+        // 获取所有已启用绑定的 Mos codes
+        let boundCodes = Set(
+            ButtonUtils.shared.getButtonBindings()
+                .filter { $0.isEnabled && $0.triggerEvent.type == .mouse }
+                .map { $0.triggerEvent.code }
+        )
+
+        let divertable = discoveredControls.filter { $0.isDivertable }
+        var divertCount = 0
+
+        for c in divertable {
+            let mosCode = LogitechCIDMap.toMosCode(c.cid)
+            let shouldDivert = boundCodes.contains(mosCode)
+            let currentlyDiverted = divertedCIDs.contains(c.cid)
+
+            if shouldDivert && !currentlyDiverted {
+                setControlReporting(featureIndex: idx, cid: c.cid, divert: true)
+                divertCount += 1
+            } else if !shouldDivert && currentlyDiverted {
+                setControlReporting(featureIndex: idx, cid: c.cid, divert: false)
+            } else if shouldDivert {
+                divertCount += 1
+            }
+        }
+
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Sync divert: \(divertCount)/\(divertable.count) controls diverted (based on bindings)")
+    }
+
+    /// 录制模式: 临时 divert 所有 divertable 按键
+    func temporarilyDivertAll() {
         guard let idx = featureIndex[Self.featureReprogV4] else { return }
         let divertable = discoveredControls.filter { $0.isDivertable }
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Diverting \(divertable.count)/\(discoveredControls.count) controls")
-        for c in divertable {
+        for c in divertable where !divertedCIDs.contains(c.cid) {
             setControlReporting(featureIndex: idx, cid: c.cid, divert: true)
         }
-        // 标记 init 完成: 此后 REPROG function 0 = divertedButtonsEvent
-        reprogInitComplete = true
-        lastActiveCIDs.removeAll()  // 清除 init 期间的残留状态
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Init complete, listening for button events")
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Temporarily diverted all \(divertable.count) controls (recording mode)")
+    }
+
+    /// 录制结束: 恢复到只 divert 有绑定的状态
+    func restoreDivertToBindings() {
+        syncDivertWithBindings()
     }
 
     private func handleDivertedButtonEvent(_ report: [UInt8]) {
