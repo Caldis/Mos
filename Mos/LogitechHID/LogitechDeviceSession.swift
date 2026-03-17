@@ -874,8 +874,6 @@ class LogitechDeviceSession {
             executeDPICycle(direction: .up)
         case "logiDPICycleDown":
             executeDPICycle(direction: .down)
-        case "logiHostCycle":
-            executeHostCycle()
         case "logiHost1":
             executeChangeHost(hostIndex: 0)
         case "logiHost2":
