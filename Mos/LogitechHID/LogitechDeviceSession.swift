@@ -511,6 +511,54 @@ class LogitechDeviceSession {
         }
     }
 
+    // MARK: - ChangeHost
+
+    private var pendingHostCycle: UInt8? = nil  // feature index, 等待 getHostInfo 响应后循环
+
+    /// 切换到指定主机 (0-based index)
+    func executeChangeHost(hostIndex: UInt8) {
+        let changeHostFeatureId: UInt16 = 0x1814
+        if let idx = featureIndex[changeHostFeatureId] {
+            switchToHost(featureIndex: idx, hostIndex: hostIndex)
+        } else {
+            discoverFeature(featureId: changeHostFeatureId) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ChangeHost feature not supported")
+                    return
+                }
+                self.featureIndex[changeHostFeatureId] = idx
+                self.switchToHost(featureIndex: idx, hostIndex: hostIndex)
+            }
+        }
+    }
+
+    /// 循环切换主机
+    func executeHostCycle() {
+        let changeHostFeatureId: UInt16 = 0x1814
+        if let idx = featureIndex[changeHostFeatureId] {
+            // 先查询当前主机信息, 然后切换到下一个
+            sendRequest(featureIndex: idx, functionId: 0)
+            pendingHostCycle = idx
+        } else {
+            discoverFeature(featureId: changeHostFeatureId) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ChangeHost feature not supported")
+                    return
+                }
+                self.featureIndex[changeHostFeatureId] = idx
+                self.sendRequest(featureIndex: idx, functionId: 0)
+                self.pendingHostCycle = idx
+            }
+        }
+    }
+
+    private func switchToHost(featureIndex: UInt8, hostIndex: UInt8) {
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Switching to host \(hostIndex + 1)")
+        // setHost: function 1, param = target host index (0-based)
+        sendRequest(featureIndex: featureIndex, functionId: 1, params: [hostIndex])
+        // 注意: 切换后设备会断开连接, session 会被清理
+    }
+
     // MARK: - Report Parsing
 
     func handleInputReport(_ report: [UInt8]) {
@@ -642,6 +690,17 @@ class LogitechDeviceSession {
             } else {
                 LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI: \(curDPI) (already at limit)")
             }
+            return
+        }
+
+        // ChangeHost response (getHostInfo, function 0) - 用于 cycle
+        if let hostIdx = pendingHostCycle, featureIdx == hostIdx && functionId == 0 {
+            pendingHostCycle = nil
+            let hostCount = report[4]
+            let currentHost = report[5]
+            let nextHost = (currentHost + 1) % hostCount
+            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Host: \(currentHost + 1)/\(hostCount) -> \(nextHost + 1)")
+            switchToHost(featureIndex: hostIdx, hostIndex: nextHost)
             return
         }
     }
@@ -815,6 +874,14 @@ class LogitechDeviceSession {
             executeDPICycle(direction: .up)
         case "logiDPICycleDown":
             executeDPICycle(direction: .down)
+        case "logiHostCycle":
+            executeHostCycle()
+        case "logiHost1":
+            executeChangeHost(hostIndex: 0)
+        case "logiHost2":
+            executeChangeHost(hostIndex: 1)
+        case "logiHost3":
+            executeChangeHost(hostIndex: 2)
         default:
             LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Unknown Logi action: \(name)")
         }

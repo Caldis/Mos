@@ -118,6 +118,10 @@ struct SystemShortcut {
                 case "logiSmartShiftToggle": return "gearshape.2"
                 case "logiDPICycleUp": return "arrow.up.circle"
                 case "logiDPICycleDown": return "arrow.down.circle"
+                case "logiHostCycle": return "arrow.triangle.2.circlepath"
+                case "logiHost1": return "1.circle"
+                case "logiHost2": return "2.circle"
+                case "logiHost3": return "3.circle"
                 // 其他
                 default: return "questionmark.circle"
             }
@@ -290,6 +294,8 @@ struct SystemShortcut {
         // Logi
         "logiSmartShiftToggle": logiSmartShiftToggle,
         "logiDPICycleUp": logiDPICycleUp, "logiDPICycleDown": logiDPICycleDown,
+        "logiHostCycle": logiHostCycle,
+        "logiHost1": logiHost1, "logiHost2": logiHost2, "logiHost3": logiHost3,
     ]
 
     /// 根据修饰键和按键代码查找快捷键名称
@@ -364,6 +370,10 @@ struct SystemShortcut {
     static let logiSmartShiftToggle = Shortcut("logiSmartShiftToggle", 0xFFFE, NSEvent.ModifierFlags(rawValue: 0))
     static let logiDPICycleUp = Shortcut("logiDPICycleUp", 0xFFFE, NSEvent.ModifierFlags(rawValue: 1))
     static let logiDPICycleDown = Shortcut("logiDPICycleDown", 0xFFFE, NSEvent.ModifierFlags(rawValue: 2))
+    static let logiHostCycle = Shortcut("logiHostCycle", 0xFFFE, NSEvent.ModifierFlags(rawValue: 3))
+    static let logiHost1 = Shortcut("logiHost1", 0xFFFE, NSEvent.ModifierFlags(rawValue: 4))
+    static let logiHost2 = Shortcut("logiHost2", 0xFFFE, NSEvent.ModifierFlags(rawValue: 5))
+    static let logiHost3 = Shortcut("logiHost3", 0xFFFE, NSEvent.ModifierFlags(rawValue: 6))
 
     /// 鼠标按键动作分类
     static let mouseButtonsCategory: (category: String, shortcuts: [Shortcut]) = (
@@ -375,7 +385,8 @@ struct SystemShortcut {
     /// Logi 专有动作分类
     static let logiActionsCategory: (category: String, shortcuts: [Shortcut]) = (
         "categoryLogiActions", [
-            logiSmartShiftToggle, logiDPICycleUp, logiDPICycleDown
+            logiSmartShiftToggle, logiDPICycleUp, logiDPICycleDown,
+            logiHostCycle, logiHost1, logiHost2, logiHost3
         ]
     )
 

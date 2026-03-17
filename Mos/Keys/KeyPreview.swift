@@ -97,59 +97,86 @@ class KeyPreview: NSStackView {
     private static let logiTagMarker = "[Logi]"
 
     private func createKeyViews() {
-        for (index, component) in keyComponents.enumerated() {
-            // [Logi] 标记: 渲染为小 tag, 不加 "+" 分隔符
-            if component == KeyPreview.logiTagMarker {
-                let tag = createLogiTag()
-                addArrangedSubview(tag)
-                continue
-            }
+        var i = 0
+        var viewIndex = 0  // 用于决定是否加 "+" 分隔符
+        while i < keyComponents.count {
+            let component = keyComponents[i]
+
+            // 跳过 [Logi] 标记 (已在前一个 component 中处理)
+            if component == KeyPreview.logiTagMarker { i += 1; continue }
 
             // 添加分隔符
-            if index > 0 {
-                // 下一个不是 [Logi] 才加 "+"
-                let nextIsLogiTag = (index + 1 < keyComponents.count && keyComponents[index + 1] == KeyPreview.logiTagMarker)
-                if !nextIsLogiTag {
-                    let plusLabel = NSTextField(labelWithString: "+")
-                    plusLabel.font = NSFont.systemFont(ofSize: KeyPreview.FONT_SIZE)
-                    plusLabel.textColor = NSColor.secondaryLabelColor
-                    addArrangedSubview(plusLabel)
-                }
+            if viewIndex > 0 {
+                let plusLabel = NSTextField(labelWithString: "+")
+                plusLabel.font = NSFont.systemFont(ofSize: KeyPreview.FONT_SIZE)
+                plusLabel.textColor = NSColor.secondaryLabelColor
+                addArrangedSubview(plusLabel)
             }
 
-            // 创建按键视图
+            // 检查下一个是否为 [Logi] 标记 → 嵌套渲染
+            let nextIsLogi = (i + 1 < keyComponents.count && keyComponents[i + 1] == KeyPreview.logiTagMarker)
             let isWaiting = (component == KeyPreview.WAITING_WORDING)
-            let keyView = createSingleKeyView(for: component, isWaiting: isWaiting)
-            addArrangedSubview(keyView)
-            keyViews.append(keyView)
 
-            // 缓存 waiting view
-            if isWaiting, let container = keyView as? KeyComponentContainer {
-                waitingView = container
+            if nextIsLogi && !isWaiting {
+                let keyView = createKeyViewWithLogiTag(for: component)
+                addArrangedSubview(keyView)
+                keyViews.append(keyView)
+                i += 2  // 跳过 [Logi]
+            } else {
+                let keyView = createSingleKeyView(for: component, isWaiting: isWaiting)
+                addArrangedSubview(keyView)
+                keyViews.append(keyView)
+                if isWaiting, let container = keyView as? KeyComponentContainer {
+                    waitingView = container
+                }
+                i += 1
             }
+            viewIndex += 1
         }
     }
 
-    /// 创建 Logi 小标签 (#00FDCF 主题色背景)
-    private func createLogiTag() -> NSView {
-        let container = NSView()
-        container.wantsLayer = true
-        container.layer?.cornerRadius = 3
-        container.layer?.backgroundColor = NSColor(calibratedRed: 0.0, green: 0.992, blue: 0.812, alpha: 1.0).cgColor  // #00FDCF
-        container.translatesAutoresizingMaskIntoConstraints = false
+    /// 创建带嵌套 Logi tag 的按键视图 (按键名 + 小 tag 在同一个容器内)
+    private func createKeyViewWithLogiTag(for text: String) -> NSView {
+        let container = KeyComponentContainer(keyStatus: status, isWaiting: false)
 
-        let label = NSTextField(labelWithString: "Logi")
-        label.font = NSFont.systemFont(ofSize: 8, weight: .bold)
-        label.textColor = NSColor(calibratedWhite: 0.15, alpha: 1.0)
+        // 按键名标签
+        let label = NSTextField(labelWithString: text)
+        label.font = NSFont.systemFont(ofSize: KeyPreview.FONT_SIZE, weight: .medium)
+        label.textColor = (status == .recorded || status == .duplicate) ? NSColor.white : NSColor.labelColor
         label.alignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
 
+        // Logi 小 tag
+        let tagBg = NSView()
+        tagBg.wantsLayer = true
+        tagBg.layer?.cornerRadius = 2.5
+        tagBg.layer?.backgroundColor = NSColor(calibratedRed: 0.0, green: 0.992, blue: 0.812, alpha: 1.0).cgColor
+        tagBg.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(tagBg)
+
+        let tagLabel = NSTextField(labelWithString: "Logi")
+        tagLabel.font = NSFont.systemFont(ofSize: 7, weight: .bold)
+        tagLabel.textColor = NSColor(calibratedWhite: 0.15, alpha: 1.0)
+        tagLabel.alignment = .center
+        tagLabel.translatesAutoresizingMaskIntoConstraints = false
+        tagBg.addSubview(tagLabel)
+
         NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: container.centerYAnchor, constant: -0.5),
-            container.widthAnchor.constraint(equalTo: label.widthAnchor, constant: 6),
-            container.heightAnchor.constraint(equalToConstant: 14),
+            // 按键名: 左侧居中
+            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 6),
+            label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            // Tag: 紧跟按键名右侧
+            tagBg.leadingAnchor.constraint(equalTo: label.trailingAnchor, constant: 4),
+            tagBg.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            tagBg.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -4),
+            // Tag 内部
+            tagLabel.centerXAnchor.constraint(equalTo: tagBg.centerXAnchor),
+            tagLabel.centerYAnchor.constraint(equalTo: tagBg.centerYAnchor, constant: -0.5),
+            tagBg.widthAnchor.constraint(equalTo: tagLabel.widthAnchor, constant: 5),
+            tagBg.heightAnchor.constraint(equalToConstant: 12),
+            // 容器高度
+            container.heightAnchor.constraint(equalToConstant: KeyPreview.VIEW_SIZE),
         ])
 
         return container
