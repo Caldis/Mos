@@ -163,7 +163,7 @@ struct KeyCode {
         14: "🖱14", 15: "🖱15", 16: "🖱16", 17: "🖱17", 18: "🖱18",
         19: "🖱19", 20: "🖱20",
         // Logitech HID++ 专有按键
-        1000: "Gesture", 1001: "SmartShift", 1002: "DPI",
+        1000: "Gesture (HID++)", 1001: "SmartShift (HID++)", 1002: "DPI (HID++)",
         1003: "Left Click (HID++)", 1004: "Right Click (HID++)",
         1005: "Middle Click (HID++)", 1006: "Back (HID++)", 1007: "Forward (HID++)",
     ]

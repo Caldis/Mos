@@ -71,9 +71,9 @@ struct LogitechCIDMap {
 
     static func displayName(forCode code: UInt16) -> String {
         switch code {
-        case 1000: return "Gesture"
-        case 1001: return "SmartShift"
-        case 1002: return "DPI"
+        case 1000: return "Gesture (HID++)"
+        case 1001: return "SmartShift (HID++)"
+        case 1002: return "DPI (HID++)"
         case 1003: return "Left Click (HID++)"
         case 1004: return "Right Click (HID++)"
         case 1005: return "Middle Click (HID++)"
