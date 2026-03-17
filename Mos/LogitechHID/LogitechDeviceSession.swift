@@ -285,8 +285,10 @@ class LogitechDeviceSession {
         let flagsByte: UInt8
         switch connectionMode {
         case .bleDirect:
-            // BLE: 必须 tmpDiverted(bit0) + persistDivert(bit1) = 0x03
-            flagsByte = divert ? 0x03 : 0x00
+            // BLE: bit1 是 "commit" 标志, 必须置位才能生效
+            // SET: bit0=1(divert ON) + bit1=1(commit) = 0x03
+            // CLEAR: bit0=0(divert OFF) + bit1=1(commit) = 0x02
+            flagsByte = divert ? 0x03 : 0x02
         case .receiver:
             // Receiver (Unifying/Bolt): TODO - 可能只需 tmpDiverted(bit0) = 0x01
             flagsByte = divert ? 0x01 : 0x00
