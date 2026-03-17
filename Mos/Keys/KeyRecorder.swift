@@ -82,11 +82,16 @@ class KeyRecorder: NSObject {
         recordingMode = mode
         // Log
         NSLog("[EventRecorder] Starting in \(mode) mode")
-        // 录制时临时 divert 所有 Logitech 按键, 以便捕获 HID++ 专有按键
-        LogitechHIDManager.shared.temporarilyDivertAll()
         // 确保清理任何存在的录制界面
         keyPopover?.hide()
         keyPopover = nil
+        // 立即显示 Popover (不等待 HID++ divert)
+        keyPopover = KeyPopover()
+        keyPopover?.show(at: sourceView)
+        // 异步 divert 所有 Logitech 按键 (BLE 通信有延迟)
+        DispatchQueue.main.async {
+            LogitechHIDManager.shared.temporarilyDivertAll()
+        }
         // 监听事件
         do {
             // 监听回调事件通知
@@ -173,9 +178,6 @@ class KeyRecorder: NSObject {
                     object: mosEvent
                 )
             }
-            // 展示录制界面
-            keyPopover = KeyPopover()
-            keyPopover?.show(at: sourceView)
             // 启动超时保护定时器
             startTimeoutTimer()
             // Log
