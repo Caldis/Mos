@@ -443,8 +443,10 @@ class LogitechDeviceSession {
 
     private var pendingSmartShiftToggle: UInt8? = nil
     private var pendingDPICycle: (featureIndex: UInt8, direction: LogitechHIDManager.DPICycleDirection)? = nil
-    private var currentDPI: UInt16 = 1000
-    private let dpiSteps: [UInt16] = [400, 800, 1000, 1600, 2000, 3200, 4000]
+    private var pendingDPIListQuery: (featureIndex: UInt8, direction: LogitechHIDManager.DPICycleDirection)? = nil
+    private var currentDPI: UInt16 = 0
+    private var dpiSteps: [UInt16] = []  // 从设备查询, 不硬编码
+    private var dpiStepSize: UInt16 = 0  // 设备报告的 DPI 步进值
 
     /// SmartShift 切换
     func executeSmartShiftToggle() {
@@ -493,10 +495,20 @@ class LogitechDeviceSession {
     }
 
     private func cycleDPI(featureIndex: UInt8, direction: LogitechHIDManager.DPICycleDirection) {
-        // getSensorDpi: function 2, param sensorIdx=0
-        // 响应: byte[4-5] = currentDPI (big-endian)
-        sendRequest(featureIndex: featureIndex, functionId: 2, params: [0x00])
-        pendingDPICycle = (featureIndex, direction)
+        if dpiSteps.isEmpty {
+            // 先查询设备支持的 DPI 列表
+            // getSensorDpiList: function 1, param sensorIdx=0
+            // 响应: byte[4]=sensorIdx, byte[5-6]=dpiStep, byte[7-8]=dpi1, byte[9-10]=dpi2, ...
+            // 如果 dpiStep > 0: 范围模式 (min~max, 步进 dpiStep)
+            // 如果 dpiStep == 0: 列表中的每个值都是一个档位
+            sendRequest(featureIndex: featureIndex, functionId: 1, params: [0x00])
+            pendingDPIListQuery = (featureIndex, direction)
+        } else {
+            // 已有 DPI 列表, 直接查询当前值并切换
+            // getSensorDpi: function 2, param sensorIdx=0
+            sendRequest(featureIndex: featureIndex, functionId: 2, params: [0x00])
+            pendingDPICycle = (featureIndex, direction)
+        }
     }
 
     // MARK: - Report Parsing
@@ -557,6 +569,42 @@ class LogitechDeviceSession {
             LogitechHIDDebugPanel.log("[\(deviceInfo.name)] SmartShift: \(currentMode == 2 ? "ratchet" : "freewheel") -> \(newMode == 2 ? "ratchet" : "freewheel")")
             // setRatchetControlMode: function 1, params: wheelMode
             sendRequest(featureIndex: smartShiftIdx, functionId: 1, params: [newMode])
+            return
+        }
+
+        // DPI list response (getSensorDpiList, function 1)
+        if let listQuery = pendingDPIListQuery, featureIdx == listQuery.featureIndex && functionId == 1 {
+            pendingDPIListQuery = nil
+            // byte[4]=sensorIdx, byte[5-6]=dpiStep, byte[7-8..]=dpi values
+            dpiStepSize = (UInt16(report[5]) << 8) | UInt16(report[6])
+            dpiSteps.removeAll()
+
+            if dpiStepSize > 0 {
+                // 范围模式: byte[7-8]=min, byte[9-10]=max
+                let dpiMin = (UInt16(report[7]) << 8) | UInt16(report[8])
+                let dpiMax = (UInt16(report[9]) << 8) | UInt16(report[10])
+                // 生成步进列表
+                var dpi = dpiMin
+                while dpi <= dpiMax {
+                    dpiSteps.append(dpi)
+                    dpi += dpiStepSize
+                }
+                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI range: \(dpiMin)-\(dpiMax) step \(dpiStepSize) (\(dpiSteps.count) levels)")
+            } else {
+                // 列表模式: 逐个读取 DPI 值
+                var offset = 7
+                while offset + 1 < report.count {
+                    let dpi = (UInt16(report[offset]) << 8) | UInt16(report[offset + 1])
+                    if dpi == 0 { break }
+                    dpiSteps.append(dpi)
+                    offset += 2
+                }
+                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI list: \(dpiSteps)")
+            }
+
+            // 继续: 查询当前 DPI 并执行切换
+            sendRequest(featureIndex: listQuery.featureIndex, functionId: 2, params: [0x00])
+            pendingDPICycle = (listQuery.featureIndex, listQuery.direction)
             return
         }
 
