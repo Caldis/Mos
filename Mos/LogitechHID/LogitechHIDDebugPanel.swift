@@ -262,7 +262,24 @@ class LogitechHIDDebugPanel: NSObject {
         self.window = w
     }
 
-    private func makeTableSection(columns: [(String, CGFloat)], tag: Int) -> NSScrollView {
+    private static let sectionTitles: [Int: String] = [
+        1: "Device Info",
+        2: "Feature Table (HID++ Features)",
+        3: "Controls (REPROG_CONTROLS_V4 Buttons)",
+    ]
+
+    private func makeTableSection(columns: [(String, CGFloat)], tag: Int) -> NSView {
+        let container = NSView()
+        container.autoresizingMask = [.width, .height]
+
+        // Section 标题
+        let titleLabel = NSTextField(labelWithString: LogitechHIDDebugPanel.sectionTitles[tag] ?? "")
+        titleLabel.font = NSFont.boldSystemFont(ofSize: 11)
+        titleLabel.textColor = NSColor.secondaryLabelColor
+        titleLabel.frame = NSRect(x: 6, y: 0, width: 400, height: 16)
+        titleLabel.autoresizingMask = [.width, .maxYMargin]
+
+        // 表格
         let scroll = NSScrollView()
         scroll.hasVerticalScroller = true
         scroll.autoresizingMask = [.width, .height]
@@ -291,7 +308,17 @@ class LogitechHIDDebugPanel: NSObject {
         default: break
         }
 
-        return scroll
+        // 布局: 标题在底部, 表格在上方 (macOS 坐标系 y 向上)
+        container.addSubview(scroll)
+        container.addSubview(titleLabel)
+
+        // 用 autoresizingMask 让 scroll 填满 container (减去标题高度)
+        scroll.frame = NSRect(x: 0, y: 16, width: 900, height: 100)
+        scroll.autoresizingMask = [.width, .height]
+        titleLabel.frame = NSRect(x: 6, y: 0, width: 400, height: 16)
+        titleLabel.autoresizingMask = [.width, .maxYMargin]
+
+        return container
     }
 
     // MARK: - Data Refresh
