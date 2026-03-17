@@ -563,7 +563,8 @@ class LogitechDeviceSession {
         // DPI response (pending cycle)
         if let dpiInfo = pendingDPICycle, featureIdx == dpiInfo.featureIndex && functionId == 2 {
             pendingDPICycle = nil
-            let curDPI = (UInt16(report[4]) << 8) | UInt16(report[5])
+            // byte[4]=sensorIdx, byte[5-6]=currentDPI (big-endian)
+            let curDPI = (UInt16(report[5]) << 8) | UInt16(report[6])
             currentDPI = curDPI
 
             // Find next/prev DPI step
