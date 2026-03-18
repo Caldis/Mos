@@ -9048,7 +9048,7 @@
     },
     "tXQ-GJ-k5M.title" : {
       "comment" : "Class = \"NSMenu\"; title = \"Running Applications\"; ObjectID = \"tXQ-GJ-k5M\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
