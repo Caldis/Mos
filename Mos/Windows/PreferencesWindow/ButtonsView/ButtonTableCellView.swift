@@ -216,9 +216,12 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         // 更新占位符的标题为选中的快捷键
         placeholderItem.title = title
 
-        // 更新占位符的图标 (如果有)
-        // NSPopUpButton 中图标和文本间距较紧,需要添加右侧边距
-        if let originalImage = image {
+        // Logi 动作: 在图标前添加 [Logi] tag
+        let isLogiAction = currentShortcut?.identifier.hasPrefix("logi") ?? false
+        if isLogiAction {
+            let compositeImage = createLogiPrefixedImage(original: image)
+            placeholderItem.image = compositeImage
+        } else if let originalImage = image {
             placeholderItem.image = createImageWithTrailingSpace(originalImage)
         } else {
             placeholderItem.image = nil
@@ -226,6 +229,51 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 
         // 选中占位符项
         actionPopUpButton.selectItem(at: 0)
+    }
+
+    /// 创建 [Logi tag] + [原图标] 的组合图片
+    private func createLogiPrefixedImage(original: NSImage?) -> NSImage {
+        // Logi tag 参数
+        let tagText = "Logi"
+        let tagFont = NSFont.systemFont(ofSize: 7, weight: .bold)
+        let tagTextColor = NSColor(calibratedWhite: 0.15, alpha: 1.0)
+        let tagBgColor = NSColor(calibratedRed: 0.0, green: 0.992, blue: 0.812, alpha: 1.0)
+        let tagAttrs: [NSAttributedString.Key: Any] = [.font: tagFont, .foregroundColor: tagTextColor]
+        let tagTextSize = (tagText as NSString).size(withAttributes: tagAttrs)
+        let tagPadH: CGFloat = 3
+        let tagHeight: CGFloat = 12
+        let tagWidth = tagTextSize.width + tagPadH * 2
+        let gap: CGFloat = 3  // tag 和图标间距
+
+        let iconSize = original?.size ?? NSSize(width: 0, height: 0)
+        let totalHeight = max(tagHeight, iconSize.height)
+        let totalWidth = tagWidth + (original != nil ? gap + iconSize.width : 0) + 2 // trailing space
+
+        let image = NSImage(size: NSSize(width: totalWidth, height: totalHeight))
+        image.lockFocus()
+
+        // 画 Logi tag
+        let tagY = (totalHeight - tagHeight) / 2
+        let tagRect = NSRect(x: 0, y: tagY, width: tagWidth, height: tagHeight)
+        let tagPath = NSBezierPath(roundedRect: tagRect, xRadius: 2.5, yRadius: 2.5)
+        tagBgColor.setFill()
+        tagPath.fill()
+        let tagTextRect = NSRect(x: tagPadH, y: tagY + (tagHeight - tagTextSize.height) / 2 + 0.5,
+                                  width: tagTextSize.width, height: tagTextSize.height)
+        (tagText as NSString).draw(in: tagTextRect, withAttributes: tagAttrs)
+
+        // 画原图标
+        if let icon = original {
+            let iconX = tagWidth + gap
+            let iconY = (totalHeight - iconSize.height) / 2
+            icon.draw(in: NSRect(x: iconX, y: iconY, width: iconSize.width, height: iconSize.height),
+                      from: NSRect(origin: .zero, size: iconSize),
+                      operation: .sourceOver, fraction: 1.0)
+        }
+
+        image.unlockFocus()
+        image.isTemplate = false
+        return image
     }
 
     /// 创建带右侧边距的图标 (用于 PopUpButton 显示)
