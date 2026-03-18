@@ -50,6 +50,7 @@ class LogitechDeviceSession {
     private var pendingDiscovery: [UInt16: (UInt8?) -> Void] = [:]
     private var discoveryTimer: Timer?
     private static let discoveryTimeout: TimeInterval = 5.0
+    private var pendingCacheValidation: UInt8? = nil  // 等待 ping 响应验证缓存
 
     // MARK: - Reprog Controls State
     private var reprogControlCount: Int = 0
@@ -62,6 +63,27 @@ class LogitechDeviceSession {
         let taskId: UInt16
         let flags: UInt16
         let isDivertable: Bool
+    }
+
+    // MARK: - Feature Index Cache (按 PID 缓存, 减少重连 discovery 延迟)
+    private static let featureCacheKey = "logitechFeatureCache"
+
+    private static func loadCachedFeatureIndex(for productId: UInt16) -> [UInt16: UInt8]? {
+        guard let data = UserDefaults.standard.data(forKey: featureCacheKey),
+              let cache = try? JSONDecoder().decode([UInt16: [UInt16: UInt8]].self, from: data) else { return nil }
+        return cache[productId]
+    }
+
+    private static func saveCachedFeatureIndex(for productId: UInt16, featureMap: [UInt16: UInt8]) {
+        var cache: [UInt16: [UInt16: UInt8]] = [:]
+        if let data = UserDefaults.standard.data(forKey: featureCacheKey),
+           let existing = try? JSONDecoder().decode([UInt16: [UInt16: UInt8]].self, from: data) {
+            cache = existing
+        }
+        cache[productId] = featureMap
+        if let data = try? JSONEncoder().encode(cache) {
+            UserDefaults.standard.set(data, forKey: featureCacheKey)
+        }
     }
 
     // MARK: - HID++ Constants
@@ -154,16 +176,17 @@ class LogitechDeviceSession {
 
         setupInputReportCallback()
 
-        // Feature Discovery
-        LogitechHIDDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
-        discoverFeature(featureId: Self.featureReprogV4) { [weak self] index in
-            guard let self = self, let index = index else {
-                LogitechHIDDebugPanel.log("\(tag) REPROG_CONTROLS_V4 not available")
-                return
-            }
-            self.featureIndex[Self.featureReprogV4] = index
-            LogitechHIDDebugPanel.log("\(tag) REPROG_CONTROLS_V4 at index \(String(format: "0x%02X", index))")
-            self.sendGetControlCount(featureIndex: index)
+        // Feature Discovery (尝试缓存, 失败则完整 discovery)
+        if let cached = Self.loadCachedFeatureIndex(for: deviceInfo.productId),
+           let reprogIdx = cached[Self.featureReprogV4] {
+            LogitechHIDDebugPanel.log("\(tag) Using cached feature index: REPROG at 0x\(String(format: "%02X", reprogIdx))")
+            self.featureIndex = cached.reduce(into: [UInt16: UInt8]()) { $0[$1.key] = $1.value }
+            // 用 ping 验证缓存是否有效 (IRoot.GetProtocolVersion)
+            sendRequest(featureIndex: 0x00, functionId: 1)
+            pendingCacheValidation = reprogIdx
+        } else {
+            LogitechHIDDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
+            startFreshDiscovery(tag: tag)
         }
     }
 
@@ -250,6 +273,20 @@ class LogitechDeviceSession {
     }
 
     // MARK: - Feature Discovery
+
+    private func startFreshDiscovery(tag: String) {
+        discoverFeature(featureId: Self.featureReprogV4) { [weak self] index in
+            guard let self = self, let index = index else {
+                LogitechHIDDebugPanel.log("\(tag) REPROG_CONTROLS_V4 not available")
+                return
+            }
+            self.featureIndex[Self.featureReprogV4] = index
+            LogitechHIDDebugPanel.log("\(tag) REPROG_CONTROLS_V4 at index \(String(format: "0x%02X", index))")
+            // 缓存 feature index
+            Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+            self.sendGetControlCount(featureIndex: index)
+        }
+    }
 
     private func discoverFeature(featureId: UInt16, completion: @escaping (UInt8?) -> Void) {
         let params: [UInt8] = [UInt8(featureId >> 8), UInt8(featureId & 0xFF)]
@@ -585,6 +622,13 @@ class LogitechDeviceSession {
 
         // IRoot response
         if featureIdx == 0x00 {
+            // 缓存验证: ping 响应 (function 1) 确认设备在线, 直接用缓存的 feature index
+            if let reprogIdx = pendingCacheValidation, functionId == 1 {
+                pendingCacheValidation = nil
+                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Cache validated (protocol \(report[4]).\(report[5])), using cached index 0x\(String(format: "%02X", reprogIdx))")
+                sendGetControlCount(featureIndex: reprogIdx)
+                return
+            }
             handleDiscoveryResponse(report)
             return
         }
@@ -746,8 +790,19 @@ class LogitechDeviceSession {
         }
     }
 
-    /// 初始化完成后: 根据当前绑定只 divert 有绑定的按键
+    /// 初始化完成后: 清理 persistDivert 残留, 然后按 binding 重新 divert
     private func divertBoundControls() {
+        guard let idx = featureIndex[Self.featureReprogV4] else { return }
+
+        // 先 undivert 所有 divertable 控件 (清理 app 崩溃/强杀后的 persistDivert 残留)
+        let divertable = discoveredControls.filter { $0.isDivertable }
+        for c in divertable {
+            setControlReporting(featureIndex: idx, cid: c.cid, divert: false)
+        }
+        divertedCIDs.removeAll()
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Cleared persistDivert residue (\(divertable.count) controls)")
+
+        // 再按 binding 状态重新 divert
         reprogInitComplete = true
         lastActiveCIDs.removeAll()
         syncDivertWithBindings()

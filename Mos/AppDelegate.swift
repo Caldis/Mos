@@ -40,6 +40,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             name: NSWorkspace.sessionDidResignActiveNotification,
             object: nil
         )
+        // 监听系统休眠/唤醒, 复用 session 生命周期方法
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(AppDelegate.sessionDidResign),
+            name: NSWorkspace.willSleepNotification,
+            object: nil
+        )
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(AppDelegate.sessionDidActive),
+            name: NSWorkspace.didWakeNotification,
+            object: nil
+        )
     }
     // 运行后启动滚动处理
     func applicationDidFinishLaunching(_ aNotification: Notification) {
