@@ -25,10 +25,13 @@ class PreferencesApplicationViewController: NSViewController {
     // 选项菜单
     @IBOutlet var applicationSourceMenuControl: NSMenu!
     @IBOutlet weak var runningAndInstalledManuItem: NSMenuItem!
-    @IBOutlet weak var runningAndInstalledMenuChildrenContainer: NSMenu!
+    private var runningAndInstalledMenuChildrenContainer: NSMenu!
     @IBOutlet weak var manuallySelectFromFinderMenuItem: NSMenuItem!
-    
+
     override func viewDidLoad() {
+        // 为 "Running Applications" 菜单项动态创建 submenu (避免 Storyboard 中的 menu 父子关系警告)
+        runningAndInstalledMenuChildrenContainer = NSMenu(title: "")
+        runningAndInstalledManuItem.submenu = runningAndInstalledMenuChildrenContainer
         // 设置图标
         Utils.attachImage(to: runningAndInstalledManuItem, withImage: #imageLiteral(resourceName: "SF.wand.and.rays.inverse"))
         Utils.attachImage(to: manuallySelectFromFinderMenuItem, withImage: #imageLiteral(resourceName: "SF.tray"))

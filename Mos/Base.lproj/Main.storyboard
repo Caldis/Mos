@@ -885,7 +885,6 @@
                         <outlet property="delButton" destination="HZK-yc-ptT" id="Kww-VP-a9A"/>
                         <outlet property="manuallySelectFromFinderMenuItem" destination="dhF-95-kUJ" id="Ny0-LT-dUM"/>
                         <outlet property="runningAndInstalledManuItem" destination="R0d-21-g6W" id="a14-sX-cP3"/>
-                        <outlet property="runningAndInstalledMenuChildrenContainer" destination="tXQ-GJ-k5M" id="kvh-JP-b9D"/>
                         <outlet property="tableEmpty" destination="LTZ-IH-4Vy" id="DlB-dd-xPl"/>
                         <outlet property="tableFoot" destination="2yz-Bt-IMN" id="p9I-Ev-m33"/>
                         <outlet property="tableHead" destination="VAL-LC-T3T" id="odB-4n-XWl"/>
@@ -896,7 +895,6 @@
                     <items>
                         <menuItem title="Running Applications" id="R0d-21-g6W">
                             <modifierMask key="keyEquivalentModifierMask" shift="YES"/>
-                            <menu key="submenu" title="Running Applications" id="tXQ-GJ-k5M"/>
                         </menuItem>
                         <menuItem title="Manually Select From Finder" id="dhF-95-kUJ">
                             <modifierMask key="keyEquivalentModifierMask"/>
