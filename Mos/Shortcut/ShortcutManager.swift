@@ -124,16 +124,45 @@ class ShortcutManager {
             totalShortcuts: &totalShortcuts
         )
 
-        // Logi 专有动作分类 (仅当触发键为 Logi 按键时显示)
+        // Logi 专有动作分类 (仅当触发键为 Logi 按键时显示, 使用 Logitech 品牌 tag 样式)
         if showLogiActions {
             addCategoryToMenu(
                 menu: menu,
                 category: SystemShortcut.logiActionsCategory,
                 target: target,
                 action: action,
-                totalShortcuts: &totalShortcuts
+                totalShortcuts: &totalShortcuts,
+                customImage: createLogitechTagImage()
             )
         }
+    }
+
+    /// 生成 Logitech 品牌 tag 图片 (黑底绿字, 圆角)
+    private static func createLogitechTagImage() -> NSImage {
+        let text = "Logitech"
+        let font = NSFont.systemFont(ofSize: 9, weight: .bold)
+        let textColor = NSColor(calibratedRed: 0.0, green: 0.992, blue: 0.812, alpha: 1.0) // #00FDCF
+        let bgColor = NSColor(calibratedWhite: 0.12, alpha: 1.0)
+
+        let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: textColor]
+        let textSize = (text as NSString).size(withAttributes: attrs)
+        let padding: CGFloat = 4
+        let height: CGFloat = 14
+        let width = textSize.width + padding * 2
+        let imageSize = NSSize(width: width, height: height)
+
+        let image = NSImage(size: imageSize)
+        image.lockFocus()
+        // 背景圆角矩形
+        let bgPath = NSBezierPath(roundedRect: NSRect(origin: .zero, size: imageSize), xRadius: 3, yRadius: 3)
+        bgColor.setFill()
+        bgPath.fill()
+        // 文字
+        let textRect = NSRect(x: padding, y: (height - textSize.height) / 2, width: textSize.width, height: textSize.height)
+        (text as NSString).draw(in: textRect, withAttributes: attrs)
+        image.unlockFocus()
+        image.isTemplate = false  // 不是模板, 保留原色
+        return image
     }
 
     /// 将一个分类添加到菜单
@@ -142,12 +171,15 @@ class ShortcutManager {
         category: (category: String, shortcuts: [SystemShortcut.Shortcut]),
         target: AnyObject,
         action: Selector,
-        totalShortcuts: inout Int
+        totalShortcuts: inout Int,
+        customImage: NSImage? = nil
     ) {
         let categoryName = SystemShortcut.localizedCategoryName(category.category)
         let categoryMenuItem = NSMenuItem(title: categoryName, action: nil, keyEquivalent: "")
 
-        if supportsSFSymbols {
+        if let custom = customImage {
+            categoryMenuItem.image = custom
+        } else if supportsSFSymbols {
             if #available(macOS 11.0, *) {
                 let symbolName = SystemShortcut.categorySymbolName(category.category)
                 categoryMenuItem.image = createSymbolImage(symbolName)
