@@ -896,13 +896,7 @@
                     <items>
                         <menuItem title="Running Applications" id="R0d-21-g6W">
                             <modifierMask key="keyEquivalentModifierMask" shift="YES"/>
-                            <menu key="submenu" title="Running Applications" id="tXQ-GJ-k5M">
-                                <items>
-                                    <menuItem title="Item" id="zFZ-n3-v9j">
-                                        <modifierMask key="keyEquivalentModifierMask"/>
-                                    </menuItem>
-                                </items>
-                            </menu>
+                            <menu key="submenu" title="Running Applications" id="tXQ-GJ-k5M"/>
                         </menuItem>
                         <menuItem title="Manually Select From Finder" id="dhF-95-kUJ">
                             <modifierMask key="keyEquivalentModifierMask"/>
