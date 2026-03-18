@@ -139,7 +139,7 @@ class ShortcutManager {
 
     /// 生成 Logitech 品牌 tag 图片 (绿底黑字, 圆角)
     private static func createLogitechTagImage() -> NSImage {
-        let text = "Logitech"
+        let text = "Logi"
         let font = NSFont.systemFont(ofSize: 7, weight: .bold)
         let textColor = NSColor(calibratedWhite: 0.12, alpha: 1.0)
         let bgColor = NSColor(calibratedRed: 0.0, green: 0.992, blue: 0.812, alpha: 1.0) // #00FDCF
