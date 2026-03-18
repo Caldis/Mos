@@ -243,7 +243,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         let tagPadH: CGFloat = 3
         let tagHeight: CGFloat = 12
         let tagWidth = tagTextSize.width + tagPadH * 2
-        let gap: CGFloat = 3  // tag 和图标间距
+        let gap: CGFloat = 5  // tag 和图标间距
 
         let iconSize = original?.size ?? NSSize(width: 0, height: 0)
         let totalHeight = max(tagHeight, iconSize.height)
