@@ -1,0 +1,76 @@
+%PDF-1.3
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 100 100] /Contents 4 0 R >>
+endobj
+
+4 0 obj
+<< /Length 650 >>
+stream
+
+% Background: none (template mode)
+% Chip body (rounded rect in center)
+q
+0 0 0 rg
+0.8 w
+
+% Main chip rectangle
+25 30 50 40 re S
+
+% Pins on left side
+15 40 10 0 re f
+15 50 10 0 re f
+15 60 10 0 re f
+
+% Pins on right side  
+75 40 10 0 re f
+75 50 10 0 re f
+75 60 10 0 re f
+
+% Left pins (lines)
+15 42 m 25 42 l S
+15 50 m 25 50 l S
+15 58 m 25 58 l S
+
+% Right pins (lines)
+75 42 m 85 42 l S
+75 50 m 85 50 l S
+75 58 m 85 58 l S
+
+% "+" symbols on the chip (representing HID++)
+% First +
+42 52 m 42 56 l S
+40 54 m 44 54 l S
+
+% Second +
+52 52 m 52 56 l S
+50 54 m 54 54 l S
+
+% Signal waves on top
+35 70 m 40 78 42 72 47 80 c S
+53 80 m 58 72 60 78 65 70 c S
+
+Q
+endstream
+endobj
+
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000214 00000 n 
+
+trailer
+<< /Size 5 /Root 1 0 R >>
+startxref
+921
+%%EOF
