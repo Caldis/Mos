@@ -80,7 +80,7 @@ extension StatusItemManager {
             // Monitor
             Utils.addMenuItem(to: menu, title: NSLocalizedString("Event Monitor", comment: ""), icon: #imageLiteral(resourceName: "SF.square.stack.3d.down.right"), action: #selector(monitorClick))
             // HID++ Debug
-            Utils.addMenuItem(to: menu, title: " HID++", icon: #imageLiteral(resourceName: "SF.ellipsis.circle"), action: #selector(hidDebugClick))
+            Utils.addMenuItem(to: menu, title: " HID++", icon: #imageLiteral(resourceName: "SF.scribble"), action: #selector(hidDebugClick))
             // Preferences
             Utils.addMenuItem(to: menu, title: NSLocalizedString("Preferences", comment: ""), icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
             // Quit
