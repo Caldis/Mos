@@ -145,7 +145,7 @@ class LogitechHIDDebugPanel: NSObject {
     }
 
     private class func appendToBuffer(_ entry: LogEntry) {
-        NSLog("[LogitechHID] %@", entry.message)
+        // 仅输出到 HID++ debug 面板, 不污染系统 console
         logBuffer.append(entry)
         if logBuffer.count > maxLogLines { logBuffer.removeFirst(logBuffer.count - maxLogLines) }
         NotificationCenter.default.post(name: logNotification, object: nil, userInfo: ["entry": entry])
