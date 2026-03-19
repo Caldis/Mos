@@ -327,6 +327,11 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
 
         // 通知外部更新(nil 表示清除绑定)
         onShortcutSelected?(shortcut)
+
+        // 延迟重绘虚线 (等待 PopUpButton 布局更新)
+        DispatchQueue.main.async {
+            self.setupDashedLine()
+        }
     }
 
     /// 删除绑定
