@@ -319,7 +319,7 @@ extension PreferencesScrollingViewController {
             let baseName = getBaseDisplayName(for: hotkey)
             if let brand = BrandTag.brandForCode(hotkey.code) {
                 // 品牌按键: image=tag, title=名称, 左图右文
-                button.image = BrandTag.createTagImage(brand: brand, fontSize: 7, height: 14)
+                button.image = BrandTag.createTagImage(brand: brand, fontSize: 7, height: 14, padH: 5, marginRight: 4)
                 button.imagePosition = .imageLeft
                 button.title = baseName
             } else {

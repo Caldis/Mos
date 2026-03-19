@@ -115,20 +115,20 @@ struct BrandTag {
     // MARK: - 标签 NSImage (用于 NSMenuItem / NSButton / NSPopUpButton 场景)
 
     /// 创建品牌标签图片
-    static func createTagImage(brand: BrandTagConfig, fontSize: CGFloat = 7, height: CGFloat = 12) -> NSImage {
+    static func createTagImage(brand: BrandTagConfig, fontSize: CGFloat = 7, height: CGFloat = 12, padH: CGFloat = 4, marginRight: CGFloat = 2) -> NSImage {
         let font = NSFont.systemFont(ofSize: fontSize, weight: .bold)
         let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: brand.textColor]
         let textSize = (brand.name as NSString).size(withAttributes: attrs)
-        let padH: CGFloat = 3
-        let width = textSize.width + padH * 2
-        let imageSize = NSSize(width: width, height: height)
+        let tagWidth = textSize.width + padH * 2
+        let imageSize = NSSize(width: tagWidth + marginRight, height: height)
 
         let image = NSImage(size: imageSize)
         image.lockFocus()
-        let bgPath = NSBezierPath(roundedRect: NSRect(origin: .zero, size: imageSize), xRadius: 2.5, yRadius: 2.5)
+        let bgRect = NSRect(x: 0, y: 0, width: tagWidth, height: height)
+        let bgPath = NSBezierPath(roundedRect: bgRect, xRadius: 3, yRadius: 3)
         brand.bgColor.setFill()
         bgPath.fill()
-        let textRect = NSRect(x: padH, y: (height - textSize.height) / 2 + 0.5, width: textSize.width, height: textSize.height)
+        let textRect = NSRect(x: padH, y: (height - textSize.height) / 2, width: textSize.width, height: textSize.height)
         (brand.name as NSString).draw(in: textRect, withAttributes: attrs)
         image.unlockFocus()
         image.isTemplate = false
