@@ -144,11 +144,12 @@ struct MosInputEvent {
     /// 构造展示用名称组件
     var displayComponents: [String] {
         var components: [String] = []
-        // 修饰键
-        if modifiers.rawValue & CGEventFlags.maskShift.rawValue != 0 { components.append("⇧") }
-        if modifiers.rawValue & CGEventFlags.maskControl.rawValue != 0 { components.append("⌃") }
-        if modifiers.rawValue & CGEventFlags.maskAlternate.rawValue != 0 { components.append("⌥") }
-        if modifiers.rawValue & CGEventFlags.maskCommand.rawValue != 0 { components.append("⌘") }
+        // 修饰键 (排除自身: 按下 Shift 时 flags 含 .maskShift, 但 keyCode 也是 Shift, 避免重复)
+        let selfMask = KeyCode.getKeyMask(code).rawValue
+        if modifiers.rawValue & CGEventFlags.maskShift.rawValue != 0 && CGEventFlags.maskShift.rawValue & selfMask == 0 { components.append("⇧") }
+        if modifiers.rawValue & CGEventFlags.maskControl.rawValue != 0 && CGEventFlags.maskControl.rawValue & selfMask == 0 { components.append("⌃") }
+        if modifiers.rawValue & CGEventFlags.maskAlternate.rawValue != 0 && CGEventFlags.maskAlternate.rawValue & selfMask == 0 { components.append("⌥") }
+        if modifiers.rawValue & CGEventFlags.maskCommand.rawValue != 0 && CGEventFlags.maskCommand.rawValue & selfMask == 0 { components.append("⌘") }
         // 按键名称
         switch type {
         case .keyboard:
