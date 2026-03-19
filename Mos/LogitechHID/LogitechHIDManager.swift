@@ -142,8 +142,12 @@ class LogitechHIDManager {
         }
     }
 
+    /// 录制模式标志: 录制期间跳过动作执行, 只转发事件给 KeyRecorder
+    private(set) var isRecording = false
+
     /// 录制模式: 临时 divert 所有按键
     func temporarilyDivertAll() {
+        isRecording = true
         for (_, session) in sessions where session.isHIDPPCandidate {
             session.temporarilyDivertAll()
         }
@@ -151,6 +155,7 @@ class LogitechHIDManager {
 
     /// 录制结束: 恢复到只 divert 有绑定的按键
     func restoreDivertToBindings() {
+        isRecording = false
         for (_, session) in sessions where session.isHIDPPCandidate {
             session.restoreDivertToBindings()
         }

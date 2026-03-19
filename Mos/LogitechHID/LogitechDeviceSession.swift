@@ -893,26 +893,33 @@ class LogitechDeviceSession {
             device: deviceInfo
         )
 
+        // 录制模式: 不执行动作, 只转发给 KeyRecorder
+        if LogitechHIDManager.shared.isRecording {
+            NotificationCenter.default.post(
+                name: LogitechHIDManager.buttonEventNotification,
+                object: nil,
+                userInfo: ["event": mosEvent]
+            )
+            return
+        }
+
         // 匹配 binding, 如果是 logi* 动作则在当前 session 执行 (设备隔离)
         if isDown {
             let bindings = ButtonUtils.shared.getButtonBindings()
             if let binding = bindings.first(where: { $0.triggerEvent.matchesMosInput(mosEvent) && $0.isEnabled }) {
                 if binding.systemShortcutName.hasPrefix("logi") {
-                    // Logi 动作: 在触发按键所在的 session 上执行, 不绕到 ShortcutExecutor
                     executeLogiAction(binding.systemShortcutName)
                 } else {
-                    // 键盘快捷键/鼠标按键: 走 ShortcutExecutor
                     ShortcutExecutor.shared.execute(named: binding.systemShortcutName)
                 }
-                // 不再走 MosInputProcessor (已处理)
                 return
             }
         }
 
-        // 未匹配的事件仍然走 MosInputProcessor (兼容 CGEventTap 路径)
+        // 未匹配的事件走 MosInputProcessor
         let _ = MosInputProcessor.shared.process(mosEvent)
 
-        // 通知 KeyRecorder (录制用)
+        // 通知 KeyRecorder
         NotificationCenter.default.post(
             name: LogitechHIDManager.buttonEventNotification,
             object: nil,
