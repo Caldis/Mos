@@ -318,12 +318,18 @@ extension PreferencesScrollingViewController {
         if let hotkey = hotkey {
             let baseName = getBaseDisplayName(for: hotkey)
             if let brand = BrandTag.brandForCode(hotkey.code) {
-                // 品牌按键: 使用带彩色 tag 的 attributedTitle
-                button.attributedTitle = BrandTag.attributedTitle(baseName, brand: brand, fontSize: button.font?.pointSize ?? 12)
+                // 品牌按键: image=tag, title=名称, 左图右文
+                button.image = BrandTag.createTagImage(brand: brand, fontSize: 7, height: 14)
+                button.imagePosition = .imageLeft
+                button.title = baseName
             } else {
+                button.image = nil
+                button.imagePosition = .noImage
                 button.title = getFullDisplayName(for: hotkey)
             }
         } else {
+            button.image = nil
+            button.imagePosition = .noImage
             button.title = NSLocalizedString("Disabled", comment: "Hotkey disabled state")
         }
 
