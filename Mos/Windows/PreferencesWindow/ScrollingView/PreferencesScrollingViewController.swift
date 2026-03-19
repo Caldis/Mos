@@ -286,19 +286,22 @@ extension PreferencesScrollingViewController {
     ]
 
     /// 获取 ScrollHotkey 的完整显示名称
-    private func getFullDisplayName(for hotkey: ScrollHotkey) -> String {
-        let baseName: String
+    /// 获取按键基础名称 (不含品牌前缀)
+    private func getBaseDisplayName(for hotkey: ScrollHotkey) -> String {
         switch hotkey.type {
         case .keyboard:
             if let fullName = PreferencesScrollingViewController.keyFullNames[hotkey.code] {
-                baseName = fullName
-            } else {
-                baseName = KeyCode.keyMap[hotkey.code] ?? "Key \(hotkey.code)"
+                return fullName
             }
+            return KeyCode.keyMap[hotkey.code] ?? "Key \(hotkey.code)"
         case .mouse:
-            baseName = KeyCode.mouseMap[hotkey.code] ?? "🖱\(hotkey.code)"
+            return KeyCode.mouseMap[hotkey.code] ?? "🖱\(hotkey.code)"
         }
-        // 品牌按键: 添加品牌前缀
+    }
+
+    /// 获取完整显示名称 (含品牌前缀, 用于纯文本场景)
+    private func getFullDisplayName(for hotkey: ScrollHotkey) -> String {
+        let baseName = getBaseDisplayName(for: hotkey)
         if let brand = BrandTag.brandForCode(hotkey.code) {
             return BrandTag.prefixedName(baseName, brand: brand)
         }
@@ -311,16 +314,19 @@ extension PreferencesScrollingViewController {
 
         let hasBound = hotkey != nil
 
-        // 获取显示名称
-        let displayName: String
+        // 设置按钮标题
         if let hotkey = hotkey {
-            displayName = getFullDisplayName(for: hotkey)
+            let baseName = getBaseDisplayName(for: hotkey)
+            if let brand = BrandTag.brandForCode(hotkey.code) {
+                // 品牌按键: 使用带彩色 tag 的 attributedTitle
+                button.attributedTitle = BrandTag.attributedTitle(baseName, brand: brand, fontSize: button.font?.pointSize ?? 12)
+            } else {
+                button.title = getFullDisplayName(for: hotkey)
+            }
         } else {
-            displayName = NSLocalizedString("Disabled", comment: "Hotkey disabled state")
+            button.title = NSLocalizedString("Disabled", comment: "Hotkey disabled state")
         }
 
-        // 设置按钮标题和启用状态
-        button.title = displayName
         button.isEnabled = enabled
 
         // 设置删除按钮可见性：仅在有绑定且启用时显示

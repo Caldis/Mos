@@ -53,9 +53,36 @@ struct BrandTag {
 
     // MARK: - 标签文字 (用于 NSButton.title 等纯文本场景)
 
-    /// 在名称前添加品牌前缀 (如 "[Logi] SmartShift")
+    /// 在名称前添加品牌前缀 (纯文本 fallback)
     static func prefixedName(_ name: String, brand: BrandTagConfig) -> String {
         return "[\(brand.name)] \(name)"
+    }
+
+    /// 创建带品牌 tag 的 NSAttributedString (用于 NSButton.attributedTitle)
+    /// 渲染为: [彩色tag] + 空格 + 按键名
+    static func attributedTitle(_ name: String, brand: BrandTagConfig, fontSize: CGFloat = 12) -> NSAttributedString {
+        let result = NSMutableAttributedString()
+
+        // Tag 部分: 品牌名 + 圆角背景
+        let tagAttrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: fontSize - 4, weight: .bold),
+            .foregroundColor: brand.textColor,
+            .backgroundColor: brand.bgColor,
+        ]
+        // 用空格包裹让背景色有 padding 效果
+        result.append(NSAttributedString(string: " \(brand.name) ", attributes: tagAttrs))
+
+        // 间距
+        result.append(NSAttributedString(string: " ", attributes: [.font: NSFont.systemFont(ofSize: fontSize - 4)]))
+
+        // 按键名部分
+        let nameAttrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: fontSize),
+            .foregroundColor: NSColor.labelColor,
+        ]
+        result.append(NSAttributedString(string: name, attributes: nameAttrs))
+
+        return result
     }
 
     // MARK: - 标签 NSView (用于 KeyPreview 等自定义 View 场景)
