@@ -132,37 +132,9 @@ class ShortcutManager {
                 target: target,
                 action: action,
                 totalShortcuts: &totalShortcuts,
-                customImage: createLogitechTagImage()
+                customImage: BrandTag.createTagImage(brand: .logi, fontSize: 7, height: 14)
             )
         }
-    }
-
-    /// 生成 Logitech 品牌 tag 图片 (绿底黑字, 圆角)
-    private static func createLogitechTagImage() -> NSImage {
-        let text = "Logi"
-        let font = NSFont.systemFont(ofSize: 7, weight: .bold)
-        let textColor = NSColor(calibratedWhite: 0.12, alpha: 1.0)
-        let bgColor = NSColor(calibratedRed: 0.0, green: 0.992, blue: 0.812, alpha: 1.0) // #00FDCF
-
-        let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: textColor]
-        let textSize = (text as NSString).size(withAttributes: attrs)
-        let padding: CGFloat = 4
-        let height: CGFloat = 14
-        let width = textSize.width + padding * 2
-        let imageSize = NSSize(width: width, height: height)
-
-        let image = NSImage(size: imageSize)
-        image.lockFocus()
-        // 背景圆角矩形
-        let bgPath = NSBezierPath(roundedRect: NSRect(origin: .zero, size: imageSize), xRadius: 3, yRadius: 3)
-        bgColor.setFill()
-        bgPath.fill()
-        // 文字
-        let textRect = NSRect(x: padding, y: (height - textSize.height) / 2, width: textSize.width, height: textSize.height)
-        (text as NSString).draw(in: textRect, withAttributes: attrs)
-        image.unlockFocus()
-        image.isTemplate = false  // 不是模板, 保留原色
-        return image
     }
 
     /// 将一个分类添加到菜单

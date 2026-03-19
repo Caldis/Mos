@@ -287,17 +287,22 @@ extension PreferencesScrollingViewController {
 
     /// 获取 ScrollHotkey 的完整显示名称
     private func getFullDisplayName(for hotkey: ScrollHotkey) -> String {
+        let baseName: String
         switch hotkey.type {
         case .keyboard:
-            // 优先使用完整名称映射
             if let fullName = PreferencesScrollingViewController.keyFullNames[hotkey.code] {
-                return fullName
+                baseName = fullName
+            } else {
+                baseName = KeyCode.keyMap[hotkey.code] ?? "Key \(hotkey.code)"
             }
-            // 其他按键使用原始映射
-            return KeyCode.keyMap[hotkey.code] ?? "Key \(hotkey.code)"
         case .mouse:
-            return KeyCode.mouseMap[hotkey.code] ?? "🖱\(hotkey.code)"
+            baseName = KeyCode.mouseMap[hotkey.code] ?? "🖱\(hotkey.code)"
         }
+        // 品牌按键: 添加品牌前缀
+        if let brand = BrandTag.brandForCode(hotkey.code) {
+            return BrandTag.prefixedName(baseName, brand: brand)
+        }
+        return baseName
     }
 
     /// 更新热键按钮的显示文本和删除按钮可见性

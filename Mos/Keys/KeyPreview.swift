@@ -118,7 +118,7 @@ class KeyPreview: NSStackView {
             let isWaiting = (component == KeyPreview.WAITING_WORDING)
 
             if nextIsLogi && !isWaiting {
-                let keyView = createKeyViewWithLogiTag(for: component)
+                let keyView = createKeyViewWithBrandTag(for: component, brand: .logi)
                 addArrangedSubview(keyView)
                 keyViews.append(keyView)
                 i += 2  // 跳过 [Logi]
@@ -135,8 +135,8 @@ class KeyPreview: NSStackView {
         }
     }
 
-    /// 创建带嵌套 Logi tag 的按键视图 (按键名 + 小 tag 在同一个容器内)
-    private func createKeyViewWithLogiTag(for text: String) -> NSView {
+    /// 创建带嵌套品牌 tag 的按键视图 (按键名 + 小 tag 在同一个容器内)
+    private func createKeyViewWithBrandTag(for text: String, brand: BrandTagConfig) -> NSView {
         let container = KeyComponentContainer(keyStatus: status, isWaiting: false)
 
         // 按键名标签
@@ -147,35 +147,16 @@ class KeyPreview: NSStackView {
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
 
-        // Logi 小 tag
-        let tagBg = NSView()
-        tagBg.wantsLayer = true
-        tagBg.layer?.cornerRadius = 2.5
-        tagBg.layer?.backgroundColor = NSColor(calibratedRed: 0.0, green: 0.992, blue: 0.812, alpha: 1.0).cgColor
-        tagBg.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(tagBg)
-
-        let tagLabel = NSTextField(labelWithString: "Logi")
-        tagLabel.font = NSFont.systemFont(ofSize: 7, weight: .bold)
-        tagLabel.textColor = NSColor(calibratedWhite: 0.15, alpha: 1.0)
-        tagLabel.alignment = .center
-        tagLabel.translatesAutoresizingMaskIntoConstraints = false
-        tagBg.addSubview(tagLabel)
+        // 品牌 tag (使用 BrandTag 统一创建)
+        let tagView = BrandTag.createTagView(brand: brand)
+        container.addSubview(tagView)
 
         NSLayoutConstraint.activate([
-            // 按键名: 左侧居中
             label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 6),
             label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            // Tag: 紧跟按键名右侧
-            tagBg.leadingAnchor.constraint(equalTo: label.trailingAnchor, constant: 4),
-            tagBg.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            tagBg.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -4),
-            // Tag 内部
-            tagLabel.centerXAnchor.constraint(equalTo: tagBg.centerXAnchor),
-            tagLabel.centerYAnchor.constraint(equalTo: tagBg.centerYAnchor, constant: -0.5),
-            tagBg.widthAnchor.constraint(equalTo: tagLabel.widthAnchor, constant: 5),
-            tagBg.heightAnchor.constraint(equalToConstant: 12),
-            // 容器高度
+            tagView.leadingAnchor.constraint(equalTo: label.trailingAnchor, constant: 4),
+            tagView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            tagView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -4),
             container.heightAnchor.constraint(equalToConstant: KeyPreview.VIEW_SIZE),
         ])
 
