@@ -150,8 +150,14 @@ struct BrandTag {
                       from: .zero, operation: .sourceOver, fraction: 1.0)
         // Original icon
         if let icon = original {
-            icon.draw(in: NSRect(x: tagSize.width + gap, y: (totalHeight - iconSize.height) / 2, width: iconSize.width, height: iconSize.height),
-                      from: .zero, operation: .sourceOver, fraction: 1.0)
+            let iconRect = NSRect(x: tagSize.width + gap, y: (totalHeight - iconSize.height) / 2, width: iconSize.width, height: iconSize.height)
+            icon.draw(in: iconRect, from: .zero, operation: .sourceOver, fraction: 1.0)
+            // 模板图标在 lockFocus 上下文中默认渲染为黑色,
+            // 用 labelColor + sourceAtop 着色, 使其在暗色模式下自动变为白色
+            if icon.isTemplate {
+                NSColor.labelColor.setFill()
+                iconRect.fill(using: .sourceAtop)
+            }
         }
         image.unlockFocus()
         image.isTemplate = false
