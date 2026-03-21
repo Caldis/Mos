@@ -295,6 +295,9 @@ extension PreferencesScrollingViewController {
             }
             return KeyCode.keyMap[hotkey.code] ?? "Key \(hotkey.code)"
         case .mouse:
+            if LogitechCIDRegistry.isLogitechCode(hotkey.code) {
+                return LogitechCIDRegistry.name(forMosCode: hotkey.code)
+            }
             return KeyCode.mouseMap[hotkey.code] ?? "🖱\(hotkey.code)"
         }
     }

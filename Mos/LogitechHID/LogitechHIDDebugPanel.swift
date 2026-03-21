@@ -52,14 +52,6 @@ struct HIDPPInfo {
         0x4521: ("HiResWheel", "Hi-res scroll wheel"),
     ]
 
-    static let cidNames: [UInt16: String] = [
-        0x0050: "Left Click", 0x0051: "Right Click", 0x0052: "Middle Click",
-        0x0053: "Back", 0x0056: "Forward",
-        0x00C3: "Gesture Button", 0x00C4: "SmartShift", 0x00D7: "DPI Change",
-        0x00D0: "Top Button", 0x00E8: "Thumb Wheel Up", 0x00E9: "Thumb Wheel Down",
-        0x00FD: "Battery LED",
-    ]
-
     static let controlFlagBits: [(bit: Int, short: String, desc: String)] = [
         (0, "Mouse", "Mouse button group"),
         (1, "FKey", "F-key group"),
@@ -497,7 +489,7 @@ class LogitechHIDDebugPanel: NSObject {
         guard let s = currentSession else { controlsTable?.reloadData(); return }
 
         for (i, c) in s.debugDiscoveredControls.enumerated() {
-            let name = HIDPPInfo.cidNames[c.cid] ?? "Unknown"
+            let name = LogitechCIDRegistry.name(forCID: c.cid)
             let isDiverted = s.debugDivertedCIDs.contains(c.cid)
             controlRows.append((
                 i,

@@ -47,7 +47,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         setupKeyDisplayView(with: binding.triggerEvent)
 
         // 判断是否为 Logi 按键 (code >= 1000)
-        let isLogiTrigger = binding.triggerEvent.type == .mouse && LogitechCIDMap.isLogitechCode(binding.triggerEvent.code)
+        let isLogiTrigger = binding.triggerEvent.type == .mouse && LogitechCIDRegistry.isLogitechCode(binding.triggerEvent.code)
 
         // 配置动作选择器
         setupActionPopUpButton(currentShortcut: binding.systemShortcut, showLogiActions: isLogiTrigger)

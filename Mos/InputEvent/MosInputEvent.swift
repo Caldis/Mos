@@ -48,59 +48,6 @@ struct DeviceFilter: Codable, Equatable {
     }
 }
 
-// MARK: - LogitechCIDMap
-/// Logitech CID -> Mos 按钮码映射
-/// 标准 CGEvent 鼠标按钮: 0~31, Logitech HID++ 专有: 1000+
-struct LogitechCIDMap {
-    private static let cidToCode: [UInt16: UInt16] = [
-        0x0050: 1003,  // Left Click (diverted)
-        0x0051: 1004,  // Right Click (diverted)
-        0x0052: 1005,  // Middle Click (diverted)
-        0x0053: 1006,  // Back (diverted)
-        0x0056: 1007,  // Forward (diverted)
-        0x00C3: 1000,  // Gesture Button
-        0x00C4: 1001,  // SmartShift
-        0x00D7: 1002,  // DPI Change Button
-    ]
-
-    static func toMosCode(_ cid: UInt16) -> UInt16 {
-        if let known = cidToCode[cid] { return known }
-        let mapped = UInt32(2000) + UInt32(cid)
-        return mapped <= UInt32(UInt16.max) ? UInt16(mapped) : UInt16(cid & 0x0FFF) + 2000
-    }
-
-    static func displayName(forCode code: UInt16) -> String {
-        switch code {
-        case 1000: return "Gesture"
-        case 1001: return "SmartShift"
-        case 1002: return "DPI"
-        case 1003: return "Left Click"
-        case 1004: return "Right Click"
-        case 1005: return "Middle Click"
-        case 1006: return "Back"
-        case 1007: return "Forward"
-        default:   return "Logi(\(code))"
-        }
-    }
-
-    /// 判断按钮码是否属于 Logitech HID++ 专有范围
-    static func isLogitechCode(_ code: UInt16) -> Bool {
-        return code >= 1000
-    }
-
-    /// 反向映射: Mos code → CID
-    static func toCID(_ mosCode: UInt16) -> UInt16? {
-        if let entry = cidToCode.first(where: { $0.value == mosCode }) {
-            return entry.key
-        }
-        // 反向 fallback (2000 + cid)
-        if mosCode >= 2000 {
-            return mosCode - 2000
-        }
-        return nil
-    }
-}
-
 // MARK: - MosInputEvent
 /// 统一输入事件 (运行时对象, 不可序列化)
 struct MosInputEvent {
@@ -155,8 +102,8 @@ struct MosInputEvent {
         case .keyboard:
             components.append(KeyCode.keyMap[code] ?? "Key(\(code))")
         case .mouse:
-            if LogitechCIDMap.isLogitechCode(code) {
-                components.append(LogitechCIDMap.displayName(forCode: code))
+            if LogitechCIDRegistry.isLogitechCode(code) {
+                components.append(LogitechCIDRegistry.name(forMosCode: code))
                 components.append("[Logi]")  // 特殊标记, KeyPreview 渲染为 tag
             } else {
                 components.append(KeyCode.mouseMap[code] ?? "Mouse(\(code))")
@@ -184,7 +131,7 @@ struct MosInputEvent {
             if !hasModifiers { return false }
             return true
         case .mouse:
-            if LogitechCIDMap.isLogitechCode(code) { return true }
+            if LogitechCIDRegistry.isLogitechCode(code) { return true }
             if KeyCode.mouseMainKeys.contains(code) { return hasModifiers }
             return true
         }

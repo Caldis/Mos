@@ -404,7 +404,7 @@ class LogitechDeviceSession {
             case 3:
                 if params.count >= 3 {
                     let cid = (UInt16(params[0]) << 8) | UInt16(params[1])
-                    let cidName = HIDPPInfo.cidNames[cid] ?? "?"
+                    let cidName = LogitechCIDRegistry.name(forCID: cid)
                     let divert = params[2] & 0x01 != 0
                     return "REPROG.SetControlReporting(CID=\(String(format: "0x%04X", cid)) \(cidName), divert=\(divert ? "ON" : "OFF"))"
                 }
@@ -440,7 +440,7 @@ class LogitechDeviceSession {
             }
             if funcId == 1 {
                 let cid = (UInt16(report[4]) << 8) | UInt16(report[5])
-                let name = HIDPPInfo.cidNames[cid] ?? "?"
+                let name = LogitechCIDRegistry.name(forCID: cid)
                 return "REPROG.ControlInfo: CID=\(String(format: "0x%04X", cid)) (\(name))"
             }
             if reprogInitComplete && funcId == 0 {
@@ -450,7 +450,7 @@ class LogitechDeviceSession {
                 while offset + 1 < report.count {
                     let cid = (UInt16(report[offset]) << 8) | UInt16(report[offset + 1])
                     if cid == 0 { break }
-                    let name = HIDPPInfo.cidNames[cid] ?? "?"
+                    let name = LogitechCIDRegistry.name(forCID: cid)
                     cids.append("\(String(format: "0x%04X", cid))(\(name))")
                     offset += 2
                 }
@@ -824,7 +824,7 @@ class LogitechDeviceSession {
         var divertCount = 0
 
         for c in divertable {
-            let mosCode = LogitechCIDMap.toMosCode(c.cid)
+            let mosCode = LogitechCIDRegistry.toMosCode(c.cid)
             let shouldDivert = boundCodes.contains(mosCode)
             let currentlyDiverted = divertedCIDs.contains(c.cid)
 
@@ -869,12 +869,12 @@ class LogitechDeviceSession {
         let newlyReleased = lastActiveCIDs.subtracting(activeCIDs)
         lastActiveCIDs = activeCIDs
         for cid in newlyPressed {
-            let cidName = HIDPPInfo.cidNames[cid] ?? "Unknown"
+            let cidName = LogitechCIDRegistry.name(forCID: cid)
             LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .buttonEvent, message: "Button DOWN: CID \(String(format: "0x%04X", cid)) (\(cidName))")
             dispatchButtonEvent(cid: cid, isDown: true)
         }
         for cid in newlyReleased {
-            let cidName = HIDPPInfo.cidNames[cid] ?? "Unknown"
+            let cidName = LogitechCIDRegistry.name(forCID: cid)
             LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .buttonEvent, message: "Button UP: CID \(String(format: "0x%04X", cid)) (\(cidName))")
             dispatchButtonEvent(cid: cid, isDown: false)
         }
@@ -886,7 +886,7 @@ class LogitechDeviceSession {
         let currentFlags = CGEventSource.flagsState(.combinedSessionState)
         let mosEvent = MosInputEvent(
             type: .mouse,
-            code: LogitechCIDMap.toMosCode(cid),
+            code: LogitechCIDRegistry.toMosCode(cid),
             modifiers: currentFlags,
             phase: isDown ? .down : .up,
             source: .hidPlusPlus,
