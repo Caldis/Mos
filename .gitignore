@@ -19,3 +19,4 @@ sparkle_private_key.txt
 build/*.zip
 /build
 /spec
+.superpowers/
