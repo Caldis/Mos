@@ -924,10 +924,10 @@ class LogitechDeviceSession {
 
         // 匹配滚动热键 (dash/toggle/block)
         // HID++ 事件不经过 CGEventTap, 需要在此处单独处理
-        let consumedByScrollHotkey = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(
+        // 注意: 不做 early return, 允许同一按键同时触发滚动热键和按钮绑定
+        ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(
             code: mosEvent.code, isDown: isDown
         )
-        if consumedByScrollHotkey { return }
 
         // 匹配 binding, 如果是 logi* 动作则在当前 session 执行 (设备隔离)
         if isDown {
