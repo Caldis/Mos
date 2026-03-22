@@ -3298,6 +3298,40 @@
         }
       }
     },
+    "logiHiResScrollToggle" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi-Res Scroll"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi-Res 滚轮"
+          }
+        }
+      }
+    },
+    "logiHiResScrollToggleDesc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toggle scroll wheel between standard and high-resolution mode"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在标准和高分辨率滚轮模式之间切换"
+          }
+        }
+      }
+    },
     "logiHost1" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3366,6 +3400,74 @@
         }
       }
     },
+    "logiPointerSpeedCycle" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pointer Speed"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指针速度"
+          }
+        }
+      }
+    },
+    "logiPointerSpeedCycleDesc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cycle pointer speed (0.5x → 1x → 1.5x → 2x)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "循环切换指针速度倍率 (0.5x → 1x → 1.5x → 2x)"
+          }
+        }
+      }
+    },
+    "logiScrollInvertToggle" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invert Scroll"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反转滚轮方向"
+          }
+        }
+      }
+    },
+    "logiScrollInvertToggleDesc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toggle scroll wheel direction, only affects current device"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换滚轮滚动方向，仅影响当前设备"
+          }
+        }
+      }
+    },
     "logiSmartShiftToggle" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3396,6 +3498,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在棘轮和自由滚动模式之间切换滚轮"
+          }
+        }
+      }
+    },
+    "logiThumbWheelToggle" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thumb Wheel Mode"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拇指轮模式"
+          }
+        }
+      }
+    },
+    "logiThumbWheelToggleDesc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toggle thumb wheel behavior mode"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换拇指滚轮行为模式"
           }
         }
       }

@@ -89,6 +89,9 @@ class LogitechDeviceSession {
     // MARK: - HID++ Constants
     private static let featureIRoot: UInt16 = 0x0000
     private static let featureReprogV4: UInt16 = 0x1B04
+    private static let featureHiResWheel: UInt16 = 0x2121
+    private static let featureThumbWheel: UInt16 = 0x2150
+    private static let featurePointerSpeed: UInt16 = 0x2205
     private static let hidppShortReportId: UInt8 = 0x10
     private static let hidppLongReportId: UInt8 = 0x11
     private static let hidppErrorFeatureIdx: UInt8 = 0xFF
@@ -490,6 +493,10 @@ class LogitechDeviceSession {
     private var currentDPI: UInt16 = 0
     private var dpiSteps: [UInt16] = []  // 从设备查询, 不硬编码
     private var dpiStepSize: UInt16 = 0  // 设备报告的 DPI 步进值
+    private var pendingHiResScrollToggle = false
+    private var pendingScrollInvertToggle = false
+    private var pendingThumbWheelToggle = false
+    private var pendingPointerSpeedCycle = false
 
     /// SmartShift 切换
     func executeSmartShiftToggle() {
@@ -600,6 +607,84 @@ class LogitechDeviceSession {
         // setHost: function 1, param = target host index (0-based)
         sendRequest(featureIndex: featureIndex, functionId: 1, params: [hostIndex])
         // 注意: 切换后设备会断开连接, session 会被清理
+    }
+
+    // MARK: - HiResWheel / ScrollInvert / ThumbWheel / PointerSpeed Actions
+
+    /// Hi-Res 滚轮模式切换
+    private func executeHiResScrollToggle() {
+        if let idx = featureIndex[Self.featureHiResWheel] {
+            pendingHiResScrollToggle = true
+            // Get current mode (function 0x10)
+            sendRequest(featureIndex: idx, functionId: 0x10, params: [])
+        } else {
+            discoverFeature(featureId: Self.featureHiResWheel) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] HiResScroll: feature not available")
+                    return
+                }
+                self.featureIndex[Self.featureHiResWheel] = idx
+                self.pendingHiResScrollToggle = true
+                self.sendRequest(featureIndex: idx, functionId: 0x10, params: [])
+            }
+        }
+    }
+
+    /// 滚轮方向反转切换
+    private func executeScrollInvertToggle() {
+        if let idx = featureIndex[Self.featureHiResWheel] {
+            pendingScrollInvertToggle = true
+            // Get current mode (function 0x10)
+            sendRequest(featureIndex: idx, functionId: 0x10, params: [])
+        } else {
+            discoverFeature(featureId: Self.featureHiResWheel) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ScrollInvert: feature not available")
+                    return
+                }
+                self.featureIndex[Self.featureHiResWheel] = idx
+                self.pendingScrollInvertToggle = true
+                self.sendRequest(featureIndex: idx, functionId: 0x10, params: [])
+            }
+        }
+    }
+
+    /// 拇指轮模式切换
+    private func executeThumbWheelToggle() {
+        if let idx = featureIndex[Self.featureThumbWheel] {
+            pendingThumbWheelToggle = true
+            // Get current mode (function 0x10)
+            sendRequest(featureIndex: idx, functionId: 0x10, params: [])
+        } else {
+            discoverFeature(featureId: Self.featureThumbWheel) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ThumbWheel: feature not available")
+                    return
+                }
+                self.featureIndex[Self.featureThumbWheel] = idx
+                self.pendingThumbWheelToggle = true
+                self.sendRequest(featureIndex: idx, functionId: 0x10, params: [])
+            }
+        }
+    }
+
+    /// 指针速度循环 (0.5x → 1x → 1.5x → 2x → 0.5x)
+    private func executePointerSpeedCycle() {
+        if let idx = featureIndex[Self.featurePointerSpeed] {
+            pendingPointerSpeedCycle = true
+            // Get current speed (function 0x00)
+            sendRequest(featureIndex: idx, functionId: 0x00, params: [])
+        } else {
+            discoverFeature(featureId: Self.featurePointerSpeed) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] PointerSpeed: feature not available")
+                    return
+                }
+                self.featureIndex[Self.featurePointerSpeed] = idx
+                self.pendingPointerSpeedCycle = true
+                self.sendRequest(featureIndex: idx, functionId: 0x00, params: [])
+            }
+        }
     }
 
     // MARK: - Report Parsing
@@ -752,6 +837,64 @@ class LogitechDeviceSession {
             LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Host: \(currentHost + 1)/\(hostCount) -> \(nextHost + 1)")
             switchToHost(featureIndex: hostIdx, hostIndex: nextHost)
             return
+        }
+
+        // HiResWheel response (pending HiRes toggle or ScrollInvert toggle)
+        if let hiresIdx = featureIndex[Self.featureHiResWheel], featureIdx == hiresIdx {
+            if pendingHiResScrollToggle && functionId == 1 {  // response to function 0x10 (0x10 >> 4 = 1)
+                let currentMode = report[4]
+                let newMode = currentMode ^ 0x02  // Toggle bit 1 (resolution)
+                sendRequest(featureIndex: hiresIdx, functionId: 0x20, params: [newMode])
+                pendingHiResScrollToggle = false
+                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] HiResScroll: \((newMode & 0x02) != 0 ? "ON" : "OFF")")
+                return
+            }
+            if pendingScrollInvertToggle && functionId == 1 {  // response to function 0x10 (0x10 >> 4 = 1)
+                let currentMode = report[4]
+                let newMode = currentMode ^ 0x04  // Toggle bit 2 (invert)
+                sendRequest(featureIndex: hiresIdx, functionId: 0x20, params: [newMode])
+                pendingScrollInvertToggle = false
+                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] ScrollInvert: \((newMode & 0x04) != 0 ? "ON" : "OFF")")
+                return
+            }
+        }
+
+        // ThumbWheel response
+        if let thumbIdx = featureIndex[Self.featureThumbWheel], featureIdx == thumbIdx {
+            if pendingThumbWheelToggle && functionId == 1 {  // response to function 0x10 (0x10 >> 4 = 1)
+                let byte1 = report[4]
+                let byte2 = report[5]
+                let newByte1 = byte1 ^ 0x01  // Toggle bit 0 (divert mode)
+                sendRequest(featureIndex: thumbIdx, functionId: 0x20, params: [newByte1, byte2])
+                pendingThumbWheelToggle = false
+                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] ThumbWheel: \((newByte1 & 0x01) != 0 ? "DIVERT" : "NORMAL")")
+                return
+            }
+        }
+
+        // PointerSpeed response
+        if let speedIdx = featureIndex[Self.featurePointerSpeed], featureIdx == speedIdx {
+            if pendingPointerSpeedCycle && functionId == 0 {  // response to function 0x00 (0x00 >> 4 = 0)
+                let currentHi = report[4]
+                let currentLo = report[5]
+                let currentSpeed = (UInt16(currentHi) << 8) | UInt16(currentLo)
+
+                // Cycle through presets: 0.5x(128) → 1x(256) → 1.5x(384) → 2x(512→clamped to 511) → 0.5x
+                let presets: [UInt16] = [0x0080, 0x0100, 0x0180, 0x01FF]
+                let nextSpeed: UInt16
+                if let idx = presets.firstIndex(where: { $0 > currentSpeed }) {
+                    nextSpeed = presets[idx]
+                } else {
+                    nextSpeed = presets[0]  // Wrap around to 0.5x
+                }
+
+                sendRequest(featureIndex: speedIdx, functionId: 0x10,
+                            params: [UInt8(nextSpeed >> 8), UInt8(nextSpeed & 0xFF)])
+                pendingPointerSpeedCycle = false
+                let speedStr = String(format: "%.1fx", Double(nextSpeed) / 256.0)
+                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] PointerSpeed: \(speedStr)")
+                return
+            }
         }
     }
 
@@ -974,6 +1117,14 @@ class LogitechDeviceSession {
             executeChangeHost(hostIndex: 1)
         case "logiHost3":
             executeChangeHost(hostIndex: 2)
+        case "logiHiResScrollToggle":
+            executeHiResScrollToggle()
+        case "logiScrollInvertToggle":
+            executeScrollInvertToggle()
+        case "logiThumbWheelToggle":
+            executeThumbWheelToggle()
+        case "logiPointerSpeedCycle":
+            executePointerSpeedCycle()
         default:
             LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Unknown Logi action: \(name)")
         }

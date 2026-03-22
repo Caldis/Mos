@@ -129,6 +129,10 @@ struct SystemShortcut {
                 case "logiHost1": return "1.circle"
                 case "logiHost2": return "2.circle"
                 case "logiHost3": return "3.circle"
+                case "logiHiResScrollToggle": return "lines.measurement.vertical"
+                case "logiScrollInvertToggle": return "arrow.up.arrow.down"
+                case "logiThumbWheelToggle": return "dial.low"
+                case "logiPointerSpeedCycle": return "cursorarrow.motionlines"
                 // 其他
                 default: return "questionmark.circle"
             }
@@ -302,6 +306,10 @@ struct SystemShortcut {
         "logiSmartShiftToggle": logiSmartShiftToggle,
         "logiDPICycleUp": logiDPICycleUp, "logiDPICycleDown": logiDPICycleDown,
         "logiHost1": logiHost1, "logiHost2": logiHost2, "logiHost3": logiHost3,
+        "logiHiResScrollToggle": logiHiResScrollToggle,
+        "logiScrollInvertToggle": logiScrollInvertToggle,
+        "logiThumbWheelToggle": logiThumbWheelToggle,
+        "logiPointerSpeedCycle": logiPointerSpeedCycle,
     ]
 
     /// 根据修饰键和按键代码查找快捷键名称
@@ -385,6 +393,14 @@ struct SystemShortcut {
         descriptionKey: "logiHostSwitchDesc")
     static let logiHost3 = Shortcut("logiHost3", 0xFFFE, NSEvent.ModifierFlags(rawValue: 6),
         descriptionKey: "logiHostSwitchDesc")
+    static let logiHiResScrollToggle = Shortcut("logiHiResScrollToggle", 0xFFFE, NSEvent.ModifierFlags(rawValue: 7),
+        descriptionKey: "logiHiResScrollToggleDesc")
+    static let logiScrollInvertToggle = Shortcut("logiScrollInvertToggle", 0xFFFE, NSEvent.ModifierFlags(rawValue: 8),
+        descriptionKey: "logiScrollInvertToggleDesc")
+    static let logiThumbWheelToggle = Shortcut("logiThumbWheelToggle", 0xFFFE, NSEvent.ModifierFlags(rawValue: 9),
+        descriptionKey: "logiThumbWheelToggleDesc")
+    static let logiPointerSpeedCycle = Shortcut("logiPointerSpeedCycle", 0xFFFE, NSEvent.ModifierFlags(rawValue: 10),
+        descriptionKey: "logiPointerSpeedCycleDesc")
 
     /// 鼠标按键动作分类
     static let mouseButtonsCategory: (category: String, shortcuts: [Shortcut]) = (
@@ -397,7 +413,8 @@ struct SystemShortcut {
     static let logiActionsCategory: (category: String, shortcuts: [Shortcut]) = (
         "categoryLogiActions", [
             logiSmartShiftToggle, logiDPICycleUp, logiDPICycleDown,
-            logiHost1, logiHost2, logiHost3
+            logiHost1, logiHost2, logiHost3,
+            logiHiResScrollToggle, logiScrollInvertToggle, logiThumbWheelToggle, logiPointerSpeedCycle
         ]
     )
 

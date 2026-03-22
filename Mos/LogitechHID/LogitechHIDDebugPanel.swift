@@ -47,8 +47,11 @@ struct HIDPPInfo {
         0x1D4B: ("WirelessStatus", "Wireless connection status"),
         0x2110: ("SmartShift", "Scroll wheel mode"),
         0x2111: ("SmartShiftV2", "SmartShift v2"),
+        0x2121: ("HiResWheel", "Hi-res scroll wheel"),
+        0x2150: ("ThumbWheel", "Thumb wheel control"),
         0x2200: ("MouseButtonSpy", "Mouse button spy"),
         0x2201: ("AdjustableDPI", "DPI adjustment"),
+        0x2205: ("PointerSpeed", "Pointer speed control"),
         0x4521: ("HiResWheel", "Hi-res scroll wheel"),
     ]
 
