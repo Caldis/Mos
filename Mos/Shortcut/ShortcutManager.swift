@@ -171,7 +171,7 @@ class ShortcutManager {
             shortcutMenuItem.keyEquivalentModifierMask = menuKeyEquivalent.modifierMask
             shortcutMenuItem.target = target
             shortcutMenuItem.representedObject = shortcut
-            shortcutMenuItem.toolTip = shortcut.localizedName
+            shortcutMenuItem.toolTip = shortcut.localizedDescription ?? shortcut.localizedName
 
             if supportsSFSymbols {
                 if #available(macOS 11.0, *) {
