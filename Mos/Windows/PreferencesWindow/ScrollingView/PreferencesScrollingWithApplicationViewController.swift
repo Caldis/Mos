@@ -64,6 +64,7 @@ class PreferencesScrollingWithApplicationViewController: NSViewController {
         if let vaildContentViewController = currentContentViewController, let validTargetApplication = currentTargetApplication {
             validTargetApplication.inherit = sender.state.rawValue==0 ? false : true
             vaildContentViewController.syncViewWithOptions()
+            LogitechHIDManager.shared.syncDivertWithBindings()
         }
     }
 }

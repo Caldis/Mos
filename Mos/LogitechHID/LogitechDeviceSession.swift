@@ -813,12 +813,31 @@ class LogitechDeviceSession {
     func syncDivertWithBindings() {
         guard let idx = featureIndex[Self.featureReprogV4] else { return }
 
-        // 获取所有已启用绑定的 Mos codes
-        let boundCodes = Set(
-            ButtonUtils.shared.getButtonBindings()
-                .filter { $0.isEnabled && $0.triggerEvent.type == .mouse }
-                .map { $0.triggerEvent.code }
-        )
+        // 收集所有需要 divert 的 Logi 鼠标按键码
+        var boundCodes = Set<UInt16>()
+
+        // 1. 按键面板: 全局按钮绑定
+        for binding in ButtonUtils.shared.getButtonBindings() where binding.isEnabled && binding.triggerEvent.type == .mouse {
+            boundCodes.insert(binding.triggerEvent.code)
+        }
+
+        // 2. 滚动面板: 全局滚动热键 (dash/toggle/block)
+        for hotkey in [Options.shared.scroll.dash, Options.shared.scroll.toggle, Options.shared.scroll.block] {
+            if let h = hotkey, h.type == .mouse, LogitechCIDRegistry.isLogitechCode(h.code) {
+                boundCodes.insert(h.code)
+            }
+        }
+
+        // 3. 应用程序面板: 分应用滚动热键 (非继承的应用)
+        let apps = Options.shared.application.applications
+        for i in 0..<apps.count {
+            guard let app = apps.get(by: i), !app.inherit else { continue }
+            for hotkey in [app.scroll.dash, app.scroll.toggle, app.scroll.block] {
+                if let h = hotkey, h.type == .mouse, LogitechCIDRegistry.isLogitechCode(h.code) {
+                    boundCodes.insert(h.code)
+                }
+            }
+        }
 
         let divertable = discoveredControls.filter { $0.isDivertable }
         var divertCount = 0
@@ -902,6 +921,13 @@ class LogitechDeviceSession {
             )
             return
         }
+
+        // 匹配滚动热键 (dash/toggle/block)
+        // HID++ 事件不经过 CGEventTap, 需要在此处单独处理
+        let consumedByScrollHotkey = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(
+            code: mosEvent.code, isDown: isDown
+        )
+        if consumedByScrollHotkey { return }
 
         // 匹配 binding, 如果是 logi* 动作则在当前 session 执行 (设备隔离)
         if isDown {

@@ -182,7 +182,61 @@ class ScrollCore {
         }
     }
     
-    // MARK: - 热键事件处理
+    // MARK: - HID++ 滚动热键处理
+
+    /// 跟踪当前由哪个 HID++ 按键码激活了热键状态
+    /// key-up 时按 code 清除, 不依赖当前 app 的热键配置, 避免跨应用释放时状态卡死
+    private var hidDashHeldCode: UInt16?
+    private var hidToggleHeldCode: UInt16?
+    private var hidBlockHeldCode: UInt16?
+
+    /// 处理来自 Logitech HID++ 的按键事件, 匹配 dash/toggle/block 滚动热键
+    /// 返回 true 表示事件被滚动热键消费, 不应继续传递给 ButtonBinding 匹配
+    func handleScrollHotkeyFromHIDPlusPlus(code: UInt16, isDown: Bool) -> Bool {
+        // Key-up: 按跟踪的 code 清除状态 (不依赖当前 app 配置, 防止焦点切换导致状态卡死)
+        if !isDown {
+            var matched = false
+            if hidDashHeldCode == code {
+                dashKeyHeld = false; dashScroll = false; dashAmplification = 1.0
+                hidDashHeldCode = nil; matched = true
+            }
+            if hidToggleHeldCode == code {
+                toggleKeyHeld = false; toggleScroll = false
+                hidToggleHeldCode = nil; matched = true
+            }
+            if hidBlockHeldCode == code {
+                blockKeyHeld = false; blockSmooth = false
+                hidBlockHeldCode = nil; matched = true
+            }
+            return matched
+        }
+
+        // Key-down: 刷新前台应用上下文 (HID++ 事件不经过滚动事件路径, application 可能陈旧)
+        application = ScrollUtils.shared.getTargetApplication(from: NSWorkspace.shared.frontmostApplication)
+
+        let dashHotkey = ScrollUtils.shared.optionsDashKey(application: application)
+        let toggleHotkey = ScrollUtils.shared.optionsToggleKey(application: application)
+        let blockHotkey = ScrollUtils.shared.optionsBlockKey(application: application)
+
+        var matched = false
+
+        if let h = dashHotkey, h.type == .mouse, h.code == code {
+            dashKeyHeld = true; dashScroll = true; dashAmplification = 5.0
+            hidDashHeldCode = code; matched = true
+        }
+        if let h = toggleHotkey, h.type == .mouse, h.code == code {
+            toggleKeyHeld = true; toggleScroll = true
+            hidToggleHeldCode = code; matched = true
+        }
+        if let h = blockHotkey, h.type == .mouse, h.code == code {
+            blockKeyHeld = true; blockSmooth = true
+            hidBlockHeldCode = code; matched = true
+        }
+
+        return matched
+    }
+
+    // MARK: - 热键事件处理 (CGEventTap)
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         let keyCode = event.keyCode
         let mouseButton = UInt16(event.getIntegerValueField(.mouseEventButtonNumber))

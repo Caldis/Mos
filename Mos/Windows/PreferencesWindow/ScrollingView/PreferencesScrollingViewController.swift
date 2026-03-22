@@ -96,6 +96,7 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     @IBAction func dashKeyDelButtonClick(_ sender: NSButton) {
         getTargetApplicationScrollOptions().dash = nil
         syncViewWithOptions()
+        LogitechHIDManager.shared.syncDivertWithBindings()
     }
     // 转换键 - 点击触发录制
     @IBAction func toggleKeyButtonClick(_ sender: NSButton) {
@@ -106,6 +107,7 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     @IBAction func toggleKeyDelButtonClick(_ sender: NSButton) {
         getTargetApplicationScrollOptions().toggle = nil
         syncViewWithOptions()
+        LogitechHIDManager.shared.syncDivertWithBindings()
     }
     // 禁用键 - 点击触发录制
     @IBAction func disableKeyButtonClick(_ sender: NSButton) {
@@ -116,6 +118,7 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     @IBAction func disableKeyDelButtonClick(_ sender: NSButton) {
         getTargetApplicationScrollOptions().block = nil
         syncViewWithOptions()
+        LogitechHIDManager.shared.syncDivertWithBindings()
     }
     
     // 步长
@@ -176,6 +179,7 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
             Options.shared.scroll = OPTIONS_SCROLL_DEFAULT()
         }
         syncViewWithOptions()
+        LogitechHIDManager.shared.syncDivertWithBindings()
     }
     
 }
@@ -361,5 +365,6 @@ extension PreferencesScrollingViewController: KeyRecorderDelegate {
 
         currentRecordingPopup = nil
         syncViewWithOptions()
+        LogitechHIDManager.shared.syncDivertWithBindings()
     }
 }
