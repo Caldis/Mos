@@ -620,7 +620,7 @@ class LogitechDeviceSession {
         } else {
             discoverFeature(featureId: Self.featureHiResWheel) { [weak self] idx in
                 guard let self = self, let idx = idx else {
-                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] HiResScroll: feature not available")
+                    self?.showFeatureNotAvailable("Hi-Res Scroll")
                     return
                 }
                 self.featureIndex[Self.featureHiResWheel] = idx
@@ -634,12 +634,11 @@ class LogitechDeviceSession {
     private func executeScrollInvertToggle() {
         if let idx = featureIndex[Self.featureHiResWheel] {
             pendingScrollInvertToggle = true
-            // Get current mode (function 0x10)
             sendRequest(featureIndex: idx, functionId: 0x10, params: [])
         } else {
             discoverFeature(featureId: Self.featureHiResWheel) { [weak self] idx in
                 guard let self = self, let idx = idx else {
-                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ScrollInvert: feature not available")
+                    self?.showFeatureNotAvailable("Scroll Invert")
                     return
                 }
                 self.featureIndex[Self.featureHiResWheel] = idx
@@ -653,12 +652,11 @@ class LogitechDeviceSession {
     private func executeThumbWheelToggle() {
         if let idx = featureIndex[Self.featureThumbWheel] {
             pendingThumbWheelToggle = true
-            // Get current mode (function 0x10)
             sendRequest(featureIndex: idx, functionId: 0x10, params: [])
         } else {
             discoverFeature(featureId: Self.featureThumbWheel) { [weak self] idx in
                 guard let self = self, let idx = idx else {
-                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ThumbWheel: feature not available")
+                    self?.showFeatureNotAvailable("Thumb Wheel")
                     return
                 }
                 self.featureIndex[Self.featureThumbWheel] = idx
@@ -672,12 +670,11 @@ class LogitechDeviceSession {
     private func executePointerSpeedCycle() {
         if let idx = featureIndex[Self.featurePointerSpeed] {
             pendingPointerSpeedCycle = true
-            // Get current speed (function 0x00)
             sendRequest(featureIndex: idx, functionId: 0x00, params: [])
         } else {
             discoverFeature(featureId: Self.featurePointerSpeed) { [weak self] idx in
                 guard let self = self, let idx = idx else {
-                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] PointerSpeed: feature not available")
+                    self?.showFeatureNotAvailable("Pointer Speed")
                     return
                 }
                 self.featureIndex[Self.featurePointerSpeed] = idx
@@ -685,6 +682,14 @@ class LogitechDeviceSession {
                 self.sendRequest(featureIndex: idx, functionId: 0x00, params: [])
             }
         }
+    }
+
+    /// 显示设备不支持某功能的 Toast 提示
+    private func showFeatureNotAvailable(_ featureName: String) {
+        let message = String(format: NSLocalizedString("featureNotAvailable", comment: ""),
+                            deviceInfo.name, featureName)
+        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] \(featureName): feature not available")
+        Toast.show(message, style: .warning)
     }
 
     // MARK: - Report Parsing
