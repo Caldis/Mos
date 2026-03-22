@@ -99,6 +99,7 @@ public struct Toast {
 
 - 去重：检查当前所有可见 toast 中是否存在相同消息文本，若存在则不重复显示（从单 toast 的 lastMessage 时间窗口去重升级为多 toast 的可见集合去重）
 - 防竞态：每个 ToastContentView 持有自己的 generation 计数器，避免旧淡出 completion 影响新 toast
+- `dismissAll()` 语义：立即将所有 toast 从 manager 的跟踪集合中移除（先移除再动画），所有可见 toast 并发淡出，取消全部 timer，completion 后释放容器窗口。先移除确保淡出 completion 无竞态
 
 ## §3 拖拽交互（ToastWindow）
 
@@ -106,11 +107,11 @@ public struct Toast {
 
 - `NSPanel` 子类，透明背景，`level: .floating`
 - `.nonactivatingPanel` + `.fullScreenAuxiliary` 集合行为
-- 窗口大小动态计算：`maxCount × (toastHeight + spacing)` 为最大尺寸
+- 窗口大小动态计算：`maxCount × (toastHeight + spacing)` 为最大尺寸，maxCount 变更时容器窗口大小同步调整
 
 ### 事件穿透
 
-容器窗口设置 `ignoresMouseEvents = false`（不再使用旧实现的 `true`），改由 `hitTest(_:)` 精确控制事件响应区域：在 ToastContentView 区域内返回 self（响应拖拽），在透明区域返回 nil（事件穿透到下层窗口）。macOS 10.13 完全支持。
+容器窗口设置 `ignoresMouseEvents = false`（不再使用旧实现的 `true`），改由容器 NSPanel 的 contentView 重写 `hitTest(_:)` 精确控制事件响应区域：遍历所有 ToastContentView 子视图的 frame 判定命中，命中则返回 self（响应拖拽），未命中则返回 nil（事件穿透到下层窗口）。macOS 10.13 完全支持。
 
 ### 拖拽行为
 
@@ -151,6 +152,10 @@ UserDefaults(suiteName: "\(Bundle.main.bundleIdentifier ?? "app").toast")
 ### 设计原则
 
 Debug 面板是**面向用户的产品功能**，不只是开发调试工具。视觉品质要求与应用其他界面一致。
+
+### 类设计
+
+`class ToastPanel: NSObject` — 单例，管理 debug 面板窗口的生命周期。作为 NSObject 子类可直接作为 NSMenuItem 的 target。内部持有一个 NSPanel 实例（非自身继承 NSPanel），负责创建、显示和配置面板窗口。
 
 ### 视觉风格
 
