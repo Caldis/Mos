@@ -58,17 +58,20 @@ public struct Toast {
     static func showTestPanel()
 
     /// 返回可直接加入菜单的 MenuItem
+    /// 内部使用 ToastPanel 单例作为 target，action 指向其 show() 方法。
+    /// NSMenuItem 的 title、icon 等均由 Toast 模块自包含，调用方无需额外配置。
     static func debugMenuItem() -> NSMenuItem
 
-    enum Style { case info, success, warning, error }
+    enum Style: CaseIterable { case info, success, warning, error }
 }
 ```
 
 **变更说明：**
 - `show()` — 签名不变，完全向后兼容
 - `dismissAll()` — 新增，支持一键清除所有 toast
-- `debugMenuItem()` — 新增，使用方一行 `menu.addItem(Toast.debugMenuItem())` 接入
+- `debugMenuItem()` — 新增，使用方一行 `menu.addItem(Toast.debugMenuItem())` 接入。target 为 ToastPanel 单例（NSObject 子类），action/icon/title 自包含
 - `showTestPanel()` — 保留，内部重写
+- `Style` — 改为 `CaseIterable`，ToastPanel 可遍历所有样式
 
 ## §2 多 Toast 管理（ToastManager）
 
@@ -94,8 +97,8 @@ public struct Toast {
 
 ### 去重与防竞态
 
-- 去重：同一消息在 0.5 秒内不重复显示（沿用现有逻辑）
-- 防竞态：代际计数器，避免旧淡出 completion 影响新 toast（沿用现有逻辑）
+- 去重：检查当前所有可见 toast 中是否存在相同消息文本，若存在则不重复显示（从单 toast 的 lastMessage 时间窗口去重升级为多 toast 的可见集合去重）
+- 防竞态：每个 ToastContentView 持有自己的 generation 计数器，避免旧淡出 completion 影响新 toast
 
 ## §3 拖拽交互（ToastWindow）
 
@@ -107,14 +110,14 @@ public struct Toast {
 
 ### 事件穿透
 
-重写 `hitTest(_:)` 方法：在 ToastContentView 区域内返回 self（响应拖拽），在透明区域返回 nil（事件穿透到下层窗口）。macOS 10.13 完全支持。
+容器窗口设置 `ignoresMouseEvents = false`（不再使用旧实现的 `true`），改由 `hitTest(_:)` 精确控制事件响应区域：在 ToastContentView 区域内返回 self（响应拖拽），在透明区域返回 nil（事件穿透到下层窗口）。macOS 10.13 完全支持。
 
 ### 拖拽行为
 
 - 拖拽任意一个 toast 内容区域时，整个容器窗口跟随移动（所有 toast 保持堆叠间距）
 - 松开后，新的锚点位置写入 ToastStorage
-- 堆叠方向根据新位置实时重新计算
-- 跨越屏幕中线时方向即时翻转，子视图动画重排
+- 堆叠方向仅在拖拽松手时根据锚点位置重新计算，堆叠过程中不动态翻转（即使堆叠延伸过屏幕中线，也继续当前方向直到溢出淘汰）
+- 跨越屏幕中线拖拽松手后方向翻转，子视图动画重排
 
 ### 动画
 
@@ -127,17 +130,21 @@ public struct Toast {
 
 ```swift
 // 独立 UserDefaults suite，不与应用的 Options/UserDefaults 混合
-UserDefaults(suiteName: "com.caldis.toast")
+// suiteName 默认基于 Bundle ID 动态生成，确保不同宿主应用间不冲突
+UserDefaults(suiteName: "\(Bundle.main.bundleIdentifier ?? "app").toast")
+// 例如 Mos → "com.caldis.Mos.toast"
 ```
 
 | Key | Type | Default | 说明 |
 |-----|------|---------|------|
-| positionX | CGFloat? | nil (屏幕居中) | 锚点 X 坐标 |
-| positionY | CGFloat? | nil (上 1/5) | 锚点 Y 坐标 |
+| positionX | CGFloat? | nil (屏幕居中) | 锚点 X 坐标（绝对屏幕坐标） |
+| positionY | CGFloat? | nil (上 1/5) | 锚点 Y 坐标（绝对屏幕坐标） |
 | maxCount | Int | 4 | 最大同时显示数 |
 
 - `nil` 值表示使用默认位置（屏幕可见区域水平居中，垂直上 1/5 处）
 - Debug 面板中的 Reset 按钮清除 positionX/positionY 回到默认
+- **坐标有效性校验**：加载时检查保存的坐标是否在任何可见屏幕范围内，若不在（如外接显示器已断开）则回退到默认位置（nil）
+- **maxCount 实时生效**：调小 maxCount 时，超出部分的最旧 toast 立即淡出
 
 ## §5 产品级 Debug 面板（ToastPanel）
 
