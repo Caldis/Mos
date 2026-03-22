@@ -209,6 +209,12 @@ class LogitechDeviceSession {
                 setControlReporting(featureIndex: reprogIdx, cid: cid, divert: false)
             }
         }
+        // 清理 ScrollCore 的 HID 热键状态, 防止设备断连时按键卡住
+        // (设备断连后 key-up 永不会触发, 滚动热键状态会永久卡死)
+        for cid in lastActiveCIDs {
+            let mosCode = LogitechCIDRegistry.toMosCode(cid)
+            ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: mosCode, isDown: false)
+        }
         divertedCIDs.removeAll()
         lastActiveCIDs.removeAll()
         discoveredControls.removeAll()
