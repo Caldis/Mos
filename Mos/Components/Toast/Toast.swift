@@ -49,6 +49,18 @@ struct Toast {
             ToastWindow.shared.present(message: message, style: style, duration: duration, icon: icon)
         }
     }
+
+    /// 所有样式列表 (用于测试面板遍历)
+    static let allStyles: [(name: String, style: Style)] = [
+        ("Info", .info), ("Success", .success), ("Warning", .warning), ("Error", .error)
+    ]
+
+    // MARK: - Test Panel
+
+    /// 显示 Toast 测试面板
+    static func showTestPanel() {
+        ToastTestPanel.shared.show()
+    }
 }
 
 // MARK: - ToastWindow (Window Management)
@@ -471,4 +483,183 @@ private class ToastContentView: NSView {
         return tinted
     }
 
+}
+
+// MARK: - Toast Test Panel
+
+/// Toast 组件测试面板
+///
+/// 提供可视化的参数调节界面, 支持测试所有 Toast 样式、时长、消息长度、
+/// 自定义图标、去重行为等场景。内聚于 Toast 模块中, 便于独立开源。
+///
+/// 使用: `Toast.showTestPanel()` 或在状态栏菜单中添加入口。
+private class ToastTestPanel {
+
+    static let shared = ToastTestPanel()
+
+    private var window: NSWindow?
+
+    // MARK: - UI Controls
+    private var messageField: NSTextField!
+    private var stylePopup: NSPopUpButton!
+    private var durationSlider: NSSlider!
+    private var durationLabel: NSTextField!
+    private var useCustomIconCheckbox: NSButton!
+
+    // MARK: - Show
+
+    func show() {
+        if let w = window {
+            w.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+        let w = buildWindow()
+        window = w
+        w.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    // MARK: - Window
+
+    private func buildWindow() -> NSWindow {
+        let w = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 380),
+            styleMask: [.titled, .closable],
+            backing: .buffered,
+            defer: false
+        )
+        w.title = "Toast Test Panel"
+        w.center()
+        w.isReleasedWhenClosed = false
+
+        let content = NSView(frame: w.contentView!.bounds)
+        content.autoresizingMask = [.width, .height]
+        w.contentView = content
+
+        var y: CGFloat = 330
+
+        // --- Message ---
+        y = addLabel(to: content, text: "Message:", y: y)
+        messageField = NSTextField(frame: NSRect(x: 20, y: y, width: 360, height: 22))
+        messageField.stringValue = "LIFT B 不支持 Hi-Res Scroll"
+        messageField.placeholderString = "Enter toast message..."
+        content.addSubview(messageField)
+        y -= 46
+
+        // --- Style ---
+        y = addLabel(to: content, text: "Style:", y: y)
+        stylePopup = NSPopUpButton(frame: NSRect(x: 20, y: y, width: 360, height: 24), pullsDown: false)
+        for (name, _) in Toast.allStyles {
+            stylePopup.addItem(withTitle: name)
+        }
+        content.addSubview(stylePopup)
+        y -= 46
+
+        // --- Duration ---
+        y = addLabel(to: content, text: "Duration:", y: y)
+        durationSlider = NSSlider(frame: NSRect(x: 20, y: y, width: 300, height: 20))
+        durationSlider.minValue = 0.5
+        durationSlider.maxValue = 10.0
+        durationSlider.doubleValue = 2.5
+        durationSlider.target = self
+        durationSlider.action = #selector(durationChanged)
+        content.addSubview(durationSlider)
+
+        durationLabel = NSTextField(labelWithString: "2.5s")
+        durationLabel.frame = NSRect(x: 330, y: y, width: 50, height: 20)
+        content.addSubview(durationLabel)
+        y -= 40
+
+        // --- Custom Icon ---
+        useCustomIconCheckbox = NSButton(checkboxWithTitle: "Use custom icon (app icon)", target: nil, action: nil)
+        useCustomIconCheckbox.frame = NSRect(x: 20, y: y, width: 360, height: 18)
+        content.addSubview(useCustomIconCheckbox)
+        y -= 40
+
+        // --- Fire Button ---
+        let fireButton = NSButton(frame: NSRect(x: 20, y: y, width: 360, height: 32))
+        fireButton.title = "Show Toast"
+        fireButton.bezelStyle = .rounded
+        fireButton.target = self
+        fireButton.action = #selector(fireToast)
+        content.addSubview(fireButton)
+        y -= 36
+
+        // --- Quick Test Buttons ---
+        y = addLabel(to: content, text: "Quick Tests:", y: y)
+        let quickTests: [(String, Selector)] = [
+            ("All Styles", #selector(testAllStyles)),
+            ("Rapid Fire (Dedup)", #selector(testRapidFire)),
+            ("Long Text", #selector(testLongText)),
+            ("Replace", #selector(testReplace)),
+        ]
+        let btnWidth: CGFloat = 85
+        for (i, (title, action)) in quickTests.enumerated() {
+            let btn = NSButton(frame: NSRect(x: 20 + CGFloat(i) * (btnWidth + 5), y: y, width: btnWidth, height: 24))
+            btn.title = title
+            btn.bezelStyle = .rounded
+            btn.font = NSFont.systemFont(ofSize: 11)
+            btn.target = self
+            btn.action = action
+            content.addSubview(btn)
+        }
+
+        return w
+    }
+
+    // MARK: - Layout Helpers
+
+    private func addLabel(to parent: NSView, text: String, y: CGFloat) -> CGFloat {
+        let labelY = y + 22  // label 在控件上方
+        let label = NSTextField(labelWithString: text)
+        label.font = NSFont.systemFont(ofSize: 11, weight: .medium)
+        label.textColor = .secondaryLabelColor
+        label.frame = NSRect(x: 20, y: labelY, width: 360, height: 14)
+        parent.addSubview(label)
+        return y  // 返回控件 y 坐标 (label 在其上方)
+    }
+
+    // MARK: - Actions
+
+    @objc private func durationChanged() {
+        let val = durationSlider.doubleValue
+        durationLabel.stringValue = String(format: "%.1fs", val)
+    }
+
+    @objc private func fireToast() {
+        let message = messageField.stringValue.isEmpty ? "Test Toast" : messageField.stringValue
+        let style = Toast.allStyles[stylePopup.indexOfSelectedItem].style
+        let duration = durationSlider.doubleValue
+        let icon: NSImage? = useCustomIconCheckbox.state == .on ? NSApp.applicationIconImage : nil
+        Toast.show(message, style: style, duration: duration, icon: icon)
+    }
+
+    // MARK: - Quick Tests
+
+    @objc private func testAllStyles() {
+        for (i, (name, style)) in Toast.allStyles.enumerated() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 1.5) {
+                Toast.show("Style: \(name)", style: style, duration: 1.2)
+            }
+        }
+    }
+
+    @objc private func testRapidFire() {
+        // 连续发送相同消息, 验证去重
+        for _ in 0..<5 {
+            Toast.show("Dedup test - same message", style: .info, duration: 2.0)
+        }
+    }
+
+    @objc private func testLongText() {
+        Toast.show("This is a very long toast message that should be truncated after two lines because nobody wants to read a novel in a toast notification, right?", style: .warning, duration: 4.0)
+    }
+
+    @objc private func testReplace() {
+        Toast.show("Message 1 - will be replaced", style: .info, duration: 5.0)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            Toast.show("Message 2 - replaced!", style: .success, duration: 2.0)
+        }
+    }
 }
