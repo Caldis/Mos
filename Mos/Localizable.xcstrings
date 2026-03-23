@@ -1,6 +1,33 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "⚠️ Warning" : {
+      "comment" : "Toast debug style button"
+    },
+    "✅ Success" : {
+      "comment" : "Toast debug style button"
+    },
+    "❌ Error" : {
+      "comment" : "Toast debug style button"
+    },
+    "🎨 All Styles" : {
+      "comment" : "Toast debug quick test title"
+    },
+    "📏 Long Text" : {
+      "comment" : "Toast debug quick test title"
+    },
+    "📚 Stack Test" : {
+      "comment" : "Toast debug quick test title"
+    },
+    "🔁 Overflow" : {
+      "comment" : "Toast debug quick test title"
+    },
+    "🔇 Dedup" : {
+      "comment" : "Toast debug quick test title"
+    },
+    "🧹 Dismiss All" : {
+      "comment" : "Toast debug quick test title"
+    },
     "appExpose" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1457,6 +1484,9 @@
         }
       }
     },
+    "Clear all toasts" : {
+      "comment" : "Toast debug quick test subtitle"
+    },
     "closeAllWindows" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1903,6 +1933,9 @@
           }
         }
       }
+    },
+    "Dedup test - same message" : {
+      "comment" : "Toast debug dedup test message"
     },
     "Default" : {
       "comment" : "Toast position default status"
@@ -2359,6 +2392,9 @@
     "Enter toast message..." : {
       "comment" : "Toast debug message placeholder"
     },
+    "Error style" : {
+      "comment" : "Toast debug quick test message"
+    },
     "Event Monitor" : {
       "localizations" : {
         "cs" : {
@@ -2447,6 +2483,9 @@
         }
       }
     },
+    "Exceed max, test eviction" : {
+      "comment" : "Toast debug quick test subtitle"
+    },
     "featureNotAvailable" : {
       "localizations" : {
         "en" : {
@@ -2462,6 +2501,9 @@
           }
         }
       }
+    },
+    "Fill to max count" : {
+      "comment" : "Toast debug quick test subtitle"
     },
     "find" : {
       "extractionState" : "manual",
@@ -2819,6 +2861,9 @@
         }
       }
     },
+    "Hello, this is a toast message" : {
+      "comment" : "Toast debug default message"
+    },
     "hideApplication" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2996,6 +3041,12 @@
           }
         }
       }
+    },
+    "ℹ️ Info" : {
+      "comment" : "Toast debug style button"
+    },
+    "Info style" : {
+      "comment" : "Toast debug quick test message"
     },
     "invertColors" : {
       "extractionState" : "manual",
@@ -4808,6 +4859,17 @@
         }
       }
     },
+    "Overflow %d of %d" : {
+      "comment" : "Toast debug overflow format",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Overflow %1$d of %2$d"
+          }
+        }
+      }
+    },
     "paste" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5166,9 +5228,6 @@
         }
       }
     },
-    "QUICK TESTS" : {
-      "comment" : "Toast debug section header"
-    },
     "Quit" : {
       "localizations" : {
         "cs" : {
@@ -5345,6 +5404,9 @@
           }
         }
       }
+    },
+    "Rapid same message" : {
+      "comment" : "Toast debug quick test subtitle"
     },
     "Record Custom Key..." : {
       "comment" : "Menu item to record a custom hotkey",
@@ -5528,8 +5590,14 @@
     "Reset" : {
       "comment" : "Toast debug reset position button"
     },
+    "Ribbon" : {
+      "comment" : "Toast debug accent indicator checkbox"
+    },
     "Saved" : {
       "comment" : "Toast position saved status"
+    },
+    "SCENARIO TESTS" : {
+      "comment" : "Toast debug section header"
     },
     "screenshot" : {
       "extractionState" : "manual",
@@ -6068,8 +6136,8 @@
     "SEND TOAST" : {
       "comment" : "Toast debug section header"
     },
-    "Show Toast" : {
-      "comment" : "Toast debug show toast button"
+    "Show each style" : {
+      "comment" : "Toast debug quick test subtitle"
     },
     "showDesktop" : {
       "extractionState" : "manual",
@@ -6427,6 +6495,12 @@
         }
       }
     },
+    "Style: %@" : {
+      "comment" : "Toast debug quick test format"
+    },
+    "Success style" : {
+      "comment" : "Toast debug quick test message"
+    },
     "switchApp" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6783,8 +6857,36 @@
         }
       }
     },
+    "Test Toast" : {
+      "comment" : "Toast debug fallback message"
+    },
+    "This is a very long toast message that should be truncated after two lines because nobody wants to read a novel in a toast notification, right? Let's see how this handles." : {
+      "comment" : "Toast debug long text test message"
+    },
+    "Toast %d of %d" : {
+      "comment" : "Toast debug stack fill format",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Toast %1$d of %2$d"
+          }
+        }
+      }
+    },
     "Toast Debug" : {
-      "comment" : "Toast debug panel menu item\nToast debug panel title\nToast debug panel window title"
+      "comment" : "Toast debug panel menu item\nToast debug panel title\nToast debug panel window title",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " Toast"
+          }
+        }
+      }
+    },
+    "Truncation test" : {
+      "comment" : "Toast debug quick test subtitle"
     },
     "unbind" : {
       "extractionState" : "manual",
@@ -7497,6 +7599,9 @@
           }
         }
       }
+    },
+    "Warning style" : {
+      "comment" : "Toast debug quick test message"
     },
     "zoomIn" : {
       "extractionState" : "manual",

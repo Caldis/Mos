@@ -20,6 +20,7 @@ class ToastStorage {
         static let positionX = "positionX"
         static let positionY = "positionY"
         static let maxCount = "maxCount"
+        static let showsAccentIndicator = "showsAccentIndicator"
     }
 
     init() {
@@ -40,9 +41,9 @@ class ToastStorage {
                 x: CGFloat(defaults.double(forKey: Keys.positionX)),
                 y: CGFloat(defaults.double(forKey: Keys.positionY))
             )
-            // 坐标有效性校验：检查是否在任何可见屏幕范围内
+            // 坐标有效性校验：检查锚点是否仍在任何屏幕可见区域内
             for screen in NSScreen.screens {
-                if screen.frame.contains(point) {
+                if screen.visibleFrame.contains(point) {
                     return point
                 }
             }
@@ -75,6 +76,23 @@ class ToastStorage {
         }
         set {
             defaults.set(min(max(newValue, 1), 8), forKey: Keys.maxCount)
+        }
+    }
+
+    // MARK: - Accent Indicator
+
+    /// 是否显示 toast 左侧 ribbon / 竖条，默认开启。
+    ///
+    /// 调试面板可以直接读写这个值，再由 toast 渲染层决定是否展示强调条。
+    var showsAccentIndicator: Bool {
+        get {
+            guard defaults.object(forKey: Keys.showsAccentIndicator) != nil else {
+                return true
+            }
+            return defaults.bool(forKey: Keys.showsAccentIndicator)
+        }
+        set {
+            defaults.set(newValue, forKey: Keys.showsAccentIndicator)
         }
     }
 

@@ -31,10 +31,15 @@ class ToastContentView: NSView {
 
     private var hasIcon: Bool = false
     private var hasAccent: Bool = false
+    private var icon: NSImage?
+    private var accentColor: NSColor?
+    private var showsAccentIndicator: Bool = true
+    private var dragStartScreenLocation: NSPoint?
+    private var dragStartWindowOrigin: NSPoint?
 
     // MARK: - Initialization
 
-    init(message: String, icon: NSImage?, accentColor: NSColor?) {
+    init(message: String, icon: NSImage?, accentColor: NSColor?, showsAccentIndicator: Bool) {
         effectView = NSVisualEffectView()
         iconView = NSImageView()
         messageLabel = NSTextField(labelWithString: "")
@@ -48,7 +53,7 @@ class ToastContentView: NSView {
         setupAccentIndicator()
         setupLayout()
 
-        update(message: message, icon: icon, accentColor: accentColor)
+        update(message: message, icon: icon, accentColor: accentColor, showsAccentIndicator: showsAccentIndicator)
     }
 
     required init?(coder: NSCoder) {
@@ -133,8 +138,11 @@ class ToastContentView: NSView {
 
     // MARK: - Update Content
 
-    func update(message: String, icon: NSImage?, accentColor: NSColor?) {
+    func update(message: String, icon: NSImage?, accentColor: NSColor?, showsAccentIndicator: Bool) {
         messageLabel.stringValue = message
+        self.icon = icon
+        self.accentColor = accentColor
+        self.showsAccentIndicator = showsAccentIndicator
 
         if let img = icon {
             let tintedIcon = tintImage(img, color: accentColor ?? NSColor.white)
@@ -147,7 +155,7 @@ class ToastContentView: NSView {
             hasIcon = false
         }
 
-        if let color = accentColor {
+        if let color = accentColor, showsAccentIndicator {
             accentIndicator.layer?.backgroundColor = color.cgColor
             accentIndicator.isHidden = false
             hasAccent = true
@@ -157,6 +165,15 @@ class ToastContentView: NSView {
         }
 
         updateMessageLeadingConstraint()
+    }
+
+    func setShowsAccentIndicator(_ showsAccentIndicator: Bool) {
+        update(
+            message: messageLabel.stringValue,
+            icon: icon,
+            accentColor: accentColor,
+            showsAccentIndicator: showsAccentIndicator
+        )
     }
 
     // MARK: - Dynamic Layout
@@ -224,10 +241,58 @@ class ToastContentView: NSView {
     /// 根据样式返回强调色
     static func accentColor(for style: Toast.Style) -> NSColor? {
         switch style {
-        case .info:    return nil
+        case .info:    return NSColor(calibratedRed: 0.34, green: 0.66, blue: 0.96, alpha: 1.0)
         case .success: return NSColor(calibratedRed: 0.30, green: 0.78, blue: 0.40, alpha: 1.0)
         case .warning: return NSColor(calibratedRed: 1.00, green: 0.70, blue: 0.20, alpha: 1.0)
         case .error:   return NSColor(calibratedRed: 1.00, green: 0.35, blue: 0.30, alpha: 1.0)
         }
+    }
+
+    // MARK: - Dragging
+
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        return true
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard let window = window else { return }
+        dragStartScreenLocation = NSEvent.mouseLocation
+        dragStartWindowOrigin = window.frame.origin
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        guard let window = window,
+              let dragStartScreenLocation = dragStartScreenLocation,
+              let dragStartWindowOrigin = dragStartWindowOrigin else {
+            return
+        }
+
+        let currentLocation = NSEvent.mouseLocation
+        let deltaX = currentLocation.x - dragStartScreenLocation.x
+        let deltaY = currentLocation.y - dragStartScreenLocation.y
+        let targetOrigin = NSPoint(
+            x: dragStartWindowOrigin.x + deltaX,
+            y: dragStartWindowOrigin.y + deltaY
+        )
+
+        if let panel = window as? NSPanel {
+            window.setFrameOrigin(
+                ToastManager.shared.snappedOrigin(for: panel, proposedOrigin: targetOrigin)
+            )
+        } else {
+            window.setFrameOrigin(targetOrigin)
+        }
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        if let panel = window as? NSPanel {
+            ToastManager.shared.saveAnchor(for: panel)
+        }
+        clearDragState()
+    }
+
+    private func clearDragState() {
+        dragStartScreenLocation = nil
+        dragStartWindowOrigin = nil
     }
 }

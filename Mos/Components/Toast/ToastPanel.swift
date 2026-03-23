@@ -28,6 +28,19 @@ class ToastPanel: NSObject {
     private var durationSlider: NSSlider!
     private var durationLabel: NSTextField!
     private var useCustomIconCheckbox: NSButton!
+    private var showsAccentRibbonCheckbox: NSButton!
+
+    private let positionStatusActiveColor = NSColor(calibratedRed: 0.30, green: 0.78, blue: 0.40, alpha: 1.0)
+
+    override init() {
+        super.init()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(anchorDidChange),
+            name: .toastAnchorDidChange,
+            object: nil
+        )
+    }
 
     // MARK: - Menu Item
 
@@ -58,21 +71,25 @@ class ToastPanel: NSObject {
 
     func show() {
         if let w = window {
+            refreshPositionStatus()
             w.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
+            applyAccentRibbonPreference()
             return
         }
         let w = buildWindow()
         window = w
+        refreshPositionStatus()
         w.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        applyAccentRibbonPreference()
     }
 
     // MARK: - Build Window
 
     private func buildWindow() -> NSPanel {
         let panelWidth: CGFloat = 420
-        let panelHeight: CGFloat = 546
+        let panelHeight: CGFloat = 560
 
         let panel = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: panelWidth, height: panelHeight),
@@ -87,6 +104,7 @@ class ToastPanel: NSObject {
         panel.isReleasedWhenClosed = false
         panel.isMovableByWindowBackground = true
         panel.hasShadow = true
+        panel.hidesOnDeactivate = false
 
         // 毛玻璃背景
         let effectView = NSVisualEffectView(frame: NSRect(origin: .zero, size: NSSize(width: panelWidth, height: panelHeight)))
@@ -112,6 +130,8 @@ class ToastPanel: NSObject {
         // 所以 origin.y = top - controlHeight
         let margin: CGFloat = 20
         let contentWidth = width - margin * 2
+        let valueColumnX = margin + 180
+        let sectionSpacing: CGFloat = 16
         var top = height - 50  // 留出 titlebar 空间
 
         // --- Header ---
@@ -125,7 +145,7 @@ class ToastPanel: NSObject {
         let subtitleLabel = makeLabel(text: NSLocalizedString("Component testing & configuration", comment: "Toast debug panel subtitle"), fontSize: 12, weight: .regular, color: .secondaryLabelColor)
         subtitleLabel.frame = NSRect(x: margin, y: top - subtitleH, width: contentWidth, height: subtitleH)
         container.addSubview(subtitleLabel)
-        top -= subtitleH + 16
+        top -= subtitleH + sectionSpacing
 
         // === SECTION: Configuration ===
         top = placeSectionHeader(in: container, title: NSLocalizedString("CONFIGURATION", comment: "Toast debug section header"), top: top, margin: margin, width: contentWidth)
@@ -136,7 +156,7 @@ class ToastPanel: NSObject {
         maxCountRow.frame = NSRect(x: margin, y: top - rowH, width: 140, height: rowH)
         container.addSubview(maxCountRow)
 
-        maxCountSlider = NSSlider(frame: NSRect(x: margin + 180, y: top - rowH, width: 150, height: rowH))
+        maxCountSlider = NSSlider(frame: NSRect(x: valueColumnX, y: top - rowH, width: 150, height: rowH))
         maxCountSlider.minValue = 1
         maxCountSlider.maxValue = 8
         maxCountSlider.integerValue = ToastStorage.shared.maxCount
@@ -156,54 +176,28 @@ class ToastPanel: NSObject {
         container.addSubview(posLabel)
 
         positionStatusLabel = makeLabel(
-            text: ToastStorage.shared.hasCustomPosition ? NSLocalizedString("Saved", comment: "Toast position saved status") : NSLocalizedString("Default", comment: "Toast position default status"),
-            fontSize: 11, weight: .medium,
-            color: ToastStorage.shared.hasCustomPosition ? NSColor(calibratedRed: 0.30, green: 0.78, blue: 0.40, alpha: 1.0) : .secondaryLabelColor
+            text: "",
+            fontSize: 11,
+            weight: .medium,
+            color: .secondaryLabelColor
         )
-        positionStatusLabel.frame = NSRect(x: margin + 180, y: top - rowH, width: 60, height: rowH)
+        positionStatusLabel.frame = NSRect(x: valueColumnX, y: top - rowH, width: 120, height: rowH)
         container.addSubview(positionStatusLabel)
+        refreshPositionStatus()
+        top -= rowH + 6
 
         let resetBtnH: CGFloat = 22
-        let resetBtn = NSButton(frame: NSRect(x: margin + 260, y: top - resetBtnH, width: 60, height: resetBtnH))
+        let resetBtn = NSButton(frame: NSRect(x: valueColumnX, y: top - resetBtnH, width: 86, height: resetBtnH))
         resetBtn.title = NSLocalizedString("Reset", comment: "Toast debug reset position button")
         resetBtn.bezelStyle = .rounded
         resetBtn.font = NSFont.systemFont(ofSize: 11)
         resetBtn.target = self
         resetBtn.action = #selector(resetPosition)
         container.addSubview(resetBtn)
-        top -= resetBtnH + 16
+        top -= resetBtnH + sectionSpacing
 
         // === SECTION: Send Toast ===
         top = placeSectionHeader(in: container, title: NSLocalizedString("SEND TOAST", comment: "Toast debug section header"), top: top, margin: margin, width: contentWidth)
-
-        // Message
-        let fieldH: CGFloat = 22
-        messageField = NSTextField(frame: NSRect(x: margin, y: top - fieldH, width: contentWidth, height: fieldH))
-        messageField.stringValue = "Hello, this is a toast message"
-        messageField.placeholderString = NSLocalizedString("Enter toast message...", comment: "Toast debug message placeholder")
-        container.addSubview(messageField)
-        top -= fieldH + 10
-
-        // Style buttons
-        let styleBtnH: CGFloat = 24
-        let styles: [(String, Toast.Style)] = [
-            ("ℹ️ Info", .info), ("✅ Success", .success), ("⚠️ Warning", .warning), ("❌ Error", .error)
-        ]
-        let btnWidth: CGFloat = (contentWidth - CGFloat(styles.count - 1) * 6) / CGFloat(styles.count)
-        styleButtons = []
-        for (i, (title, _)) in styles.enumerated() {
-            let btn = NSButton(frame: NSRect(x: margin + CGFloat(i) * (btnWidth + 6), y: top - styleBtnH, width: btnWidth, height: styleBtnH))
-            btn.title = title
-            btn.bezelStyle = .rounded
-            btn.font = NSFont.systemFont(ofSize: 11)
-            btn.tag = i
-            btn.target = self
-            btn.action = #selector(styleSelected(_:))
-            if i == 0 { btn.state = .on }
-            container.addSubview(btn)
-            styleButtons.append(btn)
-        }
-        top -= styleBtnH + 10
 
         // Duration
         let durLabel = makeLabel(text: NSLocalizedString("Duration", comment: "Toast debug duration label"), fontSize: 12, weight: .regular, color: .labelColor)
@@ -231,27 +225,71 @@ class ToastPanel: NSObject {
         container.addSubview(useCustomIconCheckbox)
         top -= rowH + 10
 
-        // Show Toast button
-        let fireBtnH: CGFloat = 30
-        let fireButton = NSButton(frame: NSRect(x: margin, y: top - fireBtnH, width: contentWidth, height: fireBtnH))
-        fireButton.title = NSLocalizedString("Show Toast", comment: "Toast debug show toast button")
-        fireButton.bezelStyle = .rounded
-        fireButton.font = NSFont.systemFont(ofSize: 13, weight: .medium)
-        fireButton.target = self
-        fireButton.action = #selector(fireToast)
-        container.addSubview(fireButton)
-        top -= fireBtnH + 16
+        showsAccentRibbonCheckbox = NSButton(
+            checkboxWithTitle: NSLocalizedString("Ribbon", comment: "Toast debug accent indicator checkbox"),
+            target: self,
+            action: #selector(showsAccentRibbonChanged(_:))
+        )
+        showsAccentRibbonCheckbox.frame = NSRect(x: margin, y: top - rowH, width: contentWidth, height: rowH)
+        showsAccentRibbonCheckbox.font = NSFont.systemFont(ofSize: 12)
+        showsAccentRibbonCheckbox.state = ToastStorage.shared.showsAccentIndicator ? .on : .off
+        container.addSubview(showsAccentRibbonCheckbox)
+        top -= rowH + 14
+
+        // Message
+        let fieldH: CGFloat = 22
+        messageField = NSTextField(frame: NSRect(x: margin, y: top - fieldH, width: contentWidth, height: fieldH))
+        messageField.stringValue = NSLocalizedString("Hello, this is a toast message", comment: "Toast debug default message")
+        messageField.placeholderString = NSLocalizedString("Enter toast message...", comment: "Toast debug message placeholder")
+        container.addSubview(messageField)
+        top -= fieldH + 10
+
+        // Style buttons
+        let styleBtnH: CGFloat = 24
+        let styles: [(String, Toast.Style)] = [
+            (NSLocalizedString("ℹ️ Info", comment: "Toast debug style button"), .info),
+            (NSLocalizedString("✅ Success", comment: "Toast debug style button"), .success),
+            (NSLocalizedString("⚠️ Warning", comment: "Toast debug style button"), .warning),
+            (NSLocalizedString("❌ Error", comment: "Toast debug style button"), .error),
+        ]
+        let btnWidth: CGFloat = (contentWidth - CGFloat(styles.count - 1) * 6) / CGFloat(styles.count)
+        styleButtons = []
+        for (i, (title, _)) in styles.enumerated() {
+            let btn = NSButton(frame: NSRect(x: margin + CGFloat(i) * (btnWidth + 6), y: top - styleBtnH, width: btnWidth, height: styleBtnH))
+            btn.title = title
+            btn.bezelStyle = .rounded
+            btn.font = NSFont.systemFont(ofSize: 11)
+            btn.tag = i
+            btn.target = self
+            btn.action = #selector(styleSelected(_:))
+            if i == 0 { btn.state = .on }
+            container.addSubview(btn)
+            styleButtons.append(btn)
+        }
+        top -= styleBtnH + sectionSpacing
 
         // === SECTION: Quick Tests ===
-        top = placeSectionHeader(in: container, title: NSLocalizedString("QUICK TESTS", comment: "Toast debug section header"), top: top, margin: margin, width: contentWidth)
+        top = placeSectionHeader(in: container, title: NSLocalizedString("SCENARIO TESTS", comment: "Toast debug section header"), top: top, margin: margin, width: contentWidth)
 
         let tests: [(String, String, Selector)] = [
-            ("🎨 All Styles", "Show each style", #selector(testAllStyles)),
-            ("📚 Stack Test", "Fill to max count", #selector(testStackFill)),
-            ("🔁 Overflow", "Exceed max, test eviction", #selector(testOverflow)),
-            ("🔇 Dedup", "Rapid same message", #selector(testDedup)),
-            ("📏 Long Text", "Truncation test", #selector(testLongText)),
-            ("🧹 Dismiss All", "Clear all toasts", #selector(testDismissAll)),
+            (NSLocalizedString("🎨 All Styles", comment: "Toast debug quick test title"),
+             NSLocalizedString("Show each style", comment: "Toast debug quick test subtitle"),
+             #selector(testAllStyles)),
+            (NSLocalizedString("📚 Stack Test", comment: "Toast debug quick test title"),
+             NSLocalizedString("Fill to max count", comment: "Toast debug quick test subtitle"),
+             #selector(testStackFill)),
+            (NSLocalizedString("🔁 Overflow", comment: "Toast debug quick test title"),
+             NSLocalizedString("Exceed max, test eviction", comment: "Toast debug quick test subtitle"),
+             #selector(testOverflow)),
+            (NSLocalizedString("🔇 Dedup", comment: "Toast debug quick test title"),
+             NSLocalizedString("Rapid same message", comment: "Toast debug quick test subtitle"),
+             #selector(testDedup)),
+            (NSLocalizedString("📏 Long Text", comment: "Toast debug quick test title"),
+             NSLocalizedString("Truncation test", comment: "Toast debug quick test subtitle"),
+             #selector(testLongText)),
+            (NSLocalizedString("🧹 Dismiss All", comment: "Toast debug quick test title"),
+             NSLocalizedString("Clear all toasts", comment: "Toast debug quick test subtitle"),
+             #selector(testDismissAll)),
         ]
         let gridCols = 2
         let cellWidth = (contentWidth - 8) / CGFloat(gridCols)
@@ -304,9 +342,8 @@ class ToastPanel: NSObject {
     }
 
     @objc private func resetPosition() {
-        ToastStorage.shared.resetPosition()
-        positionStatusLabel.stringValue = NSLocalizedString("Default", comment: "Toast position default status")
-        positionStatusLabel.textColor = .secondaryLabelColor
+        ToastManager.shared.resetToDefaultAnchor()
+        refreshPositionStatus()
     }
 
     // MARK: - Actions (Send Toast)
@@ -318,6 +355,7 @@ class ToastPanel: NSObject {
         for (i, btn) in styleButtons.enumerated() {
             btn.state = (i == sender.tag) ? .on : .off
         }
+        emitToast(allowDuplicateVisibleMessage: true)
     }
 
     @objc private func durationChanged() {
@@ -325,22 +363,52 @@ class ToastPanel: NSObject {
     }
 
     @objc private func fireToast() {
-        let message = messageField.stringValue.isEmpty ? "Test Toast" : messageField.stringValue
+        emitToast(allowDuplicateVisibleMessage: false)
+    }
+
+    @objc private func showsAccentRibbonChanged(_ sender: NSButton) {
+        ToastStorage.shared.showsAccentIndicator = (sender.state == .on)
+        applyAccentRibbonPreference()
+    }
+
+    @objc private func anchorDidChange() {
+        refreshPositionStatus()
+    }
+
+    private func emitToast(allowDuplicateVisibleMessage: Bool) {
+        let message = messageField.stringValue.isEmpty
+            ? NSLocalizedString("Test Toast", comment: "Toast debug fallback message")
+            : messageField.stringValue
         let duration = durationSlider.doubleValue
         let icon: NSImage? = useCustomIconCheckbox.state == .on ? NSApp.applicationIconImage : nil
-        Toast.show(message, style: selectedStyle, duration: duration, icon: icon)
+        Toast.show(
+            message,
+            style: selectedStyle,
+            duration: duration,
+            icon: icon,
+            allowDuplicateVisibleMessage: allowDuplicateVisibleMessage
+        )
+        DispatchQueue.main.async { [weak self] in
+            self?.applyAccentRibbonPreference()
+        }
     }
 
     // MARK: - Actions (Quick Tests)
 
     @objc private func testAllStyles() {
         let styles: [(String, Toast.Style)] = [
-            ("Info style", .info), ("Success style", .success),
-            ("Warning style", .warning), ("Error style", .error)
+            (NSLocalizedString("Info style", comment: "Toast debug quick test message"), .info),
+            (NSLocalizedString("Success style", comment: "Toast debug quick test message"), .success),
+            (NSLocalizedString("Warning style", comment: "Toast debug quick test message"), .warning),
+            (NSLocalizedString("Error style", comment: "Toast debug quick test message"), .error),
         ]
         for (i, (name, style)) in styles.enumerated() {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.3) {
-                Toast.show("Style: \(name)", style: style, duration: 3.0)
+                self.showToast(
+                    String(format: NSLocalizedString("Style: %@", comment: "Toast debug quick test format"), name),
+                    style: style,
+                    duration: 3.0
+                )
             }
         }
     }
@@ -349,7 +417,11 @@ class ToastPanel: NSObject {
         let max = ToastStorage.shared.maxCount
         for i in 0..<max {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.3) {
-                Toast.show("Toast \(i + 1) of \(max)", style: .info, duration: 5.0)
+                self.showToast(
+                    String(format: NSLocalizedString("Toast %d of %d", comment: "Toast debug stack fill format"), i + 1, max),
+                    style: .info,
+                    duration: 5.0
+                )
             }
         }
     }
@@ -359,22 +431,67 @@ class ToastPanel: NSObject {
         let total = max + 2
         for i in 0..<total {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.3) {
-                Toast.show("Overflow \(i + 1) of \(total)", style: .warning, duration: 8.0)
+                self.showToast(
+                    String(format: NSLocalizedString("Overflow %d of %d", comment: "Toast debug overflow format"), i + 1, total),
+                    style: .warning,
+                    duration: 8.0
+                )
             }
         }
     }
 
     @objc private func testDedup() {
         for _ in 0..<5 {
-            Toast.show("Dedup test - same message", style: .info, duration: 2.0)
+            showToast(
+                NSLocalizedString("Dedup test - same message", comment: "Toast debug dedup test message"),
+                style: .info,
+                duration: 2.0
+            )
         }
     }
 
     @objc private func testLongText() {
-        Toast.show("This is a very long toast message that should be truncated after two lines because nobody wants to read a novel in a toast notification, right? Let's see how this handles.", style: .warning, duration: 4.0)
+        showToast(
+            NSLocalizedString(
+                "This is a very long toast message that should be truncated after two lines because nobody wants to read a novel in a toast notification, right? Let's see how this handles.",
+                comment: "Toast debug long text test message"
+            ),
+            style: .warning,
+            duration: 4.0
+        )
     }
 
     @objc private func testDismissAll() {
         Toast.dismissAll()
+    }
+
+    // MARK: - Toast Helpers
+
+    private func showToast(_ message: String, style: Toast.Style, duration: TimeInterval, icon: NSImage? = nil, allowDuplicateVisibleMessage: Bool = false) {
+        Toast.show(
+            message,
+            style: style,
+            duration: duration,
+            icon: icon,
+            allowDuplicateVisibleMessage: allowDuplicateVisibleMessage
+        )
+        DispatchQueue.main.async { [weak self] in
+            self?.applyAccentRibbonPreference()
+        }
+    }
+
+    private func applyAccentRibbonPreference() {
+        showsAccentRibbonCheckbox?.state = ToastStorage.shared.showsAccentIndicator ? .on : .off
+        ToastManager.shared.applyAccentIndicatorVisibilityChange()
+    }
+
+    private func refreshPositionStatus() {
+        guard let positionStatusLabel = positionStatusLabel else { return }
+
+        let hasCustomPosition = ToastStorage.shared.hasCustomPosition
+        positionStatusLabel.stringValue = hasCustomPosition
+            ? NSLocalizedString("Saved", comment: "Toast position saved status")
+            : NSLocalizedString("Default", comment: "Toast position default status")
+        positionStatusLabel.textColor = hasCustomPosition ? positionStatusActiveColor : .secondaryLabelColor
     }
 }

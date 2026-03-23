@@ -16,7 +16,7 @@ class ToastWindow {
 
     // MARK: - Stack Direction (set by ToastManager)
 
-    var currentStackDirection: StackDirection = .down
+    var currentStackDirection: ToastStackDirection = .down
 
     // MARK: - Panel Factory
 
@@ -38,7 +38,7 @@ class ToastWindow {
         panel.hidesOnDeactivate = false
         panel.collectionBehavior = [.canJoinAllSpaces, .transient, .fullScreenAuxiliary]
         panel.isMovableByWindowBackground = false
-        panel.ignoresMouseEvents = true
+        panel.ignoresMouseEvents = false
         panel.contentView = contentView
 
         return panel
@@ -49,40 +49,23 @@ class ToastWindow {
     /// 计算 toast 的屏幕位置
     ///
     /// - Parameters:
-    ///   - depth: 层叠深度 (0 = 最前/最新, 1 = 次新, ...)
     ///   - toastSize: toast 的尺寸
     ///   - anchorPoint: 锚点 (屏幕坐标)
     ///   - direction: 堆叠方向
-    func screenOrigin(forDepth depth: Int, toastSize: NSSize, anchorPoint: NSPoint, direction: StackDirection) -> NSPoint {
-        let stepY = ToastLayoutConstants.toastHeight + ToastLayoutConstants.spacing
-
-        // X: 锚点水平居中
-        let x = anchorPoint.x - toastSize.width / 2.0
-
-        // Y: depth 0 在锚点旁, 越深越远
-        let y: CGFloat
-        switch direction {
-        case .down:
-            y = anchorPoint.y - toastSize.height - CGFloat(depth) * stepY
-        case .up:
-            y = anchorPoint.y + CGFloat(depth) * stepY
-        }
-
-        return NSPoint(x: x, y: y)
-    }
-
-    // MARK: - Types
-
-    enum StackDirection {
-        case up
-        case down
+    ///   - offsetFromAnchor: 与锚点的累计偏移, 由所有更靠近锚点的 toast 高度和间距累加得到
+    func screenOrigin(toastSize: NSSize, anchorPoint: NSPoint, direction: ToastStackDirection, offsetFromAnchor: CGFloat) -> NSPoint {
+        return ToastLayout.origin(
+            toastSize: toastSize,
+            anchorPoint: anchorPoint,
+            direction: direction,
+            offsetFromAnchor: offsetFromAnchor
+        )
     }
 }
 
 // MARK: - Layout Constants
 
 enum ToastLayoutConstants {
-    static let toastHeight: CGFloat = 40
     static let spacing: CGFloat = 8
     static let containerWidth: CGFloat = 360
     static let cornerRadius: CGFloat = 10

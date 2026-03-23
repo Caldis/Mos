@@ -47,12 +47,25 @@ struct Toast {
     ///   - style: 提示样式, 默认为 `.info`
     ///   - duration: 显示时长 (秒), 默认 2.5 秒
     ///   - icon: 自定义图标, 传 nil 则使用样式默认图标
-    static func show(_ message: String, style: Style = .info, duration: TimeInterval = 2.5, icon: NSImage? = nil) {
+    ///   - allowDuplicateVisibleMessage: 是否允许在已有相同可见消息存在时继续展示, 默认 false
+    static func show(
+        _ message: String,
+        style: Style = .info,
+        duration: TimeInterval = 2.5,
+        icon: NSImage? = nil,
+        allowDuplicateVisibleMessage: Bool = false
+    ) {
         // 始终异步调度到主线程
         // 即使已在主线程也必须 async, 因为调用方可能在 IOKit/CGEventTap 等
         // RunLoop source 回调中, 同步创建 NSPanel 会导致 RunLoop 递归死锁
         DispatchQueue.main.async {
-            ToastManager.shared.present(message: message, style: style, duration: duration, icon: icon)
+            ToastManager.shared.present(
+                message: message,
+                style: style,
+                duration: duration,
+                icon: icon,
+                allowDuplicateVisibleMessage: allowDuplicateVisibleMessage
+            )
         }
     }
 
@@ -65,7 +78,9 @@ struct Toast {
 
     /// 显示 Toast Debug 面板
     static func showTestPanel() {
-        ToastPanel.shared.show()
+        DispatchQueue.main.async {
+            ToastPanel.shared.show()
+        }
     }
 
     /// 返回可直接加入菜单的 Debug 面板入口 MenuItem
