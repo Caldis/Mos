@@ -122,7 +122,7 @@ extension ScrollPoster {
         dispatchContext.recordSkippedSyntheticEvent()
     }
 
-    func diagnosticsSnapshot() -> (postedFrames: UInt64, droppedFramesByGeneration: UInt64, droppedFramesByTTL: UInt64, skippedSyntheticEvents: UInt64, updateSnapshotFailures: UInt64) {
+    func diagnosticsSnapshot() -> (postedFrames: UInt64, droppedFramesByGeneration: UInt64, skippedSyntheticEvents: UInt64, updateSnapshotFailures: UInt64) {
         dispatchContext.diagnosticsSnapshot()
     }
 #endif
@@ -211,9 +211,9 @@ extension ScrollPoster {
         os_unfair_lock_unlock(&stateLock)
 #if DEBUG
         let diag = diagnosticsSnapshot()
-        if diag.droppedFramesByGeneration > 0 || diag.droppedFramesByTTL > 0 || diag.updateSnapshotFailures > 0 {
-            NSLog("[ScrollPoster] diag: posted=%llu dropGen=%llu dropTTL=%llu skipSynth=%llu snapFail=%llu",
-                  diag.postedFrames, diag.droppedFramesByGeneration, diag.droppedFramesByTTL,
+        if diag.droppedFramesByGeneration > 0 || diag.updateSnapshotFailures > 0 {
+            NSLog("[ScrollPoster] diag: posted=%llu dropGen=%llu skipSynth=%llu snapFail=%llu",
+                  diag.postedFrames, diag.droppedFramesByGeneration,
                   diag.skippedSyntheticEvents, diag.updateSnapshotFailures)
         }
 #endif
@@ -363,9 +363,9 @@ private extension ScrollPoster {
         // 是否连续滚动: 始终为 1.0
         snapshot.event.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
         ScrollUtils.shared.markSyntheticSmoothEvent(snapshot.event)
-        // 通过 CGEventPostToPid 直投目标进程:
-        // 不依赖 proxy (消除崩溃), 不经过 tap 链重新路由 (动量不跟随光标)
-        // ref: @shichangone MR: https://github.com/Caldis/Mos/pull/523, issue #868
+        // 通过 CGEventPost 投递到 HID 系统事件 tap:
+        // 事件会经过 macOS 事件处理管线, 确保滚动事件被正确处理
+        // ref: @shichangone MR: https://github.com/Caldis/Mos/pull/523
         dispatchContext.enqueue(snapshot)
         ScrollPhase.shared.didDeliverFrame()
         return true
