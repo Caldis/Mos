@@ -46,6 +46,10 @@ struct OptionItem {
         static let Allowlist = "allowlist"
         static let Applications = "applications"
     }
+
+    struct Gesture {
+        static let Bindings = "gestureBindings"
+    }
 }
 
 class Options {
@@ -70,6 +74,10 @@ class Options {
     }
     // 按钮绑定
     var buttons = OPTIONS_BUTTONS_DEFAULT() {
+        didSet { Options.shared.saveOptions() }
+    }
+    // 手势绑定
+    var gestures = OPTIONS_GESTURES_DEFAULT() {
         didSet { Options.shared.saveOptions() }
     }
     // 应用
@@ -133,6 +141,8 @@ extension Options {
         // 按钮绑定
         buttons.binding = loadButtonsData()
         ButtonUtils.shared.invalidateCache()
+        // 手势绑定
+        gestures.binding = loadGestureBindingsData()
         // 应用
         application.allowlist = UserDefaults.standard.bool(forKey: OptionItem.Application.Allowlist)
         application.applications = loadApplicationsData()
@@ -174,6 +184,8 @@ extension Options {
             }
             // 按钮绑定
             saveButtonBindingsData()
+            // 手势绑定
+            saveGestureBindingsData()
         }
     }
 
@@ -204,6 +216,36 @@ extension Options {
             UserDefaults.standard.set(data, forKey: OptionItem.Button.Bindings)
         } catch {
             NSLog("Failed to encode button bindings data: \(error), skipping save")
+        }
+    }
+
+    // 安全加载手势绑定数据
+    private func loadGestureBindingsData() -> [GestureBinding] {
+        let rawValue = UserDefaults.standard.object(forKey: OptionItem.Gesture.Bindings)
+        guard let data = rawValue as? Data else {
+            if rawValue != nil {
+                NSLog("Gesture bindings data has wrong type: \(type(of: rawValue)), clearing corrupted data")
+                UserDefaults.standard.removeObject(forKey: OptionItem.Gesture.Bindings)
+            }
+            return []
+        }
+
+        do {
+            return try decoder.decode([GestureBinding].self, from: data)
+        } catch {
+            NSLog("Failed to decode gesture bindings data: \(error), resetting to defaults")
+            UserDefaults.standard.removeObject(forKey: OptionItem.Gesture.Bindings)
+            return []
+        }
+    }
+
+    // 保存手势绑定数据
+    private func saveGestureBindingsData() {
+        do {
+            let data = try encoder.encode(gestures.binding)
+            UserDefaults.standard.set(data, forKey: OptionItem.Gesture.Bindings)
+        } catch {
+            NSLog("Failed to encode gesture bindings data: \(error), skipping save")
         }
     }
 

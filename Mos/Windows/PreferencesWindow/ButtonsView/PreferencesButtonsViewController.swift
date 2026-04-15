@@ -1,12 +1,21 @@
 //
 //  PreferencesButtonsViewController.swift
 //  Mos
-//  按钮绑定配置界面
+//  按钮绑定 + 鼠标手势配置界面
 //  Created by Claude on 2025/8/10.
 //  Copyright © 2025年 Caldis. All rights reserved.
 //
 
 import Cocoa
+
+// MARK: - ViewMode
+
+private enum ViewMode {
+    case bindings
+    case gestures
+}
+
+// MARK: - PreferencesButtonsViewController
 
 class PreferencesButtonsViewController: NSViewController {
 
@@ -15,6 +24,10 @@ class PreferencesButtonsViewController: NSViewController {
 
     // MARK: - Data
     private var buttonBindings: [ButtonBinding] = []
+    private var gestureBindings: [GestureBinding] = []
+
+    // MARK: - Mode
+    private var currentMode: ViewMode = .bindings
 
     // MARK: - UI Elements
     // 表格
@@ -26,89 +39,128 @@ class PreferencesButtonsViewController: NSViewController {
     @IBOutlet weak var createButton: PrimaryButton!
     @IBOutlet weak var addButton: NSButton!
     @IBOutlet weak var delButton: NSButton!
-    
+
+    // 模式切换
+    private var segmentedControl: NSSegmentedControl!
+
+    // 手势 Cell 标识
+    private static let gestureCellIdentifier = NSUserInterfaceItemIdentifier("gestureCellView")
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        // 设置代理
         recorder.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
-        // 读取设置
+        setupSegmentedControl()
         loadOptionsToView()
     }
-    
+
     override func viewWillAppear() {
-        // 检查表格数据
         toggleNoDataHint()
-        // 设置录制按钮回调
         setupRecordButtonCallback()
     }
 
-    // 添加
+    // MARK: - Segmented Control Setup
+
+    private func setupSegmentedControl() {
+        let labels = [
+            NSLocalizedString("bindings", comment: ""),
+            NSLocalizedString("gestures", comment: ""),
+        ]
+        segmentedControl = NSSegmentedControl(
+            labels: labels,
+            trackingMode: .selectOne,
+            target: self,
+            action: #selector(segmentChanged(_:))
+        )
+        segmentedControl.selectedSegment = 0
+        segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        tableFoot.addSubview(segmentedControl)
+
+        NSLayoutConstraint.activate([
+            segmentedControl.leadingAnchor.constraint(equalTo: tableFoot.leadingAnchor, constant: 8),
+            segmentedControl.centerYAnchor.constraint(equalTo: tableFoot.centerYAnchor),
+        ])
+    }
+
+    @objc private func segmentChanged(_ sender: NSSegmentedControl) {
+        currentMode = sender.selectedSegment == 0 ? .bindings : .gestures
+        tableView.reloadData()
+        toggleNoDataHint()
+        updateDelButtonState()
+    }
+
+    // MARK: - 添加/删除
+
     @IBAction func addItemClick(_ sender: NSButton) {
         recorder.startRecording(from: sender)
     }
-    // 删除
+
     @IBAction func removeItemClick(_ sender: NSButton) {
-        // 确保选择了行
         guard tableView.selectedRow != -1 else { return }
-        // 统一通过 removeButtonBinding 处理删除逻辑
-        let binding = buttonBindings[tableView.selectedRow]
-        removeButtonBinding(id: binding.id)
-        // 更新删除按钮状态
+        switch currentMode {
+        case .bindings:
+            let binding = buttonBindings[tableView.selectedRow]
+            removeButtonBinding(id: binding.id)
+        case .gestures:
+            let binding = gestureBindings[tableView.selectedRow]
+            removeGestureBinding(id: binding.id)
+        }
         updateDelButtonState()
     }
 }
 
-/**
- * 数据持久化
- **/
+// MARK: - Data Persistence
+
 extension PreferencesButtonsViewController {
-    // 从 Options 加载到界面
+
     func loadOptionsToView() {
         buttonBindings = Options.shared.buttons.binding
+        gestureBindings = Options.shared.gestures.binding
         tableView.reloadData()
         toggleNoDataHint()
     }
 
-    // 保存界面到 Options, 并同步 divert 状态
-    func syncViewWithOptions() {
+    // 保存按钮绑定并同步 HID++ divert
+    func syncButtonsWithOptions() {
         Options.shared.buttons.binding = buttonBindings
         ButtonUtils.shared.invalidateCache()
-        // 绑定变更后同步 HID++ divert: 只 divert 有绑定的按键
         LogitechHIDManager.shared.syncDivertWithBindings()
     }
 
-    // 更新删除按钮状态
+    // 保存手势绑定
+    func syncGesturesWithOptions() {
+        Options.shared.gestures.binding = gestureBindings
+        GestureProcessor.shared.invalidateCache()
+    }
+
     func updateDelButtonState() {
         delButton.isEnabled = tableView.selectedRow != -1
     }
 
-    // 设置录制按钮回调
     private func setupRecordButtonCallback() {
         createButton.onMouseDown = { [weak self] target in
             self?.recorder.startRecording(from: target)
         }
     }
-    
-    private func addRecordedEvent(_ event: InputEvent, isDuplicate: Bool) {
-        let recordedEvent = RecordedEvent(from: event)
 
+    // MARK: - Button Binding CRUD
+
+    private func addButtonRecordedEvent(_ event: InputEvent, isDuplicate: Bool) {
+        let recordedEvent = RecordedEvent(from: event)
         if isDuplicate {
             if let existing = buttonBindings.first(where: { $0.triggerEvent == recordedEvent }) {
                 highlightExistingRow(with: existing.id)
             }
             return
         }
-
         let binding = ButtonBinding(triggerEvent: recordedEvent, systemShortcutName: "", isEnabled: false)
         buttonBindings.append(binding)
         tableView.reloadData()
         toggleNoDataHint()
-        syncViewWithOptions()
+        syncButtonsWithOptions()
     }
 
-    // 高亮已存在的行 (用于重复录制的视觉反馈)
     private func highlightExistingRow(with id: UUID) {
         guard let row = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
         tableView.deselectAll(nil)
@@ -118,139 +170,192 @@ extension PreferencesButtonsViewController {
         }
     }
 
-    // 删除按钮绑定
     func removeButtonBinding(id: UUID) {
         buttonBindings.removeAll(where: { $0.id == id })
         tableView.reloadData()
         toggleNoDataHint()
-        syncViewWithOptions()
+        syncButtonsWithOptions()
     }
 
-    /// 更新按钮绑定
-    /// - Parameters:
-    ///   - id: 绑定记录的唯一标识
-    ///   - shortcut: 系统快捷键对象,nil 表示清除绑定
     func updateButtonBinding(id: UUID, with shortcut: SystemShortcut.Shortcut?) {
         guard let index = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
-
-        let oldBinding = buttonBindings[index]
-
-        let updatedBinding: ButtonBinding
+        let old = buttonBindings[index]
         if let shortcut = shortcut {
-            // 绑定快捷键:直接使用快捷键的 identifier
-            updatedBinding = ButtonBinding(
-                id: oldBinding.id,
-                triggerEvent: oldBinding.triggerEvent,
-                systemShortcutName: shortcut.identifier,
-                isEnabled: true
-            )
+            buttonBindings[index] = ButtonBinding(id: old.id, triggerEvent: old.triggerEvent, systemShortcutName: shortcut.identifier, isEnabled: true)
         } else {
-            // 清除绑定:保持触发事件,清空快捷键名称并禁用
-            updatedBinding = ButtonBinding(
-                id: oldBinding.id,
-                triggerEvent: oldBinding.triggerEvent,
-                systemShortcutName: "",
-                isEnabled: false
-            )
+            buttonBindings[index] = ButtonBinding(id: old.id, triggerEvent: old.triggerEvent, systemShortcutName: "", isEnabled: false)
         }
-
-        buttonBindings[index] = updatedBinding
-        syncViewWithOptions()
+        syncButtonsWithOptions()
     }
 
-    /// 更新按钮绑定 (自定义快捷键)
     func updateButtonBinding(id: UUID, withCustomName name: String) {
         guard let index = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
         let old = buttonBindings[index]
-        buttonBindings[index] = ButtonBinding(
-            id: old.id,
-            triggerEvent: old.triggerEvent,
-            systemShortcutName: name,
-            isEnabled: true,
-            createdAt: old.createdAt
-        )
-        syncViewWithOptions()
+        buttonBindings[index] = ButtonBinding(id: old.id, triggerEvent: old.triggerEvent, systemShortcutName: name, isEnabled: true, createdAt: old.createdAt)
+        syncButtonsWithOptions()
+    }
+
+    // MARK: - Gesture Binding CRUD
+
+    private func addGestureRecordedEvent(_ event: InputEvent, isDuplicate: Bool) {
+        let recordedEvent = RecordedEvent(from: event)
+        if isDuplicate {
+            // 高亮已存在的手势行 (无特殊 highlight 方法, 只滚动到可见)
+            if let row = gestureBindings.firstIndex(where: { $0.triggerEvent == recordedEvent }) {
+                tableView.deselectAll(nil)
+                tableView.scrollRowToVisible(row)
+            }
+            return
+        }
+        let binding = GestureBinding(triggerEvent: recordedEvent)
+        gestureBindings.append(binding)
+        tableView.reloadData()
+        toggleNoDataHint()
+        syncGesturesWithOptions()
+    }
+
+    func removeGestureBinding(id: UUID) {
+        gestureBindings.removeAll(where: { $0.id == id })
+        tableView.reloadData()
+        toggleNoDataHint()
+        syncGesturesWithOptions()
+    }
+
+    func updateGestureBinding(id: UUID, direction: GestureDirection, shortcut: SystemShortcut.Shortcut?) {
+        guard let index = gestureBindings.firstIndex(where: { $0.id == id }) else { return }
+        gestureBindings[index] = gestureBindings[index].withAction(shortcut?.identifier, for: direction)
+        syncGesturesWithOptions()
     }
 }
 
-/**
- * 表格区域渲染及操作
- **/
+// MARK: - Table View Delegate & Data Source
+
 extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewDataSource {
-    // 无数据
+
     func toggleNoDataHint() {
-        let hasData = buttonBindings.count != 0
+        let rowCount = currentRowCount
+        let hasData = rowCount != 0
         updateViewVisibility(view: createButton, visible: !hasData)
         updateViewVisibility(view: tableEmpty, visible: !hasData)
         updateViewVisibility(view: tableHead, visible: hasData)
-        updateViewVisibility(view: tableFoot, visible: hasData)
+        // tableFoot always visible so the segmented control stays accessible
+        updateViewVisibility(view: tableFoot, visible: true)
     }
+
     private func updateViewVisibility(view: NSView, visible: Bool) {
         view.isHidden = !visible
         view.animator().alphaValue = visible ? 1 : 0
     }
-    
-    // 表格数据源
+
+    private var currentRowCount: Int {
+        switch currentMode {
+        case .bindings: return buttonBindings.count
+        case .gestures: return gestureBindings.count
+        }
+    }
+
+    // MARK: - Data Source
+
+    func numberOfRows(in tableView: NSTableView) -> Int {
+        return currentRowCount
+    }
+
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         guard let tableColumnIdentifier = tableColumn?.identifier else { return nil }
 
-        // 创建 Cell
-        if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? ButtonTableCellView {
-            let binding = buttonBindings[row]
+        switch currentMode {
+        case .bindings:
+            if let cell = tableView.makeView(withIdentifier: tableColumnIdentifier, owner: self) as? ButtonTableCellView {
+                let binding = buttonBindings[row]
+                cell.configure(
+                    with: binding,
+                    onShortcutSelected: { [weak self] shortcut in
+                        self?.updateButtonBinding(id: binding.id, with: shortcut)
+                    },
+                    onCustomShortcutRecorded: { [weak self] customName in
+                        self?.updateButtonBinding(id: binding.id, withCustomName: customName)
+                    },
+                    onDeleteRequested: { [weak self] in
+                        self?.removeButtonBinding(id: binding.id)
+                    }
+                )
+                return cell
+            }
 
-            cell.configure(
-                with: binding,
-                onShortcutSelected: { [weak self] shortcut in
-                    self?.updateButtonBinding(id: binding.id, with: shortcut)
-                },
-                onCustomShortcutRecorded: { [weak self] customName in
-                    self?.updateButtonBinding(id: binding.id, withCustomName: customName)
-                },
-                onDeleteRequested: { [weak self] in
-                    self?.removeButtonBinding(id: binding.id)
-                }
-            )
-            return cell
+        case .gestures:
+            var cell = tableView.makeView(withIdentifier: Self.gestureCellIdentifier, owner: self) as? GestureTableCellView
+            if cell == nil {
+                cell = GestureTableCellView(frame: .zero)
+                cell?.identifier = Self.gestureCellIdentifier
+            }
+            if let cell = cell {
+                let binding = gestureBindings[row]
+                cell.configure(
+                    with: binding,
+                    onDirectionActionChanged: { [weak self] direction, shortcut in
+                        self?.updateGestureBinding(id: binding.id, direction: direction, shortcut: shortcut)
+                    },
+                    onDeleteRequested: { [weak self] in
+                        self?.removeGestureBinding(id: binding.id)
+                    }
+                )
+                return cell
+            }
         }
 
         return nil
     }
-    
-    // 行高
+
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        return 44
-    }
-    
-    // 行数
-    func numberOfRows(in tableView: NSTableView) -> Int {
-        return buttonBindings.count
+        switch currentMode {
+        case .bindings: return 44
+        case .gestures: return 144
+        }
     }
 
-    // 选择变化
     func tableViewSelectionDidChange(_ notification: Notification) {
         updateDelButtonState()
     }
 
-    // Type Selection 支持
     func tableView(_ tableView: NSTableView, typeSelectStringFor tableColumn: NSTableColumn?, row: Int) -> String? {
-        guard row < buttonBindings.count else { return nil }
-        let components = buttonBindings[row].triggerEvent.displayComponents
-        // 去掉第一项（修饰键），只保留实际按键用于匹配
-        let keyOnly = components.count > 1 ? Array(components.dropFirst()) : components
-        return keyOnly.joined(separator: " ")
+        switch currentMode {
+        case .bindings:
+            guard row < buttonBindings.count else { return nil }
+            let components = buttonBindings[row].triggerEvent.displayComponents
+            let keyOnly = components.count > 1 ? Array(components.dropFirst()) : components
+            return keyOnly.joined(separator: " ")
+        case .gestures:
+            guard row < gestureBindings.count else { return nil }
+            let components = gestureBindings[row].triggerEvent.displayComponents
+            let keyOnly = components.count > 1 ? Array(components.dropFirst()) : components
+            return keyOnly.joined(separator: " ")
+        }
     }
 }
 
-// MARK: - EventRecorderDelegate
+// MARK: - KeyRecorderDelegate
+
 extension PreferencesButtonsViewController: KeyRecorderDelegate {
+
     func validateRecordedEvent(_ recorder: KeyRecorder, event: InputEvent) -> Bool {
         let recordedEvent = RecordedEvent(from: event)
-        return !buttonBindings.contains(where: { $0.triggerEvent == recordedEvent })
+        switch currentMode {
+        case .bindings:
+            return !buttonBindings.contains(where: { $0.triggerEvent == recordedEvent })
+        case .gestures:
+            return !gestureBindings.contains(where: { $0.triggerEvent == recordedEvent })
+        }
     }
 
     func onEventRecorded(_ recorder: KeyRecorder, didRecordEvent event: InputEvent, isDuplicate: Bool) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.66) { [weak self] in
-            self?.addRecordedEvent(event, isDuplicate: isDuplicate)
+            guard let self = self else { return }
+            switch self.currentMode {
+            case .bindings:
+                self.addButtonRecordedEvent(event, isDuplicate: isDuplicate)
+            case .gestures:
+                self.addGestureRecordedEvent(event, isDuplicate: isDuplicate)
+            }
         }
     }
 }

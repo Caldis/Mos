@@ -18,6 +18,7 @@
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* MosTests/ButtonBindingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F3 /* MosTests/ButtonBindingTests.swift */; };
 		B2C3D4E5F6A7B8C9D0E1F200 /* MosTests/ButtonUtilsCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F201 /* MosTests/ButtonUtilsCacheTests.swift */; };
 		B3D4E5F6A7B8C9D0E1F40100 /* MosTests/MouseInteractionSessionControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D4E5F6A7B8C9D0E1F40101 /* MosTests/MouseInteractionSessionControllerTests.swift */; };
+		D4E5F6A7B8C9D0E1F50300 /* MosTests/GestureProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F6A7B8C9D0E1F50301 /* MosTests/GestureProcessorTests.swift */; };
 		BF0CC4D63CC0E5FE8FCF6E01 /* MosTests/ScrollFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31AFD832EF49533E8168BAA0 /* MosTests/ScrollFilterTests.swift */; };
 		C3D4E5F6A7B8C9D0E1F30200 /* MosTests/InputProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F30201 /* MosTests/InputProcessorTests.swift */; };
 		FE05F3803FB8885AAC70ADC5 /* MosTests/ScrollCoreHotkeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CF5441214A14BB8FFEDA5 /* MosTests/ScrollCoreHotkeyTests.swift */; };
@@ -46,6 +47,7 @@
 		A1B2C3D4E5F6A7B8C9D0E1F3 /* MosTests/ButtonBindingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ButtonBindingTests.swift; sourceTree = SOURCE_ROOT; };
 		B2C3D4E5F6A7B8C9D0E1F201 /* MosTests/ButtonUtilsCacheTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ButtonUtilsCacheTests.swift; sourceTree = SOURCE_ROOT; };
 		B3D4E5F6A7B8C9D0E1F40101 /* MosTests/MouseInteractionSessionControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/MouseInteractionSessionControllerTests.swift; sourceTree = SOURCE_ROOT; };
+		D4E5F6A7B8C9D0E1F50301 /* MosTests/GestureProcessorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/GestureProcessorTests.swift; sourceTree = SOURCE_ROOT; };
 		C3D4E5F6A7B8C9D0E1F30201 /* MosTests/InputProcessorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/InputProcessorTests.swift; sourceTree = SOURCE_ROOT; };
 		D3A7FDB8A6001907C9F156D6 /* MosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1B8B50E951D72C6195DBA3A /* MosTests/ScrollEventTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollEventTests.swift; sourceTree = SOURCE_ROOT; };
@@ -95,6 +97,7 @@
 				B2C3D4E5F6A7B8C9D0E1F201 /* MosTests/ButtonUtilsCacheTests.swift */,
 				C3D4E5F6A7B8C9D0E1F30201 /* MosTests/InputProcessorTests.swift */,
 				B3D4E5F6A7B8C9D0E1F40101 /* MosTests/MouseInteractionSessionControllerTests.swift */,
+				D4E5F6A7B8C9D0E1F50301 /* MosTests/GestureProcessorTests.swift */,
 				9D4A7F821E5626C63C45D698 /* MosTests/InterpolatorTests.swift */,
 				2D6CF5441214A14BB8FFEDA5 /* MosTests/ScrollCoreHotkeyTests.swift */,
 				25DD10CB06A5D177E3BD0845 /* MosTests/ScrollDispatchContextTests.swift */,
@@ -267,6 +270,7 @@
 				B2C3D4E5F6A7B8C9D0E1F200 /* MosTests/ButtonUtilsCacheTests.swift in Sources */,
 				C3D4E5F6A7B8C9D0E1F30200 /* MosTests/InputProcessorTests.swift in Sources */,
 				B3D4E5F6A7B8C9D0E1F40100 /* MosTests/MouseInteractionSessionControllerTests.swift in Sources */,
+				D4E5F6A7B8C9D0E1F50300 /* MosTests/GestureProcessorTests.swift in Sources */,
 				FE05F3803FB8885AAC70ADC5 /* MosTests/ScrollCoreHotkeyTests.swift in Sources */,
 				0E590C87FC41F66FF48D518F /* MosTests/ScrollDispatchContextTests.swift in Sources */,
 				296126EA068FF77D423ACAA9 /* MosTests/ScrollEventTests.swift in Sources */,
