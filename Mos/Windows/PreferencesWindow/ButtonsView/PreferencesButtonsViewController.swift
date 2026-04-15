@@ -77,9 +77,31 @@ class PreferencesButtonsViewController: NSViewController {
         segmentedControl.translatesAutoresizingMaskIntoConstraints = false
         tableFoot.addSubview(segmentedControl)
 
+        // Move +/- buttons to the trailing edge so they don't overlap the segmented control.
+        // The storyboard placed addButton at leading+6 and delButton immediately after it.
+        // Deactivate those conflicting constraints before adding new trailing ones.
+        for constraint in tableFoot.constraints {
+            let firstView  = constraint.firstItem  as? NSView
+            let secondView = constraint.secondItem as? NSView
+            let touchesButton = (firstView === addButton || firstView === delButton ||
+                                 secondView === addButton || secondView === delButton)
+            if touchesButton {
+                constraint.isActive = false
+            }
+        }
+
         NSLayoutConstraint.activate([
+            // Segmented control: leading
             segmentedControl.leadingAnchor.constraint(equalTo: tableFoot.leadingAnchor, constant: 8),
             segmentedControl.centerYAnchor.constraint(equalTo: tableFoot.centerYAnchor),
+
+            // Delete button: trailing edge
+            delButton.trailingAnchor.constraint(equalTo: tableFoot.trailingAnchor, constant: -6),
+            delButton.centerYAnchor.constraint(equalTo: tableFoot.centerYAnchor),
+
+            // Add button: immediately to the left of delete button
+            addButton.trailingAnchor.constraint(equalTo: delButton.leadingAnchor, constant: -2),
+            addButton.centerYAnchor.constraint(equalTo: tableFoot.centerYAnchor),
         ])
     }
 
@@ -226,6 +248,12 @@ extension PreferencesButtonsViewController {
         gestureBindings[index] = gestureBindings[index].withAction(shortcut?.identifier, for: direction)
         syncGesturesWithOptions()
     }
+
+    func updateGestureInputMode(id: UUID, mode: GestureInputMode) {
+        guard let index = gestureBindings.firstIndex(where: { $0.id == id }) else { return }
+        gestureBindings[index] = gestureBindings[index].withInputMode(mode)
+        syncGesturesWithOptions()
+    }
 }
 
 // MARK: - Table View Delegate & Data Source
@@ -294,6 +322,9 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
                     with: binding,
                     onDirectionActionChanged: { [weak self] direction, shortcut in
                         self?.updateGestureBinding(id: binding.id, direction: direction, shortcut: shortcut)
+                    },
+                    onInputModeChanged: { [weak self] mode in
+                        self?.updateGestureInputMode(id: binding.id, mode: mode)
                     },
                     onDeleteRequested: { [weak self] in
                         self?.removeGestureBinding(id: binding.id)

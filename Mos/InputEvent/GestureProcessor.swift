@@ -103,10 +103,13 @@ class GestureProcessor {
     // MARK: - Motion Event Handling
 
     /// 处理鼠标运动事件 (由 MouseInteractionSessionController 的 gestureMotionHandler 调用)
+    /// 仅处理 mouseMovement 模式的手势
     func handleMotionEvent(_ event: CGEvent) {
         guard case .pending(let binding, let savedType, let savedCode, let cursorPos, var dx, var dy) = state else {
             return
         }
+        // 滚轮模式手势不通过 motion 事件触发
+        guard binding.inputMode == .mouseMovement else { return }
 
         // 累积 delta
         let deltaX = Double(event.getIntegerValueField(.mouseEventDeltaX))
@@ -131,6 +134,52 @@ class GestureProcessor {
                 ShortcutExecutor.shared.execute(named: actionName)
             }
             state = .active(binding: binding)
+        }
+    }
+
+    // MARK: - Scroll Event Handling
+
+    /// 处理滚轮事件 (由 ScrollCore.scrollEventCallBack 调用)
+    /// - pending + scrollWheel: 积累 delta, 识别方向, 消费事件
+    /// - active  + scrollWheel: 持续消费, 阻止后续滚轮进入平滑管线
+    /// - Returns: true 表示事件已被手势系统消费 (ScrollCore 应 return nil)
+    func handleScrollEvent(_ event: CGEvent) -> Bool {
+        switch state {
+        case .pending(let binding, let savedType, let savedCode, let cursorPos, var dx, var dy):
+            guard binding.inputMode == .scrollWheel else { return false }
+
+            // 滚轮 delta: axis1 = 垂直 (向上为负), axis2 = 水平 (向右为正)
+            let deltaY = Double(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
+            let deltaX = Double(event.getIntegerValueField(.scrollWheelEventDeltaAxis2))
+            dx += deltaX
+            dy += deltaY
+
+            // 更新 pending 状态中的累积值
+            state = .pending(
+                binding: binding,
+                savedCGEventType: savedType,
+                savedButtonCode: savedCode,
+                cursorPosition: cursorPos,
+                accumulatedDX: dx,
+                accumulatedDY: dy
+            )
+
+            // 尝试识别方向
+            if let direction = resolveDirection(dx: dx, dy: dy, threshold: binding.threshold) {
+                if let actionName = binding.action(for: direction), !actionName.isEmpty {
+                    ShortcutExecutor.shared.execute(named: actionName)
+                }
+                state = .active(binding: binding)
+            }
+
+            return true
+
+        case .active(let binding):
+            // 触发键仍持按中: 继续屏蔽滚轮事件, 防止进入平滑管线
+            return binding.inputMode == .scrollWheel
+
+        case .idle:
+            return false
         }
     }
 
@@ -200,7 +249,10 @@ class GestureProcessor {
             accumulatedDY: 0
         )
 
-        startGestureTracking()
+        // 滚轮模式不需要 motion tap; 鼠标移动模式才启动 motion 追踪
+        if binding.inputMode == .mouseMovement {
+            startGestureTracking()
+        }
         return .consumed
     }
 

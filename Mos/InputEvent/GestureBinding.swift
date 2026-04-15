@@ -8,6 +8,14 @@
 
 import Cocoa
 
+// MARK: - GestureInputMode
+
+/// 手势输入模式: 鼠标移动 或 滚轮滚动
+enum GestureInputMode: String, Codable, CaseIterable {
+    case mouseMovement = "mouseMovement"  // 移动鼠标触发方向 (默认)
+    case scrollWheel   = "scrollWheel"   // 滚轮滚动触发方向
+}
+
 // MARK: - GestureDirection
 
 /// 手势方向
@@ -59,8 +67,13 @@ struct GestureBinding: Codable, Equatable {
     /// 右方向动作名称
     var rightAction: String?
 
-    /// 移动阈值 (像素), 超过后触发方向识别 (默认 30.0)
+    /// 移动阈值, 超过后触发方向识别
+    /// mouseMovement 模式: 像素距离 (默认 30.0)
+    /// scrollWheel 模式: 滚轮行数 (默认 3.0)
     var threshold: Double
+
+    /// 手势输入模式 (默认 mouseMovement, 向后兼容)
+    var inputMode: GestureInputMode
 
     /// 是否启用
     var isEnabled: Bool
@@ -77,7 +90,8 @@ struct GestureBinding: Codable, Equatable {
         downAction: String? = nil,
         leftAction: String? = nil,
         rightAction: String? = nil,
-        threshold: Double = 30.0,
+        inputMode: GestureInputMode = .mouseMovement,
+        threshold: Double? = nil,
         isEnabled: Bool = true,
         createdAt: Date = Date()
     ) {
@@ -87,9 +101,33 @@ struct GestureBinding: Codable, Equatable {
         self.downAction = downAction
         self.leftAction = leftAction
         self.rightAction = rightAction
-        self.threshold = threshold
+        self.inputMode = inputMode
+        // Default threshold depends on input mode
+        self.threshold = threshold ?? (inputMode == .scrollWheel ? 3.0 : 30.0)
         self.isEnabled = isEnabled
         self.createdAt = createdAt
+    }
+
+    // MARK: - Codable (backward-compatible)
+
+    enum CodingKeys: String, CodingKey {
+        case id, triggerEvent, upAction, downAction, leftAction, rightAction
+        case threshold, inputMode, isEnabled, createdAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id           = try c.decode(UUID.self,          forKey: .id)
+        triggerEvent = try c.decode(RecordedEvent.self,  forKey: .triggerEvent)
+        upAction     = try c.decodeIfPresent(String.self, forKey: .upAction)
+        downAction   = try c.decodeIfPresent(String.self, forKey: .downAction)
+        leftAction   = try c.decodeIfPresent(String.self, forKey: .leftAction)
+        rightAction  = try c.decodeIfPresent(String.self, forKey: .rightAction)
+        // inputMode defaults to .mouseMovement for bindings saved before this field existed
+        inputMode    = (try? c.decodeIfPresent(GestureInputMode.self, forKey: .inputMode)) ?? .mouseMovement
+        threshold    = try c.decode(Double.self,        forKey: .threshold)
+        isEnabled    = try c.decode(Bool.self,          forKey: .isEnabled)
+        createdAt    = try c.decode(Date.self,          forKey: .createdAt)
     }
 
     // MARK: - 方向动作访问
@@ -116,6 +154,14 @@ struct GestureBinding: Codable, Equatable {
         return copy
     }
 
+    /// 设置输入模式 (返回更新后的副本, 并重置阈值为模式默认值)
+    func withInputMode(_ mode: GestureInputMode) -> GestureBinding {
+        var copy = self
+        copy.inputMode = mode
+        copy.threshold = (mode == .scrollWheel) ? 3.0 : 30.0
+        return copy
+    }
+
     /// 是否有任意方向已配置动作
     var hasAnyAction: Bool {
         return upAction != nil || downAction != nil || leftAction != nil || rightAction != nil
@@ -131,6 +177,7 @@ struct GestureBinding: Codable, Equatable {
                lhs.leftAction == rhs.leftAction &&
                lhs.rightAction == rhs.rightAction &&
                lhs.threshold == rhs.threshold &&
+               lhs.inputMode == rhs.inputMode &&
                lhs.isEnabled == rhs.isEnabled &&
                lhs.createdAt == rhs.createdAt
     }

@@ -13,6 +13,7 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
     // MARK: - UI Components
 
     private var keyPreview: KeyPreview!
+    private var inputModeControl: NSSegmentedControl!
     private var upPopUp: NSPopUpButton!
     private var downPopUp: NSPopUpButton!
     private var leftPopUp: NSPopUpButton!
@@ -28,6 +29,7 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
     // MARK: - Callbacks
 
     private var onDirectionActionChanged: ((GestureDirection, SystemShortcut.Shortcut?) -> Void)?
+    private var onInputModeChanged: ((GestureInputMode) -> Void)?
     private var onDeleteRequested: (() -> Void)?
 
     // MARK: - Tags
@@ -70,10 +72,35 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
     // MARK: - Layout
 
     private func setupLayout() {
+        // Right-click context menu for deletion
+        let contextMenu = NSMenu()
+        let deleteItem = NSMenuItem(
+            title: NSLocalizedString("delete", comment: ""),
+            action: #selector(deleteGesture(_:)),
+            keyEquivalent: ""
+        )
+        deleteItem.target = self
+        contextMenu.addItem(deleteItem)
+        self.menu = contextMenu
+
         // --- KeyPreview ---
         keyPreview = KeyPreview()
         keyPreview.translatesAutoresizingMaskIntoConstraints = false
         addSubview(keyPreview)
+
+        // --- Input mode selector ---
+        inputModeControl = NSSegmentedControl(
+            labels: [
+                NSLocalizedString("gestureMouseMovement", comment: ""),
+                NSLocalizedString("gestureScrollWheel", comment: ""),
+            ],
+            trackingMode: .selectOne,
+            target: self,
+            action: #selector(inputModeChanged(_:))
+        )
+        inputModeControl.selectedSegment = 0
+        inputModeControl.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(inputModeControl)
 
         // --- Direction rows (visual order: up, left, right, down) ---
         let directionStack = NSStackView()
@@ -91,12 +118,15 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
 
         // --- Auto Layout ---
         NSLayoutConstraint.activate([
-            // KeyPreview: left-anchored, vertically centered
+            // KeyPreview: left-anchored, upper half
             keyPreview.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            keyPreview.centerYAnchor.constraint(equalTo: centerYAnchor),
+            keyPreview.topAnchor.constraint(equalTo: topAnchor, constant: 12),
 
-            // Direction stack: to the right of center (generous left margin),
-            // vertically centered
+            // Input mode control: below keyPreview, left-aligned with it
+            inputModeControl.leadingAnchor.constraint(equalTo: keyPreview.leadingAnchor),
+            inputModeControl.topAnchor.constraint(equalTo: keyPreview.bottomAnchor, constant: 8),
+
+            // Direction stack: to the right of center, vertically centered
             directionStack.leadingAnchor.constraint(equalTo: centerXAnchor, constant: -20),
             directionStack.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8),
             directionStack.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -150,9 +180,11 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
     func configure(
         with binding: GestureBinding,
         onDirectionActionChanged: @escaping (GestureDirection, SystemShortcut.Shortcut?) -> Void,
+        onInputModeChanged: @escaping (GestureInputMode) -> Void,
         onDeleteRequested: @escaping () -> Void
     ) {
         self.onDirectionActionChanged = onDirectionActionChanged
+        self.onInputModeChanged = onInputModeChanged
         self.onDeleteRequested = onDeleteRequested
 
         // Update state cache
@@ -160,6 +192,9 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
         currentActions[.down]  = binding.downAction
         currentActions[.left]  = binding.leftAction
         currentActions[.right] = binding.rightAction
+
+        // Input mode selector
+        inputModeControl.selectedSegment = binding.inputMode == .scrollWheel ? 1 : 0
 
         // KeyPreview
         keyPreview.update(from: binding.triggerEvent.displayComponents, status: .normal)
@@ -228,6 +263,15 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
 
         // Notify caller
         onDirectionActionChanged?(direction, shortcut)
+    }
+
+    @objc private func inputModeChanged(_ sender: NSSegmentedControl) {
+        let mode: GestureInputMode = sender.selectedSegment == 1 ? .scrollWheel : .mouseMovement
+        onInputModeChanged?(mode)
+    }
+
+    @objc private func deleteGesture(_ sender: NSMenuItem) {
+        onDeleteRequested?()
     }
 
     /// Walks through the sender's menu hierarchy to find which of our popups owns it.

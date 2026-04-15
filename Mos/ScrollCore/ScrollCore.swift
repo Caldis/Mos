@@ -64,6 +64,10 @@ class ScrollCore {
 #endif
             return Unmanaged.passUnretained(event)
         }
+        // 手势滚轮模式: 如果有 pending 的滚轮手势, 消费此滚轮事件并识别方向
+        if GestureProcessor.shared.handleScrollEvent(event) {
+            return nil
+        }
         // 不处理触控板
         // 无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入
         // 无法区分 Magic Mouse, 因为其滚动特征与内置的 Trackpad 一致

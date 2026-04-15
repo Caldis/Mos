@@ -13,14 +13,15 @@ final class GestureProcessorTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// 创建用于测试的 GestureBinding (默认中键触发)
+    /// 创建用于测试的 GestureBinding (默认中键触发, mouseMovement 模式)
     private func makeGestureBinding(
         code: UInt16 = 2,               // 中键 button code = 2
         upAction: String? = "missionControl",
         downAction: String? = "appExpose",
         leftAction: String? = "moveSpaceLeft",
         rightAction: String? = "moveSpaceRight",
-        threshold: Double = 30.0
+        inputMode: GestureInputMode = .mouseMovement,
+        threshold: Double? = nil
     ) -> GestureBinding {
         let trigger = RecordedEvent(
             type: .mouse,
@@ -35,8 +36,18 @@ final class GestureProcessorTests: XCTestCase {
             downAction: downAction,
             leftAction: leftAction,
             rightAction: rightAction,
+            inputMode: inputMode,
             threshold: threshold
         )
+    }
+
+    /// 创建用于测试的滚轮手势 CGEvent
+    private func makeCGScrollEvent(deltaAxis1: Int64, deltaAxis2: Int64 = 0) -> CGEvent {
+        let event = CGEvent(source: CGEventSource(stateID: .hidSystemState))!
+        event.type = .scrollWheel
+        event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: deltaAxis1)
+        event.setIntegerValueField(.scrollWheelEventDeltaAxis2, value: deltaAxis2)
+        return event
     }
 
     /// 创建 mouse InputEvent
@@ -312,7 +323,157 @@ final class GestureProcessorTests: XCTestCase {
         XCTAssertEqual(binding.leftAction, decoded.leftAction)
         XCTAssertEqual(binding.rightAction, decoded.rightAction)
         XCTAssertEqual(binding.threshold, decoded.threshold)
+        XCTAssertEqual(binding.inputMode, decoded.inputMode)
         XCTAssertEqual(binding.isEnabled, decoded.isEnabled)
+    }
+
+    func testGestureBinding_codable_backwardCompatible_missingInputMode() throws {
+        // Simulate JSON from before inputMode was added (no inputMode key)
+        let json = """
+        {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "triggerEvent": {
+            "type": "mouse", "code": 2, "modifiers": 0,
+            "displayComponents": ["🖱3"]
+          },
+          "threshold": 30.0,
+          "isEnabled": true,
+          "createdAt": 0
+        }
+        """.data(using: .utf8)!
+        let decoded = try JSONDecoder().decode(GestureBinding.self, from: json)
+        XCTAssertEqual(decoded.inputMode, .mouseMovement,
+                       "Old bindings without inputMode key should default to .mouseMovement")
+    }
+
+    // MARK: - GestureInputMode Tests
+
+    func testGestureInputMode_defaultIsMouseMovement() {
+        let binding = makeGestureBinding()
+        XCTAssertEqual(binding.inputMode, .mouseMovement)
+    }
+
+    func testGestureInputMode_scrollWheelDefaultThreshold() {
+        let binding = makeGestureBinding(inputMode: .scrollWheel)
+        XCTAssertEqual(binding.threshold, 3.0,
+                       "scrollWheel mode should have smaller default threshold")
+    }
+
+    func testGestureInputMode_mouseMovementDefaultThreshold() {
+        let binding = makeGestureBinding(inputMode: .mouseMovement)
+        XCTAssertEqual(binding.threshold, 30.0)
+    }
+
+    func testGestureBinding_withInputMode_resetsThreshold() {
+        let original = makeGestureBinding(inputMode: .mouseMovement)
+        XCTAssertEqual(original.threshold, 30.0)
+
+        let updated = original.withInputMode(.scrollWheel)
+        XCTAssertEqual(updated.inputMode, .scrollWheel)
+        XCTAssertEqual(updated.threshold, 3.0, "Switching to scrollWheel should reset threshold to 3.0")
+        XCTAssertEqual(original.inputMode, .mouseMovement, "Original should be unchanged")
+    }
+
+    // MARK: - Scroll Gesture State Machine Tests
+
+    func testHandleScrollEvent_whenIdle_notConsumed() {
+        // No pending gesture → scroll passes through
+        let scrollEvent = makeCGScrollEvent(deltaAxis1: -5)
+        let consumed = GestureProcessor.shared.handleScrollEvent(scrollEvent)
+        XCTAssertFalse(consumed, "Scroll event should not be consumed when no gesture is pending")
+    }
+
+    func testHandleScrollEvent_whenPendingMouseMovementBinding_notConsumed() {
+        // Pending but movement-mode binding → scroll should NOT be consumed
+        let binding = makeGestureBinding(code: 2, inputMode: .mouseMovement)
+        Options.shared.gestures.binding = [binding]
+        GestureProcessor.shared.invalidateCache()
+
+        let downEvent = makeMouseEvent(code: 2, phase: .down)
+        _ = GestureProcessor.shared.handleButtonEvent(downEvent, cgEvent: makeCGMouseEvent())
+
+        let scrollEvent = makeCGScrollEvent(deltaAxis1: -5)
+        let consumed = GestureProcessor.shared.handleScrollEvent(scrollEvent)
+        XCTAssertFalse(consumed, "Scroll event should not be consumed for mouseMovement binding")
+    }
+
+    func testHandleScrollEvent_whenPendingScrollWheelBinding_consumed() {
+        let binding = makeGestureBinding(code: 2, inputMode: .scrollWheel, threshold: 3.0)
+        Options.shared.gestures.binding = [binding]
+        GestureProcessor.shared.invalidateCache()
+
+        let downEvent = makeMouseEvent(code: 2, phase: .down)
+        _ = GestureProcessor.shared.handleButtonEvent(downEvent, cgEvent: makeCGMouseEvent())
+
+        // Scroll event should be consumed (gesture pending, scroll mode)
+        let scrollEvent = makeCGScrollEvent(deltaAxis1: -1)
+        let consumed = GestureProcessor.shared.handleScrollEvent(scrollEvent)
+        XCTAssertTrue(consumed, "Scroll event should be consumed when scroll gesture is pending")
+    }
+
+    func testHandleScrollEvent_scrollWheelBinding_accumulatesAndFires() {
+        let binding = makeGestureBinding(
+            code: 2, upAction: "missionControl", inputMode: .scrollWheel, threshold: 3.0
+        )
+        Options.shared.gestures.binding = [binding]
+        GestureProcessor.shared.invalidateCache()
+
+        let downEvent = makeMouseEvent(code: 2, phase: .down)
+        _ = GestureProcessor.shared.handleButtonEvent(downEvent, cgEvent: makeCGMouseEvent())
+
+        // Three scroll ticks upward (negative axis1 = up): should reach threshold
+        for _ in 0..<3 {
+            let scrollEvent = makeCGScrollEvent(deltaAxis1: -1)
+            _ = GestureProcessor.shared.handleScrollEvent(scrollEvent)
+        }
+
+        // After crossing threshold the state should be .active
+        // Verify by releasing trigger (active state → consumed)
+        let upEvent = makeMouseEvent(code: 2, phase: .up)
+        let result = GestureProcessor.shared.handleButtonEvent(upEvent, cgEvent: makeCGMouseEvent())
+        XCTAssertEqual(result, .consumed, "After scroll gesture fires, trigger release should be consumed (active state)")
+    }
+
+    func testHandleScrollEvent_whenActive_scrollWheelBinding_stillConsumed() {
+        // After direction resolves (state = .active), subsequent scroll events while
+        // the trigger is still held should be consumed to prevent smooth scrolling pipeline
+        let binding = makeGestureBinding(
+            code: 2, upAction: "missionControl", inputMode: .scrollWheel, threshold: 3.0
+        )
+        Options.shared.gestures.binding = [binding]
+        GestureProcessor.shared.invalidateCache()
+
+        let downEvent = makeMouseEvent(code: 2, phase: .down)
+        _ = GestureProcessor.shared.handleButtonEvent(downEvent, cgEvent: makeCGMouseEvent())
+
+        // Cross threshold → transition to .active
+        for _ in 0..<3 {
+            _ = GestureProcessor.shared.handleScrollEvent(makeCGScrollEvent(deltaAxis1: -1))
+        }
+
+        // Additional scrolls while in .active state should still be consumed
+        let extraScroll = makeCGScrollEvent(deltaAxis1: -1)
+        let consumed = GestureProcessor.shared.handleScrollEvent(extraScroll)
+        XCTAssertTrue(consumed,
+                      "Scroll events in .active state should be consumed to prevent unintended smooth scrolling")
+    }
+
+    func testMotionTap_notStartedForScrollWheelBinding() {
+        let binding = makeGestureBinding(code: 2, inputMode: .scrollWheel)
+        Options.shared.gestures.binding = [binding]
+        GestureProcessor.shared.invalidateCache()
+
+        var motionTapStarted = false
+        MouseInteractionSessionController.shared.setTestingMotionTapHooks(
+            start: { motionTapStarted = true },
+            stop: {}
+        )
+
+        let downEvent = makeMouseEvent(code: 2, phase: .down)
+        _ = GestureProcessor.shared.handleButtonEvent(downEvent, cgEvent: makeCGMouseEvent())
+
+        XCTAssertFalse(motionTapStarted,
+                       "Motion tap should NOT start for scrollWheel mode gesture (no mouse movement needed)")
     }
 
     // MARK: - Private Helpers
