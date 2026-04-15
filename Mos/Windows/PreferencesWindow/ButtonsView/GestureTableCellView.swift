@@ -13,27 +13,38 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
     // MARK: - UI Components
 
     private var keyPreview: KeyPreview!
-    private var inputModeControl: NSSegmentedControl!
-    private var upPopUp: NSPopUpButton!
-    private var downPopUp: NSPopUpButton!
-    private var leftPopUp: NSPopUpButton!
+
+    // Movement popups (4 directions: ↑↓←→)
+    private var upPopUp:    NSPopUpButton!
+    private var downPopUp:  NSPopUpButton!
+    private var leftPopUp:  NSPopUpButton!
     private var rightPopUp: NSPopUpButton!
+
+    // Scroll popups (2 directions: ↑↓ only)
+    private var scrollUpPopUp:   NSPopUpButton!
+    private var scrollDownPopUp: NSPopUpButton!
 
     // MARK: - State
 
-    /// Per-direction current action identifier (nil = unbound)
+    /// Per-direction current movement action identifier (nil = unbound)
     private var currentActions: [GestureDirection: String?] = [
         .up: nil, .down: nil, .left: nil, .right: nil,
     ]
 
+    /// Per-direction current scroll action identifier (nil = unbound)
+    private var currentScrollActions: [GestureDirection: String?] = [
+        .up: nil, .down: nil,
+    ]
+
     // MARK: - Callbacks
 
-    private var onDirectionActionChanged: ((GestureDirection, SystemShortcut.Shortcut?) -> Void)?
-    private var onInputModeChanged: ((GestureInputMode) -> Void)?
+    private var onMovementActionChanged: ((GestureDirection, SystemShortcut.Shortcut?) -> Void)?
+    private var onScrollActionChanged:   ((GestureDirection, SystemShortcut.Shortcut?) -> Void)?
     private var onDeleteRequested: (() -> Void)?
 
     // MARK: - Tags
-    // Tag values match GestureDirection.allCases index: up=0, down=1, left=2, right=3
+    // Movement popup tags match GestureDirection.allCases index: up=0, down=1, left=2, right=3
+    // Scroll popup tags: scrollUp=10, scrollDown=11
 
     private static let tagForDirection: [GestureDirection: Int] = {
         var map: [GestureDirection: Int] = [:]
@@ -43,18 +54,29 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
         return map
     }()
 
-    private func direction(forTag tag: Int) -> GestureDirection? {
+    private static let scrollTagUp   = 10
+    private static let scrollTagDown = 11
+
+    private func direction(forMovementTag tag: Int) -> GestureDirection? {
         return GestureDirection.allCases.indices.contains(tag)
             ? GestureDirection.allCases[tag]
             : nil
     }
 
-    private func popUp(for direction: GestureDirection) -> NSPopUpButton {
+    private func movementPopUp(for direction: GestureDirection) -> NSPopUpButton {
         switch direction {
         case .up:    return upPopUp
         case .down:  return downPopUp
         case .left:  return leftPopUp
         case .right: return rightPopUp
+        }
+    }
+
+    private func scrollPopUp(for direction: GestureDirection) -> NSPopUpButton? {
+        switch direction {
+        case .up:   return scrollUpPopUp
+        case .down: return scrollDownPopUp
+        default:    return nil
         }
     }
 
@@ -88,67 +110,134 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
         keyPreview.translatesAutoresizingMaskIntoConstraints = false
         addSubview(keyPreview)
 
-        // --- Input mode selector ---
-        inputModeControl = NSSegmentedControl(
-            labels: [
-                NSLocalizedString("gestureMouseMovement", comment: ""),
-                NSLocalizedString("gestureScrollWheel", comment: ""),
-            ],
-            trackingMode: .selectOne,
-            target: self,
-            action: #selector(inputModeChanged(_:))
+        // --- Movement section ---
+        let movementSection = makeSectionView(
+            title: NSLocalizedString("gestureMovement", comment: ""),
+            content: makeMovementStack()
         )
-        inputModeControl.selectedSegment = 0
-        inputModeControl.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(inputModeControl)
+        movementSection.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(movementSection)
 
-        // --- Direction rows (visual order: up, left, right, down) ---
-        let directionStack = NSStackView()
-        directionStack.orientation = .vertical
-        directionStack.alignment = .leading
-        directionStack.spacing = 4
-        directionStack.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(directionStack)
-
-        let visualOrder: [GestureDirection] = [.up, .left, .right, .down]
-        for direction in visualOrder {
-            let row = makeDirectionRow(for: direction)
-            directionStack.addArrangedSubview(row)
-        }
+        // --- Scroll section ---
+        let scrollSection = makeSectionView(
+            title: NSLocalizedString("gestureScroll", comment: ""),
+            content: makeScrollStack()
+        )
+        scrollSection.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(scrollSection)
 
         // --- Auto Layout ---
         NSLayoutConstraint.activate([
-            // KeyPreview: left-anchored, upper half
+            // KeyPreview: left-anchored, vertically centered
             keyPreview.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            keyPreview.topAnchor.constraint(equalTo: topAnchor, constant: 12),
+            keyPreview.centerYAnchor.constraint(equalTo: centerYAnchor),
 
-            // Input mode control: below keyPreview, left-aligned with it
-            inputModeControl.leadingAnchor.constraint(equalTo: keyPreview.leadingAnchor),
-            inputModeControl.topAnchor.constraint(equalTo: keyPreview.bottomAnchor, constant: 8),
+            // Movement section: right of keyPreview, vertically centered
+            movementSection.leadingAnchor.constraint(equalTo: centerXAnchor, constant: -120),
+            movementSection.centerYAnchor.constraint(equalTo: centerYAnchor),
 
-            // Direction stack: to the right of center, vertically centered
-            directionStack.leadingAnchor.constraint(equalTo: centerXAnchor, constant: -20),
-            directionStack.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8),
-            directionStack.centerYAnchor.constraint(equalTo: centerYAnchor),
+            // Scroll section: right of movement section, vertically centered
+            scrollSection.leadingAnchor.constraint(equalTo: movementSection.trailingAnchor, constant: 16),
+            scrollSection.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8),
+            scrollSection.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
     }
 
-    /// Creates a single horizontal row: [arrow label] [popup button]
-    private func makeDirectionRow(for direction: GestureDirection) -> NSView {
+    /// Wraps a title label + content view into a labeled section container.
+    private func makeSectionView(title: String, content: NSView) -> NSView {
+        let container = NSView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+
+        let label = NSTextField(labelWithString: title)
+        label.font = NSFont.systemFont(ofSize: 11, weight: .medium)
+        label.textColor = NSColor.secondaryLabelColor
+        label.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(label)
+
+        content.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(content)
+
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: container.topAnchor),
+            label.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+
+            content.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 4),
+            content.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            content.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            content.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+        ])
+        return container
+    }
+
+    /// Vertical stack of 4 movement direction rows (↑↓←→ in visual order: up, left, right, down).
+    private func makeMovementStack() -> NSView {
+        let stack = NSStackView()
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 4
+        let visualOrder: [GestureDirection] = [.up, .left, .right, .down]
+        for direction in visualOrder {
+            stack.addArrangedSubview(makeMovementRow(for: direction))
+        }
+        return stack
+    }
+
+    /// Vertical stack of 2 scroll direction rows (↑↓).
+    private func makeScrollStack() -> NSView {
+        let stack = NSStackView()
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 4
+        for direction in [GestureDirection.up, .down] {
+            stack.addArrangedSubview(makeScrollRow(for: direction))
+        }
+        return stack
+    }
+
+    /// Single horizontal row for a movement direction: [arrow label] [popup]
+    private func makeMovementRow(for direction: GestureDirection) -> NSView {
+        let popup = NSPopUpButton(frame: .zero, pullsDown: false)
+        popup.translatesAutoresizingMaskIntoConstraints = false
+        popup.tag = GestureTableCellView.tagForDirection[direction] ?? 0
+        popup.widthAnchor.constraint(equalToConstant: 180).isActive = true
+
+        switch direction {
+        case .up:    upPopUp    = popup
+        case .down:  downPopUp  = popup
+        case .left:  leftPopUp  = popup
+        case .right: rightPopUp = popup
+        }
+
+        return makeDirectionRow(arrowSymbol: direction.arrowSymbol, popup: popup)
+    }
+
+    /// Single horizontal row for a scroll direction: [arrow label] [popup]
+    private func makeScrollRow(for direction: GestureDirection) -> NSView {
+        let popup = NSPopUpButton(frame: .zero, pullsDown: false)
+        popup.translatesAutoresizingMaskIntoConstraints = false
+        popup.tag = direction == .up ? GestureTableCellView.scrollTagUp
+                                     : GestureTableCellView.scrollTagDown
+        popup.widthAnchor.constraint(equalToConstant: 180).isActive = true
+
+        switch direction {
+        case .up:   scrollUpPopUp   = popup
+        case .down: scrollDownPopUp = popup
+        default:    break
+        }
+
+        return makeDirectionRow(arrowSymbol: direction.arrowSymbol, popup: popup)
+    }
+
+    /// Generic [arrow label] [popup] row.
+    private func makeDirectionRow(arrowSymbol: String, popup: NSPopUpButton) -> NSView {
         let row = NSView()
         row.translatesAutoresizingMaskIntoConstraints = false
 
-        // Arrow label
-        let label = NSTextField(labelWithString: direction.arrowSymbol)
+        let label = NSTextField(labelWithString: arrowSymbol)
         label.font = NSFont.systemFont(ofSize: 13)
         label.alignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         row.addSubview(label)
-
-        // PopUpButton
-        let popup = NSPopUpButton(frame: .zero, pullsDown: false)
-        popup.translatesAutoresizingMaskIntoConstraints = false
-        popup.tag = GestureTableCellView.tagForDirection[direction] ?? 0
         row.addSubview(popup)
 
         NSLayoutConstraint.activate([
@@ -158,20 +247,10 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
 
             popup.leadingAnchor.constraint(equalTo: label.trailingAnchor, constant: 4),
             popup.trailingAnchor.constraint(equalTo: row.trailingAnchor),
-            popup.widthAnchor.constraint(equalToConstant: 200),
             popup.centerYAnchor.constraint(equalTo: row.centerYAnchor),
 
             row.heightAnchor.constraint(equalTo: popup.heightAnchor),
         ])
-
-        // Store reference
-        switch direction {
-        case .up:    upPopUp    = popup
-        case .down:  downPopUp  = popup
-        case .left:  leftPopUp  = popup
-        case .right: rightPopUp = popup
-        }
-
         return row
     }
 
@@ -179,50 +258,57 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
 
     func configure(
         with binding: GestureBinding,
-        onDirectionActionChanged: @escaping (GestureDirection, SystemShortcut.Shortcut?) -> Void,
-        onInputModeChanged: @escaping (GestureInputMode) -> Void,
+        onMovementActionChanged: @escaping (GestureDirection, SystemShortcut.Shortcut?) -> Void,
+        onScrollActionChanged: @escaping (GestureDirection, SystemShortcut.Shortcut?) -> Void,
         onDeleteRequested: @escaping () -> Void
     ) {
-        self.onDirectionActionChanged = onDirectionActionChanged
-        self.onInputModeChanged = onInputModeChanged
-        self.onDeleteRequested = onDeleteRequested
+        self.onMovementActionChanged = onMovementActionChanged
+        self.onScrollActionChanged   = onScrollActionChanged
+        self.onDeleteRequested       = onDeleteRequested
 
-        // Update state cache
+        // Update movement state cache
         currentActions[.up]    = binding.upAction
         currentActions[.down]  = binding.downAction
         currentActions[.left]  = binding.leftAction
         currentActions[.right] = binding.rightAction
 
-        // Input mode selector
-        inputModeControl.selectedSegment = binding.inputMode == .scrollWheel ? 1 : 0
+        // Update scroll state cache
+        currentScrollActions[.up]   = binding.scrollUpAction
+        currentScrollActions[.down] = binding.scrollDownAction
 
         // KeyPreview
         keyPreview.update(from: binding.triggerEvent.displayComponents, status: .normal)
 
-        // Build menus for each direction
+        // Build movement menus
         for direction in GestureDirection.allCases {
-            setupPopUp(popUp(for: direction), direction: direction, actionName: binding.action(for: direction))
+            setupMovementPopUp(movementPopUp(for: direction), direction: direction, actionName: binding.action(for: direction))
+        }
+
+        // Build scroll menus
+        for direction in [GestureDirection.up, .down] {
+            if let popup = scrollPopUp(for: direction) {
+                setupScrollPopUp(popup, direction: direction, actionName: binding.scrollAction(for: direction))
+            }
         }
     }
 
     // MARK: - PopUp Setup
 
-    private func setupPopUp(_ popup: NSPopUpButton, direction: GestureDirection, actionName: String?) {
+    private func setupMovementPopUp(_ popup: NSPopUpButton, direction: GestureDirection, actionName: String?) {
         let menu = NSMenu()
         menu.delegate = self
-
-        ShortcutManager.buildShortcutMenu(
-            into: menu,
-            target: self,
-            action: #selector(shortcutSelected(_:)),
-            showLogiActions: false
-        )
-
+        ShortcutManager.buildShortcutMenu(into: menu, target: self, action: #selector(movementShortcutSelected(_:)), showLogiActions: false)
         disableKeyEquivalents(in: menu)
-
         popup.menu = menu
+        refreshDisplay(for: popup, actionName: actionName)
+    }
 
-        // Reflect current action in the placeholder slot (index 0)
+    private func setupScrollPopUp(_ popup: NSPopUpButton, direction: GestureDirection, actionName: String?) {
+        let menu = NSMenu()
+        menu.delegate = self
+        ShortcutManager.buildShortcutMenu(into: menu, target: self, action: #selector(scrollShortcutSelected(_:)), showLogiActions: false)
+        disableKeyEquivalents(in: menu)
+        popup.menu = menu
         refreshDisplay(for: popup, actionName: actionName)
     }
 
@@ -243,46 +329,43 @@ class GestureTableCellView: NSTableCellView, NSMenuDelegate {
 
     // MARK: - Actions
 
-    @objc private func shortcutSelected(_ sender: NSMenuItem) {
-        // Identify which direction this popup belongs to via the popup's tag
-        guard let popup = findPopUp(containing: sender),
-              let direction = direction(forTag: popup.tag) else { return }
+    @objc private func movementShortcutSelected(_ sender: NSMenuItem) {
+        guard let popup = findPopUpInMovement(containing: sender),
+              let direction = direction(forMovementTag: popup.tag) else { return }
 
-        // Ignore custom shortcut option — gestures don't support custom key combos
-        if sender.representedObject as? String == "__custom__" {
-            return
-        }
+        if sender.representedObject as? String == "__custom__" { return }
 
         let shortcut = sender.representedObject as? SystemShortcut.Shortcut
-
-        // Update local state
         currentActions[direction] = shortcut?.identifier
-
-        // Update placeholder display
         refreshDisplay(for: popup, actionName: shortcut?.identifier)
-
-        // Notify caller
-        onDirectionActionChanged?(direction, shortcut)
+        onMovementActionChanged?(direction, shortcut)
     }
 
-    @objc private func inputModeChanged(_ sender: NSSegmentedControl) {
-        let mode: GestureInputMode = sender.selectedSegment == 1 ? .scrollWheel : .mouseMovement
-        onInputModeChanged?(mode)
+    @objc private func scrollShortcutSelected(_ sender: NSMenuItem) {
+        guard let popup = findPopUpInScroll(containing: sender) else { return }
+
+        if sender.representedObject as? String == "__custom__" { return }
+
+        let direction: GestureDirection = popup === scrollUpPopUp ? .up : .down
+        let shortcut = sender.representedObject as? SystemShortcut.Shortcut
+        currentScrollActions[direction] = shortcut?.identifier
+        refreshDisplay(for: popup, actionName: shortcut?.identifier)
+        onScrollActionChanged?(direction, shortcut)
     }
 
     @objc private func deleteGesture(_ sender: NSMenuItem) {
         onDeleteRequested?()
     }
 
-    /// Walks through the sender's menu hierarchy to find which of our popups owns it.
-    private func findPopUp(containing item: NSMenuItem) -> NSPopUpButton? {
+    // MARK: - PopUp Lookup
+
+    private func findPopUpInMovement(containing item: NSMenuItem) -> NSPopUpButton? {
         let allPopUps: [NSPopUpButton] = [upPopUp, downPopUp, leftPopUp, rightPopUp]
-        for popup in allPopUps {
-            if menuContains(popup.menu, item: item) {
-                return popup
-            }
-        }
-        return nil
+        return allPopUps.first { menuContains($0.menu, item: item) }
+    }
+
+    private func findPopUpInScroll(containing item: NSMenuItem) -> NSPopUpButton? {
+        return [scrollUpPopUp, scrollDownPopUp].first { menuContains($0?.menu, item: item) } ?? nil
     }
 
     private func menuContains(_ menu: NSMenu?, item: NSMenuItem) -> Bool {
@@ -308,21 +391,30 @@ extension GestureTableCellView {
         disableKeyEquivalents(in: menu)
     }
 
-    /// Dynamically adjusts placeholder / unbound item visibility based on current binding state.
+    /// Dynamically adjusts placeholder / unbound item visibility.
     private func adjustMenuStructure(_ menu: NSMenu) {
         guard menu.items.count >= 3 else { return }
 
-        // Determine which direction owns this menu
-        let allPopUps: [NSPopUpButton] = [upPopUp, downPopUp, leftPopUp, rightPopUp]
-        guard let ownerPopup = allPopUps.first(where: { $0.menu === menu }),
-              let direction = direction(forTag: ownerPopup.tag) else { return }
+        // Determine current action name for this menu
+        let currentActionName: String??
+
+        if let ownerPopup = [upPopUp, downPopUp, leftPopUp, rightPopUp]
+                .first(where: { $0.menu === menu }),
+           let direction = direction(forMovementTag: ownerPopup.tag) {
+            currentActionName = currentActions[direction]
+        } else if let ownerPopup = [scrollUpPopUp, scrollDownPopUp]
+                .first(where: { $0?.menu === menu }) {
+            let direction: GestureDirection = ownerPopup === scrollUpPopUp ? .up : .down
+            currentActionName = currentScrollActions[direction]
+        } else {
+            return
+        }
 
         let placeholderItem = menu.items[0]
         let firstSeparator  = menu.items[1]
         let unboundItem     = menu.items[2]
 
-        let currentActionName = currentActions[direction] ?? nil
-        let hasBoundAction = currentActionName != nil
+        let hasBoundAction = (currentActionName ?? nil) != nil
 
         if hasBoundAction {
             placeholderItem.isHidden = false
@@ -335,28 +427,22 @@ extension GestureTableCellView {
         }
     }
 
-    /// Recursively enables key equivalents from representedObject.
     private func enableKeyEquivalents(in menu: NSMenu) {
         for item in menu.items {
             if let shortcut = item.representedObject as? SystemShortcut.Shortcut {
                 let keyEquivalent = shortcut.keyEquivalent
-                item.keyEquivalent                 = keyEquivalent.keyEquivalent
-                item.keyEquivalentModifierMask      = keyEquivalent.modifierMask
+                item.keyEquivalent            = keyEquivalent.keyEquivalent
+                item.keyEquivalentModifierMask = keyEquivalent.modifierMask
             }
-            if let submenu = item.submenu {
-                enableKeyEquivalents(in: submenu)
-            }
+            if let submenu = item.submenu { enableKeyEquivalents(in: submenu) }
         }
     }
 
-    /// Recursively disables all key equivalents.
     private func disableKeyEquivalents(in menu: NSMenu) {
         for item in menu.items {
             item.keyEquivalent            = ""
             item.keyEquivalentModifierMask = []
-            if let submenu = item.submenu {
-                disableKeyEquivalents(in: submenu)
-            }
+            if let submenu = item.submenu { disableKeyEquivalents(in: submenu) }
         }
     }
 }

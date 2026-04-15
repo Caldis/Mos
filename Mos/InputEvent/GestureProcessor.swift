@@ -32,6 +32,10 @@ class GestureProcessor {
 
     private var state: State = .idle
 
+    /// 独立的滚轮累积值 — 与 motion 累积 (state 中的 DX/DY) 完全分离
+    /// 进入 pending 时重置, 离开 pending (无论是激活还是取消) 时重置
+    private var pendingScrollDY: Double = 0
+
     // MARK: - Binding Cache
 
     /// 缓存的手势绑定列表 (按触发优先级排序: modifier 数量多的优先)
@@ -71,15 +75,17 @@ class GestureProcessor {
                 // 另一个按键按下时取消手势, 回放原始点击
                 replayOriginalClick(eventType: savedType, buttonCode: savedCode, position: cursorPos)
                 stopGestureTracking()
+                pendingScrollDY = 0
                 state = .idle
                 return .passthrough
             } else {
                 // Up 事件: 检查是否为触发按键的松开
                 if event.type == binding.triggerEvent.type && event.code == binding.triggerEvent.code {
                     // 阈值未达到 → 回放原始点击
-                    _ = dx; _ = dy  // 已经积累了一些 delta 但不足以触发
+                    _ = dx; _ = dy
                     replayOriginalClick(eventType: savedType, buttonCode: savedCode, position: cursorPos)
                     stopGestureTracking()
+                    pendingScrollDY = 0
                     state = .idle
                     return .consumed
                 }
@@ -103,13 +109,12 @@ class GestureProcessor {
     // MARK: - Motion Event Handling
 
     /// 处理鼠标运动事件 (由 MouseInteractionSessionController 的 gestureMotionHandler 调用)
-    /// 仅处理 mouseMovement 模式的手势
+    /// 仅当绑定有 movement 动作时才会触发 motion tap, 故此处无需额外检查
     func handleMotionEvent(_ event: CGEvent) {
         guard case .pending(let binding, let savedType, let savedCode, let cursorPos, var dx, var dy) = state else {
             return
         }
-        // 滚轮模式手势不通过 motion 事件触发
-        guard binding.inputMode == .mouseMovement else { return }
+        guard binding.hasAnyMovementAction else { return }
 
         // 累积 delta
         let deltaX = Double(event.getIntegerValueField(.mouseEventDeltaX))
@@ -140,43 +145,32 @@ class GestureProcessor {
     // MARK: - Scroll Event Handling
 
     /// 处理滚轮事件 (由 ScrollCore.scrollEventCallBack 调用)
-    /// - pending + scrollWheel: 积累 delta, 识别方向, 消费事件
-    /// - active  + scrollWheel: 持续消费, 阻止后续滚轮进入平滑管线
+    /// Scroll 动作与 Movement 动作完全独立, 使用独立的 pendingScrollDY 累积器
+    /// - pending: 仅垂直方向 (↑↓) — 积累 tick 数, 识别方向, 消费事件
+    /// - active:  持续消费, 阻止后续滚轮进入平滑管线
     /// - Returns: true 表示事件已被手势系统消费 (ScrollCore 应 return nil)
     func handleScrollEvent(_ event: CGEvent) -> Bool {
         switch state {
-        case .pending(let binding, let savedType, let savedCode, let cursorPos, var dx, var dy):
-            guard binding.inputMode == .scrollWheel else { return false }
+        case .pending(let binding, _, _, _, _, _):
+            guard binding.hasAnyScrollAction else { return false }
 
-            // 滚轮 delta: axis1 = 垂直 (向上为负), axis2 = 水平 (向右为正)
+            // 滚轮手势只识别垂直方向 (axis1: 向上为负, 向下为正)
             let deltaY = Double(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
-            let deltaX = Double(event.getIntegerValueField(.scrollWheelEventDeltaAxis2))
-            dx += deltaX
-            dy += deltaY
+            pendingScrollDY += deltaY
 
-            // 更新 pending 状态中的累积值
-            state = .pending(
-                binding: binding,
-                savedCGEventType: savedType,
-                savedButtonCode: savedCode,
-                cursorPosition: cursorPos,
-                accumulatedDX: dx,
-                accumulatedDY: dy
-            )
-
-            // 尝试识别方向
-            if let direction = resolveDirection(dx: dx, dy: dy, threshold: binding.threshold) {
-                if let actionName = binding.action(for: direction), !actionName.isEmpty {
+            if abs(pendingScrollDY) >= binding.scrollThreshold {
+                let direction: GestureDirection = pendingScrollDY < 0 ? .up : .down
+                if let actionName = binding.scrollAction(for: direction), !actionName.isEmpty {
                     ShortcutExecutor.shared.execute(named: actionName)
                 }
+                pendingScrollDY = 0
                 state = .active(binding: binding)
             }
-
             return true
 
         case .active(let binding):
-            // 触发键仍持按中: 继续屏蔽滚轮事件, 防止进入平滑管线
-            return binding.inputMode == .scrollWheel
+            // 触发键仍持按中: 继续屏蔽滚轮, 防止意外进入平滑管线
+            return binding.hasAnyScrollAction
 
         case .idle:
             return false
@@ -212,6 +206,7 @@ class GestureProcessor {
     /// 清空所有手势状态 (ButtonCore disable 时调用)
     func clearState() {
         state = .idle
+        pendingScrollDY = 0
         stopGestureTracking()
     }
 
@@ -240,6 +235,7 @@ class GestureProcessor {
             savedCGEventType = .keyDown
         }
 
+        pendingScrollDY = 0
         state = .pending(
             binding: binding,
             savedCGEventType: savedCGEventType,
@@ -249,8 +245,8 @@ class GestureProcessor {
             accumulatedDY: 0
         )
 
-        // 滚轮模式不需要 motion tap; 鼠标移动模式才启动 motion 追踪
-        if binding.inputMode == .mouseMovement {
+        // motion tap 只在有 movement 动作时才需要
+        if binding.hasAnyMovementAction {
             startGestureTracking()
         }
         return .consumed

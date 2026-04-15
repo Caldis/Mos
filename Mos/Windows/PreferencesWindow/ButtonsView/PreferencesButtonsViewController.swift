@@ -249,9 +249,9 @@ extension PreferencesButtonsViewController {
         syncGesturesWithOptions()
     }
 
-    func updateGestureInputMode(id: UUID, mode: GestureInputMode) {
+    func updateGestureScrollAction(id: UUID, direction: GestureDirection, shortcut: SystemShortcut.Shortcut?) {
         guard let index = gestureBindings.firstIndex(where: { $0.id == id }) else { return }
-        gestureBindings[index] = gestureBindings[index].withInputMode(mode)
+        gestureBindings[index] = gestureBindings[index].withScrollAction(shortcut?.identifier, for: direction)
         syncGesturesWithOptions()
     }
 }
@@ -320,11 +320,11 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
                 let binding = gestureBindings[row]
                 cell.configure(
                     with: binding,
-                    onDirectionActionChanged: { [weak self] direction, shortcut in
+                    onMovementActionChanged: { [weak self] direction, shortcut in
                         self?.updateGestureBinding(id: binding.id, direction: direction, shortcut: shortcut)
                     },
-                    onInputModeChanged: { [weak self] mode in
-                        self?.updateGestureInputMode(id: binding.id, mode: mode)
+                    onScrollActionChanged: { [weak self] direction, shortcut in
+                        self?.updateGestureScrollAction(id: binding.id, direction: direction, shortcut: shortcut)
                     },
                     onDeleteRequested: { [weak self] in
                         self?.removeGestureBinding(id: binding.id)
@@ -340,7 +340,7 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         switch currentMode {
         case .bindings: return 44
-        case .gestures: return 144
+        case .gestures: return 150
         }
     }
 

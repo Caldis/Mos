@@ -3318,7 +3318,7 @@
         }
       }
     },
-    "gestureMouseMovement" : {
+    "gestureMovement" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -3347,7 +3347,7 @@
         }
       }
     },
-    "gestureScrollWheel" : {
+    "gestureScroll" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {

@@ -8,14 +8,6 @@
 
 import Cocoa
 
-// MARK: - GestureInputMode
-
-/// 手势输入模式: 鼠标移动 或 滚轮滚动
-enum GestureInputMode: String, Codable, CaseIterable {
-    case mouseMovement = "mouseMovement"  // 移动鼠标触发方向 (默认)
-    case scrollWheel   = "scrollWheel"   // 滚轮滚动触发方向
-}
-
 // MARK: - GestureDirection
 
 /// 手势方向
@@ -43,43 +35,33 @@ enum GestureDirection: String, Codable, CaseIterable {
 
 // MARK: - GestureBinding
 
-/// 手势绑定 - 将录制的触发按键与四个方向的动作关联
-/// 一个触发按键对应四个方向动作 (上/下/左/右), 每个方向可独立配置或留空
+/// 手势绑定 - 将录制的触发按键与动作关联
+/// Movement (鼠标移动): 4 方向 (↑↓←→), 阈值默认 30px
+/// Scroll   (滚轮滚动): 2 方向 (↑↓),   阈值默认 3 tick
+/// 两种输入模式相互独立, 可同时配置
 struct GestureBinding: Codable, Equatable {
 
     // MARK: - 持久化字段
 
-    /// 唯一标识符
     let id: UUID
-
-    /// 录制的触发事件 (哪个按键触发手势模式)
     let triggerEvent: RecordedEvent
+    let createdAt: Date
 
-    /// 上方向动作名称 (SystemShortcut identifier, nil = 无动作)
-    var upAction: String?
-
-    /// 下方向动作名称
-    var downAction: String?
-
-    /// 左方向动作名称
-    var leftAction: String?
-
-    /// 右方向动作名称
+    // --- Movement 动作 (鼠标移动方向, 4 方向) ---
+    var upAction:    String?
+    var downAction:  String?
+    var leftAction:  String?
     var rightAction: String?
-
-    /// 移动阈值, 超过后触发方向识别
-    /// mouseMovement 模式: 像素距离 (默认 30.0)
-    /// scrollWheel 模式: 滚轮行数 (默认 3.0)
+    /// 触发方向识别所需最小移动像素
     var threshold: Double
 
-    /// 手势输入模式 (默认 mouseMovement, 向后兼容)
-    var inputMode: GestureInputMode
+    // --- Scroll 动作 (滚轮方向, 仅 ↑↓) ---
+    var scrollUpAction:   String?
+    var scrollDownAction: String?
+    /// 触发方向识别所需最小滚轮 tick 数
+    var scrollThreshold: Double
 
-    /// 是否启用
     var isEnabled: Bool
-
-    /// 创建时间
-    let createdAt: Date
 
     // MARK: - 初始化
 
@@ -90,49 +72,82 @@ struct GestureBinding: Codable, Equatable {
         downAction: String? = nil,
         leftAction: String? = nil,
         rightAction: String? = nil,
-        inputMode: GestureInputMode = .mouseMovement,
-        threshold: Double? = nil,
+        threshold: Double = 30.0,
+        scrollUpAction: String? = nil,
+        scrollDownAction: String? = nil,
+        scrollThreshold: Double = 3.0,
         isEnabled: Bool = true,
         createdAt: Date = Date()
     ) {
-        self.id = id
-        self.triggerEvent = triggerEvent
-        self.upAction = upAction
-        self.downAction = downAction
-        self.leftAction = leftAction
-        self.rightAction = rightAction
-        self.inputMode = inputMode
-        // Default threshold depends on input mode
-        self.threshold = threshold ?? (inputMode == .scrollWheel ? 3.0 : 30.0)
-        self.isEnabled = isEnabled
-        self.createdAt = createdAt
+        self.id              = id
+        self.triggerEvent    = triggerEvent
+        self.upAction        = upAction
+        self.downAction      = downAction
+        self.leftAction      = leftAction
+        self.rightAction     = rightAction
+        self.threshold       = threshold
+        self.scrollUpAction  = scrollUpAction
+        self.scrollDownAction = scrollDownAction
+        self.scrollThreshold = scrollThreshold
+        self.isEnabled       = isEnabled
+        self.createdAt       = createdAt
     }
 
     // MARK: - Codable (backward-compatible)
 
     enum CodingKeys: String, CodingKey {
-        case id, triggerEvent, upAction, downAction, leftAction, rightAction
-        case threshold, inputMode, isEnabled, createdAt
+        case id, triggerEvent, createdAt
+        case upAction, downAction, leftAction, rightAction, threshold
+        case scrollUpAction, scrollDownAction, scrollThreshold
+        case isEnabled
+        // Legacy key — present in old data, decoded and discarded
+        case inputMode
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id,              forKey: .id)
+        try c.encode(triggerEvent,    forKey: .triggerEvent)
+        try c.encode(createdAt,       forKey: .createdAt)
+        try c.encodeIfPresent(upAction,        forKey: .upAction)
+        try c.encodeIfPresent(downAction,      forKey: .downAction)
+        try c.encodeIfPresent(leftAction,      forKey: .leftAction)
+        try c.encodeIfPresent(rightAction,     forKey: .rightAction)
+        try c.encode(threshold,                forKey: .threshold)
+        try c.encodeIfPresent(scrollUpAction,  forKey: .scrollUpAction)
+        try c.encodeIfPresent(scrollDownAction, forKey: .scrollDownAction)
+        try c.encode(scrollThreshold,          forKey: .scrollThreshold)
+        try c.encode(isEnabled,                forKey: .isEnabled)
+        // inputMode intentionally NOT encoded (legacy read-only key)
     }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        id           = try c.decode(UUID.self,          forKey: .id)
-        triggerEvent = try c.decode(RecordedEvent.self,  forKey: .triggerEvent)
-        upAction     = try c.decodeIfPresent(String.self, forKey: .upAction)
-        downAction   = try c.decodeIfPresent(String.self, forKey: .downAction)
-        leftAction   = try c.decodeIfPresent(String.self, forKey: .leftAction)
-        rightAction  = try c.decodeIfPresent(String.self, forKey: .rightAction)
-        // inputMode defaults to .mouseMovement for bindings saved before this field existed
-        inputMode    = (try? c.decodeIfPresent(GestureInputMode.self, forKey: .inputMode)) ?? .mouseMovement
-        threshold    = try c.decode(Double.self,        forKey: .threshold)
-        isEnabled    = try c.decode(Bool.self,          forKey: .isEnabled)
-        createdAt    = try c.decode(Date.self,          forKey: .createdAt)
+        id           = try c.decode(UUID.self,         forKey: .id)
+        triggerEvent = try c.decode(RecordedEvent.self, forKey: .triggerEvent)
+        createdAt    = try c.decode(Date.self,         forKey: .createdAt)
+
+        upAction    = try c.decodeIfPresent(String.self, forKey: .upAction)
+        downAction  = try c.decodeIfPresent(String.self, forKey: .downAction)
+        leftAction  = try c.decodeIfPresent(String.self, forKey: .leftAction)
+        rightAction = try c.decodeIfPresent(String.self, forKey: .rightAction)
+
+        // Legacy: threshold was the single threshold field (used for both modes).
+        // Map it to movement threshold; default 30.0 if absent.
+        threshold = (try? c.decodeIfPresent(Double.self, forKey: .threshold)) ?? 30.0
+
+        scrollUpAction   = try c.decodeIfPresent(String.self, forKey: .scrollUpAction)
+        scrollDownAction = try c.decodeIfPresent(String.self, forKey: .scrollDownAction)
+        scrollThreshold  = (try? c.decodeIfPresent(Double.self, forKey: .scrollThreshold)) ?? 3.0
+
+        isEnabled = try c.decode(Bool.self, forKey: .isEnabled)
+
+        // inputMode key is silently ignored (no longer used)
     }
 
-    // MARK: - 方向动作访问
+    // MARK: - 方向动作访问 (Movement)
 
-    /// 获取指定方向的动作名称
+    /// 获取指定 Movement 方向的动作名称
     func action(for direction: GestureDirection) -> String? {
         switch direction {
         case .up:    return upAction
@@ -142,43 +157,68 @@ struct GestureBinding: Codable, Equatable {
         }
     }
 
-    /// 设置指定方向的动作名称 (返回更新后的副本)
+    /// 设置指定 Movement 方向的动作 (返回更新后的副本)
     func withAction(_ action: String?, for direction: GestureDirection) -> GestureBinding {
         var copy = self
         switch direction {
-        case .up:    copy.upAction = action
-        case .down:  copy.downAction = action
-        case .left:  copy.leftAction = action
+        case .up:    copy.upAction    = action
+        case .down:  copy.downAction  = action
+        case .left:  copy.leftAction  = action
         case .right: copy.rightAction = action
         }
         return copy
     }
 
-    /// 设置输入模式 (返回更新后的副本, 并重置阈值为模式默认值)
-    func withInputMode(_ mode: GestureInputMode) -> GestureBinding {
+    // MARK: - 方向动作访问 (Scroll)
+
+    /// 获取指定 Scroll 方向的动作名称 (仅 .up / .down 有效)
+    func scrollAction(for direction: GestureDirection) -> String? {
+        switch direction {
+        case .up:   return scrollUpAction
+        case .down: return scrollDownAction
+        default:    return nil
+        }
+    }
+
+    /// 设置指定 Scroll 方向的动作 (返回更新后的副本)
+    func withScrollAction(_ action: String?, for direction: GestureDirection) -> GestureBinding {
         var copy = self
-        copy.inputMode = mode
-        copy.threshold = (mode == .scrollWheel) ? 3.0 : 30.0
+        switch direction {
+        case .up:   copy.scrollUpAction   = action
+        case .down: copy.scrollDownAction = action
+        default: break
+        }
         return copy
     }
 
-    /// 是否有任意方向已配置动作
-    var hasAnyAction: Bool {
+    // MARK: - 能力查询
+
+    var hasAnyMovementAction: Bool {
         return upAction != nil || downAction != nil || leftAction != nil || rightAction != nil
+    }
+
+    var hasAnyScrollAction: Bool {
+        return scrollUpAction != nil || scrollDownAction != nil
+    }
+
+    var hasAnyAction: Bool {
+        return hasAnyMovementAction || hasAnyScrollAction
     }
 
     // MARK: - Equatable
 
     static func == (lhs: GestureBinding, rhs: GestureBinding) -> Bool {
-        return lhs.id == rhs.id &&
-               lhs.triggerEvent == rhs.triggerEvent &&
-               lhs.upAction == rhs.upAction &&
-               lhs.downAction == rhs.downAction &&
-               lhs.leftAction == rhs.leftAction &&
-               lhs.rightAction == rhs.rightAction &&
-               lhs.threshold == rhs.threshold &&
-               lhs.inputMode == rhs.inputMode &&
-               lhs.isEnabled == rhs.isEnabled &&
-               lhs.createdAt == rhs.createdAt
+        return lhs.id              == rhs.id              &&
+               lhs.triggerEvent   == rhs.triggerEvent     &&
+               lhs.upAction       == rhs.upAction         &&
+               lhs.downAction     == rhs.downAction       &&
+               lhs.leftAction     == rhs.leftAction       &&
+               lhs.rightAction    == rhs.rightAction      &&
+               lhs.threshold      == rhs.threshold        &&
+               lhs.scrollUpAction   == rhs.scrollUpAction   &&
+               lhs.scrollDownAction == rhs.scrollDownAction &&
+               lhs.scrollThreshold  == rhs.scrollThreshold  &&
+               lhs.isEnabled      == rhs.isEnabled        &&
+               lhs.createdAt      == rhs.createdAt
     }
 }
