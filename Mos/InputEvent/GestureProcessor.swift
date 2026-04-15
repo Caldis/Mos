@@ -146,31 +146,61 @@ class GestureProcessor {
 
     /// 处理滚轮事件 (由 ScrollCore.scrollEventCallBack 调用)
     /// Scroll 动作与 Movement 动作完全独立, 使用独立的 pendingScrollDY 累积器
-    /// - pending: 仅垂直方向 (↑↓) — 积累 tick 数, 识别方向, 消费事件
-    /// - active:  持续消费, 阻止后续滚轮进入平滑管线
+    ///
+    /// 消费规则 (防止"滚动冲突"):
+    /// - 只消费该方向上有配置动作的滚轮事件; 无动作的方向立即放行, 正常滚动
+    /// - 换向时重置累积器
+    /// - active 状态: 仅消费有动作的方向 (防止意外平滑)
+    ///
+    /// Delta 读取优先级 (兼容离散 + 平滑滚轮):
+    ///   fixedPt (浮点) → 整数行数; 跳过 pixel delta (单位不一致)
+    ///
     /// - Returns: true 表示事件已被手势系统消费 (ScrollCore 应 return nil)
     func handleScrollEvent(_ event: CGEvent) -> Bool {
         switch state {
         case .pending(let binding, _, _, _, _, _):
             guard binding.hasAnyScrollAction else { return false }
 
-            // 滚轮手势只识别垂直方向 (axis1: 向上为负, 向下为正)
-            let deltaY = Double(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
-            pendingScrollDY += deltaY
+            // 使用 fixedPt 浮点值 (兼容平滑滚轮), 回退到整数行数
+            let fixedPt = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)
+            let rawDelta = fixedPt != 0.0
+                ? fixedPt
+                : Double(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
+            guard rawDelta != 0 else { return false }
+
+            // 轴1: 向上为负, 向下为正
+            let eventDirection: GestureDirection = rawDelta < 0 ? .up : .down
+
+            // 无动作的方向: 立即放行, 不积累 (防止该方向的滚动被吃掉)
+            guard binding.scrollAction(for: eventDirection) != nil else {
+                pendingScrollDY = 0
+                return false
+            }
+
+            // 换向时重置累积器
+            if pendingScrollDY != 0 && rawDelta * pendingScrollDY < 0 {
+                pendingScrollDY = 0
+            }
+            pendingScrollDY += rawDelta
 
             if abs(pendingScrollDY) >= binding.scrollThreshold {
-                let direction: GestureDirection = pendingScrollDY < 0 ? .up : .down
-                if let actionName = binding.scrollAction(for: direction), !actionName.isEmpty {
+                if let actionName = binding.scrollAction(for: eventDirection), !actionName.isEmpty {
                     ShortcutExecutor.shared.execute(named: actionName)
                 }
                 pendingScrollDY = 0
                 state = .active(binding: binding)
             }
-            return true
+            return true  // 消费: 正在向有动作的方向积累
 
         case .active(let binding):
-            // 触发键仍持按中: 继续屏蔽滚轮, 防止意外进入平滑管线
-            return binding.hasAnyScrollAction
+            // 触发键仍持按中: 仅消费有动作的方向, 无动作方向正常滚动
+            let fixedPt = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)
+            let rawDelta = fixedPt != 0.0
+                ? fixedPt
+                : Double(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
+            guard rawDelta != 0 else { return false }
+            let direction: GestureDirection = rawDelta < 0 ? .up : .down
+            return binding.scrollAction(for: direction) != nil
 
         case .idle:
             return false
