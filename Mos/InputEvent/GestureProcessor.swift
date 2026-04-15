@@ -193,14 +193,29 @@ class GestureProcessor {
             return true  // 消费: 正在向有动作的方向积累
 
         case .active(let binding):
-            // 触发键仍持按中: 仅消费有动作的方向, 无动作方向正常滚动
+            // 触发键仍持按中: scroll 手势可重复触发 (每次到达阈值即执行)
+            // 无动作的方向仍正常放行; 有动作的方向继续消费并在阈值时重新执行
             let fixedPt = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1)
             let rawDelta = fixedPt != 0.0
                 ? fixedPt
                 : Double(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
             guard rawDelta != 0 else { return false }
             let direction: GestureDirection = rawDelta < 0 ? .up : .down
-            return binding.scrollAction(for: direction) != nil
+
+            guard binding.scrollAction(for: direction) != nil else { return false }
+
+            if pendingScrollDY != 0 && rawDelta * pendingScrollDY < 0 {
+                pendingScrollDY = 0
+            }
+            pendingScrollDY += rawDelta
+
+            if abs(pendingScrollDY) >= binding.scrollThreshold {
+                if let actionName = binding.scrollAction(for: direction), !actionName.isEmpty {
+                    ShortcutExecutor.shared.execute(named: actionName)
+                }
+                pendingScrollDY = 0
+            }
+            return true
 
         case .idle:
             return false
