@@ -32,8 +32,9 @@ struct PANEL_IDENTIFIER {
     static let scrolling = "scrolling"
     static let scrollingWithApplication = "scrollingWithApplication"
     static let buttons = "buttons"
+    static let autoScroll = "autoScroll"
     static let application = "application"
-    static let list = [general, scrolling, buttons, application]
+    static let list = [general, scrolling, buttons, autoScroll, application]
 }
 let PANEL_PADDING = CGFloat(42.0) // 顶部导航栏高度
 let TOOLBAR_HEIGHT = CGFloat(80.0) // 偏好的 Toolbar 高度
@@ -215,6 +216,34 @@ class OPTIONS_APPLICATION_DEFAULT {
         matchKey: "path",
         forObserver: {() in Options.shared.saveOptions()}
     )
+}
+
+// 自动滚动
+class OPTIONS_AUTOSCROLL_DEFAULT {
+    var enabled = true {
+        didSet {Options.shared.saveOptions()}
+    }
+    var sensitivity = 1.0 {
+        didSet {Options.shared.saveOptions()}
+    }
+    var deadZone: CGFloat = 5.0 {
+        didSet {Options.shared.saveOptions()}
+    }
+    var dragThreshold: CGFloat = 10.0 {
+        didSet {Options.shared.saveOptions()}
+    }
+    var maxSpeed: CGFloat = 30.0 {
+        didSet {Options.shared.saveOptions()}
+    }
+    var activationButton = 2 { // 中键
+        didSet {Options.shared.saveOptions()}
+    }
+    var appExceptions: [String] = [] {
+        didSet {Options.shared.saveOptions()}
+    }
+    var darkMode = false { // 深色模式（黑色图标+白色背景）
+        didSet {Options.shared.saveOptions()}
+    }
 }
 
 // MARK: - Notification Names

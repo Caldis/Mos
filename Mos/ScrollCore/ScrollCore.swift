@@ -64,6 +64,12 @@ class ScrollCore {
 #endif
             return Unmanaged.passUnretained(event)
         }
+        // 检查是否为自动滚动事件（带有 maskAlternate 标志）
+        // 如果是，直接放行，不做任何处理
+        if event.flags.contains(.maskAlternate) {
+            return Unmanaged.passUnretained(event)
+        }
+
         // 不处理触控板
         // 无法区分黑苹果, 因为黑苹果的触控板驱动直接模拟鼠标输入
         // 无法区分 Magic Mouse, 因为其滚动特征与内置的 Trackpad 一致
