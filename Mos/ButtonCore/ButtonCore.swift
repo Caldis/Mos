@@ -20,6 +20,7 @@ class ButtonCore {
     // 拦截层
     var dispatchInterceptor: Interceptor?
     var primaryObservationInterceptor: Interceptor?
+    var tiltScrollInterceptor: Interceptor?
 
     // 组合的按钮事件掩码
     let leftDown = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
@@ -31,6 +32,7 @@ class ButtonCore {
     let flagsChanged = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
     let otherUp = CGEventMask(1 << CGEventType.otherMouseUp.rawValue)
     let keyUp = CGEventMask(1 << CGEventType.keyUp.rawValue)
+    let tiltScrollEventMask = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
     var dispatchEventMask: CGEventMask {
         return otherDown | otherUp | keyDown | keyUp
     }
@@ -80,6 +82,27 @@ class ButtonCore {
         }
         return Unmanaged.passUnretained(event)
     }
+
+    let tiltScrollCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+            TiltWheelHandler.shared.clearState()
+            return Unmanaged.passUnretained(event)
+        }
+        guard type == .scrollWheel, !ScrollEvent.isTrackpad(with: event) else {
+            return Unmanaged.passUnretained(event)
+        }
+        // macOS 会将 Shift+上下滚动转换为水平滚动, 需排除以避免误触发.
+        // 同时延长冷却窗口, 防止 Shift 释放瞬间的残留事件穿透.
+        if TiltWheelHandler.isModifierDrivenHorizontalScroll(event) {
+            TiltWheelHandler.shared.notifyModifierActive()
+            return Unmanaged.passUnretained(event)
+        }
+        guard let code = TiltWheelHandler.tiltCode(for: event) else {
+            return Unmanaged.passUnretained(event)
+        }
+        let shouldConsume = TiltWheelHandler.shared.handle(code: code)
+        return shouldConsume ? nil : Unmanaged.passUnretained(event)
+    }
     
     // MARK: - 启用和禁用
     
@@ -87,6 +110,17 @@ class ButtonCore {
     func enable() {
         if !isActive {
             do {
+                // 倾斜滚轮拦截器: headInsert 确保在 ScrollCore 的 tailAppend 之前处理, 可消费事件
+                tiltScrollInterceptor = try Interceptor(
+                    event: tiltScrollEventMask,
+                    handleBy: tiltScrollCallBack,
+                    listenOn: .cgAnnotatedSessionEventTap,
+                    placeAt: .headInsertEventTap,
+                    for: .defaultTap
+                )
+                tiltScrollInterceptor?.onRestart = {
+                    TiltWheelHandler.shared.clearState()
+                }
                 dispatchInterceptor = try Interceptor(
                     event: dispatchEventMask,
                     handleBy: buttonEventCallBack,
@@ -106,24 +140,29 @@ class ButtonCore {
                 )
                 isActive = true
             } catch {
+                tiltScrollInterceptor?.stop()
                 dispatchInterceptor?.stop()
                 primaryObservationInterceptor?.stop()
+                tiltScrollInterceptor = nil
                 dispatchInterceptor = nil
                 primaryObservationInterceptor = nil
                 NSLog("ButtonCore: Failed to create interceptor: \(error)")
             }
         }
     }
-    
+
     // 禁用按钮监控
     func disable() {
         if isActive {
             NSLog("ButtonCore disabled")
+            tiltScrollInterceptor?.stop()
             dispatchInterceptor?.stop()
             primaryObservationInterceptor?.stop()
+            tiltScrollInterceptor = nil
             dispatchInterceptor = nil
             primaryObservationInterceptor = nil
             InputProcessor.shared.clearActiveBindings()
+            TiltWheelHandler.shared.clearState()
             isActive = false
         }
     }

@@ -104,7 +104,8 @@ class KeyRecorder: NSObject {
         let otherDown = CGEventMask(1 << CGEventType.otherMouseDown.rawValue)
         let keyDown = CGEventMask(1 << CGEventType.keyDown.rawValue)
         let flagsChanged = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
-        return leftDown | rightDown | otherDown | keyDown | flagsChanged
+        let scrollWheel = CGEventMask(1 << CGEventType.scrollWheel.rawValue)
+        return leftDown | rightDown | otherDown | keyDown | flagsChanged | scrollWheel
     }
     
     // MARK: - Recording Manager
@@ -170,6 +171,27 @@ class KeyRecorder: NSObject {
                                 name: KeyRecorder.FLAG_CHANGE_NOTI_NAME,
                                 object: recordedEvent
                             )
+                        }
+                    case .scrollWheel:
+                        // 倾斜滚轮: 检测纯水平倾斜并作为虚拟鼠标键录制
+                        // 排除触控板、macOS 的 Shift+上下滚动转换以及 toggleScroll 切换引发的水平滚动
+                        if !ScrollEvent.isTrackpad(with: recordedEvent),
+                           !TiltWheelHandler.isModifierDrivenHorizontalScroll(recordedEvent),
+                           let tiltCode = TiltWheelHandler.tiltCode(for: recordedEvent) {
+                            let tiltEvent = InputEvent(
+                                type: .mouse,
+                                code: tiltCode,
+                                modifiers: recordedEvent.flags,
+                                phase: .down,
+                                source: .hidPP,
+                                device: nil
+                            )
+                            DispatchQueue.main.async {
+                                NotificationCenter.default.post(
+                                    name: KeyRecorder.FINISH_NOTI_NAME,
+                                    object: tiltEvent
+                                )
+                            }
                         }
                     case .leftMouseDown, .rightMouseDown, .otherMouseDown:
                         // 鼠标按键
