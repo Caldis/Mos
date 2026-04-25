@@ -124,6 +124,13 @@ class OPTIONS_BUTTONS_DEFAULT: Codable {
     }
 }
 
+// 手势
+class OPTIONS_GESTURES_DEFAULT: Codable {
+    var binding: [GestureBinding] = [] {
+        didSet { Options.shared.saveOptions() }
+    }
+}
+
 // 滚动
 class OPTIONS_SCROLL_DEFAULT: Codable {
     var smooth = true {

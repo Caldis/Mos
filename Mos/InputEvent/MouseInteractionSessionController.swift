@@ -43,6 +43,18 @@ final class MouseInteractionSessionController {
     var activeSessionCount: Int { activeSessions.count }
     private var hasActiveVirtualModifiers: Bool { InputProcessor.shared.activeModifierFlags != 0 }
 
+    // MARK: - Gesture Motion Support
+    /// 手势运动事件处理回调 (由 GestureProcessor 注册, 在 motion tap 事件中调用)
+    var gestureMotionHandler: ((CGEvent) -> Void)?
+    /// 是否有活跃的手势追踪会话
+    private(set) var hasActiveGesture = false
+
+    /// 设置手势追踪状态 (由 GestureProcessor 调用)
+    func setGestureTracking(_ active: Bool) {
+        hasActiveGesture = active
+        refreshMotionTapState()
+    }
+
     init(
         startMotionTap: (() -> Void)? = nil,
         stopMotionTap: (() -> Void)? = nil
@@ -183,7 +195,7 @@ final class MouseInteractionSessionController {
     }
 
     private var shouldKeepMotionTapRunning: Bool {
-        !activeSessions.isEmpty || hasActiveVirtualModifiers
+        !activeSessions.isEmpty || hasActiveVirtualModifiers || hasActiveGesture
     }
 
     private func rewrite(_ event: CGEvent, as target: SyntheticMouseTarget) {
@@ -269,6 +281,9 @@ final class MouseInteractionSessionController {
             InputProcessor.shared.clearActiveBindings()
             return Unmanaged.passUnretained(event)
         }
+
+        // 手势运动处理 (仅读取 delta 值, 不修改事件)
+        gestureMotionHandler?(event)
 
         rewriteMouseInteractionEvent(event)
         return Unmanaged.passUnretained(event)
