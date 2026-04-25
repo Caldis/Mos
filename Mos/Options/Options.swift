@@ -46,6 +46,11 @@ struct OptionItem {
         static let Allowlist = "allowlist"
         static let Applications = "applications"
     }
+
+    struct Mouse {
+        static let Sensitivity = "mouseSensitivity"
+        static let EnableSensitivity = "enableMouseSensitivity"
+    }
 }
 
 class Options {
@@ -74,6 +79,10 @@ class Options {
     }
     // 应用
     var application = OPTIONS_APPLICATION_DEFAULT() {
+        didSet { Options.shared.saveOptions() }
+    }
+    // 鼠标
+    var mouse = OPTIONS_MOUSE_DEFAULT() {
         didSet { Options.shared.saveOptions() }
     }
 }
@@ -136,6 +145,13 @@ extension Options {
         // 应用
         application.allowlist = UserDefaults.standard.bool(forKey: OptionItem.Application.Allowlist)
         application.applications = loadApplicationsData()
+        // 鼠标
+        mouse.enableSensitivity = UserDefaults.standard.bool(forKey: OptionItem.Mouse.EnableSensitivity)
+        if let storedSensitivity = UserDefaults.standard.object(forKey: OptionItem.Mouse.Sensitivity) as? Double {
+            mouse.sensitivity = storedSensitivity
+        } else {
+            mouse.sensitivity = OPTIONS_MOUSE_DEFAULT().sensitivity
+        }
         // 解锁
         readingOptionsLock = false
     }
@@ -174,6 +190,9 @@ extension Options {
             }
             // 按钮绑定
             saveButtonBindingsData()
+            // 鼠标
+            UserDefaults.standard.set(mouse.enableSensitivity, forKey: OptionItem.Mouse.EnableSensitivity)
+            UserDefaults.standard.set(mouse.sensitivity, forKey: OptionItem.Mouse.Sensitivity)
         }
     }
 
