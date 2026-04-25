@@ -389,6 +389,100 @@
         }
       }
     },
+    "button_conflict_detail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This button appears to be managed by another app (e.g. Logitech Options+). When both apps capture the same button, behavior may be unpredictable. Release it in the other app, or quit that app, to let Mos handle it."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このボタンは他のアプリ (Logitech Options+ など) に管理されているようです。両方のアプリが同じボタンを捕捉すると、動作が不安定になる場合があります。他のアプリでこのボタンを解放するか、そのアプリを終了すると、Mos が処理できるようになります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 버튼은 다른 앱(예: Logitech Options+)이 관리하는 것으로 보입니다. 두 앱이 같은 버튼을 캡처하면 예기치 않은 동작이 발생할 수 있습니다. 다른 앱에서 이 버튼을 해제하거나 해당 앱을 종료하면 Mos가 처리할 수 있습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按键似乎正被其他应用 (例如 Logitech Options+) 接管。两个应用同时捕获同一按键可能导致行为异常。请在对应应用中释放该按键,或退出该应用,以便由 Mos 处理。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按鍵似乎正被其他應用程式 (例如 Logitech Options+) 接管。兩個應用程式同時捕捉同一按鍵可能導致行為異常。請在對應應用程式中釋放該按鍵,或退出該應用程式,以便由 Mos 處理。"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按鍵似乎正被其他應用程式 (例如 Logitech Options+) 接管。兩個應用程式同時捕捉同一按鍵可能導致行為異常。請在對應應用程式中釋放該按鍵,或退出該應用程式,以便由 Mos 處理。"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按鍵似乎正被其他應用程式 (例如 Logitech Options+) 接管。兩個應用程式同時捕捉同一按鍵可能導致行為異常。請在對應應用程式中釋放該按鍵,或退出該應用程式,以便由 Mos 處理。"
+          }
+        }
+      }
+    },
+    "button_conflict_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Button may be managed by another app"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このボタンは他のアプリが管理している可能性があります"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 버튼은 다른 앱이 관리할 수 있습니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按键可能被其他应用接管"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按鍵可能被其他應用程式接管"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按鍵可能被其他應用程式接管"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按鍵可能被其他應用程式接管"
+          }
+        }
+      }
+    },
     "categoryAccessibility" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2085,23 +2179,6 @@
     "Custom Icon (app icon)" : {
       "comment" : "Toast debug custom icon checkbox"
     },
-    "custom-shortcut" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Custom…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自定义…"
-          }
-        }
-      }
-    },
     "custom-recording-prompt" : {
       "comment" : "Prompt shown on the action button while custom shortcut recording is active",
       "extractionState" : "manual",
@@ -2188,6 +2265,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "按下按鍵…"
+          }
+        }
+      }
+    },
+    "custom-shortcut" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自定义…"
           }
         }
       }
@@ -2644,25 +2738,6 @@
         }
       }
     },
-    "escapeKey" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "cs" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "el" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "zh-Hant-HK" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } },
-        "zh-Hant-TW" : { "stringUnit" : { "state" : "translated", "value" : "Escape" } }
-      }
-    },
     "Duration" : {
       "comment" : "Toast debug duration label"
     },
@@ -2755,11 +2830,103 @@
         }
       }
     },
+    "Enable Mouse Sensitivity Adjustment" : {
+      "comment" : "Enable mouse sensitivity adjustment"
+    },
     "Enter toast message..." : {
       "comment" : "Toast debug message placeholder"
     },
     "Error style" : {
       "comment" : "Toast debug quick test message"
+    },
+    "escapeKey" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escape"
+          }
+        }
+      }
     },
     "Event Monitor" : {
       "extractionState" : "stale",
@@ -2852,6 +3019,15 @@
     },
     "Exceed max, test eviction" : {
       "comment" : "Toast debug quick test subtitle"
+    },
+    "Export Settings" : {
+      "comment" : "Export settings"
+    },
+    "Failed to export settings" : {
+
+    },
+    "Failed to import settings" : {
+
     },
     "featureNotAvailable" : {
       "localizations" : {
@@ -3411,6 +3587,9 @@
     },
     "ℹ️ Info" : {
       "comment" : "Toast debug style button"
+    },
+    "Import Settings" : {
+      "comment" : "Import settings"
     },
     "Info style" : {
       "comment" : "Toast debug quick test message"
@@ -5554,6 +5733,454 @@
         }
       }
     },
+    "modifierCommand" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Command"
+          }
+        }
+      }
+    },
+    "modifierControl" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Control"
+          }
+        }
+      }
+    },
+    "modifierFn" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Function"
+          }
+        }
+      }
+    },
+    "modifierOption" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option"
+          }
+        }
+      }
+    },
+    "modifierShift" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "zh-Hant-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shift"
+          }
+        }
+      }
+    },
+    "Mouse Sensitivity" : {
+      "comment" : "Mouse sensitivity"
+    },
     "mouseBackClick" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5730,101 +6357,6 @@
             "value" : "下一頁"
           }
         }
-      }
-    },
-    "modifierCommand" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "cs" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "el" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "zh-Hant-HK" : { "stringUnit" : { "state" : "translated", "value" : "Command" } },
-        "zh-Hant-TW" : { "stringUnit" : { "state" : "translated", "value" : "Command" } }
-      }
-    },
-    "modifierControl" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "cs" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "el" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "zh-Hant-HK" : { "stringUnit" : { "state" : "translated", "value" : "Control" } },
-        "zh-Hant-TW" : { "stringUnit" : { "state" : "translated", "value" : "Control" } }
-      }
-    },
-    "modifierFn" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "cs" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "el" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "zh-Hant-HK" : { "stringUnit" : { "state" : "translated", "value" : "Function" } },
-        "zh-Hant-TW" : { "stringUnit" : { "state" : "translated", "value" : "Function" } }
-      }
-    },
-    "modifierOption" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "cs" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "el" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "zh-Hant-HK" : { "stringUnit" : { "state" : "translated", "value" : "Option" } },
-        "zh-Hant-TW" : { "stringUnit" : { "state" : "translated", "value" : "Option" } }
-      }
-    },
-    "modifierShift" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "cs" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "el" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "uk" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "zh-Hant-HK" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } },
-        "zh-Hant-TW" : { "stringUnit" : { "state" : "translated", "value" : "Shift" } }
       }
     },
     "mouseLeftClick" : {
@@ -8254,6 +8786,15 @@
     "SEND TOAST" : {
       "comment" : "Toast debug section header"
     },
+    "Settings Backup" : {
+      "comment" : "Settings backup"
+    },
+    "Settings exported successfully" : {
+
+    },
+    "Settings imported successfully" : {
+
+    },
     "Show each style" : {
       "comment" : "Toast debug quick test subtitle"
     },
@@ -9901,100 +10442,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "縮小"
-          }
-        }
-      }
-    },
-    "button_conflict_title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Button may be managed by another app"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このボタンは他のアプリが管理している可能性があります"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이 버튼은 다른 앱이 관리할 수 있습니다"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此按键可能被其他应用接管"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此按鍵可能被其他應用程式接管"
-          }
-        },
-        "zh-Hant-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此按鍵可能被其他應用程式接管"
-          }
-        },
-        "zh-Hant-TW" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此按鍵可能被其他應用程式接管"
-          }
-        }
-      }
-    },
-    "button_conflict_detail" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This button appears to be managed by another app (e.g. Logitech Options+). When both apps capture the same button, behavior may be unpredictable. Release it in the other app, or quit that app, to let Mos handle it."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このボタンは他のアプリ (Logitech Options+ など) に管理されているようです。両方のアプリが同じボタンを捕捉すると、動作が不安定になる場合があります。他のアプリでこのボタンを解放するか、そのアプリを終了すると、Mos が処理できるようになります。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이 버튼은 다른 앱(예: Logitech Options+)이 관리하는 것으로 보입니다. 두 앱이 같은 버튼을 캡처하면 예기치 않은 동작이 발생할 수 있습니다. 다른 앱에서 이 버튼을 해제하거나 해당 앱을 종료하면 Mos가 처리할 수 있습니다."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此按键似乎正被其他应用 (例如 Logitech Options+) 接管。两个应用同时捕获同一按键可能导致行为异常。请在对应应用中释放该按键,或退出该应用,以便由 Mos 处理。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此按鍵似乎正被其他應用程式 (例如 Logitech Options+) 接管。兩個應用程式同時捕捉同一按鍵可能導致行為異常。請在對應應用程式中釋放該按鍵,或退出該應用程式,以便由 Mos 處理。"
-          }
-        },
-        "zh-Hant-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此按鍵似乎正被其他應用程式 (例如 Logitech Options+) 接管。兩個應用程式同時捕捉同一按鍵可能導致行為異常。請在對應應用程式中釋放該按鍵,或退出該應用程式,以便由 Mos 處理。"
-          }
-        },
-        "zh-Hant-TW" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此按鍵似乎正被其他應用程式 (例如 Logitech Options+) 接管。兩個應用程式同時捕捉同一按鍵可能導致行為異常。請在對應應用程式中釋放該按鍵,或退出該應用程式,以便由 Mos 處理。"
           }
         }
       }
