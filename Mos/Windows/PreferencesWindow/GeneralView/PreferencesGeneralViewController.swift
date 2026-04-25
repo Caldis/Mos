@@ -29,6 +29,11 @@ class PreferencesGeneralViewController: NSViewController {
     // Layout constraints
     private var dynamicConstraints: [NSLayoutConstraint] = []
     
+    // Separators (kept as properties to prevent deallocation)
+    private var separator1: NSBox!
+    private var separator2: NSBox!
+    private var backupLabel: NSTextField!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // 创建动态 UI 元素
@@ -41,7 +46,7 @@ class PreferencesGeneralViewController: NSViewController {
     // 创建鼠标灵敏度设置 UI
     private func createMouseSensitivityUI() {
         // 分隔线
-        let separator1 = NSBox()
+        separator1 = NSBox()
         separator1.boxType = .separator
         separator1.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(separator1)
@@ -62,7 +67,8 @@ class PreferencesGeneralViewController: NSViewController {
         // 鼠标灵敏度滑块
         mouseSensitivitySlider = NSSlider(value: 1.0, minValue: 0.1, maxValue: 5.0, target: self, action: #selector(mouseSensitivitySliderChange(_:)))
         mouseSensitivitySlider.translatesAutoresizingMaskIntoConstraints = false
-        mouseSensitivitySlider.allowsTickMarks = true
+        // 注意: allowsTickMarks 是 macOS 10.15+ 的 API，为了兼容 macOS 10.13
+        // 在旧版本中，设置 numberOfTickMarks 就会自动显示刻度标记
         mouseSensitivitySlider.numberOfTickMarks = 10
         view.addSubview(mouseSensitivitySlider)
         
@@ -118,13 +124,13 @@ class PreferencesGeneralViewController: NSViewController {
     // 创建备份/恢复 UI
     private func createBackupUI() {
         // 分隔线
-        let separator2 = NSBox()
+        separator2 = NSBox()
         separator2.boxType = .separator
         separator2.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(separator2)
         
         // 备份/恢复标签
-        let backupLabel = NSTextField(labelWithString: NSLocalizedString("Settings Backup", comment: "Settings backup"))
+        backupLabel = NSTextField(labelWithString: NSLocalizedString("Settings Backup", comment: "Settings backup"))
         backupLabel.translatesAutoresizingMaskIntoConstraints = false
         backupLabel.isBezeled = false
         backupLabel.isEditable = false

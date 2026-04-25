@@ -79,7 +79,9 @@ class SettingsBackupManager {
         let savePanel = NSSavePanel()
         savePanel.canCreateDirectories = true
         savePanel.nameFieldStringValue = generateDefaultFilename()
-        savePanel.allowedContentTypes = [.json]
+        // 兼容 macOS 10.13: allowedContentTypes 是 macOS 11.0+ 的 API
+        // 使用 allowedFileTypes 替代
+        savePanel.allowedFileTypes = ["json"]
         
         let response = savePanel.runModal()
         
@@ -116,7 +118,9 @@ class SettingsBackupManager {
         openPanel.canChooseFiles = true
         openPanel.canChooseDirectories = false
         openPanel.allowsMultipleSelection = false
-        openPanel.allowedContentTypes = [.json]
+        // 兼容 macOS 10.13: allowedContentTypes 是 macOS 11.0+ 的 API
+        // 使用 allowedFileTypes 替代
+        openPanel.allowedFileTypes = ["json"]
         
         let response = openPanel.runModal()
         
