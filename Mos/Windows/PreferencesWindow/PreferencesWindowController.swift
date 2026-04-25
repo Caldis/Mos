@@ -14,6 +14,10 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     
     override func windowDidLoad() {
         super.windowDidLoad()
+        
+        // Allow the window to appear on the current active space, including fullscreen apps
+        window?.collectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary]
+        
         // 插入分隔符
         if #available(OSX 10.16, *) {
             window?.toolbar?.insertItem(withItemIdentifier: NSToolbarItem.Identifier.flexibleSpace, at: 4)
