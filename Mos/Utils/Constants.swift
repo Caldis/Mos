@@ -217,6 +217,16 @@ class OPTIONS_APPLICATION_DEFAULT {
     )
 }
 
+// 鼠标设置
+class OPTIONS_MOUSE_DEFAULT: Codable {
+    var enableSensitivity = false {
+        didSet { Options.shared.saveOptions() }
+    }
+    var sensitivity = 1.0 {
+        didSet { Options.shared.saveOptions() }
+    }
+}
+
 // MARK: - Notification Names
 extension Notification.Name {
     /// 辅助功能权限在运行时被撤销

@@ -42,6 +42,13 @@ extension EnhanceArray {
             return array.count
         }
     }
+    
+    // 获取所有元素的数组副本
+    var allElements: [T] {
+        get {
+            return array
+        }
+    }
     // 获取值
     public func get(by key: String?) -> T? {
         guard let validKey = key, let index = dictionary[validKey] else { return nil }

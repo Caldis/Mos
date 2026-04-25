@@ -97,6 +97,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         LogitechHIDManager.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
+        MouseSensitivityManager.shared.disable()
     }
     
     // 检查是否有访问 accessibility 权限, 如果有则启动滚动处理, 并结束计时器
@@ -111,6 +112,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 ScrollCore.shared.enable()
                 ButtonCore.shared.enable()
                 LogitechHIDManager.shared.start()
+                MouseSensitivityManager.shared.refresh()
             }
         } else {
             if Utils.isHadAccessibilityPermissions() {
@@ -118,6 +120,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 ScrollCore.shared.enable()
                 ButtonCore.shared.enable()
                 LogitechHIDManager.shared.start()
+                MouseSensitivityManager.shared.refresh()
             } else {
                 // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
                 WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.introductionWindowController, withTitle: "")
@@ -143,6 +146,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         LogitechHIDManager.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
+        MouseSensitivityManager.shared.disable()
     }
     // 辅助功能权限在运行时被撤销 (可能由多个 Interceptor 同时触发, 此方法必须幂等)
     @objc func handleAccessibilityPermissionLost() {
@@ -152,6 +156,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         LogitechHIDManager.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
+        MouseSensitivityManager.shared.disable()
         Toast.show(
             NSLocalizedString("Accessibility permission lost, Mos has been paused", comment: ""),
             style: .warning,
