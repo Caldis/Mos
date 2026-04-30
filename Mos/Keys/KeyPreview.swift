@@ -172,7 +172,7 @@ class KeyPreview: NSStackView {
             label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
             tagView.leadingAnchor.constraint(equalTo: label.trailingAnchor, constant: 4),
             tagView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            tagView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -4),
+            tagView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -6.5),
             container.heightAnchor.constraint(equalToConstant: KeyPreview.VIEW_SIZE),
         ])
 

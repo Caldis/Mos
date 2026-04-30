@@ -10,6 +10,7 @@
 import Cocoa
 
 class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
+    private static let appearanceChangedNotification = NSNotification.Name("AppleInterfaceThemeChangedNotification")
 
     // MARK: - IBOutlets
     @IBOutlet weak var keyDisplayContainerView: NSView!
@@ -35,8 +36,9 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
     private var onShortcutSelected: ((SystemShortcut.Shortcut?) -> Void)?
     private var onDeleteRequested: (() -> Void)?
     private var onCustomShortcutRecorded: ((String) -> Void)?
-    private var currentCustomName: String?
-    private var isCustomRecordingActive = false
+    /// 当用户从 PopUpButton 菜单选择 "打开…" 时触发,
+    /// 由 PreferencesButtonsViewController 弹出 OpenTargetConfigPopover.
+    private var onOpenTargetSelectionRequested: (() -> Void)?
 
     // MARK: - Custom Recording
     private lazy var customRecorder: KeyRecorder = {
@@ -45,26 +47,50 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         return recorder
     }()
 
-    // MARK: - Data (只用于UI显示)
-    private var currentShortcut: SystemShortcut.Shortcut?
+    // MARK: - State (单一权威源)
+    //
+    // 之前用 4 个并列字段 (currentShortcut / currentCustomName / currentOpenTarget /
+    // isCustomRecordingActive) 描述"当前展示的动作", 加新动作类型时要在 5+ 处同步,
+    // 漏一处就出 bug. 现在 currentBinding 是持久态的单一源, 录制态 isCustomRecordingActive
+    // 是 UI 临时叠加; 通过计算属性 actionState 暴露给所有需要判定/展示的代码,
+    // 加新动作类型只需在 CellActionState 加一个 case, 编译器强制 switch 覆盖.
+    private var currentBinding: ButtonBinding?
+    private var isCustomRecordingActive = false
+    private var actionState: CellActionState {
+        if isCustomRecordingActive { return .recordingPrompt }
+        guard let binding = currentBinding else { return .unbound }
+        return CellActionState(binding: binding)
+    }
+
     private var originalRowBackgroundColor: NSColor?
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        registerAppearanceObserver()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        registerAppearanceObserver()
+    }
 
     // MARK: - 配置方法
     func configure(
         with binding: ButtonBinding,
         onShortcutSelected: @escaping (SystemShortcut.Shortcut?) -> Void,
         onCustomShortcutRecorded: @escaping (String) -> Void,
+        onOpenTargetSelectionRequested: @escaping () -> Void,
         onDeleteRequested: @escaping () -> Void
     ) {
         // 保存回调
         self.onShortcutSelected = onShortcutSelected
         self.onDeleteRequested = onDeleteRequested
         self.onCustomShortcutRecorded = onCustomShortcutRecorded
+        self.onOpenTargetSelectionRequested = onOpenTargetSelectionRequested
         // 清理可能残留的录制状态 (cell 复用时)
         customRecorder.stopRecording()
         isCustomRecordingActive = false
-        self.currentShortcut = binding.systemShortcut
-        self.currentCustomName = binding.isCustomBinding ? binding.systemShortcutName : nil
+        self.currentBinding = binding
 
         // 保存原始背景色（首次或复用时）
         if originalRowBackgroundColor == nil, let rowView = self.superview as? NSTableRowView {
@@ -75,10 +101,10 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         setupKeyDisplayView(with: binding.triggerEvent)
 
         // 判断是否为 Logi 按键 (code >= 1000)
-        let isLogiTrigger = binding.triggerEvent.type == .mouse && LogitechCIDRegistry.isLogitechCode(binding.triggerEvent.code)
+        let isLogiTrigger = binding.triggerEvent.type == .mouse && LogiCenter.shared.isLogiCode(binding.triggerEvent.code)
 
         // 配置动作选择器
-        setupActionPopUpButton(currentShortcut: binding.systemShortcut, showLogiActions: isLogiTrigger)
+        setupActionPopUpButton(showLogiActions: isLogiTrigger)
 
         // 记录当前 trigger code 以供冲突检测
         self.currentTriggerCode = isLogiTrigger ? binding.triggerEvent.code : 0
@@ -93,7 +119,39 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
     }
 
     deinit {
+        DistributedNotificationCenter.default().removeObserver(self, name: Self.appearanceChangedNotification, object: nil)
         unregisterConflictObservers()
+    }
+
+    private func registerAppearanceObserver() {
+        DistributedNotificationCenter.default().addObserver(
+            self,
+            selector: #selector(appearanceChanged),
+            name: Self.appearanceChangedNotification,
+            object: nil
+        )
+    }
+
+    @objc private func appearanceChanged() {
+        refreshForAppearanceChange()
+    }
+
+    @available(macOS 10.14, *)
+    override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        refreshForAppearanceChange()
+    }
+
+    private func refreshForAppearanceChange() {
+        DispatchQueue.main.async { [weak self] in
+            self?.refreshActionDisplayForAppearanceChange()
+        }
+    }
+
+    private func refreshActionDisplayForAppearanceChange() {
+        guard actionPopUpButton != nil else { return }
+        refreshActionDisplay()
+        actionPopUpButton.needsDisplay = true
     }
 
     // 高亮该行（重复两次）
@@ -216,13 +274,13 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         conflictTrackingArea = nil
 
         // 非 Logi 按键 -> 不显示
-        guard currentTriggerCode > 0, LogitechCIDRegistry.isLogitechCode(currentTriggerCode) else {
+        guard currentTriggerCode > 0, LogiCenter.shared.isLogiCode(currentTriggerCode) else {
             setupDashedLine()
             return
         }
 
-        let status = LogitechHIDManager.shared.conflictStatus(forMosCode: currentTriggerCode)
-        guard status == .conflict else {
+        let status = LogiCenter.shared.conflictStatus(forMosCode: currentTriggerCode)
+        guard status.isConflict else {
             setupDashedLine()
             return
         }
@@ -360,14 +418,14 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
         unregisterConflictObservers()
         let center = NotificationCenter.default
         let sessionToken = center.addObserver(
-            forName: LogitechHIDManager.sessionChangedNotification,
+            forName: LogiCenter.sessionChanged,
             object: nil,
             queue: .main
         ) { [weak self] _ in
             self?.refreshConflictIndicator()
         }
         let reportingToken = center.addObserver(
-            forName: LogitechHIDManager.reportingQueryDidCompleteNotification,
+            forName: LogiCenter.reportingDidComplete,
             object: nil,
             queue: .main
         ) { [weak self] _ in
@@ -390,7 +448,7 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
     /// 1. 每次配置创建新的 NSMenu 实例，避免 cell 复用时共享状态
     /// 2. 默认禁用所有菜单项的 keyEquivalent，防止与 ButtonCore 触发的快捷键冲突
     /// 3. 通过 NSMenuDelegate 在菜单打开时临时启用 keyEquivalent（显示快捷键样式）
-    private func setupActionPopUpButton(currentShortcut: SystemShortcut.Shortcut?, showLogiActions: Bool = false) {
+    private func setupActionPopUpButton(showLogiActions: Bool = false) {
         // 每次配置时创建新的 menu，避免 cell 复用时共享状态
         let menu = NSMenu()
         menu.delegate = self
@@ -417,16 +475,13 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
     // MARK: - 私有方法
 
     func refreshActionDisplay() {
-        let presentation = actionDisplayResolver.resolve(
-            shortcut: currentShortcut,
-            customBindingName: currentCustomName,
-            isRecording: isCustomRecordingActive
-        )
+        let presentation = actionDisplayResolver.resolve(state: actionState)
         actionDisplayRenderer.render(presentation, into: actionPopUpButton)
     }
 
     func beginCustomShortcutSelection(startRecorder: Bool = true) {
         isCustomRecordingActive = true
+        refreshActionDisplay()
         DispatchQueue.main.async { [weak self] in
             self?.refreshActionDisplay()
         }
@@ -448,33 +503,53 @@ class ButtonTableCellView: NSTableCellView, NSMenuDelegate {
     // MARK: - Actions
 
     /// 快捷键选择回调
-    @objc private func shortcutSelected(_ sender: NSMenuItem) {
-        // 自定义录制: action 在 menuDidClose 之后触发,
-        // 直接 asyncAfter 等待菜单动画和焦点恢复后弹出录制弹窗
+    @objc internal func shortcutSelected(_ sender: NSMenuItem) {
+        // "打开…" sentinel: 把后续配置流程交给外部 (popover 提交后 controller reloadData)
+        if sender.representedObject as? String == "__open__" {
+            restoreTransientSelectorDisplay()
+            onOpenTargetSelectionRequested?()
+            return
+        }
+
+        // 自定义录制: 进入临时态 .recordingPrompt; 录制完成回调到 onEventRecorded
         if sender.representedObject as? String == "__custom__" {
             beginCustomShortcutSelection()
             return
         }
 
-        // 清除自定义绑定状态
-        self.currentCustomName = nil
-
-        // representedObject 为 nil 时表示用户选择了"未绑定"
+        // 系统/Logi/鼠标 等预定义快捷键, 或 nil = 取消绑定.
         let shortcut = sender.representedObject as? SystemShortcut.Shortcut
-
-        // 更新本地状态
-        self.currentShortcut = shortcut
-
-        // 更新占位符显示
+        applyLocalBindingChange { old in
+            ButtonBinding(
+                id: old.id,
+                triggerEvent: old.triggerEvent,
+                systemShortcutName: shortcut?.identifier ?? "",
+                isEnabled: shortcut != nil,
+                createdAt: old.createdAt
+            )
+        }
         refreshActionDisplay()
-
-        // 通知外部更新(nil 表示清除绑定)
         onShortcutSelected?(shortcut)
 
         // 延迟重绘虚线和冲突指示器 (等待 PopUpButton 布局更新)
         DispatchQueue.main.async {
             self.refreshConflictIndicator()
         }
+    }
+
+    private func restoreTransientSelectorDisplay() {
+        refreshActionDisplay()
+        DispatchQueue.main.async { [weak self] in
+            self?.refreshActionDisplay()
+        }
+    }
+
+    /// 助手: 通过 transform 闭包更新本地 currentBinding (cell 内的 in-memory 副本).
+    /// 调用方负责后续 refreshActionDisplay() 和 onShortcutSelected? / onCustomShortcutRecorded?
+    /// 把变更同步给 controller.
+    private func applyLocalBindingChange(_ transform: (ButtonBinding) -> ButtonBinding) {
+        guard let old = currentBinding else { return }
+        currentBinding = transform(old)
     }
 
     /// 删除绑定
@@ -519,7 +594,9 @@ extension ButtonTableCellView {
         let firstSeparator = menu.items[1]   // 第一条分割线
         let unboundItem = menu.items[2]      // "未绑定"/"取消绑定"菜单项
 
-        let hasBoundAction = currentShortcut != nil || currentCustomName != nil || isCustomRecordingActive
+        // 单一权威源: actionState.hasBoundAction 内部 switch 全 case, 加新动作类型时
+        // CellActionState 加 case 后这里不需要改 (新 case 默认 hasBoundAction 由 enum 实现统一).
+        let hasBoundAction = actionState.hasBoundAction
 
         if !hasBoundAction {
             // 当前是未绑定状态:隐藏占位符和第一条分割线,显示"未绑定"
@@ -590,8 +667,15 @@ extension ButtonTableCellView: KeyRecorderDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.66) { [weak self] in
             guard let self = self else { return }
             self.isCustomRecordingActive = false
-            self.currentShortcut = nil
-            self.currentCustomName = customName
+            self.applyLocalBindingChange { old in
+                ButtonBinding(
+                    id: old.id,
+                    triggerEvent: old.triggerEvent,
+                    systemShortcutName: customName,
+                    isEnabled: true,
+                    createdAt: old.createdAt
+                )
+            }
             self.refreshActionDisplay()
             self.onCustomShortcutRecorded?(customName)
             // 重绘虚线和冲突指示器

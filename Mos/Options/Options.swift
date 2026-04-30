@@ -76,6 +76,10 @@ class Options {
     var application = OPTIONS_APPLICATION_DEFAULT() {
         didSet { Options.shared.saveOptions() }
     }
+
+    /// 保留无法 decode 的 binding 原始 JSON 元素 (来自未来 Mos 版本).
+    /// 在 save 时再合回去, 防止用户升级后再降级时丢失新版数据.
+    fileprivate var preservedUnknownBindings: [Any] = []
 }
 
 /**
@@ -185,23 +189,66 @@ extension Options {
                 NSLog("Button bindings data has wrong type: \(type(of: rawValue)), clearing corrupted data")
                 UserDefaults.standard.removeObject(forKey: OptionItem.Button.Bindings)
             }
+            preservedUnknownBindings = []
             return []
         }
-
-        do {
-            return try decoder.decode([ButtonBinding].self, from: data)
-        } catch {
-            NSLog("Failed to decode button bindings data: \(error), resetting to defaults")
-            UserDefaults.standard.removeObject(forKey: OptionItem.Button.Bindings)
-            return []
-        }
+        let result = Self.decodeButtonBindingsWithUnknowns(from: data)
+        preservedUnknownBindings = result.unknownElements
+        return result.bindings
     }
 
-    // 保存按钮绑定数据
+    /// 容错解码 button binding 数组, 保留未识别条目原始 JSON.
+    ///
+    /// - 外层不是 JSON 数组 → 返回空, 视作配置丢失
+    /// - 单个 binding 解析失败 → 收集到 unknownElements (raw JSON), 不丢
+    ///
+    /// 这种 per-binding 容错设计支持向前兼容: 未来 Mos 版本写入的未知 payload
+    /// 不会导致整组绑定被擦掉, 也不会在 save 时被误删 (saveButtonBindingsData
+    /// 会把 preservedUnknownBindings 重新拼回数组末尾).
+    static func decodeButtonBindingsWithUnknowns(
+        from data: Data
+    ) -> (bindings: [ButtonBinding], unknownElements: [Any]) {
+        guard let elements = try? JSONSerialization.jsonObject(with: data) as? [Any] else {
+            NSLog("Button bindings data is not a JSON array, returning empty")
+            return (bindings: [], unknownElements: [])
+        }
+        let decoder = JSONDecoder()
+        var bindings: [ButtonBinding] = []
+        var unknown: [Any] = []
+        for element in elements {
+            guard JSONSerialization.isValidJSONObject(element),
+                  let elementData = try? JSONSerialization.data(withJSONObject: element) else {
+                continue   // 完全损坏的元素 (e.g. JSON null 顶级), 真正丢掉
+            }
+            if let binding = try? decoder.decode(ButtonBinding.self, from: elementData) {
+                bindings.append(binding)
+            } else {
+                unknown.append(element)
+            }
+        }
+        if !unknown.isEmpty {
+            NSLog("Preserved \(unknown.count) unparseable button binding(s) for round-trip (likely from a future Mos version)")
+        }
+        return (bindings: bindings, unknownElements: unknown)
+    }
+
+    /// Convenience wrapper: 只返回已识别的 bindings (供单测和不关心 unknowns 的调用方).
+    static func decodeButtonBindings(from data: Data) -> [ButtonBinding] {
+        return decodeButtonBindingsWithUnknowns(from: data).bindings
+    }
+
+    // 保存按钮绑定数据 (合并 preservedUnknownBindings, 不丢弃未来版本数据)
     private func saveButtonBindingsData() {
         do {
-            let data = try encoder.encode(buttons.binding)
-            UserDefaults.standard.set(data, forKey: OptionItem.Button.Bindings)
+            let knownData = try encoder.encode(buttons.binding)
+            guard var merged = try JSONSerialization.jsonObject(with: knownData) as? [Any] else {
+                NSLog("Failed to round-trip known bindings to JSON array, skipping save")
+                return
+            }
+            // 把保留的未知元素拼回去 (放在末尾, 不影响已知 bindings 顺序)
+            merged.append(contentsOf: preservedUnknownBindings)
+            let mergedData = try JSONSerialization.data(withJSONObject: merged)
+            UserDefaults.standard.set(mergedData, forKey: OptionItem.Button.Bindings)
         } catch {
             NSLog("Failed to encode button bindings data: \(error), skipping save")
         }

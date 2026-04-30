@@ -11,10 +11,24 @@ final class InputProcessorTests: XCTestCase {
         MouseInteractionSessionController.shared.clearAllSessions()
         ShortcutExecutor.shared.setTestingMouseEventObserver()
         InputProcessor.shared.clearActiveBindings()
+        ScrollCore.shared.dashScroll = false
+        ScrollCore.shared.dashAmplification = 1.0
+        ScrollCore.shared.toggleScroll = false
+        ScrollCore.shared.blockSmooth = false
+        ScrollCore.shared.dashKeyHeld = false
+        ScrollCore.shared.toggleKeyHeld = false
+        ScrollCore.shared.blockKeyHeld = false
     }
 
     override func tearDown() {
         InputProcessor.shared.clearActiveBindings()
+        ScrollCore.shared.dashScroll = false
+        ScrollCore.shared.dashAmplification = 1.0
+        ScrollCore.shared.toggleScroll = false
+        ScrollCore.shared.blockSmooth = false
+        ScrollCore.shared.dashKeyHeld = false
+        ScrollCore.shared.toggleKeyHeld = false
+        ScrollCore.shared.blockKeyHeld = false
         MouseInteractionSessionController.shared.clearAllSessions()
         MouseInteractionSessionController.shared.clearTestingMotionTapHooks()
         ShortcutExecutor.shared.clearTestingMouseEventObserver()
@@ -204,6 +218,369 @@ final class InputProcessorTests: XCTestCase {
             XCTAssertEqual(identifier, "escapeKey")
         default:
             XCTFail("Expected escape shortcut to use the system shortcut execution path")
+        }
+    }
+
+    func testResolveAction_mosScrollActionsAreStateful() {
+        for identifier in ["mosScrollDash", "mosScrollToggle", "mosScrollBlock"] {
+            guard let action = ShortcutExecutor.shared.resolveAction(named: identifier) else {
+                return XCTFail("Expected \(identifier) action to resolve")
+            }
+
+            XCTAssertEqual(action.executionMode, .stateful)
+        }
+    }
+
+    func testProcess_mosScrollDash_downAndUpControlsDashState() {
+        let trigger = RecordedEvent(type: .mouse, code: 3, modifiers: 0, displayComponents: ["🖱4"], deviceFilter: nil)
+        let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollDash", isEnabled: true)
+        Options.shared.buttons.binding = [binding]
+        ButtonUtils.shared.invalidateCache()
+
+        let downEvent = InputEvent(type: .mouse, code: 3, modifiers: .init(rawValue: 0),
+                                   phase: .down, source: .hidPP, device: nil)
+        XCTAssertEqual(InputProcessor.shared.process(downEvent), .consumed)
+        XCTAssertTrue(ScrollCore.shared.dashScroll)
+        XCTAssertEqual(ScrollCore.shared.dashAmplification, 5.0)
+
+        let upEvent = InputEvent(type: .mouse, code: 3, modifiers: .init(rawValue: 0),
+                                 phase: .up, source: .hidPP, device: nil)
+        XCTAssertEqual(InputProcessor.shared.process(upEvent), .consumed)
+        XCTAssertFalse(ScrollCore.shared.dashScroll)
+        XCTAssertEqual(ScrollCore.shared.dashAmplification, 1.0)
+    }
+
+    func testProcess_mosScrollMiddleTapWithoutScroll_replaysOriginalMouseClick() {
+        let trigger = RecordedEvent(type: .mouse, code: 2, modifiers: 0, displayComponents: ["🖱M"], deviceFilter: nil)
+        let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollDash", isEnabled: true)
+        Options.shared.buttons.binding = [binding]
+        ButtonUtils.shared.invalidateCache()
+
+        var observedEvents: [(type: CGEventType, buttonNumber: Int64, userData: Int64)] = []
+        ShortcutExecutor.shared.setTestingMouseEventObserver { event in
+            observedEvents.append((
+                event.type,
+                event.getIntegerValueField(.mouseEventButtonNumber),
+                event.getIntegerValueField(.eventSourceUserData)
+            ))
+        }
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 2, modifiers: .init(rawValue: 0), phase: .down, source: .hidPP, device: nil)),
+            .consumed
+        )
+        XCTAssertTrue(ScrollCore.shared.dashScroll)
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 2, modifiers: .init(rawValue: 0), phase: .up, source: .hidPP, device: nil)),
+            .consumed
+        )
+
+        XCTAssertEqual(observedEvents.map(\.type), [.otherMouseDown, .otherMouseUp])
+        XCTAssertEqual(observedEvents.map(\.buttonNumber), [2, 2])
+        XCTAssertEqual(observedEvents.map(\.userData), [MosEventMarker.syntheticCustom, MosEventMarker.syntheticCustom])
+        XCTAssertFalse(ScrollCore.shared.dashScroll)
+    }
+
+    func testProcess_mosScrollMiddleTapWithScrollUse_doesNotReplayOriginalMouseClick() {
+        let trigger = RecordedEvent(type: .mouse, code: 2, modifiers: 0, displayComponents: ["🖱M"], deviceFilter: nil)
+        let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollDash", isEnabled: true)
+        Options.shared.buttons.binding = [binding]
+        ButtonUtils.shared.invalidateCache()
+
+        var observedEvents: [CGEventType] = []
+        ShortcutExecutor.shared.setTestingMouseEventObserver { event in
+            observedEvents.append(event.type)
+        }
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 2, modifiers: .init(rawValue: 0), phase: .down, source: .hidPP, device: nil)),
+            .consumed
+        )
+        InputProcessor.shared.markMosScrollActionSessionsUsedForScroll()
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 2, modifiers: .init(rawValue: 0), phase: .up, source: .hidPP, device: nil)),
+            .consumed
+        )
+
+        XCTAssertTrue(observedEvents.isEmpty)
+        XCTAssertFalse(ScrollCore.shared.dashScroll)
+    }
+
+    func testScrollCore_scrollWheelWhileMosScrollHeldSuppressesTapReplay() {
+        let trigger = RecordedEvent(type: .mouse, code: 2, modifiers: 0, displayComponents: ["🖱M"], deviceFilter: nil)
+        let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollDash", isEnabled: true)
+        Options.shared.buttons.binding = [binding]
+        ButtonUtils.shared.invalidateCache()
+
+        var observedEvents: [CGEventType] = []
+        ShortcutExecutor.shared.setTestingMouseEventObserver { event in
+            observedEvents.append(event.type)
+        }
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 2, modifiers: .init(rawValue: 0), phase: .down, source: .hidPP, device: nil)),
+            .consumed
+        )
+
+        guard let scrollEvent = CGEvent(scrollWheelEvent2Source: nil, units: .line, wheelCount: 1, wheel1: 1, wheel2: 0, wheel3: 0) else {
+            return XCTFail("Expected scroll wheel event to be creatable")
+        }
+        ScrollEvent.isTrackpadCallCount = ScrollEvent.isTrackpadCallSamplingRate - 1
+        _ = ScrollCore.shared.scrollEventCallBack(CGEventTapProxy(bitPattern: 1)!, .scrollWheel, scrollEvent, nil)
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 2, modifiers: .init(rawValue: 0), phase: .up, source: .hidPP, device: nil)),
+            .consumed
+        )
+
+        XCTAssertTrue(observedEvents.isEmpty)
+        XCTAssertFalse(ScrollCore.shared.dashScroll)
+    }
+
+    func testScrollCore_scrollWheelReleasesCGMosScrollSessionWhenPhysicalButtonIsNoLongerDown() {
+        let trigger = RecordedEvent(type: .mouse, code: 2, modifiers: 0, displayComponents: ["🖱M"], deviceFilter: nil)
+        let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollDash", isEnabled: true)
+        Options.shared.buttons.binding = [binding]
+        ButtonUtils.shared.invalidateCache()
+
+        let downEvent = CGEvent(
+            mouseEventSource: nil,
+            mouseType: .otherMouseDown,
+            mouseCursorPosition: CGPoint(x: 40, y: 40),
+            mouseButton: .center
+        )!
+        downEvent.setIntegerValueField(.mouseEventButtonNumber, value: 2)
+
+        XCTAssertEqual(InputProcessor.shared.process(InputEvent(fromCGEvent: downEvent)), .consumed)
+        XCTAssertTrue(ScrollCore.shared.dashScroll)
+
+        guard let scrollEvent = CGEvent(scrollWheelEvent2Source: nil, units: .line, wheelCount: 1, wheel1: 1, wheel2: 0, wheel3: 0) else {
+            return XCTFail("Expected scroll wheel event to be creatable")
+        }
+        ScrollEvent.isTrackpadCallCount = ScrollEvent.isTrackpadCallSamplingRate - 1
+        _ = ScrollCore.shared.scrollEventCallBack(CGEventTapProxy(bitPattern: 1)!, .scrollWheel, scrollEvent, nil)
+
+        XCTAssertFalse(ScrollCore.shared.dashScroll)
+        XCTAssertEqual(ScrollCore.shared.dashAmplification, 1.0)
+    }
+
+    func testProcess_mosScrollCGMouseTapWithPointerMove_doesNotReplayOriginalMouseClick() {
+        let trigger = RecordedEvent(type: .mouse, code: 2, modifiers: 0, displayComponents: ["🖱M"], deviceFilter: nil)
+        let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollDash", isEnabled: true)
+        Options.shared.buttons.binding = [binding]
+        ButtonUtils.shared.invalidateCache()
+
+        var observedEvents: [CGEventType] = []
+        ShortcutExecutor.shared.setTestingMouseEventObserver { event in
+            observedEvents.append(event.type)
+        }
+
+        let downEvent = CGEvent(
+            mouseEventSource: nil,
+            mouseType: .otherMouseDown,
+            mouseCursorPosition: CGPoint(x: 40, y: 40),
+            mouseButton: .center
+        )!
+        downEvent.setIntegerValueField(.mouseEventButtonNumber, value: 2)
+
+        let upEvent = CGEvent(
+            mouseEventSource: nil,
+            mouseType: .otherMouseUp,
+            mouseCursorPosition: CGPoint(x: 70, y: 40),
+            mouseButton: .center
+        )!
+        upEvent.setIntegerValueField(.mouseEventButtonNumber, value: 2)
+
+        XCTAssertEqual(InputProcessor.shared.process(InputEvent(fromCGEvent: downEvent)), .consumed)
+        XCTAssertEqual(InputProcessor.shared.process(InputEvent(fromCGEvent: upEvent)), .consumed)
+
+        XCTAssertTrue(observedEvents.isEmpty)
+        XCTAssertFalse(ScrollCore.shared.dashScroll)
+    }
+
+    func testProcess_logiButtonCanTriggerMosScrollToggle() {
+        let trigger = RecordedEvent(
+            type: .mouse,
+            code: 1007,
+            modifiers: 0,
+            displayComponents: ["[Logi]", "Forward Button"],
+            deviceFilter: nil
+        )
+        let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollToggle", isEnabled: true)
+        Options.shared.buttons.binding = [binding]
+        ButtonUtils.shared.invalidateCache()
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 1007, modifiers: .init(rawValue: 0), phase: .down, source: .hidPP, device: nil)),
+            .consumed
+        )
+        XCTAssertTrue(ScrollCore.shared.toggleScroll)
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 1007, modifiers: .init(rawValue: 0), phase: .up, source: .hidPP, device: nil)),
+            .consumed
+        )
+        XCTAssertFalse(ScrollCore.shared.toggleScroll)
+    }
+
+    func testProcess_logiMosScrollForwardTapWithoutScroll_replaysForwardButton() {
+        let trigger = RecordedEvent(
+            type: .mouse,
+            code: 1007,
+            modifiers: 0,
+            displayComponents: ["[Logi]", "Forward Button"],
+            deviceFilter: nil
+        )
+        let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollToggle", isEnabled: true)
+        Options.shared.buttons.binding = [binding]
+        ButtonUtils.shared.invalidateCache()
+
+        var observedEvents: [(type: CGEventType, buttonNumber: Int64)] = []
+        ShortcutExecutor.shared.setTestingMouseEventObserver { event in
+            observedEvents.append((event.type, event.getIntegerValueField(.mouseEventButtonNumber)))
+        }
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 1007, modifiers: .init(rawValue: 0), phase: .down, source: .hidPP, device: nil)),
+            .consumed
+        )
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 1007, modifiers: .init(rawValue: 0), phase: .up, source: .hidPP, device: nil)),
+            .consumed
+        )
+
+        XCTAssertEqual(observedEvents.map(\.type), [.otherMouseDown, .otherMouseUp])
+        XCTAssertEqual(observedEvents.map(\.buttonNumber), [4, 4])
+        XCTAssertFalse(ScrollCore.shared.toggleScroll)
+    }
+
+    func testProcess_mosScrollBlock_downAndUpControlsBlockState() {
+        let trigger = RecordedEvent(type: .mouse, code: 5, modifiers: 0, displayComponents: ["🖱6"], deviceFilter: nil)
+        let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollBlock", isEnabled: true)
+        Options.shared.buttons.binding = [binding]
+        ButtonUtils.shared.invalidateCache()
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 5, modifiers: .init(rawValue: 0), phase: .down, source: .hidPP, device: nil)),
+            .consumed
+        )
+        XCTAssertTrue(ScrollCore.shared.blockSmooth)
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 5, modifiers: .init(rawValue: 0), phase: .up, source: .hidPP, device: nil)),
+            .consumed
+        )
+        XCTAssertFalse(ScrollCore.shared.blockSmooth)
+    }
+
+    func testProcess_multipleMosScrollDashTriggers_releaseOneKeepsDashActive() {
+        let firstTrigger = RecordedEvent(type: .mouse, code: 3, modifiers: 0, displayComponents: ["🖱4"], deviceFilter: nil)
+        let secondTrigger = RecordedEvent(type: .mouse, code: 4, modifiers: 0, displayComponents: ["🖱5"], deviceFilter: nil)
+        let firstBinding = ButtonBinding(triggerEvent: firstTrigger, systemShortcutName: "mosScrollDash", isEnabled: true)
+        let secondBinding = ButtonBinding(triggerEvent: secondTrigger, systemShortcutName: "mosScrollDash", isEnabled: true)
+        Options.shared.buttons.binding = [firstBinding, secondBinding]
+        ButtonUtils.shared.invalidateCache()
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 3, modifiers: .init(rawValue: 0), phase: .down, source: .hidPP, device: nil)),
+            .consumed
+        )
+        XCTAssertTrue(ScrollCore.shared.dashScroll)
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 4, modifiers: .init(rawValue: 0), phase: .down, source: .hidPP, device: nil)),
+            .consumed
+        )
+        XCTAssertTrue(ScrollCore.shared.dashScroll)
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 3, modifiers: .init(rawValue: 0), phase: .up, source: .hidPP, device: nil)),
+            .consumed
+        )
+        XCTAssertTrue(ScrollCore.shared.dashScroll)
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(type: .mouse, code: 4, modifiers: .init(rawValue: 0), phase: .up, source: .hidPP, device: nil)),
+            .consumed
+        )
+        XCTAssertFalse(ScrollCore.shared.dashScroll)
+    }
+
+    func testProcess_mosScrollBindingDoesNotLatchWhenLegacyScrollHotkeySeesOnlyDown() {
+        struct Case {
+            let shortcutName: String
+            let configureLegacyHotkey: (ScrollHotkey) -> Void
+            let isRoleActive: () -> Bool
+        }
+
+        let originalDash = Options.shared.scroll.dash
+        let originalToggle = Options.shared.scroll.toggle
+        let originalBlock = Options.shared.scroll.block
+        defer {
+            Options.shared.scroll.dash = originalDash
+            Options.shared.scroll.toggle = originalToggle
+            Options.shared.scroll.block = originalBlock
+        }
+
+        let cases: [Case] = [
+            Case(
+                shortcutName: "mosScrollDash",
+                configureLegacyHotkey: { Options.shared.scroll.dash = $0 },
+                isRoleActive: { ScrollCore.shared.dashScroll }
+            ),
+            Case(
+                shortcutName: "mosScrollToggle",
+                configureLegacyHotkey: { Options.shared.scroll.toggle = $0 },
+                isRoleActive: { ScrollCore.shared.toggleScroll }
+            ),
+            Case(
+                shortcutName: "mosScrollBlock",
+                configureLegacyHotkey: { Options.shared.scroll.block = $0 },
+                isRoleActive: { ScrollCore.shared.blockSmooth }
+            ),
+        ]
+
+        for testCase in cases {
+            InputProcessor.shared.clearActiveBindings()
+            ScrollCore.shared.dashScroll = false
+            ScrollCore.shared.dashAmplification = 1.0
+            ScrollCore.shared.toggleScroll = false
+            ScrollCore.shared.blockSmooth = false
+            ScrollCore.shared.dashKeyHeld = false
+            ScrollCore.shared.toggleKeyHeld = false
+            ScrollCore.shared.blockKeyHeld = false
+            Options.shared.scroll.dash = nil
+            Options.shared.scroll.toggle = nil
+            Options.shared.scroll.block = nil
+
+            let trigger = RecordedEvent(type: .mouse, code: 2, modifiers: 0, displayComponents: ["🖱M"], deviceFilter: nil)
+            let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: testCase.shortcutName, isEnabled: true)
+            Options.shared.buttons.binding = [binding]
+            ButtonUtils.shared.invalidateCache()
+            testCase.configureLegacyHotkey(ScrollHotkey(type: .mouse, code: 2))
+
+            let legacyDownEvent = CGEvent(
+                mouseEventSource: nil,
+                mouseType: .otherMouseDown,
+                mouseCursorPosition: CGPoint(x: 40, y: 40),
+                mouseButton: .center
+            )!
+            legacyDownEvent.setIntegerValueField(.mouseEventButtonNumber, value: 2)
+            _ = ScrollCore.shared.hotkeyEventCallBack(CGEventTapProxy(bitPattern: 1)!, .otherMouseDown, legacyDownEvent, nil)
+
+            XCTAssertEqual(
+                InputProcessor.shared.process(InputEvent(type: .mouse, code: 2, modifiers: .init(rawValue: 0), phase: .down, source: .hidPP, device: nil)),
+                .consumed
+            )
+            XCTAssertTrue(testCase.isRoleActive(), "\(testCase.shortcutName) should be active while held")
+
+            XCTAssertEqual(
+                InputProcessor.shared.process(InputEvent(type: .mouse, code: 2, modifiers: .init(rawValue: 0), phase: .up, source: .hidPP, device: nil)),
+                .consumed
+            )
+            XCTAssertFalse(testCase.isRoleActive(), "\(testCase.shortcutName) should release even if the legacy hotkey tap missed up")
         }
     }
 

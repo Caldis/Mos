@@ -58,8 +58,8 @@ struct ScrollHotkey: Codable, Equatable {
         case .keyboard:
             return KeyCode.keyMap[code] ?? "Key \(code)"
         case .mouse:
-            if LogitechCIDRegistry.isLogitechCode(code) {
-                return LogitechCIDRegistry.name(forMosCode: code)
+            if LogiCenter.shared.isLogiCode(code) {
+                return (LogiCenter.shared.name(forMosCode: code) ?? "")
             }
             return KeyCode.mouseMap[code] ?? "🖱\(code)"
         }
@@ -222,6 +222,9 @@ struct ButtonBinding: Codable, Equatable {
     static let customBindingRelevantModifierMask: UInt64 =
         KeyCode.modifiersMask | CGEventFlags.maskSecondaryFn.rawValue
 
+    /// "打开应用" 动作 sentinel; systemShortcutName 取此值时, openTarget 字段为权威载荷.
+    static let openTargetSentinel = "openTarget"
+
     // MARK: - 持久化字段
 
     /// 唯一标识符
@@ -232,6 +235,7 @@ struct ButtonBinding: Codable, Equatable {
 
     /// 绑定的系统快捷键名称
     /// 自定义快捷键格式: "custom::<keyCode>:<modifierFlags>"
+    /// "打开应用" 动作: "openTarget" (此时 openTarget 字段非 nil)
     let systemShortcutName: String
 
     /// 是否启用
@@ -239,6 +243,9 @@ struct ButtonBinding: Codable, Equatable {
 
     /// 创建时间
     let createdAt: Date
+
+    /// "打开应用" 动作的结构化载荷; 仅当 systemShortcutName == openTargetSentinel 时非 nil.
+    let openTarget: OpenTargetPayload?
 
     // MARK: - 瞬态缓存字段 (不参与编解码)
 
@@ -251,7 +258,7 @@ struct ButtonBinding: Codable, Equatable {
     // MARK: - CodingKeys (仅编码持久化字段)
 
     enum CodingKeys: String, CodingKey {
-        case id, triggerEvent, systemShortcutName, isEnabled, createdAt
+        case id, triggerEvent, systemShortcutName, isEnabled, createdAt, openTarget
     }
 
     // MARK: - 计算属性
@@ -268,12 +275,64 @@ struct ButtonBinding: Codable, Equatable {
 
     // MARK: - 初始化
 
-    init(id: UUID = UUID(), triggerEvent: RecordedEvent, systemShortcutName: String, isEnabled: Bool = true, createdAt: Date = Date()) {
+    init(id: UUID = UUID(),
+         triggerEvent: RecordedEvent,
+         systemShortcutName: String,
+         isEnabled: Bool = true,
+         createdAt: Date = Date()) {
         self.id = id
         self.triggerEvent = triggerEvent
         self.systemShortcutName = systemShortcutName
         self.isEnabled = isEnabled
         self.createdAt = createdAt
+        self.openTarget = nil
+    }
+
+    /// "打开应用" 动作专用初始化器, 强制保证 sentinel 与 payload 一致.
+    init(id: UUID = UUID(),
+         triggerEvent: RecordedEvent,
+         openTarget: OpenTargetPayload,
+         isEnabled: Bool = true,
+         createdAt: Date = Date()) {
+        self.id = id
+        self.triggerEvent = triggerEvent
+        self.systemShortcutName = Self.openTargetSentinel
+        self.openTarget = openTarget
+        self.isEnabled = isEnabled
+        self.createdAt = createdAt
+    }
+
+    // MARK: - Decode-time 一致性校验 (UI 与 executor 必须看到同一个真相)
+    //
+    // 不变量: systemShortcutName == openTargetSentinel ⇔ openTarget != nil
+    //
+    // 没有这层校验时, 手改 / AI 改写的 JSON 可能写出 mismatch 状态:
+    //   - {"systemShortcutName":"copy", "openTarget":{...}}  → UI 显 "打开 Safari", 执行却跑 Copy
+    //   - {"systemShortcutName":"openTarget", openTarget 缺}  → UI 显 unbound, 执行 no-op
+    // decode 时 throw, 让 Options.decodeButtonBindingsWithUnknowns 把这条 binding 收到
+    // preservedUnknownBindings, save 时再 round-trip 回去 (用户改 JSON 改坏了一条不会被静默吞掉).
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try c.decode(UUID.self, forKey: .id)
+        self.triggerEvent = try c.decode(RecordedEvent.self, forKey: .triggerEvent)
+        let name = try c.decode(String.self, forKey: .systemShortcutName)
+        self.systemShortcutName = name
+        self.isEnabled = try c.decode(Bool.self, forKey: .isEnabled)
+        self.createdAt = try c.decode(Date.self, forKey: .createdAt)
+        let payload = try c.decodeIfPresent(OpenTargetPayload.self, forKey: .openTarget)
+        self.openTarget = payload
+
+        // 强制一致性: sentinel 与 payload 同时存在或同时不存在.
+        let nameIsSentinel = (name == Self.openTargetSentinel)
+        let payloadIsPresent = (payload != nil)
+        if nameIsSentinel != payloadIsPresent {
+            throw DecodingError.dataCorruptedError(
+                forKey: .openTarget,
+                in: c,
+                debugDescription: "Inconsistent OpenTarget binding: systemShortcutName=\"\(name)\" but openTarget \(payloadIsPresent ? "present" : "missing")"
+            )
+        }
     }
 
     // MARK: - 自定义缓存
@@ -321,7 +380,8 @@ struct ButtonBinding: Codable, Equatable {
                lhs.triggerEvent == rhs.triggerEvent &&
                lhs.systemShortcutName == rhs.systemShortcutName &&
                lhs.isEnabled == rhs.isEnabled &&
-               lhs.createdAt == rhs.createdAt
+               lhs.createdAt == rhs.createdAt &&
+               lhs.openTarget == rhs.openTarget
     }
 }
 

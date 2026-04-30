@@ -2,10 +2,10 @@
 //  ScrollCoreHotkeyTests.swift
 //  MosTests
 //
-//  ScrollCore.handleScrollHotkeyFromHIDPlusPlus 热键匹配测试 (Task 9)
+//  ScrollCore.handleScrollHotkey 热键匹配测试 (Task 9)
 //
 //  注意: 这些测试直接操作 ScrollCore.shared 的热键状态,
-//  由于 handleScrollHotkeyFromHIDPlusPlus 内部会调用 ScrollUtils.shared 和
+//  由于 handleScrollHotkey 内部会调用 ScrollUtils.shared 和
 //  NSWorkspace 来获取热键配置, 在 CI 环境中配置可能为 nil。
 //  因此仅测试 key-up 释放逻辑 (不依赖热键配置) 和基本返回值。
 //
@@ -42,7 +42,7 @@ final class ScrollCoreHotkeyTests: XCTestCase {
     // MARK: - key-up: 无已激活状态时
 
     func testKeyUp_withNoHeldCodes_returnsFalse() {
-        let result = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 42, isDown: false)
+        let result = ScrollCore.shared.handleScrollHotkey(code: 42, isDown: false)
         XCTAssertFalse(result, "key-up with no held codes should return false")
     }
 
@@ -57,7 +57,7 @@ final class ScrollCoreHotkeyTests: XCTestCase {
         // 直接设置私有的 hidDashHeldCode (通过模拟一次完整的 down-up)
         // 由于 hidDashHeldCode 是 private, 我们需要通过正常的 key-down 路径设置
         // 但 key-down 依赖 Options 配置, 所以这里测试 key-up 对不匹配的 code 不会误清除
-        let result = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 999, isDown: false)
+        let result = ScrollCore.shared.handleScrollHotkey(code: 999, isDown: false)
         XCTAssertFalse(result, "key-up with non-matching code should return false")
 
         // 验证状态没有被错误清除
@@ -71,7 +71,7 @@ final class ScrollCoreHotkeyTests: XCTestCase {
         // 在没有配置 HID++ 鼠标按键热键时 (默认热键是键盘修饰键),
         // mouse type 的 code 不会匹配, 应返回 false
         // 默认: dash=optionL(keyboard), toggle=shiftL(keyboard), block=commandL(keyboard)
-        let result = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 100, isDown: true)
+        let result = ScrollCore.shared.handleScrollHotkey(code: 100, isDown: true)
         // 由于默认热键是 keyboard 类型, 而 HID++ 匹配要求 type == .mouse,
         // 所以不会匹配
         XCTAssertFalse(result, "keyboard-type hotkey should not match mouse code from HID++")
@@ -86,14 +86,14 @@ final class ScrollCoreHotkeyTests: XCTestCase {
         defer { Options.shared.scroll.dash = originalDash }
 
         // key-down
-        let downResult = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 50, isDown: true)
+        let downResult = ScrollCore.shared.handleScrollHotkey(code: 50, isDown: true)
         XCTAssertTrue(downResult, "mouse hotkey matching code should return true on key-down")
         XCTAssertTrue(ScrollCore.shared.dashScroll, "dashScroll should be set on key-down")
         XCTAssertTrue(ScrollCore.shared.dashKeyHeld, "dashKeyHeld should be set")
         XCTAssertEqual(ScrollCore.shared.dashAmplification, 5.0, "dashAmplification should be 5.0")
 
         // key-up
-        let upResult = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 50, isDown: false)
+        let upResult = ScrollCore.shared.handleScrollHotkey(code: 50, isDown: false)
         XCTAssertTrue(upResult, "key-up of tracked code should return true")
         XCTAssertFalse(ScrollCore.shared.dashScroll, "dashScroll should be cleared on key-up")
         XCTAssertFalse(ScrollCore.shared.dashKeyHeld, "dashKeyHeld should be cleared")
@@ -105,12 +105,12 @@ final class ScrollCoreHotkeyTests: XCTestCase {
         Options.shared.scroll.toggle = ScrollHotkey(type: .mouse, code: 60)
         defer { Options.shared.scroll.toggle = originalToggle }
 
-        let downResult = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 60, isDown: true)
+        let downResult = ScrollCore.shared.handleScrollHotkey(code: 60, isDown: true)
         XCTAssertTrue(downResult)
         XCTAssertTrue(ScrollCore.shared.toggleScroll)
         XCTAssertTrue(ScrollCore.shared.toggleKeyHeld)
 
-        let upResult = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 60, isDown: false)
+        let upResult = ScrollCore.shared.handleScrollHotkey(code: 60, isDown: false)
         XCTAssertTrue(upResult)
         XCTAssertFalse(ScrollCore.shared.toggleScroll)
         XCTAssertFalse(ScrollCore.shared.toggleKeyHeld)
@@ -121,12 +121,12 @@ final class ScrollCoreHotkeyTests: XCTestCase {
         Options.shared.scroll.block = ScrollHotkey(type: .mouse, code: 70)
         defer { Options.shared.scroll.block = originalBlock }
 
-        let downResult = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 70, isDown: true)
+        let downResult = ScrollCore.shared.handleScrollHotkey(code: 70, isDown: true)
         XCTAssertTrue(downResult)
         XCTAssertTrue(ScrollCore.shared.blockSmooth)
         XCTAssertTrue(ScrollCore.shared.blockKeyHeld)
 
-        let upResult = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 70, isDown: false)
+        let upResult = ScrollCore.shared.handleScrollHotkey(code: 70, isDown: false)
         XCTAssertTrue(upResult)
         XCTAssertFalse(ScrollCore.shared.blockSmooth)
         XCTAssertFalse(ScrollCore.shared.blockKeyHeld)
@@ -145,21 +145,21 @@ final class ScrollCoreHotkeyTests: XCTestCase {
         }
 
         // 按下 dash
-        ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 50, isDown: true)
+        ScrollCore.shared.handleScrollHotkey(code: 50, isDown: true)
         XCTAssertTrue(ScrollCore.shared.dashScroll)
 
         // 同时按下 toggle
-        ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 60, isDown: true)
+        ScrollCore.shared.handleScrollHotkey(code: 60, isDown: true)
         XCTAssertTrue(ScrollCore.shared.toggleScroll)
         XCTAssertTrue(ScrollCore.shared.dashScroll, "dash should still be active")
 
         // 释放 dash
-        ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 50, isDown: false)
+        ScrollCore.shared.handleScrollHotkey(code: 50, isDown: false)
         XCTAssertFalse(ScrollCore.shared.dashScroll, "dash should be released")
         XCTAssertTrue(ScrollCore.shared.toggleScroll, "toggle should still be active")
 
         // 释放 toggle
-        ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 60, isDown: false)
+        ScrollCore.shared.handleScrollHotkey(code: 60, isDown: false)
         XCTAssertFalse(ScrollCore.shared.toggleScroll, "toggle should be released")
     }
 
@@ -169,14 +169,14 @@ final class ScrollCoreHotkeyTests: XCTestCase {
         // 配置 dash 为 mouse code=50 并按下
         let originalDash = Options.shared.scroll.dash
         Options.shared.scroll.dash = ScrollHotkey(type: .mouse, code: 50)
-        ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 50, isDown: true)
+        ScrollCore.shared.handleScrollHotkey(code: 50, isDown: true)
         XCTAssertTrue(ScrollCore.shared.dashScroll)
 
         // 改变配置 (模拟焦点切换到不同 app)
         Options.shared.scroll.dash = ScrollHotkey(type: .mouse, code: 999)
 
         // key-up 仍然应该按照跟踪的 code 释放
-        let upResult = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 50, isDown: false)
+        let upResult = ScrollCore.shared.handleScrollHotkey(code: 50, isDown: false)
         XCTAssertTrue(upResult, "key-up should release by tracked code, not current config")
         XCTAssertFalse(ScrollCore.shared.dashScroll)
 
@@ -199,13 +199,13 @@ final class ScrollCoreHotkeyTests: XCTestCase {
             Options.shared.scroll.block = originalBlock
         }
 
-        let downResult = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 80, isDown: true)
+        let downResult = ScrollCore.shared.handleScrollHotkey(code: 80, isDown: true)
         XCTAssertTrue(downResult)
         XCTAssertTrue(ScrollCore.shared.dashScroll)
         XCTAssertTrue(ScrollCore.shared.toggleScroll)
         XCTAssertTrue(ScrollCore.shared.blockSmooth)
 
-        let upResult = ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: 80, isDown: false)
+        let upResult = ScrollCore.shared.handleScrollHotkey(code: 80, isDown: false)
         XCTAssertTrue(upResult)
         XCTAssertFalse(ScrollCore.shared.dashScroll)
         XCTAssertFalse(ScrollCore.shared.toggleScroll)

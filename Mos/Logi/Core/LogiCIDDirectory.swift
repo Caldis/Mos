@@ -1,5 +1,5 @@
 //
-//  LogitechCIDRegistry.swift
+//  LogiCIDDirectory.swift
 //  Mos
 //  Logitech HID++ Control ID (CID) 名称注册表
 //
@@ -18,7 +18,7 @@ import Foundation
 
 /// Logitech HID++ Control ID (CID) 注册表
 /// 提供 CID→名称查询 和 CID↔MosCode 转换
-struct LogitechCIDRegistry {
+struct LogiCIDDirectory {
 
     // MARK: - CID 名称表 (来自 Solaar special_keys.py CONTROL 字典)
     // 名称已格式化: 下划线→空格, 双下划线→" / "

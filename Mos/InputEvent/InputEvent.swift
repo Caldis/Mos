@@ -120,8 +120,8 @@ struct InputEvent {
         case .keyboard:
             components.append(KeyCode.keyMap[code] ?? "Key(\(code))")
         case .mouse:
-            if LogitechCIDRegistry.isLogitechCode(code) {
-                components.append(LogitechCIDRegistry.name(forMosCode: code))
+            if LogiCenter.shared.isLogiCode(code) {
+                components.append((LogiCenter.shared.name(forMosCode: code) ?? ""))
                 components.append("[Logi]")  // 特殊标记, KeyPreview 渲染为 tag
             } else {
                 components.append(KeyCode.mouseMap[code] ?? "Mouse(\(code))")
@@ -149,7 +149,7 @@ struct InputEvent {
             if !hasModifiers { return false }
             return true
         case .mouse:
-            if LogitechCIDRegistry.isLogitechCode(code) { return true }
+            if LogiCenter.shared.isLogiCode(code) { return true }
             if KeyCode.mouseMainKeys.contains(code) { return hasModifiers }
             return true
         }

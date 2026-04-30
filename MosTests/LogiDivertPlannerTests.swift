@@ -3,9 +3,9 @@ import XCTest
 
 /// 验证 Logi divert 决策纯函数: 只触碰 Mos 自己关心的 CID (已绑定 或 曾 divert 但解绑),
 /// 不碰 Options+ 等第三方可能 divert 的其它 CID.
-final class LogitechDivertPlannerTests: XCTestCase {
+final class LogiDivertPlannerTests: XCTestCase {
 
-    // MARK: - Fixture CIDs (来自 LogitechCIDRegistry)
+    // MARK: - Fixture CIDs (来自 LogiCIDDirectory)
     // 固定 MosCode: Left=0x0050→1003, Back=0x0053→1006, Forward=0x0056→1007, SmartShift=0x00C4→1001
     // 非固定 MosCode: G1=0x1001→3001 (2000+cid), 但 Logi 码 ≥1000 都视为 Logitech
     private let cidLeft: UInt16 = 0x0050
@@ -22,7 +22,7 @@ final class LogitechDivertPlannerTests: XCTestCase {
     // MARK: - 基本契约
 
     func testPlan_emptyInput_returnsEmpty() {
-        let plan = LogitechDivertPlanner.plan(
+        let plan = LogiDivertPlanner.plan(
             boundMosCodes: [],
             alreadyDiverted: [],
             divertableCIDs: []
@@ -32,7 +32,7 @@ final class LogitechDivertPlannerTests: XCTestCase {
     }
 
     func testPlan_newBinding_emitsDivert() {
-        let plan = LogitechDivertPlanner.plan(
+        let plan = LogiDivertPlanner.plan(
             boundMosCodes: [codeBack],
             alreadyDiverted: [],
             divertableCIDs: [cidBack, cidForward, cidSmartShift]
@@ -42,7 +42,7 @@ final class LogitechDivertPlannerTests: XCTestCase {
     }
 
     func testPlan_boundAndAlreadyDiverted_isIdempotent() {
-        let plan = LogitechDivertPlanner.plan(
+        let plan = LogiDivertPlanner.plan(
             boundMosCodes: [codeBack],
             alreadyDiverted: [cidBack],
             divertableCIDs: [cidBack, cidForward]
@@ -52,7 +52,7 @@ final class LogitechDivertPlannerTests: XCTestCase {
     }
 
     func testPlan_bindingRemoved_emitsUndivert() {
-        let plan = LogitechDivertPlanner.plan(
+        let plan = LogiDivertPlanner.plan(
             boundMosCodes: [],
             alreadyDiverted: [cidBack],
             divertableCIDs: [cidBack, cidForward]
@@ -71,7 +71,7 @@ final class LogitechDivertPlannerTests: XCTestCase {
         let mosBound: Set<UInt16> = [codeBack]                              // Mos 只绑定 Back
         let mosPreviouslyDiverted: Set<UInt16> = [cidBack]
 
-        let plan = LogitechDivertPlanner.plan(
+        let plan = LogiDivertPlanner.plan(
             boundMosCodes: mosBound,
             alreadyDiverted: mosPreviouslyDiverted,
             divertableCIDs: optionsPlusCIDs.union([cidBack, cidForward])
@@ -96,7 +96,7 @@ final class LogitechDivertPlannerTests: XCTestCase {
 
     func testPlan_boundButNotDivertable_ignored() {
         // 设备不支持该按键的 divert (Back 不在 divertableCIDs 里)
-        let plan = LogitechDivertPlanner.plan(
+        let plan = LogiDivertPlanner.plan(
             boundMosCodes: [codeBack],
             alreadyDiverted: [],
             divertableCIDs: [cidForward]
@@ -107,7 +107,7 @@ final class LogitechDivertPlannerTests: XCTestCase {
 
     func testPlan_nonLogitechBoundCode_ignored() {
         // 绑定集合里包含普通鼠标 code (如 3 = 标准 Button 3), 不是 Logi CID, 应被忽略
-        let plan = LogitechDivertPlanner.plan(
+        let plan = LogiDivertPlanner.plan(
             boundMosCodes: [3, 4],
             alreadyDiverted: [],
             divertableCIDs: [cidBack]
@@ -118,7 +118,7 @@ final class LogitechDivertPlannerTests: XCTestCase {
 
     func testPlan_mixedAddAndRemove() {
         // 曾经绑过 Back (已 divert), 现在改绑 Forward
-        let plan = LogitechDivertPlanner.plan(
+        let plan = LogiDivertPlanner.plan(
             boundMosCodes: [codeForward],
             alreadyDiverted: [cidBack],
             divertableCIDs: [cidBack, cidForward, cidSmartShift]
@@ -129,7 +129,7 @@ final class LogitechDivertPlannerTests: XCTestCase {
 
     func testPlan_genericCIDViaFormulaMapping() {
         // G1 (0x1001) 走公式映射 (2000 + cid), 确认 toCID 反向映射走通
-        let plan = LogitechDivertPlanner.plan(
+        let plan = LogiDivertPlanner.plan(
             boundMosCodes: [codeG1],
             alreadyDiverted: [],
             divertableCIDs: [cidG1]

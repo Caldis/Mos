@@ -17,6 +17,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // 运行前预处理
     func applicationWillFinishLaunching(_ notification: Notification) {
+        // 必须最早调用: 从 Mos 自身 env 移除 DYLD_INSERT_LIBRARIES / __XPC_DYLD_* 等
+        // Xcode 调试器注入的 vars. 这些 vars 会沿 XPC 链路传到 launchservicesd 再传到
+        // 任何 Mos 启动的子 App, 导致依赖 AVKit 的 system app (Maps/FindMy/Podcasts)
+        // 加载 libViewDebuggerSupport 时找不到符号 → dyld halt. Mos 自身进程已加载完
+        // 依赖, unsetenv 不影响自身, 只让之后启动的子进程拿到干净 env.
+        ShortcutExecutor.sanitizeOwnLaunchEnvironment()
+
         // 禁止重复运行, 结束正在运行的实例
         Utils.preventMultiRunning(killExist: true)
         
@@ -77,6 +84,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     // 运行后启动滚动处理
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        LogiCenter.shared.installBridge(LogiIntegrationBridge.shared)
+        LogiUsageBootstrap.refreshAll()
         startWithAccessibilityPermissionsChecker(nil)
         UpdateManager.shared.scheduleCheckOnAppStartIfNeeded()
     }
@@ -94,7 +103,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
-        LogitechHIDManager.shared.stop()
+        LogiCenter.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
     }
@@ -110,14 +119,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 NSLog("First Initialization (Accessibility Authorization Needed)")
                 ScrollCore.shared.enable()
                 ButtonCore.shared.enable()
-                LogitechHIDManager.shared.start()
+                LogiCenter.shared.start()
             }
         } else {
             if Utils.isHadAccessibilityPermissions() {
                 NSLog("Regular Initialization")
                 ScrollCore.shared.enable()
                 ButtonCore.shared.enable()
-                LogitechHIDManager.shared.start()
+                LogiCenter.shared.start()
             } else {
                 // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
                 WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.introductionWindowController, withTitle: "")
@@ -140,7 +149,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func sessionDidResign(notification: NSNotification){
         permissionRecoveryTimer?.invalidate()
         permissionRecoveryTimer = nil
-        LogitechHIDManager.shared.stop()
+        LogiCenter.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
     }
@@ -149,7 +158,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 避免多个 Interceptor 同时触发导致重复处理
         guard ScrollCore.shared.isActive || ButtonCore.shared.isActive else { return }
         NSLog("Accessibility permission lost at runtime, disabling cores")
-        LogitechHIDManager.shared.stop()
+        LogiCenter.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
         Toast.show(

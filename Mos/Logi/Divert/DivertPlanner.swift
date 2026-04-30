@@ -1,5 +1,5 @@
 //
-//  LogitechDivertPlanner.swift
+//  LogiDivertPlanner.swift
 //  Mos
 //  HID++ divert 决策纯函数 - 只触碰 Mos 自己关心的 CID, 不扫第三方 (如 Logitech Options+) 可能 divert 的其它 CID.
 //  Created by Mos on 2026/4/20.
@@ -15,7 +15,7 @@ import Foundation
 ///   1. 只 divert 用户绑定过且设备支持的按键.
 ///   2. 只 undivert Mos 本进程自己曾 divert 过、且已不再绑定的按键.
 ///   3. 其它 CID 完全不触碰 (Options+ 等第三方进程可能在 divert 它们).
-struct LogitechDivertPlanner {
+struct LogiDivertPlanner {
 
     struct Plan: Equatable {
         let toDivert: [UInt16]
@@ -29,7 +29,7 @@ struct LogitechDivertPlanner {
     ) -> Plan {
         var toDivert: [UInt16] = []
         for code in boundMosCodes {
-            guard let cid = LogitechCIDRegistry.toCID(code) else { continue }
+            guard let cid = LogiCIDDirectory.toCID(code) else { continue }
             guard divertableCIDs.contains(cid) else { continue }
             guard !alreadyDiverted.contains(cid) else { continue }
             toDivert.append(cid)
@@ -37,7 +37,7 @@ struct LogitechDivertPlanner {
 
         var toUndivert: [UInt16] = []
         for cid in alreadyDiverted {
-            let code = LogitechCIDRegistry.toMosCode(cid)
+            let code = LogiCIDDirectory.toMosCode(cid)
             if !boundMosCodes.contains(code) {
                 toUndivert.append(cid)
             }

@@ -115,7 +115,7 @@ class ShortcutManager {
             menu.addItem(categoryMenuItem)
         }
 
-        // 鼠标按键分类 (始终显示)
+        // 修饰键分类 (始终显示)
         addCategoryToMenu(
             menu: menu,
             category: SystemShortcut.modifierKeysCategory,
@@ -133,6 +133,16 @@ class ShortcutManager {
             totalShortcuts: &totalShortcuts
         )
 
+        // Mos 鼠标滚动分类 (始终显示, 使用 Mos tag 样式)
+        addCategoryToMenu(
+            menu: menu,
+            category: SystemShortcut.mosMouseScrollCategory,
+            target: target,
+            action: action,
+            totalShortcuts: &totalShortcuts,
+            customImage: BrandTag.createTagImage(brand: .mos, fontSize: 7, height: 14)
+        )
+
         // Logi 专有动作分类 (仅当触发键为 Logi 按键时显示, 使用 Logitech 品牌 tag 样式)
         if showLogiActions {
             addCategoryToMenu(
@@ -147,6 +157,21 @@ class ShortcutManager {
 
         // 自定义绑定分隔线
         menu.addItem(NSMenuItem.separator())
+
+        // "打开应用…" 菜单项 (representedObject 为字符串标记 __open__)
+        let openItem = NSMenuItem(
+            title: NSLocalizedString("open-target-action", comment: ""),
+            action: action,
+            keyEquivalent: ""
+        )
+        openItem.target = target
+        openItem.representedObject = "__open__" as NSString
+        if supportsSFSymbols {
+            if #available(macOS 11.0, *) {
+                openItem.image = createSymbolImage("arrow.up.forward.app")
+            }
+        }
+        menu.addItem(openItem)
 
         // "自定义…" 菜单项 (representedObject 为字符串标记)
         let customItem = NSMenuItem(

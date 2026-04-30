@@ -36,6 +36,6 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     func windowDidBecomeKey(_ notification: Notification) {
         // 窗口获得焦点时 (打开面板 / App 从后台切回 / 从其他应用切回) 触发一次冲突状态刷新.
         // Manager 内部有 30s 防抖,不会对 HID 链路造成压力;查询全异步,不阻塞 UI.
-        LogitechHIDManager.shared.refreshReportingStatesIfNeeded()
+        LogiCenter.shared.refreshReportingStates()
     }
 }

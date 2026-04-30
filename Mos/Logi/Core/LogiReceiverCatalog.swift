@@ -1,5 +1,5 @@
 //
-//  LogitechReceiverRegistry.swift
+//  LogiReceiverCatalog.swift
 //  Mos
 //  Logitech 接收器 (USB dongle) 型号识别
 //
@@ -17,7 +17,7 @@ import Foundation
 
 /// Logitech 接收器型号注册表: PID -> 接收器类型
 /// 用于在调试面板等 UI 处显示准确的接收器类型名 (Bolt / Unifying / Lightspeed / Nano / EX100)
-struct LogitechReceiverRegistry {
+struct LogiReceiverCatalog {
 
     enum Kind: String {
         case bolt        = "Bolt Receiver"

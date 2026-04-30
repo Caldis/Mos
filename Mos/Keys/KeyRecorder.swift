@@ -128,7 +128,7 @@ class KeyRecorder: NSObject {
         keyPopover?.show(at: sourceView)
         // 异步 divert 所有 Logitech 按键 (BLE 通信有延迟)
         DispatchQueue.main.async {
-            LogitechHIDManager.shared.temporarilyDivertAll()
+            LogiCenter.shared.beginKeyRecording()
         }
         // 监听事件
         do {
@@ -206,9 +206,9 @@ class KeyRecorder: NSObject {
                 placeAt: CGEventTapPlacement.headInsertEventTap,
                 for: CGEventTapOptions.defaultTap
             )
-            // 监听 HID++ 事件 (如果 LogitechHIDManager 已启动)
+            // 监听 HID++ 事件 (如果 LogiCenter 已启动)
             hidEventObserver = NotificationCenter.default.addObserver(
-                forName: NSNotification.Name("LogitechHIDButtonEvent"),
+                forName: LogiCenter.buttonEventRelay,
                 object: nil,
                 queue: .main
             ) { [weak self] notification in
@@ -518,7 +518,7 @@ class KeyRecorder: NSObject {
         }
         delegate?.onRecordingStopped(self, didRecord: didRecord)
         // 录制结束: 恢复到只 divert 有绑定的按键
-        LogitechHIDManager.shared.restoreDivertToBindings()
+        LogiCenter.shared.endKeyRecording()
         // 重置状态 (添加延迟确保 Popover 结束动画完成, 避免多个 popover 重复出现导致卡住)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.isRecording = false

@@ -494,6 +494,13 @@
                                     <constraint firstItem="PME-e7-Shd" firstAttribute="top" secondItem="y2I-TF-AaH" secondAttribute="top" id="v77-cf-5Mn"/>
                                 </constraints>
                             </customView>
+                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" indeterminate="YES" controlSize="mini" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="LgI-AC-ind">
+                                <rect key="frame" x="426" y="10" width="12" height="12"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="12" id="LgI-ht-001"/>
+                                    <constraint firstAttribute="width" constant="12" id="LgI-wd-001"/>
+                                </constraints>
+                            </progressIndicator>
                         </subviews>
                         <constraints>
                             <constraint firstItem="ftV-jh-kjD" firstAttribute="top" secondItem="2W2-hM-ME3" secondAttribute="bottom" id="7nE-RF-MKB"/>
@@ -501,6 +508,8 @@
                             <constraint firstItem="2W2-hM-ME3" firstAttribute="leading" secondItem="BTN-VW-123" secondAttribute="leading" id="BdG-ja-NoC"/>
                             <constraint firstItem="y2I-TF-AaH" firstAttribute="leading" secondItem="BTN-VW-123" secondAttribute="leading" id="Dcd-bE-nqo"/>
                             <constraint firstItem="2W2-hM-ME3" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" id="F0I-ER-NKs"/>
+                            <constraint firstAttribute="bottom" secondItem="LgI-AC-ind" secondAttribute="bottom" constant="10" id="LgI-bt-002"/>
+                            <constraint firstAttribute="trailing" secondItem="LgI-AC-ind" secondAttribute="trailing" constant="12" id="LgI-tr-002"/>
                             <constraint firstAttribute="trailing" secondItem="ftV-jh-kjD" secondAttribute="trailing" id="P8Z-6N-CpR"/>
                             <constraint firstAttribute="trailing" secondItem="2W2-hM-ME3" secondAttribute="trailing" id="Q4P-LZ-2vh"/>
                             <constraint firstItem="2W2-hM-ME3" firstAttribute="top" secondItem="BTN-VW-123" secondAttribute="top" id="R11-z5-pFR"/>
@@ -516,6 +525,7 @@
                         </constraints>
                     </visualEffectView>
                     <connections>
+                        <outlet property="activityIndicator" destination="LgI-AC-ind" id="LgI-ol-001"/>
                         <outlet property="addButton" destination="xql-gm-0mI" id="E6H-zi-qsW"/>
                         <outlet property="createButton" destination="uuZ-tE-wlr" id="h6U-Gs-MEr"/>
                         <outlet property="delButton" destination="4Ef-t4-sPm" id="80m-Qy-Vdg"/>

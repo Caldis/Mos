@@ -96,7 +96,7 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     @IBAction func dashKeyDelButtonClick(_ sender: NSButton) {
         getTargetApplicationScrollOptions().dash = nil
         syncViewWithOptions()
-        LogitechHIDManager.shared.syncDivertWithBindings()
+        pushCurrentScopeUsage(roles: [.dash])
     }
     // 转换键 - 点击触发录制
     @IBAction func toggleKeyButtonClick(_ sender: NSButton) {
@@ -107,7 +107,7 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     @IBAction func toggleKeyDelButtonClick(_ sender: NSButton) {
         getTargetApplicationScrollOptions().toggle = nil
         syncViewWithOptions()
-        LogitechHIDManager.shared.syncDivertWithBindings()
+        pushCurrentScopeUsage(roles: [.toggle])
     }
     // 禁用键 - 点击触发录制
     @IBAction func disableKeyButtonClick(_ sender: NSButton) {
@@ -118,7 +118,7 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     @IBAction func disableKeyDelButtonClick(_ sender: NSButton) {
         getTargetApplicationScrollOptions().block = nil
         syncViewWithOptions()
-        LogitechHIDManager.shared.syncDivertWithBindings()
+        pushCurrentScopeUsage(roles: [.block])
     }
     
     // 步长
@@ -179,9 +179,9 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
             Options.shared.scroll = OPTIONS_SCROLL_DEFAULT()
         }
         syncViewWithOptions()
-        LogitechHIDManager.shared.syncDivertWithBindings()
+        pushCurrentScopeUsage(roles: [.dash, .toggle, .block])
     }
-    
+
 }
 
 /**
@@ -267,6 +267,61 @@ extension PreferencesScrollingViewController {
         })
     }
 
+    // MARK: - Logi Usage Push
+
+    /// 根据当前作用域 (全局 / 指定 App) 推送 ScrollHotkey 绑定到 LogiCenter
+    /// - 当 currentTargetApplication == nil 时使用 .globalScroll(role)
+    /// - 当 currentTargetApplication != nil 且 !inherit 时使用 .appScroll(key:role:)
+    /// - 当 currentTargetApplication != nil 且 inherit 时不推送 (由 Task 3.9 的 clearAppUsage 处理)
+    private func pushCurrentScopeUsage(roles: [ScrollRole]) {
+        if let app = currentTargetApplication {
+            guard !app.inherit else { return }
+            for role in roles {
+                LogiCenter.shared.setUsage(
+                    source: .appScroll(key: app.path, role: role),
+                    codes: collectAppScrollCodes(app: app, role: role)
+                )
+            }
+        } else {
+            for role in roles {
+                LogiCenter.shared.setUsage(
+                    source: .globalScroll(role),
+                    codes: collectGlobalScrollCodes(role: role)
+                )
+            }
+        }
+    }
+
+    /// 提取全局 scroll 配置中指定 role 对应的 Logi 鼠标按键码
+    private func collectGlobalScrollCodes(role: ScrollRole) -> Set<UInt16> {
+        let hotkey: ScrollHotkey? = {
+            switch role {
+            case .dash:   return Options.shared.scroll.dash
+            case .toggle: return Options.shared.scroll.toggle
+            case .block:  return Options.shared.scroll.block
+            }
+        }()
+        guard let h = hotkey, h.type == .mouse, LogiCenter.shared.isLogiCode(h.code) else {
+            return []
+        }
+        return [h.code]
+    }
+
+    /// 提取指定 App scroll 配置中 role 对应的 Logi 鼠标按键码
+    private func collectAppScrollCodes(app: Application, role: ScrollRole) -> Set<UInt16> {
+        let hotkey: ScrollHotkey? = {
+            switch role {
+            case .dash:   return app.scroll.dash
+            case .toggle: return app.scroll.toggle
+            case .block:  return app.scroll.block
+            }
+        }()
+        guard let h = hotkey, h.type == .mouse, LogiCenter.shared.isLogiCode(h.code) else {
+            return []
+        }
+        return [h.code]
+    }
+
     /// 键盘按键的完整名称映射 (仅用于 ScrollingView 按钮显示)
     private static let keyFullNames: [UInt16: String] = [
         // 修饰键
@@ -299,8 +354,8 @@ extension PreferencesScrollingViewController {
             }
             return KeyCode.keyMap[hotkey.code] ?? "Key \(hotkey.code)"
         case .mouse:
-            if LogitechCIDRegistry.isLogitechCode(hotkey.code) {
-                return LogitechCIDRegistry.name(forMosCode: hotkey.code)
+            if LogiCenter.shared.isLogiCode(hotkey.code) {
+                return (LogiCenter.shared.name(forMosCode: hotkey.code) ?? "")
             }
             return KeyCode.mouseMap[hotkey.code] ?? "🖱\(hotkey.code)"
         }
@@ -365,6 +420,6 @@ extension PreferencesScrollingViewController: KeyRecorderDelegate {
 
         currentRecordingPopup = nil
         syncViewWithOptions()
-        LogitechHIDManager.shared.syncDivertWithBindings()
+        pushCurrentScopeUsage(roles: [.dash, .toggle, .block])
     }
 }

@@ -23,6 +23,8 @@ class InputProcessor {
     static let shared = InputProcessor()
     init() { NSLog("Module initialized: InputProcessor") }
 
+    private static let mosScrollTapReplayMovementTolerance: CGFloat = 8.0
+
     // MARK: - Active Bindings Table
     /// 跟踪当前按下中的 stateful 动作, 用于 Up 事件配对
     private var activeBindings: [TriggerKey: ActiveBindingSession] = [:]
@@ -36,6 +38,15 @@ class InputProcessor {
         let triggerKey: TriggerKey
         let action: ResolvedAction
         let mouseSessionID: UUID?
+        var mosScrollTapReplay: MosScrollTapReplay?
+    }
+
+    private struct MosScrollTapReplay {
+        let context: MouseTapReplayContext
+        /// 仅 CG 鼠标事件设置。HID++/Logi 按键不可靠更新 NSEvent.pressedMouseButtons,
+        /// 不能用 AppKit 的物理按钮位图做兜底释放判断。
+        let releaseCheckButtonNumber: Int64?
+        var didScroll = false
     }
 
     /// 清空所有活跃绑定和虚拟修饰键状态 (ButtonCore disable 时调用, 防止状态残留)
@@ -91,6 +102,10 @@ class InputProcessor {
                     mouseSessionID: session.mouseSessionID,
                     inputModifiers: event.modifiers
                 )
+                if let tapReplay = session.mosScrollTapReplay,
+                   shouldReplayMosScrollTap(tapReplay, releaseEvent: event) {
+                    ShortcutExecutor.shared.replayMouseTap(tapReplay.context)
+                }
                 recomputeActiveModifierFlags()
                 return .consumed
             }
@@ -124,9 +139,90 @@ class InputProcessor {
         activeBindings[key] = ActiveBindingSession(
             triggerKey: key,
             action: action,
-            mouseSessionID: executionResult.mouseSessionID
+            mouseSessionID: executionResult.mouseSessionID,
+            mosScrollTapReplay: mosScrollTapReplay(for: action, event: event)
         )
         recomputeActiveModifierFlags()
         return .consumed
+    }
+
+    /// 标记 Mos Scroll 会话已经被真实滚动使用; 后续 mouseUp 不再重放原始点击。
+    /// 已标记的会话不重复写回, 避免滚动高频路径上的无意义字典更新。
+    func markMosScrollActionSessionsUsedForScroll() {
+        for key in activeBindings.keys {
+            guard var session = activeBindings[key],
+                  var tapReplay = session.mosScrollTapReplay,
+                  !tapReplay.didScroll else { continue }
+            tapReplay.didScroll = true
+            session.mosScrollTapReplay = tapReplay
+            activeBindings[key] = session
+        }
+    }
+
+    /// CG 鼠标按钮丢失 Up 事件时的兜底释放。
+    /// 只在真实滚轮 delta 到达后调用, 因此不会给普通按键处理路径增加持续开销。
+    func releaseMosScrollMouseSessionsIfPhysicalButtonsAreUp() {
+        let releasedKeys = activeBindings.compactMap { key, session -> TriggerKey? in
+            guard let tapReplay = session.mosScrollTapReplay,
+                  let buttonNumber = tapReplay.releaseCheckButtonNumber,
+                  !Self.isMouseButtonPressed(buttonNumber) else {
+                return nil
+            }
+            return key
+        }
+
+        guard !releasedKeys.isEmpty else { return }
+
+        for key in releasedKeys {
+            guard let session = activeBindings.removeValue(forKey: key) else { continue }
+            ShortcutExecutor.shared.execute(
+                action: session.action,
+                phase: .up,
+                mouseSessionID: session.mouseSessionID
+            )
+        }
+        recomputeActiveModifierFlags()
+    }
+
+    private func mosScrollTapReplay(for action: ResolvedAction, event: InputEvent) -> MosScrollTapReplay? {
+        guard case .mosScroll = action,
+              let context = ShortcutExecutor.shared.mouseTapReplayContext(for: event) else {
+            return nil
+        }
+        return MosScrollTapReplay(
+            context: context,
+            releaseCheckButtonNumber: releaseCheckButtonNumber(for: event, context: context)
+        )
+    }
+
+    private func releaseCheckButtonNumber(for event: InputEvent, context: MouseTapReplayContext) -> Int64? {
+        guard event.type == .mouse,
+              case .cgEvent = event.source else {
+            return nil
+        }
+        return context.buttonNumber
+    }
+
+    private func shouldReplayMosScrollTap(_ tapReplay: MosScrollTapReplay, releaseEvent: InputEvent) -> Bool {
+        guard !tapReplay.didScroll else {
+            return false
+        }
+        guard let downLocation = tapReplay.context.location,
+              case .cgEvent(let cgEvent) = releaseEvent.source else {
+            return true
+        }
+        let upLocation = cgEvent.location
+        let deltaX = downLocation.x - upLocation.x
+        let deltaY = downLocation.y - upLocation.y
+        let distance = hypot(deltaX, deltaY)
+        return distance <= Self.mosScrollTapReplayMovementTolerance
+    }
+
+    private static func isMouseButtonPressed(_ buttonNumber: Int64) -> Bool {
+        guard buttonNumber >= 0,
+              buttonNumber < Int64(Int.bitWidth) else {
+            return true
+        }
+        return (NSEvent.pressedMouseButtons & (1 << Int(buttonNumber))) != 0
     }
 }

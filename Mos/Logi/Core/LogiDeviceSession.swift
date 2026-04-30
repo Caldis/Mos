@@ -1,5 +1,5 @@
 //
-//  LogitechDeviceSession.swift
+//  LogiDeviceSession.swift
 //  Mos
 //  单个 Logitech 设备的 HID++ 2.0 通信会话
 //  实现 Feature Discovery, Button Divert, 事件解析
@@ -11,7 +11,37 @@ import Cocoa
 import IOKit
 import IOKit.hid
 
-class LogitechDeviceSession {
+struct LogiButtonStateDelta: Equatable {
+    let pressed: Set<UInt16>
+    let released: Set<UInt16>
+}
+
+struct LogiButtonStateTracker {
+    private(set) var activeCIDs: Set<UInt16> = []
+
+    mutating func update(activeCIDs newActiveCIDs: Set<UInt16>) -> LogiButtonStateDelta {
+        let delta = LogiButtonStateDelta(
+            pressed: newActiveCIDs.subtracting(activeCIDs),
+            released: activeCIDs.subtracting(newActiveCIDs)
+        )
+        activeCIDs = newActiveCIDs
+        return delta
+    }
+
+    mutating func releaseActiveCIDs(in cids: Set<UInt16>) -> Set<UInt16> {
+        let released = activeCIDs.intersection(cids)
+        activeCIDs.subtract(released)
+        return released
+    }
+
+    mutating func releaseAll() -> Set<UInt16> {
+        let released = activeCIDs
+        activeCIDs.removeAll()
+        return released
+    }
+}
+
+class LogiDeviceSession {
 
     // MARK: - Public
     let hidDevice: IOHIDDevice
@@ -37,7 +67,7 @@ class LogitechDeviceSession {
     // MARK: - HID++ State
     private var featureIndex: [UInt16: UInt8] = [:]
     private var divertedCIDs: Set<UInt16> = []
-    private var lastActiveCIDs: Set<UInt16> = []
+    private var buttonStateTracker = LogiButtonStateTracker()
     private var deviceIndex: UInt8 = 0x01
     private var isBLE: Bool = false
     private var deviceOpened: Bool = false
@@ -121,6 +151,10 @@ class LogitechDeviceSession {
     // MARK: - Feature Index Cache (按 PID 缓存, 减少重连 discovery 延迟)
     private static let featureCacheKey = "logitechFeatureCache"
 
+    #if DEBUG
+    internal static var featureCacheKeyForTests: String { return featureCacheKey }
+    #endif
+
     private static func loadCachedFeatureIndex(for productId: UInt16) -> [UInt16: UInt8]? {
         guard let data = UserDefaults.standard.data(forKey: featureCacheKey),
               let cache = try? JSONDecoder().decode([UInt16: [UInt16: UInt8]].self, from: data) else { return nil }
@@ -189,6 +223,42 @@ class LogitechDeviceSession {
         return usagePage == 0x0001 && usage == 0x0002
     }
 
+    /// CID set last passed to setControlReporting. Diffed against next applyUsage's
+    /// projection so we only emit setControlReporting for state changes.
+    internal var lastApplied: Set<UInt16> = []
+
+    private func primeFromRegistry() {
+        LogiCenter.shared.registry.primeSession(self)
+    }
+
+    internal func applyUsage(_ aggregateMosCodes: Set<UInt16>) {
+        #if DEBUG
+        precondition(Thread.isMainThread, "applyUsage main-thread-only")
+        #endif
+        // Mid-discovery guard: isHIDPPCandidate is a static vendor/product check and is true
+        // throughout discovery. If a setUsage fires before divertBoundControls runs, applyUsage
+        // would diff against partial discoveredControls. The post-discovery prime catches up.
+        guard reprogInitComplete else { return }
+        guard let reprogIdx = featureIndex[Self.featureReprogV4] else { return }
+        // Project MosCodes -> CIDs, drop unmapped, intersect with divertable CIDs.
+        let divertable = Set(discoveredControls.filter { $0.isDivertable }.map { $0.cid })
+        let targetCIDs: Set<UInt16> = aggregateMosCodes.reduce(into: Set<UInt16>()) { acc, code in
+            if let cid = LogiCIDDirectory.toCID(code), divertable.contains(cid) {
+                acc.insert(cid)
+            }
+        }
+        let toDivert = targetCIDs.subtracting(self.lastApplied)
+        let toUndivert = self.lastApplied.subtracting(targetCIDs)
+        releaseActiveButtonState(for: toUndivert, reason: "usage removed")
+        for cid in toDivert {
+            setControlReporting(featureIndex: reprogIdx, cid: cid, divert: true)
+        }
+        for cid in toUndivert {
+            setControlReporting(featureIndex: reprogIdx, cid: cid, divert: false)
+        }
+        self.lastApplied = targetCIDs
+    }
+
     // MARK: - Debug Accessors (for HID++ debug panel)
     var debugFeatureIndex: [UInt16: UInt8] { featureIndex }
     var debugDiscoveredControls: [ControlInfo] { discoveredControls }
@@ -231,11 +301,11 @@ class LogitechDeviceSession {
         }
 
         let tag = "[\(deviceInfo.name):\(String(format: "0x%04X", usagePage))/\(String(format: "0x%04X", usage))]"
-        LogitechHIDDebugPanel.log("\(tag) Setup: transport=\(transport), mode=\(connectionMode), devIdx=\(String(format: "0x%02X", deviceIndex)), isCandidate=\(isHIDPPCandidate)")
+        LogiDebugPanel.log("\(tag) Setup: transport=\(transport), mode=\(connectionMode), devIdx=\(String(format: "0x%02X", deviceIndex)), isCandidate=\(isHIDPPCandidate)")
 
         // 只对 HID++ 候选接口进行协议通信
         guard isHIDPPCandidate else {
-            LogitechHIDDebugPanel.log("\(tag) Skipping: not a HID++ candidate interface")
+            LogiDebugPanel.log("\(tag) Skipping: not a HID++ candidate interface")
             // 仍然注册 input report 回调以捕获广播通知 (如 SmartShift)
             setupInputReportCallback()
             return
@@ -245,9 +315,9 @@ class LogitechDeviceSession {
         let openResult = IOHIDDeviceOpen(hidDevice, IOOptionBits(kIOHIDOptionsTypeNone))
         if openResult == kIOReturnSuccess {
             deviceOpened = true
-            LogitechHIDDebugPanel.log("\(tag) IOHIDDeviceOpen: OK")
+            LogiDebugPanel.log("\(tag) IOHIDDeviceOpen: OK")
         } else {
-            LogitechHIDDebugPanel.log("\(tag) IOHIDDeviceOpen: failed \(String(format: "0x%08x", openResult)), proceeding anyway")
+            LogiDebugPanel.log("\(tag) IOHIDDeviceOpen: failed \(String(format: "0x%08x", openResult)), proceeding anyway")
         }
 
         setupInputReportCallback()
@@ -258,7 +328,7 @@ class LogitechDeviceSession {
 
         // Receiver 模式: 先枚举 slot, 找到在线设备后自动 target + feature discovery
         if connectionMode == .receiver {
-            LogitechHIDDebugPanel.log("\(tag) Receiver mode: enumerating paired devices...")
+            LogiDebugPanel.log("\(tag) Receiver mode: enumerating paired devices...")
             enumerateReceiverDevices()
             return
         }
@@ -266,13 +336,13 @@ class LogitechDeviceSession {
         // BLE / 直连模式: 直接 Feature Discovery (尝试缓存, 失败则完整 discovery)
         if let cached = Self.loadCachedFeatureIndex(for: deviceInfo.productId),
            let reprogIdx = cached[Self.featureReprogV4] {
-            LogitechHIDDebugPanel.log("\(tag) Using cached feature index: REPROG at 0x\(String(format: "%02X", reprogIdx))")
+            LogiDebugPanel.log("\(tag) Using cached feature index: REPROG at 0x\(String(format: "%02X", reprogIdx))")
             self.featureIndex = cached.reduce(into: [UInt16: UInt8]()) { $0[$1.key] = $1.value }
             // 用 ping 验证缓存是否有效 (IRoot.GetProtocolVersion)
             sendRequest(featureIndex: 0x00, functionId: 1)
             pendingCacheValidation = reprogIdx
         } else {
-            LogitechHIDDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
+            LogiDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
             startFreshDiscovery(tag: tag)
         }
     }
@@ -287,7 +357,7 @@ class LogitechDeviceSession {
     }
 
     func teardown() {
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Teardown")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Teardown")
         discoveryTimer?.invalidate()
         discoveryTimer = nil
         controlInfoQueryTimer?.invalidate()
@@ -295,29 +365,27 @@ class LogitechDeviceSession {
         reportingQueryTimer?.invalidate()
         reportingQueryTimer = nil
         pendingDiscovery.removeAll()
+        releaseAllActiveButtonState(reason: "teardown")
         if let reprogIdx = featureIndex[Self.featureReprogV4] {
             for cid in divertedCIDs {
                 setControlReporting(featureIndex: reprogIdx, cid: cid, divert: false)
             }
         }
-        // 清理 ScrollCore 的 HID 热键状态, 防止设备断连时按键卡住
-        // (设备断连后 key-up 永不会触发, 滚动热键状态会永久卡死)
-        for cid in lastActiveCIDs {
-            let mosCode = LogitechCIDRegistry.toMosCode(cid)
-            ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(code: mosCode, isDown: false)
-        }
+        lastApplied.removeAll()
         divertedCIDs.removeAll()
-        lastActiveCIDs.removeAll()
         discoveredControls.removeAll()
+        // timer 已清零, 此时 isActivityInProgress 只剩 discoveryInFlight 一个分量;
+        // 走 setter 让 Manager 重算聚合 busy, 防止 session 销毁后 UI spinner 卡住.
+        setDiscoveryInFlight(false)
     }
 
     // MARK: - Input Report Callback
 
     static let inputReportCallback: IOHIDReportCallback = { context, result, sender, type, reportID, report, reportLength in
         guard let context = context else { return }
-        let session = Unmanaged<LogitechDeviceSession>.fromOpaque(context).takeUnretainedValue()
-        let data = Array(UnsafeBufferPointer(start: report, count: reportLength))
-        session.handleInputReport(data)
+        let session = Unmanaged<LogiDeviceSession>.fromOpaque(context).takeUnretainedValue()
+        let buffer = UnsafeBufferPointer(start: report, count: reportLength)
+        session.handleInputReport(buffer)
     }
 
     // MARK: - HID++ Send
@@ -359,14 +427,14 @@ class LogitechDeviceSession {
             )
 
         case .unsupported:
-            LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .warning, message: "Cannot send: unsupported connection mode")
+            LogiDebugPanel.log(device: deviceInfo.name, type: .warning, message: "Cannot send: unsupported connection mode")
             return
         }
 
         let hex = report.prefix(8).map { String(format: "%02X", $0) }.joined(separator: " ")
         let resultStr = result == kIOReturnSuccess ? "OK" : String(format: "0x%08x", result)
         let decoded = decodeRequest(featureIndex: featureIndex, functionId: functionId, params: params)
-        LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .tx, message: "TX: \(hex)... -> \(resultStr)", decoded: decoded)
+        LogiDebugPanel.log(device: deviceInfo.name, type: .tx, message: "TX: \(hex)... -> \(resultStr)", decoded: decoded)
     }
 
     // MARK: - Feature Discovery
@@ -375,13 +443,15 @@ class LogitechDeviceSession {
         discoverFeature(featureId: Self.featureReprogV4) { [weak self] index in
             guard let self = self else { return }
             guard let index = index else {
-                LogitechHIDDebugPanel.log("\(tag) REPROG_CONTROLS_V4 not available")
+                LogiDebugPanel.log("\(tag) REPROG_CONTROLS_V4 not available")
                 // Discovery 走到终点但未命中 REPROG, 仍算握手完成 (Mos 能做的已经做完).
                 self.markHandshakeComplete()
+                NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
+                LogiSessionManager.shared.recomputeAndNotifyActivityState()
                 return
             }
             self.featureIndex[Self.featureReprogV4] = index
-            LogitechHIDDebugPanel.log("\(tag) REPROG_CONTROLS_V4 at index \(String(format: "0x%02X", index))")
+            LogiDebugPanel.log("\(tag) REPROG_CONTROLS_V4 at index \(String(format: "0x%02X", index))")
             // 缓存 feature index
             Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
             self.sendGetControlCount(featureIndex: index)
@@ -394,14 +464,44 @@ class LogitechDeviceSession {
         setDiscoveryInFlight(false)
         guard !handshakeComplete else { return }
         handshakeComplete = true
-        NotificationCenter.default.post(name: LogitechHIDManager.sessionChangedNotification, object: nil)
+        NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
     }
 
     /// discoveryInFlight 切换 + 通知. idempotent: 只在状态变化时 post.
     private func setDiscoveryInFlight(_ flag: Bool) {
         guard discoveryInFlight != flag else { return }
         discoveryInFlight = flag
-        NotificationCenter.default.post(name: LogitechHIDManager.discoveryStateDidChangeNotification, object: nil)
+        NotificationCenter.default.post(name: LogiSessionManager.discoveryStateDidChangeNotification, object: nil)
+        LogiSessionManager.shared.recomputeAndNotifyActivityState()
+    }
+
+    /// 任一阶段 (discovery / reporting query) 正在进行; UI 据此驱动 activity spinner.
+    var isActivityInProgress: Bool {
+        return discoveryInFlight || reportingQueryTimer != nil
+    }
+
+    /// 供 UI hover popover 读取的 session 级活动快照. 无活动时返回 nil.
+    /// 只读投影, 不改变任何内部状态; 读线程与 HID++ 回调一致 (main).
+    var activityStatus: SessionActivityStatus? {
+        // reporting query 比 discovery 后发生, 信息更细 (可给出进度), 优先展示.
+        if reportingQueryTimer != nil {
+            let total = discoveredControls.count
+            // reportingQueryIndex 是下一个待发的索引; 展示用 index+1 更贴近"正在查第几个"
+            let current = min(reportingQueryIndex + 1, max(total, 1))
+            return SessionActivityStatus(
+                phase: .reportingQuery,
+                deviceName: deviceInfo.name,
+                progress: total > 0 ? (current, total) : nil
+            )
+        }
+        if discoveryInFlight {
+            return SessionActivityStatus(
+                phase: .discovery,
+                deviceName: deviceInfo.name,
+                progress: nil
+            )
+        }
+        return nil
     }
 
     private func discoverFeature(featureId: UInt16, completion: @escaping (UInt8?) -> Void) {
@@ -413,7 +513,7 @@ class LogitechDeviceSession {
         discoveryTimer = Timer.scheduledTimer(withTimeInterval: Self.discoveryTimeout, repeats: false) { [weak self] _ in
             guard let self = self else { return }
             if let pending = self.pendingDiscovery.removeValue(forKey: featureId) {
-                LogitechHIDDebugPanel.log("[\(self.deviceInfo.name)] Feature discovery timed out for \(String(format: "0x%04X", featureId))")
+                LogiDebugPanel.log("[\(self.deviceInfo.name)] Feature discovery timed out for \(String(format: "0x%04X", featureId))")
                 pending(nil)
             }
         }
@@ -422,12 +522,12 @@ class LogitechDeviceSession {
     // MARK: - REPROG_CONTROLS_V4 Flow
 
     private func sendGetControlCount(featureIndex: UInt8) {
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Sending GetControlCount")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Sending GetControlCount")
         sendRequest(featureIndex: featureIndex, functionId: 0)
     }
 
     private func sendGetControlInfo(featureIndex: UInt8, index: Int) {
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Sending GetControlInfo(\(index))")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Sending GetControlInfo(\(index))")
         sendRequest(featureIndex: featureIndex, functionId: 1, params: [UInt8(index)])
         scheduleControlInfoTimeout(index: index)
     }
@@ -436,7 +536,7 @@ class LogitechDeviceSession {
         controlInfoQueryTimer?.invalidate()
         controlInfoQueryTimer = Timer.scheduledTimer(withTimeInterval: Self.reprogQueryTimeout, repeats: false) { [weak self] _ in
             guard let self = self else { return }
-            LogitechHIDDebugPanel.log("[\(self.deviceInfo.name)] GetControlInfo[\(index)] timed out, skipping")
+            LogiDebugPanel.log("[\(self.deviceInfo.name)] GetControlInfo[\(index)] timed out, skipping")
             self.advanceControlInfoQuery()
         }
     }
@@ -473,7 +573,7 @@ class LogitechDeviceSession {
         // 方案 B: 不再本地改写 reportingFlags.
         // reportingFlags 永远反映 "GetControlReporting 响应的真值" (设备层状态, Mos 接管前).
         // Mos 自己的 divert 视角由 divertedCIDs 集合唯一表达, 避免污染冲突判定的依据.
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] CID \(String(format: "0x%04X", cid)) divert=\(divert ? "ON" : "OFF")")
+        LogiDebugPanel.log("[\(deviceInfo.name)] CID \(String(format: "0x%04X", cid)) divert=\(divert ? "ON" : "OFF")")
     }
 
     // MARK: - Debug Operations (interactive divert control)
@@ -487,9 +587,10 @@ class LogitechDeviceSession {
         reprogControlCount = 0
         reprogQueryIndex = 0
         reportingQueryIndex = 0
+        releaseAllActiveButtonState(reason: "rediscover")
+        lastApplied.removeAll()
         divertedCIDs.removeAll()
-        lastActiveCIDs.removeAll()
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Re-discovering features...")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Re-discovering features...")
         setDiscoveryInFlight(true)
         // 复用 startFreshDiscovery 的完整握手流程: 成功走 sendGetControlCount,
         // REPROG 不可用分支会 markHandshakeComplete(), 避免卡在 initializing.
@@ -510,19 +611,28 @@ class LogitechDeviceSession {
     }
 
     func redivertAllControls() {
-        lastActiveCIDs.removeAll()
+        releaseAllActiveButtonState(reason: "redivert")
         reprogInitComplete = true
-        syncDivertWithBindings()
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Re-synced divert with bindings")
+        divertedCIDs.removeAll()
+        lastApplied.removeAll()
+        primeFromRegistry()
+        LogiDebugPanel.log("[\(deviceInfo.name)] Re-synced divert with bindings")
     }
 
     func undivertAllControls() {
-        guard let idx = featureIndex[Self.featureReprogV4] else { return }
+        releaseAllActiveButtonState(reason: "undivert all")
+        guard let idx = featureIndex[Self.featureReprogV4] else {
+            lastApplied.removeAll()
+            reprogInitComplete = false
+            LogiDebugPanel.log("[\(deviceInfo.name)] Cleared local divert state; REPROG feature unavailable")
+            return
+        }
         for cid in divertedCIDs {
             setControlReporting(featureIndex: idx, cid: cid, divert: false)
         }
+        lastApplied.removeAll()
         reprogInitComplete = false
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Undiverted all controls")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Undiverted all controls")
     }
 
     func toggleDivert(cid: UInt16) {
@@ -546,10 +656,11 @@ class LogitechDeviceSession {
         reprogControlCount = 0
         reprogQueryIndex = 0
         reportingQueryIndex = 0
+        releaseAllActiveButtonState(reason: "target slot changed")
+        lastApplied.removeAll()
         divertedCIDs.removeAll()
-        lastActiveCIDs.removeAll()
         setDiscoveryInFlight(true)
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Target slot changed to \(slot)")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Target slot changed to \(slot)")
     }
 
     // MARK: - Receiver Device Enumeration
@@ -560,7 +671,7 @@ class LogitechDeviceSession {
         receiverPairedDevices = (1...6).map { ReceiverPairedDevice(slot: UInt8($0)) }
         pendingSlotPings = Set((1 as UInt8)...(6 as UInt8))
         receiverEnumPhase = 1
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Enumerating receiver slots 1-6...")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Enumerating receiver slots 1-6...")
 
         for slot: UInt8 in 1...6 {
             pingReceiverSlot(slot)
@@ -604,7 +715,7 @@ class LogitechDeviceSession {
 
         let hex = report.map { String(format: "%02X", $0) }.joined(separator: " ")
         let resultStr = result == kIOReturnSuccess ? "OK" : String(format: "0x%08x", result)
-        LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .tx, message: "TX: \(hex) -> \(resultStr)",
+        LogiDebugPanel.log(device: deviceInfo.name, type: .tx, message: "TX: \(hex) -> \(resultStr)",
                                   decoded: "IRoot.Ping(slot=\(slot))")
     }
 
@@ -655,14 +766,14 @@ class LogitechDeviceSession {
         let resultStr = result == kIOReturnSuccess ? "OK" : String(format: "0x%08x", result)
         let regName = register == Self.receiverPairingInfo ? "PairingInfo" : "0x\(String(format: "%02X", register))"
         let paramsHex = params.map { String(format: "%02X", $0) }.joined(separator: " ")
-        LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .tx, message: "TX: \(hex) -> \(resultStr)",
+        LogiDebugPanel.log(device: deviceInfo.name, type: .tx, message: "TX: \(hex) -> \(resultStr)",
                                   decoded: "\(isLong ? "GET_LONG" : "GET")_REGISTER(\(regName), [\(paramsHex)])")
     }
 
     // MARK: - Receiver Response Handlers
 
     /// 处理 HID++ 1.0 错误响应 (sub-ID 0x8F)
-    private func handleHIDPP10Error(_ report: [UInt8]) {
+    private func handleHIDPP10Error(_ report: UnsafeBufferPointer<UInt8>) {
         let devIdx = report[1]
         let errorSubId = report[3]
         let errorAddress = report.count > 4 ? report[4] : 0
@@ -697,7 +808,7 @@ class LogitechDeviceSession {
     }
 
     /// 处理 ping 响应 (device slot 回复 IRoot.Ping)
-    private func handleSlotPingResponse(devIdx: UInt8, report: [UInt8]) {
+    private func handleSlotPingResponse(devIdx: UInt8, report: UnsafeBufferPointer<UInt8>) {
         pendingSlotPings.remove(devIdx)
         let protMajor = report[4]
         let protMinor = report[5]
@@ -709,7 +820,7 @@ class LogitechDeviceSession {
             receiverPairedDevices[idx].lastError = nil
         }
 
-        LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .info,
+        LogiDebugPanel.log(device: deviceInfo.name, type: .info,
             message: "Slot \(devIdx): device connected (HID++ \(protMajor).\(protMinor))")
         checkPingPhaseComplete()
     }
@@ -724,7 +835,7 @@ class LogitechDeviceSession {
     private func finishPingPhase() {
         receiverEnumPhase = 2
         let connectedSlots = receiverPairedDevices.filter { $0.isConnected }
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Ping complete: \(connectedSlots.count)/6 slots connected")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Ping complete: \(connectedSlots.count)/6 slots connected")
 
         // 查询已连接设备的详细信息 (register 0xB5, 可能在 Bolt receiver 上失败)
         for dev in connectedSlots {
@@ -737,25 +848,25 @@ class LogitechDeviceSession {
             featureIndex.removeAll()
             discoveredControls.removeAll()
             reprogInitComplete = false
-            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Auto-targeted slot \(firstConnected.slot)")
+            LogiDebugPanel.log("[\(deviceInfo.name)] Auto-targeted slot \(firstConnected.slot)")
 
             let tag = "[\(deviceInfo.name):slot\(firstConnected.slot)]"
-            LogitechHIDDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
+            LogiDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
             startFreshDiscovery(tag: tag)
         } else {
             receiverEnumPhase = 0
-            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] No devices found on receiver")
+            LogiDebugPanel.log("[\(deviceInfo.name)] No devices found on receiver")
             // 无设备 -> 不会进 peripheral discovery, 此处必须清 inflight 防止 spinner 一直转.
             setDiscoveryInFlight(false)
         }
 
         // Receiver dongle 本身的握手 = slot ping 完成. 后续 peripheral discovery 状态与此独立.
         handshakeComplete = true
-        NotificationCenter.default.post(name: LogitechHIDManager.sessionChangedNotification, object: nil)
+        NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
     }
 
     /// 处理 receiver register 响应
-    private func handleReceiverRegisterResponse(_ report: [UInt8]) {
+    private func handleReceiverRegisterResponse(_ report: UnsafeBufferPointer<UInt8>) {
         let register = report[3]
 
         if register == Self.receiverPairingInfo {
@@ -769,7 +880,7 @@ class LogitechDeviceSession {
                 // [entityIdx, 0x20, destId, reportInterval, wirelessPID_hi, wirelessPID_lo, deviceType, ...]
                 receiverPairedDevices[idx].wirelessPID = (UInt16(report[8]) << 8) | UInt16(report[9])
                 receiverPairedDevices[idx].deviceType = report[10]
-                LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .info,
+                LogiDebugPanel.log(device: deviceInfo.name, type: .info,
                     message: "Slot \(slot) info: type=\(receiverPairedDevices[idx].deviceTypeName) wirelessPID=\(String(format: "0x%04X", receiverPairedDevices[idx].wirelessPID))")
             } else if infoType == Self.pairingInfoDeviceName && report.count > 7 {
                 // [entityIdx, 0x40, nameLen, char0, char1, ...]
@@ -777,23 +888,23 @@ class LogitechDeviceSession {
                 if nameLen > 0 {
                     let nameBytes = Array(report[7..<(7 + nameLen)])
                     receiverPairedDevices[idx].name = String(bytes: nameBytes, encoding: .utf8) ?? ""
-                    LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .info,
+                    LogiDebugPanel.log(device: deviceInfo.name, type: .info,
                         message: "Slot \(slot) name: \"\(receiverPairedDevices[idx].name)\"")
                 }
             }
 
-            NotificationCenter.default.post(name: LogitechHIDManager.sessionChangedNotification, object: nil)
+            NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
         }
     }
 
     /// 处理设备连接/断开通知 (sub-ID 0x41)
-    private func handleDeviceConnectionNotification(_ report: [UInt8]) {
+    private func handleDeviceConnectionNotification(_ report: UnsafeBufferPointer<UInt8>) {
         let devIdx = report[1]
         let protocolType = report.count > 3 ? report[3] : 0
         let devInfo = report.count > 4 ? report[4] : 0
         let connected = (devInfo & 0x40) == 0  // bit 6 = 0: link established
 
-        LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .info,
+        LogiDebugPanel.log(device: deviceInfo.name, type: .info,
             message: "Device \(connected ? "connected" : "disconnected") on slot \(devIdx) (protocol=\(String(format: "0x%02X", protocolType)))")
 
         if devIdx >= 1 && devIdx <= 6 {
@@ -806,7 +917,7 @@ class LogitechDeviceSession {
                 receiverPairedDevices.append(dev)
                 receiverPairedDevices.sort { $0.slot < $1.slot }
             }
-            NotificationCenter.default.post(name: LogitechHIDManager.sessionChangedNotification, object: nil)
+            NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
         }
     }
 
@@ -830,13 +941,13 @@ class LogitechDeviceSession {
             case 2:
                 if params.count >= 2 {
                     let cid = (UInt16(params[0]) << 8) | UInt16(params[1])
-                    return "REPROG.GetControlReporting(CID=\(String(format: "0x%04X", cid)) \(LogitechCIDRegistry.name(forCID: cid)))"
+                    return "REPROG.GetControlReporting(CID=\(String(format: "0x%04X", cid)) \(LogiCIDDirectory.name(forCID: cid)))"
                 }
                 return "REPROG.GetControlReporting"
             case 3:
                 if params.count >= 3 {
                     let cid = (UInt16(params[0]) << 8) | UInt16(params[1])
-                    let cidName = LogitechCIDRegistry.name(forCID: cid)
+                    let cidName = LogiCIDDirectory.name(forCID: cid)
                     let divert = params[2] & 0x01 != 0
                     return "REPROG.SetControlReporting(CID=\(String(format: "0x%04X", cid)) \(cidName), divert=\(divert ? "ON" : "OFF"))"
                 }
@@ -847,7 +958,7 @@ class LogitechDeviceSession {
         return "Feature[0x\(String(format: "%02X", featureIndex))].func\(functionId)"
     }
 
-    private func decodeReport(_ report: [UInt8]) -> String {
+    private func decodeReport(_ report: UnsafeBufferPointer<UInt8>) -> String {
         guard report.count >= 7 else { return "short report" }
         let devIdx = report[1]
         let featIdx = report[2]
@@ -907,7 +1018,7 @@ class LogitechDeviceSession {
             }
             if funcId == 1 {
                 let cid = (UInt16(report[4]) << 8) | UInt16(report[5])
-                let name = LogitechCIDRegistry.name(forCID: cid)
+                let name = LogiCIDDirectory.name(forCID: cid)
                 return "REPROG.ControlInfo: CID=\(String(format: "0x%04X", cid)) (\(name))"
             }
             if reprogInitComplete && funcId == 0 {
@@ -917,7 +1028,7 @@ class LogitechDeviceSession {
                 while offset + 1 < report.count {
                     let cid = (UInt16(report[offset]) << 8) | UInt16(report[offset + 1])
                     if cid == 0 { break }
-                    let name = LogitechCIDRegistry.name(forCID: cid)
+                    let name = LogiCIDDirectory.name(forCID: cid)
                     cids.append("\(String(format: "0x%04X", cid))(\(name))")
                     offset += 2
                 }
@@ -927,14 +1038,14 @@ class LogitechDeviceSession {
                 let cid = (UInt16(report[4]) << 8) | UInt16(report[5])
                 let rFlags = report[6]
                 let tCID = (UInt16(report[7]) << 8) | UInt16(report[8])
-                let cidName = LogitechCIDRegistry.name(forCID: cid)
+                let cidName = LogiCIDDirectory.name(forCID: cid)
                 var parts: [String] = []
                 if rFlags & 0x01 != 0 { parts.append("tmpDvrt") }
                 if rFlags & 0x02 != 0 { parts.append("pstDvrt") }
                 if rFlags & 0x04 != 0 { parts.append("tmpRemap") }
                 if rFlags & 0x08 != 0 { parts.append("pstRemap") }
                 let fStr = parts.isEmpty ? "none" : parts.joined(separator: ",")
-                let tStr = tCID != cid && tCID != 0 ? " -> \(LogitechCIDRegistry.name(forCID: tCID))" : ""
+                let tStr = tCID != cid && tCID != 0 ? " -> \(LogiCIDDirectory.name(forCID: tCID))" : ""
                 return "REPROG.GetReporting(\(cidName)): \(fStr)\(tStr)"
             }
             if funcId == 3 {
@@ -960,8 +1071,8 @@ class LogitechDeviceSession {
     // MARK: - Logi Action Execution
 
     private var pendingSmartShiftToggle: UInt8? = nil
-    private var pendingDPICycle: (featureIndex: UInt8, direction: LogitechHIDManager.DPICycleDirection)? = nil
-    private var pendingDPIListQuery: (featureIndex: UInt8, direction: LogitechHIDManager.DPICycleDirection)? = nil
+    private var pendingDPICycle: (featureIndex: UInt8, direction: Direction)? = nil
+    private var pendingDPIListQuery: (featureIndex: UInt8, direction: Direction)? = nil
     private var currentDPI: UInt16 = 0
     private var dpiSteps: [UInt16] = []  // 从设备查询, 不硬编码
     private var dpiStepSize: UInt16 = 0  // 设备报告的 DPI 步进值
@@ -981,7 +1092,7 @@ class LogitechDeviceSession {
             // 先发现 feature
             discoverFeature(featureId: smartShiftFeatureId) { [weak self] idx in
                 guard let self = self, let idx = idx else {
-                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] SmartShift feature not supported")
+                    LogiDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] SmartShift feature not supported")
                     return
                 }
                 self.featureIndex[smartShiftFeatureId] = idx
@@ -999,7 +1110,7 @@ class LogitechDeviceSession {
     }
 
     /// DPI 循环
-    func executeDPICycle(direction: LogitechHIDManager.DPICycleDirection) {
+    func executeDPICycle(direction: Direction) {
         // AdjustableDPI feature ID = 0x2201
         let dpiFeatureId: UInt16 = 0x2201
         if let idx = featureIndex[dpiFeatureId] {
@@ -1007,7 +1118,7 @@ class LogitechDeviceSession {
         } else {
             discoverFeature(featureId: dpiFeatureId) { [weak self] idx in
                 guard let self = self, let idx = idx else {
-                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] AdjustableDPI feature not supported")
+                    LogiDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] AdjustableDPI feature not supported")
                     return
                 }
                 self.featureIndex[dpiFeatureId] = idx
@@ -1016,7 +1127,7 @@ class LogitechDeviceSession {
         }
     }
 
-    private func cycleDPI(featureIndex: UInt8, direction: LogitechHIDManager.DPICycleDirection) {
+    private func cycleDPI(featureIndex: UInt8, direction: Direction) {
         if dpiSteps.isEmpty {
             // 先查询设备支持的 DPI 列表
             // getSensorDpiList: function 1, param sensorIdx=0
@@ -1045,7 +1156,7 @@ class LogitechDeviceSession {
         } else {
             discoverFeature(featureId: changeHostFeatureId) { [weak self] idx in
                 guard let self = self, let idx = idx else {
-                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ChangeHost feature not supported")
+                    LogiDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ChangeHost feature not supported")
                     return
                 }
                 self.featureIndex[changeHostFeatureId] = idx
@@ -1064,7 +1175,7 @@ class LogitechDeviceSession {
         } else {
             discoverFeature(featureId: changeHostFeatureId) { [weak self] idx in
                 guard let self = self, let idx = idx else {
-                    LogitechHIDDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ChangeHost feature not supported")
+                    LogiDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ChangeHost feature not supported")
                     return
                 }
                 self.featureIndex[changeHostFeatureId] = idx
@@ -1075,7 +1186,7 @@ class LogitechDeviceSession {
     }
 
     private func switchToHost(featureIndex: UInt8, hostIndex: UInt8) {
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Switching to host \(hostIndex + 1)")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Switching to host \(hostIndex + 1)")
         // setHost: function 1, param = target host index (0-based)
         sendRequest(featureIndex: featureIndex, functionId: 1, params: [hostIndex])
         // 注意: 切换后设备会断开连接, session 会被清理
@@ -1160,13 +1271,13 @@ class LogitechDeviceSession {
     private func showFeatureNotAvailable(_ featureName: String) {
         let message = String(format: NSLocalizedString("featureNotAvailable", comment: ""),
                             deviceInfo.name, featureName)
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] \(featureName): feature not available")
-        Toast.show(message, style: .warning)
+        LogiDebugPanel.log("[\(deviceInfo.name)] \(featureName): feature not available")
+        LogiCenter.shared.externalBridge.showLogiToast(message, severity: .warning)
     }
 
     // MARK: - Report Parsing
 
-    func handleInputReport(_ report: [UInt8]) {
+    func handleInputReport(_ report: UnsafeBufferPointer<UInt8>) {
         guard report.count >= 7 else { return }
         guard report[0] == Self.hidppShortReportId || report[0] == Self.hidppLongReportId else { return }
 
@@ -1177,7 +1288,7 @@ class LogitechDeviceSession {
         let isError = featureIdx == Self.hidppErrorFeatureIdx ||
             (connectionMode == .receiver && featureIdx == Self.hidpp10ErrorMsg)
         let rxType: LogEntryType = isError ? .error : .rx
-        LogitechHIDDebugPanel.log(device: deviceInfo.name, type: rxType, message: "RX: \(hex)", decoded: rxDecoded)
+        LogiDebugPanel.log(device: deviceInfo.name, type: rxType, message: "RX: \(hex)", decoded: rxDecoded)
 
         // Receiver mode: route HID++ 1.0 responses first
         if connectionMode == .receiver {
@@ -1212,7 +1323,7 @@ class LogitechDeviceSession {
             // REPROG discovery state (append 错误 control / advance 错误 index).
             // 0xFF (receiver register) 和 pending ping 已在上面各自处理, 不会进入这里.
             if devIdx >= 1 && devIdx <= 6 && devIdx != deviceIndex {
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Stale report from slot \(devIdx) (current target=\(deviceIndex)) dropped")
+                LogiDebugPanel.log("[\(deviceInfo.name)] Stale report from slot \(devIdx) (current target=\(deviceIndex)) dropped")
                 return
             }
         }
@@ -1222,7 +1333,7 @@ class LogitechDeviceSession {
             let originalFeatureIdx = report.count > 3 ? report[3] : 0
             let originalFuncId: UInt8 = report.count > 4 ? (report[4] >> 4) : 0
             let errorCode = report.count > 6 ? report[6] : 0
-            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] HID++ Error: feat=\(String(format: "0x%02X", originalFeatureIdx)) func=\(originalFuncId) err=\(String(format: "0x%02X", errorCode))")
+            LogiDebugPanel.log("[\(deviceInfo.name)] HID++ Error: feat=\(String(format: "0x%02X", originalFeatureIdx)) func=\(originalFuncId) err=\(String(format: "0x%02X", errorCode))")
 
             // Feature discovery pending callbacks
             for (featureId, callback) in pendingDiscovery {
@@ -1236,10 +1347,10 @@ class LogitechDeviceSession {
                !reprogInitComplete {
                 switch originalFuncId {
                 case 1:  // GetControlInfo
-                    LogitechHIDDebugPanel.log("[\(deviceInfo.name)] GetControlInfo[\(reprogQueryIndex)] returned error, skipping")
+                    LogiDebugPanel.log("[\(deviceInfo.name)] GetControlInfo[\(reprogQueryIndex)] returned error, skipping")
                     advanceControlInfoQuery()
                 case 2:  // GetControlReporting
-                    LogitechHIDDebugPanel.log("[\(deviceInfo.name)] GetControlReporting[\(reportingQueryIndex)] returned error, skipping")
+                    LogiDebugPanel.log("[\(deviceInfo.name)] GetControlReporting[\(reportingQueryIndex)] returned error, skipping")
                     advanceReportingQuery()
                 default:
                     break
@@ -1253,7 +1364,7 @@ class LogitechDeviceSession {
             // 缓存验证: ping 响应 (function 1) 确认设备在线, 直接用缓存的 feature index
             if let reprogIdx = pendingCacheValidation, functionId == 1 {
                 pendingCacheValidation = nil
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Cache validated (protocol \(report[4]).\(report[5])), using cached index 0x\(String(format: "%02X", reprogIdx))")
+                LogiDebugPanel.log("[\(deviceInfo.name)] Cache validated (protocol \(report[4]).\(report[5])), using cached index 0x\(String(format: "%02X", reprogIdx))")
                 sendGetControlCount(featureIndex: reprogIdx)
                 return
             }
@@ -1287,7 +1398,7 @@ class LogitechDeviceSession {
             pendingSmartShiftToggle = nil
             let currentMode = report[4]  // 1=freewheel, 2=ratchet
             let newMode: UInt8 = (currentMode == 2) ? 1 : 2
-            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] SmartShift: \(currentMode == 2 ? "ratchet" : "freewheel") -> \(newMode == 2 ? "ratchet" : "freewheel")")
+            LogiDebugPanel.log("[\(deviceInfo.name)] SmartShift: \(currentMode == 2 ? "ratchet" : "freewheel") -> \(newMode == 2 ? "ratchet" : "freewheel")")
             // setRatchetControlMode: function 1, params: wheelMode
             sendRequest(featureIndex: smartShiftIdx, functionId: 1, params: [newMode])
             return
@@ -1327,11 +1438,11 @@ class LogitechDeviceSession {
                     dpiSteps.append(dpi)
                     dpi += step
                 }
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI range: \(dpiMin)-\(dpiMax) step \(step) (\(dpiSteps.count) levels)")
+                LogiDebugPanel.log("[\(deviceInfo.name)] DPI range: \(dpiMin)-\(dpiMax) step \(step) (\(dpiSteps.count) levels)")
             } else {
                 // 离散列表模式
                 dpiSteps = values
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI list: \(dpiSteps)")
+                LogiDebugPanel.log("[\(deviceInfo.name)] DPI list: \(dpiSteps)")
             }
 
             // 继续: 查询当前 DPI 并执行切换
@@ -1357,11 +1468,11 @@ class LogitechDeviceSession {
             }
 
             if newDPI != curDPI {
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI: \(curDPI) -> \(newDPI)")
+                LogiDebugPanel.log("[\(deviceInfo.name)] DPI: \(curDPI) -> \(newDPI)")
                 // setSensorDpi: function 3, params: sensorIdx(1) + dpi(2)
                 sendRequest(featureIndex: dpiInfo.featureIndex, functionId: 3, params: [0x00, UInt8(newDPI >> 8), UInt8(newDPI & 0xFF)])
             } else {
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] DPI: \(curDPI) (already at limit)")
+                LogiDebugPanel.log("[\(deviceInfo.name)] DPI: \(curDPI) (already at limit)")
             }
             return
         }
@@ -1372,7 +1483,7 @@ class LogitechDeviceSession {
             let hostCount = report[4]
             let currentHost = report[5]
             let nextHost = (currentHost + 1) % hostCount
-            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Host: \(currentHost + 1)/\(hostCount) -> \(nextHost + 1)")
+            LogiDebugPanel.log("[\(deviceInfo.name)] Host: \(currentHost + 1)/\(hostCount) -> \(nextHost + 1)")
             switchToHost(featureIndex: hostIdx, hostIndex: nextHost)
             return
         }
@@ -1384,7 +1495,7 @@ class LogitechDeviceSession {
                 let newMode = currentMode ^ 0x02  // Toggle bit 1 (resolution)
                 sendRequest(featureIndex: hiresIdx, functionId: 0x20, params: [newMode])
                 pendingHiResScrollToggle = false
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] HiResScroll: \((newMode & 0x02) != 0 ? "ON" : "OFF")")
+                LogiDebugPanel.log("[\(deviceInfo.name)] HiResScroll: \((newMode & 0x02) != 0 ? "ON" : "OFF")")
                 return
             }
             if pendingScrollInvertToggle && functionId == 1 {  // response to function 0x10 (0x10 >> 4 = 1)
@@ -1392,7 +1503,7 @@ class LogitechDeviceSession {
                 let newMode = currentMode ^ 0x04  // Toggle bit 2 (invert)
                 sendRequest(featureIndex: hiresIdx, functionId: 0x20, params: [newMode])
                 pendingScrollInvertToggle = false
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] ScrollInvert: \((newMode & 0x04) != 0 ? "ON" : "OFF")")
+                LogiDebugPanel.log("[\(deviceInfo.name)] ScrollInvert: \((newMode & 0x04) != 0 ? "ON" : "OFF")")
                 return
             }
         }
@@ -1405,7 +1516,7 @@ class LogitechDeviceSession {
                 let newByte1 = byte1 ^ 0x01  // Toggle bit 0 (divert mode)
                 sendRequest(featureIndex: thumbIdx, functionId: 0x20, params: [newByte1, byte2])
                 pendingThumbWheelToggle = false
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] ThumbWheel: \((newByte1 & 0x01) != 0 ? "DIVERT" : "NORMAL")")
+                LogiDebugPanel.log("[\(deviceInfo.name)] ThumbWheel: \((newByte1 & 0x01) != 0 ? "DIVERT" : "NORMAL")")
                 return
             }
         }
@@ -1430,15 +1541,15 @@ class LogitechDeviceSession {
                             params: [UInt8(nextSpeed >> 8), UInt8(nextSpeed & 0xFF)])
                 pendingPointerSpeedCycle = false
                 let speedStr = String(format: "%.1fx", Double(nextSpeed) / 256.0)
-                LogitechHIDDebugPanel.log("[\(deviceInfo.name)] PointerSpeed: \(speedStr)")
+                LogiDebugPanel.log("[\(deviceInfo.name)] PointerSpeed: \(speedStr)")
                 return
             }
         }
     }
 
-    private func handleDiscoveryResponse(_ report: [UInt8]) {
+    private func handleDiscoveryResponse(_ report: UnsafeBufferPointer<UInt8>) {
         let discoveredIndex = report[4]
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] IRoot response: discoveredIndex=\(String(format: "0x%02X", discoveredIndex))")
+        LogiDebugPanel.log("[\(deviceInfo.name)] IRoot response: discoveredIndex=\(String(format: "0x%02X", discoveredIndex))")
         if let (featureId, callback) = pendingDiscovery.first {
             discoveryTimer?.invalidate()
             pendingDiscovery.removeValue(forKey: featureId)
@@ -1446,20 +1557,22 @@ class LogitechDeviceSession {
         }
     }
 
-    private func handleGetControlCountResponse(_ report: [UInt8]) {
+    private func handleGetControlCountResponse(_ report: UnsafeBufferPointer<UInt8>) {
         reprogControlCount = Int(report[4])
         reprogQueryIndex = 0
         discoveredControls.removeAll()
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] GetControlCount = \(reprogControlCount)")
+        LogiDebugPanel.log("[\(deviceInfo.name)] GetControlCount = \(reprogControlCount)")
         if reprogControlCount > 0, let idx = featureIndex[Self.featureReprogV4] {
             sendGetControlInfo(featureIndex: idx, index: 0)
         } else {
             // 设备声明 0 个可编程控件: discovery 走到终点, 记为握手完成.
             markHandshakeComplete()
+            NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
+            LogiSessionManager.shared.recomputeAndNotifyActivityState()
         }
     }
 
-    private func handleGetControlInfoResponse(_ report: [UInt8]) {
+    private func handleGetControlInfoResponse(_ report: UnsafeBufferPointer<UInt8>) {
         guard report.count >= 11 else { return }
         let cid = (UInt16(report[4]) << 8) | UInt16(report[5])
         let taskId = (UInt16(report[6]) << 8) | UInt16(report[7])
@@ -1470,7 +1583,7 @@ class LogitechDeviceSession {
         let isDivertable = (flags & 0x20) != 0
 
         discoveredControls.append(ControlInfo(cid: cid, taskId: taskId, flags: flags, isDivertable: isDivertable))
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Control[\(reprogQueryIndex)]: CID=\(String(format: "0x%04X", cid)) flags=\(String(format: "0x%04X", flags)) divertable=\(isDivertable)")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Control[\(reprogQueryIndex)]: CID=\(String(format: "0x%04X", cid)) flags=\(String(format: "0x%04X", flags)) divertable=\(isDivertable)")
 
         advanceControlInfoQuery()
     }
@@ -1478,7 +1591,7 @@ class LogitechDeviceSession {
     // MARK: - GetControlReporting Query (function 2)
 
     /// 重跑 GetControlReporting 循环,刷新所有 control 的 reportingFlags / targetCID.
-    /// 用于 UI 轮询冲突状态时调用(通过 LogitechHIDManager.refreshReportingStatesIfNeeded 防抖).
+    /// 用于 UI 轮询冲突状态时调用(通过 LogiSessionManager.refreshReportingStates 节流).
     /// 不重新发现 feature / control,开销小(只是 N 个 HID++ 请求).
     /// 前提:初始 discovery 必须已完成;否则无 featureIndex / discoveredControls,直接跳过.
     /// 进行中(timer 未 nil)也跳过,避免 reportingQueryIndex 被重置导致错位.
@@ -1487,7 +1600,7 @@ class LogitechDeviceSession {
               !discoveredControls.isEmpty,
               featureIndex[Self.featureReprogV4] != nil else { return }
         if reportingQueryTimer != nil { return }
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Refreshing reporting state (throttled)")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Refreshing reporting state (throttled)")
         startReportingQuery()
     }
 
@@ -1496,10 +1609,16 @@ class LogitechDeviceSession {
         reportingQueryIndex = 0
         guard !discoveredControls.isEmpty, let idx = featureIndex[Self.featureReprogV4] else {
             divertBoundControls()
+            // 镜像 advanceReportingQuery 正常终态: 即使 controls 为空也必须 post,
+            // 否则 Self-Test Wizard 的 "wait reportingDidComplete" 会无限挂起.
+            NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
+            LogiSessionManager.shared.recomputeAndNotifyActivityState()
             return
         }
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Querying reporting state for \(discoveredControls.count) controls...")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Querying reporting state for \(discoveredControls.count) controls...")
         sendGetControlReporting(featureIndex: idx, controlIndex: 0)
+        // timer 刚被创建, 通知 Manager 汇总 activity 状态 (幂等, 无变化时不 post)
+        LogiSessionManager.shared.recomputeAndNotifyActivityState()
     }
 
     private func sendGetControlReporting(featureIndex: UInt8, controlIndex: Int) {
@@ -1515,7 +1634,7 @@ class LogitechDeviceSession {
         reportingQueryTimer?.invalidate()
         reportingQueryTimer = Timer.scheduledTimer(withTimeInterval: Self.reprogQueryTimeout, repeats: false) { [weak self] _ in
             guard let self = self else { return }
-            LogitechHIDDebugPanel.log("[\(self.deviceInfo.name)] GetControlReporting[\(index)] timed out, skipping")
+            LogiDebugPanel.log("[\(self.deviceInfo.name)] GetControlReporting[\(index)] timed out, skipping")
             self.advanceReportingQuery()
         }
     }
@@ -1528,15 +1647,17 @@ class LogitechDeviceSession {
         if reportingQueryIndex < discoveredControls.count, let reprogIdx = featureIndex[Self.featureReprogV4] {
             sendGetControlReporting(featureIndex: reprogIdx, controlIndex: reportingQueryIndex)
         } else {
-            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Reporting query complete")
+            LogiDebugPanel.log("[\(deviceInfo.name)] Reporting query complete")
             divertBoundControls()
             // 先让 divertBoundControls 置 reprogInitComplete=true / handshakeComplete=true, 再通知
             // 观察者, 避免 main-queue observer 在状态翻转前就读到 stale 值.
-            NotificationCenter.default.post(name: LogitechHIDManager.reportingQueryDidCompleteNotification, object: nil)
+            NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
+            // reportingQueryTimer 此时已 nil, 若 discoveryInFlight 也为 false 则 activity 真正结束.
+            LogiSessionManager.shared.recomputeAndNotifyActivityState()
         }
     }
 
-    private func handleGetControlReportingResponse(_ report: [UInt8]) {
+    private func handleGetControlReportingResponse(_ report: UnsafeBufferPointer<UInt8>) {
         guard report.count >= 9 else { return }
         // response: byte[4-5]=CID, byte[6]=reportingFlags, byte[7-8]=targetCID
         let cid = (UInt16(report[4]) << 8) | UInt16(report[5])
@@ -1549,7 +1670,7 @@ class LogitechDeviceSession {
             discoveredControls[idx].reportingQueried = true
         }
 
-        let cidName = LogitechCIDRegistry.name(forCID: cid)
+        let cidName = LogiCIDDirectory.name(forCID: cid)
         let flagParts: [String] = [
             (reportingFlags & 0x01) != 0 ? "tmpDivert" : nil,
             (reportingFlags & 0x02) != 0 ? "persistDivert" : nil,
@@ -1558,9 +1679,9 @@ class LogitechDeviceSession {
         ].compactMap { $0 }
         let flagStr = flagParts.isEmpty ? "none" : flagParts.joined(separator: ",")
         let targetStr = targetCID != cid && targetCID != 0
-            ? " -> \(String(format: "0x%04X", targetCID))(\(LogitechCIDRegistry.name(forCID: targetCID)))"
+            ? " -> \(String(format: "0x%04X", targetCID))(\(LogiCIDDirectory.name(forCID: targetCID)))"
             : ""
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Reporting[\(cidName)]: flags=\(flagStr)\(targetStr)")
+        LogiDebugPanel.log("[\(deviceInfo.name)] Reporting[\(cidName)]: flags=\(flagStr)\(targetStr)")
 
         // 继续查询下一个 (或完成)
         advanceReportingQuery()
@@ -1573,62 +1694,8 @@ class LogitechDeviceSession {
         reprogInitComplete = true
         handshakeComplete = true
         setDiscoveryInFlight(false)
-        lastActiveCIDs.removeAll()
-        syncDivertWithBindings()
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Init complete, listening for button events")
-    }
-
-    /// 同步 divert 状态: 只触碰 "已绑定的按键" 与 "本进程曾 divert 但已不再绑定的按键",
-    /// 其它 CID (包括 Options+ 可能 divert 的) 一律不碰.
-    func syncDivertWithBindings() {
-        guard let idx = featureIndex[Self.featureReprogV4] else { return }
-
-        let boundCodes = collectBoundLogiMosCodes()
-        let divertableCIDs = Set(discoveredControls.filter { $0.isDivertable }.map { $0.cid })
-        let plan = LogitechDivertPlanner.plan(
-            boundMosCodes: boundCodes,
-            alreadyDiverted: divertedCIDs,
-            divertableCIDs: divertableCIDs
-        )
-
-        for cid in plan.toDivert {
-            setControlReporting(featureIndex: idx, cid: cid, divert: true)
-        }
-        for cid in plan.toUndivert {
-            setControlReporting(featureIndex: idx, cid: cid, divert: false)
-        }
-
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Sync divert: +\(plan.toDivert.count) -\(plan.toUndivert.count), now \(divertedCIDs.count) diverted (bound=\(boundCodes.count))")
-    }
-
-    /// 汇总当前所有可能触发 Logi 按键的 MosCode (按键面板 + 滚动面板 + 分应用)
-    private func collectBoundLogiMosCodes() -> Set<UInt16> {
-        var boundCodes = Set<UInt16>()
-
-        // 1. 按键面板: 全局按钮绑定
-        for binding in ButtonUtils.shared.getButtonBindings() where binding.isEnabled && binding.triggerEvent.type == .mouse {
-            boundCodes.insert(binding.triggerEvent.code)
-        }
-
-        // 2. 滚动面板: 全局滚动热键 (dash/toggle/block)
-        for hotkey in [Options.shared.scroll.dash, Options.shared.scroll.toggle, Options.shared.scroll.block] {
-            if let h = hotkey, h.type == .mouse, LogitechCIDRegistry.isLogitechCode(h.code) {
-                boundCodes.insert(h.code)
-            }
-        }
-
-        // 3. 应用程序面板: 分应用滚动热键 (非继承的应用)
-        let apps = Options.shared.application.applications
-        for i in 0..<apps.count {
-            guard let app = apps.get(by: i), !app.inherit else { continue }
-            for hotkey in [app.scroll.dash, app.scroll.toggle, app.scroll.block] {
-                if let h = hotkey, h.type == .mouse, LogitechCIDRegistry.isLogitechCode(h.code) {
-                    boundCodes.insert(h.code)
-                }
-            }
-        }
-
-        return boundCodes
+        primeFromRegistry()
+        LogiDebugPanel.log("[\(deviceInfo.name)] Init complete, listening for button events")
     }
 
     /// 录制模式: 临时 divert 所有 divertable 按键
@@ -1638,15 +1705,19 @@ class LogitechDeviceSession {
         for c in divertable where !divertedCIDs.contains(c.cid) {
             setControlReporting(featureIndex: idx, cid: c.cid, divert: true)
         }
-        LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Temporarily diverted all \(divertable.count) controls (recording mode)")
+        // Sync lastApplied with the full divertable set so restoreDivertToBindings'
+        // applyUsage diff (toUndivert = lastApplied - targetCIDs) can correctly
+        // compute toUndivert for recording-only CIDs after recording ends.
+        self.lastApplied = Set(divertable.map { $0.cid })
+        LogiDebugPanel.log("[\(deviceInfo.name)] Temporarily diverted all \(divertable.count) controls (recording mode)")
     }
 
     /// 录制结束: 恢复到只 divert 有绑定的状态
     func restoreDivertToBindings() {
-        syncDivertWithBindings()
+        primeFromRegistry()
     }
 
-    private func handleDivertedButtonEvent(_ report: [UInt8]) {
+    private func handleDivertedButtonEvent(_ report: UnsafeBufferPointer<UInt8>) {
         var activeCIDs: Set<UInt16> = []
         var offset = 4
         while offset + 1 < report.count {
@@ -1655,73 +1726,89 @@ class LogitechDeviceSession {
             activeCIDs.insert(cid)
             offset += 2
         }
-        let newlyPressed = activeCIDs.subtracting(lastActiveCIDs)
-        let newlyReleased = lastActiveCIDs.subtracting(activeCIDs)
-        lastActiveCIDs = activeCIDs
-        for cid in newlyPressed {
-            let cidName = LogitechCIDRegistry.name(forCID: cid)
-            LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .buttonEvent, message: "Button DOWN: CID \(String(format: "0x%04X", cid)) (\(cidName))")
+        let delta = buttonStateTracker.update(activeCIDs: activeCIDs)
+        for cid in delta.pressed {
+            let cidName = LogiCIDDirectory.name(forCID: cid)
+            LogiDebugPanel.log(device: deviceInfo.name, type: .buttonEvent, message: "Button DOWN: CID \(String(format: "0x%04X", cid)) (\(cidName))")
             dispatchButtonEvent(cid: cid, isDown: true)
         }
-        for cid in newlyReleased {
-            let cidName = LogitechCIDRegistry.name(forCID: cid)
-            LogitechHIDDebugPanel.log(device: deviceInfo.name, type: .buttonEvent, message: "Button UP: CID \(String(format: "0x%04X", cid)) (\(cidName))")
+        for cid in delta.released {
+            let cidName = LogiCIDDirectory.name(forCID: cid)
+            LogiDebugPanel.log(device: deviceInfo.name, type: .buttonEvent, message: "Button UP: CID \(String(format: "0x%04X", cid)) (\(cidName))")
             dispatchButtonEvent(cid: cid, isDown: false)
         }
     }
 
     // MARK: - Event Dispatch
 
+    /// Emit synthetic releases when Mos changes divert/session ownership and a
+    /// physical release may never arrive. Route through normal dispatch so
+    /// mouse mappings, virtual modifiers, and Mos Scroll all unwind together.
+    private func releaseAllActiveButtonState(reason: String) {
+        emitSyntheticButtonReleases(
+            for: buttonStateTracker.releaseAll(),
+            reason: reason
+        )
+    }
+
+    private func releaseActiveButtonState(for cids: Set<UInt16>, reason: String) {
+        emitSyntheticButtonReleases(
+            for: buttonStateTracker.releaseActiveCIDs(in: cids),
+            reason: reason
+        )
+    }
+
+    private func emitSyntheticButtonReleases(for cids: Set<UInt16>, reason: String) {
+        for cid in cids.sorted() {
+            let cidName = LogiCIDDirectory.name(forCID: cid)
+            LogiDebugPanel.log(
+                device: deviceInfo.name,
+                type: .buttonEvent,
+                message: "Synthetic Button UP: CID \(String(format: "0x%04X", cid)) (\(cidName)) [\(reason)]"
+            )
+            dispatchButtonEvent(cid: cid, isDown: false)
+        }
+    }
+
     private func dispatchButtonEvent(cid: UInt16, isDown: Bool) {
         let currentFlags = CGEventSource.flagsState(.combinedSessionState)
-        let mosEvent = InputEvent(
+        let event = InputEvent(
             type: .mouse,
-            code: LogitechCIDRegistry.toMosCode(cid),
+            code: LogiCIDDirectory.toMosCode(cid),
             modifiers: currentFlags,
             phase: isDown ? .down : .up,
             source: .hidPP,
             device: deviceInfo
         )
 
-        // 录制模式: 不执行动作, 只转发给 KeyRecorder
-        if LogitechHIDManager.shared.isRecording {
-            NotificationCenter.default.post(
-                name: LogitechHIDManager.buttonEventNotification,
-                object: nil,
-                userInfo: ["event": mosEvent]
-            )
+        // Always-fired raw event (deterministic for wizard + debug observers)
+        NotificationCenter.default.post(
+            name: LogiCenter.rawButtonEvent,
+            object: nil,
+            userInfo: [
+                "event": event,
+                "mosCode": event.code,
+                "cid": cid,
+                "phase": isDown ? "down" : "up",
+            ])
+
+        let bridge = LogiCenter.shared.externalBridge
+
+        if LogiCenter.shared.isRecording {
+            _ = bridge.dispatchLogiButtonEvent(event)
             return
         }
 
-        // 匹配滚动热键 (dash/toggle/block)
-        // HID++ 事件不经过 CGEventTap, 需要在此处单独处理
-        // 注意: 不做 early return, 允许同一按键同时触发滚动热键和按钮绑定
-        ScrollCore.shared.handleScrollHotkeyFromHIDPlusPlus(
-            code: mosEvent.code, isDown: isDown
-        )
+        // Side path: scroll hotkey fires regardless of binding outcome.
+        bridge.handleLogiScrollHotkey(code: event.code, phase: event.phase)
 
-        // 匹配 binding: logi* 动作在当前 session 执行 (设备隔离, 仅 down)
-        // 其余一律走 InputProcessor (支持 down/up 和 custom 绑定)
-        if isDown {
-            if let binding = ButtonUtils.shared.getBestMatchingBinding(
-                for: mosEvent,
-                where: { $0.systemShortcutName.hasPrefix("logi") }
-            ) {
-                // Logi 动作: 在当前 session 执行 (设备隔离, 不注册 activeBindings)
-                executeLogiAction(binding.systemShortcutName)
-                return
-            }
+        // Main routing.
+        switch bridge.dispatchLogiButtonEvent(event) {
+        case .logiAction(let name) where event.phase == .down:
+            executeLogiAction(name)
+        case .consumed, .unhandled, .logiAction:
+            break
         }
-        // 非 logi 绑定 (含 custom::) 和所有 Up 事件: 统一走 InputProcessor
-        let result = InputProcessor.shared.process(mosEvent)
-        if result == .consumed { return }
-
-        // 通知 KeyRecorder
-        NotificationCenter.default.post(
-            name: LogitechHIDManager.buttonEventNotification,
-            object: nil,
-            userInfo: ["event": mosEvent]
-        )
     }
 
     /// 在当前 session 上执行 Logi 动作
@@ -1748,7 +1835,7 @@ class LogitechDeviceSession {
         case "logiPointerSpeedCycle":
             executePointerSpeedCycle()
         default:
-            LogitechHIDDebugPanel.log("[\(deviceInfo.name)] Unknown Logi action: \(name)")
+            LogiDebugPanel.log("[\(deviceInfo.name)] Unknown Logi action: \(name)")
         }
     }
 }
