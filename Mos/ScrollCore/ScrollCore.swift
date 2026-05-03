@@ -82,13 +82,18 @@ class ScrollCore {
         if scrollEvent.isTrackpad() {
             return Unmanaged.passUnretained(event)
         }
-        // 当事件来自远程桌面，且其发送的事件 isContinuous=1.0，此时跳过本地平滑
-        if ScrollUtils.shared.isRemoteSmoothedEvent(event) {
-            return Unmanaged.passUnretained(event)
-        }
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
         // 获取事件目标
         let targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
+        // ToDesk 等远程控制链路无法稳定处理 Mos 合成的连续滚轮事件，只禁用平滑，保留翻转等原始事件处理。
+        let disableSmoothForRemoteControl = ScrollUtils.shared.shouldDisableSmoothForRemoteControl(
+            event,
+            targetRunningApplication: targetRunningApplication
+        )
+        let isRemoteSmoothedEvent = ScrollUtils.shared.isRemoteSmoothedEvent(event)
+        if isRemoteSmoothedEvent && !disableSmoothForRemoteControl {
+            return Unmanaged.passUnretained(event)
+        }
         // 获取列表中应用程序的列外设置信息
         ScrollCore.shared.application = ScrollUtils.shared.getTargetApplication(from: targetRunningApplication)
         // 平滑/翻转
@@ -116,6 +121,11 @@ class ScrollCore {
             let allowReverse = Options.shared.scroll.reverse
             enableReverseVertical = allowReverse && Options.shared.scroll.reverseVertical
             enableReverseHorizontal = allowReverse && Options.shared.scroll.reverseHorizontal
+        }
+        if disableSmoothForRemoteControl || isRemoteSmoothedEvent {
+            enableSmooth = false
+            enableSmoothVertical = false
+            enableSmoothHorizontal = false
         }
         // Launchpad 激活则强制屏蔽平滑
         if ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication) {

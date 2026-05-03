@@ -70,6 +70,8 @@ struct REMOTE_CONTROL_APPLICATION {
         "screensharingd",          // macOS 屏幕共享守护进程
         "ScreensharingAgent",     // macOS 屏幕共享用户会话代理
         "ARDAgent",                // Apple Remote Desktop
+        "ToDesk",                  // ToDesk 远程控制相关进程
+        "todesk",                  // ToDesk helper/daemon 可能使用小写路径
     ]
     // Bundle Identifier（用于第三方应用）
     static let bundleIdentifiers = [
@@ -82,6 +84,18 @@ struct REMOTE_CONTROL_APPLICATION {
         "com.realvnc.vncviewer",
         "com.tigervnc.vncviewer",
         "com.netease.uuremote",  // UU 远程桌面
+    ]
+    // Bundle Identifier 关键字（用于 ToDesk 这类版本间可能变化的 ID）
+    static let bundleIdentifierKeywords = [
+        "todesk",
+    ]
+    // 这些远程控制应用无法稳定处理 Mos 合成的连续滚轮事件，需直接使用原始滚轮。
+    static let rawScrollPassthroughExecutableKeywords = [
+        "ToDesk",
+        "todesk",
+    ]
+    static let rawScrollPassthroughBundleIdentifierKeywords = [
+        "todesk",
     ]
 }
 
