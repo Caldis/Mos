@@ -201,4 +201,28 @@ final class OptionsButtonsLoaderTests: XCTestCase {
         ]))
         XCTAssertTrue(AppRuntime.shouldRunAppStartupSideEffects(environment: [:]))
     }
+
+    func testApplicationListModeBehaviorMatrix() {
+        XCTAssertTrue(ApplicationListMode.custom.appliesToListedApplications)
+        XCTAssertTrue(ApplicationListMode.custom.appliesToUnlistedApplications)
+
+        XCTAssertTrue(ApplicationListMode.allowlist.appliesToListedApplications)
+        XCTAssertFalse(ApplicationListMode.allowlist.appliesToUnlistedApplications)
+
+        XCTAssertFalse(ApplicationListMode.blacklist.appliesToListedApplications)
+        XCTAssertTrue(ApplicationListMode.blacklist.appliesToUnlistedApplications)
+    }
+
+    func testLegacyAllowlistAccessMapsToListMode() {
+        let applicationOptions = OPTIONS_APPLICATION_DEFAULT()
+
+        applicationOptions.listMode = .blacklist
+        XCTAssertFalse(applicationOptions.allowlist)
+
+        applicationOptions.allowlist = true
+        XCTAssertEqual(applicationOptions.listMode, .allowlist)
+
+        applicationOptions.allowlist = false
+        XCTAssertEqual(applicationOptions.listMode, .custom)
+    }
 }

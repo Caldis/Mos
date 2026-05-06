@@ -117,6 +117,11 @@ class ScrollUtils {
         return nil
     }
 
+    func isExcludedByApplicationListMode(_ runningApplication: NSRunningApplication?) -> Bool {
+        guard Options.shared.application.listMode == .blacklist else { return false }
+        return getTargetApplication(from: runningApplication) != nil
+    }
+
     // MARK: - 远程桌面事件检测
     // 远程桌面事件检测缓存
     private var lastSourcePID: pid_t = 0

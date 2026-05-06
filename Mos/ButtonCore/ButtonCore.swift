@@ -50,6 +50,12 @@ class ButtonCore {
         if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
             return Unmanaged.passUnretained(event)
         }
+        let runningApplication = ScrollUtils.shared.getRunningApplication(from: event) ?? NSWorkspace.shared.frontmostApplication
+        if ScrollUtils.shared.isExcludedByApplicationListMode(runningApplication) {
+            InputProcessor.shared.clearActiveBindings()
+            ScrollCore.shared.clearScrollActivationState()
+            return Unmanaged.passUnretained(event)
+        }
 
         // 使用原始 flags 匹配绑定 (不注入虚拟修饰键, 保证匹配准确)
         let mosEvent = InputEvent(fromCGEvent: event)

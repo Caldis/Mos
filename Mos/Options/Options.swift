@@ -44,6 +44,7 @@ struct OptionItem {
 
     struct Application {
         static let Allowlist = "allowlist"
+        static let ListMode = "applicationListMode"
         static let Applications = "applications"
     }
 }
@@ -138,7 +139,13 @@ extension Options {
         buttons.binding = loadButtonsData()
         ButtonUtils.shared.invalidateCache()
         // 应用
-        application.allowlist = UserDefaults.standard.bool(forKey: OptionItem.Application.Allowlist)
+        let legacyAllowlist = UserDefaults.standard.bool(forKey: OptionItem.Application.Allowlist)
+        if let rawListMode = UserDefaults.standard.string(forKey: OptionItem.Application.ListMode),
+           let storedListMode = ApplicationListMode(rawValue: rawListMode) {
+            application.listMode = storedListMode
+        } else {
+            application.listMode = legacyAllowlist ? .allowlist : .custom
+        }
         application.applications = loadApplicationsData()
         // 解锁
         readingOptionsLock = false
@@ -172,7 +179,8 @@ extension Options {
             UserDefaults.standard.set(scroll.smoothVertical, forKey: OptionItem.Scroll.SmoothVertical)
             UserDefaults.standard.set(scroll.smoothHorizontal, forKey: OptionItem.Scroll.SmoothHorizontal)
             // 应用
-            UserDefaults.standard.set(application.allowlist, forKey: OptionItem.Application.Allowlist)
+            UserDefaults.standard.set(application.listMode.rawValue, forKey: OptionItem.Application.ListMode)
+            UserDefaults.standard.set(application.listMode == .allowlist, forKey: OptionItem.Application.Allowlist)
             if let applicationsData = application.applications.json() {
                 UserDefaults.standard.set(applicationsData, forKey: OptionItem.Application.Applications)
             } else {
