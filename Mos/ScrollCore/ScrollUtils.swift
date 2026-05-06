@@ -117,6 +117,34 @@ class ScrollUtils {
         return nil
     }
 
+    // MARK: - Scroll source ignore rules
+    private var lastScrollSourcePID: pid_t = 0
+    private var lastScrollSourceShouldIgnore = false
+
+    func invalidateScrollSourceIgnoreCache() {
+        lastScrollSourcePID = 0
+        lastScrollSourceShouldIgnore = false
+    }
+
+    /// Checks whether the app that emitted this scroll event should bypass Mos handling.
+    /// Source-app policy is intentionally separate from target-app scroll settings.
+    func shouldIgnoreScrollSource(_ event: CGEvent) -> Bool {
+        let sourcePID = pid_t(event.getIntegerValueField(.eventSourceUnixProcessID))
+        if sourcePID == 0 { return false }
+
+        if sourcePID != lastScrollSourcePID {
+            lastScrollSourcePID = sourcePID
+            lastScrollSourceShouldIgnore = false
+
+            if let sourceApplication = NSRunningApplication(processIdentifier: sourcePID),
+               let application = getTargetApplication(from: sourceApplication) {
+                lastScrollSourceShouldIgnore = application.ignoreAsScrollSource
+            }
+        }
+
+        return lastScrollSourceShouldIgnore
+    }
+
     // MARK: - 远程桌面事件检测
     // 远程桌面事件检测缓存
     private var lastSourcePID: pid_t = 0

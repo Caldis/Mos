@@ -87,6 +87,7 @@ class PreferencesApplicationViewController: NSViewController {
         guard let removedApp = Options.shared.application.applications.get(by: tableView.selectedRow) else { return }
         // 删除
         Options.shared.application.applications.remove(at: tableView.selectedRow)
+        ScrollUtils.shared.invalidateScrollSourceIgnoreCache()
         // 清除该应用所有 appScroll 占用 (codes=[] -> source 移除 -> Logi divert 同步)
         clearAppUsage(removedApp)
         // 重新加载

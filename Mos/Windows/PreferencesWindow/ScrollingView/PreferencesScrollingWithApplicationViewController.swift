@@ -20,12 +20,15 @@ class PreferencesScrollingWithApplicationViewController: NSViewController {
     @IBOutlet weak var currentTargetApplicationIcon: NSImageView!
     @IBOutlet weak var currentTargetApplicationName: NSTextField!
     @IBOutlet weak var inheritGlobalSettingCheckBox: NSButton!
+    private var ignoreScrollSourceCheckBox: NSButton?
     
     override func viewDidLoad() {
         // 初始化显示内容
         currentTargetApplicationIcon.image = currentTargetApplication?.getIcon()
         currentTargetApplicationIcon.toolTip = currentTargetApplication?.path
         currentTargetApplicationName.stringValue = currentTargetApplication?.getName() ?? ""
+        currentTargetApplicationName.toolTip = currentTargetApplication?.path
+        configureIgnoreScrollSourceCheckBox()
         // 读取设置
         syncViewWithOptions()
     }
@@ -39,6 +42,9 @@ class PreferencesScrollingWithApplicationViewController: NSViewController {
     
     public func updateTargetApplication(with target: Application?) {
         currentTargetApplication = target
+        if isViewLoaded {
+            syncViewWithOptions()
+        }
         if let vaildContentViewController = currentContentViewController, let validTargetApplication = currentTargetApplication {
             vaildContentViewController.currentTargetApplication = validTargetApplication
         }
@@ -54,7 +60,8 @@ class PreferencesScrollingWithApplicationViewController: NSViewController {
         if name.count > 0 {
             currentTargetApplication?.displayName = name
             if let validParentTableView = parentTableView, let validParentTableRow = parentTableRow {
-                validParentTableView.reloadData(forRowIndexes: [validParentTableRow], columnIndexes: [0, 1, 2])
+                let columnIndexes = IndexSet(integersIn: 0..<validParentTableView.numberOfColumns)
+                validParentTableView.reloadData(forRowIndexes: [validParentTableRow], columnIndexes: columnIndexes)
             }
         }
     }
@@ -71,6 +78,11 @@ class PreferencesScrollingWithApplicationViewController: NSViewController {
                 pushAppUsage(validTargetApplication)
             }
         }
+    }
+
+    @objc func ignoreScrollSourceClick(_ sender: NSButton) {
+        guard let validTargetApplication = currentTargetApplication else { return }
+        validTargetApplication.ignoreAsScrollSource = sender.state == .on
     }
 
     // MARK: - Logi usage helpers
@@ -108,9 +120,40 @@ class PreferencesScrollingWithApplicationViewController: NSViewController {
  * 工具函数
  **/
 extension PreferencesScrollingWithApplicationViewController {
+    private func configureIgnoreScrollSourceCheckBox() {
+        guard let headerContentView = inheritGlobalSettingCheckBox.superview,
+              let headerBox = headerContentView.superview else { return }
+
+        let checkBox = NSButton(
+            checkboxWithTitle: NSLocalizedString("Ignore Scroll Source", comment: "Per-application option for ignoring scroll events emitted by this app"),
+            target: self,
+            action: #selector(ignoreScrollSourceClick)
+        )
+        checkBox.controlSize = .small
+        checkBox.font = NSFont.menuFont(ofSize: 11)
+        checkBox.imagePosition = .imageRight
+        checkBox.translatesAutoresizingMaskIntoConstraints = false
+        checkBox.toolTip = NSLocalizedString("Pass through scroll events emitted by this app without Mos smoothing", comment: "Tooltip for ignore scroll source checkbox")
+        headerContentView.addSubview(checkBox)
+        ignoreScrollSourceCheckBox = checkBox
+        headerBox.constraints
+            .filter { $0.firstAttribute == .height }
+            .forEach { $0.constant = max($0.constant, 58) }
+
+        let nameWidth = currentTargetApplicationName.widthAnchor.constraint(lessThanOrEqualToConstant: 150)
+        nameWidth.priority = .defaultHigh
+        NSLayoutConstraint.activate([
+            nameWidth,
+            checkBox.leadingAnchor.constraint(equalTo: inheritGlobalSettingCheckBox.leadingAnchor),
+            checkBox.topAnchor.constraint(equalTo: inheritGlobalSettingCheckBox.bottomAnchor, constant: 5),
+            checkBox.widthAnchor.constraint(equalTo: inheritGlobalSettingCheckBox.widthAnchor),
+        ])
+    }
+
     // 同步界面与设置
     func syncViewWithOptions() {
         // 继承
         inheritGlobalSettingCheckBox.state = NSControl.StateValue(rawValue: (currentTargetApplication?.inherit ?? false) ? 1 : 0)
+        ignoreScrollSourceCheckBox?.state = (currentTargetApplication?.ignoreAsScrollSource ?? false) ? .on : .off
     }
 }
