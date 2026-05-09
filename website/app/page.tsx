@@ -36,10 +36,11 @@ export const metadata: Metadata = {
 function HomepageStructuredSummary() {
   return (
     <section
-      className="mx-auto max-w-6xl px-4 pb-20 pt-4 text-white/72 sm:px-6"
-      aria-labelledby="mos-agent-summary-title"
+      className="sr-only"
+      data-agent-context="homepage-structured-summary"
+      aria-hidden="true"
     >
-      <div className="rounded-[24px] border border-white/10 bg-black/35 p-6 sm:p-8">
+      <div>
         <p className="font-mono text-xs uppercase tracking-[0.22em] text-white/42">
           Product context
         </p>
