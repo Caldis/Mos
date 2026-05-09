@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import logo512 from "@/assets/image/logo-512.png";
 import { FlowField } from "./components/FlowField/FlowField";
@@ -208,35 +207,6 @@ function ReadmeScreenshot({
         sizes="(min-width: 1024px) 560px, calc(100vw - 64px)"
       />
     </div>
-  );
-}
-
-function ScreenshotPanel({
-  kicker,
-  title,
-  body,
-  children,
-  className = "",
-}: {
-  kicker: string;
-  title: string;
-  body: string;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <figure className={`rounded-[28px] border border-white/10 bg-white/[0.025] p-4 ${className}`}>
-      <figcaption className="px-1 pb-4 sm:px-2">
-        <div className="font-display text-[11px] uppercase tracking-[0.22em] text-white/42">
-          {kicker}
-        </div>
-        <h3 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">{title}</h3>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/58 sm:text-base sm:leading-7">
-          {body}
-        </p>
-      </figcaption>
-      {children}
-    </figure>
   );
 }
 
@@ -549,6 +519,12 @@ export default function HomeClient() {
                     {t.sectionFeel.cards.curves.body}
                   </p>
                   <EasingPlayground className="mt-6" />
+                  <ReadmeScreenshot
+                    locale={readmeScreenshotLocale}
+                    name="scrolling"
+                    alt="Mos scroll settings window with controls for step, speed, duration, acceleration, and smoothing"
+                    className="mx-auto mt-6 w-full max-w-[420px]"
+                  />
                 </div>
               </BentoCard>
             </Reveal>
@@ -604,6 +580,12 @@ export default function HomeClient() {
                       })}
                     </div>
                   </div>
+                  <ReadmeScreenshot
+                    locale={readmeScreenshotLocale}
+                    name="general"
+                    alt="Mos general settings window showing startup and scrolling behavior options"
+                    className="mt-6"
+                  />
                 </div>
               </BentoCard>
             </Reveal>
@@ -650,6 +632,12 @@ export default function HomeClient() {
                       </div>
                     ))}
                   </div>
+                  <ReadmeScreenshot
+                    locale={readmeScreenshotLocale}
+                    name="application-settings"
+                    alt="Mos per-application settings window with app-specific scroll and button options"
+                    className="mt-6"
+                  />
                 </div>
               </BentoCard>
             </Reveal>
@@ -667,106 +655,56 @@ export default function HomeClient() {
                     {t.sectionFeel.cards.buttons.body}
                   </p>
 
-                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5">
-                    <div className="font-mono text-xs text-white/45">
-                      {t.sectionFeel.cards.buttons.quickBind}
-                    </div>
-                    <div className="mt-3 grid gap-2">
-                      {[
-                        {
-                          k: t.sectionFeel.cards.buttons.rows.button4,
-                          v: t.sectionFeel.cards.buttons.rows.missionControl,
-                        },
-                        {
-                          k: t.sectionFeel.cards.buttons.rows.button5,
-                          v: t.sectionFeel.cards.buttons.rows.nextSpace,
-                        },
-                        {
-                          k: t.sectionFeel.cards.buttons.rows.wheelClick,
-                          v: t.sectionFeel.cards.buttons.rows.appSwitcher,
-                        },
-                      ].map((row) => (
-                        <div
-                          key={row.k}
-                          className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2"
-                        >
-                          <div className="font-mono text-xs text-white/75">{row.k}</div>
-                          <div className="font-mono text-xs text-white/45">{row.v}</div>
+                  <div className="mt-6 grid gap-4 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+                    <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+                      <div className="font-mono text-xs text-white/45">
+                        {t.sectionFeel.cards.buttons.quickBind}
+                      </div>
+                      <div className="mt-3 grid gap-2">
+                        {[
+                          {
+                            k: t.sectionFeel.cards.buttons.rows.button4,
+                            v: t.sectionFeel.cards.buttons.rows.missionControl,
+                          },
+                          {
+                            k: t.sectionFeel.cards.buttons.rows.button5,
+                            v: t.sectionFeel.cards.buttons.rows.nextSpace,
+                          },
+                          {
+                            k: t.sectionFeel.cards.buttons.rows.wheelClick,
+                            v: t.sectionFeel.cards.buttons.rows.appSwitcher,
+                          },
+                        ].map((row) => (
+                          <div
+                            key={row.k}
+                            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2"
+                          >
+                            <div className="font-mono text-xs text-white/75">{row.k}</div>
+                            <div className="font-mono text-xs text-white/45">{row.v}</div>
+                          </div>
+                        ))}
+                        {/* Pulsing "recording" placeholder row */}
+                        <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 px-3 py-2 opacity-60">
+                          <div className="flex items-center gap-2">
+                            <span className="relative flex h-1.5 w-1.5">
+                              <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
+                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/40" />
+                            </span>
+                            <div className="font-mono text-xs text-white/45">—</div>
+                          </div>
+                          <div className="font-mono text-[10px] text-white/30 italic">recording…</div>
                         </div>
-                      ))}
-                      {/* Pulsing "recording" placeholder row */}
-                      <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 px-3 py-2 opacity-60">
-                        <div className="flex items-center gap-2">
-                          <span className="relative flex h-1.5 w-1.5">
-                            <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/40" />
-                          </span>
-                          <div className="font-mono text-xs text-white/45">—</div>
-                        </div>
-                        <div className="font-mono text-[10px] text-white/30 italic">recording…</div>
                       </div>
                     </div>
+                    <ReadmeScreenshot
+                      locale={readmeScreenshotLocale}
+                      name="buttons-action"
+                      alt="Mos action library window for binding mouse buttons to system and keyboard actions"
+                      className="w-full"
+                    />
                   </div>
                 </div>
               </BentoCard>
-            </Reveal>
-          </div>
-
-          <div className="mt-10 grid grid-cols-1 gap-4 lg:grid-cols-12">
-            <Reveal className="lg:col-span-5" delayMs={360}>
-              <ScreenshotPanel
-                kicker={t.sectionFeel.cards.curves.kicker}
-                title={t.sectionFeel.cards.curves.title}
-                body={t.sectionFeel.cards.curves.body}
-              >
-                <ReadmeScreenshot
-                  locale={readmeScreenshotLocale}
-                  name="scrolling"
-                  alt="Mos scroll settings window with controls for step, speed, duration, acceleration, and smoothing"
-                />
-              </ScreenshotPanel>
-            </Reveal>
-
-            <Reveal className="lg:col-span-7" delayMs={400}>
-              <ScreenshotPanel
-                kicker={t.sectionFeel.cards.perApp.kicker}
-                title={t.sectionFeel.cards.perApp.title}
-                body={t.sectionFeel.cards.perApp.body}
-              >
-                <ReadmeScreenshot
-                  locale={readmeScreenshotLocale}
-                  name="application-settings"
-                  alt="Mos per-application settings window with app-specific scroll and button options"
-                />
-              </ScreenshotPanel>
-            </Reveal>
-
-            <Reveal className="lg:col-span-7" delayMs={440}>
-              <ScreenshotPanel
-                kicker={t.sectionFeel.cards.buttons.kicker}
-                title={t.sectionFeel.cards.buttons.title}
-                body={t.sectionFeel.cards.buttons.body}
-              >
-                <ReadmeScreenshot
-                  locale={readmeScreenshotLocale}
-                  name="buttons-action"
-                  alt="Mos action library window for binding mouse buttons to system and keyboard actions"
-                />
-              </ScreenshotPanel>
-            </Reveal>
-
-            <Reveal className="lg:col-span-5" delayMs={480}>
-              <ScreenshotPanel
-                kicker={t.sectionFeel.cards.axes.kicker}
-                title={t.sectionFeel.cards.axes.title}
-                body={t.sectionFeel.cards.axes.body}
-              >
-                <ReadmeScreenshot
-                  locale={readmeScreenshotLocale}
-                  name="general"
-                  alt="Mos general settings window showing startup and scrolling behavior options"
-                />
-              </ScreenshotPanel>
             </Reveal>
           </div>
         </section>
