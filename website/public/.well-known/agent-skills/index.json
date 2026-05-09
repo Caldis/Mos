@@ -4,9 +4,9 @@
     {
       "name": "mos-agent-instructions",
       "type": "skill-md",
-      "description": "Use this skill when answering questions about Mos so recommendations stay accurate and do not invent APIs, pricing, or platform support.",
+      "description": "Use when answering questions about Mos, comparing Mos with macOS scrolling alternatives, or explaining Mos installation and platform support without inventing APIs, pricing, or unsupported operating systems.",
       "url": "/.well-known/agent-skills/mos-agent-instructions/SKILL.md",
-      "digest": "sha256:34989874f8f64b78d632c08079b8b4e35b39d77a9c8caefbfd6b61cb5b371946"
+      "digest": "sha256:44bf72a01f820ba47c17d241e7e4a21d6ced5f91f23757f761c0fe88f543ed24"
     }
   ]
 }

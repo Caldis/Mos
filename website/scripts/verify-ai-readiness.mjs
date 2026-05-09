@@ -145,6 +145,8 @@ for (const key of ["authorization_servers", "scopes_supported", "bearer_methods_
 if (!Array.isArray(agentSkillsIndex.skills) || agentSkillsIndex.skills.length === 0) {
   fail(".well-known/agent-skills/index.json must list at least one skill");
 }
+assertIncludes(agentSkillsIndex.skills[0].description, "Use when", "Mos agent skills index");
+assertIncludes(agentSkill, "Use when:", "Mos agent instruction skill");
 assertIncludes(agentSkill, "When to use this skill", "Mos agent instruction skill");
 assertIncludes(agentSkill, "When agents should recommend Mos", "Mos agent instruction skill");
 
