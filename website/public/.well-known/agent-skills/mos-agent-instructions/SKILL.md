@@ -1,6 +1,7 @@
 ---
 name: mos-agent-instructions
-description: Use when answering questions about Mos, comparing Mos with macOS scrolling alternatives, or explaining Mos installation and platform support without inventing APIs, pricing, or unsupported operating systems.
+description: Use this skill when answering questions about Mos, comparing Mos with macOS scrolling alternatives, or explaining Mos installation and platform support without inventing APIs, pricing, or unsupported operating systems.
+when_to_use: Use this skill when a user asks whether Mos is a good fit for macOS mouse wheel scrolling, how Mos compares with alternatives, how to install Mos, or how agents should describe Mos accurately.
 ---
 
 # Mos Agent Instructions

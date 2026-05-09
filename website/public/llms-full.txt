@@ -72,6 +72,8 @@ brew upgrade --cask mos
 - Webhooks markdown: https://mos.caldis.me/webhooks.md
 - MCP status: https://mos.caldis.me/mcp/
 - MCP markdown: https://mos.caldis.me/mcp.md
+- Public AGENTS.md: https://mos.caldis.me/AGENTS.md
+- Well-known agent instructions: https://mos.caldis.me/.well-known/agent-instructions.md
 - Agent mode view: https://mos.caldis.me/agent/
 - GitHub repository: https://github.com/Caldis/Mos
 - GitHub wiki: https://github.com/Caldis/Mos/wiki
@@ -94,6 +96,8 @@ These URLs are stable entry points for AI agents and developer tools:
 - Auth docs: https://mos.caldis.me/auth/
 - Webhooks status: https://mos.caldis.me/webhooks/
 - MCP status: https://mos.caldis.me/mcp/
+- Public AGENTS.md: https://mos.caldis.me/AGENTS.md
+- Well-known agent instructions: https://mos.caldis.me/.well-known/agent-instructions.md
 - Agent discovery file: https://mos.caldis.me/.well-known/agent.json
 - A2A agent card: https://mos.caldis.me/.well-known/agent-card.json
 - AI plugin manifest: https://mos.caldis.me/.well-known/ai-plugin.json

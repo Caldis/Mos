@@ -49,6 +49,8 @@ const apiDocsMd = readOut("api-docs.md");
 const authMd = readOut("auth.md");
 const webhooksMd = readOut("webhooks.md");
 const mcpMd = readOut("mcp.md");
+const publicAgentsMd = readOut("AGENTS.md");
+const wellKnownAgentInstructions = readOut(".well-known/agent-instructions.md");
 const rootAgent = assertJson("agent.json", ["name", "url", "capabilities", "links"]);
 const apiCatalog = assertJson(".well-known/api-catalog", ["linkset"]);
 const oauthProtectedResource = assertJson(".well-known/oauth-protected-resource", ["resource"]);
@@ -79,6 +81,8 @@ for (const [label, markdown] of [
   ["auth.md", authMd],
   ["webhooks.md", webhooksMd],
   ["mcp.md", mcpMd],
+  ["AGENTS.md", publicAgentsMd],
+  [".well-known/agent-instructions.md", wellKnownAgentInstructions],
 ]) {
   if (!markdown.startsWith("# Mos")) {
     fail(`${label} must start with a top-level Mos heading`);
@@ -100,6 +104,8 @@ for (const expected of [
   "/auth.md",
   "/webhooks.md",
   "/mcp.md",
+  "/AGENTS.md",
+  "/.well-known/agent-instructions.md",
   "/llms-full.txt",
   "/agent.json",
   "/.well-known/api-catalog",
@@ -192,7 +198,8 @@ for (const key of ["authorization_servers", "scopes_supported", "bearer_methods_
 if (!Array.isArray(agentSkillsIndex.skills) || agentSkillsIndex.skills.length === 0) {
   fail(".well-known/agent-skills/index.json must list at least one skill");
 }
-assertIncludes(agentSkillsIndex.skills[0].description, "Use when", "Mos agent skills index");
+assertIncludes(agentSkillsIndex.skills[0].description, "Use this skill when", "Mos agent skills index");
+assertIncludes(agentSkill, "when_to_use", "Mos agent instruction skill");
 assertIncludes(agentSkill, "Use when:", "Mos agent instruction skill");
 assertIncludes(agentSkill, "When to use this skill", "Mos agent instruction skill");
 assertIncludes(agentSkill, "When agents should recommend Mos", "Mos agent instruction skill");

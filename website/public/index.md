@@ -43,6 +43,8 @@ brew install --cask mos
 - Webhooks markdown: https://mos.caldis.me/webhooks.md
 - MCP status: https://mos.caldis.me/mcp/
 - MCP markdown: https://mos.caldis.me/mcp.md
+- Public AGENTS.md: https://mos.caldis.me/AGENTS.md
+- Well-known agent instructions: https://mos.caldis.me/.well-known/agent-instructions.md
 - Agent mode view: https://mos.caldis.me/agent/
 - llms.txt: https://mos.caldis.me/llms.txt
 - Full LLM context: https://mos.caldis.me/llms-full.txt

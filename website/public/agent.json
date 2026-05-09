@@ -92,6 +92,8 @@
     "webhooks_markdown": "https://mos.caldis.me/webhooks.md",
     "mcp_status": "https://mos.caldis.me/mcp/",
     "mcp_markdown": "https://mos.caldis.me/mcp.md",
+    "public_agents_md": "https://mos.caldis.me/AGENTS.md",
+    "well_known_agent_instructions": "https://mos.caldis.me/.well-known/agent-instructions.md",
     "agent_instructions": "https://mos.caldis.me/agent-instructions/",
     "about": "https://mos.caldis.me/about/",
     "contact": "https://mos.caldis.me/contact/",

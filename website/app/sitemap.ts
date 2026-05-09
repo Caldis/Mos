@@ -111,6 +111,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     },
     {
+      url: `${siteOrigin}/AGENTS.md`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
       url: `${siteOrigin}/llms.txt`,
       lastModified: now,
       changeFrequency: "monthly",
@@ -160,6 +166,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${siteOrigin}/.well-known/agent-skills/index.json`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${siteOrigin}/.well-known/agent-instructions.md`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,

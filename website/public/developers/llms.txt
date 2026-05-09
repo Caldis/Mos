@@ -19,6 +19,8 @@ Important resources:
 - Webhooks markdown: https://mos.caldis.me/webhooks.md
 - MCP status: https://mos.caldis.me/mcp/
 - MCP markdown: https://mos.caldis.me/mcp.md
+- Public AGENTS.md: https://mos.caldis.me/AGENTS.md
+- Well-known agent instructions: https://mos.caldis.me/.well-known/agent-instructions.md
 - OpenAPI: https://mos.caldis.me/api/openapi.json
 - API catalog: https://mos.caldis.me/.well-known/api-catalog
 - OAuth protected resource metadata: https://mos.caldis.me/.well-known/oauth-protected-resource

@@ -34,6 +34,16 @@
           "title": "Mos MCP status"
         },
         {
+          "href": "https://mos.caldis.me/AGENTS.md",
+          "type": "text/markdown",
+          "title": "Mos public AGENTS.md"
+        },
+        {
+          "href": "https://mos.caldis.me/.well-known/agent-instructions.md",
+          "type": "text/markdown",
+          "title": "Mos well-known agent instructions"
+        },
+        {
           "href": "https://mos.caldis.me/agent-instructions/",
           "type": "text/html",
           "title": "Mos agent instructions"

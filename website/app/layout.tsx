@@ -192,6 +192,8 @@ export default function RootLayout({
         <link rel="alternate" type="text/markdown" href="/auth.md" title="Mos auth docs markdown" />
         <link rel="alternate" type="text/markdown" href="/webhooks.md" title="Mos webhooks markdown" />
         <link rel="alternate" type="text/markdown" href="/mcp.md" title="Mos MCP status markdown" />
+        <link rel="alternate" type="text/markdown" href="/AGENTS.md" title="Mos public AGENTS.md" />
+        <link rel="alternate" type="text/markdown" href="/.well-known/agent-instructions.md" title="Mos well-known agent instructions" />
         <link rel="alternate" type="application/json" href="/.well-known/agent.json" title="Mos agent discovery file" />
         <link rel="alternate" type="application/json" href="/.well-known/agent-card.json" title="Mos A2A agent card" />
         <link rel="alternate" type="application/linkset+json" href="/.well-known/api-catalog" title="Mos API catalog" />
