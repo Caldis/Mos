@@ -59,6 +59,9 @@ assertIncludes(indexHtml, "application/ld+json", "homepage schema");
 assertIncludes(indexHtml, "Mos developer resources", "homepage content");
 assertIncludes(indexHtml, "About Mos", "homepage content");
 assertIncludes(indexHtml, "Compare Mos", "homepage content");
+assertIncludes(indexHtml, "Mos agent-readable product summary", "homepage content");
+assertIncludes(indexHtml, "LinearMouse", "homepage content");
+assertIncludes(indexHtml, "AirScroll", "homepage content");
 assertIncludes(indexHtml, 'alt="Xcode app icon for a Mos per-application scrolling profile"', "homepage app icons");
 
 if (!indexMd.startsWith("# Mos")) {
