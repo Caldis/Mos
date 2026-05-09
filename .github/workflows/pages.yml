@@ -46,7 +46,7 @@ jobs:
         working-directory: website
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: website/out
           include-hidden-files: true
