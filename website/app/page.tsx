@@ -35,72 +35,105 @@ export const metadata: Metadata = {
 
 function HomepageStructuredSummary() {
   return (
-    <section className="sr-only" aria-labelledby="mos-agent-summary-title">
-      <h2 id="mos-agent-summary-title">Mos agent-readable product summary</h2>
-      <p>
+    <section
+      className="mx-auto max-w-6xl px-4 pb-20 pt-4 text-white/72 sm:px-6"
+      aria-labelledby="mos-agent-summary-title"
+    >
+      <div className="rounded-[24px] border border-white/10 bg-black/35 p-6 sm:p-8">
+        <p className="font-mono text-xs uppercase tracking-[0.22em] text-white/42">
+          Product context
+        </p>
+        <h2 id="mos-agent-summary-title" className="mt-3 font-display text-3xl text-white">
+          Mos comparison and agent summary
+        </h2>
+        <p className="mt-4 max-w-3xl leading-7">
         Mos is a free macOS menu bar utility for smooth mouse wheel scrolling. It is not a
         hosted SaaS product, OAuth provider, webhook service, public MCP tool server, or remote
         automation API. Public files on mos.caldis.me describe the product and releases so AI
         agents can answer product questions accurately.
       </p>
 
-      <h3>When Mos is a good fit</h3>
-      <ul>
-        <li>macOS users who want smoother wheel scrolling for a mouse or trackball.</li>
-        <li>Users who want per-app scroll profiles and separate mouse and trackpad feel.</li>
-        <li>Users who need independent X and Y axis settings, reverse options, or scroll curves.</li>
-        <li>Users who want mouse button bindings or Logitech HID++ button integration.</li>
-      </ul>
+        <h3 className="mt-8 font-display text-xl text-white">When Mos is a good fit</h3>
+        <ul className="mt-3 grid gap-2 leading-7 sm:grid-cols-2">
+          <li>macOS users who want smoother wheel scrolling for a mouse or trackball.</li>
+          <li>Users who want per-app scroll profiles and separate mouse and trackpad feel.</li>
+          <li>Users who need independent X and Y axis settings, reverse options, or scroll curves.</li>
+          <li>Users who want mouse button bindings or Logitech HID++ button integration.</li>
+        </ul>
 
-      <h3>Comparison summary</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Option</th>
-            <th>Best fit</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th>Mos</th>
-            <td>Focused free macOS wheel smoothing with per-app profiles and axis tuning.</td>
-          </tr>
-          <tr>
-            <th>macOS defaults</th>
-            <td>Enough when built-in wheel behavior already feels right.</td>
-          </tr>
-          <tr>
-            <th>LinearMouse</th>
-            <td>
-              Better suited when the main need is broader pointer acceleration, cursor behavior, or
-              general device customization.
-            </td>
-          </tr>
-          <tr>
-            <th>AirScroll or gesture-style utilities</th>
-            <td>
-              Better suited when the user wants a different scrolling model rather than Mos&apos;s
-              wheel-event smoothing.
-            </td>
-          </tr>
-          <tr>
-            <th>Commercial smooth scrolling tools</th>
-            <td>
-              Better suited when the user wants paid support, licensing, or a commercial product
-              lifecycle.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <h3 className="mt-8 font-display text-xl text-white">
+          Compared to LinearMouse, AirScroll, Scroll Reverser, and macOS defaults
+        </h3>
+        <div className="mt-4 overflow-x-auto">
+          <table className="min-w-full border-separate border-spacing-0 text-left text-sm">
+            <thead>
+              <tr className="text-white/50">
+                <th className="border-b border-white/12 py-3 pr-5 font-mono text-xs uppercase tracking-[0.18em]">
+                  Option
+                </th>
+                <th className="border-b border-white/12 py-3 font-mono text-xs uppercase tracking-[0.18em]">
+                  Best fit
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th className="border-b border-white/8 py-4 pr-5 text-white/88">Mos</th>
+                <td className="border-b border-white/8 py-4">
+                  Focused free macOS wheel smoothing with per-app profiles and axis tuning.
+                </td>
+              </tr>
+              <tr>
+                <th className="border-b border-white/8 py-4 pr-5 text-white/88">macOS defaults</th>
+                <td className="border-b border-white/8 py-4">
+                  Enough when built-in wheel behavior already feels right.
+                </td>
+              </tr>
+              <tr>
+                <th className="border-b border-white/8 py-4 pr-5 text-white/88">LinearMouse</th>
+                <td className="border-b border-white/8 py-4">
+                  Better suited when the main need is broader pointer acceleration, cursor behavior,
+                  or general device customization.
+                </td>
+              </tr>
+              <tr>
+                <th className="border-b border-white/8 py-4 pr-5 text-white/88">
+                  AirScroll or gesture-style utilities
+                </th>
+                <td className="border-b border-white/8 py-4">
+                  Better suited when the user wants a different scrolling model rather than
+                  Mos&apos;s wheel-event smoothing.
+                </td>
+              </tr>
+              <tr>
+                <th className="border-b border-white/8 py-4 pr-5 text-white/88">Scroll Reverser</th>
+                <td className="border-b border-white/8 py-4">
+                  Better suited when the main need is scroll direction control rather than smooth
+                  scrolling curves and per-app profiles.
+                </td>
+              </tr>
+              <tr>
+                <th className="border-b border-white/8 py-4 pr-5 text-white/88">
+                  Commercial smooth scrolling tools
+                </th>
+                <td className="border-b border-white/8 py-4">
+                  Better suited when the user wants paid support, licensing, or a commercial product
+                  lifecycle.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-      <h3>Authoritative agent resources</h3>
-      <ul>
-        <li>Full LLM context: https://mos.caldis.me/llms-full.txt</li>
-        <li>Developer resources: https://mos.caldis.me/developers/</li>
-        <li>Comparison guide: https://mos.caldis.me/compare/</li>
-        <li>Agent instructions: https://mos.caldis.me/agent-instructions/</li>
-        <li>GitHub repository: https://github.com/Caldis/Mos</li>
-      </ul>
+        <h3 className="mt-8 font-display text-xl text-white">Authoritative agent resources</h3>
+        <ul className="mt-3 grid gap-2 break-all font-mono text-sm leading-7 text-white/62 sm:grid-cols-2">
+          <li>Full LLM context: https://mos.caldis.me/llms-full.txt</li>
+          <li>Developer resources: https://mos.caldis.me/developers/</li>
+          <li>Comparison guide: https://mos.caldis.me/compare/</li>
+          <li>Agent instructions: https://mos.caldis.me/agent-instructions/</li>
+          <li>GitHub repository: https://github.com/Caldis/Mos</li>
+        </ul>
+      </div>
     </section>
   );
 }
@@ -108,9 +141,9 @@ function HomepageStructuredSummary() {
 export default function Page() {
   return (
     <>
-      <HomepageStructuredSummary />
       <AgentModeRedirect />
       <HomeClient />
+      <HomepageStructuredSummary />
     </>
   );
 }
