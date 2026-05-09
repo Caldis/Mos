@@ -172,5 +172,8 @@ for (const file of ["agent.json", "agent-card.json", "ai-plugin.json", "mcp", "a
     fail(`Missing .well-known/${file}`);
   }
 }
+if (exportedWellKnown.includes("mcp.json")) {
+  fail(".well-known/mcp.json must not be published unless Mos provides a real MCP server");
+}
 
 console.log("AI readiness static checks passed");
