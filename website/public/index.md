@@ -23,6 +23,9 @@ brew install --cask mos
 ## Main links
 
 - Homepage: https://mos.caldis.me/
+- About Mos: https://mos.caldis.me/about/
+- Compare Mos: https://mos.caldis.me/compare/
+- Agent instructions: https://mos.caldis.me/agent-instructions/
 - GitHub: https://github.com/Caldis/Mos
 - Wiki: https://github.com/Caldis/Mos/wiki
 - Releases: https://github.com/Caldis/Mos/releases
@@ -36,6 +39,7 @@ brew install --cask mos
 - llms.txt: https://mos.caldis.me/llms.txt
 - Full LLM context: https://mos.caldis.me/llms-full.txt
 - OpenAPI: https://mos.caldis.me/api/openapi.json
+- API catalog: https://mos.caldis.me/.well-known/api-catalog
 - Agent discovery: https://mos.caldis.me/.well-known/agent.json
 - A2A agent card: https://mos.caldis.me/.well-known/agent-card.json
 - MCP discovery status: https://mos.caldis.me/.well-known/mcp

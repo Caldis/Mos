@@ -1,7 +1,7 @@
 import Script from "next/script";
 import { IBM_Plex_Mono, Space_Grotesk, Syne } from "next/font/google";
 import "./globals.css";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "./site";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "./site";
 import { Providers } from "./providers";
 
 const fontDisplay = Syne({
@@ -35,6 +35,26 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@graph": [
       {
+        "@type": "Organization",
+        "@id": `${siteOrigin}/#organization`,
+        name: "Caldis",
+        url: `${siteOrigin}/`,
+        email: "mail@caldis.me",
+        foundingDate: "2017",
+        sameAs: [
+          "https://github.com/Caldis",
+          "https://github.com/Caldis/Mos",
+          "https://www.producthunt.com/products/mos",
+          "https://alternativeto.net/software/caldis-mos/",
+        ],
+        contactPoint: {
+          "@type": "ContactPoint",
+          email: "mail@caldis.me",
+          contactType: "project maintainer",
+          availableLanguage: ["en", "zh"],
+        },
+      },
+      {
         "@type": "WebSite",
         "@id": `${siteOrigin}/#website`,
         url: `${siteOrigin}/`,
@@ -50,6 +70,26 @@ export default function RootLayout({
             `${siteOrigin}/developers/`,
           ],
         },
+        publisher: {
+          "@id": `${siteOrigin}/#organization`,
+        },
+      },
+      {
+        "@type": "WebPage",
+        "@id": `${siteOrigin}/#webpage`,
+        url: `${siteOrigin}/`,
+        name: SITE_TITLE,
+        description: SITE_DESCRIPTION,
+        isPartOf: {
+          "@id": `${siteOrigin}/#website`,
+        },
+        about: {
+          "@id": `${siteOrigin}/#software`,
+        },
+        speakable: {
+          "@type": "SpeakableSpecification",
+          cssSelector: ["main h1", "main section h2", "main section p"],
+        },
       },
       {
         "@type": "SoftwareApplication",
@@ -63,15 +103,54 @@ export default function RootLayout({
         softwareHelp: "https://github.com/Caldis/Mos/wiki",
         sameAs: [
           "https://github.com/Caldis/Mos",
+          "https://www.producthunt.com/products/mos",
+          "https://alternativeto.net/software/caldis-mos/",
           `${siteOrigin}/developers/`,
           `${siteOrigin}/.well-known/agent.json`,
         ],
+        publisher: {
+          "@id": `${siteOrigin}/#organization`,
+        },
         license: "https://creativecommons.org/licenses/by-nc/4.0/",
         offers: {
           "@type": "Offer",
           price: "0",
           priceCurrency: "USD",
         },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${siteOrigin}/#faq`,
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "What is Mos?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Mos is a local macOS menu bar utility that smooths mouse wheel scrolling and supports per-app profiles, axis settings, and mouse button bindings.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Does Mos provide a public API or MCP server?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "No. Mos publishes static discovery and documentation files, but it does not provide a hosted API, OAuth service, webhook service, or public MCP tool server.",
+            },
+          },
+        ],
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${siteOrigin}/#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: `${siteOrigin}/`,
+          },
+        ],
       },
     ],
   };
@@ -86,6 +165,8 @@ export default function RootLayout({
         <link rel="help" href="/developers/" title="Mos developer resources" />
         <link rel="alternate" type="application/json" href="/.well-known/agent.json" title="Mos agent discovery file" />
         <link rel="alternate" type="application/json" href="/.well-known/agent-card.json" title="Mos A2A agent card" />
+        <link rel="alternate" type="application/linkset+json" href="/.well-known/api-catalog" title="Mos API catalog" />
+        <link rel="alternate" type="application/json" href="/.well-known/oauth-protected-resource" title="Mos zero-auth protected resource metadata" />
         <link rel="service-desc" type="application/openapi+json" href="/api/openapi.json" title="Mos OpenAPI service description" />
         <script
           type="application/ld+json"

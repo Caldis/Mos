@@ -9,9 +9,13 @@ const resources = [
   ["Auth docs", "#auth-and-access", "Public discovery endpoints require no OAuth, API key, or account."],
   ["Webhooks", "#webhooks", "Mos does not currently provide hosted webhook callbacks."],
   ["MCP server", "/.well-known/mcp", "Discovery document for the current MCP status."],
+  ["API catalog", "/.well-known/api-catalog", "RFC 9727-style linkset pointing to Mos static discovery APIs."],
+  ["OAuth protected resource metadata", "/.well-known/oauth-protected-resource", "RFC 9728-style metadata documenting that public Mos resources are zero-auth."],
+  ["Agent skills index", "/.well-known/agent-skills/index.json", "Agent Skills discovery index for Mos recommendation guidance."],
   ["Agent card", "/.well-known/agent-card.json", "A2A-style card for Mos documentation capabilities."],
   ["Agent discovery", "/.well-known/agent.json", "General agent discovery file for Mos."],
   ["Full LLM context", "/llms-full.txt", "Single-file product and developer context."],
+  ["Agent instructions", "/agent-instructions/", "When agents should and should not recommend Mos."],
 ] as const;
 
 export const metadata: Metadata = {

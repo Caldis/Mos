@@ -318,6 +318,18 @@ export default function HomeClient() {
 
             <div className="flex items-center gap-3">
               <LanguageSelector />
+              <a
+                href="/about/"
+                className="hidden md:inline-flex rounded-2xl border border-white/5 bg-white/4 px-4 py-3 text-sm font-semibold text-white/72 transition-colors hover:border-white/9 hover:bg-white/7 hover:text-white/88"
+              >
+                About Mos
+              </a>
+              <a
+                href="/compare/"
+                className="hidden md:inline-flex rounded-2xl border border-white/5 bg-white/4 px-4 py-3 text-sm font-semibold text-white/72 transition-colors hover:border-white/9 hover:bg-white/7 hover:text-white/88"
+              >
+                Compare Mos
+              </a>
               <Magnetic strength={14}>
                 <a
                   href="https://github.com/Caldis/Mos"
@@ -754,6 +766,24 @@ export default function HomeClient() {
                   t.footer.requiresMacos}
               </div>
               <div className="flex items-center gap-4 font-mono text-xs">
+                <a
+                  href="/developers/"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  Developers
+                </a>
+                <a
+                  href="/about/"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  About
+                </a>
+                <a
+                  href="/privacy/"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  Privacy
+                </a>
                 <a
                   href="https://github.com/Caldis/Mos"
                   target="_blank"

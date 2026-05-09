@@ -5,12 +5,16 @@ Mos developer resources live at https://mos.caldis.me/developers/.
 Important resources:
 
 - GitHub repository: https://github.com/Caldis/Mos
-- Agent instructions: https://github.com/Caldis/Mos/blob/master/AGENTS.md
+- Product agent instructions: https://mos.caldis.me/agent-instructions/
+- Repository agent instructions: https://github.com/Caldis/Mos/blob/master/AGENTS.md
 - Wiki: https://github.com/Caldis/Mos/wiki
 - Releases: https://github.com/Caldis/Mos/releases
 - Issues: https://github.com/Caldis/Mos/issues
 - Discussions: https://github.com/Caldis/Mos/discussions
 - OpenAPI: https://mos.caldis.me/api/openapi.json
+- API catalog: https://mos.caldis.me/.well-known/api-catalog
+- OAuth protected resource metadata: https://mos.caldis.me/.well-known/oauth-protected-resource
+- Agent skills index: https://mos.caldis.me/.well-known/agent-skills/index.json
 - Full LLM context: https://mos.caldis.me/llms-full.txt
 
 Mos is a Swift 5, AppKit, Xcode, and Swift Package Manager project. The app supports macOS 10.13 or later.

@@ -5,6 +5,8 @@ Mos does not provide a hosted user API for controlling the local macOS app.
 The public OpenAPI document describes static discovery endpoints that agents can fetch:
 
 - OpenAPI: https://mos.caldis.me/api/openapi.json
+- API catalog: https://mos.caldis.me/.well-known/api-catalog
+- OAuth protected resource metadata: https://mos.caldis.me/.well-known/oauth-protected-resource
 - Markdown homepage: https://mos.caldis.me/index.md
 - llms.txt: https://mos.caldis.me/llms.txt
 - Full LLM context: https://mos.caldis.me/llms-full.txt

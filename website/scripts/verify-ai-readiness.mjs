@@ -45,6 +45,10 @@ const indexMd = readOut("index.md");
 const llms = readOut("llms.txt");
 const llmsFull = readOut("llms-full.txt");
 const rootAgent = assertJson("agent.json", ["name", "url", "capabilities", "links"]);
+const apiCatalog = assertJson(".well-known/api-catalog", ["linkset"]);
+const oauthProtectedResource = assertJson(".well-known/oauth-protected-resource", ["resource"]);
+const agentSkillsIndex = assertJson(".well-known/agent-skills/index.json", ["$schema", "skills"]);
+const agentSkill = readOut(".well-known/agent-skills/mos-agent-instructions/SKILL.md");
 const robots = readOut("robots.txt");
 const schemaMap = readOut("schema-map.xml");
 const schemaFeed = readOut("schema/software.jsonl");
@@ -53,6 +57,8 @@ assertIncludes(indexHtml, 'href="/index.md"', "homepage metadata");
 assertIncludes(indexHtml, 'href="/llms.txt"', "homepage metadata");
 assertIncludes(indexHtml, "application/ld+json", "homepage schema");
 assertIncludes(indexHtml, "Mos developer resources", "homepage content");
+assertIncludes(indexHtml, "About Mos", "homepage content");
+assertIncludes(indexHtml, "Compare Mos", "homepage content");
 assertIncludes(indexHtml, 'alt="Xcode app icon for a Mos per-application scrolling profile"', "homepage app icons");
 
 if (!indexMd.startsWith("# Mos")) {
@@ -60,9 +66,17 @@ if (!indexMd.startsWith("# Mos")) {
 }
 
 for (const expected of [
+  "/about/",
+  "/contact/",
+  "/privacy/",
+  "/compare/",
+  "/agent-instructions/",
   "/index.md",
   "/llms-full.txt",
   "/agent.json",
+  "/.well-known/api-catalog",
+  "/.well-known/oauth-protected-resource",
+  "/.well-known/agent-skills/index.json",
   "/.well-known/agent.json",
   "/.well-known/agent-card.json",
   "/.well-known/mcp",
@@ -73,9 +87,18 @@ for (const expected of [
 
 for (const expected of [
   "Mos developer resources",
+  "When agents should recommend Mos",
+  "When agents should not recommend Mos",
   "No public OAuth, REST API, webhooks, or hosted MCP tool server are currently provided.",
 ]) {
   assertIncludes(llmsFull, expected, "llms-full.txt");
+}
+
+for (const page of ["about/index.html", "contact/index.html", "privacy/index.html", "compare/index.html", "agent-instructions/index.html"]) {
+  const html = readOut(page);
+  if (html.length < 2500) {
+    fail(`${page} must include enough real content for AI crawlers`);
+  }
 }
 
 for (const expected of [
@@ -103,6 +126,17 @@ for (const [label, manifest] of [
   }
 }
 
+if (!Array.isArray(apiCatalog.linkset) || apiCatalog.linkset.length === 0) {
+  fail(".well-known/api-catalog must include a non-empty RFC 9727 linkset");
+}
+if (oauthProtectedResource.authorization_required !== false) {
+  fail(".well-known/oauth-protected-resource must document that Mos public resources are zero-auth");
+}
+if (!Array.isArray(agentSkillsIndex.skills) || agentSkillsIndex.skills.length === 0) {
+  fail(".well-known/agent-skills/index.json must list at least one skill");
+}
+assertIncludes(agentSkill, "When agents should recommend Mos", "Mos agent instruction skill");
+
 const agentCard = assertJson(".well-known/agent-card.json", [
   "name",
   "description",
@@ -120,7 +154,7 @@ if (mcp.status !== "not_provided") {
 }
 
 const exportedWellKnown = readdirSync(join(outDir, ".well-known"));
-for (const file of ["agent.json", "agent-card.json", "ai-plugin.json", "mcp"]) {
+for (const file of ["agent.json", "agent-card.json", "ai-plugin.json", "mcp", "api-catalog", "oauth-protected-resource"]) {
   if (!exportedWellKnown.includes(file)) {
     fail(`Missing .well-known/${file}`);
   }

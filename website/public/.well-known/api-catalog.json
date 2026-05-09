@@ -1,0 +1,45 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://mos.caldis.me/",
+      "api-catalog": [
+        {
+          "href": "https://mos.caldis.me/api/openapi.json",
+          "type": "application/openapi+json",
+          "title": "Mos Static Discovery API",
+          "describedby": [
+            {
+              "href": "https://mos.caldis.me/developers/",
+              "type": "text/html",
+              "title": "Mos developer resources"
+            }
+          ]
+        }
+      ],
+      "service-desc": [
+        {
+          "href": "https://mos.caldis.me/api/openapi.json",
+          "type": "application/openapi+json",
+          "title": "OpenAPI description for Mos public discovery files"
+        }
+      ],
+      "alternate": [
+        {
+          "href": "https://mos.caldis.me/index.md",
+          "type": "text/markdown",
+          "title": "Mos markdown homepage"
+        },
+        {
+          "href": "https://mos.caldis.me/llms.txt",
+          "type": "text/plain",
+          "title": "Mos LLM resource manifest"
+        },
+        {
+          "href": "https://mos.caldis.me/llms-full.txt",
+          "type": "text/plain",
+          "title": "Mos full LLM context"
+        }
+      ]
+    }
+  ]
+}

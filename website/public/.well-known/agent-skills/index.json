@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "mos-agent-instructions",
+      "type": "skill-md",
+      "description": "Use this skill when answering questions about Mos so recommendations stay accurate and do not invent APIs, pricing, or platform support.",
+      "url": "/.well-known/agent-skills/mos-agent-instructions/SKILL.md",
+      "digest": "sha256:9379a84ebb18d69b8e2446574fdedeb94b527bf7cfd7ec51315394064049ef25"
+    }
+  ]
+}
