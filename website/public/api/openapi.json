@@ -1,0 +1,209 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mos Static Discovery API",
+    "version": "1.0.0",
+    "description": "Static, unauthenticated discovery endpoints for Mos documentation, agent metadata, schema feeds, and release context. This API does not provide remote control over the local Mos macOS app."
+  },
+  "servers": [
+    {
+      "url": "https://mos.caldis.me"
+    }
+  ],
+  "security": [],
+  "paths": {
+    "/index.md": {
+      "get": {
+        "summary": "Markdown homepage",
+        "operationId": "getMarkdownHomepage",
+        "responses": {
+          "200": {
+            "description": "Markdown summary of Mos.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llms.txt": {
+      "get": {
+        "summary": "LLM resource manifest",
+        "operationId": "getLlmsTxt",
+        "responses": {
+          "200": {
+            "description": "Curated AI resource manifest.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llms-full.txt": {
+      "get": {
+        "summary": "Full LLM context",
+        "operationId": "getLlmsFullTxt",
+        "responses": {
+          "200": {
+            "description": "Single-file Mos product and developer context.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/agent.json": {
+      "get": {
+        "summary": "Agent discovery file",
+        "operationId": "getAgentDiscovery",
+        "responses": {
+          "200": {
+            "description": "General Mos agent discovery metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentDiscovery"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/agent-card.json": {
+      "get": {
+        "summary": "A2A agent card",
+        "operationId": "getAgentCard",
+        "responses": {
+          "200": {
+            "description": "A2A-style Mos documentation agent card.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/mcp": {
+      "get": {
+        "summary": "MCP discovery status",
+        "operationId": "getMcpDiscovery",
+        "responses": {
+          "200": {
+            "description": "Current Mos MCP status. Mos does not host an MCP tool server.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "status",
+                    "documentation_url"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "const": "not_provided"
+                    },
+                    "documentation_url": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schema-map.xml": {
+      "get": {
+        "summary": "Schema feed map",
+        "operationId": "getSchemaMap",
+        "responses": {
+          "200": {
+            "description": "XML schema map pointing to structured data feeds.",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schema/software.jsonl": {
+      "get": {
+        "summary": "Software schema feed",
+        "operationId": "getSoftwareSchemaFeed",
+        "responses": {
+          "200": {
+            "description": "JSONL feed containing schema.org SoftwareApplication data for Mos.",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AgentDiscovery": {
+        "type": "object",
+        "required": [
+          "name",
+          "url",
+          "capabilities",
+          "links"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "links": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

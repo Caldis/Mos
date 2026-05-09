@@ -1,0 +1,22 @@
+# Mos API context
+
+Mos does not provide a hosted user API for controlling the local macOS app.
+
+The public OpenAPI document describes static discovery endpoints that agents can fetch:
+
+- OpenAPI: https://mos.caldis.me/api/openapi.json
+- Markdown homepage: https://mos.caldis.me/index.md
+- llms.txt: https://mos.caldis.me/llms.txt
+- Full LLM context: https://mos.caldis.me/llms-full.txt
+- Agent discovery: https://mos.caldis.me/.well-known/agent.json
+- A2A agent card: https://mos.caldis.me/.well-known/agent-card.json
+- MCP discovery status: https://mos.caldis.me/.well-known/mcp
+- Schema map: https://mos.caldis.me/schema-map.xml
+
+Authentication: none for public static discovery endpoints.
+
+OAuth: not provided.
+
+Webhooks: not provided.
+
+Hosted MCP tool server: not provided.

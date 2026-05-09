@@ -9,6 +9,7 @@ export const ko: Translations = {
     closeDialog: "대화상자 닫기",
     githubAria: "Mos GitHub",
     appIconAlt: "Mos 앱 아이콘",
+    appProfileIconAlt: "Mos 앱별 스크롤 프로필용 {app} 앱 아이콘",
     scrollCurveGraph: "스크롤 커브 그래프",
   },
   nav: {

@@ -9,6 +9,7 @@ export const pl: Translations = {
     closeDialog: "Zamknij okno dialogowe",
     githubAria: "Mos na GitHubie",
     appIconAlt: "Ikona aplikacji Mos",
+    appProfileIconAlt: "Ikona aplikacji {app} dla profilu przewijania Mos",
     scrollCurveGraph: "Wykres krzywej przewijania",
   },
   nav: {

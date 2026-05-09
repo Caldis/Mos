@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemamap xmlns="https://schema.org/">
+  <DataFeed>
+    <name>Mos SoftwareApplication schema feed</name>
+    <url>https://mos.caldis.me/schema/software.jsonl</url>
+    <encodingFormat>application/ld+jsonlines</encodingFormat>
+    <about>SoftwareApplication</about>
+  </DataFeed>
+</schemamap>

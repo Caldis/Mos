@@ -9,6 +9,7 @@ export const ja: Translations = {
     closeDialog: "ダイアログを閉じる",
     githubAria: "Mos の GitHub",
     appIconAlt: "Mos アプリアイコン",
+    appProfileIconAlt: "Mos のアプリ別スクロールプロファイル用 {app} アプリアイコン",
     scrollCurveGraph: "スクロールカーブのグラフ",
   },
   nav: {

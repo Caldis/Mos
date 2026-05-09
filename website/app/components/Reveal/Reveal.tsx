@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ReactNode, useRef } from "react";
+import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
 
 const SPRING = { type: "spring" as const, stiffness: 100, damping: 20 };
 
@@ -20,7 +21,7 @@ export function Reveal({
   delayMs?: number;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
   const inView = useInView(ref, {
     once: true,
     margin: "40px 0px -10% 0px",
@@ -31,9 +32,9 @@ export function Reveal({
       ref={ref}
       className={className}
       variants={variants}
-      initial={shouldReduceMotion ? "visible" : "hidden"}
-      animate={inView ? "visible" : "hidden"}
-      transition={{ ...SPRING, delay: delayMs / 1000 }}
+      initial={false}
+      animate={shouldReduceMotion || inView ? "visible" : "hidden"}
+      transition={shouldReduceMotion ? { duration: 0 } : { ...SPRING, delay: delayMs / 1000 }}
     >
       {children}
     </motion.div>

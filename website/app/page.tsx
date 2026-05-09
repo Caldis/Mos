@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AgentModeRedirect from "./agent-mode-redirect";
 import HomeClient from "./home-client";
 import { OG_IMAGE_PATH, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "./site";
 
@@ -33,6 +34,11 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <HomeClient />;
+  return (
+    <>
+      <AgentModeRedirect />
+      <HomeClient />
+    </>
+  );
 }
 

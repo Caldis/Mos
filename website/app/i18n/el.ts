@@ -9,6 +9,7 @@ export const el: Translations = {
     closeDialog: "Κλείσιμο διαλόγου",
     githubAria: "Mos στο GitHub",
     appIconAlt: "Εικονίδιο εφαρμογής Mos",
+    appProfileIconAlt: "Εικονίδιο {app} για προφίλ κύλισης Mos ανά εφαρμογή",
     scrollCurveGraph: "Γράφημα καμπύλης κύλισης",
   },
   nav: {

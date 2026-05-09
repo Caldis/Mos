@@ -1,0 +1,108 @@
+# Mos full LLM context
+
+Mos is a free, open-source macOS menu bar utility. It makes mouse wheel scrolling smoother on macOS while keeping the precision and directness of a mouse. Mos is useful for people who prefer a mouse but want scrolling that feels closer to a trackpad.
+
+## Product summary
+
+- Name: Mos
+- Homepage: https://mos.caldis.me/
+- Repository: https://github.com/Caldis/Mos
+- Platform: macOS 10.13 or later
+- License: CC BY-NC 4.0
+- Distribution: GitHub Releases and Homebrew cask
+- App type: local macOS menu bar utility
+
+## Core capabilities
+
+- Smooth scrolling: Mos intercepts mouse wheel events and turns raw deltas into smoother motion.
+- Scroll tuning: users can tune step, gain, and duration.
+- Independent axes: vertical and horizontal scroll can be configured separately.
+- Reverse direction: scroll direction can be reversed per axis.
+- Per-app profiles: each app can inherit defaults or override scroll and button behavior.
+- Scroll hotkeys: users can bind keys for acceleration, axis conversion, and temporarily disabling smoothing.
+- Mouse button bindings: users can record mouse, keyboard, or custom events and bind them to actions.
+- Action library: built-in actions include Mission Control, Spaces, screenshots, Finder operations, document editing, mouse scrolling, apps, scripts, and files.
+- Logitech HID++ support: Mos can handle button events from Bolt, Unifying, and Bluetooth direct-connected Logitech devices.
+
+## Install
+
+Manual install:
+
+1. Download the latest release from https://github.com/Caldis/Mos/releases/latest.
+2. Unzip the archive.
+3. Move `Mos.app` into `/Applications`.
+4. Launch Mos.
+5. Grant macOS Accessibility permission if prompted.
+
+Homebrew install:
+
+```bash
+brew install --cask mos
+```
+
+Homebrew update:
+
+```bash
+brew update
+brew upgrade --cask mos
+```
+
+## Troubleshooting
+
+- If Mos does not affect scrolling, confirm that macOS Accessibility permission is enabled for Mos.
+- If an app needs different behavior, use per-app profiles instead of changing the global defaults.
+- If a Logitech button does not work, check whether the device is connected through Bolt, Unifying, or Bluetooth and whether the relevant button event is visible to Mos.
+- For known issues and setup notes, use the wiki: https://github.com/Caldis/Mos/wiki.
+
+## Public resources
+
+- Homepage: https://mos.caldis.me/
+- Markdown homepage: https://mos.caldis.me/index.md
+- Developer resources: https://mos.caldis.me/developers/
+- Agent mode view: https://mos.caldis.me/agent/
+- GitHub repository: https://github.com/Caldis/Mos
+- GitHub wiki: https://github.com/Caldis/Mos/wiki
+- Discussions: https://github.com/Caldis/Mos/discussions
+- Issues: https://github.com/Caldis/Mos/issues
+- Releases: https://github.com/Caldis/Mos/releases
+- Latest release: https://github.com/Caldis/Mos/releases/latest
+- Appcast: https://mos.caldis.me/appcast.xml
+
+## Mos developer resources
+
+These URLs are stable entry points for AI agents and developer tools:
+
+- llms.txt: https://mos.caldis.me/llms.txt
+- Full LLM context: https://mos.caldis.me/llms-full.txt
+- Product docs llms.txt: https://mos.caldis.me/docs/llms.txt
+- Developer llms.txt: https://mos.caldis.me/developers/llms.txt
+- API llms.txt: https://mos.caldis.me/api/llms.txt
+- Agent discovery file: https://mos.caldis.me/.well-known/agent.json
+- A2A agent card: https://mos.caldis.me/.well-known/agent-card.json
+- AI plugin manifest: https://mos.caldis.me/.well-known/ai-plugin.json
+- MCP discovery status: https://mos.caldis.me/.well-known/mcp
+- OpenAPI service description: https://mos.caldis.me/api/openapi.json
+- Schema map: https://mos.caldis.me/schema-map.xml
+- Software schema feed: https://mos.caldis.me/schema/software.jsonl
+
+## Auth, API, webhooks, and MCP status
+
+Mos is a local macOS utility, not a hosted SaaS platform. Public documentation, release metadata, markdown files, discovery files, OpenAPI, and schema feeds require no authentication.
+
+No public OAuth, REST API, webhooks, or hosted MCP tool server are currently provided.
+
+The OpenAPI document describes static discovery endpoints that agents can fetch. It does not describe remote control over the user's local Mos app.
+
+The MCP well-known document records that Mos does not currently host an MCP tool server. Agents should not infer an MCP endpoint beyond the documented static discovery file.
+
+## Contribution guidance
+
+Mos handles system input, Accessibility permission, Logitech/HID devices, and persisted user configuration. Small focused changes are preferred. Changes involving Logi/HID, Accessibility, signing, notarization, app updates, real-device testing, or persisted formats carry higher risk and should be discussed before large implementation work.
+
+Agent instructions for the repository are published in `AGENTS.md` at https://github.com/Caldis/Mos/blob/master/AGENTS.md.
+
+## License
+
+Copyright (c) 2017-2026 Caldis. All rights reserved.
+
+Mos is licensed under CC BY-NC 4.0. Do not upload Mos to the Mac App Store.

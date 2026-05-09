@@ -9,6 +9,7 @@ export const tr: Translations = {
     closeDialog: "İletişim penceresini kapat",
     githubAria: "GitHub'da Mos",
     appIconAlt: "Mos uygulama simgesi",
+    appProfileIconAlt: "Mos uygulama bazlı kaydırma profili için {app} simgesi",
     scrollCurveGraph: "Kaydırma eğrisi grafiği",
   },
   nav: {

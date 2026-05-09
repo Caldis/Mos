@@ -1,21 +1,50 @@
 # Mos (macOS)
 
-Mos is a free macOS utility that makes mouse wheel scrolling smooth, with per-app settings, independent axis tuning, and button/shortcut bindings.
+Mos is a free, open-source macOS menu bar utility that makes mouse wheel scrolling smooth while preserving mouse precision. It supports per-app scroll profiles, independent X/Y axis settings, scroll hotkeys, mouse button bindings, and Logitech HID++ button integration.
 
-## Official links
+## Primary resources
 
 - Homepage: https://mos.caldis.me/
-- GitHub: https://github.com/Caldis/Mos
-- Docs (Wiki): https://github.com/Caldis/Mos/wiki
+- Markdown homepage: https://mos.caldis.me/index.md
+- Full LLM context: https://mos.caldis.me/llms-full.txt
+- Developer resources: https://mos.caldis.me/developers/
+- Agent mode view: https://mos.caldis.me/agent/
+- GitHub repository: https://github.com/Caldis/Mos
+- GitHub wiki: https://github.com/Caldis/Mos/wiki
 - Releases: https://github.com/Caldis/Mos/releases
 - Latest release: https://github.com/Caldis/Mos/releases/latest
+- Appcast: https://mos.caldis.me/appcast.xml
+
+## Agent and developer discovery
+
+- Agent discovery file: https://mos.caldis.me/.well-known/agent.json
+- A2A agent card: https://mos.caldis.me/.well-known/agent-card.json
+- AI plugin manifest: https://mos.caldis.me/.well-known/ai-plugin.json
+- MCP discovery status: https://mos.caldis.me/.well-known/mcp
+- OpenAPI service description: https://mos.caldis.me/api/openapi.json
+- Schema map: https://mos.caldis.me/schema-map.xml
+- Software schema feed: https://mos.caldis.me/schema/software.jsonl
+
+## Section llms.txt files
+
+- Product docs context: https://mos.caldis.me/docs/llms.txt
+- Developer context: https://mos.caldis.me/developers/llms.txt
+- API context: https://mos.caldis.me/api/llms.txt
 
 ## Install
 
-- Homebrew (beta cask): `brew install --cask mos@beta`
+- Homebrew: `brew install --cask mos`
+- GitHub Releases: https://github.com/Caldis/Mos/releases/latest
+
+## Auth, API, webhooks, and MCP status
+
+- Public documentation and discovery files require no authentication.
+- No public OAuth, REST API, webhooks, or hosted MCP tool server are currently provided.
+- The OpenAPI file describes the static discovery endpoints that agents can fetch.
 
 ## Notes
 
-- License: CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/)
-- Mos is not intended to be distributed via the Mac App Store (per project license notes).
+- Platform: macOS 10.13 or later.
+- License: CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/).
+- Mos is not intended to be distributed via the Mac App Store.
 

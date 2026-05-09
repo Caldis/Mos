@@ -1,0 +1,20 @@
+# Mos developer context
+
+Mos developer resources live at https://mos.caldis.me/developers/.
+
+Important resources:
+
+- GitHub repository: https://github.com/Caldis/Mos
+- Agent instructions: https://github.com/Caldis/Mos/blob/master/AGENTS.md
+- Wiki: https://github.com/Caldis/Mos/wiki
+- Releases: https://github.com/Caldis/Mos/releases
+- Issues: https://github.com/Caldis/Mos/issues
+- Discussions: https://github.com/Caldis/Mos/discussions
+- OpenAPI: https://mos.caldis.me/api/openapi.json
+- Full LLM context: https://mos.caldis.me/llms-full.txt
+
+Mos is a Swift 5, AppKit, Xcode, and Swift Package Manager project. The app supports macOS 10.13 or later.
+
+Public docs and discovery endpoints require no authentication.
+
+No public OAuth, webhooks, or hosted MCP tool server are currently provided.

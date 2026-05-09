@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build && bash scripts/prepare-pages-artifact.sh",
+    "build": "next build && node scripts/prepare-pages-artifact.mjs",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check:ai": "node scripts/verify-ai-readiness.mjs",
+    "check:motion": "node scripts/verify-motion-hydration.mjs"
   },
   "dependencies": {
     "framer-motion": "^11.18.2",
@@ -28,7 +30,6 @@
     "typescript": "^5"
   },
   "overrides": {
-    "minimatch": "^10.2.1",
-    "ajv": "^8.18.0"
+    "minimatch": "^10.2.1"
   }
 }

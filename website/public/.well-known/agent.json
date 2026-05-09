@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "name": "Mos",
+  "description": "Mos is a free, open-source macOS utility for smooth mouse wheel scrolling, per-app profiles, independent axes, and mouse button bindings.",
+  "url": "https://mos.caldis.me/agent/",
+  "homepage": "https://mos.caldis.me/",
+  "repository": "https://github.com/Caldis/Mos",
+  "authentication": {
+    "type": "none",
+    "description": "Public documentation and discovery endpoints require no account, OAuth flow, API key, or cookie."
+  },
+  "capabilities": [
+    {
+      "id": "product_context",
+      "name": "Product context",
+      "description": "Explain Mos features, supported macOS versions, install paths, and project links."
+    },
+    {
+      "id": "release_lookup",
+      "name": "Release lookup",
+      "description": "Locate GitHub releases, latest downloads, and the public Sparkle appcast."
+    },
+    {
+      "id": "developer_discovery",
+      "name": "Developer discovery",
+      "description": "Find llms.txt, full LLM context, OpenAPI, schema feeds, and agent discovery files."
+    }
+  ],
+  "links": {
+    "llms": "https://mos.caldis.me/llms.txt",
+    "llms_full": "https://mos.caldis.me/llms-full.txt",
+    "markdown_homepage": "https://mos.caldis.me/index.md",
+    "developer_resources": "https://mos.caldis.me/developers/",
+    "openapi": "https://mos.caldis.me/api/openapi.json",
+    "a2a_agent_card": "https://mos.caldis.me/.well-known/agent-card.json",
+    "mcp_discovery": "https://mos.caldis.me/.well-known/mcp",
+    "schema_map": "https://mos.caldis.me/schema-map.xml"
+  },
+  "service_status": {
+    "public_rest_api": "static-discovery-only",
+    "oauth": "not_provided",
+    "webhooks": "not_provided",
+    "hosted_mcp_server": "not_provided"
+  }
+}

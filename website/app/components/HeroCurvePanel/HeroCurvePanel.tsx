@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
 
 const SPRING = { type: "spring" as const, stiffness: 80, damping: 18 };
 
@@ -17,14 +18,14 @@ const PARAMS = [
 ];
 
 export function HeroCurvePanel() {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
 
   return (
     <motion.div
       className="hidden md:block w-[280px] lg:w-[320px] xl:w-[340px] shrink-0"
-      initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ ...SPRING, delay: 0.34 }}
+      transition={shouldReduceMotion ? { duration: 0 } : { ...SPRING, delay: 0.34 }}
     >
       <motion.div
         className="relative rounded-[var(--radius-card)] glass shadow-elevated border border-white/10 overflow-hidden p-5"
@@ -90,12 +91,7 @@ export function HeroCurvePanel() {
               strokeLinejoin="round"
               pathLength={1}
               strokeDasharray={1}
-              strokeDashoffset={shouldReduceMotion ? 0 : 1}
-              style={
-                shouldReduceMotion
-                  ? {}
-                  : { animation: "stroke-in 1200ms var(--ease-out) 500ms both" }
-              }
+              strokeDashoffset={0}
             />
           </svg>
         </div>

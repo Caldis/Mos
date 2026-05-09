@@ -12,9 +12,10 @@ import { CopyButton } from "./components/CopyButton/CopyButton";
 import { useI18n } from "./i18n/context";
 import { format } from "./i18n/format";
 import { useGithubRelease } from "./services/github";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { HeroCurvePanel } from "./components/HeroCurvePanel/HeroCurvePanel";
 import { BentoCard } from "./components/BentoCard/BentoCard";
+import { useHydratedReducedMotion } from "./hooks/useHydratedReducedMotion";
 
 const FALLBACK_RELEASE_LINK = "https://github.com/Caldis/Mos/releases/latest";
 
@@ -162,15 +163,15 @@ const HERO_SPRING = { type: "spring" as const, stiffness: 100, damping: 20 };
 
 function heroMotion(delayS: number, shouldReduceMotion: boolean | null) {
   return {
-    initial: shouldReduceMotion ? (false as const) : { opacity: 0, y: 24 },
+    initial: false as const,
     animate: { opacity: 1, y: 0 },
-    transition: { ...HERO_SPRING, delay: delayS },
+    transition: shouldReduceMotion ? { duration: 0 } : { ...HERO_SPRING, delay: delayS },
   };
 }
 
 export default function HomeClient() {
   const { t } = useI18n();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
   const { data: release } = useGithubRelease();
 
   const [axesDemo, setAxesDemo] = useState<Record<Axis, Record<AxisSetting, boolean>>>(() => ({
@@ -561,7 +562,7 @@ export default function HomeClient() {
                         <div className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-black/20 overflow-hidden">
                           <Image
                             src={a.icon}
-                            alt=""
+                            alt={format(t.a11y.appProfileIconAlt, { app: a.name })}
                             width={48}
                             height={48}
                             className="h-full w-full object-cover"

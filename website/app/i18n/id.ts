@@ -9,6 +9,7 @@ export const id: Translations = {
     closeDialog: "Tutup dialog",
     githubAria: "Mos di GitHub",
     appIconAlt: "Ikon aplikasi Mos",
+    appProfileIconAlt: "Ikon aplikasi {app} untuk profil scroll per aplikasi Mos",
     scrollCurveGraph: "Grafik kurva scroll",
   },
   nav: {

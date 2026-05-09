@@ -41,6 +41,15 @@ export default function RootLayout({
         name: SITE_NAME,
         description: SITE_DESCRIPTION,
         inLanguage: "en",
+        potentialAction: {
+          "@type": "ReadAction",
+          target: [
+            `${siteOrigin}/index.md`,
+            `${siteOrigin}/llms.txt`,
+            `${siteOrigin}/llms-full.txt`,
+            `${siteOrigin}/developers/`,
+          ],
+        },
       },
       {
         "@type": "SoftwareApplication",
@@ -52,7 +61,11 @@ export default function RootLayout({
         description: SITE_DESCRIPTION,
         downloadUrl: "https://github.com/Caldis/Mos/releases/latest",
         softwareHelp: "https://github.com/Caldis/Mos/wiki",
-        sameAs: ["https://github.com/Caldis/Mos"],
+        sameAs: [
+          "https://github.com/Caldis/Mos",
+          `${siteOrigin}/developers/`,
+          `${siteOrigin}/.well-known/agent.json`,
+        ],
         license: "https://creativecommons.org/licenses/by-nc/4.0/",
         offers: {
           "@type": "Offer",
@@ -66,6 +79,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="js">
       <head>
+        <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+        <link rel="alternate" type="text/markdown" href="/index.md" title="Mos markdown homepage" />
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="Mos llms.txt" />
+        <link rel="alternate" type="text/plain" href="/llms-full.txt" title="Mos full LLM context" />
+        <link rel="help" href="/developers/" title="Mos developer resources" />
+        <link rel="alternate" type="application/json" href="/.well-known/agent.json" title="Mos agent discovery file" />
+        <link rel="alternate" type="application/json" href="/.well-known/agent-card.json" title="Mos A2A agent card" />
+        <link rel="service-desc" type="application/openapi+json" href="/api/openapi.json" title="Mos OpenAPI service description" />
         <script
           type="application/ld+json"
           // JSON-LD should be static, machine-readable, and identical for bots & users.
