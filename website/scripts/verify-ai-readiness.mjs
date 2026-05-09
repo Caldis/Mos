@@ -49,6 +49,8 @@ const apiDocsMd = readOut("api-docs.md");
 const authMd = readOut("auth.md");
 const webhooksMd = readOut("webhooks.md");
 const mcpMd = readOut("mcp.md");
+const rateLimitsMd = readOut("rate-limits.md");
+const errorsMd = readOut("errors.md");
 const publicAgentsMd = readOut("AGENTS.md");
 const wellKnownAgentInstructions = readOut(".well-known/agent-instructions.md");
 const rootAgent = assertJson("agent.json", ["name", "url", "capabilities", "links"]);
@@ -81,6 +83,8 @@ for (const [label, markdown] of [
   ["auth.md", authMd],
   ["webhooks.md", webhooksMd],
   ["mcp.md", mcpMd],
+  ["rate-limits.md", rateLimitsMd],
+  ["errors.md", errorsMd],
   ["AGENTS.md", publicAgentsMd],
   [".well-known/agent-instructions.md", wellKnownAgentInstructions],
 ]) {
@@ -98,12 +102,16 @@ for (const expected of [
   "/auth/",
   "/webhooks/",
   "/mcp/",
+  "/rate-limits/",
+  "/errors/",
   "/agent-instructions/",
   "/index.md",
   "/api-docs.md",
   "/auth.md",
   "/webhooks.md",
   "/mcp.md",
+  "/rate-limits.md",
+  "/errors.md",
   "/AGENTS.md",
   "/.well-known/agent-instructions.md",
   "/llms-full.txt",
@@ -127,6 +135,8 @@ for (const expected of [
   "AirScroll",
   "API docs are published",
   "MCP status is published",
+  "Rate-limit documentation is published",
+  "Error-response documentation is published",
   "No public OAuth, REST API, webhooks, or hosted MCP tool server are currently provided.",
 ]) {
   assertIncludes(llmsFull, expected, "llms-full.txt");
@@ -141,6 +151,8 @@ for (const page of [
   "auth/index.html",
   "webhooks/index.html",
   "mcp/index.html",
+  "rate-limits/index.html",
+  "errors/index.html",
   "agent-instructions/index.html",
 ]) {
   const html = readOut(page);

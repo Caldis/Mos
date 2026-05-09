@@ -45,6 +45,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
+      url: `${siteOrigin}/rate-limits/`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${siteOrigin}/errors/`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${siteOrigin}/about/`,
       lastModified: now,
       changeFrequency: "monthly",
@@ -106,6 +118,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${siteOrigin}/mcp.md`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${siteOrigin}/rate-limits.md`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${siteOrigin}/errors.md`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,

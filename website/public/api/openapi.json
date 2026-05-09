@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Mos Static Discovery API",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "description": "Static, unauthenticated discovery endpoints for Mos documentation, agent metadata, schema feeds, release context, and zero-auth API catalog metadata. This API does not provide remote control over the local Mos macOS app."
   },
   "servers": [
@@ -275,6 +275,86 @@
         "responses": {
           "200": {
             "description": "Markdown MCP status.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rate-limits/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos rate limits",
+        "description": "Human-readable rate-limit boundary. Mos does not provide hosted API quotas.",
+        "operationId": "getRateLimitsPage",
+        "responses": {
+          "200": {
+            "description": "HTML rate-limit documentation.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rate-limits.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos rate limits markdown",
+        "description": "Markdown rate-limit boundary for agents.",
+        "operationId": "getRateLimitsMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown rate-limit documentation.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/errors/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos error responses",
+        "description": "Human-readable error-response boundary. Mos does not provide a hosted JSON API error envelope.",
+        "operationId": "getErrorResponsesPage",
+        "responses": {
+          "200": {
+            "description": "HTML error-response documentation.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/errors.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos error responses markdown",
+        "description": "Markdown error-response boundary for agents.",
+        "operationId": "getErrorResponsesMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown error-response documentation.",
             "content": {
               "text/markdown": {
                 "schema": {

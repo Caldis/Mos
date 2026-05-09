@@ -43,6 +43,10 @@ brew install --cask mos
 - Webhooks markdown: https://mos.caldis.me/webhooks.md
 - MCP status: https://mos.caldis.me/mcp/
 - MCP markdown: https://mos.caldis.me/mcp.md
+- Rate limits: https://mos.caldis.me/rate-limits/
+- Rate limits markdown: https://mos.caldis.me/rate-limits.md
+- Error responses: https://mos.caldis.me/errors/
+- Error responses markdown: https://mos.caldis.me/errors.md
 - Public AGENTS.md: https://mos.caldis.me/AGENTS.md
 - Well-known agent instructions: https://mos.caldis.me/.well-known/agent-instructions.md
 - Agent mode view: https://mos.caldis.me/agent/

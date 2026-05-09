@@ -34,6 +34,16 @@
           "title": "Mos MCP status"
         },
         {
+          "href": "https://mos.caldis.me/rate-limits/",
+          "type": "text/html",
+          "title": "Mos rate limits"
+        },
+        {
+          "href": "https://mos.caldis.me/errors/",
+          "type": "text/html",
+          "title": "Mos error responses"
+        },
+        {
           "href": "https://mos.caldis.me/AGENTS.md",
           "type": "text/markdown",
           "title": "Mos public AGENTS.md"

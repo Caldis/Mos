@@ -72,6 +72,8 @@ export default function RootLayout({
             `${siteOrigin}/auth/`,
             `${siteOrigin}/webhooks/`,
             `${siteOrigin}/mcp/`,
+            `${siteOrigin}/rate-limits/`,
+            `${siteOrigin}/errors/`,
           ],
         },
         publisher: {
@@ -188,10 +190,14 @@ export default function RootLayout({
         <link rel="help" href="/auth/" title="Mos auth docs" />
         <link rel="help" href="/webhooks/" title="Mos webhooks status" />
         <link rel="help" href="/mcp/" title="Mos MCP status" />
+        <link rel="help" href="/rate-limits/" title="Mos rate limits" />
+        <link rel="help" href="/errors/" title="Mos error responses" />
         <link rel="alternate" type="text/markdown" href="/api-docs.md" title="Mos API docs markdown" />
         <link rel="alternate" type="text/markdown" href="/auth.md" title="Mos auth docs markdown" />
         <link rel="alternate" type="text/markdown" href="/webhooks.md" title="Mos webhooks markdown" />
         <link rel="alternate" type="text/markdown" href="/mcp.md" title="Mos MCP status markdown" />
+        <link rel="alternate" type="text/markdown" href="/rate-limits.md" title="Mos rate limits markdown" />
+        <link rel="alternate" type="text/markdown" href="/errors.md" title="Mos error responses markdown" />
         <link rel="alternate" type="text/markdown" href="/AGENTS.md" title="Mos public AGENTS.md" />
         <link rel="alternate" type="text/markdown" href="/.well-known/agent-instructions.md" title="Mos well-known agent instructions" />
         <link rel="alternate" type="application/json" href="/.well-known/agent.json" title="Mos agent discovery file" />
