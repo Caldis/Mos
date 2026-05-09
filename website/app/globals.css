@@ -29,11 +29,7 @@ body {
 
 body {
   color: var(--fg0);
-  background:
-    radial-gradient(1100px 680px at 5% 8%, rgba(255, 255, 255, 0.10), transparent 55%),
-    radial-gradient(900px 620px at 88% 14%, rgba(255, 255, 255, 0.06), transparent 55%),
-    radial-gradient(1100px 820px at 45% 92%, rgba(255, 255, 255, 0.045), transparent 60%),
-    linear-gradient(180deg, var(--bg0), var(--bg1));
+  background: #000;
   font-family:
     var(--font-body),
     ui-sans-serif,
@@ -59,7 +55,7 @@ body {
   color: rgba(255, 255, 255, 0.98);
 }
 
-/* A subtle, always-on grain to kill flat gradients. */
+/* A subtle, always-on grain over the black page background. */
 body::before {
   content: "";
   position: fixed;
@@ -121,15 +117,6 @@ body::before {
   to {
     stroke-dashoffset: 0;
     opacity: 1;
-  }
-}
-
-@keyframes float-slow {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(0, -14px, 0);
   }
 }
 
@@ -225,15 +212,6 @@ body::before {
     box-shadow:
       0 32px 120px rgba(0, 0, 0, 0.80),
       0 1px 0 rgba(255, 255, 255, 0.08) inset;
-  }
-
-  .orb {
-    position: absolute;
-    border-radius: 999px;
-    filter: blur(28px);
-    opacity: 0.10;
-    transform: translateZ(0);
-    animation: float-slow 7s var(--ease-out) infinite alternate;
   }
 
   .hairline {
@@ -341,8 +319,5 @@ body::before {
   .homebrew-highlight::after {
     animation: none;
     opacity: 0;
-  }
-  .orb {
-    animation: none;
   }
 }

@@ -21,6 +21,8 @@ const FALLBACK_RELEASE_LINK = "https://github.com/Caldis/Mos/releases/latest";
 
 type Axis = "X" | "Y";
 type AxisSetting = "smooth" | "reverse";
+type ReadmeScreenshotLocale = "en-us" | "zh-cn";
+type ReadmeScreenshotName = "scrolling" | "general" | "application-settings" | "buttons-action";
 
 type AppProfile = {
   id: string;
@@ -161,6 +163,16 @@ function pickDownloadUrl(release: unknown): string {
 
 const HERO_SPRING = { type: "spring" as const, stiffness: 100, damping: 20 };
 
+const README_SCREENSHOT_SIZES: Record<
+  ReadmeScreenshotName,
+  { width: number; height: number }
+> = {
+  scrolling: { width: 1124, height: 1354 },
+  general: { width: 1124, height: 610 },
+  "application-settings": { width: 1926, height: 1276 },
+  "buttons-action": { width: 1440, height: 1330 },
+};
+
 function heroMotion(delayS: number, shouldReduceMotion: boolean | null) {
   return {
     initial: false as const,
@@ -169,8 +181,37 @@ function heroMotion(delayS: number, shouldReduceMotion: boolean | null) {
   };
 }
 
+function ReadmeScreenshot({
+  locale,
+  name,
+  alt,
+  className = "",
+}: {
+  locale: ReadmeScreenshotLocale;
+  name: ReadmeScreenshotName;
+  alt: string;
+  className?: string;
+}) {
+  const size = README_SCREENSHOT_SIZES[name];
+
+  return (
+    <div
+      className={`overflow-hidden rounded-[22px] border border-white/10 bg-black/45 shadow-elevated ${className}`}
+    >
+      <Image
+        src={`/readme/${locale}/${name}.png`}
+        alt={alt}
+        width={size.width}
+        height={size.height}
+        className="h-full w-full object-cover object-top"
+        sizes="(min-width: 768px) 520px, calc(100vw - 64px)"
+      />
+    </div>
+  );
+}
+
 export default function HomeClient() {
-  const { t } = useI18n();
+  const { language, t } = useI18n();
   const shouldReduceMotion = useHydratedReducedMotion();
   const { data: release } = useGithubRelease();
 
@@ -193,6 +234,8 @@ export default function HomeClient() {
   }, [release?.tag_name]);
 
   const downloadUrl = useMemo(() => pickDownloadUrl(release), [release]);
+  const readmeScreenshotLocale: ReadmeScreenshotLocale =
+    language === "zh" || language === "zh-Hant" ? "zh-cn" : "en-us";
 
   const homebrewRef = useRef<HTMLDivElement | null>(null);
   const pendingHomebrewFlashRef = useRef(false);
@@ -294,9 +337,6 @@ export default function HomeClient() {
 
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <FlowField className="absolute inset-0" />
-        <div className="orb left-[-140px] top-[-120px] w-[380px] h-[380px] bg-[color:var(--accent)]" />
-        <div className="orb right-[-180px] top-[10vh] w-[420px] h-[420px] bg-[color:var(--accent3)] [animation-delay:-1.2s]" />
-        <div className="orb left-[12vw] bottom-[-220px] w-[520px] h-[520px] bg-[color:var(--accent2)] [animation-delay:-2.1s]" />
       </div>
 
       <header className="fixed left-0 right-0 top-0 z-50 px-4 sm:px-6">
@@ -318,18 +358,6 @@ export default function HomeClient() {
 
             <div className="flex items-center gap-3">
               <LanguageSelector />
-              <a
-                href="/about/"
-                className="hidden md:inline-flex rounded-2xl border border-white/5 bg-white/4 px-4 py-3 text-sm font-semibold text-white/72 transition-colors hover:border-white/9 hover:bg-white/7 hover:text-white/88"
-              >
-                About Mos
-              </a>
-              <a
-                href="/compare/"
-                className="hidden md:inline-flex rounded-2xl border border-white/5 bg-white/4 px-4 py-3 text-sm font-semibold text-white/72 transition-colors hover:border-white/9 hover:bg-white/7 hover:text-white/88"
-              >
-                Compare Mos
-              </a>
               <Magnetic strength={14}>
                 <a
                   href="https://github.com/Caldis/Mos"
@@ -491,6 +519,12 @@ export default function HomeClient() {
                     {t.sectionFeel.cards.curves.body}
                   </p>
                   <EasingPlayground className="mt-6" />
+                  <ReadmeScreenshot
+                    locale={readmeScreenshotLocale}
+                    name="scrolling"
+                    alt="Mos scroll settings window with controls for step, speed, duration, acceleration, and smoothing"
+                    className="mt-6 aspect-[16/9] max-h-[260px]"
+                  />
                 </div>
               </BentoCard>
             </Reveal>
@@ -546,6 +580,12 @@ export default function HomeClient() {
                       })}
                     </div>
                   </div>
+                  <ReadmeScreenshot
+                    locale={readmeScreenshotLocale}
+                    name="general"
+                    alt="Mos general settings window showing startup and scrolling behavior options"
+                    className="mt-6 aspect-[16/9] max-h-[220px]"
+                  />
                 </div>
               </BentoCard>
             </Reveal>
@@ -592,6 +632,12 @@ export default function HomeClient() {
                       </div>
                     ))}
                   </div>
+                  <ReadmeScreenshot
+                    locale={readmeScreenshotLocale}
+                    name="application-settings"
+                    alt="Mos per-application settings window with app-specific scroll and button options"
+                    className="mt-6 aspect-[16/10] max-h-[260px]"
+                  />
                 </div>
               </BentoCard>
             </Reveal>
@@ -609,45 +655,53 @@ export default function HomeClient() {
                     {t.sectionFeel.cards.buttons.body}
                   </p>
 
-                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5">
-                    <div className="font-mono text-xs text-white/45">
-                      {t.sectionFeel.cards.buttons.quickBind}
-                    </div>
-                    <div className="mt-3 grid gap-2">
-                      {[
-                        {
-                          k: t.sectionFeel.cards.buttons.rows.button4,
-                          v: t.sectionFeel.cards.buttons.rows.missionControl,
-                        },
-                        {
-                          k: t.sectionFeel.cards.buttons.rows.button5,
-                          v: t.sectionFeel.cards.buttons.rows.nextSpace,
-                        },
-                        {
-                          k: t.sectionFeel.cards.buttons.rows.wheelClick,
-                          v: t.sectionFeel.cards.buttons.rows.appSwitcher,
-                        },
-                      ].map((row) => (
-                        <div
-                          key={row.k}
-                          className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2"
-                        >
-                          <div className="font-mono text-xs text-white/75">{row.k}</div>
-                          <div className="font-mono text-xs text-white/45">{row.v}</div>
+                  <div className="mt-6 grid gap-4 lg:grid-cols-[0.92fr_1.08fr] lg:items-stretch">
+                    <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+                      <div className="font-mono text-xs text-white/45">
+                        {t.sectionFeel.cards.buttons.quickBind}
+                      </div>
+                      <div className="mt-3 grid gap-2">
+                        {[
+                          {
+                            k: t.sectionFeel.cards.buttons.rows.button4,
+                            v: t.sectionFeel.cards.buttons.rows.missionControl,
+                          },
+                          {
+                            k: t.sectionFeel.cards.buttons.rows.button5,
+                            v: t.sectionFeel.cards.buttons.rows.nextSpace,
+                          },
+                          {
+                            k: t.sectionFeel.cards.buttons.rows.wheelClick,
+                            v: t.sectionFeel.cards.buttons.rows.appSwitcher,
+                          },
+                        ].map((row) => (
+                          <div
+                            key={row.k}
+                            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2"
+                          >
+                            <div className="font-mono text-xs text-white/75">{row.k}</div>
+                            <div className="font-mono text-xs text-white/45">{row.v}</div>
+                          </div>
+                        ))}
+                        {/* Pulsing "recording" placeholder row */}
+                        <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 px-3 py-2 opacity-60">
+                          <div className="flex items-center gap-2">
+                            <span className="relative flex h-1.5 w-1.5">
+                              <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
+                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/40" />
+                            </span>
+                            <div className="font-mono text-xs text-white/45">—</div>
+                          </div>
+                          <div className="font-mono text-[10px] text-white/30 italic">recording…</div>
                         </div>
-                      ))}
-                      {/* Pulsing "recording" placeholder row */}
-                      <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 px-3 py-2 opacity-60">
-                        <div className="flex items-center gap-2">
-                          <span className="relative flex h-1.5 w-1.5">
-                            <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/40" />
-                          </span>
-                          <div className="font-mono text-xs text-white/45">—</div>
-                        </div>
-                        <div className="font-mono text-[10px] text-white/30 italic">recording…</div>
                       </div>
                     </div>
+                    <ReadmeScreenshot
+                      locale={readmeScreenshotLocale}
+                      name="buttons-action"
+                      alt="Mos action library window for binding mouse buttons to system and keyboard actions"
+                      className="aspect-[16/11] min-h-[260px] lg:h-full"
+                    />
                   </div>
                 </div>
               </BentoCard>
@@ -765,7 +819,7 @@ export default function HomeClient() {
                   " · " +
                   t.footer.requiresMacos}
               </div>
-              <div className="flex items-center gap-4 font-mono text-xs">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs">
                 <a
                   href="/developers/"
                   className="hover:text-white/80 transition-colors"
@@ -776,7 +830,13 @@ export default function HomeClient() {
                   href="/about/"
                   className="hover:text-white/80 transition-colors"
                 >
-                  About
+                  About Mos
+                </a>
+                <a
+                  href="/compare/"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  Compare Mos
                 </a>
                 <a
                   href="/privacy/"
