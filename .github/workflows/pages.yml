@@ -49,6 +49,7 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: website/out
+          include-hidden-files: true
 
   deploy:
     environment:
