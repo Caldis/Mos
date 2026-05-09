@@ -44,6 +44,7 @@ const indexHtml = readOut("index.html");
 const indexMd = readOut("index.md");
 const llms = readOut("llms.txt");
 const llmsFull = readOut("llms-full.txt");
+const rootAgent = assertJson("agent.json", ["name", "url", "capabilities", "links"]);
 const robots = readOut("robots.txt");
 const schemaMap = readOut("schema-map.xml");
 const schemaFeed = readOut("schema/software.jsonl");
@@ -61,6 +62,7 @@ if (!indexMd.startsWith("# Mos")) {
 for (const expected of [
   "/index.md",
   "/llms-full.txt",
+  "/agent.json",
   "/.well-known/agent.json",
   "/.well-known/agent-card.json",
   "/.well-known/mcp",
@@ -89,8 +91,16 @@ assertIncludes(schemaMap, "https://mos.caldis.me/schema/software.jsonl", "schema
 assertIncludes(schemaFeed, '"@type":"SoftwareApplication"', "schema feed");
 
 const agent = assertJson(".well-known/agent.json", ["name", "url", "capabilities", "links"]);
-if (!Array.isArray(agent.capabilities) || agent.capabilities.length === 0) {
-  fail(".well-known/agent.json must include capabilities");
+for (const [label, manifest] of [
+  ["agent.json", rootAgent],
+  [".well-known/agent.json", agent],
+]) {
+  if (!Array.isArray(manifest.capabilities) || manifest.capabilities.length === 0) {
+    fail(`${label} must include capabilities`);
+  }
+  if (!Array.isArray(manifest.actions) || manifest.actions.length === 0) {
+    fail(`${label} must include actions`);
+  }
 }
 
 const agentCard = assertJson(".well-known/agent-card.json", [

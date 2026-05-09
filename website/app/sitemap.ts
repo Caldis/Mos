@@ -51,6 +51,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     },
     {
+      url: `${siteOrigin}/agent.json`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
       url: `${siteOrigin}/.well-known/agent.json`,
       lastModified: now,
       changeFrequency: "monthly",

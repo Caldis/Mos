@@ -4,37 +4,38 @@ Mos is a free, open-source macOS menu bar utility that makes mouse wheel scrolli
 
 ## Primary resources
 
-- Homepage: https://mos.caldis.me/
-- Markdown homepage: https://mos.caldis.me/index.md
-- Full LLM context: https://mos.caldis.me/llms-full.txt
-- Developer resources: https://mos.caldis.me/developers/
-- Agent mode view: https://mos.caldis.me/agent/
-- GitHub repository: https://github.com/Caldis/Mos
-- GitHub wiki: https://github.com/Caldis/Mos/wiki
-- Releases: https://github.com/Caldis/Mos/releases
-- Latest release: https://github.com/Caldis/Mos/releases/latest
-- Appcast: https://mos.caldis.me/appcast.xml
+- [Homepage](https://mos.caldis.me/)
+- [Markdown homepage](https://mos.caldis.me/index.md)
+- [Full LLM context](https://mos.caldis.me/llms-full.txt)
+- [Developer resources](https://mos.caldis.me/developers/)
+- [Agent mode view](https://mos.caldis.me/agent/)
+- [GitHub repository](https://github.com/Caldis/Mos)
+- [GitHub wiki](https://github.com/Caldis/Mos/wiki)
+- [Releases](https://github.com/Caldis/Mos/releases)
+- [Latest release](https://github.com/Caldis/Mos/releases/latest)
+- [Appcast](https://mos.caldis.me/appcast.xml)
 
 ## Agent and developer discovery
 
-- Agent discovery file: https://mos.caldis.me/.well-known/agent.json
-- A2A agent card: https://mos.caldis.me/.well-known/agent-card.json
-- AI plugin manifest: https://mos.caldis.me/.well-known/ai-plugin.json
-- MCP discovery status: https://mos.caldis.me/.well-known/mcp
-- OpenAPI service description: https://mos.caldis.me/api/openapi.json
-- Schema map: https://mos.caldis.me/schema-map.xml
-- Software schema feed: https://mos.caldis.me/schema/software.jsonl
+- [Root agent.json](https://mos.caldis.me/agent.json)
+- [Well-known agent.json](https://mos.caldis.me/.well-known/agent.json)
+- [A2A agent card](https://mos.caldis.me/.well-known/agent-card.json)
+- [AI plugin manifest](https://mos.caldis.me/.well-known/ai-plugin.json)
+- [MCP discovery status](https://mos.caldis.me/.well-known/mcp)
+- [OpenAPI service description](https://mos.caldis.me/api/openapi.json)
+- [Schema map](https://mos.caldis.me/schema-map.xml)
+- [Software schema feed](https://mos.caldis.me/schema/software.jsonl)
 
 ## Section llms.txt files
 
-- Product docs context: https://mos.caldis.me/docs/llms.txt
-- Developer context: https://mos.caldis.me/developers/llms.txt
-- API context: https://mos.caldis.me/api/llms.txt
+- [Product docs context](https://mos.caldis.me/docs/llms.txt)
+- [Developer context](https://mos.caldis.me/developers/llms.txt)
+- [API context](https://mos.caldis.me/api/llms.txt)
 
 ## Install
 
 - Homebrew: `brew install --cask mos`
-- GitHub Releases: https://github.com/Caldis/Mos/releases/latest
+- [GitHub Releases](https://github.com/Caldis/Mos/releases/latest)
 
 ## Auth, API, webhooks, and MCP status
 
