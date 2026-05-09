@@ -35,6 +35,14 @@ brew install --cask mos
 ## Mos developer resources
 
 - Developer resources: https://mos.caldis.me/developers/
+- API docs: https://mos.caldis.me/api-docs/
+- API docs markdown: https://mos.caldis.me/api-docs.md
+- Auth docs: https://mos.caldis.me/auth/
+- Auth docs markdown: https://mos.caldis.me/auth.md
+- Webhooks status: https://mos.caldis.me/webhooks/
+- Webhooks markdown: https://mos.caldis.me/webhooks.md
+- MCP status: https://mos.caldis.me/mcp/
+- MCP markdown: https://mos.caldis.me/mcp.md
 - Agent mode view: https://mos.caldis.me/agent/
 - llms.txt: https://mos.caldis.me/llms.txt
 - Full LLM context: https://mos.caldis.me/llms-full.txt

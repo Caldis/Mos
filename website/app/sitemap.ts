@@ -21,6 +21,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${siteOrigin}/api-docs/`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${siteOrigin}/auth/`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${siteOrigin}/webhooks/`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${siteOrigin}/mcp/`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${siteOrigin}/about/`,
       lastModified: now,
       changeFrequency: "monthly",
@@ -61,6 +85,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
+    },
+    {
+      url: `${siteOrigin}/api-docs.md`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${siteOrigin}/auth.md`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${siteOrigin}/webhooks.md`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${siteOrigin}/mcp.md`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
     },
     {
       url: `${siteOrigin}/llms.txt`,

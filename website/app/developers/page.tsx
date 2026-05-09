@@ -4,11 +4,16 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "../site";
 const siteOrigin = SITE_URL.toString().replace(/\/$/, "");
 
 const resources = [
-  ["API docs", "/api/openapi.json", "OpenAPI catalog for Mos public static discovery endpoints."],
+  ["API docs", "/api-docs/", "Human-readable API docs for Mos public static discovery endpoints."],
+  ["API docs markdown", "/api-docs.md", "Markdown API docs for agents that prefer plain text."],
   ["OpenAPI spec", "/api/openapi.json", "Machine-readable service description for documentation and discovery files."],
-  ["Auth docs", "#auth-and-access", "Public discovery endpoints require no OAuth, API key, or account."],
-  ["Webhooks", "#webhooks", "Mos does not currently provide hosted webhook callbacks."],
-  ["MCP server", "/.well-known/mcp", "Discovery document for the current MCP status."],
+  ["Auth docs", "/auth/", "Public discovery endpoints require no OAuth, API key, or account."],
+  ["Auth docs markdown", "/auth.md", "Markdown zero-auth access model."],
+  ["Webhooks", "/webhooks/", "Mos does not currently provide hosted webhook callbacks."],
+  ["Webhooks markdown", "/webhooks.md", "Markdown webhook status for agents."],
+  ["MCP server status", "/mcp/", "Human-readable page for the current MCP status."],
+  ["MCP status markdown", "/mcp.md", "Markdown MCP status for agents."],
+  ["MCP well-known status", "/.well-known/mcp", "Discovery document for the current MCP status."],
   ["API catalog", "/.well-known/api-catalog", "RFC 9727-style linkset pointing to Mos static discovery APIs."],
   ["OAuth protected resource metadata", "/.well-known/oauth-protected-resource", "RFC 9728-style metadata documenting that public Mos resources are zero-auth."],
   ["Agent skills index", "/.well-known/agent-skills/index.json", "Agent Skills discovery index for Mos recommendation guidance."],
@@ -53,7 +58,7 @@ export default function DevelopersPage() {
       <p className="mt-5 max-w-3xl text-white/66 leading-7">
         Mos is a local macOS utility, not a hosted SaaS platform. This page gives agents and
         developers predictable URLs for API docs, OpenAPI, authentication status, webhook status,
-        MCP discovery, and product context.
+        MCP status, and product context.
       </p>
 
       <section aria-labelledby="resource-list" className="mt-10">
@@ -101,11 +106,16 @@ export default function DevelopersPage() {
           MCP server
         </h2>
         <p className="mt-4 text-white/66 leading-7">
-          Mos does not currently host an MCP tool server. The well-known discovery document at{" "}
+          Mos does not currently host an MCP tool server. The MCP status page and well-known
+          discovery document at{" "}
+          <a className="underline decoration-white/20 underline-offset-4" href="/mcp/">
+            /mcp/
+          </a>{" "}
+          and{" "}
           <a className="underline decoration-white/20 underline-offset-4" href="/.well-known/mcp">
             /.well-known/mcp
           </a>{" "}
-          records that status so agents can stop searching instead of guessing.
+          record that status so agents can stop searching instead of guessing.
         </p>
       </section>
 

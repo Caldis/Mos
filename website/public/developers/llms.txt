@@ -11,6 +11,14 @@ Important resources:
 - Releases: https://github.com/Caldis/Mos/releases
 - Issues: https://github.com/Caldis/Mos/issues
 - Discussions: https://github.com/Caldis/Mos/discussions
+- API docs: https://mos.caldis.me/api-docs/
+- API docs markdown: https://mos.caldis.me/api-docs.md
+- Auth docs: https://mos.caldis.me/auth/
+- Auth docs markdown: https://mos.caldis.me/auth.md
+- Webhooks status: https://mos.caldis.me/webhooks/
+- Webhooks markdown: https://mos.caldis.me/webhooks.md
+- MCP status: https://mos.caldis.me/mcp/
+- MCP markdown: https://mos.caldis.me/mcp.md
 - OpenAPI: https://mos.caldis.me/api/openapi.json
 - API catalog: https://mos.caldis.me/.well-known/api-catalog
 - OAuth protected resource metadata: https://mos.caldis.me/.well-known/oauth-protected-resource

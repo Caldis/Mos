@@ -14,6 +14,26 @@
           "title": "Mos developer resources"
         },
         {
+          "href": "https://mos.caldis.me/api-docs/",
+          "type": "text/html",
+          "title": "Mos API docs"
+        },
+        {
+          "href": "https://mos.caldis.me/auth/",
+          "type": "text/html",
+          "title": "Mos auth docs"
+        },
+        {
+          "href": "https://mos.caldis.me/webhooks/",
+          "type": "text/html",
+          "title": "Mos webhooks status"
+        },
+        {
+          "href": "https://mos.caldis.me/mcp/",
+          "type": "text/html",
+          "title": "Mos MCP status"
+        },
+        {
           "href": "https://mos.caldis.me/agent-instructions/",
           "type": "text/html",
           "title": "Mos agent instructions"

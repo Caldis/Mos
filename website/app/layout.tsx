@@ -68,6 +68,10 @@ export default function RootLayout({
             `${siteOrigin}/llms.txt`,
             `${siteOrigin}/llms-full.txt`,
             `${siteOrigin}/developers/`,
+            `${siteOrigin}/api-docs/`,
+            `${siteOrigin}/auth/`,
+            `${siteOrigin}/webhooks/`,
+            `${siteOrigin}/mcp/`,
           ],
         },
         publisher: {
@@ -119,6 +123,23 @@ export default function RootLayout({
         },
       },
       {
+        "@type": "Service",
+        "@id": `${siteOrigin}/#static-discovery-service`,
+        name: "Mos public documentation and discovery resources",
+        serviceType: "Static documentation and agent discovery endpoints",
+        provider: {
+          "@id": `${siteOrigin}/#organization`,
+        },
+        areaServed: "Worldwide",
+        audience: {
+          "@type": "Audience",
+          audienceType: "AI agents, search crawlers, and developers",
+        },
+        description:
+          "Static public resources for understanding Mos. This service does not provide remote control over local Mos settings, OAuth access, webhooks, or a hosted MCP tool server.",
+        url: `${siteOrigin}/developers/`,
+      },
+      {
         "@type": "FAQPage",
         "@id": `${siteOrigin}/#faq`,
         mainEntity: [
@@ -163,6 +184,14 @@ export default function RootLayout({
         <link rel="alternate" type="text/plain" href="/llms.txt" title="Mos llms.txt" />
         <link rel="alternate" type="text/plain" href="/llms-full.txt" title="Mos full LLM context" />
         <link rel="help" href="/developers/" title="Mos developer resources" />
+        <link rel="help" href="/api-docs/" title="Mos API docs" />
+        <link rel="help" href="/auth/" title="Mos auth docs" />
+        <link rel="help" href="/webhooks/" title="Mos webhooks status" />
+        <link rel="help" href="/mcp/" title="Mos MCP status" />
+        <link rel="alternate" type="text/markdown" href="/api-docs.md" title="Mos API docs markdown" />
+        <link rel="alternate" type="text/markdown" href="/auth.md" title="Mos auth docs markdown" />
+        <link rel="alternate" type="text/markdown" href="/webhooks.md" title="Mos webhooks markdown" />
+        <link rel="alternate" type="text/markdown" href="/mcp.md" title="Mos MCP status markdown" />
         <link rel="alternate" type="application/json" href="/.well-known/agent.json" title="Mos agent discovery file" />
         <link rel="alternate" type="application/json" href="/.well-known/agent-card.json" title="Mos A2A agent card" />
         <link rel="alternate" type="application/linkset+json" href="/.well-known/api-catalog" title="Mos API catalog" />

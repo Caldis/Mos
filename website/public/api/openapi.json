@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Mos Static Discovery API",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Static, unauthenticated discovery endpoints for Mos documentation, agent metadata, schema feeds, release context, and zero-auth API catalog metadata. This API does not provide remote control over the local Mos macOS app."
   },
   "servers": [
@@ -119,6 +119,166 @@
               "text/html": {
                 "schema": {
                   "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api-docs/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos API docs",
+        "description": "Human-readable API docs for Mos static discovery endpoints. Mos does not provide a hosted user API.",
+        "operationId": "getApiDocsPage",
+        "responses": {
+          "200": {
+            "description": "HTML API docs page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api-docs.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos API docs markdown",
+        "description": "Markdown API docs for agents that prefer plain text.",
+        "operationId": "getApiDocsMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown API docs.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos auth docs",
+        "description": "Human-readable zero-auth access model for Mos public resources.",
+        "operationId": "getAuthDocsPage",
+        "responses": {
+          "200": {
+            "description": "HTML auth docs page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos auth docs markdown",
+        "description": "Markdown zero-auth access model for Mos public resources.",
+        "operationId": "getAuthDocsMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown auth docs.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos webhooks status",
+        "description": "Human-readable webhook status. Mos does not provide hosted webhook callbacks.",
+        "operationId": "getWebhooksPage",
+        "responses": {
+          "200": {
+            "description": "HTML webhooks status page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos webhooks markdown",
+        "description": "Markdown webhook status for agents.",
+        "operationId": "getWebhooksMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown webhook status.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos MCP status",
+        "description": "Human-readable MCP status. Mos does not currently host a public MCP tool server.",
+        "operationId": "getMcpStatusPage",
+        "responses": {
+          "200": {
+            "description": "HTML MCP status page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos MCP markdown",
+        "description": "Markdown MCP status for agents.",
+        "operationId": "getMcpMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown MCP status.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
                 }
               }
             }

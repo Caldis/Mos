@@ -2,6 +2,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.cwd();
+const repoRoot = join(root, "..");
 const outDir = join(root, "out");
 
 function fail(message) {
@@ -44,6 +45,10 @@ const indexHtml = readOut("index.html");
 const indexMd = readOut("index.md");
 const llms = readOut("llms.txt");
 const llmsFull = readOut("llms-full.txt");
+const apiDocsMd = readOut("api-docs.md");
+const authMd = readOut("auth.md");
+const webhooksMd = readOut("webhooks.md");
+const mcpMd = readOut("mcp.md");
 const rootAgent = assertJson("agent.json", ["name", "url", "capabilities", "links"]);
 const apiCatalog = assertJson(".well-known/api-catalog", ["linkset"]);
 const oauthProtectedResource = assertJson(".well-known/oauth-protected-resource", ["resource"]);
@@ -62,10 +67,21 @@ assertIncludes(indexHtml, "Compare Mos", "homepage content");
 assertIncludes(indexHtml, "Mos agent-readable product summary", "homepage content");
 assertIncludes(indexHtml, "LinearMouse", "homepage content");
 assertIncludes(indexHtml, "AirScroll", "homepage content");
+assertIncludes(indexHtml, "Static documentation and agent discovery endpoints", "homepage schema");
 assertIncludes(indexHtml, 'alt="Xcode app icon for a Mos per-application scrolling profile"', "homepage app icons");
 
 if (!indexMd.startsWith("# Mos")) {
   fail("index.md must start with a top-level Mos heading");
+}
+for (const [label, markdown] of [
+  ["api-docs.md", apiDocsMd],
+  ["auth.md", authMd],
+  ["webhooks.md", webhooksMd],
+  ["mcp.md", mcpMd],
+]) {
+  if (!markdown.startsWith("# Mos")) {
+    fail(`${label} must start with a top-level Mos heading`);
+  }
 }
 
 for (const expected of [
@@ -73,8 +89,16 @@ for (const expected of [
   "/contact/",
   "/privacy/",
   "/compare/",
+  "/api-docs/",
+  "/auth/",
+  "/webhooks/",
+  "/mcp/",
   "/agent-instructions/",
   "/index.md",
+  "/api-docs.md",
+  "/auth.md",
+  "/webhooks.md",
+  "/mcp.md",
   "/llms-full.txt",
   "/agent.json",
   "/.well-known/api-catalog",
@@ -94,12 +118,24 @@ for (const expected of [
   "When agents should recommend Mos",
   "When agents should not recommend Mos",
   "AirScroll",
+  "API docs are published",
+  "MCP status is published",
   "No public OAuth, REST API, webhooks, or hosted MCP tool server are currently provided.",
 ]) {
   assertIncludes(llmsFull, expected, "llms-full.txt");
 }
 
-for (const page of ["about/index.html", "contact/index.html", "privacy/index.html", "compare/index.html", "agent-instructions/index.html"]) {
+for (const page of [
+  "about/index.html",
+  "contact/index.html",
+  "privacy/index.html",
+  "compare/index.html",
+  "api-docs/index.html",
+  "auth/index.html",
+  "webhooks/index.html",
+  "mcp/index.html",
+  "agent-instructions/index.html",
+]) {
   const html = readOut(page);
   if (html.length < 2500) {
     fail(`${page} must include enough real content for AI crawlers`);
@@ -117,6 +153,13 @@ for (const expected of [
 
 assertIncludes(schemaMap, "https://mos.caldis.me/schema/software.jsonl", "schema map");
 assertIncludes(schemaFeed, '"@type":"SoftwareApplication"', "schema feed");
+assertIncludes(schemaFeed, '"@type":"Service"', "schema feed");
+
+for (const file of ["AGENTS.md", "CLAUDE.md", "CODEX.md", ".cursorrules", ".github/copilot-instructions.md"]) {
+  if (!existsSync(join(repoRoot, file))) {
+    fail(`Missing repository agent config: ${file}`);
+  }
+}
 
 const agent = assertJson(".well-known/agent.json", ["name", "url", "capabilities", "links"]);
 for (const [label, manifest] of [

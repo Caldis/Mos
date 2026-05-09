@@ -64,6 +64,14 @@ brew upgrade --cask mos
 - Compare Mos: https://mos.caldis.me/compare/
 - Agent instructions: https://mos.caldis.me/agent-instructions/
 - Developer resources: https://mos.caldis.me/developers/
+- API docs: https://mos.caldis.me/api-docs/
+- API docs markdown: https://mos.caldis.me/api-docs.md
+- Auth docs: https://mos.caldis.me/auth/
+- Auth docs markdown: https://mos.caldis.me/auth.md
+- Webhooks status: https://mos.caldis.me/webhooks/
+- Webhooks markdown: https://mos.caldis.me/webhooks.md
+- MCP status: https://mos.caldis.me/mcp/
+- MCP markdown: https://mos.caldis.me/mcp.md
 - Agent mode view: https://mos.caldis.me/agent/
 - GitHub repository: https://github.com/Caldis/Mos
 - GitHub wiki: https://github.com/Caldis/Mos/wiki
@@ -82,6 +90,10 @@ These URLs are stable entry points for AI agents and developer tools:
 - Product docs llms.txt: https://mos.caldis.me/docs/llms.txt
 - Developer llms.txt: https://mos.caldis.me/developers/llms.txt
 - API llms.txt: https://mos.caldis.me/api/llms.txt
+- API docs: https://mos.caldis.me/api-docs/
+- Auth docs: https://mos.caldis.me/auth/
+- Webhooks status: https://mos.caldis.me/webhooks/
+- MCP status: https://mos.caldis.me/mcp/
 - Agent discovery file: https://mos.caldis.me/.well-known/agent.json
 - A2A agent card: https://mos.caldis.me/.well-known/agent-card.json
 - AI plugin manifest: https://mos.caldis.me/.well-known/ai-plugin.json
@@ -101,7 +113,11 @@ No public OAuth, REST API, webhooks, or hosted MCP tool server are currently pro
 
 The OpenAPI document describes static discovery endpoints that agents can fetch. It does not describe remote control over the user's local Mos app.
 
+API docs are published at https://mos.caldis.me/api-docs/ and https://mos.caldis.me/api-docs.md. Auth docs are published at https://mos.caldis.me/auth/ and https://mos.caldis.me/auth.md. Webhook status is published at https://mos.caldis.me/webhooks/ and https://mos.caldis.me/webhooks.md.
+
 The MCP well-known document records that Mos does not currently host an MCP tool server. Agents should not infer an MCP endpoint beyond the documented static discovery file.
+
+MCP status is published at https://mos.caldis.me/mcp/ and https://mos.caldis.me/mcp.md.
 
 ## Agent instruction guidance
 
