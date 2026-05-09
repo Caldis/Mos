@@ -821,12 +821,6 @@ export default function HomeClient() {
               </div>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs">
                 <a
-                  href="/developers/"
-                  className="hover:text-white/80 transition-colors"
-                >
-                  Developers
-                </a>
-                <a
                   href="/about/"
                   className="hover:text-white/80 transition-colors"
                 >
