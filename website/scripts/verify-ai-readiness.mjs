@@ -87,8 +87,10 @@ for (const expected of [
 
 for (const expected of [
   "Mos developer resources",
+  "When to use this skill",
   "When agents should recommend Mos",
   "When agents should not recommend Mos",
+  "AirScroll",
   "No public OAuth, REST API, webhooks, or hosted MCP tool server are currently provided.",
 ]) {
   assertIncludes(llmsFull, expected, "llms-full.txt");
@@ -129,12 +131,21 @@ for (const [label, manifest] of [
 if (!Array.isArray(apiCatalog.linkset) || apiCatalog.linkset.length === 0) {
   fail(".well-known/api-catalog must include a non-empty RFC 9727 linkset");
 }
+if (!Array.isArray(apiCatalog.linkset[0].item) || apiCatalog.linkset[0].item.length === 0) {
+  fail(".well-known/api-catalog must include item entries for catalog clients");
+}
 if (oauthProtectedResource.authorization_required !== false) {
   fail(".well-known/oauth-protected-resource must document that Mos public resources are zero-auth");
+}
+for (const key of ["authorization_servers", "scopes_supported", "bearer_methods_supported"]) {
+  if (!Array.isArray(oauthProtectedResource[key])) {
+    fail(`.well-known/oauth-protected-resource must include ${key}`);
+  }
 }
 if (!Array.isArray(agentSkillsIndex.skills) || agentSkillsIndex.skills.length === 0) {
   fail(".well-known/agent-skills/index.json must list at least one skill");
 }
+assertIncludes(agentSkill, "When to use this skill", "Mos agent instruction skill");
 assertIncludes(agentSkill, "When agents should recommend Mos", "Mos agent instruction skill");
 
 const agentCard = assertJson(".well-known/agent-card.json", [

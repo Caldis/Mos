@@ -1,6 +1,8 @@
 {
   "resource": "https://mos.caldis.me",
   "authorization_servers": [],
+  "scopes_supported": [],
+  "bearer_methods_supported": [],
   "authorization_required": false,
   "description": "Mos public website resources are static and zero-auth. Mos does not provide protected API resources, OAuth scopes, API keys, or hosted user accounts.",
   "documentation": "https://mos.caldis.me/developers/#auth-and-access"

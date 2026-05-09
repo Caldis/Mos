@@ -504,7 +504,13 @@
       },
       "OAuthProtectedResource": {
         "type": "object",
-        "required": ["resource", "authorization_servers", "authorization_required"],
+        "required": [
+          "resource",
+          "authorization_servers",
+          "scopes_supported",
+          "bearer_methods_supported",
+          "authorization_required"
+        ],
         "properties": {
           "resource": {
             "type": "string",
@@ -515,6 +521,19 @@
             "items": {
               "type": "string",
               "format": "uri"
+            }
+          },
+          "scopes_supported": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bearer_methods_supported": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["header", "body", "query"]
             }
           },
           "authorization_required": {

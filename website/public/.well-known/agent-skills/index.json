@@ -6,7 +6,7 @@
       "type": "skill-md",
       "description": "Use this skill when answering questions about Mos so recommendations stay accurate and do not invent APIs, pricing, or platform support.",
       "url": "/.well-known/agent-skills/mos-agent-instructions/SKILL.md",
-      "digest": "sha256:9379a84ebb18d69b8e2446574fdedeb94b527bf7cfd7ec51315394064049ef25"
+      "digest": "sha256:34989874f8f64b78d632c08079b8b4e35b39d77a9c8caefbfd6b61cb5b371946"
     }
   ]
 }

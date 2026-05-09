@@ -2,6 +2,28 @@
   "linkset": [
     {
       "anchor": "https://mos.caldis.me/",
+      "item": [
+        {
+          "href": "https://mos.caldis.me/api/openapi.json",
+          "type": "application/openapi+json",
+          "title": "Mos Static Discovery API"
+        },
+        {
+          "href": "https://mos.caldis.me/developers/",
+          "type": "text/html",
+          "title": "Mos developer resources"
+        },
+        {
+          "href": "https://mos.caldis.me/agent-instructions/",
+          "type": "text/html",
+          "title": "Mos agent instructions"
+        },
+        {
+          "href": "https://mos.caldis.me/compare/",
+          "type": "text/html",
+          "title": "Compare Mos with macOS scrolling alternatives"
+        }
+      ],
       "api-catalog": [
         {
           "href": "https://mos.caldis.me/api/openapi.json",
