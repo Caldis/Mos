@@ -922,12 +922,12 @@
             <objects>
                 <viewController id="o12-9v-Ej5" userLabel="Application Allowlist hint" customClass="AdaptivePopover" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="wdx-Jb-jwG">
-                        <rect key="frame" x="0.0" y="0.0" width="224" height="62"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="88"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KGW-PK-8DX">
-                                <rect key="frame" x="10" y="10" width="204" height="42"/>
-                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="left" title="The allow list mode will make Mos only apply to apps within the application list." id="v26-RK-BtL">
+                                <rect key="frame" x="10" y="10" width="300" height="68"/>
+                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="left" title="Use Normal for per-app overrides, Allowlist to apply Mos only to listed apps, or Blacklist to ignore listed apps." id="v26-RK-BtL">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

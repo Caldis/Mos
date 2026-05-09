@@ -27,6 +27,7 @@ class PreferencesApplicationViewController: NSViewController {
     @IBOutlet weak var runningAndInstalledManuItem: NSMenuItem!
     private var runningAndInstalledMenuChildrenContainer: NSMenu!
     @IBOutlet weak var manuallySelectFromFinderMenuItem: NSMenuItem!
+    private var applicationListModeControl: NSSegmentedControl?
 
     override func viewDidLoad() {
         // 为 "Running Applications" 菜单项动态创建 submenu (避免 Storyboard 中的 menu 父子关系警告)
@@ -37,6 +38,7 @@ class PreferencesApplicationViewController: NSViewController {
         Utils.attachImage(to: manuallySelectFromFinderMenuItem, withImage: #imageLiteral(resourceName: "SF.tray"))
         // 设置表格代理
         tableView.delegate = self
+        configureApplicationListModeControl()
         // 读取设置
         syncViewWithOptions()
         // 初始化按钮状态
@@ -62,8 +64,18 @@ class PreferencesApplicationViewController: NSViewController {
     
     // 白名单模式
     @IBAction func allowListModeClick(_ sender: NSButton) {
-        Options.shared.application.allowlist = sender.state.rawValue==0 ? false : true
+        setApplicationListMode(sender.state == .on ? .allowlist : .custom)
+    }
+
+    @objc private func applicationListModeControlChanged(_ sender: NSSegmentedControl) {
+        guard let mode = ApplicationListMode(segment: sender.selectedSegment) else { return }
+        setApplicationListMode(mode)
+    }
+
+    private func setApplicationListMode(_ mode: ApplicationListMode) {
+        Options.shared.application.listMode = mode
         syncViewWithOptions()
+        tableView.reloadData()
     }
     
     // 列表底部按钮
@@ -112,13 +124,60 @@ class PreferencesApplicationViewController: NSViewController {
 extension PreferencesApplicationViewController {
     // 同步界面与设置参数
     func syncViewWithOptions() {
-        // 白名单
-        allowlistModeCheckBox.state = NSControl.StateValue(rawValue: Options.shared.application.allowlist ? 1 : 0)
+        let mode = Options.shared.application.listMode
+        allowlistModeCheckBox.state = mode == .allowlist ? .on : .off
+        applicationListModeControl?.selectedSegment = mode.segmentIndex
     }
     
     // 更新删除按钮状态
     func updateDelButtonState() {
         delButton.isEnabled = tableView.selectedRow != -1
+    }
+
+    private func configureApplicationListModeControl() {
+        allowlistModeCheckBox.isHidden = true
+
+        let control = NSSegmentedControl(
+            labels: [
+                NSLocalizedString("application-list-mode-normal", comment: ""),
+                NSLocalizedString("application-list-mode-allowlist", comment: ""),
+                NSLocalizedString("application-list-mode-blacklist", comment: "")
+            ],
+            trackingMode: .selectOne,
+            target: self,
+            action: #selector(applicationListModeControlChanged(_:))
+        )
+        control.segmentStyle = .rounded
+        control.controlSize = .small
+        control.translatesAutoresizingMaskIntoConstraints = false
+
+        tableFoot.addSubview(control)
+        NSLayoutConstraint.activate([
+            control.centerYAnchor.constraint(equalTo: tableFoot.centerYAnchor),
+            control.trailingAnchor.constraint(equalTo: tableFoot.trailingAnchor, constant: -32),
+            control.widthAnchor.constraint(equalToConstant: 236)
+        ])
+
+        applicationListModeControl = control
+    }
+}
+
+private extension ApplicationListMode {
+    init?(segment: Int) {
+        switch segment {
+        case 0: self = .custom
+        case 1: self = .allowlist
+        case 2: self = .blacklist
+        default: return nil
+        }
+    }
+
+    var segmentIndex: Int {
+        switch self {
+        case .custom: return 0
+        case .allowlist: return 1
+        case .blacklist: return 2
+        }
     }
 }
 
@@ -145,6 +204,7 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
     }
     // 点击设置
     @objc func settingScrollingButtonClick(_ sender: NSButton!) {
+        guard Options.shared.application.listMode != .blacklist else { return }
         // 行号
         let row = sender.tag
         // 从 SB 构建内容
@@ -176,6 +236,10 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
                 button.tag = row
                 button.target = self
                 button.action = #selector(settingScrollingButtonClick)
+                button.isEnabled = Options.shared.application.listMode != .blacklist
+                button.toolTip = Options.shared.application.listMode == .blacklist
+                    ? NSLocalizedString("application-list-blacklist-disabled-tooltip", comment: "")
+                    : nil
                 return cell
             default: break
         }

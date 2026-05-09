@@ -100,7 +100,13 @@ class ScrollCore {
         var step = Options.shared.scroll.step,
             speed = Options.shared.scroll.speed,
             duration = Options.shared.scroll.durationTransition
-        if let targetApplication = ScrollCore.shared.application {
+        let applicationListMode = Options.shared.application.listMode
+        if ScrollCore.shared.application != nil && applicationListMode == .blacklist {
+            ScrollCore.shared.clearScrollActivationState()
+            ScrollCore.shared.currentApplication = nil
+        }
+        if let targetApplication = ScrollCore.shared.application,
+           applicationListMode.appliesToListedApplications {
             enableSmooth = targetApplication.isSmooth(ScrollCore.shared.blockSmooth)
             enableSmoothVertical = targetApplication.isSmoothVertical(ScrollCore.shared.blockSmooth)
             enableSmoothHorizontal = targetApplication.isSmoothHorizontal(ScrollCore.shared.blockSmooth)
@@ -109,7 +115,7 @@ class ScrollCore {
             step = targetApplication.getStep()
             speed = targetApplication.getSpeed()
             duration = targetApplication.getDuration()
-        } else if !Options.shared.application.allowlist {
+        } else if ScrollCore.shared.application == nil && applicationListMode.appliesToUnlistedApplications {
             enableSmooth = Options.shared.scroll.smooth && !ScrollCore.shared.blockSmooth
             enableSmoothVertical = enableSmooth && Options.shared.scroll.smoothVertical
             enableSmoothHorizontal = enableSmooth && Options.shared.scroll.smoothHorizontal
@@ -216,6 +222,21 @@ class ScrollCore {
         }
     }
 
+    func clearScrollActivationState() {
+        dashKeyHeld = false
+        toggleKeyHeld = false
+        blockKeyHeld = false
+        hidDashHeldCode = nil
+        hidToggleHeldCode = nil
+        hidBlockHeldCode = nil
+        mosDashActionCount = 0
+        mosToggleActionCount = 0
+        mosBlockActionCount = 0
+        refreshDashState()
+        refreshToggleState()
+        refreshBlockState()
+    }
+
     private func updatedActionCount(_ count: Int, isDown: Bool) -> Int {
         if isDown {
             return count + 1
@@ -264,7 +285,14 @@ class ScrollCore {
         }
 
         // Key-down: 刷新前台应用上下文 (HID++ 事件不经过滚动事件路径, application 可能陈旧)
-        application = ScrollUtils.shared.getTargetApplication(from: NSWorkspace.shared.frontmostApplication)
+        let frontmostApplication = NSWorkspace.shared.frontmostApplication
+        if ScrollUtils.shared.isExcludedByApplicationListMode(frontmostApplication) {
+            clearScrollActivationState()
+            currentApplication = nil
+            application = ScrollUtils.shared.getTargetApplication(from: frontmostApplication)
+            return false
+        }
+        application = ScrollUtils.shared.getTargetApplication(from: frontmostApplication)
 
         let dashHotkey = ScrollUtils.shared.optionsDashKey(application: application)
         let toggleHotkey = ScrollUtils.shared.optionsToggleKey(application: application)
@@ -299,6 +327,13 @@ class ScrollCore {
         // 跳过 Mos 合成事件, 避免 executeCustom 的 flagsChanged 误触发 dash/toggle/block
         if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
             return nil  // listenOnly tap 返回值无影响
+        }
+        let runningApplication = ScrollUtils.shared.getRunningApplication(from: event) ?? NSWorkspace.shared.frontmostApplication
+        ScrollCore.shared.application = ScrollUtils.shared.getTargetApplication(from: runningApplication)
+        if ScrollUtils.shared.isExcludedByApplicationListMode(runningApplication) {
+            ScrollCore.shared.clearScrollActivationState()
+            ScrollCore.shared.currentApplication = nil
+            return nil
         }
         if type == .keyDown || type == .flagsChanged || type == .otherMouseDown,
            ScrollCore.shared.shouldDeferToMosScrollButtonBinding(event) {

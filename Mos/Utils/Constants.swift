@@ -58,6 +58,20 @@ enum MosEventMarker {
     static let syntheticCustom: Int64 = 0x4D6F73  // "Mos" ASCII
 }
 
+enum ApplicationListMode: String, CaseIterable {
+    case custom
+    case allowlist
+    case blacklist
+
+    var appliesToListedApplications: Bool {
+        return self != .blacklist
+    }
+
+    var appliesToUnlistedApplications: Bool {
+        return self != .allowlist
+    }
+}
+
 // 事件处理应用
 struct SPECIAL_EVENT_SOURCE_APPLICATION {
     static let logitechOptions = "com.logitech.manager.daemon"
@@ -208,8 +222,12 @@ extension OPTIONS_SCROLL_DEFAULT: Equatable {
 
 // 例外应用
 class OPTIONS_APPLICATION_DEFAULT {
-    var allowlist = false {
-        didSet {Options.shared.saveOptions()}
+    var listMode: ApplicationListMode = .custom {
+        didSet { Options.shared.saveOptions() }
+    }
+    var allowlist: Bool {
+        get { return listMode == .allowlist }
+        set { listMode = newValue ? .allowlist : .custom }
     }
     var applications = EnhanceArray<Application>(
         matchKey: "path",

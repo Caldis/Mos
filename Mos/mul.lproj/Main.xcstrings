@@ -9287,7 +9287,7 @@
       }
     },
     "v26-RK-BtL.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"The allow list mode will make Mos only apply to apps within the application list.\"; ObjectID = \"v26-RK-BtL\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Use Normal for per-app overrides, Allowlist to apply Mos only to listed apps, or Blacklist to ignore listed apps.\"; ObjectID = \"v26-RK-BtL\";",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -9310,7 +9310,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The allowlist mode will make Mos only apply to apps within the application list."
+            "value" : "Use Normal for per-app overrides, Allowlist to apply Mos only to listed apps, or Blacklist to ignore listed apps."
           }
         },
         "fr" : {
@@ -9352,25 +9352,25 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用白名单模式后, Mos 仅会对包含在例外列表内的程序启用, 其他的则不受任何影响"
+            "value" : "Normal 用于按应用覆盖；白名单只对列表内应用启用 Mos；黑名单会让 Mos 忽略列表内应用。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "啟用白名單模式後，Mos 只會對例外列表中的應用程式啟用，其他不受影響"
+            "value" : "Normal 用於按 App 覆寫；白名單只對列表內 App 啟用 Mos；黑名單會讓 Mos 忽略列表內 App。"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "啟用白名單模式後，Mos 只會對列表中的應用程式啟用，其他不受影響"
+            "value" : "Normal 用於按 App 覆寫；白名單只對列表內 App 啟用 Mos；黑名單會讓 Mos 忽略列表內 App。"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "啟用白名單模式後，Mos 只會對列表中的應用程式啟用，其他不受影響"
+            "value" : "Normal 用於按 App 覆寫；白名單只對列表內 App 啟用 Mos；黑名單會讓 Mos 忽略列表內 App。"
           }
         }
       }
