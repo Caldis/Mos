@@ -37,9 +37,12 @@ extension WindowManager {
             showWindow(withIdentifier: identifier, withTitle: title)
             return
         }
-        // 显示
+        // 取消显示 Dock 图标并激活 App，保留 accessory 模式避免切换 space
+        // Utils.showDockIcon()
+        NSApp.activate(ignoringOtherApps: true)
+        
+        // 显示并前置窗口
         windowController.showWindow(self)
-        // 前置并激活（已打开窗口也要置顶）
         if let window = windowController.window {
             if window.isMiniaturized {
                 window.deminiaturize(self)
@@ -47,14 +50,11 @@ extension WindowManager {
             window.makeKeyAndOrderFront(self)
             window.orderFrontRegardless()
         }
-        NSApp.activate(ignoringOtherApps: true)
-        // 显示 Dock 图标
-        Utils.showDockIcon()
     }
     // 关闭对应 Identifier 的窗口
     func hideWindow(withIdentifier identifier: String, destroy: Bool = false) {
         // 隐藏 Dock 图标
-        Utils.hideDockIcon()
+        // Utils.hideDockIcon()
         // 销毁实例
         if destroy {
             refs.removeValue(forKey: identifier)
