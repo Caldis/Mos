@@ -53,6 +53,9 @@ class ScrollPoster {
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
     func update(event: CGEvent, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
+        let probe = InputPipelineProfiler.shared.begin(.scrollPosterUpdate, event: event)
+        defer { probe?.end() }
+
         guard dispatchContext.capture(event: event) else {
             return self
         }
@@ -328,6 +331,9 @@ private extension ScrollPoster {
 
     // 处理滚动事件
     func processing() {
+        let probe = InputPipelineProfiler.shared.begin(.scrollPosterFrame)
+        defer { probe?.end() }
+
         var pendingStopPhase: Phase?
         os_unfair_lock_lock(&stateLock)
         lastCallbackTime = CFAbsoluteTimeGetCurrent()

@@ -106,7 +106,15 @@ final class ScrollDispatchContext {
     }
 
     func enqueue(_ snapshot: PostingSnapshot) {
+        let queueWaitStartNanos = InputPipelineProfiler.shared.markQueueWaitStart()
         postQueue.async { [self] in
+            let probe = InputPipelineProfiler.shared.begin(
+                .scrollDispatchPost,
+                event: snapshot.event,
+                queueWaitStartNanos: queueWaitStartNanos
+            )
+            defer { probe?.end() }
+
             os_unfair_lock_lock(&self.lock)
             let now = CFAbsoluteTimeGetCurrent()
             let validGeneration = snapshot.generation == self.state.generation

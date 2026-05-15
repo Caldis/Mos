@@ -51,6 +51,9 @@ class ScrollCore {
     
     // MARK: - 滚动事件处理
     let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        let probe = InputPipelineProfiler.shared.begin(.scrollEventTap, event: event)
+        defer { probe?.end() }
+
         _ = refcon
         // Tap 被系统禁用或重启边界时，强制清理 poster 上下文并失效历史异步帧
         if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
@@ -296,6 +299,9 @@ class ScrollCore {
 
     // MARK: - 热键事件处理 (CGEventTap)
     let hotkeyEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
+        let probe = InputPipelineProfiler.shared.begin(.scrollHotkeyTap, event: event)
+        defer { probe?.end() }
+
         // 跳过 Mos 合成事件, 避免 executeCustom 的 flagsChanged 误触发 dash/toggle/block
         if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
             return nil  // listenOnly tap 返回值无影响

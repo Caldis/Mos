@@ -70,6 +70,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // 读取用户设置
         Options.shared.readOptions()
+        InputPipelineProfiler.shared.logStartupConfiguration()
         
         // DEBUG: 直接弹出设置窗口
         #if DEBUG
@@ -107,6 +108,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             forName: NSApplication.didChangeScreenParametersNotification,
             object: nil, queue: .main
         ) { [weak self] _ in
+            InputPipelineProfiler.shared.recordLifecycleEvent("screenParametersChanged")
             self?.screenChangeTimer?.invalidate()
             self?.screenChangeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
                 ScrollPoster.shared.recreateDisplayLink()
@@ -143,6 +145,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // 关闭前停止滚动处理
     func applicationWillTerminate(_ aNotification: Notification) {
         guard AppRuntime.shouldRunAppStartupSideEffects else { return }
+        InputPipelineProfiler.shared.recordLifecycleEvent("applicationWillTerminate")
         LogiCenter.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
@@ -184,9 +187,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // 在切换用户时停止滚动处理
     @objc func sessionDidActive(notification: NSNotification){
+        let eventName = notification.name == NSWorkspace.didWakeNotification ? "didWake" : "sessionDidBecomeActive"
+        InputPipelineProfiler.shared.recordLifecycleEvent(eventName)
         startWithAccessibilityPermissionsChecker(nil)
     }
     @objc func sessionDidResign(notification: NSNotification){
+        let eventName = notification.name == NSWorkspace.willSleepNotification ? "willSleep" : "sessionDidResignActive"
+        InputPipelineProfiler.shared.recordLifecycleEvent(eventName)
         permissionRecoveryTimer?.invalidate()
         permissionRecoveryTimer = nil
         LogiCenter.shared.stop()
@@ -195,6 +202,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     // 辅助功能权限在运行时被撤销 (可能由多个 Interceptor 同时触发, 此方法必须幂等)
     @objc func handleAccessibilityPermissionLost() {
+        InputPipelineProfiler.shared.recordLifecycleEvent("accessibilityPermissionLost")
         // 避免多个 Interceptor 同时触发导致重复处理
         guard ScrollCore.shared.isActive || ButtonCore.shared.isActive else { return }
         NSLog("Accessibility permission lost at runtime, disabling cores")

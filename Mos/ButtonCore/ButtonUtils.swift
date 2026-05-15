@@ -44,6 +44,9 @@ class ButtonUtils {
         for event: InputEvent,
         where predicate: ((ButtonBinding) -> Bool)? = nil
     ) -> ButtonBinding? {
+        let probe = InputPipelineProfiler.shared.begin(.buttonBindingMatch, inputEvent: event)
+        defer { probe?.end() }
+
         let candidates = getButtonBindings(for: event.type, code: event.code)
         var bestBinding: ButtonBinding?
         var bestPriority = Int.min

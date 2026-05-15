@@ -90,6 +90,9 @@ class InputProcessor {
     /// - Parameter event: 统一输入事件
     /// - Returns: .consumed 表示事件已处理, .passthrough 表示未匹配
     func process(_ event: InputEvent) -> InputResult {
+        let probe = InputPipelineProfiler.shared.begin(.inputProcessor, inputEvent: event)
+        defer { probe?.end() }
+
         if event.phase == .up {
             // Up 事件: 按 (type, code) 查表, 忽略 modifiers (用户可能已松开修饰键)
             if releaseActiveBinding(for: event) {
