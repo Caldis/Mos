@@ -7,6 +7,7 @@ export const en = {
     closeDialog: "Close dialog",
     githubAria: "Mos on GitHub",
     appIconAlt: "Mos app icon",
+    appProfileIconAlt: "{app} app icon for a Mos per-application scrolling profile",
     scrollCurveGraph: "Scroll curve graph",
   },
   nav: {

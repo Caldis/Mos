@@ -58,8 +58,8 @@ struct ScrollHotkey: Codable, Equatable {
         case .keyboard:
             return KeyCode.keyMap[code] ?? "Key \(code)"
         case .mouse:
-            if LogitechCIDRegistry.isLogitechCode(code) {
-                return LogitechCIDRegistry.name(forMosCode: code)
+            if LogiCenter.shared.isLogiCode(code) {
+                return (LogiCenter.shared.name(forMosCode: code) ?? "")
             }
             return KeyCode.mouseMap[code] ?? "🖱\(code)"
         }
@@ -99,7 +99,6 @@ struct RecordedEvent: Codable, Equatable {
     let type: EventType // 事件类型
     let code: UInt16 // 按键代码
     let modifiers: UInt // 修饰键
-    let displayComponents: [String] // 展示用名称组件
     let deviceFilter: DeviceFilter?
 
     // MARK: - 计算属性
@@ -114,6 +113,19 @@ struct RecordedEvent: Codable, Equatable {
         return ScrollHotkey(type: type, code: code)
     }
 
+    /// 展示用名称组件按当前命名规则动态计算, 不写入持久化配置.
+    var displayComponents: [String] {
+        let event = InputEvent(
+            type: type,
+            code: code,
+            modifiers: CGEventFlags(rawValue: UInt64(modifiers)),
+            phase: .down,
+            source: .hidPP,
+            device: nil
+        )
+        return event.displayComponents
+    }
+
     // MARK: - INIT
     init(from event: CGEvent) {
         // 修饰键
@@ -126,8 +138,6 @@ struct RecordedEvent: Codable, Equatable {
             self.type = .mouse
             self.code = event.mouseCode
         }
-        // 展示用名称
-        self.displayComponents = event.displayComponents
         self.deviceFilter = nil
     }
 
@@ -137,16 +147,31 @@ struct RecordedEvent: Codable, Equatable {
         self.code = event.code
         self.modifiers = UInt(event.modifiers.rawValue)
         self.deviceFilter = deviceFilter
-        self.displayComponents = event.displayComponents
     }
 
-    /// 便捷构造 - 直接指定所有字段
+    /// 便捷构造 - 直接指定事件字段
+    init(type: EventType, code: UInt16, modifiers: UInt, deviceFilter: DeviceFilter?) {
+        self.type = type
+        self.code = code
+        self.modifiers = modifiers
+        self.deviceFilter = deviceFilter
+    }
+
+    /// 兼容旧调用点: displayComponents 已改为动态计算, 这里不再存储传入值.
     init(type: EventType, code: UInt16, modifiers: UInt, displayComponents: [String], deviceFilter: DeviceFilter?) {
         self.type = type
         self.code = code
         self.modifiers = modifiers
-        self.displayComponents = displayComponents
         self.deviceFilter = deviceFilter
+    }
+
+    func standardMouseAliasTriggerIfAvailable() -> RecordedEvent? {
+        return LogiStandardMouseButtonAlias.convertedRecordedEvent(from: self)
+    }
+
+    func normalizedForButtonBinding(diagnosis: LogiButtonCaptureDiagnosis) -> RecordedEvent {
+        guard diagnosis.usesNativeEvents else { return self }
+        return standardMouseAliasTriggerIfAvailable() ?? self
     }
 
     // MARK: - 匹配方法
@@ -222,6 +247,9 @@ struct ButtonBinding: Codable, Equatable {
     static let customBindingRelevantModifierMask: UInt64 =
         KeyCode.modifiersMask | CGEventFlags.maskSecondaryFn.rawValue
 
+    /// "打开应用" 动作 sentinel; systemShortcutName 取此值时, openTarget 字段为权威载荷.
+    static let openTargetSentinel = "openTarget"
+
     // MARK: - 持久化字段
 
     /// 唯一标识符
@@ -231,7 +259,8 @@ struct ButtonBinding: Codable, Equatable {
     let triggerEvent: RecordedEvent
 
     /// 绑定的系统快捷键名称
-    /// 自定义快捷键格式: "custom::<keyCode>:<modifierFlags>"
+    /// 自定义快捷键格式: "custom::<keyCode>:<modifierFlags>" 或 "custom::mouse:<buttonCode>:<modifierFlags>"
+    /// "打开应用" 动作: "openTarget" (此时 openTarget 字段非 nil)
     let systemShortcutName: String
 
     /// 是否启用
@@ -239,6 +268,9 @@ struct ButtonBinding: Codable, Equatable {
 
     /// 创建时间
     let createdAt: Date
+
+    /// "打开应用" 动作的结构化载荷; 仅当 systemShortcutName == openTargetSentinel 时非 nil.
+    let openTarget: OpenTargetPayload?
 
     // MARK: - 瞬态缓存字段 (不参与编解码)
 
@@ -248,10 +280,13 @@ struct ButtonBinding: Codable, Equatable {
     /// 缓存的自定义修饰键标志
     private(set) var cachedCustomModifiers: UInt64? = nil
 
+    /// 缓存的自定义输入类型; 旧格式按 code 推断, 与展示和执行路径保持一致.
+    private(set) var cachedCustomType: EventType? = nil
+
     // MARK: - CodingKeys (仅编码持久化字段)
 
     enum CodingKeys: String, CodingKey {
-        case id, triggerEvent, systemShortcutName, isEnabled, createdAt
+        case id, triggerEvent, systemShortcutName, isEnabled, createdAt, openTarget
     }
 
     // MARK: - 计算属性
@@ -268,50 +303,176 @@ struct ButtonBinding: Codable, Equatable {
 
     // MARK: - 初始化
 
-    init(id: UUID = UUID(), triggerEvent: RecordedEvent, systemShortcutName: String, isEnabled: Bool = true, createdAt: Date = Date()) {
+    init(id: UUID = UUID(),
+         triggerEvent: RecordedEvent,
+         systemShortcutName: String,
+         isEnabled: Bool = true,
+         createdAt: Date = Date()) {
         self.id = id
         self.triggerEvent = triggerEvent
         self.systemShortcutName = systemShortcutName
         self.isEnabled = isEnabled
         self.createdAt = createdAt
+        self.openTarget = nil
+    }
+
+    /// "打开应用" 动作专用初始化器, 强制保证 sentinel 与 payload 一致.
+    init(id: UUID = UUID(),
+         triggerEvent: RecordedEvent,
+         openTarget: OpenTargetPayload,
+         isEnabled: Bool = true,
+         createdAt: Date = Date()) {
+        self.id = id
+        self.triggerEvent = triggerEvent
+        self.systemShortcutName = Self.openTargetSentinel
+        self.openTarget = openTarget
+        self.isEnabled = isEnabled
+        self.createdAt = createdAt
+    }
+
+    func standardMouseAliasBindingIfAvailable() -> ButtonBinding? {
+        return LogiStandardMouseButtonAlias.convertedBinding(from: self)
+    }
+
+    func replacingTriggerEvent(_ triggerEvent: RecordedEvent) -> ButtonBinding {
+        if let payload = openTarget {
+            return ButtonBinding(
+                id: id,
+                triggerEvent: triggerEvent,
+                openTarget: payload,
+                isEnabled: isEnabled,
+                createdAt: createdAt
+            )
+        }
+
+        return ButtonBinding(
+            id: id,
+            triggerEvent: triggerEvent,
+            systemShortcutName: systemShortcutName,
+            isEnabled: isEnabled,
+            createdAt: createdAt
+        )
+    }
+
+    // MARK: - Decode-time 一致性校验 (UI 与 executor 必须看到同一个真相)
+    //
+    // 不变量: systemShortcutName == openTargetSentinel ⇔ openTarget != nil
+    //
+    // 没有这层校验时, 手改 / AI 改写的 JSON 可能写出 mismatch 状态:
+    //   - {"systemShortcutName":"copy", "openTarget":{...}}  → UI 显 "打开 Safari", 执行却跑 Copy
+    //   - {"systemShortcutName":"openTarget", openTarget 缺}  → UI 显 unbound, 执行 no-op
+    // decode 时 throw, 让 Options.decodeButtonBindingsWithUnknowns 把这条 binding 收到
+    // preservedUnknownBindings, save 时再 round-trip 回去 (用户改 JSON 改坏了一条不会被静默吞掉).
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try c.decode(UUID.self, forKey: .id)
+        self.triggerEvent = try c.decode(RecordedEvent.self, forKey: .triggerEvent)
+        let name = try c.decode(String.self, forKey: .systemShortcutName)
+        self.systemShortcutName = name
+        self.isEnabled = try c.decode(Bool.self, forKey: .isEnabled)
+        self.createdAt = try c.decode(Date.self, forKey: .createdAt)
+        let payload = try c.decodeIfPresent(OpenTargetPayload.self, forKey: .openTarget)
+        self.openTarget = payload
+
+        // 强制一致性: sentinel 与 payload 同时存在或同时不存在.
+        let nameIsSentinel = (name == Self.openTargetSentinel)
+        let payloadIsPresent = (payload != nil)
+        if nameIsSentinel != payloadIsPresent {
+            throw DecodingError.dataCorruptedError(
+                forKey: .openTarget,
+                in: c,
+                debugDescription: "Inconsistent OpenTarget binding: systemShortcutName=\"\(name)\" but openTarget \(payloadIsPresent ? "present" : "missing")"
+            )
+        }
     }
 
     // MARK: - 自定义缓存
 
     /// 解析 custom:: 格式并填充缓存字段
     mutating func prepareCustomCache() {
-        guard let payload = Self.normalizedCustomBindingPayload(from: systemShortcutName) else {
+        guard let payload = Self.normalizedCustomBindingDescriptor(from: systemShortcutName) else {
             cachedCustomCode = nil
             cachedCustomModifiers = nil
+            cachedCustomType = nil
             return
         }
         cachedCustomCode = payload.code
         cachedCustomModifiers = payload.modifiers
+        cachedCustomType = payload.type
     }
 
     static func normalizedCustomBindingName(code: UInt16, modifiers: UInt64) -> String {
-        let payload = normalizeCustomBindingPayload(code: code, modifiers: modifiers)
+        let payload = normalizeCustomBindingPayload(type: .keyboard, code: code, modifiers: modifiers)
         return "custom::\(payload.code):\(payload.modifiers)"
     }
 
+    static func normalizedCustomBindingName(type: EventType, code: UInt16, modifiers: UInt64) -> String {
+        let payload = normalizeCustomBindingPayload(type: type, code: code, modifiers: modifiers)
+        switch payload.type {
+        case .keyboard:
+            return "custom::\(payload.code):\(payload.modifiers)"
+        case .mouse:
+            return "custom::mouse:\(payload.code):\(payload.modifiers)"
+        }
+    }
+
+    static func normalizedCustomBindingName(from event: InputEvent) -> String {
+        return normalizedCustomBindingName(
+            type: event.type,
+            code: event.code,
+            modifiers: UInt64(event.modifiers.rawValue)
+        )
+    }
+
     static func normalizedCustomBindingPayload(from customBindingName: String) -> (code: UInt16, modifiers: UInt64)? {
+        guard let payload = normalizedCustomBindingDescriptor(from: customBindingName) else { return nil }
+        return (payload.code, payload.modifiers)
+    }
+
+    static func normalizedCustomBindingDescriptor(from customBindingName: String) -> (type: EventType, code: UInt16, modifiers: UInt64)? {
+        guard let payload = customBindingPayload(from: customBindingName) else { return nil }
+        let inferredType = payload.explicitType ?? legacyCustomBindingType(forCode: payload.code)
+        return (inferredType, payload.code, payload.modifiers)
+    }
+
+    private static func customBindingPayload(from customBindingName: String) -> (explicitType: EventType?, code: UInt16, modifiers: UInt64)? {
         guard customBindingName.hasPrefix("custom::") else { return nil }
         let payload = String(customBindingName.dropFirst("custom::".count))
         let parts = payload.split(separator: ":")
-        guard parts.count == 2,
-              let code = UInt16(parts[0]),
-              let modifiers = UInt64(parts[1]) else {
+
+        if parts.count == 2,
+           let code = UInt16(parts[0]),
+           let modifiers = UInt64(parts[1]) {
+            let normalized = normalizeCustomBindingPayload(type: .keyboard, code: code, modifiers: modifiers)
+            return (nil, normalized.code, normalized.modifiers)
+        }
+
+        guard parts.count == 3,
+              let type = EventType(rawValue: String(parts[0])),
+              let code = UInt16(parts[1]),
+              let modifiers = UInt64(parts[2]) else {
             return nil
         }
-        return normalizeCustomBindingPayload(code: code, modifiers: modifiers)
+        let normalized = normalizeCustomBindingPayload(type: type, code: code, modifiers: modifiers)
+        return (normalized.type, normalized.code, normalized.modifiers)
     }
 
     static func normalizeCustomBindingPayload(code: UInt16, modifiers: UInt64) -> (code: UInt16, modifiers: UInt64) {
+        let payload = normalizeCustomBindingPayload(type: .keyboard, code: code, modifiers: modifiers)
+        return (payload.code, payload.modifiers)
+    }
+
+    static func normalizeCustomBindingPayload(type: EventType, code: UInt16, modifiers: UInt64) -> (type: EventType, code: UInt16, modifiers: UInt64) {
         var normalizedModifiers = modifiers & customBindingRelevantModifierMask
-        if KeyCode.modifierKeys.contains(code) {
+        if type == .keyboard && KeyCode.modifierKeys.contains(code) {
             normalizedModifiers &= ~KeyCode.getKeyMask(code).rawValue
         }
-        return (code, normalizedModifiers)
+        return (type, code, normalizedModifiers)
+    }
+
+    private static func legacyCustomBindingType(forCode code: UInt16) -> EventType {
+        return code >= 0x100 ? .mouse : .keyboard
     }
 
     // MARK: - Equatable (仅比较持久化字段, 忽略瞬态缓存)
@@ -321,7 +482,64 @@ struct ButtonBinding: Codable, Equatable {
                lhs.triggerEvent == rhs.triggerEvent &&
                lhs.systemShortcutName == rhs.systemShortcutName &&
                lhs.isEnabled == rhs.isEnabled &&
-               lhs.createdAt == rhs.createdAt
+               lhs.createdAt == rhs.createdAt &&
+               lhs.openTarget == rhs.openTarget
+    }
+}
+
+enum ButtonBindingReplacement {
+    static func replacing(_ replacement: ButtonBinding, in bindings: [ButtonBinding]) -> [ButtonBinding] {
+        guard bindings.contains(where: { $0.id == replacement.id }) else {
+            return bindings
+        }
+
+        let mergedReplacement = replacement.mergingActionFromDuplicateIfNeeded(in: bindings)
+        var result = bindings.filter { binding in
+            binding.id == replacement.id || binding.triggerEvent != replacement.triggerEvent
+        }
+        guard let index = result.firstIndex(where: { $0.id == replacement.id }) else {
+            return bindings
+        }
+        result[index] = mergedReplacement
+        return result
+    }
+}
+
+private extension ButtonBinding {
+    var hasPersistentAction: Bool {
+        return openTarget != nil || !systemShortcutName.isEmpty
+    }
+
+    func mergingActionFromDuplicateIfNeeded(in bindings: [ButtonBinding]) -> ButtonBinding {
+        guard !hasPersistentAction else { return self }
+        guard let donor = bindings.first(where: { binding in
+            binding.id != id &&
+            binding.triggerEvent == triggerEvent &&
+            binding.hasPersistentAction
+        }) else {
+            return self
+        }
+        return replacingAction(from: donor)
+    }
+
+    func replacingAction(from donor: ButtonBinding) -> ButtonBinding {
+        if let payload = donor.openTarget {
+            return ButtonBinding(
+                id: id,
+                triggerEvent: triggerEvent,
+                openTarget: payload,
+                isEnabled: donor.isEnabled,
+                createdAt: createdAt
+            )
+        }
+
+        return ButtonBinding(
+            id: id,
+            triggerEvent: triggerEvent,
+            systemShortcutName: donor.systemShortcutName,
+            isEnabled: donor.isEnabled,
+            createdAt: createdAt
+        )
     }
 }
 

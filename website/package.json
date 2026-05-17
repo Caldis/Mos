@@ -4,13 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build && bash scripts/publish-docs.sh",
+    "build": "next build && node scripts/prepare-pages-artifact.mjs",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check:ai": "node scripts/verify-ai-readiness.mjs",
+    "check:motion": "node scripts/verify-motion-hydration.mjs"
   },
   "dependencies": {
     "framer-motion": "^11.18.2",
-    "next": "16.1.6",
+    "next": "16.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "swr": "^2.3.0"
@@ -28,7 +30,6 @@
     "typescript": "^5"
   },
   "overrides": {
-    "minimatch": "^10.2.1",
-    "ajv": "^8.18.0"
+    "minimatch": "^10.2.1"
   }
 }

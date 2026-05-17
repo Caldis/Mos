@@ -12,14 +12,17 @@ import { CopyButton } from "./components/CopyButton/CopyButton";
 import { useI18n } from "./i18n/context";
 import { format } from "./i18n/format";
 import { useGithubRelease } from "./services/github";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { HeroCurvePanel } from "./components/HeroCurvePanel/HeroCurvePanel";
 import { BentoCard } from "./components/BentoCard/BentoCard";
+import { useHydratedReducedMotion } from "./hooks/useHydratedReducedMotion";
 
 const FALLBACK_RELEASE_LINK = "https://github.com/Caldis/Mos/releases/latest";
 
 type Axis = "X" | "Y";
 type AxisSetting = "smooth" | "reverse";
+type ReadmeScreenshotLocale = "en-us" | "zh-cn";
+type ReadmeScreenshotName = "scrolling" | "general" | "application-settings" | "buttons-action";
 
 type AppProfile = {
   id: string;
@@ -160,17 +163,56 @@ function pickDownloadUrl(release: unknown): string {
 
 const HERO_SPRING = { type: "spring" as const, stiffness: 100, damping: 20 };
 
+const README_SCREENSHOT_SIZES: Record<
+  ReadmeScreenshotName,
+  { width: number; height: number }
+> = {
+  scrolling: { width: 1124, height: 1354 },
+  general: { width: 1124, height: 610 },
+  "application-settings": { width: 1926, height: 1276 },
+  "buttons-action": { width: 1440, height: 1330 },
+};
+
 function heroMotion(delayS: number, shouldReduceMotion: boolean | null) {
   return {
-    initial: shouldReduceMotion ? (false as const) : { opacity: 0, y: 24 },
+    initial: false as const,
     animate: { opacity: 1, y: 0 },
-    transition: { ...HERO_SPRING, delay: delayS },
+    transition: shouldReduceMotion ? { duration: 0 } : { ...HERO_SPRING, delay: delayS },
   };
 }
 
+function ReadmeScreenshot({
+  locale,
+  name,
+  alt,
+  className = "",
+}: {
+  locale: ReadmeScreenshotLocale;
+  name: ReadmeScreenshotName;
+  alt: string;
+  className?: string;
+}) {
+  const size = README_SCREENSHOT_SIZES[name];
+
+  return (
+    <div
+      className={`rounded-[22px] border border-white/10 bg-black/45 p-2.5 shadow-elevated sm:p-3 ${className}`}
+    >
+      <Image
+        src={`/readme/${locale}/${name}.png`}
+        alt={alt}
+        width={size.width}
+        height={size.height}
+        className="block h-auto w-full rounded-[16px] border border-white/8 bg-[#302d31]"
+        sizes="(min-width: 1024px) 560px, calc(100vw - 64px)"
+      />
+    </div>
+  );
+}
+
 export default function HomeClient() {
-  const { t } = useI18n();
-  const shouldReduceMotion = useReducedMotion();
+  const { language, t } = useI18n();
+  const shouldReduceMotion = useHydratedReducedMotion();
   const { data: release } = useGithubRelease();
 
   const [axesDemo, setAxesDemo] = useState<Record<Axis, Record<AxisSetting, boolean>>>(() => ({
@@ -192,6 +234,8 @@ export default function HomeClient() {
   }, [release?.tag_name]);
 
   const downloadUrl = useMemo(() => pickDownloadUrl(release), [release]);
+  const readmeScreenshotLocale: ReadmeScreenshotLocale =
+    language === "zh" || language === "zh-Hant" ? "zh-cn" : "en-us";
 
   const homebrewRef = useRef<HTMLDivElement | null>(null);
   const pendingHomebrewFlashRef = useRef(false);
@@ -293,9 +337,6 @@ export default function HomeClient() {
 
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <FlowField className="absolute inset-0" />
-        <div className="orb left-[-140px] top-[-120px] w-[380px] h-[380px] bg-[color:var(--accent)]" />
-        <div className="orb right-[-180px] top-[10vh] w-[420px] h-[420px] bg-[color:var(--accent3)] [animation-delay:-1.2s]" />
-        <div className="orb left-[12vw] bottom-[-220px] w-[520px] h-[520px] bg-[color:var(--accent2)] [animation-delay:-2.1s]" />
       </div>
 
       <header className="fixed left-0 right-0 top-0 z-50 px-4 sm:px-6">
@@ -478,6 +519,12 @@ export default function HomeClient() {
                     {t.sectionFeel.cards.curves.body}
                   </p>
                   <EasingPlayground className="mt-6" />
+                  <ReadmeScreenshot
+                    locale={readmeScreenshotLocale}
+                    name="scrolling"
+                    alt="Mos scroll settings window with controls for step, speed, duration, acceleration, and smoothing"
+                    className="mx-auto mt-6 w-full max-w-[420px]"
+                  />
                 </div>
               </BentoCard>
             </Reveal>
@@ -533,6 +580,12 @@ export default function HomeClient() {
                       })}
                     </div>
                   </div>
+                  <ReadmeScreenshot
+                    locale={readmeScreenshotLocale}
+                    name="general"
+                    alt="Mos general settings window showing startup and scrolling behavior options"
+                    className="mt-6"
+                  />
                 </div>
               </BentoCard>
             </Reveal>
@@ -561,7 +614,7 @@ export default function HomeClient() {
                         <div className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-black/20 overflow-hidden">
                           <Image
                             src={a.icon}
-                            alt=""
+                            alt={format(t.a11y.appProfileIconAlt, { app: a.name })}
                             width={48}
                             height={48}
                             className="h-full w-full object-cover"
@@ -579,6 +632,12 @@ export default function HomeClient() {
                       </div>
                     ))}
                   </div>
+                  <ReadmeScreenshot
+                    locale={readmeScreenshotLocale}
+                    name="application-settings"
+                    alt="Mos per-application settings window with app-specific scroll and button options"
+                    className="mt-6"
+                  />
                 </div>
               </BentoCard>
             </Reveal>
@@ -596,45 +655,53 @@ export default function HomeClient() {
                     {t.sectionFeel.cards.buttons.body}
                   </p>
 
-                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5">
-                    <div className="font-mono text-xs text-white/45">
-                      {t.sectionFeel.cards.buttons.quickBind}
-                    </div>
-                    <div className="mt-3 grid gap-2">
-                      {[
-                        {
-                          k: t.sectionFeel.cards.buttons.rows.button4,
-                          v: t.sectionFeel.cards.buttons.rows.missionControl,
-                        },
-                        {
-                          k: t.sectionFeel.cards.buttons.rows.button5,
-                          v: t.sectionFeel.cards.buttons.rows.nextSpace,
-                        },
-                        {
-                          k: t.sectionFeel.cards.buttons.rows.wheelClick,
-                          v: t.sectionFeel.cards.buttons.rows.appSwitcher,
-                        },
-                      ].map((row) => (
-                        <div
-                          key={row.k}
-                          className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2"
-                        >
-                          <div className="font-mono text-xs text-white/75">{row.k}</div>
-                          <div className="font-mono text-xs text-white/45">{row.v}</div>
+                  <div className="mt-6 grid gap-4 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+                    <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
+                      <div className="font-mono text-xs text-white/45">
+                        {t.sectionFeel.cards.buttons.quickBind}
+                      </div>
+                      <div className="mt-3 grid gap-2">
+                        {[
+                          {
+                            k: t.sectionFeel.cards.buttons.rows.button4,
+                            v: t.sectionFeel.cards.buttons.rows.missionControl,
+                          },
+                          {
+                            k: t.sectionFeel.cards.buttons.rows.button5,
+                            v: t.sectionFeel.cards.buttons.rows.nextSpace,
+                          },
+                          {
+                            k: t.sectionFeel.cards.buttons.rows.wheelClick,
+                            v: t.sectionFeel.cards.buttons.rows.appSwitcher,
+                          },
+                        ].map((row) => (
+                          <div
+                            key={row.k}
+                            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2"
+                          >
+                            <div className="font-mono text-xs text-white/75">{row.k}</div>
+                            <div className="font-mono text-xs text-white/45">{row.v}</div>
+                          </div>
+                        ))}
+                        {/* Pulsing "recording" placeholder row */}
+                        <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 px-3 py-2 opacity-60">
+                          <div className="flex items-center gap-2">
+                            <span className="relative flex h-1.5 w-1.5">
+                              <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
+                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/40" />
+                            </span>
+                            <div className="font-mono text-xs text-white/45">—</div>
+                          </div>
+                          <div className="font-mono text-[10px] text-white/30 italic">recording…</div>
                         </div>
-                      ))}
-                      {/* Pulsing "recording" placeholder row */}
-                      <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 px-3 py-2 opacity-60">
-                        <div className="flex items-center gap-2">
-                          <span className="relative flex h-1.5 w-1.5">
-                            <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/40" />
-                          </span>
-                          <div className="font-mono text-xs text-white/45">—</div>
-                        </div>
-                        <div className="font-mono text-[10px] text-white/30 italic">recording…</div>
                       </div>
                     </div>
+                    <ReadmeScreenshot
+                      locale={readmeScreenshotLocale}
+                      name="buttons-action"
+                      alt="Mos action library window for binding mouse buttons to system and keyboard actions"
+                      className="w-full"
+                    />
                   </div>
                 </div>
               </BentoCard>
@@ -752,7 +819,25 @@ export default function HomeClient() {
                   " · " +
                   t.footer.requiresMacos}
               </div>
-              <div className="flex items-center gap-4 font-mono text-xs">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs">
+                <a
+                  href="/about/"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  About Mos
+                </a>
+                <a
+                  href="/compare/"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  Compare Mos
+                </a>
+                <a
+                  href="/privacy/"
+                  className="hover:text-white/80 transition-colors"
+                >
+                  Privacy
+                </a>
                 <a
                   href="https://github.com/Caldis/Mos"
                   target="_blank"

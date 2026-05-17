@@ -20,6 +20,10 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 npm run build
 ```
 
+The build writes a static export to `website/out` and prepares the Pages
+artifact by copying the tracked Sparkle files from `../release/`. GitHub Pages
+deployment is handled by `.github/workflows/pages.yml`.
+
 ## Transition
 
-Just edit the wording with your language in `app/i18n` and rise an pull request.
+Edit the wording for your language in `app/i18n` and open a pull request.

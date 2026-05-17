@@ -189,7 +189,7 @@ extension OPTIONS_SCROLL_DEFAULT: Equatable {
     static func == (l: OPTIONS_SCROLL_DEFAULT, r: OPTIONS_SCROLL_DEFAULT) -> Bool {
         return (
             l.smooth == r.smooth &&
-            l.reverse == r.smooth &&
+            l.reverse == r.reverse &&
             l.reverseVertical == r.reverseVertical &&
             l.reverseHorizontal == r.reverseHorizontal &&
             l.dash == r.dash &&

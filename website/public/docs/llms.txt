@@ -1,0 +1,20 @@
+# Mos product docs context
+
+Mos product documentation and release resources:
+
+- Homepage: https://mos.caldis.me/
+- Markdown homepage: https://mos.caldis.me/index.md
+- Full LLM context: https://mos.caldis.me/llms-full.txt
+- Wiki: https://github.com/Caldis/Mos/wiki
+- Releases: https://github.com/Caldis/Mos/releases
+- Latest release: https://github.com/Caldis/Mos/releases/latest
+- Appcast: https://mos.caldis.me/appcast.xml
+
+Core topics:
+
+- Smooth mouse wheel scrolling on macOS.
+- Per-app scroll profiles.
+- Independent X/Y axis settings.
+- Mouse button and keyboard event bindings.
+- Logitech HID++ button integration.
+- Accessibility permission requirements.

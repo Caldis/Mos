@@ -48,7 +48,10 @@ class ButtonUtils {
         var bestBinding: ButtonBinding?
         var bestPriority = Int.min
 
-        for binding in candidates where binding.isEnabled {
+        for binding in candidates {
+            guard binding.isEnabled else {
+                continue
+            }
             if let predicate, !predicate(binding) {
                 continue
             }

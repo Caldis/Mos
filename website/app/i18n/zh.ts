@@ -9,6 +9,7 @@ export const zh: Translations = {
     closeDialog: "关闭对话框",
     githubAria: "Mos 的 GitHub",
     appIconAlt: "Mos 应用图标",
+    appProfileIconAlt: "{app} 应用图标，用于展示 Mos 按应用滚动配置",
     scrollCurveGraph: "滚动曲线图",
   },
   nav: {

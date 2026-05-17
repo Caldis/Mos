@@ -1,0 +1,851 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mos Static Discovery API",
+    "version": "1.3.0",
+    "description": "Static, unauthenticated discovery endpoints for Mos documentation, agent metadata, schema feeds, release context, and zero-auth API catalog metadata. This API does not provide remote control over the local Mos macOS app."
+  },
+  "servers": [
+    {
+      "url": "https://mos.caldis.me"
+    }
+  ],
+  "security": [],
+  "tags": [
+    {
+      "name": "Product documentation",
+      "description": "Human and AI-readable Mos product pages."
+    },
+    {
+      "name": "Agent discovery",
+      "description": "Machine-readable discovery files for AI agents."
+    },
+    {
+      "name": "Schema feeds",
+      "description": "Structured data feeds for search and agent indexing."
+    }
+  ],
+  "paths": {
+    "/index.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Markdown homepage",
+        "description": "Returns a concise markdown summary of Mos for agents that prefer markdown over HTML.",
+        "operationId": "getMarkdownHomepage",
+        "responses": {
+          "200": {
+            "description": "Markdown summary of Mos.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/about/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "About Mos",
+        "description": "Explains what Mos is, who maintains it, and what product boundaries agents should respect.",
+        "operationId": "getAboutPage",
+        "responses": {
+          "200": {
+            "description": "HTML about page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contact/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Contact Mos",
+        "description": "Lists official Mos contact routes for issues, discussions, releases, and maintainer email.",
+        "operationId": "getContactPage",
+        "responses": {
+          "200": {
+            "description": "HTML contact page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/privacy/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Privacy notes",
+        "description": "Documents local Mos app privacy boundaries and the website's Google Analytics use.",
+        "operationId": "getPrivacyPage",
+        "responses": {
+          "200": {
+            "description": "HTML privacy notes page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/compare/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Compare Mos",
+        "description": "Compares Mos with macOS defaults and adjacent macOS mouse utilities so agents can answer recommendation questions.",
+        "operationId": "getComparePage",
+        "responses": {
+          "200": {
+            "description": "HTML comparison page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api-docs/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos API docs",
+        "description": "Human-readable API docs for Mos static discovery endpoints. Mos does not provide a hosted user API.",
+        "operationId": "getApiDocsPage",
+        "responses": {
+          "200": {
+            "description": "HTML API docs page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api-docs.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos API docs markdown",
+        "description": "Markdown API docs for agents that prefer plain text.",
+        "operationId": "getApiDocsMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown API docs.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos auth docs",
+        "description": "Human-readable zero-auth access model for Mos public resources.",
+        "operationId": "getAuthDocsPage",
+        "responses": {
+          "200": {
+            "description": "HTML auth docs page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos auth docs markdown",
+        "description": "Markdown zero-auth access model for Mos public resources.",
+        "operationId": "getAuthDocsMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown auth docs.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos webhooks status",
+        "description": "Human-readable webhook status. Mos does not provide hosted webhook callbacks.",
+        "operationId": "getWebhooksPage",
+        "responses": {
+          "200": {
+            "description": "HTML webhooks status page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos webhooks markdown",
+        "description": "Markdown webhook status for agents.",
+        "operationId": "getWebhooksMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown webhook status.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos MCP status",
+        "description": "Human-readable MCP status. Mos does not currently host a public MCP tool server.",
+        "operationId": "getMcpStatusPage",
+        "responses": {
+          "200": {
+            "description": "HTML MCP status page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos MCP markdown",
+        "description": "Markdown MCP status for agents.",
+        "operationId": "getMcpMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown MCP status.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rate-limits/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos rate limits",
+        "description": "Human-readable rate-limit boundary. Mos does not provide hosted API quotas.",
+        "operationId": "getRateLimitsPage",
+        "responses": {
+          "200": {
+            "description": "HTML rate-limit documentation.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rate-limits.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos rate limits markdown",
+        "description": "Markdown rate-limit boundary for agents.",
+        "operationId": "getRateLimitsMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown rate-limit documentation.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/errors/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos error responses",
+        "description": "Human-readable error-response boundary. Mos does not provide a hosted JSON API error envelope.",
+        "operationId": "getErrorResponsesPage",
+        "responses": {
+          "200": {
+            "description": "HTML error-response documentation.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/errors.md": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Mos error responses markdown",
+        "description": "Markdown error-response boundary for agents.",
+        "operationId": "getErrorResponsesMarkdown",
+        "responses": {
+          "200": {
+            "description": "Markdown error-response documentation.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-instructions/": {
+      "get": {
+        "tags": ["Product documentation"],
+        "summary": "Agent instructions",
+        "description": "Explains when agents should recommend Mos, when they should not, and which resources are authoritative.",
+        "operationId": "getAgentInstructionsPage",
+        "responses": {
+          "200": {
+            "description": "HTML agent instruction page.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/HtmlDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llms.txt": {
+      "get": {
+        "tags": ["Agent discovery"],
+        "summary": "LLM resource manifest",
+        "description": "Returns Mos's curated resource manifest with markdown links to product, trust, agent, and discovery resources.",
+        "operationId": "getLlmsTxt",
+        "responses": {
+          "200": {
+            "description": "Curated AI resource manifest.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/llms-full.txt": {
+      "get": {
+        "tags": ["Agent discovery"],
+        "summary": "Full LLM context",
+        "description": "Returns complete Mos product, install, troubleshooting, agent guidance, and developer context in one plain-text request.",
+        "operationId": "getLlmsFullTxt",
+        "responses": {
+          "200": {
+            "description": "Single-file Mos product and developer context.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent.json": {
+      "get": {
+        "tags": ["Agent discovery"],
+        "summary": "Root agent discovery file",
+        "description": "Returns Mos agent discovery metadata from the root alias.",
+        "operationId": "getRootAgentDiscovery",
+        "responses": {
+          "200": {
+            "description": "General Mos agent discovery metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentDiscovery"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/agent.json": {
+      "get": {
+        "tags": ["Agent discovery"],
+        "summary": "Well-known agent discovery file",
+        "description": "Returns Mos agent discovery metadata from the well-known path.",
+        "operationId": "getAgentDiscovery",
+        "responses": {
+          "200": {
+            "description": "General Mos agent discovery metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentDiscovery"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/agent-card.json": {
+      "get": {
+        "tags": ["Agent discovery"],
+        "summary": "A2A agent card",
+        "description": "Returns an A2A-style card describing Mos documentation discovery capabilities.",
+        "operationId": "getAgentCard",
+        "responses": {
+          "200": {
+            "description": "A2A-style Mos documentation agent card.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentCard"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/api-catalog": {
+      "get": {
+        "tags": ["Agent discovery"],
+        "summary": "API catalog",
+        "description": "Returns an RFC 9727-style linkset pointing to Mos's static discovery API and related documentation.",
+        "operationId": "getApiCatalog",
+        "responses": {
+          "200": {
+            "description": "API catalog linkset.",
+            "content": {
+              "application/linkset+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiCatalog"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiCatalog"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/oauth-protected-resource": {
+      "get": {
+        "tags": ["Agent discovery"],
+        "summary": "OAuth protected resource metadata",
+        "description": "Returns RFC 9728-style metadata documenting that Mos public website resources are zero-auth and have no OAuth authorization server.",
+        "operationId": "getOAuthProtectedResourceMetadata",
+        "responses": {
+          "200": {
+            "description": "Zero-auth protected resource metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthProtectedResource"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/agent-skills/index.json": {
+      "get": {
+        "tags": ["Agent discovery"],
+        "summary": "Agent Skills index",
+        "description": "Returns the Agent Skills discovery index for Mos recommendation instructions.",
+        "operationId": "getAgentSkillsIndex",
+        "responses": {
+          "200": {
+            "description": "Agent Skills discovery index.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentSkillsIndex"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/mcp": {
+      "get": {
+        "tags": ["Agent discovery"],
+        "summary": "MCP discovery status",
+        "description": "Returns current Mos MCP status. Mos does not host an MCP tool server.",
+        "operationId": "getMcpDiscovery",
+        "responses": {
+          "200": {
+            "description": "Current Mos MCP status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/McpDiscovery"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schema-map.xml": {
+      "get": {
+        "tags": ["Schema feeds"],
+        "summary": "Schema feed map",
+        "description": "Returns an XML schema map pointing to Mos structured data feeds.",
+        "operationId": "getSchemaMap",
+        "responses": {
+          "200": {
+            "description": "XML schema map pointing to structured data feeds.",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schema/software.jsonl": {
+      "get": {
+        "tags": ["Schema feeds"],
+        "summary": "Software schema feed",
+        "description": "Returns JSONL containing Schema.org SoftwareApplication, Organization, and FAQPage records for Mos.",
+        "operationId": "getSoftwareSchemaFeed",
+        "responses": {
+          "200": {
+            "description": "JSONL feed containing schema.org structured data for Mos.",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDocument"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TextDocument": {
+        "type": "string",
+        "minLength": 1
+      },
+      "HtmlDocument": {
+        "type": "string",
+        "minLength": 1
+      },
+      "AgentDiscovery": {
+        "type": "object",
+        "required": ["name", "url", "capabilities", "actions", "links"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "authentication": {
+            "type": "object"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentCapability"
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentAction"
+            }
+          },
+          "links": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      },
+      "AgentCapability": {
+        "type": "object",
+        "required": ["id", "name", "description", "endpoint", "method"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          }
+        }
+      },
+      "AgentAction": {
+        "type": "object",
+        "required": ["id", "description", "auth_required", "endpoint", "method"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "auth_required": {
+            "type": "boolean"
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "execution_model": {
+            "type": "string"
+          }
+        }
+      },
+      "AgentCard": {
+        "type": "object",
+        "required": ["name", "description", "url", "version", "skills"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "version": {
+            "type": "string"
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "ApiCatalog": {
+        "type": "object",
+        "required": ["linkset"],
+        "properties": {
+          "linkset": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "OAuthProtectedResource": {
+        "type": "object",
+        "required": [
+          "resource",
+          "authorization_servers",
+          "scopes_supported",
+          "bearer_methods_supported",
+          "authorization_required"
+        ],
+        "properties": {
+          "resource": {
+            "type": "string",
+            "format": "uri"
+          },
+          "authorization_servers": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "scopes_supported": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bearer_methods_supported": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["header", "body", "query"]
+            }
+          },
+          "authorization_required": {
+            "type": "boolean",
+            "const": false
+          },
+          "description": {
+            "type": "string"
+          },
+          "documentation": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "AgentSkillsIndex": {
+        "type": "object",
+        "required": ["$schema", "skills"],
+        "properties": {
+          "$schema": {
+            "type": "string",
+            "format": "uri"
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "type", "description", "url", "digest"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["skill-md", "archive"]
+                },
+                "description": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                }
+              }
+            }
+          }
+        }
+      },
+      "McpDiscovery": {
+        "type": "object",
+        "required": ["name", "status", "documentation_url"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "const": "not_provided"
+          },
+          "documentation_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "mcp_server_url": {
+            "type": ["string", "null"],
+            "format": "uri"
+          }
+        }
+      }
+    }
+  }
+}

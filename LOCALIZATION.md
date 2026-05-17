@@ -1,6 +1,8 @@
 # Localization Guide for Mos
 
-This guide describes how Mos 4.0 handles localisation, how to extend it, and how to keep every language in sync with new features such as the Buttons panel and shortcut catalog.
+This guide describes how Mos handles localisation, how to extend it, and how to
+keep every language in sync with app features such as the Buttons panel,
+per-application settings, Logi actions, and the shortcut catalog.
 
 ---
 
@@ -10,7 +12,7 @@ Mos ships Xcode’s string catalogs instead of legacy `.strings` files. There ar
 
 | File | Scope | Notes |
 |------|-------|-------|
-| `Mos/Localizable.xcstrings` | Strings referenced from Swift (`NSLocalizedString`) | Keys are either human-readable phrases (`"Auth"`, `"Current Version"`) **or** camelCase identifiers that mirror code constants (e.g. `appExpose`, `categoryFunctionKeys`, shortcut identifiers in `SystemShortcut.Shortcut`). Do not rename identifiers—Swift enums and persistence depend on them. |
+| `Mos/Localizable.xcstrings` | Strings referenced from Swift (`NSLocalizedString`) | Keys are either human-readable phrases (`"Auth"`, `"Current Version"`) **or** camelCase identifiers that mirror code constants (e.g. `appExpose`, `categoryFunctionKeys`, shortcut identifiers in `SystemShortcut.Shortcut`). Do not rename identifiers; Swift enums and persistence depend on them. |
 | `Mos/mul.lproj/Main.xcstrings` | Interface Builder (storyboards / XIBs) | Keys are Interface Builder Object IDs (`2AK-Pu-mot.title`). Xcode regenerates them on build. Never hand-edit Object IDs. |
 
 `mul.lproj` is the canonical bundle for storyboard strings because we support many locales. Xcode fans out per-language nibs at build time, so do **not** split `Main.xcstrings` into multiple folders manually.
@@ -21,9 +23,9 @@ The project still targets macOS 10.13, so always use `NSLocalizedString(_:commen
 
 ## 2. Current Language Coverage
 
-Both catalogs expose the same set of locales (plus the English source column):
+Both catalogs expose the same set of locales:
 
-`de`, `el`, `ja`, `ko`, `ru`, `tr`, `uk`, `zh-Hans`, `zh-Hant`, `zh-Hant-HK`, `zh-Hant-TW`
+`cs`, `de`, `el`, `en`, `fr`, `ja`, `ko`, `ru`, `tr`, `uk`, `zh-Hans`, `zh-Hant`, `zh-Hant-HK`, `zh-Hant-TW`
 
 To verify coverage and catch untranslated rows:
 
@@ -40,7 +42,9 @@ PY
 
 Run the same script against `Mos/mul.lproj/Main.xcstrings` if you suspect orphaned storyboard strings. A “duplicate” is acceptable when the official term matches English (e.g. “Launchpad”), but treat the report as a to-do list for translators.
 
-The 4.0 release added ~40 strings across the Buttons panel, shortcut catalog, onboarding, and the refreshed Preferences UI. Make sure every locale is updated before tagging a new build.
+Feature work often adds strings across the Buttons panel, shortcut catalog,
+onboarding, per-app settings, Monitor window, and Preferences UI. Make sure
+every locale is updated before tagging a new build.
 
 ---
 
@@ -48,7 +52,8 @@ The 4.0 release added ~40 strings across the Buttons panel, shortcut catalog, on
 
 ### macOS Official Terms
 
-Use the terminology Apple ships in System Preferences / System Settings. Never swap in colloquial variants.
+Use the terminology Apple ships in System Preferences / System Settings. Never
+swap in colloquial variants.
 
 | English | 简体中文 | 繁體中文 | 日本語 | Notes |
 |---------|---------|---------|--------|-------|
@@ -120,7 +125,9 @@ button.title = NSLocalizedString("Auth", comment: "Authorization button title")
 1. In Xcode, Project ▸ Info ▸ Localizations → add the language.
 2. Ensure Xcode offers to localise both catalogs; tick every checkbox.
 3. Translate *all* keys in `Localizable.xcstrings` and `Main.xcstrings`.
-4. Update external documentation (README variants, website) if the language is publicly visible.
+4. Update external documentation if the language is publicly visible. README
+   variants live at the repo root, and their screenshots live in `assets/readme/`.
+   Non-Chinese README variants currently use English screenshots.
 5. Switch macOS to the new language (System Preferences ▸ Language & Region) and run through:
    - Welcome / Introduction windows
    - Preferences tabs (General, Scrolling, Application, Buttons, Updates, About)
@@ -135,14 +142,25 @@ button.title = NSLocalizedString("Auth", comment: "Authorization button title")
 # Pretty-print a catalog for manual diffing
 jq '.' Mos/Localizable.xcstrings | less
 
-# List storyboard keys that no longer exist in Base.lproj
-python3 Scripts/find_orphan_storyboard_keys.py  # create alongside other scripts if needed
+# Validate catalog JSON
+python3 -m json.tool Mos/Localizable.xcstrings >/dev/null
+python3 -m json.tool Mos/mul.lproj/Main.xcstrings >/dev/null
+
+# Compare locale coverage between the two catalogs
+python3 - <<'PY'
+import json, pathlib
+for path in ("Mos/Localizable.xcstrings", "Mos/mul.lproj/Main.xcstrings"):
+    catalog = json.loads(pathlib.Path(path).read_text())
+    locales = sorted({lang for row in catalog["strings"].values()
+                     for lang in row.get("localizations", {})})
+    print(path, ", ".join(locales))
+PY
 
 # Export catalogs for external translators (creates XLIFF)
-xcodebuild -exportLocalizations -project Mos.xcodeproj -localizationPath DerivedData/Localizations
+xcodebuild -exportLocalizations -project Mos.xcodeproj -localizationPath build/localizations
 
 # Reimport translated XLIFF back into the project
-xcodebuild -importLocalizations -project Mos.xcodeproj -localizationPath DerivedData/Localizations
+xcodebuild -importLocalizations -project Mos.xcodeproj -localizationPath build/localizations
 ```
 
 ---
@@ -158,4 +176,8 @@ When new modules land (e.g. gesture editor, theme manager), append them here so 
 
 ---
 
-Keeping localisation healthy is part of every feature cycle. Touch the catalog as soon as you add UI copy, run the duplicate check before merging, and leave notes for community translators whenever the wording carries product context. That habit keeps all 12 languages launch-ready the moment we ship a new build.
+Keeping localisation healthy is part of every feature cycle. Touch the catalog
+as soon as you add UI copy, run the duplicate check before merging, and leave
+notes for community translators whenever the wording carries product context.
+That habit keeps all supported locales launch-ready the moment we ship a new
+build.
