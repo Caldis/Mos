@@ -139,7 +139,7 @@ final class LogiButtonDeliveryModeTests: XCTestCase {
         XCTAssertEqual(LogiButtonDeliveryPolicy.default.standardButtonUndivertGuardInterval, 2)
     }
 
-    func testDefaultButtonDeliveryPolicyEnablesStandardUndivertGuard() {
+    func testDefaultButtonDeliveryPolicyDisablesStandardUndivertGuard() {
         let key = "LogiBLEStandardUndivertGuardEnabled"
         let defaults = UserDefaults.standard
         let original = defaults.object(forKey: key)
@@ -152,7 +152,32 @@ final class LogiButtonDeliveryModeTests: XCTestCase {
             }
         }
 
-        XCTAssertTrue(LogiButtonDeliveryPolicy.default.standardButtonUndivertGuardEnabled)
+        XCTAssertFalse(LogiButtonDeliveryPolicy.default.standardButtonUndivertGuardEnabled)
+    }
+
+    func testStandardUndivertGuardCanBeDisabledByBundleDefault() {
+        XCTAssertFalse(LogiButtonDeliveryPolicy.resolveBoolDefaultingTrue(
+            userDefaultObject: nil,
+            userDefaultBool: true,
+            bundleDefaultValue: false
+        ))
+    }
+
+    func testUserDefaultOverridesStandardUndivertGuardBundleDefault() {
+        XCTAssertTrue(LogiButtonDeliveryPolicy.resolveBoolDefaultingTrue(
+            userDefaultObject: false,
+            userDefaultBool: true,
+            bundleDefaultValue: false
+        ))
+    }
+
+    func testStandardUndivertGuardDefaultsFalseWithoutUserOrBundleValue() {
+        XCTAssertFalse(LogiButtonDeliveryPolicy.resolveBoolDefaulting(
+            userDefaultObject: nil,
+            userDefaultBool: true,
+            bundleDefaultValue: nil,
+            defaultValue: false
+        ))
     }
 
     func testDiagnosisSessionPreferenceFollowsCurrentTransport() {

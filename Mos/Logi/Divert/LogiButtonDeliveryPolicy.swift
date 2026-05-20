@@ -17,7 +17,7 @@ struct LogiButtonDeliveryPolicy {
 
     init(
         standardMouseButtonsUseNativeEvents: Bool,
-        standardButtonUndivertGuardEnabled: Bool = true,
+        standardButtonUndivertGuardEnabled: Bool = false,
         standardButtonUndivertGuardInterval: TimeInterval = 2.0
     ) {
         self.standardMouseButtonsUseNativeEvents = standardMouseButtonsUseNativeEvents
@@ -28,7 +28,10 @@ struct LogiButtonDeliveryPolicy {
     static var `default`: LogiButtonDeliveryPolicy {
         return LogiButtonDeliveryPolicy(
             standardMouseButtonsUseNativeEvents: boolDefaultingTrue(forKey: "LogiBLEStandardButtonsNativeFirst"),
-            standardButtonUndivertGuardEnabled: boolDefaultingTrue(forKey: "LogiBLEStandardUndivertGuardEnabled"),
+            standardButtonUndivertGuardEnabled: boolDefaultingFalse(
+                forKey: "LogiBLEStandardUndivertGuardEnabled",
+                bundleDefaultKey: "LogiBLEStandardUndivertGuardEnabledByDefault"
+            ),
             standardButtonUndivertGuardInterval: intervalDefaultingTwoSeconds(forKey: "LogiBLEStandardUndivertGuardInterval")
         )
     }
@@ -53,8 +56,61 @@ struct LogiButtonDeliveryPolicy {
     }
 
     private static func boolDefaultingTrue(forKey key: String) -> Bool {
-        guard UserDefaults.standard.object(forKey: key) != nil else { return true }
-        return UserDefaults.standard.bool(forKey: key)
+        return resolveBoolDefaultingTrue(
+            userDefaultObject: UserDefaults.standard.object(forKey: key),
+            userDefaultBool: UserDefaults.standard.bool(forKey: key),
+            bundleDefaultValue: nil
+        )
+    }
+
+    private static func boolDefaultingTrue(forKey key: String, bundleDefaultKey: String) -> Bool {
+        return resolveBoolDefaulting(
+            userDefaultObject: UserDefaults.standard.object(forKey: key),
+            userDefaultBool: UserDefaults.standard.bool(forKey: key),
+            bundleDefaultValue: Bundle.main.object(forInfoDictionaryKey: bundleDefaultKey),
+            defaultValue: true
+        )
+    }
+
+    private static func boolDefaultingFalse(forKey key: String, bundleDefaultKey: String) -> Bool {
+        return resolveBoolDefaulting(
+            userDefaultObject: UserDefaults.standard.object(forKey: key),
+            userDefaultBool: UserDefaults.standard.bool(forKey: key),
+            bundleDefaultValue: Bundle.main.object(forInfoDictionaryKey: bundleDefaultKey),
+            defaultValue: false
+        )
+    }
+
+    static func resolveBoolDefaultingTrue(
+        userDefaultObject: Any?,
+        userDefaultBool: Bool,
+        bundleDefaultValue: Any?
+    ) -> Bool {
+        resolveBoolDefaulting(
+            userDefaultObject: userDefaultObject,
+            userDefaultBool: userDefaultBool,
+            bundleDefaultValue: bundleDefaultValue,
+            defaultValue: true
+        )
+    }
+
+    static func resolveBoolDefaulting(
+        userDefaultObject: Any?,
+        userDefaultBool: Bool,
+        bundleDefaultValue: Any?,
+        defaultValue: Bool
+    ) -> Bool {
+        if userDefaultObject != nil {
+            return userDefaultBool
+        }
+        if let bundleDefaultValue = bundleDefaultValue as? Bool {
+            return bundleDefaultValue
+        }
+        if let bundleDefaultValue = bundleDefaultValue as? String {
+            let normalized = bundleDefaultValue.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            return ["1", "true", "yes"].contains(normalized)
+        }
+        return defaultValue
     }
 
     private static func intervalDefaultingTwoSeconds(forKey key: String) -> TimeInterval {

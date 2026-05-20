@@ -8,6 +8,109 @@
 import Cocoa
 import Foundation
 
+private final class InputPipelineProfilerLogSink {
+    static let shared = InputPipelineProfilerLogSink()
+
+    private enum Defaults {
+        static let maxFileBytes: UInt64 = 64 * 1024 * 1024
+        static let maxRetainedFiles = 8
+    }
+
+    private let queue = DispatchQueue(label: "com.caldis.Mos.inputPipelineProfiler.log")
+    private var fileHandle: FileHandle?
+    private var fileURL: URL?
+    private var fileStem: String?
+    private var fileIndex = 0
+    private var currentFileBytes: UInt64 = 0
+    private var retainedFileURLs: [URL] = []
+
+    func write(_ line: String) {
+        queue.async {
+            self.writeLocked(line)
+        }
+    }
+
+    func filePath() -> String {
+        queue.sync {
+            self.ensureFileLocked()
+            return self.fileURL?.path ?? "unavailable"
+        }
+    }
+
+    private func writeLocked(_ line: String) {
+        ensureFileLocked()
+        guard let data = (line + "\n").data(using: .utf8) else { return }
+        if currentFileBytes > 0 && currentFileBytes + UInt64(data.count) > Defaults.maxFileBytes {
+            let previousPath = fileURL?.path ?? "unavailable"
+            rotateFileLocked(previousPath: previousPath)
+        }
+        writeDataLocked(data)
+    }
+
+    private func ensureFileLocked() {
+        if fileHandle != nil { return }
+
+        let logsDirectory = (FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first
+            ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library", isDirectory: true))
+            .appendingPathComponent("Logs", isDirectory: true)
+            .appendingPathComponent("Mos", isDirectory: true)
+        try? FileManager.default.createDirectory(at: logsDirectory, withIntermediateDirectories: true)
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        let timestamp = formatter.string(from: Date())
+        fileStem = logsDirectory
+            .appendingPathComponent("input-pipeline-profiler-\(timestamp)-\(ProcessInfo.processInfo.processIdentifier)")
+            .path
+        openNextFileLocked()
+    }
+
+    private func openNextFileLocked() {
+        guard let fileStem else { return }
+        let suffix = fileIndex == 0 ? ".log" : "-part\(fileIndex).log"
+        fileIndex += 1
+        let url = URL(fileURLWithPath: fileStem + suffix)
+        FileManager.default.createFile(atPath: url.path, contents: nil)
+        fileHandle = try? FileHandle(forWritingTo: url)
+        fileURL = url
+        let attributes = try? FileManager.default.attributesOfItem(atPath: url.path)
+        currentFileBytes = (attributes?[.size] as? NSNumber)?.uint64Value ?? 0
+        retainedFileURLs.append(url)
+        trimRetainedFilesLocked()
+    }
+
+    private func rotateFileLocked(previousPath: String) {
+        fileHandle?.closeFile()
+        fileHandle = nil
+        openNextFileLocked()
+        let currentPath = fileURL?.path ?? "unavailable"
+        let maxFileMB = Defaults.maxFileBytes / 1024 / 1024
+        let line = "[InputPipelineProfiler] logRotated previous=\(metadataValue(previousPath)) current=\(metadataValue(currentPath)) maxFileMB=\(maxFileMB) retainedFiles=\(Defaults.maxRetainedFiles)"
+        guard let data = (line + "\n").data(using: .utf8) else { return }
+        writeDataLocked(data)
+    }
+
+    private func writeDataLocked(_ data: Data) {
+        guard let fileHandle = fileHandle else { return }
+        fileHandle.seekToEndOfFile()
+        fileHandle.write(data)
+        currentFileBytes &+= UInt64(data.count)
+    }
+
+    private func trimRetainedFilesLocked() {
+        while retainedFileURLs.count > Defaults.maxRetainedFiles {
+            let url = retainedFileURLs.removeFirst()
+            try? FileManager.default.removeItem(at: url)
+        }
+    }
+
+    private func metadataValue(_ value: String) -> String {
+        String(value.map { character in
+            character.isWhitespace || character == "|" ? "_" : character
+        })
+    }
+}
+
 final class InputPipelineProfiler {
 
     static let shared = InputPipelineProfiler()
@@ -21,6 +124,10 @@ final class InputPipelineProfiler {
         case scrollPosterUpdate
         case scrollPosterFrame
         case scrollDispatchPost
+        case hidInputReportCallback
+        case hidReportSend
+        case logiDebugLog
+        case mainRunLoopHeartbeat
     }
 
     struct StageStats: Equatable {
@@ -66,10 +173,33 @@ final class InputPipelineProfiler {
         fileprivate let profiler: InputPipelineProfiler
         fileprivate let stage: Stage
         fileprivate let startNanos: UInt64
-        fileprivate let metadata: EventMetadata?
+        fileprivate let metadata: ProbeMetadata?
 
         func end() {
             profiler.finish(self)
+        }
+    }
+
+    fileprivate enum ProbeMetadata {
+        case event(EventMetadata)
+        case text(String)
+
+        var lagNanos: UInt64? {
+            switch self {
+            case .event(let metadata):
+                return metadata.lagNanos
+            case .text:
+                return nil
+            }
+        }
+
+        var description: String {
+            switch self {
+            case .event(let metadata):
+                return metadata.description
+            case .text(let text):
+                return text
+            }
         }
     }
 
@@ -110,11 +240,14 @@ final class InputPipelineProfiler {
     private enum Defaults {
         static let environmentKey = "MOS_INPUT_PIPELINE_PROFILING"
         static let userDefaultsKey = "InputPipelineProfilingEnabled"
+        static let infoPlistEnabledKey = "InputPipelineProfilingEnabledByDefault"
+        static let diagnosticBuildLabelKey = "MOSDiagnosticBuildLabel"
         static let slowThresholdNanos: UInt64 = 20_000_000
         static let eventLagThresholdNanos: UInt64 = 100_000_000
         static let summaryIntervalNanos: UInt64 = 60_000_000_000
         static let slowLogLimitPerInterval: UInt64 = 30
         static let slowLogIntervalNanos: UInt64 = 60_000_000_000
+        static let mainRunLoopHeartbeatIntervalNanos: UInt64 = 1_000_000_000
     }
 
     private struct SlowLogRateState {
@@ -138,6 +271,8 @@ final class InputPipelineProfiler {
     private var processStartNanos: UInt64
     private let sessionId: String
     private var logHandler: (String) -> Void
+    private var heartbeatTimer: Timer?
+    private var heartbeatExpectedNanos: UInt64?
 
     init(
         environment: [String: String] = ProcessInfo.processInfo.environment,
@@ -154,7 +289,7 @@ final class InputPipelineProfiler {
         processStartNanos = defaultClock()
         lastSummaryNanos = processStartNanos
         sessionId = UUID().uuidString
-        logHandler = { line in NSLog("%@", line) }
+        logHandler = Self.defaultLogHandler
     }
 
     @inline(__always)
@@ -165,7 +300,7 @@ final class InputPipelineProfiler {
             profiler: self,
             stage: stage,
             startNanos: now,
-            metadata: makeMetadata(event: event, now: now, queueWaitStartNanos: queueWaitStartNanos)
+            metadata: makeMetadata(event: event, now: now, queueWaitStartNanos: queueWaitStartNanos).map { .event($0) }
         )
     }
 
@@ -177,8 +312,62 @@ final class InputPipelineProfiler {
             profiler: self,
             stage: stage,
             startNanos: now,
-            metadata: metadata(for: inputEvent)
+            metadata: .event(metadata(for: inputEvent))
         )
+    }
+
+    @inline(__always)
+    func begin(_ stage: Stage, metadata: () -> String?) -> Probe? {
+        guard enabled else { return nil }
+        let now = clock()
+        return Probe(
+            profiler: self,
+            stage: stage,
+            startNanos: now,
+            metadata: metadata().map { .text($0) }
+        )
+    }
+
+    @inline(__always)
+    func measure<T>(_ stage: Stage, metadata: (T) -> String?, _ body: () -> T) -> T {
+        guard enabled else { return body() }
+        let startNanos = clock()
+        let result = body()
+        let endNanos = clock()
+        let textMetadata = metadata(result).map { ProbeMetadata.text($0) }
+        finish(stage: stage, startNanos: startNanos, endNanos: endNanos, metadata: textMetadata)
+        return result
+    }
+
+    func recordObservedDuration(_ stage: Stage, durationNanos: UInt64, metadata: String? = nil) {
+        guard enabled else { return }
+        let endNanos = clock()
+        let startNanos = endNanos >= durationNanos ? endNanos - durationNanos : 0
+        finish(stage: stage, startNanos: startNanos, endNanos: endNanos, metadata: metadata.map { .text($0) })
+    }
+
+    func startMainRunLoopHeartbeat() {
+        guard enabled else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.lock.lock()
+            let alreadyStarted = self.heartbeatTimer != nil
+            let now = self.clock()
+            if !alreadyStarted {
+                self.heartbeatExpectedNanos = now + Defaults.mainRunLoopHeartbeatIntervalNanos
+            }
+            self.lock.unlock()
+            guard !alreadyStarted else { return }
+
+            let timer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+                self?.recordMainRunLoopHeartbeatTick()
+            }
+            RunLoop.main.add(timer, forMode: .common)
+
+            self.lock.lock()
+            self.heartbeatTimer = timer
+            self.lock.unlock()
+        }
     }
 
     @inline(__always)
@@ -199,9 +388,11 @@ final class InputPipelineProfiler {
         let now = clock()
         logHandler(
             String(
-                format: "[InputPipelineProfiler] enabled sessionId=%@ uptimeSeconds=%@ slowThresholdMs=%.3f eventLagThresholdMs=%.3f summaryIntervalSeconds=%.1f slowLogLimit=%llu slowLogIntervalSeconds=%.1f",
+                format: "[InputPipelineProfiler] enabled sessionId=%@ uptimeSeconds=%@ buildLabel=%@ logFile=%@ slowThresholdMs=%.3f eventLagThresholdMs=%.3f summaryIntervalSeconds=%.1f slowLogLimit=%llu slowLogIntervalSeconds=%.1f",
                 sessionId,
                 uptimeSecondsText(atNanos: now),
+                Self.diagnosticBuildLabel(),
+                InputPipelineProfilerLogSink.shared.filePath(),
                 Double(slowThresholdNanos) / 1_000_000.0,
                 Double(eventLagThresholdNanos) / 1_000_000.0,
                 Double(summaryIntervalNanos) / 1_000_000_000.0,
@@ -246,8 +437,11 @@ final class InputPipelineProfiler {
         self.slowLogIntervalNanos = slowLogIntervalNanos
         self.clock = clock ?? { DispatchTime.now().uptimeNanoseconds }
         self.processStartNanos = 0
-        self.logHandler = logHandler ?? { line in NSLog("%@", line) }
+        self.logHandler = logHandler ?? Self.defaultLogHandler
         self.lastSummaryNanos = 0
+        self.heartbeatTimer?.invalidate()
+        self.heartbeatTimer = nil
+        self.heartbeatExpectedNanos = nil
         self.stats.removeAll()
         self.intervalStats.removeAll()
         self.slowLogRateStates.removeAll()
@@ -270,7 +464,10 @@ final class InputPipelineProfiler {
         clock = defaultClock
         processStartNanos = defaultClock()
         lastSummaryNanos = processStartNanos
-        logHandler = { line in NSLog("%@", line) }
+        logHandler = Self.defaultLogHandler
+        heartbeatTimer?.invalidate()
+        heartbeatTimer = nil
+        heartbeatExpectedNanos = nil
         stats.removeAll()
         intervalStats.removeAll()
         slowLogRateStates.removeAll()
@@ -280,8 +477,17 @@ final class InputPipelineProfiler {
 
     private func finish(_ probe: Probe) {
         let endNanos = clock()
-        let durationNanos = endNanos >= probe.startNanos ? endNanos - probe.startNanos : 0
-        let eventLagNanos = probe.metadata?.lagNanos
+        finish(
+            stage: probe.stage,
+            startNanos: probe.startNanos,
+            endNanos: endNanos,
+            metadata: probe.metadata
+        )
+    }
+
+    private func finish(stage: Stage, startNanos: UInt64, endNanos: UInt64, metadata: ProbeMetadata?) {
+        let durationNanos = endNanos >= startNanos ? endNanos - startNanos : 0
+        let eventLagNanos = metadata?.lagNanos
         let shouldLogSlow = durationNanos >= slowThresholdNanos ||
             (eventLagNanos.map { $0 >= eventLagThresholdNanos } ?? false)
 
@@ -289,29 +495,29 @@ final class InputPipelineProfiler {
         var slowLine: String?
         let handler: (String) -> Void
         lock.lock()
-        var stageStats = stats[probe.stage] ?? StageStats()
+        var stageStats = stats[stage] ?? StageStats()
         stageStats.record(
             durationNanos: durationNanos,
             eventLagNanos: eventLagNanos,
             slowThresholdNanos: slowThresholdNanos,
             eventLagThresholdNanos: eventLagThresholdNanos
         )
-        stats[probe.stage] = stageStats
+        stats[stage] = stageStats
 
-        var intervalStageStats = intervalStats[probe.stage] ?? StageStats()
+        var intervalStageStats = intervalStats[stage] ?? StageStats()
         intervalStageStats.record(
             durationNanos: durationNanos,
             eventLagNanos: eventLagNanos,
             slowThresholdNanos: slowThresholdNanos,
             eventLagThresholdNanos: eventLagThresholdNanos
         )
-        intervalStats[probe.stage] = intervalStageStats
+        intervalStats[stage] = intervalStageStats
 
-        if shouldLogSlow && shouldEmitSlowLogLocked(stage: probe.stage, atNanos: probe.startNanos) {
+        if shouldLogSlow && shouldEmitSlowLogLocked(stage: stage, atNanos: startNanos) {
             slowLine = makeSlowLine(
-                stage: probe.stage,
+                stage: stage,
                 durationNanos: durationNanos,
-                metadata: probe.metadata,
+                metadata: metadata,
                 endNanos: endNanos
             )
         }
@@ -332,6 +538,27 @@ final class InputPipelineProfiler {
         if let summaryLine {
             handler(summaryLine)
         }
+    }
+
+    private func recordMainRunLoopHeartbeatTick() {
+        let now = clock()
+        var driftNanos: UInt64 = 0
+
+        lock.lock()
+        if let expectedNanos = heartbeatExpectedNanos, now > expectedNanos {
+            driftNanos = now - expectedNanos
+        }
+        heartbeatExpectedNanos = now + Defaults.mainRunLoopHeartbeatIntervalNanos
+        lock.unlock()
+
+        recordObservedDuration(
+            .mainRunLoopHeartbeat,
+            durationNanos: driftNanos,
+            metadata: String(
+                format: "source=mainRunLoop type=heartbeat intervalMs=%.3f",
+                Double(Defaults.mainRunLoopHeartbeatIntervalNanos) / 1_000_000.0
+            )
+        )
     }
 
     private func shouldEmitSlowLogLocked(stage: Stage, atNanos: UInt64) -> Bool {
@@ -371,7 +598,16 @@ final class InputPipelineProfiler {
         if environment[Defaults.environmentKey] == "1" {
             return true
         }
-        return userDefaults.bool(forKey: Defaults.userDefaultsKey)
+        if userDefaults.bool(forKey: Defaults.userDefaultsKey) {
+            return true
+        }
+        if let enabled = Bundle.main.object(forInfoDictionaryKey: Defaults.infoPlistEnabledKey) as? Bool {
+            return enabled
+        }
+        if let enabled = Bundle.main.object(forInfoDictionaryKey: Defaults.infoPlistEnabledKey) as? String {
+            return ["1", "true", "yes"].contains(enabled.lowercased())
+        }
+        return false
     }
 
     private func makeMetadata(event: CGEvent?, now: UInt64, queueWaitStartNanos: UInt64?) -> EventMetadata? {
@@ -429,7 +665,7 @@ final class InputPipelineProfiler {
     private func makeSlowLine(
         stage: Stage,
         durationNanos: UInt64,
-        metadata: EventMetadata?,
+        metadata: ProbeMetadata?,
         endNanos: UInt64
     ) -> String {
         var parts = [
@@ -437,7 +673,8 @@ final class InputPipelineProfiler {
             "sessionId=\(sessionId)",
             "uptimeSeconds=\(uptimeSecondsText(atNanos: endNanos))",
             "stage=\(stage.rawValue)",
-            String(format: "durationMs=%.3f", Double(durationNanos) / 1_000_000.0)
+            String(format: "durationMs=%.3f", Double(durationNanos) / 1_000_000.0),
+            "thread=\(Thread.isMainThread ? "main" : "background")"
         ]
         if let metadata {
             parts.append(metadata.description)
@@ -477,6 +714,25 @@ final class InputPipelineProfiler {
 
     private func secondsText(_ nanos: UInt64) -> String {
         String(format: "%.3f", Double(nanos) / 1_000_000_000.0)
+    }
+
+    static func metadataValue(_ value: String) -> String {
+        String(value.map { character in
+            character.isWhitespace || character == "|" ? "_" : character
+        })
+    }
+
+    private static func defaultLogHandler(_ line: String) {
+        InputPipelineProfilerLogSink.shared.write(line)
+        NSLog("%@", line)
+    }
+
+    private static func diagnosticBuildLabel() -> String {
+        guard let value = Bundle.main.object(forInfoDictionaryKey: Defaults.diagnosticBuildLabelKey) as? String,
+              !value.isEmpty else {
+            return "none"
+        }
+        return metadataValue(value)
     }
 
     private func phaseName(for type: CGEventType) -> String? {

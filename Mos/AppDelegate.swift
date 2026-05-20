@@ -71,6 +71,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 读取用户设置
         Options.shared.readOptions()
         InputPipelineProfiler.shared.logStartupConfiguration()
+        InputPipelineProfiler.shared.startMainRunLoopHeartbeat()
         
         // DEBUG: 直接弹出设置窗口
         #if DEBUG

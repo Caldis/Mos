@@ -359,13 +359,21 @@ class LogiDebugPanel: NSObject {
     #endif
 
     class func log(_ message: String) {
+        let probe = InputPipelineProfiler.shared.begin(.logiDebugLog) {
+            "source=logiDebug type=Info device=none"
+        }
         let entry = LogEntry(timestamp: timestamp(), deviceName: "", type: .info, message: message, decoded: nil, rawBytes: nil)
         appendToBuffer(entry)
+        probe?.end()
     }
 
     class func log(device: String, type: LogEntryType, message: String, decoded: String? = nil, rawBytes: [UInt8]? = nil) {
+        let probe = InputPipelineProfiler.shared.begin(.logiDebugLog) {
+            "source=logiDebug type=\(type.rawValue) device=\(InputPipelineProfiler.metadataValue(device))"
+        }
         let entry = LogEntry(timestamp: timestamp(), deviceName: device, type: type, message: message, decoded: decoded, rawBytes: rawBytes)
         appendToBuffer(entry)
+        probe?.end()
     }
 
     // Note: existing callers that pass (device:type:message:decoded:) without rawBytes

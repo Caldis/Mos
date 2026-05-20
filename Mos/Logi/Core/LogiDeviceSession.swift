@@ -947,10 +947,51 @@ class LogiDeviceSession {
         guard let context = context else { return }
         let session = Unmanaged<LogiDeviceSession>.fromOpaque(context).takeUnretainedValue()
         let buffer = UnsafeBufferPointer(start: report, count: reportLength)
+        let probe = InputPipelineProfiler.shared.begin(.hidInputReportCallback) {
+            [
+                "source=hidPP",
+                "type=inputReport",
+                "device=\(InputPipelineProfiler.metadataValue(session.deviceInfo.name))",
+                "mode=\(session.connectionMode)",
+                "reportID=\(String(format: "0x%02X", Int(reportID)))",
+                "bytes=\(reportLength)",
+                "result=\(LogiDeviceSession.iorReturnText(result))"
+            ].joined(separator: " ")
+        }
         session.handleInputReport(buffer)
+        probe?.end()
     }
 
     // MARK: - HID++ Send
+
+    private static func iorReturnText(_ result: IOReturn) -> String {
+        result == kIOReturnSuccess ? "OK" : String(format: "0x%08x", result)
+    }
+
+    private func setHIDReportWithProfiling(_ report: [UInt8], call: String, metadata: String? = nil) -> IOReturn {
+        InputPipelineProfiler.shared.measure(.hidReportSend, metadata: { result in
+            var parts = [
+                "source=hidPP",
+                "type=setReport",
+                "call=\(call)",
+                "device=\(InputPipelineProfiler.metadataValue(deviceInfo.name))",
+                "mode=\(connectionMode)",
+                "transport=\(InputPipelineProfiler.metadataValue(transport))",
+                "reportID=\(String(format: "0x%02X", report.first ?? 0))",
+                "bytes=\(report.count)",
+                "result=\(Self.iorReturnText(result))"
+            ]
+            if let metadata, !metadata.isEmpty {
+                parts.append(metadata)
+            }
+            return parts.joined(separator: " ")
+        }) {
+            IOHIDDeviceSetReport(
+                hidDevice, kIOHIDReportTypeOutput,
+                CFIndex(report[0]), report, report.count
+            )
+        }
+    }
 
     /// 发送 HID++ 请求
     /// BLE 直连: long report (20 bytes) + report ID in payload (hidapi 兼容)
@@ -968,9 +1009,10 @@ class LogiDeviceSession {
             report[2] = featureIndex
             report[3] = (functionId << 4) | 0x01
             for (i, p) in params.prefix(16).enumerated() { report[4 + i] = p }
-            result = IOHIDDeviceSetReport(
-                hidDevice, kIOHIDReportTypeOutput,
-                CFIndex(report[0]), report, report.count
+            result = setHIDReportWithProfiling(
+                report,
+                call: "sendRequest",
+                metadata: String(format: "feature=0x%02X function=0x%02X params=%d", featureIndex, functionId, params.count)
             )
 
         case .receiver:
@@ -983,9 +1025,10 @@ class LogiDeviceSession {
             report[2] = featureIndex
             report[3] = (functionId << 4) | 0x01
             for (i, p) in params.prefix(16).enumerated() { report[4 + i] = p }
-            result = IOHIDDeviceSetReport(
-                hidDevice, kIOHIDReportTypeOutput,
-                CFIndex(report[0]), report, report.count
+            result = setHIDReportWithProfiling(
+                report,
+                call: "sendRequest",
+                metadata: String(format: "feature=0x%02X function=0x%02X params=%d", featureIndex, functionId, params.count)
             )
 
         case .unsupported:
@@ -1422,9 +1465,10 @@ class LogiDeviceSession {
 
         pendingSlotPings.insert(slot)
 
-        let result = IOHIDDeviceSetReport(
-            hidDevice, kIOHIDReportTypeOutput,
-            CFIndex(report[0]), report, report.count
+        let result = setHIDReportWithProfiling(
+            report,
+            call: "pingReceiverSlot",
+            metadata: "slot=\(slot)"
         )
 
         let hex = report.map { String(format: "%02X", $0) }.joined(separator: " ")
@@ -1471,9 +1515,10 @@ class LogiDeviceSession {
             if 4 + i < report.count { report[4 + i] = p }
         }
 
-        let result = IOHIDDeviceSetReport(
-            hidDevice, kIOHIDReportTypeOutput,
-            CFIndex(report[0]), report, report.count
+        let result = setHIDReportWithProfiling(
+            report,
+            call: "sendReceiverRegisterGet",
+            metadata: "register=\(String(format: "0x%02X", register)) params=\(params.count)"
         )
 
         let hex = report.prefix(min(report.count, 20)).map { String(format: "%02X", $0) }.joined(separator: " ")

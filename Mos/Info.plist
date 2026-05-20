@@ -30,6 +30,10 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>InputPipelineProfilingEnabledByDefault</key>
+	<true/>
+	<key>LogiBLEStandardUndivertGuardEnabledByDefault</key>
+	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
@@ -38,6 +42,8 @@
 	<false/>
 	<key>LSUIElement</key>
 	<true/>
+	<key>MOSDiagnosticBuildLabel</key>
+	<string>InputProfiler-NoBLEGuardDefault-20260520</string>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>Mos needs to access accessibility to enhance your scrolling.</string>
 	<key>NSHumanReadableCopyright</key>

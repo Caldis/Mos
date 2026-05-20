@@ -108,6 +108,67 @@ final class InputPipelineProfilerTests: XCTestCase {
         XCTAssertTrue(logs.contains { $0.contains("stage=scrollDispatchPost") && $0.contains("queueWaitMs=45.000") })
     }
 
+    func testProfilerMeasuresSynchronousOperationWithResultMetadata() {
+        var ticks: [UInt64] = [1_000_000, 36_000_000]
+        var logs: [String] = []
+        InputPipelineProfiler.shared.configureForTesting(
+            enabled: true,
+            slowThresholdNanos: 20_000_000,
+            eventLagThresholdNanos: 100_000_000,
+            summaryIntervalNanos: UInt64.max,
+            clock: { ticks.removeFirst() },
+            logHandler: { logs.append($0) }
+        )
+
+        let result = InputPipelineProfiler.shared.measure(
+            .hidReportSend,
+            metadata: { result in "source=hidPP type=setReport result=\(result)" }
+        ) {
+            7
+        }
+
+        XCTAssertEqual(result, 7)
+        let stats = InputPipelineProfiler.shared.snapshot().stats[.hidReportSend]
+        XCTAssertEqual(stats?.count, 1)
+        XCTAssertEqual(stats?.slowCount, 1)
+        XCTAssertEqual(stats?.maxDurationNanos, 35_000_000)
+        XCTAssertTrue(logs.contains {
+            $0.contains("stage=hidReportSend") &&
+                $0.contains("durationMs=35.000") &&
+                $0.contains("source=hidPP type=setReport result=7") &&
+                $0.contains("thread=")
+        })
+    }
+
+    func testProfilerRecordsObservedDurationForMainRunLoopHeartbeat() {
+        var ticks: [UInt64] = [2_000_000_000]
+        var logs: [String] = []
+        InputPipelineProfiler.shared.configureForTesting(
+            enabled: true,
+            slowThresholdNanos: 20_000_000,
+            eventLagThresholdNanos: 100_000_000,
+            summaryIntervalNanos: UInt64.max,
+            clock: { ticks.removeFirst() },
+            logHandler: { logs.append($0) }
+        )
+
+        InputPipelineProfiler.shared.recordObservedDuration(
+            .mainRunLoopHeartbeat,
+            durationNanos: 150_000_000,
+            metadata: "source=mainRunLoop type=heartbeat"
+        )
+
+        let stats = InputPipelineProfiler.shared.snapshot().stats[.mainRunLoopHeartbeat]
+        XCTAssertEqual(stats?.count, 1)
+        XCTAssertEqual(stats?.slowCount, 1)
+        XCTAssertEqual(stats?.maxDurationNanos, 150_000_000)
+        XCTAssertTrue(logs.contains {
+            $0.contains("stage=mainRunLoopHeartbeat") &&
+                $0.contains("durationMs=150.000") &&
+                $0.contains("source=mainRunLoop type=heartbeat")
+        })
+    }
+
     func testSlowLogsAreRateLimitedAndDroppedCountAppearsInSummary() {
         var ticks: [UInt64] = [
             0, 25_000_000,

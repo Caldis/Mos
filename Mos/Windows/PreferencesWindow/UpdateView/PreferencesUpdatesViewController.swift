@@ -20,7 +20,12 @@ class PreferencesUpdatesViewController: NSViewController {
         // 版本号
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion")!
-        versionLabel.stringValue = "\(NSLocalizedString("Current Version", comment: "")): \(version as! String) · \(build as! String)"
+        var buildText = build as! String
+        if let diagnosticLabel = Bundle.main.object(forInfoDictionaryKey: "MOSDiagnosticBuildLabel") as? String,
+           !diagnosticLabel.isEmpty {
+            buildText += "-\(diagnosticLabel)"
+        }
+        versionLabel.stringValue = "\(NSLocalizedString("Current Version", comment: "")): \(version as! String) · \(buildText)"
 
         checkOnAppStartCheckbox.state = Options.shared.update.checkOnAppStart ? .on : .off
         includingBetaVersionCheckbox.state = Options.shared.update.includingBetaVersion ? .on : .off
