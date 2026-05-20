@@ -6,6 +6,7 @@
 //
 
 import Cocoa
+import Darwin
 import Foundation
 
 private final class InputPipelineProfilerLogSink {
@@ -169,6 +170,33 @@ final class InputPipelineProfiler {
         let stats: [Stage: StageStats]
     }
 
+    struct SystemTopProcess: Equatable {
+        let pid: Int
+        let cpuPercent: Double
+        let memoryPercent: Double
+        let command: String
+    }
+
+    struct SystemHealthSnapshot: Equatable {
+        let load1: Double
+        let load5: Double
+        let load15: Double
+        let activeProcessorCount: Int
+        let physicalMemoryMB: UInt64
+        let residentMemoryMB: UInt64?
+        let topProcesses: [SystemTopProcess]
+
+        static let empty = SystemHealthSnapshot(
+            load1: 0,
+            load5: 0,
+            load15: 0,
+            activeProcessorCount: 0,
+            physicalMemoryMB: 0,
+            residentMemoryMB: nil,
+            topProcesses: []
+        )
+    }
+
     struct Probe {
         fileprivate let profiler: InputPipelineProfiler
         fileprivate let stage: Stage
@@ -248,6 +276,8 @@ final class InputPipelineProfiler {
         static let slowLogLimitPerInterval: UInt64 = 30
         static let slowLogIntervalNanos: UInt64 = 60_000_000_000
         static let mainRunLoopHeartbeatIntervalNanos: UInt64 = 1_000_000_000
+        static let systemHealthIntervalSeconds: TimeInterval = 60
+        static let systemHealthTopProcessLimit = 10
     }
 
     private struct SlowLogRateState {
@@ -273,6 +303,8 @@ final class InputPipelineProfiler {
     private var logHandler: (String) -> Void
     private var heartbeatTimer: Timer?
     private var heartbeatExpectedNanos: UInt64?
+    private let systemHealthQueue = DispatchQueue(label: "com.caldis.Mos.inputPipelineProfiler.systemHealth", qos: .utility)
+    private var systemHealthTimer: DispatchSourceTimer?
 
     init(
         environment: [String: String] = ProcessInfo.processInfo.environment,
@@ -388,7 +420,7 @@ final class InputPipelineProfiler {
         let now = clock()
         logHandler(
             String(
-                format: "[InputPipelineProfiler] enabled sessionId=%@ uptimeSeconds=%@ buildLabel=%@ logFile=%@ slowThresholdMs=%.3f eventLagThresholdMs=%.3f summaryIntervalSeconds=%.1f slowLogLimit=%llu slowLogIntervalSeconds=%.1f",
+                format: "[InputPipelineProfiler] enabled sessionId=%@ uptimeSeconds=%@ buildLabel=%@ logFile=%@ slowThresholdMs=%.3f eventLagThresholdMs=%.3f summaryIntervalSeconds=%.1f slowLogLimit=%llu slowLogIntervalSeconds=%.1f systemHealthIntervalSeconds=%.1f",
                 sessionId,
                 uptimeSecondsText(atNanos: now),
                 Self.diagnosticBuildLabel(),
@@ -397,9 +429,43 @@ final class InputPipelineProfiler {
                 Double(eventLagThresholdNanos) / 1_000_000.0,
                 Double(summaryIntervalNanos) / 1_000_000_000.0,
                 slowLogLimitPerInterval,
-                Double(slowLogIntervalNanos) / 1_000_000_000.0
+                Double(slowLogIntervalNanos) / 1_000_000_000.0,
+                Defaults.systemHealthIntervalSeconds
             )
         )
+    }
+
+    func startSystemHealthSnapshots() {
+        guard enabled else { return }
+
+        lock.lock()
+        let alreadyStarted = systemHealthTimer != nil
+        lock.unlock()
+        guard !alreadyStarted else { return }
+
+        systemHealthQueue.async { [weak self] in
+            guard let self = self else { return }
+            self.lock.lock()
+            let alreadyStarted = self.systemHealthTimer != nil
+            self.lock.unlock()
+            guard !alreadyStarted else { return }
+
+            let timer = DispatchSource.makeTimerSource(queue: self.systemHealthQueue)
+            timer.schedule(
+                deadline: .now() + .seconds(10),
+                repeating: .seconds(Int(Defaults.systemHealthIntervalSeconds)),
+                leeway: .seconds(5)
+            )
+            timer.setEventHandler { [weak self] in
+                guard let self = self else { return }
+                self.recordSystemHealthSnapshot(Self.makeSystemHealthSnapshot())
+            }
+
+            self.lock.lock()
+            self.systemHealthTimer = timer
+            self.lock.unlock()
+            timer.resume()
+        }
     }
 
     func recordLifecycleEvent(_ event: String) {
@@ -416,6 +482,10 @@ final class InputPipelineProfiler {
         handler(
             "[InputPipelineProfiler] lifecycle sessionId=\(sessionId) uptimeSeconds=\(secondsText(uptimeNanos)) event=\(event)"
         )
+    }
+
+    func recordSystemHealthSnapshotForTesting(_ snapshot: SystemHealthSnapshot) {
+        recordSystemHealthSnapshot(snapshot)
     }
 
     func configureForTesting(
@@ -442,6 +512,8 @@ final class InputPipelineProfiler {
         self.heartbeatTimer?.invalidate()
         self.heartbeatTimer = nil
         self.heartbeatExpectedNanos = nil
+        self.systemHealthTimer?.cancel()
+        self.systemHealthTimer = nil
         self.stats.removeAll()
         self.intervalStats.removeAll()
         self.slowLogRateStates.removeAll()
@@ -468,6 +540,8 @@ final class InputPipelineProfiler {
         heartbeatTimer?.invalidate()
         heartbeatTimer = nil
         heartbeatExpectedNanos = nil
+        systemHealthTimer?.cancel()
+        systemHealthTimer = nil
         stats.removeAll()
         intervalStats.removeAll()
         slowLogRateStates.removeAll()
@@ -561,6 +635,43 @@ final class InputPipelineProfiler {
         )
     }
 
+    private func recordSystemHealthSnapshot(_ snapshot: SystemHealthSnapshot) {
+        guard enabled else { return }
+        let now = clock()
+
+        let handler: (String) -> Void
+        let uptimeNanos: UInt64
+        lock.lock()
+        handler = logHandler
+        uptimeNanos = now >= processStartNanos ? now - processStartNanos : 0
+        lock.unlock()
+
+        let residentMemoryText = snapshot.residentMemoryMB.map(String.init) ?? "unknown"
+        let topProcessesText = snapshot.topProcesses.map { process in
+            String(
+                format: "%d:%@:%.1f:%.1f",
+                process.pid,
+                Self.metadataValue(process.command),
+                process.cpuPercent,
+                process.memoryPercent
+            )
+        }.joined(separator: ";")
+        handler(
+            String(
+                format: "[InputPipelineProfiler] systemHealth sessionId=%@ uptimeSeconds=%@ load1=%.2f load5=%.2f load15=%.2f activeCPUs=%d physicalMemoryMB=%llu residentMemoryMB=%@ topProcesses=%@",
+                sessionId,
+                secondsText(uptimeNanos),
+                snapshot.load1,
+                snapshot.load5,
+                snapshot.load15,
+                snapshot.activeProcessorCount,
+                snapshot.physicalMemoryMB,
+                residentMemoryText,
+                topProcessesText.isEmpty ? "none" : topProcessesText
+            )
+        )
+    }
+
     private func shouldEmitSlowLogLocked(stage: Stage, atNanos: UInt64) -> Bool {
         if slowLogIntervalNanos == 0 {
             return true
@@ -608,6 +719,78 @@ final class InputPipelineProfiler {
             return ["1", "true", "yes"].contains(enabled.lowercased())
         }
         return false
+    }
+
+    private static func makeSystemHealthSnapshot() -> SystemHealthSnapshot {
+        var loads = [Double](repeating: 0, count: 3)
+        let loadCount = loads.withUnsafeMutableBufferPointer { buffer in
+            getloadavg(buffer.baseAddress, Int32(buffer.count))
+        }
+        if loadCount != 3 {
+            loads = [0, 0, 0]
+        }
+        return SystemHealthSnapshot(
+            load1: loads[0],
+            load5: loads[1],
+            load15: loads[2],
+            activeProcessorCount: ProcessInfo.processInfo.activeProcessorCount,
+            physicalMemoryMB: ProcessInfo.processInfo.physicalMemory / 1024 / 1024,
+            residentMemoryMB: residentMemoryMB(),
+            topProcesses: sampleTopProcesses(limit: Defaults.systemHealthTopProcessLimit)
+        )
+    }
+
+    private static func residentMemoryMB() -> UInt64? {
+        var info = task_basic_info_64()
+        var count = mach_msg_type_number_t(MemoryLayout<task_basic_info_64>.size / MemoryLayout<integer_t>.size)
+        let result = withUnsafeMutablePointer(to: &info) { pointer in
+            pointer.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { reboundPointer in
+                task_info(mach_task_self_, task_flavor_t(TASK_BASIC_INFO_64), reboundPointer, &count)
+            }
+        }
+        guard result == KERN_SUCCESS else { return nil }
+        return UInt64(info.resident_size) / 1024 / 1024
+    }
+
+    private static func sampleTopProcesses(limit: Int) -> [SystemTopProcess] {
+        guard limit > 0 else { return [] }
+
+        let process = Process()
+        process.launchPath = "/bin/ps"
+        process.arguments = ["-arcwwwxo", "pid,ppid,%cpu,%mem,comm"]
+        let outputPipe = Pipe()
+        process.standardOutput = outputPipe
+        process.standardError = Pipe()
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+        } catch {
+            return []
+        }
+        guard process.terminationStatus == 0 else { return [] }
+
+        let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
+        guard let output = String(data: data, encoding: .utf8) else { return [] }
+        return output
+            .split(separator: "\n")
+            .dropFirst()
+            .prefix(limit)
+            .compactMap { line in
+                let columns = line.split(separator: " ", maxSplits: 4, omittingEmptySubsequences: true)
+                guard columns.count == 5,
+                      let pid = Int(columns[0]),
+                      let cpuPercent = Double(columns[2]),
+                      let memoryPercent = Double(columns[3]) else {
+                    return nil
+                }
+                return SystemTopProcess(
+                    pid: pid,
+                    cpuPercent: cpuPercent,
+                    memoryPercent: memoryPercent,
+                    command: String(columns[4])
+                )
+            }
     }
 
     private func makeMetadata(event: CGEvent?, now: UInt64, queueWaitStartNanos: UInt64?) -> EventMetadata? {

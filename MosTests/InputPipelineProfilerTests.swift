@@ -261,4 +261,51 @@ final class InputPipelineProfilerTests: XCTestCase {
                 $0.contains("uptimeSeconds=2.000")
         })
     }
+
+    func testSystemHealthSnapshotOnlyLogsWhenProfilerIsEnabled() {
+        var logs: [String] = []
+        InputPipelineProfiler.shared.configureForTesting(
+            enabled: false,
+            clock: { 1_000_000_000 },
+            logHandler: { logs.append($0) }
+        )
+
+        InputPipelineProfiler.shared.recordSystemHealthSnapshotForTesting(.empty)
+        XCTAssertTrue(logs.isEmpty)
+    }
+
+    func testSystemHealthSnapshotLogsParseableLoadMemoryAndTopProcesses() {
+        var logs: [String] = []
+        InputPipelineProfiler.shared.configureForTesting(
+            enabled: true,
+            clock: { 3_000_000_000 },
+            logHandler: { logs.append($0) }
+        )
+        let snapshot = InputPipelineProfiler.SystemHealthSnapshot(
+            load1: 1.25,
+            load5: 2.5,
+            load15: 3.75,
+            activeProcessorCount: 10,
+            physicalMemoryMB: 65_536,
+            residentMemoryMB: 128,
+            topProcesses: [
+                InputPipelineProfiler.SystemTopProcess(pid: 42, cpuPercent: 91.5, memoryPercent: 0.3, command: "WindowServer"),
+                InputPipelineProfiler.SystemTopProcess(pid: 84, cpuPercent: 33.25, memoryPercent: 1.4, command: "Codex Helper")
+            ]
+        )
+
+        InputPipelineProfiler.shared.recordSystemHealthSnapshotForTesting(snapshot)
+
+        let line = logs.first ?? ""
+        XCTAssertTrue(line.contains("[InputPipelineProfiler] systemHealth"))
+        XCTAssertTrue(line.contains("sessionId="))
+        XCTAssertTrue(line.contains("uptimeSeconds=3.000"))
+        XCTAssertTrue(line.contains("load1=1.25"))
+        XCTAssertTrue(line.contains("load5=2.50"))
+        XCTAssertTrue(line.contains("load15=3.75"))
+        XCTAssertTrue(line.contains("activeCPUs=10"))
+        XCTAssertTrue(line.contains("physicalMemoryMB=65536"))
+        XCTAssertTrue(line.contains("residentMemoryMB=128"))
+        XCTAssertTrue(line.contains("topProcesses=42:WindowServer:91.5:0.3;84:Codex_Helper:33.2:1.4"))
+    }
 }

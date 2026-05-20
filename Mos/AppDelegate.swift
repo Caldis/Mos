@@ -72,6 +72,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Options.shared.readOptions()
         InputPipelineProfiler.shared.logStartupConfiguration()
         InputPipelineProfiler.shared.startMainRunLoopHeartbeat()
+        InputPipelineProfiler.shared.startSystemHealthSnapshots()
         
         // DEBUG: 直接弹出设置窗口
         #if DEBUG
