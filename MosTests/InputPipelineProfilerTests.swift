@@ -169,6 +169,56 @@ final class InputPipelineProfilerTests: XCTestCase {
         })
     }
 
+    func testTextMetadataClosureIsNotEvaluatedForFastProbe() {
+        var ticks: [UInt64] = [1_000_000, 2_000_000]
+        var evaluated = false
+        InputPipelineProfiler.shared.configureForTesting(
+            enabled: true,
+            slowThresholdNanos: 20_000_000,
+            eventLagThresholdNanos: 100_000_000,
+            summaryIntervalNanos: UInt64.max,
+            clock: { ticks.removeFirst() },
+            logHandler: { _ in }
+        )
+
+        let probe = InputPipelineProfiler.shared.begin(.hidInputReportCallback) {
+            evaluated = true
+            return "source=hidPP type=inputReport"
+        }
+        probe?.end()
+
+        XCTAssertFalse(evaluated)
+        let stats = InputPipelineProfiler.shared.snapshot().stats[.hidInputReportCallback]
+        XCTAssertEqual(stats?.count, 1)
+    }
+
+    func testTextMetadataClosureIsEvaluatedForSlowProbe() {
+        var ticks: [UInt64] = [1_000_000, 26_000_000]
+        var evaluated = false
+        var logs: [String] = []
+        InputPipelineProfiler.shared.configureForTesting(
+            enabled: true,
+            slowThresholdNanos: 20_000_000,
+            eventLagThresholdNanos: 100_000_000,
+            summaryIntervalNanos: UInt64.max,
+            clock: { ticks.removeFirst() },
+            logHandler: { logs.append($0) }
+        )
+
+        let probe = InputPipelineProfiler.shared.begin(.hidInputReportCallback) {
+            evaluated = true
+            return "source=hidPP type=inputReport"
+        }
+        probe?.end()
+
+        XCTAssertTrue(evaluated)
+        XCTAssertTrue(logs.contains {
+            $0.contains("stage=hidInputReportCallback") &&
+                $0.contains("durationMs=25.000") &&
+                $0.contains("source=hidPP type=inputReport")
+        })
+    }
+
     func testSlowLogsAreRateLimitedAndDroppedCountAppearsInSummary() {
         var ticks: [UInt64] = [
             0, 25_000_000,

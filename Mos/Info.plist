@@ -43,7 +43,7 @@
 	<key>LogiBLEStandardUndivertGuardEnabledByDefault</key>
 	<false/>
 	<key>MOSDiagnosticBuildLabel</key>
-	<string>InputProfiler-NoBLEGuard-SystemHealth-20260520</string>
+	<string>InputProfiler-NoBLEGuard-SystemHealth-LazyMeta-20260520</string>
 	<key>NSAppleEventsUsageDescription</key>
 	<string>Mos needs to access accessibility to enhance your scrolling.</string>
 	<key>NSHumanReadableCopyright</key>

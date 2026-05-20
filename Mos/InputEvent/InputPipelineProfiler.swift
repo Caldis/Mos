@@ -211,22 +211,25 @@ final class InputPipelineProfiler {
     fileprivate enum ProbeMetadata {
         case event(EventMetadata)
         case text(String)
+        case lazyText(() -> String?)
 
         var lagNanos: UInt64? {
             switch self {
             case .event(let metadata):
                 return metadata.lagNanos
-            case .text:
+            case .text, .lazyText:
                 return nil
             }
         }
 
-        var description: String {
+        var description: String? {
             switch self {
             case .event(let metadata):
                 return metadata.description
             case .text(let text):
                 return text
+            case .lazyText(let provider):
+                return provider()
             }
         }
     }
@@ -349,24 +352,24 @@ final class InputPipelineProfiler {
     }
 
     @inline(__always)
-    func begin(_ stage: Stage, metadata: () -> String?) -> Probe? {
+    func begin(_ stage: Stage, metadata: @escaping () -> String?) -> Probe? {
         guard enabled else { return nil }
         let now = clock()
         return Probe(
             profiler: self,
             stage: stage,
             startNanos: now,
-            metadata: metadata().map { .text($0) }
+            metadata: .lazyText(metadata)
         )
     }
 
     @inline(__always)
-    func measure<T>(_ stage: Stage, metadata: (T) -> String?, _ body: () -> T) -> T {
+    func measure<T>(_ stage: Stage, metadata: @escaping (T) -> String?, _ body: () -> T) -> T {
         guard enabled else { return body() }
         let startNanos = clock()
         let result = body()
         let endNanos = clock()
-        let textMetadata = metadata(result).map { ProbeMetadata.text($0) }
+        let textMetadata = ProbeMetadata.lazyText { metadata(result) }
         finish(stage: stage, startNanos: startNanos, endNanos: endNanos, metadata: textMetadata)
         return result
     }
@@ -860,7 +863,9 @@ final class InputPipelineProfiler {
             "thread=\(Thread.isMainThread ? "main" : "background")"
         ]
         if let metadata {
-            parts.append(metadata.description)
+            if let description = metadata.description {
+                parts.append(description)
+            }
         }
         return parts.joined(separator: " ")
     }

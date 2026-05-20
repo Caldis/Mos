@@ -969,15 +969,19 @@ class LogiDeviceSession {
     }
 
     private func setHIDReportWithProfiling(_ report: [UInt8], call: String, metadata: String? = nil) -> IOReturn {
-        InputPipelineProfiler.shared.measure(.hidReportSend, metadata: { result in
+        let deviceName = InputPipelineProfiler.metadataValue(deviceInfo.name)
+        let currentConnectionMode = connectionMode
+        let currentTransport = InputPipelineProfiler.metadataValue(transport)
+        let reportIDText = String(format: "0x%02X", report.first ?? 0)
+        return InputPipelineProfiler.shared.measure(.hidReportSend, metadata: { result in
             var parts = [
                 "source=hidPP",
                 "type=setReport",
                 "call=\(call)",
-                "device=\(InputPipelineProfiler.metadataValue(deviceInfo.name))",
-                "mode=\(connectionMode)",
-                "transport=\(InputPipelineProfiler.metadataValue(transport))",
-                "reportID=\(String(format: "0x%02X", report.first ?? 0))",
+                "device=\(deviceName)",
+                "mode=\(currentConnectionMode)",
+                "transport=\(currentTransport)",
+                "reportID=\(reportIDText)",
                 "bytes=\(report.count)",
                 "result=\(Self.iorReturnText(result))"
             ]
