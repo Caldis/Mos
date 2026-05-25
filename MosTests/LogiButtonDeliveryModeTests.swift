@@ -139,11 +139,27 @@ final class LogiButtonDeliveryModeTests: XCTestCase {
         XCTAssertEqual(LogiButtonDeliveryPolicy.default.standardButtonUndivertGuardInterval, 2)
     }
 
-    func testDefaultButtonDeliveryPolicyEnablesStandardUndivertGuard() {
+    func testDefaultButtonDeliveryPolicyDisablesStandardUndivertGuard() {
         let key = "LogiBLEStandardUndivertGuardEnabled"
         let defaults = UserDefaults.standard
         let original = defaults.object(forKey: key)
         defaults.removeObject(forKey: key)
+        defer {
+            if let original {
+                defaults.set(original, forKey: key)
+            } else {
+                defaults.removeObject(forKey: key)
+            }
+        }
+
+        XCTAssertFalse(LogiButtonDeliveryPolicy.default.standardButtonUndivertGuardEnabled)
+    }
+
+    func testUserDefaultCanEnableStandardUndivertGuard() {
+        let key = "LogiBLEStandardUndivertGuardEnabled"
+        let defaults = UserDefaults.standard
+        let original = defaults.object(forKey: key)
+        defaults.set(true, forKey: key)
         defer {
             if let original {
                 defaults.set(original, forKey: key)

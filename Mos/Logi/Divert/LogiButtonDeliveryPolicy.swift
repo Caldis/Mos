@@ -17,7 +17,7 @@ struct LogiButtonDeliveryPolicy {
 
     init(
         standardMouseButtonsUseNativeEvents: Bool,
-        standardButtonUndivertGuardEnabled: Bool = true,
+        standardButtonUndivertGuardEnabled: Bool = false,
         standardButtonUndivertGuardInterval: TimeInterval = 2.0
     ) {
         self.standardMouseButtonsUseNativeEvents = standardMouseButtonsUseNativeEvents
@@ -28,7 +28,7 @@ struct LogiButtonDeliveryPolicy {
     static var `default`: LogiButtonDeliveryPolicy {
         return LogiButtonDeliveryPolicy(
             standardMouseButtonsUseNativeEvents: boolDefaultingTrue(forKey: "LogiBLEStandardButtonsNativeFirst"),
-            standardButtonUndivertGuardEnabled: boolDefaultingTrue(forKey: "LogiBLEStandardUndivertGuardEnabled"),
+            standardButtonUndivertGuardEnabled: boolDefaultingFalse(forKey: "LogiBLEStandardUndivertGuardEnabled"),
             standardButtonUndivertGuardInterval: intervalDefaultingTwoSeconds(forKey: "LogiBLEStandardUndivertGuardInterval")
         )
     }
@@ -54,6 +54,11 @@ struct LogiButtonDeliveryPolicy {
 
     private static func boolDefaultingTrue(forKey key: String) -> Bool {
         guard UserDefaults.standard.object(forKey: key) != nil else { return true }
+        return UserDefaults.standard.bool(forKey: key)
+    }
+
+    private static func boolDefaultingFalse(forKey key: String) -> Bool {
+        guard UserDefaults.standard.object(forKey: key) != nil else { return false }
         return UserDefaults.standard.bool(forKey: key)
     }
 
