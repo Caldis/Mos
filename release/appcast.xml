@@ -9,6 +9,32 @@
     <language>en</language>
 
     <item>
+      <title>Mos 4.2.1</title>
+
+      <description><![CDATA[<h2>修复</h2>
+<ul>
+<li>修复由于应用热键的输入检查导致的部分情况下的性能问题。</li>
+</ul>
+
+<hr/>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fixed a performance issue in some cases caused by input checks for app hotkeys.</li>
+</ul>]]></description>
+      <pubDate>Sun, 31 May 2026 14:37:22 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.2.1/Mos.Versions.4.2.1-20260531.1.zip"
+        length="12127893"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.2.1"
+        sparkle:version="20260531.1"
+        sparkle:edSignature="K31Y9XZUvJ40rwnx8KP9mcQWs8RobTyAd5YQznxmkhj7WFwAPzcx3UHFrJNTYx728pykbannf8PI0a6u0HmSDg=="
+      />
+    </item>
+
+    <item>
       <title>Mos 4.2.0</title>
 
       <description><![CDATA[<h2>新功能</h2>
