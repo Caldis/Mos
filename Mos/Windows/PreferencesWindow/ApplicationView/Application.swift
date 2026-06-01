@@ -28,6 +28,12 @@ class Application: Codable, Equatable {
     var buttons: OPTIONS_BUTTONS_DEFAULT? {
         didSet { Options.shared.saveOptions() }
     }
+    var ignoreAsScrollSource = false {
+        didSet {
+            ScrollUtils.shared.invalidateScrollSourceIgnoreCache()
+            Options.shared.saveOptions()
+        }
+    }
     // 初始化
     init(path: String) {
         self.path = path
@@ -46,6 +52,7 @@ class Application: Codable, Equatable {
         scroll = try container.decodeIfPresent(OPTIONS_SCROLL_DEFAULT.self, forKey: .scroll) ?? OPTIONS_SCROLL_DEFAULT()
         // 按钮绑定
         buttons = try container.decodeIfPresent(OPTIONS_BUTTONS_DEFAULT.self, forKey: .buttons)
+        ignoreAsScrollSource = try container.decodeIfPresent(Bool.self, forKey: .ignoreAsScrollSource) ?? false
     }
     
     // Equatable

@@ -67,6 +67,9 @@ class ScrollCore {
 #endif
             return Unmanaged.passUnretained(event)
         }
+        if ScrollUtils.shared.shouldIgnoreScrollSource(event) {
+            return Unmanaged.passUnretained(event)
+        }
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
         let hasVerticalDelta = scrollEvent.Y.valid && scrollEvent.Y.usableValue != 0.0
