@@ -1,6 +1,19 @@
 import type { Translations } from "./context";
 
 export const ja: Translations = {
+  donate: {
+    trigger: "Mos を応援",
+    footerLink: "寄付",
+    title: "Mos を応援",
+    intro: "Mos は無料・オープンソースで、これからもずっと変わりません。寄付は任意ですが、いただけるととても励みになります。",
+    paypal: "PayPal",
+    buyMeACoffee: "Buy Me a Coffee",
+    qrLabel: "中国本土",
+    alipay: "Alipay",
+    wechat: "WeChat Pay",
+    scanHint: "{app}を開いてスキャン",
+    meowWall: "猫の写真、見ていく？",
+  },
   languageSelector: {
     title: "言語を選択",
   },

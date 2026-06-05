@@ -9,11 +9,12 @@ import { Magnetic } from "./components/Magnetic/Magnetic";
 import { Reveal } from "./components/Reveal/Reveal";
 import { EasingPlayground } from "./components/EasingPlayground/EasingPlayground";
 import { CopyButton } from "./components/CopyButton/CopyButton";
+import { SupportButton } from "./components/Donate/SupportButton";
+import { SupportLink } from "./components/Donate/SupportLink";
 import { useI18n } from "./i18n/context";
 import { format } from "./i18n/format";
 import { useGithubRelease } from "./services/github";
 import { motion } from "framer-motion";
-import { HeroCurvePanel } from "./components/HeroCurvePanel/HeroCurvePanel";
 import { BentoCard } from "./components/BentoCard/BentoCard";
 import { useHydratedReducedMotion } from "./hooks/useHydratedReducedMotion";
 
@@ -377,6 +378,7 @@ export default function HomeClient() {
                   </svg>
                 </a>
               </Magnetic>
+              <SupportButton />
             </div>
           </div>
         </nav>
@@ -385,7 +387,7 @@ export default function HomeClient() {
       <main id="content" className="mx-auto max-w-6xl px-4 sm:px-6">
         <section className="relative min-h-[100dvh] pt-28 sm:pt-36 pb-10 sm:pb-12 flex flex-col">
           <div className="flex-1 flex items-center">
-            <div className="w-full grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 lg:gap-20 items-center">
+            <div className="w-full">
 
               {/* Left column */}
               <div>
@@ -428,10 +430,11 @@ export default function HomeClient() {
                 </motion.p>
 
                 <motion.div
-                  className="mt-8 flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4"
+                  className="mt-8 flex flex-col gap-4"
                   {...heroMotion(0.26, shouldReduceMotion)}
                 >
-                  <div className="flex flex-col items-start w-fit">
+                  {/* Primary actions */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                     <Magnetic strength={22}>
                       <a
                         href={downloadUrl}
@@ -447,39 +450,50 @@ export default function HomeClient() {
                         <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 [background:radial-gradient(800px_240px_at_30%_0%,rgba(0,0,0,0.18),transparent_55%)]" />
                       </a>
                     </Magnetic>
+
+                    <Magnetic strength={14}>
+                      <a
+                        href="https://github.com/Caldis/Mos"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
+                      >
+                        <span className="mr-2 opacity-70 group-hover:opacity-100 transition-opacity">↗</span>
+                        <span>{t.hero.ctaViewGitHub}</span>
+                      </a>
+                    </Magnetic>
+                  </div>
+
+                  {/* Homebrew install + system requirement */}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
                     <a
                       href="#homebrew"
                       onClick={(e) => {
                         e.preventDefault();
                         scrollToHomebrew();
                       }}
-                      className="mt-2 self-center text-xs font-mono text-white/50 hover:text-white/75 transition-colors underline decoration-white/15 hover:decoration-white/35 underline-offset-4"
+                      className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 font-mono text-[11px] text-white/50 transition-colors hover:border-white/20 hover:text-white/80"
                     >
-                      {t.hero.ctaInstallHomebrew}
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        className="h-3.5 w-3.5 opacity-70 transition-opacity group-hover:opacity-100"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.8}
+                      >
+                        <rect x="3" y="4" width="18" height="16" rx="2.5" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 9.5 10 12l-2.5 2.5M13 14.5h4" />
+                      </svg>
+                      <span>{t.hero.ctaInstallHomebrew}</span>
                     </a>
-                  </div>
 
-                  <Magnetic strength={14}>
-                    <a
-                      href="https://github.com/Caldis/Mos"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
-                    >
-                      <span className="mr-2 opacity-70 group-hover:opacity-100 transition-opacity">↗</span>
-                      <span>{t.hero.ctaViewGitHub}</span>
-                    </a>
-                  </Magnetic>
-
-                  <div className="sm:ml-auto sm:self-center text-xs text-white/45">
-                    <div className="font-mono tabular-nums">{t.hero.requirementsLine1}</div>
-                    <div className="font-mono">{t.hero.requirementsLine2}</div>
+                    <span className="font-mono tabular-nums text-xs text-white/45">
+                      {t.hero.requirementsLine1}
+                    </span>
                   </div>
                 </motion.div>
               </div>
-
-              {/* Right column — HeroCurvePanel is hidden md: internally */}
-              <HeroCurvePanel />
             </div>
           </div>
 
@@ -862,6 +876,7 @@ export default function HomeClient() {
                 >
                   {t.footer.releases}
                 </a>
+                <SupportLink className="font-mono text-xs text-white/45 hover:text-white/80 transition-colors" />
               </div>
             </div>
           </div>

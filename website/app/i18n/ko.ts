@@ -1,6 +1,19 @@
 import type { Translations } from "./context";
 
 export const ko: Translations = {
+  donate: {
+    trigger: "Mos 후원하기",
+    footerLink: "후원",
+    title: "Mos 후원하기",
+    intro: "Mos는 무료이며 오픈 소스이고, 앞으로도 그렇습니다. 후원은 전적으로 선택이지만, 해주신다면 정말 큰 힘이 됩니다.",
+    paypal: "PayPal",
+    buyMeACoffee: "Buy Me a Coffee",
+    qrLabel: "중국 본토",
+    alipay: "Alipay",
+    wechat: "WeChat Pay",
+    scanHint: "{app} 열고 스캔하기",
+    meowWall: "고양이 사진 보고 갈래요?",
+  },
   languageSelector: {
     title: "언어 선택",
   },

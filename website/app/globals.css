@@ -109,6 +109,16 @@ body::before {
   }
 }
 
+/* Subtle "lub-dub" heartbeat for the support (cat) icon. */
+@keyframes meow-heartbeat {
+  0% { transform: scale(1) translateY(0); }
+  14% { transform: scale(1.24) translateY(-1.5px); }
+  28% { transform: scale(1) translateY(0); }
+  42% { transform: scale(1.14) translateY(-1px); }
+  56% { transform: scale(1) translateY(0); }
+  100% { transform: scale(1) translateY(0); }
+}
+
 @keyframes stroke-in {
   from {
     stroke-dashoffset: 1;

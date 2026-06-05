@@ -1,6 +1,19 @@
 import type { Translations } from "./context";
 
 export const pl: Translations = {
+  donate: {
+    trigger: "Wesprzyj Mos",
+    footerLink: "Wesprzyj",
+    title: "Wesprzyj Mos",
+    intro: "Mos jest darmowy i open source — i taki pozostanie. Napiwek jest całkowicie dobrowolny, ale bardzo mnie ucieszy.",
+    paypal: "PayPal",
+    buyMeACoffee: "Buy Me a Coffee",
+    qrLabel: "Chiny kontynentalne",
+    alipay: "Alipay",
+    wechat: "WeChat Pay",
+    scanHint: "Otwórz {app} i zeskanuj",
+    meowWall: "Chcesz zobaczyć kocie fotki?",
+  },
   languageSelector: {
     title: "Wybierz język",
   },

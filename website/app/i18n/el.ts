@@ -1,6 +1,19 @@
 import type { Translations } from "./context";
 
 export const el: Translations = {
+  donate: {
+    trigger: "Υποστήριξε το Mos",
+    footerLink: "Δωρεά",
+    title: "Υποστήριξε το Mos",
+    intro: "Το Mos είναι δωρεάν και ανοιχτού κώδικα — και θα παραμείνει. Μια μικρή δωρεά είναι εντελώς προαιρετική, αλλά θα με χαροποιούσε ιδιαίτερα.",
+    paypal: "PayPal",
+    buyMeACoffee: "Buy Me a Coffee",
+    qrLabel: "Ηπειρωτική Κίνα",
+    alipay: "Alipay",
+    wechat: "WeChat Pay",
+    scanHint: "Άνοιξε το {app} και σάρωσε",
+    meowWall: "Θες να δεις μερικές γατο-φωτογραφίες;",
+  },
   languageSelector: {
     title: "Επιλογή γλώσσας",
   },

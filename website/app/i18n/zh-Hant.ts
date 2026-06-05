@@ -1,6 +1,19 @@
 import type { Translations } from "./context";
 
 export const zhHant: Translations = {
+  donate: {
+    trigger: "支持 Mos",
+    footerLink: "贊賞",
+    title: "支持 Mos",
+    intro: "Mos 一直都是免費且開源的,以後也會如此。贊賞完全出於自願,但若有的話,我會非常開心。",
+    paypal: "PayPal",
+    buyMeACoffee: "Buy Me a Coffee",
+    qrLabel: "中國大陸",
+    alipay: "支付寶",
+    wechat: "微信支付",
+    scanHint: "開啟{app}掃一掃",
+    meowWall: "想看點貓片嗎?",
+  },
   languageSelector: {
     title: "選擇語言",
   },

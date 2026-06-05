@@ -1,6 +1,19 @@
 import type { Translations } from "./context";
 
 export const de: Translations = {
+  donate: {
+    trigger: "Mos unterstützen",
+    footerLink: "Spenden",
+    title: "Mos unterstützen",
+    intro: "Mos ist kostenlos und quelloffen — und bleibt es auch. Ein kleiner Beitrag ist völlig freiwillig, freut mich aber riesig.",
+    paypal: "PayPal",
+    buyMeACoffee: "Buy Me a Coffee",
+    qrLabel: "Festlandchina",
+    alipay: "Alipay",
+    wechat: "WeChat Pay",
+    scanHint: "{app} öffnen und scannen",
+    meowWall: "Lust auf ein paar Katzenbilder?",
+  },
   languageSelector: {
     title: "Sprache auswählen",
   },

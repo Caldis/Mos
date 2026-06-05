@@ -1,4 +1,17 @@
 export const en = {
+  donate: {
+    trigger: "Support Mos",
+    footerLink: "Donate",
+    title: "Support Mos",
+    intro: "Mos is free and open, and always will be. A small tip is entirely optional — but it genuinely makes my day.",
+    paypal: "PayPal",
+    buyMeACoffee: "Buy Me a Coffee",
+    qrLabel: "Mainland China",
+    alipay: "Alipay",
+    wechat: "WeChat Pay",
+    scanHint: "Open {app} to scan",
+    meowWall: "Want to see some pussycat pics?",
+  },
   languageSelector: {
     title: "Select Language",
   },

@@ -1,6 +1,19 @@
 import type { Translations } from "./context";
 
 export const id: Translations = {
+  donate: {
+    trigger: "Dukung Mos",
+    footerLink: "Donasi",
+    title: "Dukung Mos",
+    intro: "Mos gratis dan open source — dan akan selalu begitu. Sedikit donasi sepenuhnya opsional, tetapi sangat menyenangkan hati saya.",
+    paypal: "PayPal",
+    buyMeACoffee: "Buy Me a Coffee",
+    qrLabel: "Tiongkok Daratan",
+    alipay: "Alipay",
+    wechat: "WeChat Pay",
+    scanHint: "Buka {app} lalu pindai",
+    meowWall: "Mau lihat foto-foto kucing?",
+  },
   languageSelector: {
     title: "Pilih Bahasa",
   },
