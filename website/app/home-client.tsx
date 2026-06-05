@@ -358,6 +358,18 @@ export default function HomeClient() {
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Hidden until the Wall ships — remove `hidden` to re-enable. */}
+              <div className="hidden">
+                <Magnetic strength={14}>
+                  <a
+                    href="/wall/"
+                    title="The Wall"
+                    className="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-white/5 bg-white/4 px-3.5 font-mono text-xs text-white/75 transition-colors hover:border-white/9 hover:bg-white/7 hover:text-white"
+                  >
+                    <span aria-hidden>✎</span> Wall
+                  </a>
+                </Magnetic>
+              </div>
               <LanguageSelector />
               <Magnetic strength={14}>
                 <a
@@ -851,6 +863,13 @@ export default function HomeClient() {
                   className="hover:text-white/80 transition-colors"
                 >
                   Privacy
+                </a>
+                {/* Hidden until the Wall ships — remove `hidden` to re-enable. */}
+                <a
+                  href="/wall/"
+                  className="hidden hover:text-white/80 transition-colors"
+                >
+                  Wall
                 </a>
                 <a
                   href="https://github.com/Caldis/Mos"
