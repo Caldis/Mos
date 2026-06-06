@@ -22,6 +22,7 @@ interface TurnstileApi {
       "error-callback"?: () => void;
       theme?: "light" | "dark" | "auto";
       size?: "normal" | "flexible" | "compact";
+      appearance?: "always" | "execute" | "interaction-only";
     }
   ) => string;
   reset: (id?: string) => void;
@@ -95,8 +96,12 @@ export function TurnstileWidget({ onToken, className }: TurnstileWidgetProps) {
         api = t;
         widgetId = t.render(hostRef.current, {
           sitekey: TURNSTILE_SITE_KEY,
-          theme: "dark",
-          size: "flexible",
+          theme: "light",
+          // Compact (~130px) fits inside the narrow sticky; interaction-only keeps
+          // the widget invisible for users who pass passively, only surfacing the
+          // small checkbox when Cloudflare actually requires an interaction.
+          size: "compact",
+          appearance: "interaction-only",
           callback: (token) => onTokenRef.current(token),
           // Any of these invalidates the current token — clear it and let the
           // widget re-issue a new one on its own.

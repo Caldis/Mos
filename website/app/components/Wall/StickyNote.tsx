@@ -253,10 +253,10 @@ export function StickyNote({
                 no site key is set, in which case `verified` is forced true by the
                 parent so submit stays enabled. */}
             {WALL_TURNSTILE_ENABLED && (
-              <div className="mt-2.5">
+              <div className="mt-2.5 flex flex-col items-center gap-1 text-center">
                 <TurnstileWidget onToken={(token) => onTurnstileToken?.(token)} />
                 {!verified && (
-                  <div className="mt-1.5 text-[11px]" style={{ color: palette.ink, opacity: 0.55 }}>
+                  <div className="text-[10px] tracking-wide" style={{ color: palette.ink, opacity: 0.5 }}>
                     {t.wall.verifyHint}
                   </div>
                 )}
