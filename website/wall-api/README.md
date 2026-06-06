@@ -18,7 +18,7 @@ stick it and it stays). Rotation is not stored; the client derives it from `id`.
 ## Local dev
 
 ```sh
-cd wall-api
+cd website/wall-api
 pnpm install          # or npm install
 pnpm migrate:local    # apply migrations to the local SQLite
 pnpm dev              # wrangler dev -> http://localhost:8787

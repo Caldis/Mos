@@ -1,0 +1,8 @@
+# Standalone pnpm workspace root. Its presence stops pnpm from walking up into
+# the parent website/ workspace, so `pnpm install` / `dev` / `deploy` stay
+# scoped to THIS folder's own node_modules instead of leaking into the site.
+# Also approves the Worker toolchain's native build scripts (otherwise pnpm 10
+# skips them and `wrangler dev` can't find its runtime).
+onlyBuiltDependencies:
+  - workerd
+  - esbuild

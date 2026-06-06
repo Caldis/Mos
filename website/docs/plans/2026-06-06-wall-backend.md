@@ -2,7 +2,7 @@
 
 状态：规划中。前端已合入 master（commit `82ce1bb`），`/wall` 路由可用但导航/footer 入口已 CSS 隐藏；数据层 `website/app/services/wall.ts` 跑本地种子。本方案把它切到真实后端。
 
-**进度（2026-06-06，分支 `feat/wall-backend`）**：后端 `wall-api/` 脚手架已建并 `tsc` 通过；本地 `wrangler dev` + curl 全绿（健康、GET/POST/OPTIONS、归属 `mine` 不泄 owner、限流 429、Turnstile siteverify、CORS 预检）。前端数据层/交互改造与 13 语言 i18n 进行中。决策 D1–D5 已拍板（见第 13 节）。
+**进度（2026-06-06，分支 `feat/wall-backend`）**：后端 `website/wall-api/` 脚手架已建并 `tsc` 通过；本地 `wrangler dev` + curl 全绿（健康、GET/POST/OPTIONS、归属 `mine` 不泄 owner、限流 429、Turnstile siteverify、CORS 预检）。前端数据层/交互改造与 13 语言 i18n 进行中。决策 D1–D5 已拍板（见第 13 节）。
 
 读者：执行本方案的下一个会话与后续维护者。
 
@@ -129,14 +129,15 @@ export function rotFromId(id: string): number {
 
 ## 10. Worker 工程结构
 
-建议放仓库顶层 `wall-api/`（与 `website/` 隔离，避免被 Next 编译或被 pnpm workspace 当子包）：
+放在 `website/wall-api/`（与站点同目录）。两道隔离避免它被站点构建吞并：① `website/tsconfig.json` 的 `exclude` 加 `wall-api`，把 Worker 代码挡在 Next 编译之外；② wall-api 自带 `pnpm-workspace.yaml` 成为独立 pnpm 根，`install`/`dev`/`deploy` 锁在自己的 node_modules（否则父 workspace 会把安装劫持到站点根）。
 
 ```
-wall-api/
+website/wall-api/
   wrangler.toml         # name, main, compatibility_date; [[d1_databases]] 绑定; [vars] ALLOWED_ORIGIN
-  package.json          # 可选: hono + @cloudflare/workers-types
+  pnpm-workspace.yaml   # 独立 pnpm 根 + 批准 workerd/esbuild 构建脚本
+  package.json
   migrations/0001_init.sql
-  src/index.ts          # 路由 GET/POST/PATCH/OPTIONS
+  src/index.ts          # 路由 GET/POST/OPTIONS（无 PATCH，见 D3）
 ```
 
 2–3 个端点用原生 `fetch` handler 手写路由即可，无需 Hono（减依赖）。CORS、Turnstile、限流、D1 读写都在 `src/index.ts`。
@@ -144,7 +145,7 @@ wall-api/
 ## 11. 部署步骤
 
 ```
-cd wall-api
+cd website/wall-api
 wrangler d1 create mos-wall                     # 记录 database_id 填进 wrangler.toml
 wrangler d1 migrations apply mos-wall            # 建表
 wrangler secret put TURNSTILE_SECRET             # 输入 Turnstile secret
@@ -167,7 +168,7 @@ wrangler deploy                                  # 得到 Worker 地址/路由
 ## 13. 决策（已拍板 2026-06-06）
 
 - **D1 署名 `name`：保留**为可选字段（属于 note 内容）。migration 含 `name` 列，前端 compose 维持可选署名输入。
-- **D2 限流：1/分钟、20/小时/IP**（已在 `wall-api/src/index.ts` 实现，本地 curl 验证 429）。
+- **D2 限流：1/分钟、20/小时/IP**（已在 `website/wall-api/src/index.ts` 实现，本地 curl 验证 429）。
 - **D3 重定位：落点持久化，但"保存即锁"** —— note 一旦贴上即不可再编辑/拖动。**因此不做 PATCH**：第 5 节 `PATCH /api/messages/:id`、第 8 节 `repositionNote`、任务清单中"reposition 持久化"均作废；位置在 POST 时定稿、之后只读。公开 API 仅 `GET` / `POST` / `OPTIONS`。
 - **D4 部署：自定义路由 `api.mos.caldis.me`**（DNS 已在 Cloudflare）。`wrangler.toml` 用 `routes = [{ pattern = "api.mos.caldis.me", custom_domain = true }]`；CORS `ALLOWED_ORIGIN = https://mos.caldis.me`。
 - **D5 拉取上限：最近 800 条，无分页**（已实现；将来需要再加 `?before`）。
