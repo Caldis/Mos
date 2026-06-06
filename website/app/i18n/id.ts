@@ -143,6 +143,7 @@ export const id: Translations = {
     submit: "Tempelkan ↗",
     submitting: "Menempelkan…",
     anonymous: "anonim",
+    delete: "Hapus catatan",
     verifyHint: "Sebentar — verifikasi bahwa kamu manusia…",
     errorGeneric: "Gagal mengirim catatanmu. Coba lagi ya.",
     errorRate: "Kamu mengirim terlalu cepat — coba lagi dalam semenit.",

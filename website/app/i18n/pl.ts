@@ -143,6 +143,7 @@ export const pl: Translations = {
     submit: "Przyklej ↗",
     submitting: "Przyklejam…",
     anonymous: "anonim",
+    delete: "Usuń karteczkę",
     verifyHint: "Chwila — sprawdzamy, czy jesteś człowiekiem…",
     errorGeneric: "Nie udało się opublikować notatki. Spróbuj ponownie.",
     errorRate: "Publikujesz zbyt szybko — spróbuj za minutę.",

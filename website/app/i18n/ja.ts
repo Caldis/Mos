@@ -143,6 +143,7 @@ export const ja: Translations = {
     submit: "貼り付ける ↗",
     submitting: "貼り付け中…",
     anonymous: "匿名",
+    delete: "メモを削除",
     verifyHint: "人間確認をさせてください…",
     errorGeneric: "投稿できませんでした。もう一度試してください。",
     errorRate: "投稿が早すぎます — 少し待ってから再試行してください。",

@@ -47,6 +47,8 @@ interface StickyNoteProps {
   onTurnstileToken?: (token: string) => void;
   onConfirm?: () => void;
   onCancel?: () => void;
+  // Hide one of your own placed notes (only rendered when `mine`).
+  onDelete?: (id: string) => void;
 }
 
 function Card({
@@ -93,6 +95,7 @@ export function StickyNote({
   onTurnstileToken,
   onConfirm,
   onCancel,
+  onDelete,
 }: StickyNoteProps) {
   const { t } = useI18n();
   const palette = NOTE_COLORS[note.color];
@@ -160,7 +163,7 @@ export function StickyNote({
 
   return (
     <motion.div
-      className="absolute left-0 top-0 will-change-transform"
+      className="group absolute left-0 top-0 will-change-transform"
       drag={draggable}
       dragListener={false}
       dragControls={dragControls}
@@ -204,6 +207,19 @@ export function StickyNote({
         }
         transition={{ type: "spring", stiffness: 380, damping: 20 }}
       />
+
+      {/* Delete affordance — only on your own placed notes; reveals on hover. */}
+      {!composing && mine && onDelete && (
+        <button
+          type="button"
+          onClick={() => onDelete(note.id)}
+          aria-label={t.wall.delete}
+          className="absolute -right-2.5 -top-2.5 z-30 grid h-6 w-6 place-items-center rounded-full text-[14px] leading-none opacity-0 shadow-md transition hover:scale-110 group-hover:opacity-100 focus-visible:opacity-100"
+          style={{ background: palette.ink, color: palette.bg }}
+        >
+          ×
+        </button>
+      )}
 
       <Card palette={palette} active={composing}>
         {composing ? (

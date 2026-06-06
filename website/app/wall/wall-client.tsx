@@ -18,6 +18,7 @@ import {
   NOTE_COLOR_KEYS,
   NOTE_COLORS,
   NOTE_SIZE,
+  deleteNote,
   postNote,
   useWallNotes,
   type NoteColor,
@@ -209,6 +210,16 @@ export function WallClient() {
     setDraft((d) => (d ? { ...d, x: nx, y: ny } : d));
   }, []);
 
+  // Soft-delete one of your own notes. Optimistically drop it from the canvas;
+  // revalidate from the server if the request fails (rollback).
+  const removeNote = useCallback(
+    (id: string) => {
+      mutate((cur) => (cur ?? []).filter((n) => n.id !== id), { revalidate: false });
+      deleteNote(id).catch(() => mutate());
+    },
+    [mutate],
+  );
+
   return (
     <div className="relative h-full w-full select-none overflow-hidden">
       <div ref={canvasRef} className="wall-grid absolute inset-0">
@@ -222,6 +233,7 @@ export function WallClient() {
                 mine={n.mine}
                 canvasW={canvasSize.w}
                 canvasH={canvasSize.h}
+                onDelete={removeNote}
               />
             ))}
         </AnimatePresence>

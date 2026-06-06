@@ -175,3 +175,28 @@ export async function postNote(input: NewNoteInput): Promise<WallNote> {
   const data = (await res.json()) as { note: ServerNote };
   return fromServer(data.note);
 }
+
+// Soft-delete (hide) a note you own. The server checks owner === note.owner via
+// the x-wall-owner header, so you can only remove your own notes.
+export async function deleteNote(id: string): Promise<void> {
+  if (!SERVER_URL) {
+    const list = ensureLocal();
+    const i = list.findIndex((n) => n.id === id);
+    if (i >= 0) list.splice(i, 1);
+    return;
+  }
+  const res = await fetch(`${SERVER_URL}/wall/messages/${id}`, {
+    method: "DELETE",
+    headers: { "x-wall-owner": getOwner() },
+  });
+  if (!res.ok) {
+    let reason = `delete failed: ${res.status}`;
+    try {
+      const data = (await res.json()) as { error?: string };
+      if (data?.error) reason = data.error;
+    } catch {
+      // non-JSON body
+    }
+    throw new Error(reason);
+  }
+}

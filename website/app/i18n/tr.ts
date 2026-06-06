@@ -143,6 +143,7 @@ export const tr: Translations = {
     submit: "Yapıştır ↗",
     submitting: "Yapıştırılıyor…",
     anonymous: "anonim",
+    delete: "Notu sil",
     verifyHint: "İnsan olduğunu doğrulamak için hızlı bir kontrol…",
     errorGeneric: "Notun gönderilemedi. Lütfen tekrar dene.",
     errorRate: "Çok hızlı gönderiyorsun — bir dakika sonra tekrar dene.",

@@ -143,6 +143,7 @@ export const de: Translations = {
     submit: "Anpinnen ↗",
     submitting: "Wird gepinnt…",
     anonymous: "anonym",
+    delete: "Notiz löschen",
     verifyHint: "Kurz bestätigen, dass du ein Mensch bist…",
     errorGeneric: "Notiz konnte nicht gepostet werden. Bitte nochmal versuchen.",
     errorRate: "Du postest zu schnell — bitte warte eine Minute.",

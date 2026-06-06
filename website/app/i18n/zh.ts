@@ -142,6 +142,7 @@ export const zh: Translations = {
     submit: "贴上去 ↗",
     submitting: "贴中…",
     anonymous: "匿名",
+    delete: "删除便签",
     verifyHint: "先确认一下你是人类…",
     errorGeneric: "便利贴没发出去，再试一次吧。",
     errorRate: "发得有点快——过一分钟再试。",
