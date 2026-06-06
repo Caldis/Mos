@@ -19,6 +19,9 @@ import {
   type NoteColor,
   type WallNote,
 } from "@/app/services/wall";
+import { useI18n } from "@/app/i18n/context";
+import { format } from "@/app/i18n/format";
+import { TurnstileWidget, WALL_TURNSTILE_ENABLED } from "./TurnstileWidget";
 
 const HALF = SIZE / 2;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -31,11 +34,16 @@ interface StickyNoteProps {
   submitting?: boolean;
   canvasW?: number;
   canvasH?: number;
-  onReposition?: (id: string, x: number, y: number) => void;
+  // Set true once a Turnstile token is in hand (or when Turnstile is disabled),
+  // gating the confirm button. Only relevant while composing.
+  verified?: boolean;
+  errorMessage?: string | null;
   onDraftMove?: (x: number, y: number) => void;
   onBodyChange?: (v: string) => void;
   onNameChange?: (v: string) => void;
   onColorChange?: (c: NoteColor) => void;
+  // Receives a fresh Turnstile token (or "" when it expires / errors).
+  onTurnstileToken?: (token: string) => void;
   onConfirm?: () => void;
   onCancel?: () => void;
 }
@@ -75,16 +83,21 @@ export function StickyNote({
   submitting = false,
   canvasW = 0,
   canvasH = 0,
-  onReposition,
+  verified = false,
+  errorMessage = null,
   onDraftMove,
   onBodyChange,
   onNameChange,
   onColorChange,
+  onTurnstileToken,
   onConfirm,
   onCancel,
 }: StickyNoteProps) {
+  const { t } = useI18n();
   const palette = NOTE_COLORS[note.color];
-  const draggable = composing || mine;
+  // D3: only the in-progress draft is ever draggable. Once a note is placed its
+  // position is locked forever — `mine` is purely a visual cue (brighter tape).
+  const draggable = composing;
   const dragControls = useDragControls();
   const x = useMotionValue(note.x * canvasW - HALF);
   const y = useMotionValue(note.y * canvasH - HALF);
@@ -125,13 +138,15 @@ export function StickyNote({
     draggingRef.current = false;
     setDragging(false);
     if (!canvasW || !canvasH) return;
+    // Only the draft moves; placed notes are never draggable (D3), so the only
+    // thing we report here is the draft's new position.
     const nx = clamp((x.get() + HALF) / canvasW, 0.02, 0.98);
     const ny = clamp((y.get() + HALF) / canvasH, 0.02, 0.98);
-    if (composing) onDraftMove?.(nx, ny);
-    else onReposition?.(note.id, nx, ny);
+    onDraftMove?.(nx, ny);
   };
 
-  const canConfirm = note.body.trim().length > 0 && !submitting;
+  // Need a body, not mid-submit, and — when Turnstile is enabled — a token.
+  const canConfirm = note.body.trim().length > 0 && !submitting && verified;
   const onKey = (e: React.KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && canConfirm) onConfirm?.();
     if (e.key === "Escape") onCancel?.();
@@ -199,7 +214,7 @@ export function StickyNote({
               rows={3}
               onChange={(e) => onBodyChange?.(e.target.value)}
               onKeyDown={onKey}
-              placeholder="Write something…"
+              placeholder={t.wall.bodyPlaceholder}
               className="font-hand w-full flex-1 resize-none select-text bg-transparent text-[23px] leading-[1.12] outline-none placeholder:opacity-35"
               style={{ color: palette.ink }}
             />
@@ -209,7 +224,7 @@ export function StickyNote({
                 <button
                   key={c}
                   type="button"
-                  aria-label={`color ${c}`}
+                  aria-label={format(t.wall.colorAria, { color: c })}
                   onClick={() => onColorChange?.(c)}
                   className="h-4 w-4 rounded-full transition-transform hover:scale-110"
                   style={{
@@ -229,10 +244,34 @@ export function StickyNote({
               maxLength={NOTE_MAX_NAME}
               onChange={(e) => onNameChange?.(e.target.value)}
               onKeyDown={onKey}
-              placeholder="Your name (optional)"
+              placeholder={t.wall.namePlaceholder}
               className="mt-2 w-full select-text border-b bg-transparent pb-1 text-[13px] outline-none placeholder:opacity-35"
               style={{ color: palette.ink, borderColor: "rgba(0,0,0,0.14)" }}
             />
+
+            {/* Turnstile lives inside the compose card. Inert (renders null) when
+                no site key is set, in which case `verified` is forced true by the
+                parent so submit stays enabled. */}
+            {WALL_TURNSTILE_ENABLED && (
+              <div className="mt-2.5">
+                <TurnstileWidget onToken={(token) => onTurnstileToken?.(token)} />
+                {!verified && (
+                  <div className="mt-1.5 text-[11px]" style={{ color: palette.ink, opacity: 0.55 }}>
+                    {t.wall.verifyHint}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {errorMessage && (
+              <div
+                role="alert"
+                className="mt-2 text-[11px] leading-snug"
+                style={{ color: palette.ink, opacity: 0.85 }}
+              >
+                {errorMessage}
+              </div>
+            )}
 
             <div className="mt-2.5 flex items-center gap-2">
               <button
@@ -241,7 +280,7 @@ export function StickyNote({
                 className="rounded-md px-2 py-1 text-[12px] font-medium transition-opacity hover:opacity-70"
                 style={{ color: palette.ink, opacity: 0.65 }}
               >
-                Cancel
+                {t.wall.cancel}
               </button>
               <button
                 type="button"
@@ -255,7 +294,7 @@ export function StickyNote({
                   cursor: canConfirm ? "pointer" : "not-allowed",
                 }}
               >
-                {submitting ? "Sticking…" : "Stick it ↗"}
+                {submitting ? t.wall.submitting : t.wall.submit}
               </button>
             </div>
           </>
@@ -266,7 +305,7 @@ export function StickyNote({
               className="mt-auto flex items-center justify-between pt-3 text-[11px] font-medium"
               style={{ opacity: 0.62 }}
             >
-              <span className="max-w-[78%] truncate">{note.name?.trim() || "anonymous"}</span>
+              <span className="max-w-[78%] truncate">{note.name?.trim() || t.wall.anonymous}</span>
               <span aria-hidden>✦</span>
             </div>
           </>

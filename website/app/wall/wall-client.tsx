@@ -10,6 +10,9 @@ import {
 } from "framer-motion";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { StickyNote } from "@/app/components/Wall/StickyNote";
+import { WALL_TURNSTILE_ENABLED } from "@/app/components/Wall/TurnstileWidget";
+import { useI18n } from "@/app/i18n/context";
+import { format } from "@/app/i18n/format";
 import {
   CANVAS_PAD,
   NOTE_COLOR_KEYS,
@@ -27,8 +30,13 @@ interface Draft {
   color: NoteColor;
   x: number;
   y: number;
+  // Display-only tilt for the compose preview. NOT sent to the server — placed
+  // notes derive their rotation from their id (rotFromId).
   rot: number;
   createdAt: number;
+  // Always false for a draft; present only so a Draft satisfies WallNote when
+  // passed to <StickyNote note=…>. (`mine` matters only for placed notes.)
+  mine: boolean;
 }
 
 const HALF = NOTE_SIZE / 2;
@@ -38,12 +46,19 @@ function randRot(): number {
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 export function WallClient() {
+  const { t } = useI18n();
   const { data: notes, mutate, isLoading } = useWallNotes();
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [ghostColor, setGhostColor] = useState<NoteColor | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [myIds, setMyIds] = useState<Set<string>>(() => new Set());
+  // Turnstile token for the current draft (empty until the challenge passes).
+  // When Turnstile is disabled there's no widget, so we treat the draft as
+  // pre-verified to keep dev / local-seed mode working.
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const verified = !WALL_TURNSTILE_ENABLED || turnstileToken.length > 0;
+  // User-facing error surfaced near the compose buttons (cleared on retry/cancel).
+  const [postError, setPostError] = useState<string | null>(null);
   const [canvasSize, setCanvasSize] = useState({ w: 0, h: 0 });
   const dragRef = useRef<{ startX: number; startY: number; color: NoteColor; moved: boolean } | null>(
     null
@@ -75,7 +90,7 @@ export function WallClient() {
       const { w, h } = canvasSize;
       const x = w ? clamp(nx * w, HALF + margin, w - HALF - margin) / w : clamp(nx, 0.12, 0.88);
       const y = h ? clamp(ny * h, HALF + top, h - HALF - tray) / h : clamp(ny, 0.14, 0.8);
-      setDraft({ id: "draft", name: "", body: "", color, x, y, rot, createdAt: Date.now() });
+      setDraft({ id: "draft", name: "", body: "", color, x, y, rot, createdAt: Date.now(), mine: false });
     },
     [canvasSize]
   );
@@ -138,9 +153,28 @@ export function WallClient() {
 
   useEffect(() => () => window.removeEventListener("pointermove", onPointerMove), [onPointerMove]);
 
+  // Map a thrown error message (the Worker's `error` reason) → friendly copy.
+  const friendlyError = useCallback(
+    (message: string): string => {
+      switch (message) {
+        case "rate limited":
+          return t.wall.errorRate;
+        case "turnstile failed":
+        case "missing turnstile token":
+          return t.wall.errorTurnstile;
+        case "too many links":
+          return t.wall.errorLinks;
+        default:
+          return t.wall.errorGeneric;
+      }
+    },
+    [t]
+  );
+
   const confirmDraft = useCallback(async () => {
     if (!draft || !draft.body.trim()) return;
     setSubmitting(true);
+    setPostError(null);
     try {
       const created = await postNote({
         name: draft.name.trim(),
@@ -148,33 +182,28 @@ export function WallClient() {
         color: draft.color,
         x: draft.x,
         y: draft.y,
-        rot: draft.rot,
+        // Position-tilt (rot) is no longer sent — derived from id server-side.
+        turnstileToken: turnstileToken || undefined,
       });
+      // `created.mine` is true; the server is the source of truth for ownership.
       await mutate((cur) => [...(cur ?? []), created], { revalidate: false });
-      setMyIds((s) => {
-        const next = new Set(s);
-        next.add(created.id);
-        return next;
-      });
       setDraft(null);
+      setTurnstileToken("");
     } catch (err) {
-      console.error("Failed to post note", err);
+      const message = err instanceof Error ? err.message : "";
+      setPostError(friendlyError(message));
+      // The token (if any) was consumed by the failed attempt; force a re-verify.
+      setTurnstileToken("");
     } finally {
       setSubmitting(false);
     }
-  }, [draft, mutate]);
+  }, [draft, mutate, turnstileToken, friendlyError]);
 
-  const cancelDraft = useCallback(() => setDraft(null), []);
-
-  const reposition = useCallback(
-    (id: string, nx: number, ny: number) => {
-      mutate((cur) => (cur ?? []).map((n) => (n.id === id ? { ...n, x: nx, y: ny } : n)), {
-        revalidate: false,
-      });
-      // TODO: persist position to the backend (PATCH) once the Worker is live.
-    },
-    [mutate]
-  );
+  const cancelDraft = useCallback(() => {
+    setDraft(null);
+    setPostError(null);
+    setTurnstileToken("");
+  }, []);
 
   const moveDraft = useCallback((nx: number, ny: number) => {
     setDraft((d) => (d ? { ...d, x: nx, y: ny } : d));
@@ -190,10 +219,9 @@ export function WallClient() {
                 key={n.id}
                 note={n}
                 index={i}
-                mine={myIds.has(n.id)}
+                mine={n.mine}
                 canvasW={canvasSize.w}
                 canvasH={canvasSize.h}
-                onReposition={reposition}
               />
             ))}
         </AnimatePresence>
@@ -205,12 +233,15 @@ export function WallClient() {
               note={draft}
               composing
               submitting={submitting}
+              verified={verified}
+              errorMessage={postError}
               canvasW={canvasSize.w}
               canvasH={canvasSize.h}
               onDraftMove={moveDraft}
               onBodyChange={(v) => setDraft((d) => (d ? { ...d, body: v } : d))}
               onNameChange={(v) => setDraft((d) => (d ? { ...d, name: v } : d))}
               onColorChange={(c) => setDraft((d) => (d ? { ...d, color: c } : d))}
+              onTurnstileToken={setTurnstileToken}
               onConfirm={confirmDraft}
               onCancel={cancelDraft}
             />
@@ -220,7 +251,7 @@ export function WallClient() {
         {!isLoading && (notes?.length ?? 0) === 0 && !draft && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             <p className="font-mono text-xs uppercase tracking-[0.22em] text-white/30">
-              be the first to leave a note
+              {t.wall.empty}
             </p>
           </div>
         )}
@@ -267,6 +298,7 @@ function Tray({
   onPointerDownSticky: (e: React.PointerEvent, color: NoteColor) => void;
   hidden: boolean;
 }) {
+  const { t } = useI18n();
   const mid = (NOTE_COLOR_KEYS.length - 1) / 2;
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex justify-center pb-6 sm:pb-8">
@@ -282,7 +314,7 @@ function Tray({
               key={c}
               type="button"
               onPointerDown={(e) => onPointerDownSticky(e, c)}
-              aria-label={`Drag a ${c} sticky onto the wall`}
+              aria-label={format(t.wall.trayDragAria, { color: c })}
               whileHover={{ y: -8, scale: 1.08 }}
               style={{
                 rotate: (i - mid) * 4,
@@ -300,7 +332,7 @@ function Tray({
             </motion.button>
           ))}
         </div>
-        <div className="font-mono text-[11px] text-white/45">Drag a sticky onto the wall</div>
+        <div className="font-mono text-[11px] text-white/45">{t.wall.trayHint}</div>
       </motion.div>
     </div>
   );
