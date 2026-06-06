@@ -19,7 +19,7 @@ ALLOWED_ORIGIN = "https://mos.caldis.me"
 [[d1_databases]]
 binding = "DB"
 database_name = "mos-server"
-database_id = "REPLACE_WITH_database_id_FROM_wrangler_d1_create"
+database_id = "896f4475-222f-483e-9381-4031108764fd"
 
 # Secrets (NOT stored here) — set with:
 #   wrangler secret put TURNSTILE_SECRET
