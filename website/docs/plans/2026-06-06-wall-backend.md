@@ -2,6 +2,8 @@
 
 状态：规划中。前端已合入 master（commit `82ce1bb`），`/wall` 路由可用但导航/footer 入口已 CSS 隐藏；数据层 `website/app/services/wall.ts` 跑本地种子。本方案把它切到真实后端。
 
+**进度（2026-06-06，分支 `feat/wall-backend`）**：后端 `wall-api/` 脚手架已建并 `tsc` 通过；本地 `wrangler dev` + curl 全绿（健康、GET/POST/OPTIONS、归属 `mine` 不泄 owner、限流 429、Turnstile siteverify、CORS 预检）。前端数据层/交互改造与 13 语言 i18n 进行中。决策 D1–D5 已拍板（见第 13 节）。
+
 读者：执行本方案的下一个会话与后续维护者。
 
 ## 1. 目标
@@ -162,10 +164,10 @@ wrangler deploy                                  # 得到 Worker 地址/路由
 6. 部署 Worker + D1；配置站点 env；去掉入口 `hidden`。
 7. 真机验证：跨浏览器/会话可见、只拖自己的、限流、Turnstile 拦机器人。
 
-## 13. 开放决策（执行前需你拍板）
+## 13. 决策（已拍板 2026-06-06）
 
-- D1 `name`（署名）去留：你说"只记录文本/颜色/位置"，但 compose 现有可选署名。建议保留为可选字段（属于 note 内容）；若不要，删 `name` 列与前端字段。
-- D2 限流阈值：默认建议 1/分钟、20/小时/IP。
-- D3 重定位是否持久化（接 PATCH），还是保持仅本地视图。
-- D4 Worker 部署形态：`*.workers.dev` 子域，还是自定义路由（如 `api.mos.caldis.me`）。
-- D5 一次拉取上限/分页：默认最近 800 条，无分页；需要再加 `?before`。
+- **D1 署名 `name`：保留**为可选字段（属于 note 内容）。migration 含 `name` 列，前端 compose 维持可选署名输入。
+- **D2 限流：1/分钟、20/小时/IP**（已在 `wall-api/src/index.ts` 实现，本地 curl 验证 429）。
+- **D3 重定位：落点持久化，但"保存即锁"** —— note 一旦贴上即不可再编辑/拖动。**因此不做 PATCH**：第 5 节 `PATCH /api/messages/:id`、第 8 节 `repositionNote`、任务清单中"reposition 持久化"均作废；位置在 POST 时定稿、之后只读。公开 API 仅 `GET` / `POST` / `OPTIONS`。
+- **D4 部署：自定义路由 `api.mos.caldis.me`**（DNS 已在 Cloudflare）。`wrangler.toml` 用 `routes = [{ pattern = "api.mos.caldis.me", custom_domain = true }]`；CORS `ALLOWED_ORIGIN = https://mos.caldis.me`。
+- **D5 拉取上限：最近 800 条，无分页**（已实现；将来需要再加 `?before`）。

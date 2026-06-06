@@ -44,6 +44,13 @@ jobs:
       - name: Build website artifact
         run: npm run build
         working-directory: website
+        env:
+          # Wall backend — public values injected at static-export build time.
+          # Leaving the Turnstile key unset keeps the widget inert (and the
+          # wall on its local-seed fallback). Set the WALL_TURNSTILE_SITE_KEY
+          # repo variable to enable it.
+          NEXT_PUBLIC_WALL_API_URL: https://api.mos.caldis.me
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.WALL_TURNSTILE_SITE_KEY }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
