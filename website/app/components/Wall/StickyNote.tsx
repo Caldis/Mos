@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  AnimatePresence,
   motion,
   useDragControls,
   useMotionValue,
@@ -215,7 +216,7 @@ export function StickyNote({
               onChange={(e) => onBodyChange?.(e.target.value)}
               onKeyDown={onKey}
               placeholder={t.wall.bodyPlaceholder}
-              className="font-hand w-full flex-1 resize-none select-text bg-transparent text-[23px] leading-[1.12] outline-none placeholder:opacity-35"
+              className="font-hand w-full flex-1 resize-none select-text bg-transparent text-[23px] leading-[1.12] outline-none placeholder:opacity-60"
               style={{ color: palette.ink }}
             />
 
@@ -245,23 +246,32 @@ export function StickyNote({
               onChange={(e) => onNameChange?.(e.target.value)}
               onKeyDown={onKey}
               placeholder={t.wall.namePlaceholder}
-              className="mt-2 w-full select-text border-b bg-transparent pb-1 text-[13px] outline-none placeholder:opacity-35"
+              className="mt-2 w-full select-text border-b bg-transparent pb-1 text-[13px] outline-none placeholder:opacity-60"
               style={{ color: palette.ink, borderColor: "rgba(0,0,0,0.14)" }}
             />
 
-            {/* Turnstile lives inside the compose card. Inert (renders null) when
-                no site key is set, in which case `verified` is forced true by the
-                parent so submit stays enabled. */}
-            {WALL_TURNSTILE_ENABLED && (
-              <div className="mt-2.5 flex flex-col items-center gap-1 text-center">
-                <TurnstileWidget onToken={(token) => onTurnstileToken?.(token)} />
-                {!verified && (
-                  <div className="text-[10px] tracking-wide" style={{ color: palette.ink, opacity: 0.5 }}>
-                    {t.wall.verifyHint}
+            {/* Turnstile: shown only until verified, then collapses away with an
+                animated height transition (no abrupt disappear). interaction-only
+                keeps it invisible for passive passes; inert when no site key. */}
+            <AnimatePresence initial={false}>
+              {WALL_TURNSTILE_ENABLED && !verified && (
+                <motion.div
+                  key="turnstile"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <div className="flex flex-col items-center gap-1 pt-2.5 text-center">
+                    <TurnstileWidget onToken={(token) => onTurnstileToken?.(token)} />
+                    <div className="text-[10px] tracking-wide" style={{ color: palette.ink, opacity: 0.5 }}>
+                      {t.wall.verifyHint}
+                    </div>
                   </div>
-                )}
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {errorMessage && (
               <div
