@@ -49,7 +49,7 @@ jobs:
           # Leaving the Turnstile key unset keeps the widget inert (and the
           # wall on its local-seed fallback). Set the WALL_TURNSTILE_SITE_KEY
           # repo variable to enable it.
-          NEXT_PUBLIC_SERVER_URL: https://api.mos.caldis.me
+          NEXT_PUBLIC_SERVER_URL: https://mos-api.caldis.me
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.WALL_TURNSTILE_SITE_KEY }}
 
       - name: Upload Pages artifact

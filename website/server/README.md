@@ -1,7 +1,7 @@
 # Mos server
 
 Cloudflare Worker + D1 backend for the Mos website. One Worker at
-`api.mos.caldis.me`, multiplexing feature modules by path prefix. The static
+`mos-api.caldis.me`, multiplexing feature modules by path prefix. The static
 site (GitHub Pages, `output: export`) calls it at runtime.
 
 ## Structure
@@ -77,12 +77,12 @@ wrangler d1 create mos-server                       # paste database_id into wra
 wrangler d1 migrations apply mos-server --remote    # build tables on the real DB
 wrangler secret put TURNSTILE_SECRET                # your real Turnstile secret
 wrangler secret put IP_SALT                         # any long random string
-wrangler deploy                                     # publishes to api.mos.caldis.me (custom_domain)
+wrangler deploy                                     # publishes to mos-api.caldis.me (custom_domain)
 ```
 
 Then in the site build (GitHub Pages workflow) inject:
 
-- `NEXT_PUBLIC_SERVER_URL=https://api.mos.caldis.me`
+- `NEXT_PUBLIC_SERVER_URL=https://mos-api.caldis.me`
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY=<your Turnstile site key>`
 
 Leaving `NEXT_PUBLIC_SERVER_URL` unset keeps the local seed fallback in

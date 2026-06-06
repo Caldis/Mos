@@ -1,11 +1,14 @@
 name = "mos-server"
 main = "src/index.ts"
 compatibility_date = "2026-06-01"
+# Backend is reached only via the custom domain (mos-api.caldis.me).
+workers_dev = false
+preview_urls = false
 
 # D4: custom domain. DNS for caldis.me is already on Cloudflare, so
 # `custom_domain = true` makes wrangler create the DNS record + cert on deploy.
 routes = [
-  { pattern = "api.mos.caldis.me", custom_domain = true }
+  { pattern = "mos-api.caldis.me", custom_domain = true }
 ]
 
 # CORS allow-list (comma-separated). The static site lives at mos.caldis.me;

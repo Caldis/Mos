@@ -173,5 +173,5 @@ wrangler deploy                                  # 得到 Worker 地址/路由
 - **D1 署名 `name`：保留**为可选字段（属于 note 内容）。migration 含 `name` 列，前端 compose 维持可选署名输入。
 - **D2 限流：1/分钟、20/小时/IP**（已在 `website/server/src/index.ts` 实现，本地 curl 验证 429）。
 - **D3 重定位：落点持久化，但"保存即锁"** —— note 一旦贴上即不可再编辑/拖动。**因此不做 PATCH**：第 5 节 `PATCH /wall/messages/:id`、第 8 节 `repositionNote`、任务清单中"reposition 持久化"均作废；位置在 POST 时定稿、之后只读。公开 API 仅 `GET` / `POST` / `OPTIONS`。
-- **D4 部署：自定义路由 `api.mos.caldis.me`**（DNS 已在 Cloudflare）。`wrangler.toml` 用 `routes = [{ pattern = "api.mos.caldis.me", custom_domain = true }]`；CORS `ALLOWED_ORIGIN = https://mos.caldis.me`。
+- **D4 部署：自定义路由 `mos-api.caldis.me`**（DNS 已在 Cloudflare）。`wrangler.toml` 用 `routes = [{ pattern = "mos-api.caldis.me", custom_domain = true }]`；CORS `ALLOWED_ORIGIN = https://mos.caldis.me`。
 - **D5 拉取上限：最近 800 条，无分页**（已实现；将来需要再加 `?before`）。
