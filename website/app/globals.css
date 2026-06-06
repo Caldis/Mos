@@ -20,6 +20,14 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   --noise-opacity: 0.065;
+
+  /* Unified CJK fallback so 中日韩 text renders consistently across every font
+     slot (display/body/mono/hand) instead of each latin font's own system
+     fallback. Latin is always caught by the primary font first, so this only
+     affects CJK glyphs. */
+  --font-cjk: "PingFang SC", "PingFang TC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Microsoft JhengHei", "Malgun Gothic", "Noto Sans CJK SC", "Noto Sans CJK TC",
+    "Noto Sans CJK JP", "Noto Sans CJK KR", "Noto Sans SC";
 }
 
 html,
@@ -32,6 +40,7 @@ body {
   background: #000;
   font-family:
     var(--font-body),
+    var(--font-cjk),
     ui-sans-serif,
     system-ui,
     -apple-system,
@@ -173,6 +182,7 @@ body::before {
   .font-display {
     font-family:
       var(--font-display),
+      var(--font-cjk),
       var(--font-body),
       ui-sans-serif,
       system-ui,
@@ -186,6 +196,7 @@ body::before {
   .font-mono {
     font-family:
       var(--font-mono),
+      var(--font-cjk),
       ui-monospace,
       SFMono-Regular,
       Menlo,
@@ -201,7 +212,7 @@ body::before {
   }
 
   .font-hand {
-    font-family: var(--font-hand), "Bradley Hand", "Comic Sans MS", cursive;
+    font-family: var(--font-hand), var(--font-cjk), "Bradley Hand", "Comic Sans MS", cursive;
   }
 
   /* Dot grid for the sticky-note canvas (/wall). */
