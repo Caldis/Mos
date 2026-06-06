@@ -12,8 +12,13 @@ const MAX_NAME = 24;
 const FETCH_LIMIT = 800;
 
 // Per-IP-hash rate limits (decision D2).
-const RL_PER_MINUTE = 1;
-const RL_PER_HOUR = 20;
+// Short window counts only VISIBLE notes, so soft-deleting your just-posted note
+// (hidden=1) frees the slot and lets you repost immediately.
+const RL_VISIBLE_WINDOW_MS = 2 * 60_000; // 2 minutes
+const RL_VISIBLE_MAX = 1;
+// Hard hourly ceiling counts ALL posts (incl. deleted), so the "delete unlocks"
+// exception can't be abused to churn unlimited rows.
+const RL_HOURLY_MAX = 8;
 
 interface NoteRow {
   id: number;
@@ -100,14 +105,14 @@ export async function handlePost(env: Env, request: Request, origin: string): Pr
   const ipHash = (await sha256Hex(ip + env.IP_SALT)).slice(0, 32);
   const now = Date.now();
   const rl = await env.DB.prepare(
-    `SELECT SUM(CASE WHEN created_at > ? THEN 1 ELSE 0 END) AS last_min,
-            COUNT(*) AS last_hour
+    `SELECT SUM(CASE WHEN created_at > ? AND hidden = 0 THEN 1 ELSE 0 END) AS recent_visible,
+            COUNT(*) AS hourly_all
        FROM wall_notes
       WHERE ip_hash = ? AND created_at > ?`,
   )
-    .bind(now - 60_000, ipHash, now - 3_600_000)
-    .first<{ last_min: number | null; last_hour: number | null }>();
-  if (Number(rl?.last_min ?? 0) >= RL_PER_MINUTE || Number(rl?.last_hour ?? 0) >= RL_PER_HOUR)
+    .bind(now - RL_VISIBLE_WINDOW_MS, ipHash, now - 3_600_000)
+    .first<{ recent_visible: number | null; hourly_all: number | null }>();
+  if (Number(rl?.recent_visible ?? 0) >= RL_VISIBLE_MAX || Number(rl?.hourly_all ?? 0) >= RL_HOURLY_MAX)
     return json({ error: "rate limited" }, 429, origin);
 
   // 3) Content filter.
@@ -126,4 +131,27 @@ export async function handlePost(env: Env, request: Request, origin: string): Pr
     owner,
   );
   return json({ note }, 201, origin);
+}
+
+// DELETE /wall/messages/:id — soft-delete (hidden=1) a note you own. The owner
+// token comes from the x-wall-owner header. You can only hide your own notes,
+// and other users' owner tokens are never exposed, so this can't wipe the wall.
+export async function handleDelete(
+  env: Env,
+  request: Request,
+  origin: string,
+  id: string,
+): Promise<Response> {
+  const owner = request.headers.get("x-wall-owner") ?? "";
+  if (!owner) return json({ error: "missing owner" }, 422, origin);
+
+  const res = await env.DB.prepare(
+    `UPDATE wall_notes SET hidden = 1 WHERE id = ? AND owner = ? AND hidden = 0`,
+  )
+    .bind(Number(id), owner)
+    .run();
+
+  // No row changed → not yours, gone, or already hidden. Don't reveal which.
+  if (!res.meta.changes) return json({ error: "not found" }, 404, origin);
+  return json({ ok: true }, 200, origin);
 }

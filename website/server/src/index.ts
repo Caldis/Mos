@@ -29,6 +29,12 @@ export default {
       if (request.method === "POST") return wall.handlePost(env, request, origin);
       return json({ error: "method not allowed" }, 405, origin);
     }
+    const wallNote = url.pathname.match(/^\/wall\/messages\/(\d+)$/);
+    if (wallNote) {
+      if (request.method === "DELETE")
+        return wall.handleDelete(env, request, origin, wallNote[1]);
+      return json({ error: "method not allowed" }, 405, origin);
+    }
 
     return json({ error: "not found" }, 404, origin);
   },
