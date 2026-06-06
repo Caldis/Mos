@@ -1,0 +1,26 @@
+name = "mos-wall"
+main = "src/index.ts"
+compatibility_date = "2026-06-01"
+
+# D4: custom domain. DNS for caldis.me is already on Cloudflare, so
+# `custom_domain = true` makes wrangler create the DNS record + cert on deploy.
+routes = [
+  { pattern = "api.mos.caldis.me", custom_domain = true }
+]
+
+# CORS allow-list (comma-separated). The static site lives at mos.caldis.me;
+# add http://localhost:3000 in .dev.vars for local integration testing.
+[vars]
+ALLOWED_ORIGIN = "https://mos.caldis.me"
+
+# Bind the D1 database as `env.DB`. Run `wrangler d1 create mos-wall` and paste
+# the printed database_id here before `wrangler deploy` (local dev tolerates the
+# placeholder because it uses a separate on-disk SQLite).
+[[d1_databases]]
+binding = "DB"
+database_name = "mos-wall"
+database_id = "REPLACE_WITH_database_id_FROM_wrangler_d1_create"
+
+# Secrets (NOT stored here) — set with:
+#   wrangler secret put TURNSTILE_SECRET
+#   wrangler secret put IP_SALT

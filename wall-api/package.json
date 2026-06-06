@@ -1,0 +1,18 @@
+{
+  "name": "mos-wall-api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Cloudflare Worker + D1 backend for the Mos sticky-note wall",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "migrate:local": "wrangler d1 migrations apply mos-wall --local",
+    "migrate:remote": "wrangler d1 migrations apply mos-wall --remote",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250601.0",
+    "typescript": "^5.5.0",
+    "wrangler": "^4.20.0"
+  }
+}
