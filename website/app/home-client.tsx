@@ -358,8 +358,7 @@ export default function HomeClient() {
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Hidden until the Wall ships — remove `hidden` to re-enable. */}
-              <div className="hidden">
+              <div>
                 <Magnetic strength={14}>
                   <a
                     href="/wall/"
@@ -864,10 +863,9 @@ export default function HomeClient() {
                 >
                   Privacy
                 </a>
-                {/* Hidden until the Wall ships — remove `hidden` to re-enable. */}
                 <a
                   href="/wall/"
-                  className="hidden hover:text-white/80 transition-colors"
+                  className="hover:text-white/80 transition-colors"
                 >
                   Wall
                 </a>
