@@ -8,7 +8,12 @@ import { format } from "@/app/i18n/format";
 
 const PAYPAL_URL = "https://www.paypal.me/mosapp";
 const BMC_URL = "https://buymeacoffee.com/caldis";
-const MEOW_URL = "https://meow.caldis.me?from=MosWebsite";
+// UTM params so the destination's GA attributes the visit to Mos. They travel in
+// the URL, so they survive even though the link is rel="noreferrer"-free here but
+// referrers can still be stripped by browsers/extensions. (`from` kept for any
+// existing server-side logging on meow.caldis.me — safe to drop if unused.)
+const MEOW_URL =
+  "https://meow.caldis.me/?from=MosWebsite&utm_source=mos.caldis.me&utm_medium=referral&utm_campaign=donate-modal";
 
 type QrChannel = "alipay" | "wechat";
 
@@ -151,7 +156,7 @@ export function DonateModal({ isOpen, onClose }: DonateModalProps) {
         <a
           href={MEOW_URL}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener"
           className="group flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 transition-colors hover:border-white/15 hover:bg-white/[0.06]"
         >
           <Image
