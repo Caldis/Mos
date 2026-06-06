@@ -27,6 +27,20 @@ import { TurnstileWidget, WALL_TURNSTILE_ENABLED } from "./TurnstileWidget";
 const HALF = SIZE / 2;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
+// Localized relative time ("2h ago" / "2小时前") via Intl — no extra i18n keys.
+// Computed at render; runs client-side only (placed notes never render on the server).
+function relativeTime(ms: number, lang: string): string {
+  const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+  const sec = Math.round((ms - Date.now()) / 1000); // negative = past
+  const a = Math.abs(sec);
+  if (a < 60) return rtf.format(sec, "second");
+  if (a < 3600) return rtf.format(Math.round(sec / 60), "minute");
+  if (a < 86400) return rtf.format(Math.round(sec / 3600), "hour");
+  if (a < 2592000) return rtf.format(Math.round(sec / 86400), "day");
+  if (a < 31536000) return rtf.format(Math.round(sec / 2592000), "month");
+  return rtf.format(Math.round(sec / 31536000), "year");
+}
+
 interface StickyNoteProps {
   note: WallNote;
   composing?: boolean;
@@ -97,7 +111,7 @@ export function StickyNote({
   onCancel,
   onDelete,
 }: StickyNoteProps) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const palette = NOTE_COLORS[note.color];
   // D3: only the in-progress draft is ever draggable. Once a note is placed its
   // position is locked forever — `mine` is purely a visual cue (brighter tape).
@@ -107,6 +121,7 @@ export function StickyNote({
   const y = useMotionValue(note.y * canvasH - HALF);
   const draggingRef = useRef(false);
   const [dragging, setDragging] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
@@ -164,6 +179,7 @@ export function StickyNote({
   return (
     <motion.div
       className="group absolute left-0 top-0 will-change-transform"
+      onMouseLeave={() => setConfirmingDelete(false)}
       drag={draggable}
       dragListener={false}
       dragControls={dragControls}
@@ -208,16 +224,25 @@ export function StickyNote({
         transition={{ type: "spring", stiffness: 380, damping: 20 }}
       />
 
-      {/* Delete affordance — only on your own placed notes; reveals on hover. */}
+      {/* Delete affordance — own placed notes only. Hover reveals ×; first click
+          arms a red "Delete?" confirm, second click deletes. Mouse-leave cancels. */}
       {!composing && mine && onDelete && (
         <button
           type="button"
-          onClick={() => onDelete(note.id)}
-          aria-label={t.wall.delete}
-          className="absolute -right-2.5 -top-2.5 z-30 grid h-6 w-6 place-items-center rounded-full text-[14px] leading-none opacity-0 shadow-md transition hover:scale-110 group-hover:opacity-100 focus-visible:opacity-100"
-          style={{ background: palette.ink, color: palette.bg }}
+          onClick={() => (confirmingDelete ? onDelete(note.id) : setConfirmingDelete(true))}
+          aria-label={confirmingDelete ? t.wall.deleteConfirm : t.wall.delete}
+          className={`absolute -right-2.5 -top-2.5 z-30 grid h-6 place-items-center rounded-full opacity-0 shadow-md transition group-hover:opacity-100 focus-visible:opacity-100 ${
+            confirmingDelete
+              ? "px-2 text-[10px] font-semibold"
+              : "w-6 text-[14px] leading-none hover:scale-110"
+          }`}
+          style={
+            confirmingDelete
+              ? { background: "#c0392b", color: "#fff" }
+              : { background: palette.ink, color: palette.bg }
+          }
         >
-          ×
+          {confirmingDelete ? t.wall.deleteConfirm : "×"}
         </button>
       )}
 
@@ -331,8 +356,13 @@ export function StickyNote({
               className="mt-auto flex items-center justify-between pt-3 text-[11px] font-medium"
               style={{ opacity: 0.62 }}
             >
-              <span className="max-w-[78%] truncate">{note.name?.trim() || t.wall.anonymous}</span>
-              <span aria-hidden>✦</span>
+              <span className="min-w-0 flex-1 truncate">{note.name?.trim() || t.wall.anonymous}</span>
+              <span
+                title={new Intl.DateTimeFormat(language, { dateStyle: "medium", timeStyle: "short" }).format(note.createdAt)}
+                className="shrink-0 pl-2 tabular-nums"
+              >
+                {relativeTime(note.createdAt, language)}
+              </span>
             </div>
           </>
         )}

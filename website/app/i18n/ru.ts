@@ -144,6 +144,7 @@ export const ru: Translations = {
     submitting: "Лепим…",
     anonymous: "аноним",
     delete: "Удалить заметку",
+    deleteConfirm: "Удалить?",
     verifyHint: "Секунда — проверим, что ты человек…",
     errorGeneric: "Не удалось отправить заметку. Попробуй ещё раз.",
     errorRate: "Слишком быстро — попробуй через минуту.",

@@ -143,6 +143,7 @@ export const zhHant: Translations = {
     submitting: "貼中…",
     anonymous: "匿名",
     delete: "刪除便條",
+    deleteConfirm: "刪除?",
     verifyHint: "先確認一下你是真人…",
     errorGeneric: "便條紙沒有發出去，請再試一次。",
     errorRate: "發得有點快——稍等一分鐘再試。",

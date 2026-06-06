@@ -142,6 +142,7 @@ export const en = {
     submitting: "Sticking…",
     anonymous: "anonymous",
     delete: "Delete note",
+    deleteConfirm: "Delete?",
     verifyHint: "Quick check you're human…",
     errorGeneric: "Couldn't post your note. Please try again.",
     errorRate: "You're posting too fast — try again in a minute.",

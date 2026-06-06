@@ -144,6 +144,7 @@ export const id: Translations = {
     submitting: "Menempelkan…",
     anonymous: "anonim",
     delete: "Hapus catatan",
+    deleteConfirm: "Hapus?",
     verifyHint: "Sebentar — verifikasi bahwa kamu manusia…",
     errorGeneric: "Gagal mengirim catatanmu. Coba lagi ya.",
     errorRate: "Kamu mengirim terlalu cepat — coba lagi dalam semenit.",

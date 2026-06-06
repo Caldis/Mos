@@ -144,6 +144,7 @@ export const ko: Translations = {
     submitting: "붙이는 중…",
     anonymous: "익명",
     delete: "메모 삭제",
+    deleteConfirm: "삭제?",
     verifyHint: "잠깐, 사람인지 확인할게요…",
     errorGeneric: "메모를 올리지 못했어요. 다시 시도해 주세요.",
     errorRate: "너무 빠르게 올리고 있어요 — 잠시 후 다시 시도해 주세요.",

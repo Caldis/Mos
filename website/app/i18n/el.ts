@@ -144,6 +144,7 @@ export const el: Translations = {
     submitting: "Κολλάει…",
     anonymous: "ανώνυμος",
     delete: "Διαγραφή σημειώματος",
+    deleteConfirm: "Διαγραφή;",
     verifyHint: "Γρήγορος έλεγχος ότι είσαι άνθρωπος…",
     errorGeneric: "Δεν ήταν δυνατή η ανάρτηση. Παρακαλώ δοκίμασε ξανά.",
     errorRate: "Ανεβάζεις πολύ γρήγορα — δοκίμασε ξανά σε ένα λεπτό.",

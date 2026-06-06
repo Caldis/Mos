@@ -144,6 +144,7 @@ export const uk: Translations = {
     submitting: "Клеїмо…",
     anonymous: "анонім",
     delete: "Видалити нотатку",
+    deleteConfirm: "Видалити?",
     verifyHint: "Секунда — перевіримо, що ти людина…",
     errorGeneric: "Не вдалося опублікувати нотатку. Спробуй ще раз.",
     errorRate: "Занадто швидко — спробуй через хвилину.",
