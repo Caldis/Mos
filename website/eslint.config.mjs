@@ -9,7 +9,7 @@ const config = [
       "archive/**",
       // Cloudflare Worker backend — its own toolchain/tsconfig, not part of the
       // Next app. Excluded from Next build typecheck (tsconfig) and lint here.
-      "wall-api/**",
+      "server/**",
     ],
   },
 ];

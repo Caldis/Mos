@@ -1,8 +1,8 @@
--- Mos Wall — initial schema.
+-- Wall feature — shared sticky-note board.
 -- Stores text / color / position only. Rotation is derived client-side from id
 -- (see website/app/services/wall.ts rotFromId), never persisted.
 
-CREATE TABLE IF NOT EXISTS notes (
+CREATE TABLE IF NOT EXISTS wall_notes (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   body        TEXT    NOT NULL,
   color       TEXT    NOT NULL,            -- palette key: amber|rose|sky|mint|lilac|blush
@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS notes (
   ip_hash     TEXT                         -- rate limit / moderation, irreversible hash
 );
 
-CREATE INDEX IF NOT EXISTS idx_notes_visible   ON notes (hidden, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_notes_ratelimit ON notes (ip_hash, created_at);
+CREATE INDEX IF NOT EXISTS idx_wall_notes_visible   ON wall_notes (hidden, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_wall_notes_ratelimit ON wall_notes (ip_hash, created_at);

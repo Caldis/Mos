@@ -1,13 +1,13 @@
 {
-  "name": "mos-wall-api",
+  "name": "mos-server",
   "version": "0.0.0",
   "private": true,
-  "description": "Cloudflare Worker + D1 backend for the Mos sticky-note wall",
+  "description": "Cloudflare Worker + D1 backend for the Mos website (wall, plus future features)",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "migrate:local": "wrangler d1 migrations apply mos-wall --local",
-    "migrate:remote": "wrangler d1 migrations apply mos-wall --remote",
+    "migrate:local": "wrangler d1 migrations apply mos-server --local",
+    "migrate:remote": "wrangler d1 migrations apply mos-server --remote",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

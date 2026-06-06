@@ -1,4 +1,4 @@
-name = "mos-wall"
+name = "mos-server"
 main = "src/index.ts"
 compatibility_date = "2026-06-01"
 
@@ -13,12 +13,12 @@ routes = [
 [vars]
 ALLOWED_ORIGIN = "https://mos.caldis.me"
 
-# Bind the D1 database as `env.DB`. Run `wrangler d1 create mos-wall` and paste
-# the printed database_id here before `wrangler deploy` (local dev tolerates the
-# placeholder because it uses a separate on-disk SQLite).
+# Bind the D1 database as `env.DB` (shared by all features). Run
+# `wrangler d1 create mos-server` and paste the printed database_id here before
+# `wrangler deploy` (local dev tolerates the placeholder).
 [[d1_databases]]
 binding = "DB"
-database_name = "mos-wall"
+database_name = "mos-server"
 database_id = "REPLACE_WITH_database_id_FROM_wrangler_d1_create"
 
 # Secrets (NOT stored here) — set with:

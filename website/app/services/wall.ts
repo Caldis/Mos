@@ -45,8 +45,8 @@ export interface NewNoteInput {
   turnstileToken?: string;
 }
 
-export const WALL_API_URL =
-  process.env.NEXT_PUBLIC_WALL_API_URL?.replace(/\/$/, "") ?? "";
+export const SERVER_URL =
+  process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, "") ?? "";
 
 // Stable tilt in [-4, 4] derived from the note id, so a note always leans the
 // same way without persisting a `rot` field. (Same hash style as Java's
@@ -112,8 +112,8 @@ function makeId(): string {
 async function fetchNotes(): Promise<WallNote[]> {
   // Return a copy so the SWR cache never aliases the in-memory store
   // (otherwise an optimistic append would duplicate the just-posted note).
-  if (!WALL_API_URL) return [...ensureLocal()];
-  const res = await fetch(`${WALL_API_URL}/api/messages`, {
+  if (!SERVER_URL) return [...ensureLocal()];
+  const res = await fetch(`${SERVER_URL}/wall/messages`, {
     headers: { accept: "application/json", "x-wall-owner": getOwner() },
   });
   if (!res.ok) throw new Error(`wall fetch failed: ${res.status}`);
@@ -131,7 +131,7 @@ export function useWallNotes() {
 }
 
 export async function postNote(input: NewNoteInput): Promise<WallNote> {
-  if (!WALL_API_URL) {
+  if (!SERVER_URL) {
     const id = makeId();
     const note: WallNote = {
       id,
@@ -147,7 +147,7 @@ export async function postNote(input: NewNoteInput): Promise<WallNote> {
     ensureLocal().push(note);
     return note;
   }
-  const res = await fetch(`${WALL_API_URL}/api/messages`, {
+  const res = await fetch(`${SERVER_URL}/wall/messages`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({

@@ -1,0 +1,129 @@
+// Wall feature — the shared sticky-note board. One of possibly many features
+// hosted by this Worker; everything wall-specific (schema, validation, routes)
+// lives here. Routes are registered in ../index.ts under the /wall prefix.
+import type { Env } from "../lib/env";
+import { json } from "../lib/http";
+import { verifyTurnstile } from "../lib/turnstile";
+import { sha256Hex } from "../lib/hash";
+
+const PALETTE = new Set(["amber", "rose", "sky", "mint", "lilac", "blush"]);
+const MAX_BODY = 180;
+const MAX_NAME = 24;
+const FETCH_LIMIT = 800;
+
+// Per-IP-hash rate limits (decision D2).
+const RL_PER_MINUTE = 1;
+const RL_PER_HOUR = 20;
+
+interface NoteRow {
+  id: number;
+  body: string;
+  color: string;
+  x: number;
+  y: number;
+  name: string | null;
+  owner: string;
+  created_at: number;
+}
+
+// Public shape. row.owner is NEVER emitted — only the boolean `mine`, so one
+// client can't learn (and impersonate) another's token.
+function toPublicNote(row: NoteRow, owner: string) {
+  return {
+    id: String(row.id),
+    body: row.body,
+    color: row.color,
+    x: row.x,
+    y: row.y,
+    name: row.name,
+    createdAt: row.created_at,
+    mine: owner !== "" && row.owner === owner,
+  };
+}
+
+// 2+ URLs in a body is a strong spam signal — reject.
+function looksSpammy(body: string): boolean {
+  const links = body.match(/https?:\/\/|www\./gi);
+  return (links?.length ?? 0) >= 2;
+}
+
+// GET /wall/messages — list visible notes (newest first, max 800). Send
+// `x-wall-owner` to get a per-note `mine`.
+export async function handleGet(env: Env, request: Request, origin: string): Promise<Response> {
+  const owner = request.headers.get("x-wall-owner") ?? "";
+  const { results } = await env.DB.prepare(
+    `SELECT id, body, color, x, y, name, owner, created_at
+       FROM wall_notes
+      WHERE hidden = 0
+      ORDER BY created_at DESC
+      LIMIT ?`,
+  )
+    .bind(FETCH_LIMIT)
+    .all<NoteRow>();
+  const notes = (results ?? []).map((r) => toPublicNote(r, owner));
+  return json({ notes }, 200, origin);
+}
+
+// POST /wall/messages — create a note. Position is set here and locked (D3).
+export async function handlePost(env: Env, request: Request, origin: string): Promise<Response> {
+  let input: Record<string, unknown>;
+  try {
+    input = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return json({ error: "invalid json" }, 400, origin);
+  }
+
+  const body = typeof input.body === "string" ? input.body.trim() : "";
+  const color = typeof input.color === "string" ? input.color : "";
+  const x = Number(input.x);
+  const y = Number(input.y);
+  const name = typeof input.name === "string" ? input.name.trim() : "";
+  const owner = typeof input.owner === "string" ? input.owner.trim() : "";
+  const turnstileToken = typeof input.turnstileToken === "string" ? input.turnstileToken : "";
+
+  // Field validation (server re-checks everything the client claims to enforce).
+  if (body.length < 1 || body.length > MAX_BODY) return json({ error: "body length" }, 422, origin);
+  if (!PALETTE.has(color)) return json({ error: "bad color" }, 422, origin);
+  if (!Number.isFinite(x) || x < 0 || x > 1 || !Number.isFinite(y) || y < 0 || y > 1)
+    return json({ error: "bad position" }, 422, origin);
+  if (name.length > MAX_NAME) return json({ error: "name too long" }, 422, origin);
+  if (!owner) return json({ error: "missing owner" }, 422, origin);
+  if (!turnstileToken) return json({ error: "missing turnstile token" }, 422, origin);
+
+  const ip = request.headers.get("cf-connecting-ip") ?? "";
+
+  // 1) Bot check.
+  if (!(await verifyTurnstile(env, turnstileToken, ip)))
+    return json({ error: "turnstile failed" }, 403, origin);
+
+  // 2) Rate limit by irreversible IP hash (salt is a Worker secret).
+  const ipHash = (await sha256Hex(ip + env.IP_SALT)).slice(0, 32);
+  const now = Date.now();
+  const rl = await env.DB.prepare(
+    `SELECT SUM(CASE WHEN created_at > ? THEN 1 ELSE 0 END) AS last_min,
+            COUNT(*) AS last_hour
+       FROM wall_notes
+      WHERE ip_hash = ? AND created_at > ?`,
+  )
+    .bind(now - 60_000, ipHash, now - 3_600_000)
+    .first<{ last_min: number | null; last_hour: number | null }>();
+  if (Number(rl?.last_min ?? 0) >= RL_PER_MINUTE || Number(rl?.last_hour ?? 0) >= RL_PER_HOUR)
+    return json({ error: "rate limited" }, 429, origin);
+
+  // 3) Content filter.
+  if (looksSpammy(body)) return json({ error: "too many links" }, 422, origin);
+
+  // 4) Insert.
+  const res = await env.DB.prepare(
+    `INSERT INTO wall_notes (body, color, x, y, name, owner, created_at, hidden, ip_hash)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)`,
+  )
+    .bind(body, color, x, y, name || null, owner, now, ipHash)
+    .run();
+
+  const note = toPublicNote(
+    { id: res.meta.last_row_id as number, body, color, x, y, name: name || null, owner, created_at: now },
+    owner,
+  );
+  return json({ note }, 201, origin);
+}
