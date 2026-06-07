@@ -33,7 +33,7 @@ export function FlowFieldControls({ config, onChange, onReset }: Props) {
     () => true,
     () => false,
   );
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   if (!isClient) return null;
