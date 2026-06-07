@@ -22,6 +22,18 @@ crons = ["0 * * * *"]
 [ai]
 binding = "AI"
 
+# Per-IP flood guard for GET /wall/messages (Cloudflare Rate Limiting binding,
+# bound as env.RL). A burst gets a cheap 429 before any D1 query. Worker-level and
+# per-colo: this protects D1/CPU, NOT the Worker request quota itself (the Worker
+# still runs to evaluate the limit) — for that, add an edge WAF Rate Limiting Rule
+# in the dashboard. Generous: a real user loads once + the occasional refetch.
+[[ratelimits]]
+name = "RL"
+namespace_id = "1001"
+[ratelimits.simple]
+limit = 120
+period = 60
+
 # CORS allow-list (comma-separated). The static site lives at mos.caldis.me;
 # add http://localhost:3000 in .dev.vars for local integration testing.
 [vars]

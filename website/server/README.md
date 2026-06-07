@@ -120,3 +120,23 @@ wrangler d1 execute mos-server --remote --command "SELECT id, hide_reason, subst
 # un-hide (restore) a note:
 wrangler d1 execute mos-server --remote --command "UPDATE wall_notes SET hidden=0, hide_reason=NULL WHERE id=42"
 ```
+
+## Abuse & cost controls
+
+The account is on the **Workers Free plan**: every service hard-stops at its free
+limit instead of billing overage, so the worst case under attack is temporary
+unavailability, not a surprise bill. Cloudflare also adds no bandwidth/egress
+charges and free, unmetered DDoS mitigation. Layers in this Worker:
+
+- **POST** — Turnstile + per-IP-hash rate limit (1 visible / 2 min, 8 / hour),
+  plus the link + ad-keyword content filter.
+- **GET** — Cloudflare Rate Limiting binding (`env.RL`, `[[ratelimits]]`):
+  120 req / 60 s per IP, per-colo. A burst gets a cheap 429 before any D1 query.
+  This guards D1/CPU, **not** the Worker request quota (the Worker still runs to
+  evaluate the limit) — for that, add an edge **WAF Rate Limiting Rule** in the
+  dashboard (Security → WAF → Rate limiting rules), which blocks before the Worker.
+- **Workers AI** — not reachable from any public route (only the hourly cron calls
+  it). Triple-capped: once per note (`ai_checked`), `AI_SWEEP_LIMIT` per run, and
+  `AI_DAILY_MAX` per UTC day (`ai_budget` table). Fail-open on any error.
+- **Client** — the site caches `GET /wall/messages` in `localStorage` for 5 min,
+  so reloads don't re-hit the API (`website/app/services/wall.ts`).

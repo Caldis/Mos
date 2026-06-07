@@ -11,6 +11,7 @@ import {
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { StickyNote } from "@/app/components/Wall/StickyNote";
 import { WALL_TURNSTILE_ENABLED } from "@/app/components/Wall/TurnstileWidget";
+import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
 import { useI18n } from "@/app/i18n/context";
 import { format } from "@/app/i18n/format";
 import {
@@ -363,7 +364,36 @@ function Tray({
   hidden: boolean;
 }) {
   const { t } = useI18n();
+  const reduceMotion = useHydratedReducedMotion();
   const mid = (NOTE_COLOR_KEYS.length - 1) / 2;
+
+  // Idle "swipe": auto-play each sticky's hover left→right (0.2s apart) on a 5s
+  // loop, so the tray reads as interactive. Reuses the hover transform — no new
+  // visual, just an automated cursor-swipe feel. Pauses while the pointer is on
+  // the tray (hover) or any drag/compose is in flight (the whole tray is `hidden`
+  // then), so it never fights a real interaction. Off under reduced motion.
+  const [sweep, setSweep] = useState(-1);
+  const [hovering, setHovering] = useState(false);
+  const paused = hidden || hovering || reduceMotion;
+  // Force the wave to rest while paused via derivation, so we never setState in
+  // the effect just to reset — the interval callback is the only writer of `sweep`.
+  const activeSweep = paused ? -1 : sweep;
+
+  useEffect(() => {
+    if (paused) return;
+    const COUNT = NOTE_COLOR_KEYS.length;
+    const STEP_MS = 200; // 0.2s between notes
+    const CYCLE_STEPS = Math.round(5000 / STEP_MS); // 5s loop
+    let step = 0;
+    const id = window.setInterval(() => {
+      // The lit note travels 0→last over the first COUNT steps, then idles for the
+      // rest of the cycle before repeating.
+      setSweep(step < COUNT ? step : -1);
+      step = (step + 1) % CYCLE_STEPS;
+    }, STEP_MS);
+    return () => window.clearInterval(id);
+  }, [paused]);
+
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex justify-center pb-6 sm:pb-8">
       <motion.div
@@ -371,6 +401,8 @@ function Tray({
         initial={false}
         animate={{ y: hidden ? 120 : 0, opacity: hidden ? 0 : 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 26 }}
+        onPointerEnter={() => setHovering(true)}
+        onPointerLeave={() => setHovering(false)}
       >
         <div className="flex items-end gap-2.5">
           {NOTE_COLOR_KEYS.map((c, i) => (
@@ -379,7 +411,9 @@ function Tray({
               type="button"
               onPointerDown={(e) => onPointerDownSticky(e, c)}
               aria-label={format(t.wall.trayDragAria, { color: c })}
+              animate={{ y: activeSweep === i ? -8 : 0, scale: activeSweep === i ? 1.08 : 1 }}
               whileHover={{ y: -8, scale: 1.08 }}
+              transition={{ type: "spring", stiffness: 320, damping: 17 }}
               style={{
                 rotate: (i - mid) * 4,
                 background: NOTE_COLORS[c].bg,

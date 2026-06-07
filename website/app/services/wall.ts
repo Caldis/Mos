@@ -230,15 +230,66 @@ function makeId(): string {
   }
 }
 
+// --- Local snapshot cache ---------------------------------------------------
+// Persist the last server fetch so reloads within the TTL render instantly
+// WITHOUT re-hitting the API. SWR's in-memory dedupe only lasts the session, so
+// a reload would otherwise re-fetch every time; this stops a user (or a tab they
+// keep reopening) from hammering /wall/messages. One key, overwritten each fetch
+// — at most FETCH_LIMIT notes ≈ a couple hundred KB, far under the ~5MB
+// localStorage quota, so it can't grow unbounded.
+const NOTES_CACHE_KEY = "wall_notes_cache";
+const NOTES_CACHE_TTL = 5 * 60_000; // 5 min
+
+function readNotesCache(): ServerNote[] | null {
+  try {
+    const raw = localStorage.getItem(NOTES_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { ts?: number; notes?: ServerNote[] };
+    if (!parsed || typeof parsed.ts !== "number" || !Array.isArray(parsed.notes)) return null;
+    if (Date.now() - parsed.ts >= NOTES_CACHE_TTL) return null; // stale → refetch
+    return parsed.notes;
+  } catch {
+    return null;
+  }
+}
+
+function writeNotesCache(notes: ServerNote[]): void {
+  try {
+    localStorage.setItem(NOTES_CACHE_KEY, JSON.stringify({ ts: Date.now(), notes }));
+  } catch {
+    // private mode / quota exceeded — caching is best-effort, just skip it.
+  }
+}
+
+// Drop the snapshot after the user changes the wall (post / delete) so the next
+// load reflects their action instead of serving a stale copy.
+function invalidateNotesCache(): void {
+  try {
+    localStorage.removeItem(NOTES_CACHE_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 async function fetchNotes(): Promise<WallNote[]> {
   // Return a copy so the SWR cache never aliases the in-memory store
   // (otherwise an optimistic append would duplicate the just-posted note).
   if (!SERVER_URL) return [...ensureLocal()];
+
+  // Fresh local snapshot → skip the network entirely. `mine` was baked in by the
+  // server (via x-wall-owner) when cached, and the owner token is stable, so it
+  // stays correct across reloads.
+  if (typeof localStorage !== "undefined") {
+    const cached = readNotesCache();
+    if (cached) return cached.map(fromServer);
+  }
+
   const res = await fetch(`${SERVER_URL}/wall/messages`, {
     headers: { accept: "application/json", "x-wall-owner": getOwner() },
   });
   if (!res.ok) throw new Error(`wall fetch failed: ${res.status}`);
   const data = (await res.json()) as { notes: ServerNote[] };
+  if (typeof localStorage !== "undefined") writeNotesCache(data.notes);
   return data.notes.map(fromServer);
 }
 
@@ -294,6 +345,7 @@ export async function postNote(input: NewNoteInput): Promise<WallNote> {
     throw new Error(reason);
   }
   const data = (await res.json()) as { note: ServerNote };
+  invalidateNotesCache(); // their new note must show on the next load
   return fromServer(data.note);
 }
 
@@ -320,4 +372,5 @@ export async function deleteNote(id: string): Promise<void> {
     }
     throw new Error(reason);
   }
+  invalidateNotesCache(); // the hidden note must be gone on the next load
 }

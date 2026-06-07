@@ -57,9 +57,23 @@ const SWEEP_LIMIT = 800;
 // drains over a few hourly sweeps; after that it's just the handful of new notes.
 const AI_SWEEP_LIMIT = 25;
 
+// Hard ceiling on AI judgements per UTC day (tracked in the ai_budget table) — a
+// backstop so a sustained note flood can't run up Workers AI usage even across
+// many sweeps. The free tier is ~10k neurons/day and each judge costs a fraction
+// of that, so 150/day stays comfortably free. Tune to taste.
+const AI_DAILY_MAX = 150;
+
 // GET /wall/messages — list visible notes (newest first, max 800). Send
 // `x-wall-owner` to get a per-note `mine`.
 export async function handleGet(env: Env, request: Request, origin: string): Promise<Response> {
+  // Cheap per-IP flood guard: a burst gets a 429 before any D1 work. Optional
+  // binding (env.RL) so the handler still works if it isn't configured.
+  if (env.RL) {
+    const ip = request.headers.get("cf-connecting-ip") ?? "";
+    const { success } = await env.RL.limit({ key: ip || "anon" });
+    if (!success) return json({ error: "rate limited" }, 429, origin);
+  }
+
   const owner = request.headers.get("x-wall-owner") ?? "";
   const { results } = await env.DB.prepare(
     `SELECT id, body, color, x, y, name, owner, created_at
@@ -195,39 +209,56 @@ export async function sweep(env: Env): Promise<{ spam: number; flagged: number }
       .run();
   }
 
-  // Pass 2 — AI low-quality flag. Only notes the model hasn't seen (ai_checked=0)
-  // and that survived pass 1 (hidden=0 excludes the just-hidden spam).
-  const { results: pending } = await env.DB.prepare(
-    `SELECT id, body, name
-       FROM wall_notes
-      WHERE hidden = 0 AND ai_checked = 0
-      ORDER BY created_at DESC
-      LIMIT ?`,
-  )
-    .bind(AI_SWEEP_LIMIT)
-    .all<{ id: number; body: string; name: string | null }>();
+  // Pass 2 — AI low-quality flag. Triple-capped so a flood can't run up AI usage:
+  // once-per-note (ai_checked), per-run (AI_SWEEP_LIMIT), and per-UTC-day
+  // (AI_DAILY_MAX via the ai_budget table). Only notes that survived pass 1
+  // (hidden=0) and haven't been judged are eligible.
+  const day = new Date().toISOString().slice(0, 10);
+  const spent =
+    (await env.DB.prepare(`SELECT count FROM ai_budget WHERE day = ?`).bind(day).first<{ count: number }>())
+      ?.count ?? 0;
+  const aiLimit = Math.min(AI_SWEEP_LIMIT, Math.max(0, AI_DAILY_MAX - spent));
 
   const judged: number[] = [];
   const flagged: number[] = [];
-  for (const r of pending ?? []) {
-    judged.push(r.id);
-    if (await looksLowQuality(env, r.body, r.name)) flagged.push(r.id);
-  }
-  if (judged.length) {
-    // Mark every judged note checked, so it's never re-sent to the model.
-    const ph = judged.map(() => "?").join(",");
-    await env.DB.prepare(`UPDATE wall_notes SET ai_checked = 1 WHERE id IN (${ph})`)
-      .bind(...judged)
-      .run();
-  }
-  if (flagged.length) {
-    // Tag the gibberish ones for review WITHOUT hiding them (hidden stays 0).
-    const ph = flagged.map(() => "?").join(",");
-    await env.DB.prepare(
-      `UPDATE wall_notes SET hide_reason = 'ai-low-quality' WHERE id IN (${ph}) AND hidden = 0`,
+  if (aiLimit > 0) {
+    const { results: pending } = await env.DB.prepare(
+      `SELECT id, body, name
+         FROM wall_notes
+        WHERE hidden = 0 AND ai_checked = 0
+        ORDER BY created_at DESC
+        LIMIT ?`,
     )
-      .bind(...flagged)
-      .run();
+      .bind(aiLimit)
+      .all<{ id: number; body: string; name: string | null }>();
+
+    for (const r of pending ?? []) {
+      judged.push(r.id);
+      if (await looksLowQuality(env, r.body, r.name)) flagged.push(r.id);
+    }
+    if (judged.length) {
+      // Mark every judged note checked, so it's never re-sent to the model…
+      const ph = judged.map(() => "?").join(",");
+      await env.DB.prepare(`UPDATE wall_notes SET ai_checked = 1 WHERE id IN (${ph})`)
+        .bind(...judged)
+        .run();
+      // …and record today's spend so the daily cap holds across sweeps.
+      await env.DB.prepare(
+        `INSERT INTO ai_budget (day, count) VALUES (?, ?)
+         ON CONFLICT(day) DO UPDATE SET count = count + excluded.count`,
+      )
+        .bind(day, judged.length)
+        .run();
+    }
+    if (flagged.length) {
+      // Tag the gibberish ones for review WITHOUT hiding them (hidden stays 0).
+      const ph = flagged.map(() => "?").join(",");
+      await env.DB.prepare(
+        `UPDATE wall_notes SET hide_reason = 'ai-low-quality' WHERE id IN (${ph}) AND hidden = 0`,
+      )
+        .bind(...flagged)
+        .run();
+    }
   }
 
   return { spam: spamIds.length, flagged: flagged.length };
