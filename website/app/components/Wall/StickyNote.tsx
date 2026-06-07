@@ -17,6 +17,7 @@ import {
   NOTE_MAX_BODY,
   NOTE_MAX_NAME,
   NOTE_SIZE as BASE,
+  bodyHasLink,
   safeArea,
   type NoteColor,
   type WallNote,
@@ -188,8 +189,11 @@ export function StickyNote({
     onDraftMove?.(nx, ny);
   };
 
-  // Need a body, not mid-submit, and — when Turnstile is enabled — a token.
-  const canConfirm = note.body.trim().length > 0 && !submitting && verified;
+  // Links are banned: warn live and block submit while the body contains one, so
+  // the user fixes it here instead of round-tripping to a server rejection.
+  const hasLink = composing && bodyHasLink(note.body);
+  // Need a body, not mid-submit, no link, and — when Turnstile is on — a token.
+  const canConfirm = note.body.trim().length > 0 && !submitting && verified && !hasLink;
   const onKey = (e: React.KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter" && canConfirm) onConfirm?.();
     if (e.key === "Escape") onCancel?.();
@@ -307,6 +311,16 @@ export function StickyNote({
                 {note.body.length}/{NOTE_MAX_BODY}
               </span>
             </div>
+
+            {hasLink && (
+              <div
+                role="status"
+                className="mt-1.5 text-[11px] leading-snug"
+                style={{ color: palette.ink, opacity: 0.72 }}
+              >
+                {t.wall.noLinksHint}
+              </div>
+            )}
 
             <input
               value={note.name}

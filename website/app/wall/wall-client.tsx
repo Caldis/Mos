@@ -199,8 +199,10 @@ export function WallClient() {
         case "turnstile failed":
         case "missing turnstile token":
           return t.wall.errorTurnstile;
-        case "too many links":
+        case "no links":
           return t.wall.errorLinks;
+        case "spam":
+          return t.wall.errorSpam;
         default:
           return t.wall.errorGeneric;
       }

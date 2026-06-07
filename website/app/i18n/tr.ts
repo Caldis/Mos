@@ -167,6 +167,8 @@ export const tr: Translations = {
     errorGeneric: "Notun gönderilemedi. Lütfen tekrar dene.",
     errorRate: "Çok hızlı gönderiyorsun — bir dakika sonra tekrar dene.",
     errorTurnstile: "Lütfen doğrulamayı tamamla ve tekrar dene.",
-    errorLinks: "Notunda çok fazla link var.",
+    errorLinks: "Duvarda bağlantılara izin verilmiyor — lütfen kaldır.",
+    errorSpam: "Bu spam gibi göründü, bu yüzden paylaşılmadı.",
+    noLinksHint: "Bağlantılara izin verilmiyor — paylaşmak için kaldır.",
   },
 };

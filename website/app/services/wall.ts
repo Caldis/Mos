@@ -155,6 +155,20 @@ export interface NewNoteInput {
 export const SERVER_URL =
   process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, "") ?? "";
 
+// Client-side mirror of the server link rule (server/src/lib/moderation.ts:
+// STRONG_LINK + BARE_SPAM_DOMAIN). Used ONLY to warn the user as they type —
+// the Worker re-checks and is the real authority. Keep the two in sync: if the
+// banned-TLD set changes there, change it here too. The ad-keyword blocklist is
+// intentionally NOT mirrored (it stays server-side, private, and the server
+// surfaces a "spam" reason instead).
+const LINK_RE =
+  /(https?:\/\/|www\.|:\/\/|\b[a-z0-9-]+\.[a-z]{2,}\/\S|\b[a-z0-9-]+\.(?:com|net|org|cn|xyz|top|vip|shop|club|live|link|cc|tk|ru|info|biz|online|site|store|fun|pro|wang|ltd|icu)\b)/i;
+
+// True when the text contains something the server will reject as a link.
+export function bodyHasLink(text: string): boolean {
+  return LINK_RE.test(text);
+}
+
 // Stable tilt in [-4, 4] derived from the note id, so a note always leans the
 // same way without persisting a `rot` field. (Same hash style as Java's
 // String.hashCode; the |0 keeps it a 32-bit int.)

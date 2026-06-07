@@ -5,6 +5,8 @@ import type { Env } from "../lib/env";
 import { json } from "../lib/http";
 import { verifyTurnstile } from "../lib/turnstile";
 import { sha256Hex } from "../lib/hash";
+import { spamReason } from "../lib/moderation";
+import { looksLowQuality } from "../lib/aiJudge";
 
 const PALETTE = new Set(["amber", "rose", "sky", "mint", "lilac", "blush"]);
 const MAX_BODY = 180;
@@ -46,11 +48,14 @@ function toPublicNote(row: NoteRow, owner: string) {
   };
 }
 
-// 2+ URLs in a body is a strong spam signal — reject.
-function looksSpammy(body: string): boolean {
-  const links = body.match(/https?:\/\/|www\./gi);
-  return (links?.length ?? 0) >= 2;
-}
+// Re-scan this many of the newest visible notes per sweep. New spam is recent,
+// and the wall only holds a few hundred notes, so this stays a cheap query.
+const SWEEP_LIMIT = 800;
+
+// Cap AI judgements per sweep so Workers AI usage stays tiny: at most this many
+// not-yet-judged notes are sent to the model each run. The existing backlog
+// drains over a few hourly sweeps; after that it's just the handful of new notes.
+const AI_SWEEP_LIMIT = 25;
 
 // GET /wall/messages — list visible notes (newest first, max 800). Send
 // `x-wall-owner` to get a per-note `mine`.
@@ -115,8 +120,10 @@ export async function handlePost(env: Env, request: Request, origin: string): Pr
   if (Number(rl?.recent_visible ?? 0) >= RL_VISIBLE_MAX || Number(rl?.hourly_all ?? 0) >= RL_HOURLY_MAX)
     return json({ error: "rate limited" }, 429, origin);
 
-  // 3) Content filter.
-  if (looksSpammy(body)) return json({ error: "too many links" }, 422, origin);
+  // 3) Content filter — links are banned and obvious ad spam is rejected. Same
+  // logic the scheduled sweep uses, so the door and the broom agree (moderation).
+  const reason = spamReason(body, name);
+  if (reason) return json({ error: reason }, 422, origin);
 
   // 4) Insert.
   const res = await env.DB.prepare(
@@ -146,7 +153,7 @@ export async function handleDelete(
   if (!owner) return json({ error: "missing owner" }, 422, origin);
 
   const res = await env.DB.prepare(
-    `UPDATE wall_notes SET hidden = 1 WHERE id = ? AND owner = ? AND hidden = 0`,
+    `UPDATE wall_notes SET hidden = 1, hide_reason = 'user' WHERE id = ? AND owner = ? AND hidden = 0`,
   )
     .bind(Number(id), owner)
     .run();
@@ -154,4 +161,74 @@ export async function handleDelete(
   // No row changed → not yours, gone, or already hidden. Don't reveal which.
   if (!res.meta.changes) return json({ error: "not found" }, 404, origin);
   return json({ ok: true }, 200, origin);
+}
+
+// Scheduled moderation sweep, wired to a Cron Trigger via the `scheduled` handler
+// in ../index.ts. Two passes:
+//   1. Rule spam — re-scan visible notes; hide outright (hide_reason='spam').
+//      Catches spam that landed before the rules tightened.
+//   2. AI low-quality — ask Workers AI whether each not-yet-judged note is
+//      gibberish; FLAG (hide_reason='ai-low-quality'), never hide. A human
+//      decides. Each note is judged once (ai_checked), capped per run, so AI
+//      usage is minimal.
+// Read-then-write is safe: the sweep is the only content-based writer, runs
+// single-instance on the cron, and a missed note is simply caught next hour.
+export async function sweep(env: Env): Promise<{ spam: number; flagged: number }> {
+  // Pass 1 — rule spam (cheap, no AI).
+  const { results } = await env.DB.prepare(
+    `SELECT id, body, name
+       FROM wall_notes
+      WHERE hidden = 0
+      ORDER BY created_at DESC
+      LIMIT ?`,
+  )
+    .bind(SWEEP_LIMIT)
+    .all<{ id: number; body: string; name: string | null }>();
+
+  const spamIds = (results ?? []).filter((r) => spamReason(r.body, r.name) !== null).map((r) => r.id);
+  if (spamIds.length) {
+    const ph = spamIds.map(() => "?").join(",");
+    await env.DB.prepare(
+      `UPDATE wall_notes SET hidden = 1, hide_reason = 'spam' WHERE id IN (${ph})`,
+    )
+      .bind(...spamIds)
+      .run();
+  }
+
+  // Pass 2 — AI low-quality flag. Only notes the model hasn't seen (ai_checked=0)
+  // and that survived pass 1 (hidden=0 excludes the just-hidden spam).
+  const { results: pending } = await env.DB.prepare(
+    `SELECT id, body, name
+       FROM wall_notes
+      WHERE hidden = 0 AND ai_checked = 0
+      ORDER BY created_at DESC
+      LIMIT ?`,
+  )
+    .bind(AI_SWEEP_LIMIT)
+    .all<{ id: number; body: string; name: string | null }>();
+
+  const judged: number[] = [];
+  const flagged: number[] = [];
+  for (const r of pending ?? []) {
+    judged.push(r.id);
+    if (await looksLowQuality(env, r.body, r.name)) flagged.push(r.id);
+  }
+  if (judged.length) {
+    // Mark every judged note checked, so it's never re-sent to the model.
+    const ph = judged.map(() => "?").join(",");
+    await env.DB.prepare(`UPDATE wall_notes SET ai_checked = 1 WHERE id IN (${ph})`)
+      .bind(...judged)
+      .run();
+  }
+  if (flagged.length) {
+    // Tag the gibberish ones for review WITHOUT hiding them (hidden stays 0).
+    const ph = flagged.map(() => "?").join(",");
+    await env.DB.prepare(
+      `UPDATE wall_notes SET hide_reason = 'ai-low-quality' WHERE id IN (${ph}) AND hidden = 0`,
+    )
+      .bind(...flagged)
+      .run();
+  }
+
+  return { spam: spamIds.length, flagged: flagged.length };
 }

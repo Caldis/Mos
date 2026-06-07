@@ -11,6 +11,17 @@ routes = [
   { pattern = "mos-api.caldis.me", custom_domain = true }
 ]
 
+# Hourly moderation sweep (free Cron Trigger). Calls the Worker's `scheduled`
+# handler → wall.sweep(): rule-based spam gets hidden, and a small Workers AI
+# model flags gibberish notes for review (never auto-hidden).
+[triggers]
+crons = ["0 * * * *"]
+
+# Workers AI (free tier: 10,000 Neurons/day). Bound as env.AI; used only by the
+# sweep's low-quality judge — see src/lib/aiJudge.ts.
+[ai]
+binding = "AI"
+
 # CORS allow-list (comma-separated). The static site lives at mos.caldis.me;
 # add http://localhost:3000 in .dev.vars for local integration testing.
 [vars]

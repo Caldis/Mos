@@ -167,6 +167,8 @@ export const ja: Translations = {
     errorGeneric: "投稿できませんでした。もう一度試してください。",
     errorRate: "投稿が早すぎます — 少し待ってから再試行してください。",
     errorTurnstile: "認証を完了してから再試行してください。",
-    errorLinks: "リンクが多すぎます。",
+    errorLinks: "リンクは貼れません。削除してからどうぞ。",
+    errorSpam: "宣伝のようなので投稿できませんでした。",
+    noLinksHint: "リンクは貼れません。削除してください。",
   },
 };

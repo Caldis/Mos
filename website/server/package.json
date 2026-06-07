@@ -8,7 +8,8 @@
     "deploy": "wrangler deploy",
     "migrate:local": "wrangler d1 migrations apply mos-server --local",
     "migrate:remote": "wrangler d1 migrations apply mos-server --remote",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test src/lib/moderation.test.ts src/lib/aiJudge.test.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250601.0",

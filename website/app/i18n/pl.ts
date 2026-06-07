@@ -167,6 +167,8 @@ export const pl: Translations = {
     errorGeneric: "Nie udało się opublikować notatki. Spróbuj ponownie.",
     errorRate: "Publikujesz zbyt szybko — spróbuj za minutę.",
     errorTurnstile: "Proszę ukończyć weryfikację i spróbować ponownie.",
-    errorLinks: "W notatce jest zbyt wiele linków.",
+    errorLinks: "Linki nie są dozwolone na ścianie — usuń go.",
+    errorSpam: "To wygląda na spam, więc nie zostało opublikowane.",
+    noLinksHint: "Linki nie są dozwolone — usuń go, aby opublikować.",
   },
 };

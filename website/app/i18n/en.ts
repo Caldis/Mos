@@ -165,6 +165,8 @@ export const en = {
     errorGeneric: "Couldn't post your note. Please try again.",
     errorRate: "You're posting too fast — try again in a minute.",
     errorTurnstile: "Please complete the verification and try again.",
-    errorLinks: "Too many links in your note.",
+    errorLinks: "Links aren't allowed on the wall — please remove it.",
+    errorSpam: "This looks like spam, so it wasn't posted.",
+    noLinksHint: "Links aren't allowed — remove it to post.",
   },
 };

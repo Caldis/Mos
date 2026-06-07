@@ -90,6 +90,33 @@ Leaving `NEXT_PUBLIC_SERVER_URL` unset keeps the local seed fallback in
 
 ## Moderation
 
+`hide_reason` records **why** a note was hidden — or, for `ai-low-quality`, why
+it was flagged while still visible:
+
+| `hide_reason`    | `hidden` | Meaning                                                                 |
+| ---------------- | -------- | ----------------------------------------------------------------------- |
+| `NULL`           | 0        | visible, nothing flagged                                                |
+| `user`           | 1        | the author self-deleted (`DELETE /wall/messages/:id`)                   |
+| `spam`           | 1        | rule filter at POST time / the hourly sweep (`lib/moderation`: links + ad keywords) |
+| `ai-low-quality` | **0**    | the sweep's AI judge thinks it's gibberish — **still visible**, awaiting your review |
+| `admin`          | 1        | a human hid it by hand (command below)                                  |
+
+Two automated layers, both in the hourly sweep (`features/wall.ts` → `sweep`):
+- **Rule spam** (`lib/moderation.ts`, shared with the POST handler so the door
+  and the broom agree) — links banned + ad-keyword blocklist. Tune it there.
+- **AI low-quality** (`lib/aiJudge.ts`) — a small Workers AI model flags gibberish
+  like `Dhdh`. It only flags; you decide. `ai_checked` ensures each note is judged
+  once, so AI usage stays within the free tier.
+
 ```sh
-wrangler d1 execute mos-server --remote --command "UPDATE wall_notes SET hidden=1 WHERE id=42"
+# review what the AI flagged (still visible until you act):
+wrangler d1 execute mos-server --remote --command "SELECT id, substr(body,1,60) AS body FROM wall_notes WHERE hide_reason='ai-low-quality' AND hidden=0"
+# agree → hide it by hand, tagged 'admin' so the audit trail is honest:
+wrangler d1 execute mos-server --remote --command "UPDATE wall_notes SET hidden=1, hide_reason='admin' WHERE id=42"
+# disagree → clear the flag (ai_checked stays 1, so it won't be re-judged):
+wrangler d1 execute mos-server --remote --command "UPDATE wall_notes SET hide_reason=NULL WHERE id=42"
+# inspect everything hidden:
+wrangler d1 execute mos-server --remote --command "SELECT id, hide_reason, substr(body,1,60) AS body FROM wall_notes WHERE hidden=1 ORDER BY id DESC LIMIT 50"
+# un-hide (restore) a note:
+wrangler d1 execute mos-server --remote --command "UPDATE wall_notes SET hidden=0, hide_reason=NULL WHERE id=42"
 ```

@@ -167,6 +167,8 @@ export const id: Translations = {
     errorGeneric: "Gagal mengirim catatanmu. Coba lagi ya.",
     errorRate: "Kamu mengirim terlalu cepat — coba lagi dalam semenit.",
     errorTurnstile: "Selesaikan verifikasi lalu coba lagi.",
-    errorLinks: "Terlalu banyak tautan dalam catatanmu.",
+    errorLinks: "Tautan tidak diizinkan di dinding — hapus dulu.",
+    errorSpam: "Ini tampak seperti spam, jadi tidak diposting.",
+    noLinksHint: "Tautan tidak diizinkan — hapus untuk menempel.",
   },
 };

@@ -167,6 +167,8 @@ export const de: Translations = {
     errorGeneric: "Notiz konnte nicht gepostet werden. Bitte nochmal versuchen.",
     errorRate: "Du postest zu schnell — bitte warte eine Minute.",
     errorTurnstile: "Bitte Überprüfung abschließen und nochmal versuchen.",
-    errorLinks: "Zu viele Links in deiner Notiz.",
+    errorLinks: "Links sind an der Wand nicht erlaubt — bitte entfernen.",
+    errorSpam: "Das sieht nach Spam aus und wurde nicht gepostet.",
+    noLinksHint: "Links sind nicht erlaubt — bitte entfernen.",
   },
 };

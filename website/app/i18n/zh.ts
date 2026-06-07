@@ -166,6 +166,8 @@ export const zh: Translations = {
     errorGeneric: "便利贴没发出去，再试一次吧。",
     errorRate: "发得有点快——过一分钟再试。",
     errorTurnstile: "请完成验证后再试。",
-    errorLinks: "便利贴里链接太多啦。",
+    errorLinks: "留言墙不支持链接，去掉后再贴。",
+    errorSpam: "这条看起来像广告，没发出去。",
+    noLinksHint: "不能贴链接哦，去掉才能贴上。",
   },
 };

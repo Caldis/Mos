@@ -167,6 +167,8 @@ export const ko: Translations = {
     errorGeneric: "메모를 올리지 못했어요. 다시 시도해 주세요.",
     errorRate: "너무 빠르게 올리고 있어요 — 잠시 후 다시 시도해 주세요.",
     errorTurnstile: "인증을 완료한 후 다시 시도해 주세요.",
-    errorLinks: "메모에 링크가 너무 많아요.",
+    errorLinks: "링크는 붙일 수 없어요. 링크를 빼고 다시 시도해 주세요.",
+    errorSpam: "광고처럼 보여서 게시되지 않았어요.",
+    noLinksHint: "링크는 붙일 수 없어요. 링크를 빼 주세요.",
   },
 };

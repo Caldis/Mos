@@ -166,6 +166,8 @@ export const zhHant: Translations = {
     errorGeneric: "便條紙沒有發出去，請再試一次。",
     errorRate: "發得有點快——稍等一分鐘再試。",
     errorTurnstile: "請完成驗證後再試。",
-    errorLinks: "便條紙裡連結太多了。",
+    errorLinks: "留言牆不支援連結，移除後再貼。",
+    errorSpam: "這則看起來像廣告，沒有貼上。",
+    noLinksHint: "不能貼連結喔，移除後才能貼上。",
   },
 };

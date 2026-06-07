@@ -38,4 +38,15 @@ export default {
 
     return json({ error: "not found" }, 404, origin);
   },
+
+  // Cron Trigger (see wrangler.toml [triggers]). Runs the moderation sweep so
+  // spam that slipped past the POST-time filter gets hidden automatically.
+  // waitUntil keeps the worker alive until the DB writes finish.
+  async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(
+      wall.sweep(env).then(({ spam, flagged }) => {
+        if (spam || flagged) console.log(`wall sweep: hid ${spam} spam, flagged ${flagged} low-quality`);
+      }),
+    );
+  },
 };
