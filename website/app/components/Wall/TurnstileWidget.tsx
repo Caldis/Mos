@@ -82,7 +82,9 @@ export function TurnstileWidget({ onToken, className }: TurnstileWidgetProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   // Keep the latest onToken without re-rendering the widget on every parent render.
   const onTokenRef = useRef(onToken);
-  onTokenRef.current = onToken;
+  useEffect(() => {
+    onTokenRef.current = onToken;
+  }, [onToken]);
 
   useEffect(() => {
     if (!WALL_TURNSTILE_ENABLED) return;
