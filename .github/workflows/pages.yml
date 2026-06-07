@@ -51,6 +51,9 @@ jobs:
           # repo variable to enable it.
           NEXT_PUBLIC_SERVER_URL: https://mos-api.caldis.me
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.WALL_TURNSTILE_SITE_KEY }}
+          # Authenticated build-time fetch of the latest release (5000/hr) so the
+          # version number is baked into the static page; see app/page.tsx.
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

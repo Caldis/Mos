@@ -69,10 +69,10 @@ const BINDING_ROWS = [
   ["wheelClick", "appSwitcher"],
 ] as const;
 
-export default function HomeClient() {
+export default function HomeClient({ initialRelease }: { initialRelease?: unknown }) {
   const { language, t } = useI18n();
   const shouldReduceMotion = useHydratedReducedMotion();
-  const { data: release } = useGithubRelease();
+  const { data: release } = useGithubRelease(initialRelease);
   const brew = useModal();
 
   const downloadUrl = useMemo(() => pickDownloadUrl(release), [release]);
