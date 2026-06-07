@@ -268,9 +268,12 @@ function Panel({
   );
 }
 
-// Compact label / track / value row — lives inside the panel it controls.
+// Compact label / track / value row + a one-line description, inside the panel
+// it controls. Uses the page body font (synced with the rest of the site), not
+// the mono chip style.
 function MiniSlider({
   label,
+  hint,
   value,
   display,
   min,
@@ -278,6 +281,7 @@ function MiniSlider({
   onChange,
 }: {
   label: string;
+  hint: string;
   value: number;
   display: string;
   min: number;
@@ -285,19 +289,22 @@ function MiniSlider({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="w-[58px] shrink-0 font-mono text-[10px] uppercase tracking-[0.16em] text-white/55">{label}</span>
-      <input
-        className="range flex-1"
-        type="range"
-        min={min}
-        max={max}
-        step={0.01}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        aria-label={label}
-      />
-      <span className="w-12 shrink-0 text-right font-mono text-[10px] tabular-nums text-white/50">{display}</span>
+    <div>
+      <div className="flex items-center gap-3">
+        <span className="w-9 shrink-0 text-[12px] text-white/70">{label}</span>
+        <input
+          className="range flex-1"
+          type="range"
+          min={min}
+          max={max}
+          step={0.01}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          aria-label={label}
+        />
+        <span className="w-12 shrink-0 text-right text-[11px] tabular-nums text-white/55">{display}</span>
+      </div>
+      <p className="mt-1 pl-12 text-[11px] leading-snug text-white/40">{hint}</p>
     </div>
   );
 }
@@ -329,17 +336,41 @@ export function SmoothScrollDemo() {
 
   // The sliders live inside the "With Mos" panel — they only shape the smooth
   // side, so they belong to it, not to a detached row under both panels.
-  // Step / Speed / Duration are kept as compact English chips (fixed-width,
-  // aligned, and matching the app's control names); the surrounding copy is i18n.
+  // Labels/values use the page body font (synced with the site) and are Chinese
+  // only — intentionally NOT i18n — each with a one-line note on what it does.
   const controls = (
-    <div className="mt-4 space-y-2.5 border-t border-white/[0.07] pt-4">
+    <div className="mt-4 space-y-3 border-t border-white/[0.07] pt-4">
       <div className="flex items-baseline justify-between">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">{t.scroll.parameters}</span>
-        <span className="font-mono text-[10px] tabular-nums text-white/35">transition {durationTransition(duration).toFixed(3)}</span>
+        <span className="text-[11px] tracking-[0.06em] text-white/50">参数</span>
+        <span className="text-[11px] tabular-nums text-white/35">过渡 {durationTransition(duration).toFixed(3)}</span>
       </div>
-      <MiniSlider label="Step" value={step} display={step.toFixed(2)} min={0.01} max={100} onChange={setStep} />
-      <MiniSlider label="Speed" value={speed} display={`×${speed.toFixed(2)}`} min={1} max={10} onChange={setSpeed} />
-      <MiniSlider label="Duration" value={duration} display={duration.toFixed(2)} min={1} max={5} onChange={setDuration} />
+      <MiniSlider
+        label="步长"
+        hint="每格滚轮的基础滚动距离，越大单次跨度越大"
+        value={step}
+        display={step.toFixed(2)}
+        min={0.01}
+        max={100}
+        onChange={setStep}
+      />
+      <MiniSlider
+        label="速度"
+        hint="在步长之上的整体倍率，越大滚动越快"
+        value={speed}
+        display={`×${speed.toFixed(2)}`}
+        min={1}
+        max={10}
+        onChange={setSpeed}
+      />
+      <MiniSlider
+        label="时长"
+        hint="平滑缓动的持续时间，越大滑行越久、越顺滑"
+        value={duration}
+        display={duration.toFixed(2)}
+        min={1}
+        max={5}
+        onChange={setDuration}
+      />
     </div>
   );
 
