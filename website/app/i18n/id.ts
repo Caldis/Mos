@@ -75,8 +75,9 @@ export const id: Translations = {
         kicker: "Tombol & pintasan",
         title: "Ikat, rekam, ulangi.",
         body:
-          "Ikat mouse atau keyboard ke aksi cepat, dan susun alur kerjamu sesukamu.",
+          "Ikat tombol mouse mana pun ke aksi cepat, dan susun alur kerjamu sesukamu.",
         quickBind: "Quick Bind",
+        logi: "Dukungan pemetaan tombol khusus Logitech",
         rows: {
           button4: "Button 4",
           button5: "Button 5",
@@ -138,7 +139,7 @@ export const id: Translations = {
     kickerButtons: "Tombol",
     heading: "Jangan dibaca. Gulir saja.",
     lead:
-      "Roda mouse mentah tidak di-sampling sesering trackpad, jadi halaman hanya bisa meloncat patah-patah. Mos membentuk ulang masukan itu dengan algoritma yang disetel cermat berdasarkan fisika nyata, mengubah niat gulirmu menjadi gerakan yang mulus dan presisi yang mengikuti jarimu.",
+      "Roda mouse biasa tidak di-sampling sehalus trackpad macOS, jadi halaman hanya bisa meloncat dengan langkah tetap. Mos membentuk ulang niat itu dengan algoritma yang disetel cermat berdasarkan inersia fisik nyata, menjadi gerakan mulus dan presisi yang mengikuti jarimu.",
     withoutMos: "Tanpa Mos",
     withMos: "Dengan Mos",
     tagRaw: "mentah",

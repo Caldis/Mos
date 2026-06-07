@@ -15,6 +15,7 @@ import { Modal } from "./components/Modal/Modal";
 import { useModal } from "./components/Modal/hooks";
 import { SmoothScrollDemo } from "./components/SmoothScroll/SmoothScrollDemo";
 import { CurveDivider, IndexMark, Shot } from "./components/Editorial/Editorial";
+import { LogiKeymap } from "./components/LogiKeymap/LogiKeymap";
 import { useI18n } from "./i18n/context";
 import { format } from "./i18n/format";
 import { useGithubRelease } from "./services/github";
@@ -271,7 +272,7 @@ export default function HomeClient() {
             </Reveal>
             <Reveal className="md:col-span-5" delayMs={120}>
               <IndexMark n="02" label={t.scroll.kickerProfiles} />
-              <h2 className="font-display text-4xl leading-[0.95] tracking-[-0.01em] text-white sm:text-5xl">
+              <h2 className="font-display text-4xl leading-[0.95] tracking-[-0.01em] whitespace-pre-line text-white sm:text-5xl">
                 {t.sectionFeel.cards.perApp.title}
               </h2>
               <p className="mt-5 text-pretty leading-[1.7] text-white/65">{t.sectionFeel.cards.perApp.body}</p>
@@ -286,7 +287,7 @@ export default function HomeClient() {
           <div className="grid gap-8 md:grid-cols-12 md:items-center">
             <Reveal className="md:col-span-5">
               <IndexMark n="03" label={t.scroll.kickerButtons} />
-              <h2 className="font-display text-4xl leading-[0.95] tracking-[-0.01em] text-white sm:text-5xl">
+              <h2 className="font-display text-4xl leading-[0.95] tracking-[-0.01em] whitespace-pre-line text-white sm:text-5xl">
                 {t.sectionFeel.cards.buttons.title}
               </h2>
               <p className="mt-5 text-pretty leading-[1.7] text-white/65">{t.sectionFeel.cards.buttons.body}</p>
@@ -299,6 +300,8 @@ export default function HomeClient() {
                   </div>
                 ))}
               </dl>
+
+              <LogiKeymap label={t.sectionFeel.cards.buttons.logi} />
             </Reveal>
             <Reveal className="md:col-span-7 md:-mr-6" delayMs={120}>
               <Shot locale={readmeLocale} name="buttons-action" alt="Mos action library window" />

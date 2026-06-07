@@ -75,8 +75,9 @@ export const de: Translations = {
         kicker: "Buttons & Shortcuts",
         title: "Binden, aufnehmen, wiederholen.",
         body:
-          "Binde Maus oder Tastatur an Schnellaktionen und gestalte deinen Workflow ganz nach Belieben.",
+          "Binde jede Maustaste an eine Schnellaktion und gestalte deinen Workflow ganz nach Belieben.",
         quickBind: "Schnell binden",
+        logi: "Logitech-Sondertasten werden unterstützt",
         rows: {
           button4: "Taste 4",
           button5: "Taste 5",
@@ -138,7 +139,7 @@ export const de: Translations = {
     kickerButtons: "Tasten",
     heading: "Nicht lesen. Scrollen.",
     lead:
-      "Ein rohes Mausrad wird nicht so fein abgetastet wie ein Trackpad, also kann die Seite nur ruckweise springen. Mos formt diese Eingabe mit einem sorgfältig abgestimmten, physikbasierten Algorithmus neu und macht aus deiner Absicht eine geschmeidige, präzise Bewegung, die deinen Fingern folgt.",
+      "Ein gewöhnliches Mausrad wird nicht so fein abgetastet wie ein macOS-Trackpad, also kann die Seite nur in festen Schritten springen. Mos formt diese Absicht mit einem sorgfältig abgestimmten Algorithmus auf Basis echter physikalischer Trägheit neu — eine geschmeidige, präzise Bewegung, die deinen Fingern folgt.",
     withoutMos: "Ohne Mos",
     withMos: "Mit Mos",
     tagRaw: "roh",

@@ -75,8 +75,9 @@ export const tr: Translations = {
         kicker: "Tuşlar ve kısayollar",
         title: "Bağla, kaydet, tekrar et.",
         body:
-          "Fareyi veya klavyeyi hızlı eylemlere bağla, iş akışını dilediğin gibi kur.",
+          "Herhangi bir fare tuşunu hızlı bir eyleme bağla, iş akışını dilediğin gibi kur.",
         quickBind: "Hızlı bağla",
+        logi: "Logitech özel tuş eşlemesi desteği",
         rows: {
           button4: "Tuş 4",
           button5: "Tuş 5",
@@ -138,7 +139,7 @@ export const tr: Translations = {
     kickerButtons: "Düğmeler",
     heading: "Okuma. Kaydır.",
     lead:
-      "Ham fare tekerleği, bir trackpad kadar sık örneklenmez; bu yüzden sayfa ancak adım adım sıçrayabilir. Mos bu girdiyi, gerçek fiziğe dayanan özenle ayarlanmış bir algoritmayla yeniden şekillendirir; niyetini pürüzsüz, hassas bir harekete çevirir ve sayfa parmaklarını takip eder.",
+      "Sıradan bir fare tekerleği, macOS trackpad'i kadar sık örneklenmez; bu yüzden sayfa yalnızca sabit adımlarla sıçrayabilir. Mos bu niyeti, gerçek fiziksel ataletten beslenen özenle ayarlanmış bir algoritmayla yeniden şekillendirir; parmaklarını takip eden pürüzsüz, hassas bir harekete dönüştürür.",
     withoutMos: "Mos olmadan",
     withMos: "Mos ile",
     tagRaw: "ham",
