@@ -17,6 +17,7 @@ import {
   NOTE_MAX_BODY,
   NOTE_MAX_NAME,
   NOTE_SIZE as BASE,
+  safeArea,
   type NoteColor,
   type WallNote,
 } from "@/app/services/wall";
@@ -165,12 +166,15 @@ export function StickyNote({
   const sway = useTransform(smoothVel, [-1800, 0, 1800], [-12, 0, 12], { clamp: true });
   const rotate = useTransform(sway, (s) => note.rot + s);
 
-  const { margin, top, tray } = pad;
+  // Drag bounds come from the shared safe area — the same module the tray-drag
+  // ghost and the drop clamp use, so every interaction is protected identically.
+  // The motion value is the note's TOP-LEFT, so shift the center-rect by HALF.
+  const a = safeArea(canvasW, canvasH, pad, HALF);
   const constraints = {
-    left: margin,
-    right: Math.max(margin, canvasW - renderSize - margin),
-    top,
-    bottom: Math.max(top, canvasH - renderSize - tray),
+    left: a.minX - HALF,
+    right: a.maxX - HALF,
+    top: a.minY - HALF,
+    bottom: a.maxY - HALF,
   };
 
   const endDrag = () => {

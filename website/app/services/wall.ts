@@ -37,6 +37,96 @@ export function canvasPadFor(canvasW: number): typeof CANVAS_PAD {
   return CANVAS_PAD;
 }
 
+export interface SafeArea {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
+// The rectangle a note's CENTER may occupy (px): keeps the whole sticky on the
+// canvas and clear of the header (top) and tray (bottom). Single source of truth
+// for every placement interaction — draft drag-constraints, drop clamping, the
+// tray-drag ghost, and the click-to-place search all derive their bounds here,
+// so a note can never be steered under the chrome no matter how it's placed.
+export function safeArea(
+  canvasW: number,
+  canvasH: number,
+  pad: { margin: number; top: number; tray: number },
+  half: number,
+): SafeArea {
+  const minX = pad.margin + half;
+  const minY = pad.top + half;
+  return {
+    minX,
+    minY,
+    maxX: Math.max(minX, canvasW - pad.margin - half),
+    maxY: Math.max(minY, canvasH - pad.tray - half),
+  };
+}
+
+// Clamp a point (px) into the safe area.
+export function clampToSafeArea(x: number, y: number, a: SafeArea): { x: number; y: number } {
+  return {
+    x: Math.min(a.maxX, Math.max(a.minX, x)),
+    y: Math.min(a.maxY, Math.max(a.minY, y)),
+  };
+}
+
+// Where to drop a note that was *clicked* (not dragged) off the tray: the
+// emptiest spot on the wall. This is the largest-empty-circle problem — the
+// point farthest from every existing note — solved with a discretized grid
+// search (the standard, deterministic approximation; the exact optimum sits at
+// a Voronoi vertex, which is overkill here).
+//
+// For each grid candidate the "clearance" is the radius of the biggest circle
+// that fits inside the allowed center-rectangle AND touches no note, i.e.
+// min(distance to nearest note, distance to the rectangle edge). Counting the
+// edge as an obstacle means an empty canvas resolves to dead center, while a
+// crowded one finds the widest interior gap without hugging a wall. Ties break
+// toward the center for a calm, predictable landing. Distances are in px so a
+// non-square (portrait phone) canvas isn't distorted.
+export function sparsestSpot(
+  notes: ReadonlyArray<{ x: number; y: number }>,
+  canvasW: number,
+  canvasH: number,
+  pad: { margin: number; top: number; tray: number },
+  half: number,
+): { x: number; y: number } {
+  // Allowed range for a note's CENTER — shared with every other drag interaction.
+  const { minX, maxX, minY, maxY } = safeArea(canvasW, canvasH, pad, half);
+  // Unmeasured / too-small canvas: fall back to the historical center default.
+  if (!(maxX > minX) || !(maxY > minY)) return { x: 0.5, y: 0.4 };
+
+  const obstacles = notes.map((n) => ({ x: n.x * canvasW, y: n.y * canvasH }));
+  const cx0 = (minX + maxX) / 2;
+  const cy0 = (minY + maxY) / 2;
+
+  const COLS = 11;
+  const ROWS = 11;
+  let best = { x: cx0, y: cy0 };
+  let bestScore = -Infinity;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const px = minX + (maxX - minX) * (c / (COLS - 1));
+      const py = minY + (maxY - minY) * (r / (ROWS - 1));
+      // Radius of the largest circle here that stays in-bounds and clears notes.
+      let clear = Math.min(px - minX, maxX - px, py - minY, maxY - py);
+      for (const o of obstacles) {
+        const d = Math.hypot(px - o.x, py - o.y);
+        if (d < clear) clear = d;
+      }
+      // Clearance dominates; the tiny center pull only settles near-ties.
+      const score = clear - 0.02 * Math.hypot(px - cx0, py - cy0);
+      if (score > bestScore) {
+        bestScore = score;
+        best = { x: px, y: py };
+      }
+    }
+  }
+  return { x: best.x / canvasW, y: best.y / canvasH };
+}
+
 export interface WallNote {
   id: string;
   name: string;

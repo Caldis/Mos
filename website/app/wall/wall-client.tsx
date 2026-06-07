@@ -18,9 +18,12 @@ import {
   NOTE_COLORS,
   NOTE_SIZE,
   canvasPadFor,
+  clampToSafeArea,
   deleteNote,
   noteSizeFor,
   postNote,
+  safeArea,
+  sparsestSpot,
   useWallNotes,
   type NoteColor,
 } from "@/app/services/wall";
@@ -88,10 +91,19 @@ export function WallClient() {
 
   const beginDraft = useCallback(
     (nx: number, ny: number, color: NoteColor, rot: number) => {
-      const { margin, top, tray } = canvasPadFor(canvasSize.w);
       const { w, h } = canvasSize;
-      const x = w ? clamp(nx * w, HALF + margin, w - HALF - margin) / w : clamp(nx, 0.12, 0.88);
-      const y = h ? clamp(ny * h, HALF + top, h - HALF - tray) / h : clamp(ny, 0.14, 0.8);
+      let x: number;
+      let y: number;
+      if (w && h) {
+        // Snap the drop point into the shared safe area so a placed note always
+        // clears the header/tray/edges, however it was placed.
+        const p = clampToSafeArea(nx * w, ny * h, safeArea(w, h, canvasPadFor(w), HALF));
+        x = p.x / w;
+        y = p.y / h;
+      } else {
+        x = clamp(nx, 0.12, 0.88);
+        y = clamp(ny, 0.14, 0.8);
+      }
       setDraft({ id: "draft", name: "", body: "", color, x, y, rot, createdAt: Date.now(), mine: false });
     },
     [canvasSize]
@@ -103,8 +115,28 @@ export function WallClient() {
       if (!d) return;
       if (!d.moved && Math.hypot(e.clientX - d.startX, e.clientY - d.startY) > 6) d.moved = true;
       if (d.moved) {
-        ghostX.set(e.clientX);
-        ghostY.set(e.clientY);
+        // Pin the ghost inside the SAME safe area as the in-canvas draft drag, so
+        // a note dragged out of the tray is blocked from the header/tray/edges too
+        // — not just clamped on drop. Outside the canvas it simply pins to the
+        // nearest edge (releasing there still cancels, via the inside check below).
+        const el = canvasRef.current;
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const a = safeArea(rect.width, rect.height, canvasPadFor(rect.width), HALF);
+          // Top and side chrome are hard walls — the ghost is blocked from the
+          // header and page edges exactly like the in-canvas draft drag. The
+          // bottom is NOT a wall, because the ghost is dragged UP out of the tray;
+          // clamping it to the tray line would yank it off the cursor at grab
+          // time. It tracks the finger down to the screen edge, and the drop
+          // (beginDraft) still snaps the placed note above the tray.
+          const gx = clamp(e.clientX - rect.left, a.minX, a.maxX);
+          const gy = clamp(e.clientY - rect.top, a.minY, rect.height - HALF);
+          ghostX.set(rect.left + gx);
+          ghostY.set(rect.top + gy);
+        } else {
+          ghostX.set(e.clientX);
+          ghostY.set(e.clientY);
+        }
         setGhostColor((c) => c ?? d.color);
       }
     },
@@ -133,10 +165,13 @@ export function WallClient() {
           beginDraft((e.clientX - rect.left) / rect.width, (e.clientY - rect.top) / rect.height, d.color, rot);
         }
       } else {
-        beginDraft(0.5, 0.4, d.color, ghostBaseRot.current);
+        // No drag — a plain click. Drop into the emptiest spot on the wall rather
+        // than always stacking on the page center.
+        const spot = sparsestSpot(notes ?? [], rect.width, rect.height, canvasPadFor(rect.width), HALF);
+        beginDraft(spot.x, spot.y, d.color, ghostBaseRot.current);
       }
     },
-    [beginDraft, onPointerMove, ghostTilt]
+    [beginDraft, onPointerMove, ghostTilt, notes]
   );
 
   const startTrayDrag = useCallback(
