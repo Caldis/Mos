@@ -5,6 +5,9 @@ website/node_modules
 website/out
 *.tsbuildinfo
 
+# Playwright MCP browser-automation artifacts (screenshots, snapshots, logs)
+.playwright-mcp/
+
 # macOS
 .DS_Store
 
