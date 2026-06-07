@@ -22,14 +22,15 @@ export const NOTE_MAX_BODY = 180;
 export const NOTE_SIZE = 198; // px — full size (desktop + compose)
 export const CANVAS_PAD = { margin: 48, top: 104, tray: 124 };
 
-// Placed notes shrink on a narrow canvas so more stickies fit on a phone, while
-// tablet/desktop keep the full NOTE_SIZE. Width-driven (~0.33 of the canvas,
-// clamped 100–198): stays 198 until the canvas is under ~600px wide, then scales
-// down (≈125px on a 380px phone). Composing always uses NOTE_SIZE — a shrunk card
+// Placed notes are capped a bit below the compose size (PLACED_MAX) so more fit
+// on the wall, and shrink further on a narrow phone canvas. Width-driven (~0.33
+// of the canvas, clamped 100–PLACED_MAX): desktop/tablet sit at PLACED_MAX, a
+// 380px phone ≈125px. Composing always uses the larger NOTE_SIZE — a shrunk card
 // is too cramped to type in.
+const PLACED_MAX = 170;
 export function noteSizeFor(canvasW: number): number {
-  if (!canvasW) return NOTE_SIZE;
-  return Math.round(Math.min(NOTE_SIZE, Math.max(100, canvasW * 0.33)));
+  if (!canvasW) return PLACED_MAX;
+  return Math.round(Math.min(PLACED_MAX, Math.max(100, canvasW * 0.33)));
 }
 
 // Phones also get tighter side insets so notes can reach closer to the edges.
