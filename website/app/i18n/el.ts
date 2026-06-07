@@ -100,7 +100,6 @@ export const el: Translations = {
     title: "Homebrew",
     copy: "Αντιγραφή",
     copied: "Αντιγράφηκε",
-    tip: "Τη δοκιμαστική έκδοση την κατεβάζεις με {cask}.",
   },
   footer: {
     latestRelease: "Τελευταία έκδοση",

@@ -369,7 +369,6 @@ export default function HomeClient() {
             {t.homebrew.copy}
           </CopyButton>
         </div>
-        <p className="mt-4 font-mono text-[11px] text-white/40">{format(t.homebrew.tip, { cask: "mos@beta" })}</p>
       </Modal>
     </div>
   );

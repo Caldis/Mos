@@ -100,7 +100,6 @@ export const ru: Translations = {
     title: "Homebrew",
     copy: "Копировать",
     copied: "Скопировано",
-    tip: "Тестовую сборку можно поставить через {cask}.",
   },
   footer: {
     latestRelease: "Последний релиз",

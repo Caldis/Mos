@@ -100,7 +100,6 @@ export const de: Translations = {
     title: "Homebrew",
     copy: "Kopieren",
     copied: "Kopiert",
-    tip: "Die Beta installierst du mit {cask}.",
   },
   footer: {
     latestRelease: "Neuester Release",

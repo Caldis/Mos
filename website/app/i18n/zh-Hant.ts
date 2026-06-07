@@ -99,7 +99,6 @@ export const zhHant: Translations = {
     title: "Homebrew",
     copy: "複製",
     copied: "已複製",
-    tip: "可以使用 {cask} 下載測試版本",
   },
   footer: {
     latestRelease: "最新發佈",

@@ -100,7 +100,6 @@ export const ja: Translations = {
     title: "Homebrew",
     copy: "コピー",
     copied: "コピーしました",
-    tip: "テスト版は {cask} で入手できます。",
   },
   footer: {
     latestRelease: "最新リリース",

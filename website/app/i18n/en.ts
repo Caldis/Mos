@@ -98,7 +98,6 @@ export const en = {
     title: "Homebrew",
     copy: "Copy",
     copied: "Copied",
-    tip: "Get the beta build with {cask}.",
   },
   footer: {
     latestRelease: "Latest release",

@@ -100,7 +100,6 @@ export const tr: Translations = {
     title: "Homebrew",
     copy: "Kopyala",
     copied: "Kopyalandı",
-    tip: "Test sürümünü {cask} ile indirebilirsin.",
   },
   footer: {
     latestRelease: "En son sürüm",
