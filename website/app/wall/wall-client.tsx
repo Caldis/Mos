@@ -225,17 +225,23 @@ export function WallClient() {
       <div ref={canvasRef} className="wall-grid absolute inset-0">
         <AnimatePresence>
           {canvasSize.w > 0 &&
-            (notes ?? []).map((n, i) => (
-              <StickyNote
-                key={n.id}
-                note={n}
-                index={i}
-                mine={n.mine}
-                canvasW={canvasSize.w}
-                canvasH={canvasSize.h}
-                onDelete={removeNote}
-              />
-            ))}
+            // Every placed note shares one low z-index (see StickyNote), so paint
+            // order is decided by DOM order. Render oldest → newest so the most
+            // recently posted sticky lands on top, like freshly stuck paper —
+            // regardless of the order the API returns them in.
+            [...(notes ?? [])]
+              .sort((a, b) => a.createdAt - b.createdAt)
+              .map((n, i) => (
+                <StickyNote
+                  key={n.id}
+                  note={n}
+                  index={i}
+                  mine={n.mine}
+                  canvasW={canvasSize.w}
+                  canvasH={canvasSize.h}
+                  onDelete={removeNote}
+                />
+              ))}
         </AnimatePresence>
 
         <AnimatePresence>

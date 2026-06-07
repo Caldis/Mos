@@ -185,6 +185,9 @@ export function StickyNote({
       dragControls={dragControls}
       dragConstraints={constraints}
       dragElastic={0.04}
+      // Placed notes share one low z-index so they sit below the chrome (header
+      // 50 / compose 60 / ghost 90); their mutual order comes from DOM order,
+      // which wall-client sorts oldest → newest so the latest sticky is on top.
       style={{ x, y, rotate, perspective: 720, zIndex: composing ? 60 : dragging ? 50 : 2 }}
       initial={{ opacity: 0, scale: composing ? 0.6 : 0.7 }}
       animate={{ opacity: 1, scale: 1 }}
