@@ -1,63 +1,24 @@
-"use client";
-
-import { motion } from "framer-motion";
-import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
-
-// Logitech's G-series side buttons (G4–G7) — a recognizable nod to Logi's
-// proprietary keys without leaning on a trademarked logo. A soft white highlight
-// sweeps left-to-right across the caps, suggesting each special key gets picked
-// up and mapped. Single-colour glow to stay in the page's monochrome key.
-const KEYS = ["G4", "G5", "G6", "G7"];
-
+// A compact badge under the 03 bindings list. Renders the localized line with
+// the literal "Logitech" turned into a brand-colour (teal) tag, splitting on the
+// word so it adapts to each language's word order.
 export function LogiKeymap({ label }: { label: string }) {
-  const reduce = useHydratedReducedMotion();
   return (
-    <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-[#000000c9] py-2 pl-2.5 pr-4">
-      <div className="flex gap-1" aria-hidden>
-        {KEYS.map((k, i) => (
-          <motion.span
-            key={k}
-            className="grid h-6 w-7 place-items-center rounded-[6px] border border-white/12 bg-white/[0.05] font-mono text-[10px] leading-none text-white/55"
-            initial={false}
-            animate={
-              reduce
-                ? undefined
-                : {
-                    borderColor: [
-                      "rgba(255,255,255,0.12)",
-                      "rgba(255,255,255,0.5)",
-                      "rgba(255,255,255,0.12)",
-                    ],
-                    color: [
-                      "rgba(255,255,255,0.55)",
-                      "rgba(255,255,255,0.96)",
-                      "rgba(255,255,255,0.55)",
-                    ],
-                    boxShadow: [
-                      "0 0 0 0 rgba(255,255,255,0)",
-                      "0 0 14px 0 rgba(255,255,255,0.22)",
-                      "0 0 0 0 rgba(255,255,255,0)",
-                    ],
-                  }
-            }
-            transition={
-              reduce
-                ? undefined
-                : {
-                    duration: 1.6,
-                    times: [0, 0.4, 1],
-                    repeat: Infinity,
-                    repeatDelay: 1.3,
-                    delay: i * 0.16,
-                    ease: "easeInOut",
-                  }
-            }
-          >
-            {k}
-          </motion.span>
+    <div className="mt-6 inline-flex items-center rounded-full border border-white/10 bg-[#000000c9] px-4 py-2">
+      <span className="font-mono text-[11px] tracking-wide text-white/60">
+        {label.split("Logitech").map((part, i) => (
+          <span key={i}>
+            {i > 0 && (
+              <span
+                className="mx-1 inline-flex items-center rounded-md px-2 py-[3px] align-middle text-[11px] font-semibold leading-none tracking-tight"
+                style={{ fontFamily: "var(--font-body)", background: "#2EC8B0", color: "#0e2f2a" }}
+              >
+                Logitech
+              </span>
+            )}
+            {part}
+          </span>
         ))}
-      </div>
-      <span className="font-mono text-[11px] tracking-wide text-white/60">{label}</span>
+      </span>
     </div>
   );
 }
