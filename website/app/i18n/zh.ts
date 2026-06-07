@@ -99,7 +99,7 @@ export const zh: Translations = {
     title: "Homebrew",
     copy: "复制",
     copied: "已复制",
-    tip: "提示：如果你在用 beta 版，cask 可能是 {cask}。",
+    tip: "可以使用 {cask} 下载测试版本",
   },
   footer: {
     latestRelease: "最新发布",

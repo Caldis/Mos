@@ -100,7 +100,7 @@ export const uk: Translations = {
     title: "Homebrew",
     copy: "Копіювати",
     copied: "Скопійовано",
-    tip: "Порада: якщо ти на beta, твій cask може бути {cask}.",
+    tip: "Тестову збірку можна поставити через {cask}.",
   },
   footer: {
     latestRelease: "Останній реліз",

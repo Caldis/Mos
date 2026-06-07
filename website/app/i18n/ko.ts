@@ -100,7 +100,7 @@ export const ko: Translations = {
     title: "Homebrew",
     copy: "복사",
     copied: "복사됨",
-    tip: "팁: beta를 사용 중이라면 cask가 {cask}일 수 있어요.",
+    tip: "테스트 버전은 {cask}로 받을 수 있어요.",
   },
   footer: {
     latestRelease: "최신 릴리스",

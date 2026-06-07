@@ -100,7 +100,7 @@ export const id: Translations = {
     title: "Homebrew",
     copy: "Salin",
     copied: "Disalin",
-    tip: "Tips: jika kamu memakai beta, cask-nya mungkin {cask}.",
+    tip: "Versi beta bisa kamu pasang lewat {cask}.",
   },
   footer: {
     latestRelease: "Rilis terbaru",
