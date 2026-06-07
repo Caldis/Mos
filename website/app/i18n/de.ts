@@ -31,12 +31,12 @@ export const de: Translations = {
   hero: {
     badgeLine1: "Sanftes Scrollen mit dem Mausrad unter macOS",
     badgeLine2: "App-Profile · getrennte Achsen · Buttons & Shortcuts",
-    titleLine1: "Mach aus der Maus",
-    titleLine2Before: "einen ",
-    titleLine2Highlight: "Flow",
+    titleLine1: "Deine Maus,",
+    titleLine2Before: "",
+    titleLine2Highlight: "neu gedacht",
     titleLine2After: ".",
     lead:
-      "Mos ist ein kostenloses Open-Source-Tool für macOS. Es macht das Scrollen mit dem Mausrad so glatt wie beim Trackpad, ohne dir die Kontrolle zu nehmen. Kurven anpassen, Achsen trennen und Regeln pro App überschreiben.",
+      "Das Rad folgt deinen Fingern wie ein Trackpad, und jede Taste deiner Maus entfaltet ihr volles Potenzial.",
     ctaDownload: "Mos herunterladen",
     ctaViewGitHub: "Auf GitHub ansehen",
     ctaInstallHomebrew: "Mit Homebrew installieren",
@@ -69,13 +69,13 @@ export const de: Translations = {
         kicker: "Profile pro App",
         title: "Andere Apps, anderes Gefühl.",
         body:
-          "Jede App kann die Defaults übernehmen oder Scroll- und Button-Regeln überschreiben. Präzise, wo’s zählt, smooth überall sonst.",
+          "Jede App bekommt ihre eigene Scrollkurve und ihr eigenes Verhalten. Präzise oder geschmeidig — du entscheidest.",
       },
       buttons: {
         kicker: "Buttons & Shortcuts",
         title: "Binden, aufnehmen, wiederholen.",
         body:
-          "Maus- oder Tastatur-Events aufnehmen und an System-Shortcuts binden. Im Live-Monitor siehst du, was deine Geräte senden.",
+          "Binde Maus oder Tastatur an Schnellaktionen und gestalte deinen Workflow ganz nach Belieben.",
         quickBind: "Schnell binden",
         rows: {
           button4: "Taste 4",
@@ -89,7 +89,7 @@ export const de: Translations = {
     },
   },
   download: {
-    title: "Mos herunterladen. Scrollen nach deinem Geschmack.",
+    title: "Installier Mos. Die Maus gehorcht dir.",
     body:
       "In Sekunden installiert, in deinem Tempo eingestellt. Und das Scroll-Gefühl bleibt in deinen Apps konsistent.",
     ctaDownload: "Herunterladen",
@@ -105,10 +105,14 @@ export const de: Translations = {
   footer: {
     latestRelease: "Neuester Release",
     latestVersion: "Neueste {version}",
-    requiresMacos: "macOS 10.13+ erforderlich",
+    requiresMacos: "Unterstützt macOS 10.13 oder neuer",
     github: "GitHub",
     wiki: "Wiki",
+    language: "Sprache",
     releases: "Releases",
+    about: "Über Mos",
+    compare: "Vergleich",
+    privacy: "Datenschutz",
   },
   easing: {
     graphAria: "Scrollkurven-Diagramm",
@@ -128,6 +132,20 @@ export const de: Translations = {
       help: "Zeitkonstante fürs Glätten (höher = längerer Nachlauf).",
     },
     footer: "ScrollCore curve",
+  },
+  scroll: {
+    kickerFeel: "Gefühl",
+    kickerProfiles: "Profile",
+    kickerButtons: "Tasten",
+    heading: "Nicht lesen. Scrollen.",
+    lead:
+      "Ein rohes Mausrad wird nicht so fein abgetastet wie ein Trackpad, also kann die Seite nur ruckweise springen. Mos formt diese Eingabe mit einem sorgfältig abgestimmten, physikbasierten Algorithmus neu und macht aus deiner Absicht eine geschmeidige, präzise Bewegung, die deinen Fingern folgt.",
+    withoutMos: "Ohne Mos",
+    withMos: "Mit Mos",
+    tagRaw: "roh",
+    tagSmooth: "geschmeidig",
+    scrollInside: "hier scrollen",
+    parameters: "Parameter",
   },
   wall: {
     back: "Mos",

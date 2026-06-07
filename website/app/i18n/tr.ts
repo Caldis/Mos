@@ -31,12 +31,12 @@ export const tr: Translations = {
   hero: {
     badgeLine1: "macOS'ta mouse tekeri için akıcı kaydırma",
     badgeLine2: "uygulama profilleri · bağımsız eksenler · tuşlar ve kısayollar",
-    titleLine1: "Fareyi",
+    titleLine1: "Fareni",
     titleLine2Before: "",
-    titleLine2Highlight: "flow",
-    titleLine2After: "'a çevir.",
+    titleLine2Highlight: "yeniden kur",
+    titleLine2After: ".",
     lead:
-      "Mos, macOS için ücretsiz ve açık kaynak bir araç. Mouse tekeri kaydırmasını trackpad'e daha yakın hissettirir, kontrolü elinden almaz. Eğrileri ayarla, X/Y eksenlerini ayır ve uygulama bazında davranışı geçersiz kıl.",
+      "Teker, parmaklarını bir trackpad gibi takip eder; faredeki her tuş, hak ettiği gücü ortaya koyar.",
     ctaDownload: "Mos'u indir",
     ctaViewGitHub: "GitHub'da gör",
     ctaInstallHomebrew: "Homebrew ile yükle",
@@ -69,13 +69,13 @@ export const tr: Translations = {
         kicker: "Uygulama profilleri",
         title: "Farklı uygulamalar, farklı his.",
         body:
-          "Her uygulama varsayılanları devralabilir ya da kaydırma ve tuş kurallarını geçersiz kılabilir. Gerekli yerde hassas, diğer her yerde akıcı.",
+          "Her uygulamanın kendi kaydırma eğrisi ve davranışı var. Hassas mı, pürüzsüz mü — sen karar ver.",
       },
       buttons: {
         kicker: "Tuşlar ve kısayollar",
         title: "Bağla, kaydet, tekrar et.",
         body:
-          "Mouse veya klavye olaylarını kaydet ve sistem kısayollarına bağla. Canlı monitörle cihazlarının ne gönderdiğini görebilirsin.",
+          "Fareyi veya klavyeyi hızlı eylemlere bağla, iş akışını dilediğin gibi kur.",
         quickBind: "Hızlı bağla",
         rows: {
           button4: "Tuş 4",
@@ -89,7 +89,7 @@ export const tr: Translations = {
     },
   },
   download: {
-    title: "Mos'u indir. Kaydırmanı kendine göre ayarla.",
+    title: "Mos'u kur. Fare artık seni dinler.",
     body:
       "Saniyeler içinde kur. İhtiyacın olduğunda ayarla ve kullandığın uygulamalarda kaydırma davranışını tutarlı tut.",
     ctaDownload: "İndir",
@@ -105,10 +105,14 @@ export const tr: Translations = {
   footer: {
     latestRelease: "En son sürüm",
     latestVersion: "En son {version}",
-    requiresMacos: "macOS 10.13+ gerekir",
+    requiresMacos: "macOS 10.13 ve üzerini destekler",
     github: "GitHub",
     wiki: "Wiki",
-    releases: "Releases",
+    language: "Dil",
+    releases: "Sürümler",
+    about: "Hakkında",
+    compare: "Karşılaştır",
+    privacy: "Gizlilik",
   },
   easing: {
     graphAria: "Kaydırma eğrisi grafiği",
@@ -128,6 +132,20 @@ export const tr: Translations = {
       help: "Yumuşatma zaman sabiti (daha yüksek = daha uzun kuyruk).",
     },
     footer: "ScrollCore eğrisi",
+  },
+  scroll: {
+    kickerFeel: "His",
+    kickerProfiles: "Profiller",
+    kickerButtons: "Düğmeler",
+    heading: "Okuma. Kaydır.",
+    lead:
+      "Ham fare tekerleği, bir trackpad kadar sık örneklenmez; bu yüzden sayfa ancak adım adım sıçrayabilir. Mos bu girdiyi, gerçek fiziğe dayanan özenle ayarlanmış bir algoritmayla yeniden şekillendirir; niyetini pürüzsüz, hassas bir harekete çevirir ve sayfa parmaklarını takip eder.",
+    withoutMos: "Mos olmadan",
+    withMos: "Mos ile",
+    tagRaw: "ham",
+    tagSmooth: "pürüzsüz",
+    scrollInside: "burada kaydır",
+    parameters: "parametreler",
   },
   wall: {
     back: "Mos",

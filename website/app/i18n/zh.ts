@@ -31,12 +31,12 @@ export const zh: Translations = {
   hero: {
     badgeLine1: "让 macOS 上的鼠标滚轮滚动更顺滑",
     badgeLine2: "按应用配置 · 横纵轴独立 · 按键与快捷键",
-    titleLine1: "让鼠标",
-    titleLine2Before: "变得",
-    titleLine2Highlight: "顺滑",
-    titleLine2After: "。",
+    titleLine1: "重塑你的",
+    titleLine2Before: "",
+    titleLine2Highlight: "鼠标体验",
+    titleLine2After: "",
     lead:
-      "Mos 是一个免费的开源 macOS 小工具，让滚轮滚动更接近触控板的手感，同时不影响你的控制。你可以调曲线、分离横纵轴，也可以按 App 覆盖行为。",
+      "让滚轮像触控板一样跟随你的手指，解放你鼠标上每一个按键应有的潜力。",
     ctaDownload: "下载 Mos",
     ctaViewGitHub: "在 GitHub 查看",
     ctaInstallHomebrew: "通过 Homebrew 安装",
@@ -69,13 +69,13 @@ export const zh: Translations = {
         kicker: "按应用配置",
         title: "不同 App，不同规则。",
         body:
-          "每个 App 可以继承默认值，也可以单独覆盖滚动和按键规则。需要精准就精准，其他地方保持顺滑。",
+          "每个 App 都支持独立设置滚动曲线和行为。精准或顺滑，由你决定。",
       },
       buttons: {
         kicker: "按键与快捷键",
         title: "绑定、记录、重复。",
         body:
-          "把鼠标或键盘事件录下来，绑定到系统快捷键。也可以用实时监视器看看设备到底发了什么。",
+          "将鼠标或键盘绑定到快捷动作，随心自定义你的工作流。",
         quickBind: "快速绑定",
         rows: {
           button4: "按键 4",
@@ -89,7 +89,7 @@ export const zh: Translations = {
     },
   },
   download: {
-    title: "下载 Mos。按你的习惯调。",
+    title: "装上 Mos，鼠标你说了算。",
     body: "几秒就能装好，需要时再慢慢调参数，让常用 App 里滚动手感保持一致。",
     ctaDownload: "下载",
     releaseNotes: "更新日志",
@@ -104,10 +104,14 @@ export const zh: Translations = {
   footer: {
     latestRelease: "最新发布",
     latestVersion: "最新 {version}",
-    requiresMacos: "需要 macOS 10.13+",
+    requiresMacos: "支持 macOS 10.13 或更高版本",
     github: "GitHub",
     wiki: "Wiki",
-    releases: "Releases",
+    language: "语言",
+    releases: "历史版本",
+    about: "关于 Mos",
+    compare: "对比 Mos",
+    privacy: "隐私",
   },
   easing: {
     graphAria: "滚动曲线图",
@@ -127,6 +131,20 @@ export const zh: Translations = {
       help: "平滑时间常数（越大尾巴越长）。",
     },
     footer: "ScrollCore 曲线",
+  },
+  scroll: {
+    kickerFeel: "手感",
+    kickerProfiles: "配置",
+    kickerButtons: "按键",
+    heading: "别看了，直接试试",
+    lead:
+      "原始的鼠标滚轮输入并非像触控板一样高频采样，页面只能跳动。而 Mos 通过精心调节的算法将根据实际物理效果，对滚动意图进行重塑，得到顺滑、精确的输出，让页面跟随你的手指而流动。",
+    withoutMos: "未用 Mos",
+    withMos: "用了 Mos",
+    tagRaw: "原始",
+    tagSmooth: "顺滑",
+    scrollInside: "在此滚动",
+    parameters: "参数",
   },
   wall: {
     back: "Mos",

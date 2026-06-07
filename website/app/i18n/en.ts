@@ -29,12 +29,12 @@ export const en = {
   hero: {
     badgeLine1: "Smooth scrolling for mouse wheels on macOS",
     badgeLine2: "per-app profiles · independent axes · buttons & shortcuts",
-    titleLine1: "Turn the mouse",
-    titleLine2Before: "into ",
-    titleLine2Highlight: "flow",
+    titleLine1: "Reshape",
+    titleLine2Before: "your ",
+    titleLine2Highlight: "mouse",
     titleLine2After: ".",
     lead:
-      "Mos is a free, open-source macOS utility that makes wheel scrolling feel closer to a trackpad, without getting in your way. Tune curves, split axes, and override behavior per app.",
+      "Make the wheel follow your fingers like a trackpad, and unlock what every button on your mouse was meant to do.",
     ctaDownload: "Download Mos",
     ctaViewGitHub: "View on GitHub",
     ctaInstallHomebrew: "Install via Homebrew",
@@ -67,13 +67,13 @@ export const en = {
         kicker: "Per-app Profiles",
         title: "Different apps, different feel.",
         body:
-          "Let each app inherit defaults, or override scroll and button rules. Precision where it matters, smooth everywhere else.",
+          "Every app gets its own scroll curve and behavior. Precise or smooth — you decide.",
       },
       buttons: {
         kicker: "Buttons & Shortcuts",
         title: "Bind, record, repeat.",
         body:
-          "Record mouse or keyboard events and bind them to system shortcuts. Use the live monitor to see what your devices are sending.",
+          "Bind your mouse or keyboard to quick actions and shape your workflow however you like.",
         quickBind: "Quick Bind",
         rows: {
           button4: "Button 4",
@@ -87,7 +87,7 @@ export const en = {
     },
   },
   download: {
-    title: "Download Mos. Tune your scroll.",
+    title: "Install Mos. The mouse is yours.",
     body:
       "Install in seconds, tweak it when you need to, and keep your scroll behavior consistent across the apps you live in.",
     ctaDownload: "Download",
@@ -103,10 +103,14 @@ export const en = {
   footer: {
     latestRelease: "Latest release",
     latestVersion: "Latest {version}",
-    requiresMacos: "Requires macOS 10.13+",
+    requiresMacos: "Supports macOS 10.13 or later",
     github: "GitHub",
     wiki: "Wiki",
     releases: "Releases",
+    language: "Language",
+    about: "About Mos",
+    compare: "Compare Mos",
+    privacy: "Privacy",
   },
   easing: {
     graphAria: "Scroll curve graph",
@@ -126,6 +130,20 @@ export const en = {
       help: "Smoothing time constant (higher means longer tail).",
     },
     footer: "ScrollCore curve",
+  },
+  scroll: {
+    kickerFeel: "Feel",
+    kickerProfiles: "Profiles",
+    kickerButtons: "Buttons",
+    heading: "Stop reading. Just scroll it.",
+    lead:
+      "A raw mouse wheel doesn't sample as finely as a trackpad, so the page can only lurch step by step. Mos reshapes that input with a carefully tuned, physics-based algorithm, turning your scroll intent into smooth, precise motion that flows with your fingers.",
+    withoutMos: "Without Mos",
+    withMos: "With Mos",
+    tagRaw: "raw",
+    tagSmooth: "smooth",
+    scrollInside: "scroll inside",
+    parameters: "parameters",
   },
   wall: {
     back: "Mos",

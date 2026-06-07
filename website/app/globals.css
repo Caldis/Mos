@@ -30,6 +30,13 @@
     "Noto Sans CJK JP", "Noto Sans CJK KR", "Noto Sans SC";
 }
 
+html {
+  /* Reserve the scrollbar's space so locking page scroll (e.g. opening a modal)
+     never hides the scrollbar and reflows the layout wider. No-op for macOS
+     overlay scrollbars; fixes the width jump with classic scrollbars (Windows). */
+  scrollbar-gutter: stable;
+}
+
 html,
 body {
   height: 100%;

@@ -31,12 +31,12 @@ export const id: Translations = {
   hero: {
     badgeLine1: "Scroll halus untuk roda mouse di macOS",
     badgeLine2: "profil per aplikasi · sumbu terpisah · tombol & pintasan",
-    titleLine1: "Ubah mouse",
-    titleLine2Before: "menjadi ",
-    titleLine2Highlight: "flow",
+    titleLine1: "Bentuk ulang",
+    titleLine2Before: "",
+    titleLine2Highlight: "mouse-mu",
     titleLine2After: ".",
     lead:
-      "Mos adalah utilitas macOS gratis dan open-source yang membuat scroll roda mouse terasa lebih seperti trackpad, tanpa mengurangi kontrol. Atur kurva, pisahkan sumbu, dan override perilaku per aplikasi.",
+      "Roda mengikuti jarimu seperti trackpad, dan setiap tombol di mouse-mu melepaskan potensi sebenarnya.",
     ctaDownload: "Unduh Mos",
     ctaViewGitHub: "Lihat di GitHub",
     ctaInstallHomebrew: "Instal via Homebrew",
@@ -69,13 +69,13 @@ export const id: Translations = {
         kicker: "Profil per aplikasi",
         title: "Aplikasi berbeda, rasa berbeda.",
         body:
-          "Setiap aplikasi bisa memakai default atau meng-override aturan scroll dan tombol. Presisi saat dibutuhkan, halus di tempat lain.",
+          "Tiap aplikasi punya kurva scroll dan perilakunya sendiri. Presisi atau mulus — kamu yang menentukan.",
       },
       buttons: {
         kicker: "Tombol & pintasan",
         title: "Ikat, rekam, ulangi.",
         body:
-          "Rekam event mouse atau keyboard lalu ikat ke pintasan sistem. Dengan live monitor kamu bisa melihat apa yang dikirim perangkatmu.",
+          "Ikat mouse atau keyboard ke aksi cepat, dan susun alur kerjamu sesukamu.",
         quickBind: "Quick Bind",
         rows: {
           button4: "Button 4",
@@ -89,7 +89,7 @@ export const id: Translations = {
     },
   },
   download: {
-    title: "Unduh Mos. Atur scroll sesuai kamu.",
+    title: "Pasang Mos. Mouse menurut padamu.",
     body:
       "Instal dalam hitungan detik, atur saat perlu, dan jaga perilaku scroll tetap konsisten di aplikasi yang kamu pakai setiap hari.",
     ctaDownload: "Unduh",
@@ -105,10 +105,14 @@ export const id: Translations = {
   footer: {
     latestRelease: "Rilis terbaru",
     latestVersion: "Terbaru {version}",
-    requiresMacos: "Butuh macOS 10.13+",
+    requiresMacos: "Mendukung macOS 10.13 atau lebih baru",
     github: "GitHub",
     wiki: "Wiki",
-    releases: "Releases",
+    language: "Bahasa",
+    releases: "Rilis",
+    about: "Tentang",
+    compare: "Bandingkan",
+    privacy: "Privasi",
   },
   easing: {
     graphAria: "Grafik kurva scroll",
@@ -128,6 +132,20 @@ export const id: Translations = {
       help: "Konstanta waktu smoothing (lebih besar = tail lebih panjang).",
     },
     footer: "ScrollCore curve",
+  },
+  scroll: {
+    kickerFeel: "Rasa",
+    kickerProfiles: "Profil",
+    kickerButtons: "Tombol",
+    heading: "Jangan dibaca. Gulir saja.",
+    lead:
+      "Roda mouse mentah tidak di-sampling sesering trackpad, jadi halaman hanya bisa meloncat patah-patah. Mos membentuk ulang masukan itu dengan algoritma yang disetel cermat berdasarkan fisika nyata, mengubah niat gulirmu menjadi gerakan yang mulus dan presisi yang mengikuti jarimu.",
+    withoutMos: "Tanpa Mos",
+    withMos: "Dengan Mos",
+    tagRaw: "mentah",
+    tagSmooth: "mulus",
+    scrollInside: "gulir di sini",
+    parameters: "parameter",
   },
   wall: {
     back: "Mos",

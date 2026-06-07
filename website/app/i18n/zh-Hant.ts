@@ -31,12 +31,12 @@ export const zhHant: Translations = {
   hero: {
     badgeLine1: "讓 macOS 上的滑鼠滾輪捲動更順",
     badgeLine2: "按 App 設定 · X/Y 軸獨立 · 按鍵與快捷鍵",
-    titleLine1: "讓滑鼠",
-    titleLine2Before: "變得",
-    titleLine2Highlight: "順滑",
-    titleLine2After: "。",
+    titleLine1: "重塑你的",
+    titleLine2Before: "",
+    titleLine2Highlight: "滑鼠體驗",
+    titleLine2After: "",
     lead:
-      "Mos 是一個免費、開源的 macOS 小工具，讓滾輪捲動更接近觸控板手感，同時不影響你的控制。你可以調曲線、分離 X/Y，也能針對不同 App 覆寫行為。",
+      "讓滾輪像觸控板一樣跟隨你的手指，解放你滑鼠上每一個按鍵應有的潛力。",
     ctaDownload: "下載 Mos",
     ctaViewGitHub: "在 GitHub 查看",
     ctaInstallHomebrew: "透過 Homebrew 安裝",
@@ -69,13 +69,13 @@ export const zhHant: Translations = {
         kicker: "按 App 設定",
         title: "不同 App，不同規則。",
         body:
-          "每個 App 可以繼承預設值，也可以單獨覆寫捲動與按鍵規則。需要精準就精準，其餘保持順滑。",
+          "每個 App 都支援獨立設定捲動曲線與行為。精準或順滑，由你決定。",
       },
       buttons: {
         kicker: "按鍵與快捷鍵",
         title: "綁定、記錄、重複。",
         body:
-          "把滑鼠或鍵盤事件錄下來，綁定到系統快捷鍵。也能用即時監視器看看裝置到底送了什麼。",
+          "將滑鼠或鍵盤綁定到快捷動作，隨心自訂你的工作流程。",
         quickBind: "快速綁定",
         rows: {
           button4: "按鍵 4",
@@ -89,7 +89,7 @@ export const zhHant: Translations = {
     },
   },
   download: {
-    title: "下載 Mos。按你的習慣調。",
+    title: "裝上 Mos，滑鼠你說了算。",
     body: "幾秒就能裝好，需要時再慢慢調參數，讓常用 App 裡的捲動手感保持一致。",
     ctaDownload: "下載",
     releaseNotes: "更新紀錄",
@@ -104,10 +104,14 @@ export const zhHant: Translations = {
   footer: {
     latestRelease: "最新發佈",
     latestVersion: "最新 {version}",
-    requiresMacos: "需要 macOS 10.13+",
+    requiresMacos: "支援 macOS 10.13 或更新版本",
     github: "GitHub",
     wiki: "Wiki",
-    releases: "Releases",
+    language: "語言",
+    releases: "歷史版本",
+    about: "關於 Mos",
+    compare: "比較 Mos",
+    privacy: "隱私",
   },
   easing: {
     graphAria: "捲動曲線圖",
@@ -127,6 +131,20 @@ export const zhHant: Translations = {
       help: "平滑時間常數（越大尾巴越長）。",
     },
     footer: "ScrollCore 曲線",
+  },
+  scroll: {
+    kickerFeel: "手感",
+    kickerProfiles: "設定檔",
+    kickerButtons: "按鍵",
+    heading: "別看了，直接試試",
+    lead:
+      "原始的滑鼠滾輪輸入並非像觸控板一樣高頻取樣，頁面只能跳動。而 Mos 透過精心調節的演算法將根據實際物理效果，對滾動意圖進行重塑，得到順滑、精確的輸出，讓頁面跟隨你的手指而流動。",
+    withoutMos: "未用 Mos",
+    withMos: "用了 Mos",
+    tagRaw: "原始",
+    tagSmooth: "順滑",
+    scrollInside: "在此捲動",
+    parameters: "參數",
   },
   wall: {
     back: "Mos",

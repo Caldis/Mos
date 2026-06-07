@@ -31,12 +31,12 @@ export const el: Translations = {
   hero: {
     badgeLine1: "Ομαλό scrolling με ροδέλα ποντικιού στο macOS",
     badgeLine2: "προφίλ ανά εφαρμογή · ανεξάρτητοι άξονες · κουμπιά & shortcuts",
-    titleLine1: "Κάνε το ποντίκι",
-    titleLine2Before: "να ",
-    titleLine2Highlight: "ρέει",
+    titleLine1: "Το ποντίκι,",
+    titleLine2Before: "",
+    titleLine2Highlight: "ξανά",
     titleLine2After: ".",
     lead:
-      "Το Mos είναι ένα δωρεάν, open-source εργαλείο για macOS. Κάνει το scrolling με ροδέλα να θυμίζει trackpad, χωρίς να χάνεις τον έλεγχο. Ρύθμισε καμπύλες, χώρισε άξονες και βάλε εξαιρέσεις ανά εφαρμογή.",
+      "Η ροδέλα ακολουθεί τα δάχτυλά σου σαν trackpad, και κάθε κουμπί του ποντικιού ξεδιπλώνει όλες του τις δυνατότητες.",
     ctaDownload: "Λήψη Mos",
     ctaViewGitHub: "Δες το στο GitHub",
     ctaInstallHomebrew: "Εγκατάσταση με Homebrew",
@@ -69,13 +69,13 @@ export const el: Translations = {
         kicker: "Προφίλ ανά εφαρμογή",
         title: "Άλλες εφαρμογές, άλλη αίσθηση.",
         body:
-          "Άφησε κάθε εφαρμογή να κληρονομεί τα default ή κάνε override κανόνες κύλισης και κουμπιών. Ακρίβεια όπου χρειάζεται, ομαλότητα παντού αλλού.",
+          "Κάθε εφαρμογή έχει τη δική της καμπύλη κύλισης και συμπεριφορά. Ακριβές ή ομαλό — εσύ αποφασίζεις.",
       },
       buttons: {
         kicker: "Κουμπιά & shortcuts",
         title: "Δέσε, γράψε, επανάλαβε.",
         body:
-          "Κατέγραψε events από ποντίκι ή πληκτρολόγιο και δέσε τα σε system shortcuts. Με το live monitor βλέπεις τι στέλνουν οι συσκευές σου.",
+          "Δέσε ποντίκι ή πληκτρολόγιο σε γρήγορες ενέργειες και διαμόρφωσε τη ροή εργασίας σου όπως θες.",
         quickBind: "Γρήγορη δέσμευση",
         rows: {
           button4: "Κουμπί 4",
@@ -89,7 +89,7 @@ export const el: Translations = {
     },
   },
   download: {
-    title: "Λήψη Mos. Ρύθμισε το scrolling σου.",
+    title: "Βάλε το Mos. Το ποντίκι σε ακούει.",
     body:
       "Εγκατάσταση σε δευτερόλεπτα, ρύθμιση με τον ρυθμό σου, και σταθερή συμπεριφορά κύλισης στις εφαρμογές που χρησιμοποιείς καθημερινά.",
     ctaDownload: "Λήψη",
@@ -105,10 +105,14 @@ export const el: Translations = {
   footer: {
     latestRelease: "Τελευταία έκδοση",
     latestVersion: "Τελευταίο {version}",
-    requiresMacos: "Απαιτεί macOS 10.13+",
+    requiresMacos: "Υποστηρίζει macOS 10.13 ή νεότερη",
     github: "GitHub",
     wiki: "Wiki",
-    releases: "Releases",
+    language: "Γλώσσα",
+    releases: "Εκδόσεις",
+    about: "Σχετικά",
+    compare: "Σύγκριση",
+    privacy: "Απόρρητο",
   },
   easing: {
     graphAria: "Γράφημα καμπύλης κύλισης",
@@ -128,6 +132,20 @@ export const el: Translations = {
       help: "Χρονική σταθερά εξομάλυνσης (μεγαλύτερη = μεγαλύτερη ουρά).",
     },
     footer: "Καμπύλη ScrollCore",
+  },
+  scroll: {
+    kickerFeel: "Αίσθηση",
+    kickerProfiles: "Προφίλ",
+    kickerButtons: "Κουμπιά",
+    heading: "Μην το διαβάζεις. Κύλησέ το.",
+    lead:
+      "Μια απλή ροδέλα ποντικιού δεν δειγματοληπτείται τόσο πυκνά όσο ένα trackpad, οπότε η σελίδα μπορεί μόνο να τινάζεται βηματικά. Το Mos αναπλάθει αυτή την είσοδο με έναν προσεκτικά ρυθμισμένο αλγόριθμο βασισμένο στη φυσική, μετατρέποντας την πρόθεσή σου σε ομαλή, ακριβή κίνηση που ακολουθεί τα δάχτυλά σου.",
+    withoutMos: "Χωρίς Mos",
+    withMos: "Με Mos",
+    tagRaw: "ωμό",
+    tagSmooth: "ομαλό",
+    scrollInside: "κύλησε εδώ",
+    parameters: "παράμετροι",
   },
   wall: {
     back: "Mos",

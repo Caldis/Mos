@@ -33,10 +33,10 @@ export const ja: Translations = {
     badgeLine2: "アプリ別プロファイル · 軸の分離 · ボタン/ショートカット",
     titleLine1: "マウスを",
     titleLine2Before: "",
-    titleLine2Highlight: "flow",
-    titleLine2After: " に変える。",
+    titleLine2Highlight: "再定義",
+    titleLine2After: "。",
     lead:
-      "Mos は無料・オープンソースの macOS ユーティリティです。ホイールスクロールをトラックパッドに近い感触にしつつ、操作感はそのまま。カーブ調整、X/Y の分離、アプリ別の上書きができます。",
+      "ホイールをトラックパッドのように指へ追従させ、マウスのすべてのボタンが秘めた力を解き放ちます。",
     ctaDownload: "Mos をダウンロード",
     ctaViewGitHub: "GitHub で見る",
     ctaInstallHomebrew: "Homebrew でインストール",
@@ -69,13 +69,13 @@ export const ja: Translations = {
         kicker: "アプリ別プロファイル",
         title: "アプリごとに手触りを。",
         body:
-          "基本設定のまま使うことも、アプリごとにスクロールやボタンのルールを上書きすることもできます。必要なところは正確に、他は滑らかに。",
+          "アプリごとにスクロールカーブと挙動を個別に設定。精密にも、滑らかにも、あなた次第。",
       },
       buttons: {
         kicker: "ボタンとショートカット",
         title: "割り当てて、記録して、繰り返す。",
         body:
-          "マウスやキーボードのイベントを記録して、システムのショートカットに割り当てます。ライブモニターで送信内容も確認できます。",
+          "マウスやキーボードをクイックアクションに割り当てて、ワークフローを思いのままに。",
         quickBind: "クイックバインド",
         rows: {
           button4: "ボタン 4",
@@ -89,7 +89,7 @@ export const ja: Translations = {
     },
   },
   download: {
-    title: "Mos をダウンロード。スクロールを自分好みに。",
+    title: "入れれば、マウスはあなたの思いどおり。",
     body:
       "数秒で入れて、必要なときに調整。よく使うアプリでも同じ感触に揃えられます。",
     ctaDownload: "ダウンロード",
@@ -105,10 +105,14 @@ export const ja: Translations = {
   footer: {
     latestRelease: "最新リリース",
     latestVersion: "最新 {version}",
-    requiresMacos: "macOS 10.13 以降",
+    requiresMacos: "macOS 10.13 以降に対応",
     github: "GitHub",
     wiki: "Wiki",
-    releases: "Releases",
+    language: "言語",
+    releases: "リリース",
+    about: "Mos について",
+    compare: "Mos を比較",
+    privacy: "プライバシー",
   },
   easing: {
     graphAria: "スクロールカーブのグラフ",
@@ -128,6 +132,20 @@ export const ja: Translations = {
       help: "平滑化の時間定数（大きいほど尾を引きます）。",
     },
     footer: "ScrollCore curve",
+  },
+  scroll: {
+    kickerFeel: "感触",
+    kickerProfiles: "プロファイル",
+    kickerButtons: "ボタン",
+    heading: "読むより、スクロール。",
+    lead:
+      "生のマウスホイールはトラックパッドのように高頻度でサンプリングされず、ページはカクカクとしか動けません。Mos は実際の物理に基づいて丁寧に調整したアルゴリズムでその入力を作り直し、スクロールの意図を滑らかで正確な動きに変えて、ページを指に追従させます。",
+    withoutMos: "Mos なし",
+    withMos: "Mos あり",
+    tagRaw: "素のまま",
+    tagSmooth: "滑らか",
+    scrollInside: "ここでスクロール",
+    parameters: "パラメータ",
   },
   wall: {
     back: "Mos",

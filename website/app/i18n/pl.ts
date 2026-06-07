@@ -31,12 +31,12 @@ export const pl: Translations = {
   hero: {
     badgeLine1: "Płynne przewijanie kółkiem myszy w macOS",
     badgeLine2: "profile per aplikacja · niezależne osie · przyciski i skróty",
-    titleLine1: "Zamień mysz",
-    titleLine2Before: "w ",
-    titleLine2Highlight: "flow",
+    titleLine1: "Twoja mysz,",
+    titleLine2Before: "",
+    titleLine2Highlight: "od nowa",
     titleLine2After: ".",
     lead:
-      "Mos to darmowe, otwartoźródłowe narzędzie dla macOS. Sprawia, że przewijanie kółkiem jest bliższe wrażeniu z trackpada, bez odbierania kontroli. Dostosuj krzywe, rozdziel osie i nadpisuj zachowanie dla poszczególnych aplikacji.",
+      "Kółko podąża za palcami jak gładzik, a każdy przycisk myszy uwalnia swój pełny potencjał.",
     ctaDownload: "Pobierz Mos",
     ctaViewGitHub: "Zobacz na GitHubie",
     ctaInstallHomebrew: "Zainstaluj przez Homebrew",
@@ -69,13 +69,13 @@ export const pl: Translations = {
         kicker: "Profile per aplikacja",
         title: "Inne aplikacje, inne odczucie.",
         body:
-          "Każda aplikacja może dziedziczyć ustawienia domyślne albo nadpisywać reguły przewijania i przycisków. Precyzja tam, gdzie trzeba, płynność wszędzie indziej.",
+          "Każda aplikacja ma własną krzywą przewijania i zachowanie. Precyzyjnie czy płynnie — ty decydujesz.",
       },
       buttons: {
         kicker: "Przyciski i skróty",
         title: "Przypnij, nagraj, powtórz.",
         body:
-          "Nagraj zdarzenia myszy lub klawiatury i przypisz je do skrótów systemowych. W monitorze na żywo sprawdzisz, co wysyłają urządzenia.",
+          "Przypisz mysz lub klawiaturę do szybkich akcji i ułóż swój workflow po swojemu.",
         quickBind: "Szybkie przypisanie",
         rows: {
           button4: "Przycisk 4",
@@ -89,7 +89,7 @@ export const pl: Translations = {
     },
   },
   download: {
-    title: "Pobierz Mos. Ustaw przewijanie pod siebie.",
+    title: "Zainstaluj Mos. Mysz słucha ciebie.",
     body:
       "Instalacja w kilka sekund. Dopasuj, kiedy potrzebujesz, i utrzymaj spójne przewijanie w aplikacjach, z których korzystasz na co dzień.",
     ctaDownload: "Pobierz",
@@ -105,10 +105,14 @@ export const pl: Translations = {
   footer: {
     latestRelease: "Najnowsze wydanie",
     latestVersion: "Najnowsza {version}",
-    requiresMacos: "Wymaga macOS 10.13+",
+    requiresMacos: "Obsługuje macOS 10.13 lub nowszy",
     github: "GitHub",
     wiki: "Wiki",
-    releases: "Releases",
+    language: "Język",
+    releases: "Wydania",
+    about: "O Mos",
+    compare: "Porównanie",
+    privacy: "Prywatność",
   },
   easing: {
     graphAria: "Wykres krzywej przewijania",
@@ -128,6 +132,20 @@ export const pl: Translations = {
       help: "Stała czasowa wygładzania (większa = dłuższy ogon).",
     },
     footer: "Krzywa ScrollCore",
+  },
+  scroll: {
+    kickerFeel: "Wrażenie",
+    kickerProfiles: "Profile",
+    kickerButtons: "Przyciski",
+    heading: "Nie czytaj. Przewiń.",
+    lead:
+      "Zwykłe kółko myszy nie jest próbkowane tak gęsto jak gładzik, więc strona może tylko skakać skokowo. Mos przekształca ten sygnał starannie dostrojonym, opartym na fizyce algorytmem, zamieniając twój zamiar w płynny, precyzyjny ruch, który podąża za palcami.",
+    withoutMos: "Bez Mos",
+    withMos: "Z Mos",
+    tagRaw: "surowe",
+    tagSmooth: "płynnie",
+    scrollInside: "przewiń tutaj",
+    parameters: "parametry",
   },
   wall: {
     back: "Mos",

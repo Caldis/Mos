@@ -1,141 +1,27 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useMemo } from "react";
 import logo512 from "@/assets/image/logo-512.png";
 import { FlowField } from "./components/FlowField/FlowField";
 import { LanguageSelector } from "./components/LanguageSelector/LanguageSelector";
 import { Magnetic } from "./components/Magnetic/Magnetic";
 import { Reveal } from "./components/Reveal/Reveal";
-import { EasingPlayground } from "./components/EasingPlayground/EasingPlayground";
 import { CopyButton } from "./components/CopyButton/CopyButton";
 import { SupportButton } from "./components/Donate/SupportButton";
 import { SupportLink } from "./components/Donate/SupportLink";
+import { Modal } from "./components/Modal/Modal";
+import { useModal } from "./components/Modal/hooks";
+import { SmoothScrollDemo } from "./components/SmoothScroll/SmoothScrollDemo";
+import { CurveDivider, IndexMark, Shot } from "./components/Editorial/Editorial";
 import { useI18n } from "./i18n/context";
 import { format } from "./i18n/format";
 import { useGithubRelease } from "./services/github";
 import { motion } from "framer-motion";
-import { BentoCard } from "./components/BentoCard/BentoCard";
 import { useHydratedReducedMotion } from "./hooks/useHydratedReducedMotion";
 
 const FALLBACK_RELEASE_LINK = "https://github.com/Caldis/Mos/releases/latest";
-
-type Axis = "X" | "Y";
-type AxisSetting = "smooth" | "reverse";
-type ReadmeScreenshotLocale = "en-us" | "zh-cn";
-type ReadmeScreenshotName = "scrolling" | "general" | "application-settings" | "buttons-action";
-
-type AppProfile = {
-  id: string;
-  name: string;
-  icon: string;
-  curve: { step: number; gain: number; duration: number };
-  axes: Record<Axis, Record<AxisSetting, boolean>>;
-};
-
-const APP_PROFILES: AppProfile[] = [
-  {
-    id: "xcode",
-    name: "Xcode",
-    icon: "/app-icons/xcode.png",
-    curve: { step: 28.0, gain: 2.3, duration: 3.4 },
-    axes: {
-      Y: { smooth: true, reverse: false },
-      X: { smooth: false, reverse: false },
-    },
-  },
-  {
-    id: "safari",
-    name: "Safari",
-    icon: "/app-icons/safari.png",
-    curve: { step: 33.6, gain: 2.7, duration: 4.35 },
-    axes: {
-      Y: { smooth: true, reverse: false },
-      X: { smooth: true, reverse: false },
-    },
-  },
-  {
-    id: "figma",
-    name: "Figma",
-    icon: "/app-icons/figma.png",
-    curve: { step: 26.0, gain: 2.1, duration: 3.8 },
-    axes: {
-      Y: { smooth: true, reverse: false },
-      X: { smooth: true, reverse: true },
-    },
-  },
-  {
-    id: "terminal",
-    name: "Terminal",
-    icon: "/app-icons/terminal.png",
-    curve: { step: 18.0, gain: 1.6, duration: 2.0 },
-    axes: {
-      Y: { smooth: false, reverse: false },
-      X: { smooth: false, reverse: false },
-    },
-  },
-  {
-    id: "notion",
-    name: "Notion",
-    icon: "/app-icons/notion.png",
-    curve: { step: 30.0, gain: 2.4, duration: 4.8 },
-    axes: {
-      Y: { smooth: true, reverse: false },
-      X: { smooth: false, reverse: false },
-    },
-  },
-  {
-    id: "chrome",
-    name: "Chrome",
-    icon: "/app-icons/chrome.png",
-    curve: { step: 33.6, gain: 2.9, duration: 4.1 },
-    axes: {
-      Y: { smooth: true, reverse: false },
-      X: { smooth: true, reverse: false },
-    },
-  },
-];
-
-function MiniToggle({
-  checked,
-  onToggle,
-  ariaLabel,
-  disabled = false,
-}: {
-  checked: boolean;
-  onToggle: () => void;
-  ariaLabel: string;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-disabled={disabled}
-      aria-label={ariaLabel}
-      disabled={disabled}
-      onClick={() => {
-        if (disabled) return;
-        onToggle();
-      }}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center overflow-hidden rounded-full border p-[2px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 ${
-        checked
-          ? "border-white/30 bg-white/28"
-          : disabled
-            ? "border-white/8 bg-white/4"
-            : "border-white/8 bg-white/4 hover:border-white/14 hover:bg-white/7"
-      } ${disabled ? "cursor-default" : "cursor-pointer"}`}
-    >
-      <span
-        aria-hidden="true"
-        className={`h-5 w-5 rounded-full shadow-[0_6px_16px_rgba(0,0,0,0.45)] transition-[transform,background-color] duration-200 ease-out ${
-          checked ? "translate-x-5 bg-white" : "translate-x-0 bg-white/50"
-        }`}
-      />
-    </button>
-  );
-}
 
 function pickDownloadUrl(release: unknown): string {
   if (!release || typeof release !== "object") return FALLBACK_RELEASE_LINK;
@@ -164,16 +50,6 @@ function pickDownloadUrl(release: unknown): string {
 
 const HERO_SPRING = { type: "spring" as const, stiffness: 100, damping: 20 };
 
-const README_SCREENSHOT_SIZES: Record<
-  ReadmeScreenshotName,
-  { width: number; height: number }
-> = {
-  scrolling: { width: 1124, height: 1354 },
-  general: { width: 1124, height: 610 },
-  "application-settings": { width: 1926, height: 1276 },
-  "buttons-action": { width: 1440, height: 1330 },
-};
-
 function heroMotion(delayS: number, shouldReduceMotion: boolean | null) {
   return {
     initial: false as const,
@@ -182,150 +58,54 @@ function heroMotion(delayS: number, shouldReduceMotion: boolean | null) {
   };
 }
 
-function ReadmeScreenshot({
-  locale,
-  name,
-  alt,
-  className = "",
-}: {
-  locale: ReadmeScreenshotLocale;
-  name: ReadmeScreenshotName;
-  alt: string;
-  className?: string;
-}) {
-  const size = README_SCREENSHOT_SIZES[name];
+const PRIMARY_BTN =
+  "inline-flex select-none items-center justify-center rounded-[16px] border border-black/10 px-6 py-3.5 text-sm font-semibold tracking-wide text-black shadow-elevated sm:text-base";
+const PRIMARY_BG = "linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.86) 100%)";
 
-  return (
-    <div
-      className={`rounded-[22px] border border-white/10 bg-black/45 p-2.5 shadow-elevated sm:p-3 ${className}`}
-    >
-      <Image
-        src={`/readme/${locale}/${name}.png`}
-        alt={alt}
-        width={size.width}
-        height={size.height}
-        className="block h-auto w-full rounded-[16px] border border-white/8 bg-[#302d31]"
-        sizes="(min-width: 1024px) 560px, calc(100vw - 64px)"
-      />
-    </div>
-  );
-}
+const BINDING_ROWS = [
+  ["button4", "missionControl"],
+  ["button5", "nextSpace"],
+  ["wheelClick", "appSwitcher"],
+] as const;
 
 export default function HomeClient() {
   const { language, t } = useI18n();
   const shouldReduceMotion = useHydratedReducedMotion();
   const { data: release } = useGithubRelease();
+  const brew = useModal();
 
-  const [axesDemo, setAxesDemo] = useState<Record<Axis, Record<AxisSetting, boolean>>>(() => ({
-    Y: { smooth: true, reverse: false },
-    X: { smooth: false, reverse: true },
-  }));
-
-  const toggleAxis = useCallback((axis: Axis, setting: AxisSetting) => {
-    setAxesDemo((prev) => ({
-      ...prev,
-      [axis]: { ...prev[axis], [setting]: !prev[axis][setting] },
-    }));
-  }, []);
-
+  const downloadUrl = useMemo(() => pickDownloadUrl(release), [release]);
+  const readmeLocale: "en-us" | "zh-cn" =
+    language === "zh" || language === "zh-Hant" ? "zh-cn" : "en-us";
 
   const versionLabel = useMemo(() => {
     const tag = release?.tag_name;
     return typeof tag === "string" && tag.trim() ? `v${tag.replace(/^v/i, "")}` : null;
   }, [release?.tag_name]);
 
-  const downloadUrl = useMemo(() => pickDownloadUrl(release), [release]);
-  const readmeScreenshotLocale: ReadmeScreenshotLocale =
-    language === "zh" || language === "zh-Hant" ? "zh-cn" : "en-us";
+  // Shared "latest version · system requirement" line — hero note and footer
+  // render the exact same value, sourced from the live GitHub latest release.
+  const releaseLine =
+    (versionLabel ? `${format(t.footer.latestVersion, { version: versionLabel })} · ` : "") +
+    t.footer.requiresMacos;
 
-  const homebrewRef = useRef<HTMLDivElement | null>(null);
-  const pendingHomebrewFlashRef = useRef(false);
-  const homebrewFlashStartTimerRef = useRef<number | null>(null);
-  const homebrewFlashTimerRef = useRef<number | null>(null);
-
-  const flashHomebrew = useCallback((delayMs = 0) => {
-    const el = homebrewRef.current;
-    if (!el) return;
-
-    if (homebrewFlashStartTimerRef.current) {
-      window.clearTimeout(homebrewFlashStartTimerRef.current);
-      homebrewFlashStartTimerRef.current = null;
-    }
-    if (homebrewFlashTimerRef.current) {
-      window.clearTimeout(homebrewFlashTimerRef.current);
-      homebrewFlashTimerRef.current = null;
-    }
-
-    const start = () => {
-      el.classList.remove("homebrew-highlight");
-      // Force reflow so the animation restarts reliably.
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      el.offsetWidth;
-      el.classList.add("homebrew-highlight");
-
-      homebrewFlashTimerRef.current = window.setTimeout(() => {
-        el.classList.remove("homebrew-highlight");
-        homebrewFlashTimerRef.current = null;
-      }, 1200);
-    };
-
-    if (delayMs > 0) {
-      homebrewFlashStartTimerRef.current = window.setTimeout(() => {
-        homebrewFlashStartTimerRef.current = null;
-        start();
-      }, delayMs);
-    } else {
-      start();
-    }
-  }, []);
-
-  useEffect(() => {
-    const el = homebrewRef.current;
-    if (!el) return;
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (!entry?.isIntersecting) return;
-        if (!pendingHomebrewFlashRef.current) return;
-        pendingHomebrewFlashRef.current = false;
-        flashHomebrew(500);
-      },
-      { threshold: 0.35 }
-    );
-
-    io.observe(el);
-
-    return () => {
-      io.disconnect();
-      if (homebrewFlashStartTimerRef.current) {
-        window.clearTimeout(homebrewFlashStartTimerRef.current);
-        homebrewFlashStartTimerRef.current = null;
-      }
-      if (homebrewFlashTimerRef.current) {
-        window.clearTimeout(homebrewFlashTimerRef.current);
-        homebrewFlashTimerRef.current = null;
-      }
-    };
-  }, [flashHomebrew]);
-
-  const scrollToHomebrew = () => {
-    const el = homebrewRef.current ?? document.getElementById("homebrew");
-    if (!el) return;
-
-    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
-
-    const rect = el.getBoundingClientRect();
-    const inView = rect.top < window.innerHeight * 0.78 && rect.bottom > window.innerHeight * 0.22;
-    if (inView) {
-      pendingHomebrewFlashRef.current = false;
-      flashHomebrew(500);
-    } else {
-      pendingHomebrewFlashRef.current = true;
-    }
-
-    el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
-  };
+  // Hero is a deliberate English block; the close section below stays localized.
+  // Both buttons open the same Homebrew modal.
+  const renderBrewButton = (label: string) => (
+    <Magnetic strength={14}>
+      <button
+        type="button"
+        onClick={brew.handleOpen}
+        className="inline-flex items-center justify-center gap-2 rounded-[16px] border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold tracking-wide text-white/85 transition-colors hover:bg-white/10 sm:text-base"
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 opacity-70" fill="none" stroke="currentColor" strokeWidth={1.8}>
+          <rect x="3" y="4" width="18" height="16" rx="2.5" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 9.5 10 12l-2.5 2.5M13 14.5h4" />
+        </svg>
+        {label}
+      </button>
+    </Magnetic>
+  );
 
   return (
     <div className="min-h-[100dvh] text-[color:var(--fg0)]">
@@ -336,569 +116,261 @@ export default function HomeClient() {
         {t.a11y.skipToContent}
       </a>
 
+      {/* background: lift off pure black, then the flow field */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(120% 80% at 50% -8%, rgba(58,60,72,0.22), transparent 56%)" }}
+        />
         <FlowField className="absolute inset-0" />
       </div>
 
       <header className="fixed left-0 right-0 top-0 z-50 px-4 sm:px-6">
-        <nav className="mx-auto mt-4 sm:mt-6 max-w-6xl rounded-[var(--radius-xl)] glass ring-accent">
-          <div className="flex items-center justify-between px-4 sm:px-5 py-3">
-            <div className="flex items-center gap-3">
-              <Image
-                src={logo512}
-                alt={t.a11y.appIconAlt}
-                width={40}
-                height={40}
-                className="object-contain rounded-[14px]"
-                priority
-              />
-              <div className="text-lg sm:text-xl font-extrabold tracking-[0.015em] text-white">
-                Mos
-              </div>
+        <nav
+          className="mx-auto mt-4 flex max-w-6xl items-center justify-between rounded-2xl border border-white/[0.06] px-4 py-2.5 backdrop-blur-xl sm:mt-5 sm:px-5"
+          style={{
+            background: "rgba(10,11,14,0.55)",
+            boxShadow: "0 1px 0 rgba(255,255,255,0.05) inset, 0 12px 40px -16px rgba(0,0,0,0.75)",
+          }}
+        >
+          <div className="flex items-center gap-1">
+            <Image src={logo512} alt={t.a11y.appIconAlt} width={36} height={36} className="rounded-[12px] object-contain" priority />
+            <div className="text-2xl font-extrabold tracking-[0.015em] text-white" style={{ fontFamily: "math" }}>
+              Mos
             </div>
+          </div>
 
-            <div className="flex items-center gap-3">
-              <div>
-                <Magnetic strength={14}>
-                  <a
-                    href="/wall/"
-                    title="The Wall"
-                    className="inline-flex h-11 items-center gap-1.5 rounded-2xl border border-white/5 bg-white/4 px-3.5 font-mono text-xs text-white/75 transition-colors hover:border-white/9 hover:bg-white/7 hover:text-white"
-                  >
-                    <span aria-hidden>✎</span> {t.wall.title}
-                  </a>
-                </Magnetic>
-              </div>
-              <LanguageSelector />
-              <Magnetic strength={14}>
-                <a
-                  href="https://github.com/Caldis/Mos"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group grid h-11 w-11 place-items-center rounded-2xl border border-white/5 bg-white/4 hover:bg-white/7 hover:border-white/9 transition-colors"
-                  aria-label={t.a11y.githubAria}
-                  title={t.nav.githubTitle}
-                >
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    className="h-5 w-5 text-white/82 group-hover:text-white/92 transition-colors"
-                    fill="currentColor"
-                  >
-                    <path d="M12 2c-5.52 0-10 4.58-10 10.23 0 4.52 2.87 8.35 6.84 9.7.5.1.68-.22.68-.48 0-.24-.01-.88-.01-1.72-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1.01.07 1.54 1.06 1.54 1.06.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.3.1-2.72 0 0 .84-.28 2.75 1.05.8-.23 1.65-.35 2.5-.35.85 0 1.7.12 2.5.35 1.9-1.33 2.75-1.05 2.75-1.05.55 1.42.2 2.46.1 2.72.64.72 1.03 1.64 1.03 2.76 0 3.93-2.34 4.8-4.58 5.05.36.32.69.96.69 1.94 0 1.4-.01 2.52-.01 2.86 0 .26.18.58.69.48A10.3 10.3 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
-                  </svg>
-                </a>
-              </Magnetic>
-              <SupportButton />
-            </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Magnetic strength={14}>
+              <Link
+                href="/wall/"
+                title={t.wall.title}
+                className="inline-flex h-10 items-center gap-1.5 rounded-2xl border border-white/5 bg-white/4 px-3.5 font-mono text-xs text-white/75 transition-colors hover:border-white/9 hover:bg-white/7 hover:text-white"
+              >
+                <span aria-hidden>✎</span> {t.wall.title}
+              </Link>
+            </Magnetic>
+            <LanguageSelector />
+            <Magnetic strength={14}>
+              <a
+                href="https://github.com/Caldis/Mos"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group grid h-10 w-10 place-items-center rounded-2xl border border-white/5 bg-white/4 transition-colors hover:border-white/9 hover:bg-white/7"
+                aria-label={t.a11y.githubAria}
+                title={t.nav.githubTitle}
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 text-white/82 transition-colors group-hover:text-white/92" fill="currentColor">
+                  <path d="M12 2c-5.52 0-10 4.58-10 10.23 0 4.52 2.87 8.35 6.84 9.7.5.1.68-.22.68-.48 0-.24-.01-.88-.01-1.72-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1.01.07 1.54 1.06 1.54 1.06.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.3.1-2.72 0 0 .84-.28 2.75 1.05.8-.23 1.65-.35 2.5-.35.85 0 1.7.12 2.5.35 1.9-1.33 2.75-1.05 2.75-1.05.55 1.42.2 2.46.1 2.72.64.72 1.03 1.64 1.03 2.76 0 3.93-2.34 4.8-4.58 5.05.36.32.69.96.69 1.94 0 1.4-.01 2.52-.01 2.86 0 .26.18.58.69.48A10.3 10.3 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
+                </svg>
+              </a>
+            </Magnetic>
+            <SupportButton />
           </div>
         </nav>
       </header>
 
-      <main id="content" className="mx-auto max-w-6xl px-4 sm:px-6">
-        <section className="relative min-h-[100dvh] pt-28 sm:pt-36 pb-10 sm:pb-12 flex flex-col">
-          <div className="flex-1 flex items-center">
-            <div className="w-full">
+      <main id="content" className="mx-auto max-w-5xl px-4 sm:px-6">
+        {/* ---------- hero (English) ---------- */}
+        <section className="flex min-h-[100dvh] flex-col justify-center pt-28 sm:pt-36">
+          <motion.h1
+            className="max-w-4xl font-display text-[14vw] leading-[1.02] tracking-[-0.02em] text-white sm:text-[96px]"
+            {...heroMotion(0, shouldReduceMotion)}
+          >
+            {t.hero.titleLine1}
+            <br />
+            {t.hero.titleLine2Before}
+            <span className="relative inline-block">
+              {t.hero.titleLine2Highlight}
+              <svg className="absolute -bottom-2 left-0 h-4 w-full overflow-visible" viewBox="0 0 100 14" preserveAspectRatio="none" aria-hidden="true">
+                <path
+                  d="M1 8 C 26 14, 54 1, 99 7"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.92)"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                  pathLength={1}
+                  strokeDasharray={1}
+                  strokeDashoffset={1}
+                  style={{ animation: "stroke-in 900ms var(--ease-out) 350ms both" }}
+                />
+              </svg>
+            </span>
+            {t.hero.titleLine2After}
+          </motion.h1>
 
-              {/* Left column */}
-              <div>
-                <motion.div
-                  className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-xs text-white/70 shadow-elevated"
-                  {...heroMotion(0, shouldReduceMotion)}
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-[color:var(--accent)] shadow-[0_0_22px_rgba(255,255,255,0.35)]" />
-                    {t.hero.badgeLine1}
-                  </span>
-                  <span className="hidden sm:inline text-white/35">•</span>
-                  <span className="hidden sm:inline font-mono text-white/45">
-                    {t.hero.badgeLine2}
-                  </span>
-                </motion.div>
+          <motion.p
+            className="mt-8 max-w-2xl text-pretty text-base leading-[1.7] text-white/65 sm:text-lg"
+            {...heroMotion(0.18, shouldReduceMotion)}
+          >
+            {t.hero.lead}
+          </motion.p>
 
-                <motion.h1
-                  className="mt-7 font-display text-balance text-[52px] leading-[0.95] tracking-[-0.02em] sm:text-[88px] md:text-[108px] lg:text-[124px] text-white"
-                  {...heroMotion(0.08, shouldReduceMotion)}
-                >
-                  {t.hero.titleLine1}
-                  <span className="block">
-                    {t.hero.titleLine2Before}
-                    <span
-                      className="inline-block text-flow"
-                      style={{ textShadow: "0 0 42px rgba(255,255,255,0.08)" }}
-                    >
-                      {t.hero.titleLine2Highlight}
-                    </span>
-                    {t.hero.titleLine2After}
-                  </span>
-                </motion.h1>
+          <motion.div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center" {...heroMotion(0.26, shouldReduceMotion)}>
+            <Magnetic strength={22}>
+              <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className={PRIMARY_BTN} style={{ background: PRIMARY_BG }}>
+                {t.hero.ctaDownload}
+              </a>
+            </Magnetic>
+            {renderBrewButton(t.hero.ctaInstallHomebrew)}
+            <Magnetic strength={14}>
+              <a
+                href="https://github.com/Caldis/Mos"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-[16px] border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold tracking-wide text-white/85 transition-colors hover:bg-white/10 sm:text-base"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+                  <path d="M12 2c-5.52 0-10 4.58-10 10.23 0 4.52 2.87 8.35 6.84 9.7.5.1.68-.22.68-.48 0-.24-.01-.88-.01-1.72-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1.01.07 1.54 1.06 1.54 1.06.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.3.1-2.72 0 0 .84-.28 2.75 1.05.8-.23 1.65-.35 2.5-.35.85 0 1.7.12 2.5.35 1.9-1.33 2.75-1.05 2.75-1.05.55 1.42.2 2.46.1 2.72.64.72 1.03 1.64 1.03 2.76 0 3.93-2.34 4.8-4.58 5.05.36.32.69.96.69 1.94 0 1.4-.01 2.52-.01 2.86 0 .26.18.58.69.48A10.3 10.3 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
+                </svg>
+                GitHub
+              </a>
+            </Magnetic>
+          </motion.div>
 
-                <motion.p
-                  className="mt-5 max-w-2xl text-balance text-[15px] sm:text-lg text-white/72 leading-[1.7]"
-                  {...heroMotion(0.18, shouldReduceMotion)}
-                >
-                  {t.hero.lead}
-                </motion.p>
+          <motion.p
+            className="mt-4 font-mono text-[11px] text-white/40"
+            {...heroMotion(0.34, shouldReduceMotion)}
+          >
+            {releaseLine}
+          </motion.p>
 
-                <motion.div
-                  className="mt-8 flex flex-col gap-4"
-                  {...heroMotion(0.26, shouldReduceMotion)}
-                >
-                  {/* Primary actions */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                    <Magnetic strength={22}>
-                      <a
-                        href={downloadUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative overflow-hidden rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-black shadow-elevated border border-black/10 inline-flex items-center justify-center"
-                        style={{
-                          background:
-                            "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.84) 100%)",
-                        }}
-                      >
-                        <span className="relative z-10">{t.hero.ctaDownload}</span>
-                        <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 [background:radial-gradient(800px_240px_at_30%_0%,rgba(0,0,0,0.18),transparent_55%)]" />
-                      </a>
-                    </Magnetic>
+          <div className="mt-16 font-mono text-[11px] uppercase tracking-[0.3em] text-white/30">scroll ↓</div>
+        </section>
 
-                    <Magnetic strength={14}>
-                      <a
-                        href="https://github.com/Caldis/Mos"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
-                      >
-                        <span className="mr-2 opacity-70 group-hover:opacity-100 transition-opacity">↗</span>
-                        <span>{t.hero.ctaViewGitHub}</span>
-                      </a>
-                    </Magnetic>
-                  </div>
+        {/* ---------- 01 · scroll it yourself ---------- */}
+        <CurveDivider label={t.scroll.kickerFeel} />
 
-                  {/* Homebrew install + system requirement */}
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
-                    <a
-                      href="#homebrew"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        scrollToHomebrew();
-                      }}
-                      className="group inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 font-mono text-[11px] text-white/50 transition-colors hover:border-white/20 hover:text-white/80"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-3.5 w-3.5 opacity-70 transition-opacity group-hover:opacity-100"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={1.8}
-                      >
-                        <rect x="3" y="4" width="18" height="16" rx="2.5" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 9.5 10 12l-2.5 2.5M13 14.5h4" />
-                      </svg>
-                      <span>{t.hero.ctaInstallHomebrew}</span>
-                    </a>
+        <section className="py-8 sm:py-12">
+          <Reveal>
+            <IndexMark n="01" label={t.scroll.kickerFeel} />
+            <h2 className="font-display text-4xl leading-[0.95] tracking-[-0.01em] text-white sm:text-6xl">
+              {t.scroll.heading}
+            </h2>
+            <p className="mt-5 max-w-xl text-pretty leading-[1.7] text-white/65">{t.scroll.lead}</p>
+          </Reveal>
 
-                    <span className="font-mono tabular-nums text-xs text-white/45">
-                      {t.hero.requirementsLine1}
-                    </span>
-                  </div>
-                </motion.div>
-              </div>
-            </div>
-          </div>
+          <Reveal className="mt-8" delayMs={140}>
+            <SmoothScrollDemo />
+          </Reveal>
+        </section>
 
-          <div className="mt-8 sm:mt-10 flex items-center gap-3 text-white/40">
-            <div className="h-[1px] flex-1 hairline" />
-            <div className="font-mono text-[11px] tracking-[0.18em] uppercase">
-              {t.hero.scrollHint}
-            </div>
-            <div className="h-[1px] flex-1 hairline" />
+        {/* ---------- 02 · per-app ---------- */}
+        <CurveDivider />
+
+        <section className="py-8 sm:py-12">
+          <div className="grid gap-8 md:grid-cols-12 md:items-center">
+            <Reveal className="md:col-span-7 md:-ml-6">
+              <Shot
+                locale={readmeLocale}
+                name="application-settings"
+                alt="Mos per-application settings window"
+              />
+            </Reveal>
+            <Reveal className="md:col-span-5" delayMs={120}>
+              <IndexMark n="02" label={t.scroll.kickerProfiles} />
+              <h2 className="font-display text-4xl leading-[0.95] tracking-[-0.01em] text-white sm:text-5xl">
+                {t.sectionFeel.cards.perApp.title}
+              </h2>
+              <p className="mt-5 text-pretty leading-[1.7] text-white/65">{t.sectionFeel.cards.perApp.body}</p>
+            </Reveal>
           </div>
         </section>
 
-        <section className="py-16 sm:py-24">
+        {/* ---------- 03 · buttons ---------- */}
+        <CurveDivider />
+
+        <section className="py-8 sm:py-12">
+          <div className="grid gap-8 md:grid-cols-12 md:items-center">
+            <Reveal className="md:col-span-5">
+              <IndexMark n="03" label={t.scroll.kickerButtons} />
+              <h2 className="font-display text-4xl leading-[0.95] tracking-[-0.01em] text-white sm:text-5xl">
+                {t.sectionFeel.cards.buttons.title}
+              </h2>
+              <p className="mt-5 text-pretty leading-[1.7] text-white/65">{t.sectionFeel.cards.buttons.body}</p>
+
+              <dl className="mt-7 divide-y divide-white/8 border-y border-white/8">
+                {BINDING_ROWS.map(([k, v]) => (
+                  <div key={k} className="flex items-center justify-between py-3">
+                    <dt className="font-mono text-xs text-white/75">{t.sectionFeel.cards.buttons.rows[k]}</dt>
+                    <dd className="font-mono text-xs text-white/45">{t.sectionFeel.cards.buttons.rows[v]}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Reveal>
+            <Reveal className="md:col-span-7 md:-mr-6" delayMs={120}>
+              <Shot locale={readmeLocale} name="buttons-action" alt="Mos action library window" />
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ---------- close ---------- */}
+        <CurveDivider />
+
+        <section className="py-12 sm:py-20">
           <Reveal>
-            <h2 className="font-display text-balance text-3xl sm:text-5xl text-white leading-[0.95] tracking-[-0.01em]">
-              {t.sectionFeel.title}
+            <h2 className="max-w-3xl font-display text-4xl leading-[0.95] tracking-[-0.015em] text-white sm:text-6xl">
+              {t.download.title}
             </h2>
           </Reveal>
-          <Reveal delayMs={90}>
-            <p className="mt-4 max-w-3xl text-white/68 leading-[1.7]">
-              {t.sectionFeel.lead}
-            </p>
-          </Reveal>
-
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-12 gap-4">
-            {/* Row 1: Easing (7) + Axes (5) */}
-            <Reveal className="md:col-span-7 h-full" delayMs={140}>
-              <BentoCard>
-                <div className="relative p-6 sm:p-8">
-                  <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
-                    {t.sectionFeel.cards.curves.kicker}
-                  </div>
-                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
-                    {t.sectionFeel.cards.curves.title}
-                  </div>
-                  <p className="mt-3 text-white/62 leading-[1.7]">
-                    {t.sectionFeel.cards.curves.body}
-                  </p>
-                  <EasingPlayground className="mt-6" />
-                  <ReadmeScreenshot
-                    locale={readmeScreenshotLocale}
-                    name="scrolling"
-                    alt="Mos scroll settings window with controls for step, speed, duration, acceleration, and smoothing"
-                    className="mx-auto mt-6 w-full max-w-[420px]"
-                  />
-                </div>
-              </BentoCard>
-            </Reveal>
-
-            <Reveal className="md:col-span-5 h-full" delayMs={200}>
-              <BentoCard>
-                <div className="relative p-6 sm:p-8">
-                  <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
-                    {t.sectionFeel.cards.axes.kicker}
-                  </div>
-                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
-                    {t.sectionFeel.cards.axes.title}
-                  </div>
-                  <p className="mt-3 text-white/62 leading-[1.7]">
-                    {t.sectionFeel.cards.axes.body}
-                  </p>
-
-                  <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 p-5">
-                    <div className="space-y-3">
-                      {(["Y", "X"] as const).map((axis) => {
-                        const row = axesDemo[axis];
-                        return (
-                          <div key={axis} className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-2xl border border-white/10 bg-white/5 grid place-items-center">
-                              <span className="font-mono text-xs text-white/60">{axis}</span>
-                            </div>
-
-                            <div className="flex flex-1 flex-wrap gap-2">
-                              <div className="flex min-w-[150px] flex-1 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-                                <span className="font-mono text-[11px] text-white/60">
-                                  {t.sectionFeel.cards.axes.smooth}
-                                </span>
-                                <MiniToggle
-                                  checked={row.smooth}
-                                  onToggle={() => toggleAxis(axis, "smooth")}
-                                  ariaLabel={`${axis} ${t.sectionFeel.cards.axes.smooth}`}
-                                />
-                              </div>
-
-                              <div className="flex min-w-[150px] flex-1 items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-                                <span className="font-mono text-[11px] text-white/60">
-                                  {t.sectionFeel.cards.axes.reverse}
-                                </span>
-                                <MiniToggle
-                                  checked={row.reverse}
-                                  onToggle={() => toggleAxis(axis, "reverse")}
-                                  ariaLabel={`${axis} ${t.sectionFeel.cards.axes.reverse}`}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <ReadmeScreenshot
-                    locale={readmeScreenshotLocale}
-                    name="general"
-                    alt="Mos general settings window showing startup and scrolling behavior options"
-                    className="mt-6"
-                  />
-                </div>
-              </BentoCard>
-            </Reveal>
-
-            {/* Row 2: Per-App (5) + Buttons (7) — taller than row 1 */}
-            <Reveal className="md:col-span-5 h-full" delayMs={260}>
-              <BentoCard>
-                <div className="relative p-6 sm:p-8 min-h-[360px]">
-                  <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
-                    {t.sectionFeel.cards.perApp.kicker}
-                  </div>
-                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
-                    {t.sectionFeel.cards.perApp.title}
-                  </div>
-                  <p className="mt-3 text-white/62 leading-[1.7]">
-                    {t.sectionFeel.cards.perApp.body}
-                  </p>
-
-                  {/* 2-column grid with larger 48px icons + smooth badge */}
-                  <div className="mt-6 grid grid-cols-2 gap-3">
-                    {APP_PROFILES.map((a) => (
-                      <div
-                        key={a.id}
-                        className="rounded-2xl border border-white/10 bg-white/5 p-3 flex items-center gap-3"
-                      >
-                        <div className="h-12 w-12 shrink-0 rounded-xl border border-white/10 bg-black/20 overflow-hidden">
-                          <Image
-                            src={a.icon}
-                            alt={format(t.a11y.appProfileIconAlt, { app: a.name })}
-                            width={48}
-                            height={48}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <div className="font-mono text-[11px] text-white/65">{a.name}</div>
-                          {a.axes.Y.smooth && (
-                            <div className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-white/8 border border-white/10 px-1.5 py-0.5">
-                              <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
-                              <span className="font-mono text-[9px] text-white/50">smooth</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <ReadmeScreenshot
-                    locale={readmeScreenshotLocale}
-                    name="application-settings"
-                    alt="Mos per-application settings window with app-specific scroll and button options"
-                    className="mt-6"
-                  />
-                </div>
-              </BentoCard>
-            </Reveal>
-
-            <Reveal className="md:col-span-7 h-full" delayMs={320}>
-              <BentoCard>
-                <div className="relative p-6 sm:p-8 min-h-[360px]">
-                  <div className="font-display text-[11px] tracking-[0.22em] uppercase text-white/50">
-                    {t.sectionFeel.cards.buttons.kicker}
-                  </div>
-                  <div className="mt-4 text-2xl sm:text-3xl text-white font-semibold">
-                    {t.sectionFeel.cards.buttons.title}
-                  </div>
-                  <p className="mt-3 text-white/62 leading-[1.7]">
-                    {t.sectionFeel.cards.buttons.body}
-                  </p>
-
-                  <div className="mt-6 grid gap-4 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
-                    <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
-                      <div className="font-mono text-xs text-white/45">
-                        {t.sectionFeel.cards.buttons.quickBind}
-                      </div>
-                      <div className="mt-3 grid gap-2">
-                        {[
-                          {
-                            k: t.sectionFeel.cards.buttons.rows.button4,
-                            v: t.sectionFeel.cards.buttons.rows.missionControl,
-                          },
-                          {
-                            k: t.sectionFeel.cards.buttons.rows.button5,
-                            v: t.sectionFeel.cards.buttons.rows.nextSpace,
-                          },
-                          {
-                            k: t.sectionFeel.cards.buttons.rows.wheelClick,
-                            v: t.sectionFeel.cards.buttons.rows.appSwitcher,
-                          },
-                        ].map((row) => (
-                          <div
-                            key={row.k}
-                            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-3 py-2"
-                          >
-                            <div className="font-mono text-xs text-white/75">{row.k}</div>
-                            <div className="font-mono text-xs text-white/45">{row.v}</div>
-                          </div>
-                        ))}
-                        {/* Pulsing "recording" placeholder row */}
-                        <div className="flex items-center justify-between rounded-xl border border-white/8 bg-white/3 px-3 py-2 opacity-60">
-                          <div className="flex items-center gap-2">
-                            <span className="relative flex h-1.5 w-1.5">
-                              <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
-                              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/40" />
-                            </span>
-                            <div className="font-mono text-xs text-white/45">—</div>
-                          </div>
-                          <div className="font-mono text-[10px] text-white/30 italic">recording…</div>
-                        </div>
-                      </div>
-                    </div>
-                    <ReadmeScreenshot
-                      locale={readmeScreenshotLocale}
-                      name="buttons-action"
-                      alt="Mos action library window for binding mouse buttons to system and keyboard actions"
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-              </BentoCard>
-            </Reveal>
-          </div>
-        </section>
-
-        <section className="pt-0 pb-16 sm:pb-24">
-          <div className="rounded-[28px] glass shadow-elevated border border-white/10 overflow-hidden">
-            <div className="px-6 sm:px-10 py-10 sm:py-14">
-              <Reveal>
-                <h3 className="font-display text-balance text-3xl sm:text-6xl text-white leading-[0.95] tracking-[-0.015em]">
-                  {t.download.title}
-                </h3>
-              </Reveal>
-              <Reveal delayMs={90}>
-                <p className="mt-4 max-w-3xl text-white/68 leading-[1.7]">
-                  {t.download.body}
-                </p>
-              </Reveal>
-
-              <Reveal delayMs={160}>
-                <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-3">
-                  <Magnetic strength={22}>
-                    <a
-                      href={downloadUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative overflow-hidden rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-black shadow-elevated border border-black/10 inline-flex items-center justify-center"
-                      style={{
-                        background:
-                          "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.84) 100%)",
-                      }}
-                    >
-                      <span className="relative z-10">
-                        {t.download.ctaDownload}
-                      </span>
-                      <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 [background:radial-gradient(900px_260px_at_30%_0%,rgba(0,0,0,0.18),transparent_55%)]" />
-                    </a>
-                  </Magnetic>
-
-                  <Magnetic strength={14}>
-                    <a
-                      href="https://github.com/Caldis/Mos/releases"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
-                    >
-                      {t.download.releaseNotes}
-                    </a>
-                  </Magnetic>
-
-                  <Magnetic strength={14}>
-                    <a
-                      href="https://github.com/Caldis/Mos/wiki"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center rounded-[18px] px-6 py-3.5 text-sm sm:text-base font-semibold tracking-wide text-white/85 border border-white/12 bg-white/5 hover:bg-white/8 transition-colors"
-                    >
-                      {t.download.docs}
-                    </a>
-                  </Magnetic>
-                </div>
-              </Reveal>
-
-              <Reveal delayMs={220}>
-                <div
-                  id="homebrew"
-                  ref={homebrewRef}
-                  className="mt-8 scroll-mt-28 rounded-[22px] border border-white/10 bg-black/35 p-5 sm:p-6"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <div className="font-display text-sm tracking-[0.18em] uppercase text-white/70">
-                        {t.homebrew.title}
-                      </div>
-                      <div className="mt-2 font-mono text-sm text-white/75">
-                        brew install --cask mos
-                      </div>
-                    </div>
-                    <CopyButton
-                      value="brew install --cask mos"
-                      className="self-start sm:self-auto rounded-2xl px-4 py-2.5 text-sm font-semibold border border-white/12 bg-white/5 hover:bg-white/8 transition-colors text-white/85"
-                      copiedLabel={t.homebrew.copied}
-                    >
-                      {t.homebrew.copy}
-                    </CopyButton>
-                  </div>
-                  <div className="mt-4 font-mono text-xs text-white/45">
-                    {(() => {
-                      const tpl = t.homebrew.tip;
-                      const marker = "{cask}";
-                      const idx = tpl.indexOf(marker);
-                      if (idx === -1) return tpl;
-                      const before = tpl.slice(0, idx);
-                      const after = tpl.slice(idx + marker.length);
-                      return (
-                        <>
-                          {before}
-                          <span className="text-white/70">mos@beta</span>
-                          {after}
-                        </>
-                      );
-                    })()}
-                  </div>
-                </div>
-              </Reveal>
-            </div>
-
-            <div className="px-6 sm:px-10 py-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white/45">
-              <div className="font-mono text-xs">
-                {(versionLabel
-                  ? format(t.footer.latestVersion, { version: versionLabel })
-                  : t.footer.latestRelease) +
-                  " · " +
-                  t.footer.requiresMacos}
-              </div>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs">
-                <a
-                  href="/about/"
-                  className="hover:text-white/80 transition-colors"
-                >
-                  About Mos
+          <Reveal delayMs={120}>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Magnetic strength={22}>
+                <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className={PRIMARY_BTN} style={{ background: PRIMARY_BG }}>
+                  {t.download.ctaDownload}
                 </a>
-                <a
-                  href="/compare/"
-                  className="hover:text-white/80 transition-colors"
-                >
-                  Compare Mos
-                </a>
-                <a
-                  href="/privacy/"
-                  className="hover:text-white/80 transition-colors"
-                >
-                  Privacy
-                </a>
-                <a
-                  href="/wall/"
-                  className="hover:text-white/80 transition-colors"
-                >
-                  {t.wall.title}
-                </a>
-                <a
-                  href="https://github.com/Caldis/Mos"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white/80 transition-colors"
-                >
-                  {t.footer.github}
-                </a>
-                <a
-                  href="https://github.com/Caldis/Mos/wiki"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white/80 transition-colors"
-                >
-                  {t.footer.wiki}
-                </a>
+              </Magnetic>
+              {renderBrewButton(t.hero.ctaInstallHomebrew)}
+              <Magnetic strength={14}>
                 <a
                   href="https://github.com/Caldis/Mos/releases"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-white/80 transition-colors"
+                  className="inline-flex items-center justify-center rounded-[16px] border border-white/12 bg-white/5 px-6 py-3.5 text-sm font-semibold tracking-wide text-white/85 transition-colors hover:bg-white/10 sm:text-base"
                 >
-                  {t.footer.releases}
+                  {t.download.releaseNotes}
                 </a>
-                <SupportLink className="font-mono text-xs text-white/45 hover:text-white/80 transition-colors" />
-              </div>
+              </Magnetic>
             </div>
-          </div>
+          </Reveal>
         </section>
+
+        {/* ---------- footer ---------- */}
+        <footer className="border-t border-white/[0.08] pt-8 pb-40 sm:pt-10">
+          <div className="flex flex-col gap-5 font-mono text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
+            <div>{releaseLine}</div>
+            <nav className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <Link href="/about/" className="transition-colors hover:text-white/85">{t.footer.about}</Link>
+              <Link href="/compare/" className="transition-colors hover:text-white/85">{t.footer.compare}</Link>
+              <Link href="/privacy/" className="transition-colors hover:text-white/85">{t.footer.privacy}</Link>
+              <a href="https://github.com/Caldis/Mos/wiki" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white/85">{t.footer.wiki}</a>
+              <a href="https://github.com/Caldis/Mos/releases" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white/85">{t.footer.releases}</a>
+              <span aria-hidden="true" className="h-3 w-px shrink-0 bg-white/15" />
+              <Link href="/wall/" className="transition-colors hover:text-white/85">{t.wall.title}</Link>
+              <LanguageSelector variant="link" className="font-mono text-xs text-white/45 hover:text-white/85" />
+              <a href="https://github.com/Caldis/Mos" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white/85">{t.footer.github}</a>
+              <SupportLink className="font-mono text-xs text-white/45 hover:text-white/85" />
+            </nav>
+          </div>
+        </footer>
       </main>
+
+      {/* Homebrew install — modal */}
+      <Modal isOpen={brew.isOpen} onClose={brew.handleClose} title={t.hero.ctaInstallHomebrew} closeLabel={t.a11y.closeDialog}>
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/40 px-4 py-3">
+          <code className="font-mono text-sm text-white/85">brew install --cask mos</code>
+          <CopyButton
+            value="brew install --cask mos"
+            className="shrink-0 rounded-xl border border-white/12 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/85 transition-colors hover:bg-white/10"
+            copiedLabel={t.homebrew.copied}
+          >
+            {t.homebrew.copy}
+          </CopyButton>
+        </div>
+        <p className="mt-4 font-mono text-[11px] text-white/40">{format(t.homebrew.tip, { cask: "mos@beta" })}</p>
+      </Modal>
     </div>
   );
 }

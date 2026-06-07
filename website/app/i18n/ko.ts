@@ -33,10 +33,10 @@ export const ko: Translations = {
     badgeLine2: "앱별 프로필 · 축 분리 · 버튼/단축키",
     titleLine1: "마우스를",
     titleLine2Before: "",
-    titleLine2Highlight: "flow",
-    titleLine2After: "로 바꿉니다.",
+    titleLine2Highlight: "재정의",
+    titleLine2After: ".",
     lead:
-      "Mos는 무료 오픈소스 macOS 유틸리티입니다. 휠 스크롤을 트랙패드에 가까운 느낌으로 만들면서도, 필요한 제어는 그대로 남겨둡니다. 곡선을 조정하고, X/Y 축을 분리하고, 앱별로 동작을 덮어쓸 수 있어요.",
+      "휠이 트랙패드처럼 손가락을 따라오게 하고, 마우스의 모든 버튼이 지닌 잠재력을 깨웁니다.",
     ctaDownload: "Mos 다운로드",
     ctaViewGitHub: "GitHub에서 보기",
     ctaInstallHomebrew: "Homebrew로 설치",
@@ -69,13 +69,13 @@ export const ko: Translations = {
         kicker: "앱별 프로필",
         title: "앱마다 다른 감각.",
         body:
-          "각 앱은 기본값을 그대로 쓰거나, 스크롤/버튼 규칙을 앱별로 덮어쓸 수 있습니다. 필요한 곳은 정확하게, 나머지는 부드럽게.",
+          "앱마다 스크롤 곡선과 동작을 따로 설정하세요. 정밀하게든 부드럽게든, 당신 마음대로.",
       },
       buttons: {
         kicker: "버튼과 단축키",
         title: "바인딩, 기록, 반복.",
         body:
-          "마우스나 키보드 이벤트를 기록해 시스템 단축키에 바인딩합니다. 라이브 모니터로 기기가 보내는 값을 확인할 수도 있어요.",
+          "마우스나 키보드를 빠른 동작에 바인딩해, 워크플로를 마음대로 구성하세요.",
         quickBind: "빠른 바인드",
         rows: {
           button4: "버튼 4",
@@ -89,7 +89,7 @@ export const ko: Translations = {
     },
   },
   download: {
-    title: "Mos 다운로드. 스크롤을 내 취향으로.",
+    title: "설치하면, 마우스는 당신 뜻대로.",
     body:
       "몇 초 만에 설치하고, 필요할 때만 조절하세요. 자주 쓰는 앱에서도 같은 스크롤 감각을 유지할 수 있습니다.",
     ctaDownload: "다운로드",
@@ -105,10 +105,14 @@ export const ko: Translations = {
   footer: {
     latestRelease: "최신 릴리스",
     latestVersion: "최신 {version}",
-    requiresMacos: "macOS 10.13+ 필요",
+    requiresMacos: "macOS 10.13 이상 지원",
     github: "GitHub",
     wiki: "Wiki",
-    releases: "Releases",
+    language: "언어",
+    releases: "릴리스",
+    about: "Mos 소개",
+    compare: "Mos 비교",
+    privacy: "개인정보",
   },
   easing: {
     graphAria: "스크롤 커브 그래프",
@@ -128,6 +132,20 @@ export const ko: Translations = {
       help: "스무딩 시간 상수(클수록 꼬리가 길어짐).",
     },
     footer: "ScrollCore curve",
+  },
+  scroll: {
+    kickerFeel: "감각",
+    kickerProfiles: "프로필",
+    kickerButtons: "버튼",
+    heading: "읽지 말고, 스크롤해 보세요.",
+    lead:
+      "원시 마우스 휠은 트랙패드처럼 촘촘하게 샘플링되지 않아 페이지가 뚝뚝 끊겨 움직일 수밖에 없습니다. Mos는 실제 물리에 기반해 정교하게 다듬은 알고리즘으로 그 입력을 재구성해, 스크롤 의도를 부드럽고 정확한 움직임으로 바꿔 페이지가 손가락을 따라 흐르게 합니다.",
+    withoutMos: "Mos 없이",
+    withMos: "Mos 사용",
+    tagRaw: "원본",
+    tagSmooth: "부드럽게",
+    scrollInside: "여기서 스크롤",
+    parameters: "매개변수",
   },
   wall: {
     back: "Mos",
