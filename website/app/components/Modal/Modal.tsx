@@ -2,7 +2,9 @@
 
 import { ReactNode, useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+
+import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
 
 function getFocusableElements(root: HTMLElement | null): HTMLElement[] {
   if (!root) return [];
@@ -49,7 +51,7 @@ export function Modal({
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const lastActiveElementRef = useRef<HTMLElement | null>(null);
-  const reduce = useReducedMotion();
+  const reduce = useHydratedReducedMotion();
 
   const label = useMemo(() => ({ titleId }), [titleId]);
 
