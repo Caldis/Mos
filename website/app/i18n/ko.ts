@@ -73,7 +73,7 @@ export const ko: Translations = {
       },
       buttons: {
         kicker: "버튼과 단축키",
-        title: "바인딩, 기록, 반복.",
+        title: "바인딩, 기록, 실행.",
         body:
           "어떤 마우스 버튼이든 빠른 동작에 바인딩해, 워크플로를 마음대로 구성하세요.",
         quickBind: "빠른 바인드",
@@ -137,7 +137,7 @@ export const ko: Translations = {
     kickerFeel: "감각",
     kickerProfiles: "프로필",
     kickerButtons: "버튼",
-    heading: "읽지 말고, 스크롤해 보세요.",
+    heading: "기다리지 말고, 스크롤해 보세요.",
     lead:
       "일반 마우스 휠은 macOS 트랙패드만큼 촘촘하게 샘플링되지 않아 페이지가 일정한 간격으로만 움직입니다. Mos는 실제 물리 관성에 기반해 정교하게 다듬은 알고리즘으로 그 의도를 재구성해, 부드럽고 정확한 움직임으로 바꿔 페이지가 손가락을 따라 흐르게 합니다.",
     withoutMos: "Mos 없이",

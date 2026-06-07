@@ -73,7 +73,7 @@ export const tr: Translations = {
       },
       buttons: {
         kicker: "Tuşlar ve kısayollar",
-        title: "Bağla, kaydet, tekrar et.",
+        title: "Bağla, kaydet, çalıştır.",
         body:
           "Herhangi bir fare tuşunu hızlı bir eyleme bağla, iş akışını dilediğin gibi kur.",
         quickBind: "Hızlı bağla",
@@ -137,7 +137,7 @@ export const tr: Translations = {
     kickerFeel: "His",
     kickerProfiles: "Profiller",
     kickerButtons: "Düğmeler",
-    heading: "Okuma. Kaydır.",
+    heading: "Bekleme. Kaydır.",
     lead:
       "Sıradan bir fare tekerleği, macOS trackpad'i kadar sık örneklenmez; bu yüzden sayfa yalnızca sabit adımlarla sıçrayabilir. Mos bu niyeti, gerçek fiziksel ataletten beslenen özenle ayarlanmış bir algoritmayla yeniden şekillendirir; parmaklarını takip eden pürüzsüz, hassas bir harekete dönüştürür.",
     withoutMos: "Mos olmadan",

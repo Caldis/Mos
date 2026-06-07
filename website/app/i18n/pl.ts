@@ -73,7 +73,7 @@ export const pl: Translations = {
       },
       buttons: {
         kicker: "Przyciski i skróty",
-        title: "Przypnij, nagraj, powtórz.",
+        title: "Przypnij, nagraj, wykonaj.",
         body:
           "Przypisz dowolny przycisk myszy do szybkiej akcji i ułóż swój workflow po swojemu.",
         quickBind: "Szybkie przypisanie",
@@ -137,7 +137,7 @@ export const pl: Translations = {
     kickerFeel: "Wrażenie",
     kickerProfiles: "Profile",
     kickerButtons: "Przyciski",
-    heading: "Nie czytaj. Przewiń.",
+    heading: "Nie czekaj. Przewiń.",
     lead:
       "Zwykłe kółko myszy nie jest próbkowane tak gęsto jak gładzik macOS, więc strona może skakać tylko stałymi krokami. Mos przekształca ten zamiar starannie dostrojonym algorytmem opartym na rzeczywistej bezwładności fizycznej, zamieniając go w płynny, precyzyjny ruch, który podąża za palcami.",
     withoutMos: "Bez Mos",

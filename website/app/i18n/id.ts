@@ -73,7 +73,7 @@ export const id: Translations = {
       },
       buttons: {
         kicker: "Tombol & pintasan",
-        title: "Ikat, rekam, ulangi.",
+        title: "Ikat, rekam, jalankan.",
         body:
           "Ikat tombol mouse mana pun ke aksi cepat, dan susun alur kerjamu sesukamu.",
         quickBind: "Quick Bind",
@@ -137,7 +137,7 @@ export const id: Translations = {
     kickerFeel: "Rasa",
     kickerProfiles: "Profil",
     kickerButtons: "Tombol",
-    heading: "Jangan dibaca. Gulir saja.",
+    heading: "Jangan tunggu. Gulir saja.",
     lead:
       "Roda mouse biasa tidak di-sampling sehalus trackpad macOS, jadi halaman hanya bisa meloncat dengan langkah tetap. Mos membentuk ulang niat itu dengan algoritma yang disetel cermat berdasarkan inersia fisik nyata, menjadi gerakan mulus dan presisi yang mengikuti jarimu.",
     withoutMos: "Tanpa Mos",

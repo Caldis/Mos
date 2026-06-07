@@ -71,11 +71,11 @@ export const en = {
       },
       buttons: {
         kicker: "Buttons & Shortcuts",
-        title: "Bind, record, repeat.",
+        title: "Bind, record, run.",
         body:
           "Bind any mouse button to a quick action and shape your workflow exactly how you like.",
         quickBind: "Quick Bind",
-        logi: "Native Logitech key mapping",
+        logi: "Logitech key mapping",
         rows: {
           button4: "Button 4",
           button5: "Button 5",
@@ -135,7 +135,7 @@ export const en = {
     kickerFeel: "Feel",
     kickerProfiles: "Profiles",
     kickerButtons: "Buttons",
-    heading: "Stop reading. Just scroll it.",
+    heading: "Stop waiting. Just scroll it.",
     lead:
       "A regular mouse wheel can't sample as finely as a macOS trackpad, so the page can only jump in fixed steps. Mos reshapes that intent with a carefully tuned algorithm grounded in real physical inertia — turning it into smooth, precise motion that flows with your fingers.",
     withoutMos: "Without Mos",

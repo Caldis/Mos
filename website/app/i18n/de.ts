@@ -73,7 +73,7 @@ export const de: Translations = {
       },
       buttons: {
         kicker: "Buttons & Shortcuts",
-        title: "Binden, aufnehmen, wiederholen.",
+        title: "Binden, aufnehmen, ausführen.",
         body:
           "Binde jede Maustaste an eine Schnellaktion und gestalte deinen Workflow ganz nach Belieben.",
         quickBind: "Schnell binden",
@@ -137,7 +137,7 @@ export const de: Translations = {
     kickerFeel: "Gefühl",
     kickerProfiles: "Profile",
     kickerButtons: "Tasten",
-    heading: "Nicht lesen. Scrollen.",
+    heading: "Nicht warten. Scrollen.",
     lead:
       "Ein gewöhnliches Mausrad wird nicht so fein abgetastet wie ein macOS-Trackpad, also kann die Seite nur in festen Schritten springen. Mos formt diese Absicht mit einem sorgfältig abgestimmten Algorithmus auf Basis echter physikalischer Trägheit neu — eine geschmeidige, präzise Bewegung, die deinen Fingern folgt.",
     withoutMos: "Ohne Mos",

@@ -73,7 +73,7 @@ export const ja: Translations = {
       },
       buttons: {
         kicker: "ボタンとショートカット",
-        title: "割り当てて、記録して、繰り返す。",
+        title: "割り当てて、記録して、実行する。",
         body:
           "マウスの任意のボタンをクイックアクションに割り当てて、ワークフローを思いのままに。",
         quickBind: "クイックバインド",
@@ -137,7 +137,7 @@ export const ja: Translations = {
     kickerFeel: "感触",
     kickerProfiles: "プロファイル",
     kickerButtons: "ボタン",
-    heading: "読むより、スクロール。",
+    heading: "待つより、スクロール。",
     lead:
       "普通のマウスホイールは macOS のトラックパッドほど高頻度にサンプリングされないため、ページは一定の間隔でしか動けません。Mos は実際の物理慣性に基づいて丁寧に調整したアルゴリズムでその意図を作り直し、滑らかで正確な、指に追従するスクロールへと変えます。",
     withoutMos: "Mos なし",

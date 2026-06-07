@@ -73,11 +73,11 @@ export const zhHant: Translations = {
       },
       buttons: {
         kicker: "按鍵與快捷鍵",
-        title: "綁定、記錄、\n重複。",
+        title: "綁定、記錄、\n執行。",
         body:
           "你可以將滑鼠按鍵綁定到任意快捷動作，隨心自訂你的工作流程。",
         quickBind: "快速綁定",
-        logi: "原生支援 Logitech 專有按鍵對應",
+        logi: "支援 Logitech 專有按鍵對應",
         rows: {
           button4: "按鍵 4",
           button5: "按鍵 5",
@@ -136,7 +136,7 @@ export const zhHant: Translations = {
     kickerFeel: "手感",
     kickerProfiles: "設定檔",
     kickerButtons: "按鍵",
-    heading: "別看了，直接試試",
+    heading: "別等了，直接試試",
     lead:
       "常規的滑鼠滾輪無法像 macOS 的觸控板一樣進行高頻取樣，因此頁面只能以固定間隔跳動。而 Mos 透過精心調節的演算法，根據實際物理慣性對滾動意圖進行重塑，從而得到流暢、精確的輸出，讓頁面隨你的手指而流動。",
     withoutMos: "未用 Mos",
