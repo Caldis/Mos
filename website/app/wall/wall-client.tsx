@@ -378,6 +378,9 @@ function Tray({
   // Force the wave to rest while paused via derivation, so we never setState in
   // the effect just to reset — the interval callback is the only writer of `sweep`.
   const activeSweep = paused ? -1 : sweep;
+  // The very first sweep waits 3s after load so the page settles before the tray
+  // draws attention; later resumes (after a hover/drag) start right away.
+  const firstSweepRef = useRef(true);
 
   useEffect(() => {
     if (paused) return;
@@ -385,13 +388,25 @@ function Tray({
     const STEP_MS = 200; // 0.2s between notes
     const CYCLE_STEPS = Math.round(5000 / STEP_MS); // 5s loop
     let step = 0;
-    const id = window.setInterval(() => {
+    let intervalId = 0;
+    const tick = () => {
       // The lit note travels 0→last over the first COUNT steps, then idles for the
       // rest of the cycle before repeating.
       setSweep(step < COUNT ? step : -1);
       step = (step + 1) % CYCLE_STEPS;
-    }, STEP_MS);
-    return () => window.clearInterval(id);
+    };
+    const startId = window.setTimeout(
+      () => {
+        firstSweepRef.current = false; // mark only once a sweep actually plays
+        tick();
+        intervalId = window.setInterval(tick, STEP_MS);
+      },
+      firstSweepRef.current ? 3000 : 0,
+    );
+    return () => {
+      window.clearTimeout(startId);
+      window.clearInterval(intervalId);
+    };
   }, [paused]);
 
   return (
