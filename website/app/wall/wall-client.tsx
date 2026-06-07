@@ -14,11 +14,12 @@ import { WALL_TURNSTILE_ENABLED } from "@/app/components/Wall/TurnstileWidget";
 import { useI18n } from "@/app/i18n/context";
 import { format } from "@/app/i18n/format";
 import {
-  CANVAS_PAD,
   NOTE_COLOR_KEYS,
   NOTE_COLORS,
   NOTE_SIZE,
+  canvasPadFor,
   deleteNote,
+  noteSizeFor,
   postNote,
   useWallNotes,
   type NoteColor,
@@ -87,7 +88,7 @@ export function WallClient() {
 
   const beginDraft = useCallback(
     (nx: number, ny: number, color: NoteColor, rot: number) => {
-      const { margin, top, tray } = CANVAS_PAD;
+      const { margin, top, tray } = canvasPadFor(canvasSize.w);
       const { w, h } = canvasSize;
       const x = w ? clamp(nx * w, HALF + margin, w - HALF - margin) / w : clamp(nx, 0.12, 0.88);
       const y = h ? clamp(ny * h, HALF + top, h - HALF - tray) / h : clamp(ny, 0.14, 0.8);
@@ -220,6 +221,11 @@ export function WallClient() {
     [mutate],
   );
 
+  // Placed notes shrink to fit more on a narrow (phone) canvas; the compose draft
+  // stays full size (NOTE_SIZE). Insets tighten on phones too (see canvasPadFor).
+  const noteSize = noteSizeFor(canvasSize.w);
+  const pad = canvasPadFor(canvasSize.w);
+
   return (
     <div className="relative h-full w-full select-none overflow-hidden">
       <div ref={canvasRef} className="wall-grid absolute inset-0">
@@ -237,6 +243,7 @@ export function WallClient() {
                   note={n}
                   index={i}
                   mine={n.mine}
+                  size={noteSize}
                   canvasW={canvasSize.w}
                   canvasH={canvasSize.h}
                   onDelete={removeNote}
@@ -253,6 +260,8 @@ export function WallClient() {
               submitting={submitting}
               verified={verified}
               errorMessage={postError}
+              size={NOTE_SIZE}
+              pad={pad}
               canvasW={canvasSize.w}
               canvasH={canvasSize.h}
               onDraftMove={moveDraft}

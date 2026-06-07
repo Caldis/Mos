@@ -16,7 +16,7 @@ import {
   NOTE_COLOR_KEYS,
   NOTE_MAX_BODY,
   NOTE_MAX_NAME,
-  NOTE_SIZE as SIZE,
+  NOTE_SIZE as BASE,
   type NoteColor,
   type WallNote,
 } from "@/app/services/wall";
@@ -24,7 +24,6 @@ import { useI18n } from "@/app/i18n/context";
 import { format } from "@/app/i18n/format";
 import { TurnstileWidget, WALL_TURNSTILE_ENABLED } from "./TurnstileWidget";
 
-const HALF = SIZE / 2;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 // Localized relative time ("2h ago" / "2小时前") via Intl — no extra i18n keys.
@@ -49,6 +48,11 @@ interface StickyNoteProps {
   submitting?: boolean;
   canvasW?: number;
   canvasH?: number;
+  // Rendered side length in px. Placed notes shrink on narrow canvases; the
+  // compose draft always renders at the full BASE size.
+  size?: number;
+  // Safe-area insets for the drag constraints (responsive — tighter on phones).
+  pad?: { margin: number; top: number; tray: number };
   // Set true once a Turnstile token is in hand (or when Turnstile is disabled),
   // gating the confirm button. Only relevant while composing.
   verified?: boolean;
@@ -68,18 +72,25 @@ interface StickyNoteProps {
 function Card({
   palette,
   active,
+  size,
   children,
 }: {
   palette: { bg: string; ink: string; edge: string };
   active?: boolean;
+  size: number;
   children: ReactNode;
 }) {
+  const k = size / BASE;
   return (
     <div
-      className="flex flex-col rounded-[3px] px-4 pb-3.5 pt-4"
+      className="flex flex-col rounded-[3px]"
       style={{
-        width: SIZE,
-        minHeight: SIZE,
+        width: size,
+        minHeight: size,
+        paddingLeft: 16 * k,
+        paddingRight: 16 * k,
+        paddingTop: 16 * k,
+        paddingBottom: 14 * k,
         background: palette.bg,
         color: palette.ink,
         boxShadow: active
@@ -100,6 +111,8 @@ export function StickyNote({
   submitting = false,
   canvasW = 0,
   canvasH = 0,
+  size = BASE,
+  pad = CANVAS_PAD,
   verified = false,
   errorMessage = null,
   onDraftMove,
@@ -113,6 +126,13 @@ export function StickyNote({
 }: StickyNoteProps) {
   const { t, language } = useI18n();
   const palette = NOTE_COLORS[note.color];
+  // Compose always renders at the full BASE size (a shrunk card is too cramped to
+  // type in); placed notes use the responsive `size`. k scales the tape, padding
+  // and type so a smaller sticky stays proportional. HALF re-centers it: a note's
+  // center stays at note.x*canvasW regardless of size (positions are normalized).
+  const renderSize = composing ? BASE : size;
+  const HALF = renderSize / 2;
+  const k = renderSize / BASE;
   // D3: only the in-progress draft is ever draggable. Once a note is placed its
   // position is locked forever — `mine` is purely a visual cue (brighter tape).
   const draggable = composing;
@@ -128,7 +148,7 @@ export function StickyNote({
     if (draggingRef.current) return;
     x.set(note.x * canvasW - HALF);
     y.set(note.y * canvasH - HALF);
-  }, [note.x, note.y, canvasW, canvasH, x, y]);
+  }, [note.x, note.y, canvasW, canvasH, HALF, x, y]);
 
   useEffect(() => {
     if (!composing) return;
@@ -145,12 +165,12 @@ export function StickyNote({
   const sway = useTransform(smoothVel, [-1800, 0, 1800], [-12, 0, 12], { clamp: true });
   const rotate = useTransform(sway, (s) => note.rot + s);
 
-  const { margin, top, tray } = CANVAS_PAD;
+  const { margin, top, tray } = pad;
   const constraints = {
     left: margin,
-    right: Math.max(margin, canvasW - SIZE - margin),
+    right: Math.max(margin, canvasW - renderSize - margin),
     top,
-    bottom: Math.max(top, canvasH - SIZE - tray),
+    bottom: Math.max(top, canvasH - renderSize - tray),
   };
 
   const endDrag = () => {
@@ -174,7 +194,7 @@ export function StickyNote({
   // Your notes get a bright, wide, grippable tape; others' a small faded one.
   const tape = draggable
     ? { w: 96, h: 28, bg: "rgba(255,255,255,0.4)" }
-    : { w: 64, h: 20, bg: "rgba(255,255,255,0.13)" };
+    : { w: 64 * k, h: 20 * k, bg: "rgba(255,255,255,0.13)" };
 
   return (
     <motion.div
@@ -215,10 +235,10 @@ export function StickyNote({
               }
             : undefined
         }
-        className={`absolute -top-[10px] left-1/2 z-20 -translate-x-1/2 rounded-[2px] ${
+        className={`absolute left-1/2 z-20 -translate-x-1/2 rounded-[2px] ${
           draggable ? "cursor-grab touch-none active:cursor-grabbing" : ""
         }`}
-        style={{ width: tape.w, height: tape.h, background: tape.bg, transformOrigin: "bottom center" }}
+        style={{ top: -10 * k, width: tape.w, height: tape.h, background: tape.bg, transformOrigin: "bottom center" }}
         animate={
           dragging
             ? { rotateX: -62, y: -6, boxShadow: "0 9px 16px rgba(0,0,0,0.38)" }
@@ -249,7 +269,7 @@ export function StickyNote({
         </button>
       )}
 
-      <Card palette={palette} active={composing}>
+      <Card palette={palette} active={composing} size={renderSize}>
         {composing ? (
           <>
             <textarea
@@ -354,15 +374,21 @@ export function StickyNote({
           </>
         ) : (
           <>
-            <div className="font-hand text-[23px] leading-[1.14] [overflow-wrap:anywhere]">{note.body}</div>
             <div
-              className="mt-auto flex items-center justify-between pt-3 text-[11px] font-medium"
-              style={{ opacity: 0.62 }}
+              className="font-hand leading-[1.14] [overflow-wrap:anywhere]"
+              style={{ fontSize: Math.round(23 * k) }}
+            >
+              {note.body}
+            </div>
+            <div
+              className="mt-auto flex items-center justify-between font-medium"
+              style={{ opacity: 0.62, paddingTop: 12 * k, fontSize: Math.max(9, Math.round(11 * k)) }}
             >
               <span className="min-w-0 flex-1 truncate">{note.name?.trim() || t.wall.anonymous}</span>
               <span
                 title={new Intl.DateTimeFormat(language, { dateStyle: "medium", timeStyle: "short" }).format(note.createdAt)}
-                className="shrink-0 pl-2 tabular-nums"
+                className="shrink-0 tabular-nums"
+                style={{ paddingLeft: 8 * k }}
               >
                 {relativeTime(note.createdAt, language)}
               </span>

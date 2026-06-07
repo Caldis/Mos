@@ -19,8 +19,23 @@ export const NOTE_MAX_NAME = 24;
 export const NOTE_MAX_BODY = 180;
 
 // Sticky square size + safe insets used by both the canvas and drag constraints.
-export const NOTE_SIZE = 198; // px
+export const NOTE_SIZE = 198; // px — full size (desktop + compose)
 export const CANVAS_PAD = { margin: 48, top: 104, tray: 124 };
+
+// Placed notes shrink on a narrow canvas so more stickies fit on a phone, while
+// tablet/desktop keep the full NOTE_SIZE. Width-driven (~0.36 of the canvas,
+// clamped 120–198): stays 198 until the canvas is under ~550px wide, then scales
+// down. Composing always uses NOTE_SIZE — a shrunk card is too cramped to type in.
+export function noteSizeFor(canvasW: number): number {
+  if (!canvasW) return NOTE_SIZE;
+  return Math.round(Math.min(NOTE_SIZE, Math.max(120, canvasW * 0.36)));
+}
+
+// Phones also get tighter side insets so notes can reach closer to the edges.
+export function canvasPadFor(canvasW: number): typeof CANVAS_PAD {
+  if (canvasW > 0 && canvasW < 560) return { ...CANVAS_PAD, margin: 20 };
+  return CANVAS_PAD;
+}
 
 export interface WallNote {
   id: string;
