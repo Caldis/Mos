@@ -291,9 +291,9 @@ export default function HomeClient() {
               </h2>
               <p className="mt-5 text-pretty leading-[1.7] text-white/65">{t.sectionFeel.cards.buttons.body}</p>
 
-              <dl className="mt-7 divide-y divide-white/8 border-y border-white/8">
+              <dl className="mt-7 divide-y divide-white/8 border-y border-white/8 bg-[#000000c9]">
                 {BINDING_ROWS.map(([k, v]) => (
-                  <div key={k} className="flex items-center justify-between py-3">
+                  <div key={k} className="flex items-center justify-between p-3">
                     <dt className="font-mono text-xs text-white/75">{t.sectionFeel.cards.buttons.rows[k]}</dt>
                     <dd className="font-mono text-xs text-white/45">{t.sectionFeel.cards.buttons.rows[v]}</dd>
                   </div>

@@ -213,7 +213,7 @@ function Panel({
   fillViewport?: boolean;
 }) {
   return (
-    <div className="flex min-h-0 flex-col rounded-[20px] border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5">
+    <div className="flex min-h-0 flex-col rounded-[20px] border border-white/[0.08] bg-[#000000c9] p-4 sm:p-5">
       <div className="mb-3 flex items-center justify-between">
         <span className={`font-display text-sm ${accent ? "text-white" : "text-white/55"}`}>{title}</span>
         <span
