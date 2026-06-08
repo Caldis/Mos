@@ -5,6 +5,7 @@ import type { Env } from "../lib/env";
 import { json } from "../lib/http";
 import { verifyTurnstile } from "../lib/turnstile";
 import { sha256Hex } from "../lib/hash";
+import { resolveCountry } from "../lib/geo";
 import { spamReason } from "../lib/moderation";
 import { looksLowQuality } from "../lib/aiJudge";
 
@@ -139,12 +140,19 @@ export async function handlePost(env: Env, request: Request, origin: string): Pr
   const reason = spamReason(body, name);
   if (reason) return json({ error: reason }, 422, origin);
 
-  // 4) Insert.
+  // 4) Insert. Country is read from Cloudflare's edge (resolveCountry) — no extra
+  // request, no IP stored for it; falls back to 'XX' when unknown / local dev.
+  // request.cf is typed as the broad CfProperties union; narrow it to the inbound
+  // shape that actually carries `country`.
+  const country = resolveCountry(
+    request.cf as IncomingRequestCfProperties | undefined,
+    request.headers.get("cf-ipcountry"),
+  );
   const res = await env.DB.prepare(
-    `INSERT INTO wall_notes (body, color, x, y, name, owner, created_at, hidden, ip_hash)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)`,
+    `INSERT INTO wall_notes (body, color, x, y, name, owner, created_at, hidden, ip_hash, country)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
   )
-    .bind(body, color, x, y, name || null, owner, now, ipHash)
+    .bind(body, color, x, y, name || null, owner, now, ipHash, country)
     .run();
 
   const note = toPublicNote(

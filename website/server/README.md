@@ -14,6 +14,7 @@ src/
     http.ts         #   CORS + json() helpers
     turnstile.ts    #   Turnstile siteverify
     hash.ts         #   sha256 (rate-limit / ip hashing)
+    geo.ts          #   resolveCountry (edge geolocation -> country code)
   features/
     wall.ts         # sticky-note wall (/wall/*)
 migrations/         # D1 schema (one shared database)
@@ -38,7 +39,7 @@ stick it and it stays). Rotation is not stored; the client derives it from `id`.
 
 ```sh
 cd website/server
-pnpm install          # standalone pnpm root (own pnpm-workspace.yaml)
+pnpm install          # standalone pnpm root; allowBuilds approves workerd/esbuild (pnpm 11+)
 pnpm migrate:local    # apply migrations to the local SQLite
 pnpm dev              # wrangler dev -> http://localhost:8787
 ```
@@ -87,6 +88,27 @@ Then in the site build (GitHub Pages workflow) inject:
 
 Leaving `NEXT_PUBLIC_SERVER_URL` unset keeps the local seed fallback in
 `website/app/services/wall.ts` for offline frontend dev.
+
+## Geo (country stats)
+
+Each note stores a `country` column (migration `0005`), resolved server-side in
+`handlePost` from Cloudflare's edge geolocation — `request.cf.country`, falling
+back to the `CF-IPCountry` header, then `'XX'`. It's an ISO 3166-1 alpha-2 code
+(e.g. `SG`), `'XX'` (unknown / local `wrangler dev`, where `request.cf` is absent),
+or `'T1'` (Tor). The selection logic is the pure `resolveCountry` (`lib/geo.ts`,
+unit-tested in `geo.test.ts`).
+
+This adds **no extra request and stores no IP**: the country rides on the inbound
+request for free, and only the 2-letter code is persisted (the separate `ip_hash`
+is for rate-limiting, not geo). It is **stored only, never emitted** — `toPublicNote`
+doesn't expose it, so it stays backend-only, for aggregate stats:
+
+```sh
+# country distribution of visible notes
+wrangler d1 execute mos-server --remote --command "SELECT country, COUNT(*) AS notes FROM wall_notes WHERE hidden=0 GROUP BY country ORDER BY notes DESC"
+```
+
+Rows created before `0005` have `country = NULL`; every new note gets a value.
 
 ## Moderation
 

@@ -1,8 +1,13 @@
 # Standalone pnpm workspace root. Its presence stops pnpm from walking up into
 # the parent website/ workspace, so `pnpm install` / `dev` / `deploy` stay
 # scoped to THIS folder's own node_modules instead of leaking into the site.
-# Also approves the Worker toolchain's native build scripts (otherwise pnpm 10
-# skips them and `wrangler dev` can't find its runtime).
-onlyBuiltDependencies:
-  - workerd
-  - esbuild
+#
+# allowBuilds approves the Worker toolchain's native build scripts. pnpm 11+
+# blocks ALL postinstall scripts by default; an unlisted one makes `pnpm install`
+# exit 1 (ERR_PNPM_IGNORED_BUILDS), which also trips wrangler's pre-run deps
+# check so `wrangler dev` never starts. Replaces pnpm 10's removed
+# `onlyBuiltDependencies` list.
+allowBuilds:
+  workerd: true # Workers runtime binary (wrangler dev / local D1)
+  esbuild: true # bundler wrangler uses to build the Worker
+  sharp: true   # wrangler's optional image dep; matches the site workspace
