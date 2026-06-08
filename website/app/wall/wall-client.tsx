@@ -12,6 +12,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { StickyNote } from "@/app/components/Wall/StickyNote";
 import { WALL_TURNSTILE_ENABLED } from "@/app/components/Wall/TurnstileWidget";
 import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
+import { useWallAdmin } from "@/app/hooks/useWallAdmin";
 import { useI18n } from "@/app/i18n/context";
 import { format } from "@/app/i18n/format";
 import {
@@ -53,6 +54,7 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 
 export function WallClient() {
   const { t } = useI18n();
+  const { admin } = useWallAdmin();
   const { data: notes, mutate, isLoading } = useWallNotes();
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -249,8 +251,9 @@ export function WallClient() {
     setDraft((d) => (d ? { ...d, x: nx, y: ny } : d));
   }, []);
 
-  // Soft-delete one of your own notes. Optimistically drop it from the canvas;
-  // revalidate from the server if the request fails (rollback).
+  // Soft-delete a note (your own, or — in admin mode — any note; deleteNote
+  // attaches the admin token and the Worker enforces which is allowed).
+  // Optimistically drop it from the canvas; revalidate from the server on failure.
   const removeNote = useCallback(
     (id: string) => {
       mutate((cur) => (cur ?? []).filter((n) => n.id !== id), { revalidate: false });
@@ -281,6 +284,7 @@ export function WallClient() {
                   note={n}
                   index={i}
                   mine={n.mine}
+                  admin={admin}
                   size={noteSize}
                   canvasW={canvasSize.w}
                   canvasH={canvasSize.h}

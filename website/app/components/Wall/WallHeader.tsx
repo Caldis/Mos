@@ -1,10 +1,17 @@
 "use client";
 
-import type { MouseEvent } from "react";
+import { useCallback, useEffect, useRef, type MouseEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useI18n } from "@/app/i18n/context";
+import { useWallAdmin } from "@/app/hooks/useWallAdmin";
+
+// Hidden admin entry: clicking the wall title this many times (within a short
+// gap of each other) opens the admin-token prompt. No visual feedback by design —
+// it's an unadvertised maintainer shortcut, not a public control.
+const ADMIN_CLICKS = 10;
+const ADMIN_CLICK_GAP_MS = 1500;
 
 // Just the visible header chrome for /wall. Split out as a client component so
 // the page itself can stay a server component (it owns the static `metadata`,
@@ -12,6 +19,32 @@ import { useI18n } from "@/app/i18n/context";
 export function WallHeader() {
   const { t } = useI18n();
   const router = useRouter();
+  const { unlock } = useWallAdmin();
+
+  // Count clicks on the title; reset if they slow down (so stray taps over time
+  // never accumulate). On the threshold, prompt for the token and verify it.
+  const clicks = useRef(0);
+  const resetTimer = useRef<number | null>(null);
+  useEffect(() => () => {
+    if (resetTimer.current) window.clearTimeout(resetTimer.current);
+  }, []);
+
+  const handleTitleClick = useCallback(() => {
+    if (resetTimer.current) window.clearTimeout(resetTimer.current);
+    clicks.current += 1;
+    if (clicks.current < ADMIN_CLICKS) {
+      resetTimer.current = window.setTimeout(() => {
+        clicks.current = 0;
+      }, ADMIN_CLICK_GAP_MS);
+      return;
+    }
+    clicks.current = 0;
+    const token = window.prompt("Admin token");
+    if (!token) return;
+    void unlock(token).then((ok) => {
+      window.alert(ok ? "Admin mode unlocked" : "Invalid token");
+    });
+  }, [unlock]);
 
   // The "← Mos" control should behave like a real back button. If the visitor
   // reached the wall from our own homepage (a client-side <Link> push), pop that
@@ -41,7 +74,13 @@ export function WallHeader() {
       >
         <span aria-hidden>←</span> {t.wall.back}
       </Link>
-      <div className="select-none text-right">
+      {/* Hidden admin entry: click the title ADMIN_CLICKS× to open the token
+          prompt. Intentionally NOT announced as interactive (no role/keyboard
+          handler) — it's an unadvertised maintainer shortcut. */}
+      <div
+        className="pointer-events-auto select-none text-right"
+        onClick={handleTitleClick}
+      >
         <div className="font-display text-base font-semibold tracking-wide text-white">
           {t.wall.title}
         </div>

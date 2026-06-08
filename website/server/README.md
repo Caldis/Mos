@@ -27,13 +27,20 @@ To add a feature: drop `src/features/<name>.ts`, register its routes in
 
 ### wall — `/wall/messages`
 
-| Method | Path             | Notes                                                       |
-| ------ | ---------------- | ---------------------------------------------------------- |
-| GET    | `/wall/messages` | visible notes, newest first, max 800. Send `x-wall-owner` for per-note `mine`. |
-| POST   | `/wall/messages` | create a note: `{ body, color, x, y, name?, owner, turnstileToken }` |
+| Method | Path                  | Notes                                                       |
+| ------ | --------------------- | ---------------------------------------------------------- |
+| GET    | `/wall/messages`      | visible notes, newest first, max 800. Send `x-wall-owner` for per-note `mine`. |
+| POST   | `/wall/messages`      | create a note: `{ body, color, x, y, name?, owner, turnstileToken }` |
+| DELETE | `/wall/messages/:id`  | soft-delete. Owner-scoped via `x-wall-owner` (`hide_reason='user'`); with a valid `x-wall-admin` it hides ANY note (`hide_reason='admin-del'`). |
+| GET    | `/wall/admin`         | validate the admin secret (`x-wall-admin`) → `200 {ok:true}` / `401`. Lets the panel confirm the token before unlocking admin mode. Rate-limited (`RL_ADMIN`). |
 
 No `PATCH`: a note's position is set at POST time and **locked** (decision D3 —
 stick it and it stays). Rotation is not stored; the client derives it from `id`.
+
+**Admin mode** is a hidden maintainer panel: on the live wall, click the title
+10× to open a prompt for `ADMIN_TOKEN`. Once verified it's held in `sessionStorage`
+and a delete affordance appears on every note. Auth is enforced server-side — the
+client flag only shows the buttons; without a valid `x-wall-admin` the Worker rejects.
 
 ## Local dev
 
@@ -51,6 +58,7 @@ Create `.dev.vars` (gitignored) so secrets exist locally. Use Cloudflare's
 TURNSTILE_SECRET=1x0000000000000000000000000000000AA
 IP_SALT=dev-salt
 ALLOWED_ORIGIN=https://mos.caldis.me,http://localhost:3000
+ADMIN_TOKEN=dev-admin-token
 ```
 
 (The matching always-passes **site** key for the frontend is `1x00000000000000000000AA`.)
@@ -78,6 +86,7 @@ wrangler d1 create mos-server                       # paste database_id into wra
 wrangler d1 migrations apply mos-server --remote    # build tables on the real DB
 wrangler secret put TURNSTILE_SECRET                # your real Turnstile secret
 wrangler secret put IP_SALT                         # any long random string
+wrangler secret put ADMIN_TOKEN                     # panel moderation; `openssl rand -base64 32`
 wrangler deploy                                     # publishes to mos-api.caldis.me (custom_domain)
 ```
 
@@ -121,7 +130,8 @@ it was flagged while still visible:
 | `user`           | 1        | the author self-deleted (`DELETE /wall/messages/:id`)                   |
 | `spam`           | 1        | rule filter at POST time / the hourly sweep (`lib/moderation`: links + ad keywords) |
 | `ai-low-quality` | **0**    | the sweep's AI judge thinks it's gibberish — **still visible**, awaiting your review |
-| `admin`          | 1        | a human hid it by hand (command below)                                  |
+| `admin`          | 1        | a human hid it by hand via the `wrangler d1` command below              |
+| `admin-del`      | 1        | a human hid it from the **admin panel** (delete button, `DELETE` + `x-wall-admin`) |
 
 Two automated layers, both in the hourly sweep (`features/wall.ts` → `sweep`):
 - **Rule spam** (`lib/moderation.ts`, shared with the POST handler so the door
@@ -157,6 +167,13 @@ charges and free, unmetered DDoS mitigation. Layers in this Worker:
   This guards D1/CPU, **not** the Worker request quota (the Worker still runs to
   evaluate the limit) — for that, add an edge **WAF Rate Limiting Rule** in the
   dashboard (Security → WAF → Rate limiting rules), which blocks before the Worker.
+- **Admin** (`GET /wall/admin` verify + admin `DELETE`) — the real defense is the
+  `ADMIN_TOKEN`'s entropy (`openssl rand -base64 32` = 256-bit → brute force is
+  infeasible), compared in constant time (`lib/admin.ts`) to deny a timing side
+  channel. On top, any request carrying `x-wall-admin` is per-IP rate-limited
+  (`env.RL_ADMIN`, 10/60s) with a cheap 429 before any compare/D1. As with `RL`
+  this still runs the Worker — to block earlier, add an edge **WAF Rate Limiting
+  Rule** on `/wall/admin*`. Failures return a flat `401` (no detail).
 - **Workers AI** — not reachable from any public route (only the hourly cron calls
   it). Triple-capped: once per note (`ai_checked`), `AI_SWEEP_LIMIT` per run, and
   `AI_DAILY_MAX` per UTC day (`ai_budget` table). Fail-open on any error.

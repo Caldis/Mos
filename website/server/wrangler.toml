@@ -34,6 +34,19 @@ namespace_id = "1001"
 limit = 120
 period = 60
 
+# Per-IP throttle for the admin endpoints (GET /wall/admin verify + admin DELETE),
+# bound as env.RL_ADMIN. Any request carrying an x-wall-admin header is limited
+# here BEFORE any token compare or D1 work, so a brute-force / DDoS burst gets a
+# cheap 429. The admin token's entropy is the real defense; this caps abuse. As
+# with RL, this still runs the Worker — to block before it, add an edge WAF Rate
+# limiting rule on /wall/admin* in the dashboard.
+[[ratelimits]]
+name = "RL_ADMIN"
+namespace_id = "1002"
+[ratelimits.simple]
+limit = 10
+period = 60
+
 # CORS allow-list (comma-separated). The static site lives at mos.caldis.me;
 # add http://localhost:3000 in .dev.vars for local integration testing.
 [vars]
@@ -50,3 +63,4 @@ database_id = "896f4475-222f-483e-9381-4031108764fd"
 # Secrets (NOT stored here) — set with:
 #   wrangler secret put TURNSTILE_SECRET
 #   wrangler secret put IP_SALT
+#   wrangler secret put ADMIN_TOKEN   # panel moderation; use `openssl rand -base64 32`

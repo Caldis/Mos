@@ -196,6 +196,70 @@ export function getOwner(): string {
   }
 }
 
+// --- Admin (panel moderation) -----------------------------------------------
+// A single shared secret unlocks panel moderation (delete ANY note). It lives in
+// sessionStorage — cleared when the tab closes, safer than localStorage for a
+// privileged credential — and rides on the x-wall-admin header. The Worker is the
+// only authority: without a valid token every admin request is rejected, so the
+// client-side "admin mode" is purely a UI affordance, not a security boundary.
+const ADMIN_TOKEN_KEY = "wall_admin";
+// Same-tab listeners can't use the native `storage` event (it only fires in OTHER
+// tabs), so unlock/lock dispatch this so the current tab's hook re-renders too.
+export const WALL_ADMIN_EVENT = "wall-admin-change";
+
+export function getAdminToken(): string {
+  if (typeof sessionStorage === "undefined") return "";
+  try {
+    return sessionStorage.getItem(ADMIN_TOKEN_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+export function isAdminUnlocked(): boolean {
+  return getAdminToken().length > 0;
+}
+
+function setAdminToken(token: string): void {
+  try {
+    if (token) sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
+    else sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+  } catch {
+    // private mode / quota — admin mode just won't persist; ignore.
+  }
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(WALL_ADMIN_EVENT));
+}
+
+// Validate a candidate admin token against the Worker. On success it's stored and
+// admin mode unlocks; on any failure storage is cleared. Returns whether it passed.
+export async function verifyAdmin(token: string): Promise<boolean> {
+  const candidate = token.trim();
+  if (!SERVER_URL) {
+    // Local seed mode (no backend): accept any non-empty token so the admin UI is
+    // exercisable offline against the seed notes.
+    setAdminToken(candidate);
+    return candidate.length > 0;
+  }
+  try {
+    const res = await fetch(`${SERVER_URL}/wall/admin`, {
+      headers: { accept: "application/json", "x-wall-admin": candidate },
+    });
+    if (!res.ok) {
+      setAdminToken("");
+      return false;
+    }
+    setAdminToken(candidate);
+    return true;
+  } catch {
+    setAdminToken("");
+    return false;
+  }
+}
+
+export function lockAdmin(): void {
+  setAdminToken("");
+}
+
 // Shape of a single note as the Worker returns it (no derived `rot`).
 type ServerNote = Omit<WallNote, "rot" | "name"> & { name: string | null };
 
@@ -349,8 +413,11 @@ export async function postNote(input: NewNoteInput): Promise<WallNote> {
   return fromServer(data.note);
 }
 
-// Soft-delete (hide) a note you own. The server checks owner === note.owner via
-// the x-wall-owner header, so you can only remove your own notes.
+// Soft-delete (hide) a note. Normally owner-scoped: the server checks
+// owner === note.owner via x-wall-owner, so you can only remove your own. When an
+// admin token is unlocked it also rides along as x-wall-admin; the Worker then
+// lets it hide ANY note (tagged 'admin-del'). The server is the authority — a
+// stray admin header without a valid token is simply rejected.
 export async function deleteNote(id: string): Promise<void> {
   if (!SERVER_URL) {
     const list = ensureLocal();
@@ -358,9 +425,10 @@ export async function deleteNote(id: string): Promise<void> {
     if (i >= 0) list.splice(i, 1);
     return;
   }
+  const admin = getAdminToken();
   const res = await fetch(`${SERVER_URL}/wall/messages/${id}`, {
     method: "DELETE",
-    headers: { "x-wall-owner": getOwner() },
+    headers: { "x-wall-owner": getOwner(), ...(admin ? { "x-wall-admin": admin } : {}) },
   });
   if (!res.ok) {
     let reason = `delete failed: ${res.status}`;

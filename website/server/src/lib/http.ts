@@ -14,7 +14,7 @@ export function corsHeaders(origin: string): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "content-type, x-wall-owner",
+    "Access-Control-Allow-Headers": "content-type, x-wall-owner, x-wall-admin",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
   };

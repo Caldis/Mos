@@ -29,6 +29,11 @@ export default {
       if (request.method === "POST") return wall.handlePost(env, request, origin);
       return json({ error: "method not allowed" }, 405, origin);
     }
+    // Admin secret check — lets the panel confirm the password before unlocking.
+    if (url.pathname === "/wall/admin") {
+      if (request.method === "GET") return wall.handleAdminCheck(env, request, origin);
+      return json({ error: "method not allowed" }, 405, origin);
+    }
     const wallNote = url.pathname.match(/^\/wall\/messages\/(\d+)$/);
     if (wallNote) {
       if (request.method === "DELETE")

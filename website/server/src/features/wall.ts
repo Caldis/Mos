@@ -8,6 +8,18 @@ import { sha256Hex } from "../lib/hash";
 import { resolveCountry } from "../lib/geo";
 import { spamReason } from "../lib/moderation";
 import { looksLowQuality } from "../lib/aiJudge";
+import { isAdmin } from "../lib/admin";
+
+// Per-IP throttle for any request carrying an x-wall-admin header (verify + admin
+// delete). The admin token's entropy is the real defense against guessing; this
+// just caps abuse/DDoS with a cheap 429 before any crypto or D1 work. Optional
+// binding (env.RL_ADMIN) so the handler still works if it isn't configured.
+async function adminRateLimited(env: Env, request: Request, origin: string): Promise<Response | null> {
+  if (!env.RL_ADMIN) return null;
+  const ip = request.headers.get("cf-connecting-ip") ?? "";
+  const { success } = await env.RL_ADMIN.limit({ key: ip || "anon" });
+  return success ? null : json({ error: "rate limited" }, 429, origin);
+}
 
 const PALETTE = new Set(["amber", "rose", "sky", "mint", "lilac", "blush"]);
 const MAX_BODY = 180;
@@ -162,15 +174,45 @@ export async function handlePost(env: Env, request: Request, origin: string): Pr
   return json({ note }, 201, origin);
 }
 
-// DELETE /wall/messages/:id — soft-delete (hidden=1) a note you own. The owner
-// token comes from the x-wall-owner header. You can only hide your own notes,
-// and other users' owner tokens are never exposed, so this can't wipe the wall.
+// GET /wall/admin — validate the admin secret so the panel can confirm the
+// password before unlocking admin mode. Rate-limited per IP; returns a flat 401
+// on any failure (no detail) so it leaks nothing about the token.
+export async function handleAdminCheck(env: Env, request: Request, origin: string): Promise<Response> {
+  const limited = await adminRateLimited(env, request, origin);
+  if (limited) return limited;
+  const token = request.headers.get("x-wall-admin") ?? "";
+  if (!isAdmin(env, token)) return json({ error: "unauthorized" }, 401, origin);
+  return json({ ok: true }, 200, origin);
+}
+
+// DELETE /wall/messages/:id — soft-delete (hidden=1) a note.
+//
+// Two paths, chosen by the presence of an x-wall-admin header:
+//   • Admin: any non-empty x-wall-admin is rate-limited (per IP) then constant-time
+//     checked. A valid admin can hide ANY note (no owner match), tagged
+//     'admin-del' to distinguish panel deletions from CLI 'admin' hides.
+//   • Owner (default): hide your OWN note via the x-wall-owner token. Other users'
+//     owner tokens are never exposed, so this can't wipe the wall.
 export async function handleDelete(
   env: Env,
   request: Request,
   origin: string,
   id: string,
 ): Promise<Response> {
+  const adminToken = request.headers.get("x-wall-admin") ?? "";
+  if (adminToken) {
+    const limited = await adminRateLimited(env, request, origin);
+    if (limited) return limited;
+    if (!isAdmin(env, adminToken)) return json({ error: "unauthorized" }, 401, origin);
+    const res = await env.DB.prepare(
+      `UPDATE wall_notes SET hidden = 1, hide_reason = 'admin-del' WHERE id = ? AND hidden = 0`,
+    )
+      .bind(Number(id))
+      .run();
+    if (!res.meta.changes) return json({ error: "not found" }, 404, origin);
+    return json({ ok: true }, 200, origin);
+  }
+
   const owner = request.headers.get("x-wall-owner") ?? "";
   if (!owner) return json({ error: "missing owner" }, 422, origin);
 
