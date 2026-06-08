@@ -185,6 +185,83 @@ export async function handleAdminCheck(env: Env, request: Request, origin: strin
   return json({ ok: true }, 200, origin);
 }
 
+// GET /wall/admin/notes — the full moderation ledger: EVERY note (visible AND
+// hidden) with its hidden flag, hide_reason and position, so the panel can list
+// all and filter by reason client-side, and restore can re-place a note on the
+// canvas. Admin-only; the public GET never exposes hide_reason.
+export async function handleAdminNotes(env: Env, request: Request, origin: string): Promise<Response> {
+  const limited = await adminRateLimited(env, request, origin);
+  if (limited) return limited;
+  const token = request.headers.get("x-wall-admin") ?? "";
+  if (!isAdmin(env, token)) return json({ error: "unauthorized" }, 401, origin);
+
+  const { results } = await env.DB.prepare(
+    `SELECT id, body, color, name, x, y, created_at, hidden, hide_reason
+       FROM wall_notes
+      ORDER BY created_at DESC
+      LIMIT ?`,
+  )
+    .bind(FETCH_LIMIT)
+    .all<{
+      id: number;
+      body: string;
+      color: string;
+      name: string | null;
+      x: number;
+      y: number;
+      created_at: number;
+      hidden: number;
+      hide_reason: string | null;
+    }>();
+
+  const notes = (results ?? []).map((r) => ({
+    id: String(r.id),
+    body: r.body,
+    color: r.color,
+    name: r.name,
+    x: r.x,
+    y: r.y,
+    createdAt: r.created_at,
+    hidden: r.hidden === 1,
+    hideReason: r.hide_reason,
+  }));
+  return json({ notes }, 200, origin);
+}
+
+// POST /wall/admin/notes/:id/restore — un-hide a note (hidden=0, hide_reason=NULL)
+// so it returns to the wall. The inverse of the admin delete.
+export async function handleRestore(env: Env, request: Request, origin: string, id: string): Promise<Response> {
+  const limited = await adminRateLimited(env, request, origin);
+  if (limited) return limited;
+  const token = request.headers.get("x-wall-admin") ?? "";
+  if (!isAdmin(env, token)) return json({ error: "unauthorized" }, 401, origin);
+
+  const res = await env.DB.prepare(
+    `UPDATE wall_notes SET hidden = 0, hide_reason = NULL WHERE id = ? AND hidden = 1`,
+  )
+    .bind(Number(id))
+    .run();
+  if (!res.meta.changes) return json({ error: "not found" }, 404, origin);
+  return json({ ok: true }, 200, origin);
+}
+
+// POST /wall/admin/flagged/hide — hide EVERY currently-flagged note in one atomic
+// UPDATE (tagged 'admin-del'). Done server-side so "hide all" is a single request:
+// looping per-note DELETEs from the client would trip RL_ADMIN after 10. Returns
+// how many rows it hid.
+export async function handleFlaggedHideAll(env: Env, request: Request, origin: string): Promise<Response> {
+  const limited = await adminRateLimited(env, request, origin);
+  if (limited) return limited;
+  const token = request.headers.get("x-wall-admin") ?? "";
+  if (!isAdmin(env, token)) return json({ error: "unauthorized" }, 401, origin);
+
+  const res = await env.DB.prepare(
+    `UPDATE wall_notes SET hidden = 1, hide_reason = 'admin-del'
+      WHERE hidden = 0 AND hide_reason = 'ai-low-quality'`,
+  ).run();
+  return json({ hidden: res.meta.changes ?? 0 }, 200, origin);
+}
+
 // DELETE /wall/messages/:id — soft-delete (hidden=1) a note.
 //
 // Two paths, chosen by the presence of an x-wall-admin header:

@@ -442,3 +442,93 @@ export async function deleteNote(id: string): Promise<void> {
   }
   invalidateNotesCache(); // the hidden note must be gone on the next load
 }
+
+// --- Admin moderation ledger -------------------------------------------------
+// EVERY note (visible AND hidden) with its state, so the panel can list all and
+// filter by hide_reason. Admin-only; the public GET never reveals hide_reason.
+// `x`/`y` are included so a restored note can be re-placed on the canvas.
+export interface AdminNote {
+  id: string;
+  body: string;
+  color: NoteColor;
+  name: string | null;
+  x: number;
+  y: number;
+  createdAt: number;
+  hidden: boolean;
+  hideReason: string | null;
+}
+
+async function fetchAdminNotes(): Promise<AdminNote[]> {
+  const admin = getAdminToken();
+  if (!admin) return [];
+  if (!SERVER_URL) {
+    // Local seed mode: surface the seed notes as the ledger, faking a couple of
+    // ai-low-quality flags so the filter + actions are exercisable offline.
+    return ensureLocal().map((n, i) => ({
+      id: n.id,
+      body: n.body,
+      color: n.color,
+      name: n.name,
+      x: n.x,
+      y: n.y,
+      createdAt: n.createdAt,
+      hidden: false,
+      hideReason: i < 2 ? "ai-low-quality" : null,
+    }));
+  }
+  const res = await fetch(`${SERVER_URL}/wall/admin/notes`, {
+    headers: { accept: "application/json", "x-wall-admin": admin },
+  });
+  if (!res.ok) throw new Error(`admin notes fetch failed: ${res.status}`);
+  const data = (await res.json()) as { notes: AdminNote[] };
+  return data.notes;
+}
+
+// SWR hook for the ledger. enabled=false (not admin) → null key → no fetch at all.
+// Manual revalidation only: it changes when the admin acts or the hourly sweep
+// runs, never on window focus.
+export function useAdminNotes(enabled: boolean) {
+  return useSWR<AdminNote[]>(enabled ? "wall-admin-notes" : null, fetchAdminNotes, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+}
+
+// Un-hide a note (admin) — inverse of the admin delete. Throws on failure so the
+// caller can surface a per-row error and roll back.
+export async function restoreNote(id: string): Promise<void> {
+  const admin = getAdminToken();
+  if (!SERVER_URL) return; // seed mode has nothing hidden to restore
+  if (!admin) throw new Error("not admin");
+  const res = await fetch(`${SERVER_URL}/wall/admin/notes/${id}/restore`, {
+    method: "POST",
+    headers: { "x-wall-admin": admin },
+  });
+  if (!res.ok) throw new Error(`restore failed: ${res.status}`);
+  invalidateNotesCache(); // the restored note must reappear on the next load
+}
+
+// Hide every AI-flagged note in ONE request (server-side bulk UPDATE → 'admin-del'),
+// returning the count. Looping per-note DELETEs would trip RL_ADMIN after 10.
+export async function hideAllFlagged(): Promise<number> {
+  const admin = getAdminToken();
+  if (!admin) return 0;
+  if (!SERVER_URL) {
+    const list = ensureLocal();
+    const ids = list.slice(0, 2).map((n) => n.id);
+    for (const id of ids) {
+      const i = list.findIndex((n) => n.id === id);
+      if (i >= 0) list.splice(i, 1);
+    }
+    return ids.length;
+  }
+  const res = await fetch(`${SERVER_URL}/wall/admin/flagged/hide`, {
+    method: "POST",
+    headers: { "x-wall-admin": admin },
+  });
+  if (!res.ok) throw new Error(`hide all failed: ${res.status}`);
+  const data = (await res.json()) as { hidden: number };
+  invalidateNotesCache();
+  return data.hidden;
+}

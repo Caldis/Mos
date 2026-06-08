@@ -34,6 +34,20 @@ export default {
       if (request.method === "GET") return wall.handleAdminCheck(env, request, origin);
       return json({ error: "method not allowed" }, 405, origin);
     }
+    // Admin moderation: full notes ledger / restore one / hide all AI-flagged.
+    if (url.pathname === "/wall/admin/notes") {
+      if (request.method === "GET") return wall.handleAdminNotes(env, request, origin);
+      return json({ error: "method not allowed" }, 405, origin);
+    }
+    const wallRestore = url.pathname.match(/^\/wall\/admin\/notes\/(\d+)\/restore$/);
+    if (wallRestore) {
+      if (request.method === "POST") return wall.handleRestore(env, request, origin, wallRestore[1]);
+      return json({ error: "method not allowed" }, 405, origin);
+    }
+    if (url.pathname === "/wall/admin/flagged/hide") {
+      if (request.method === "POST") return wall.handleFlaggedHideAll(env, request, origin);
+      return json({ error: "method not allowed" }, 405, origin);
+    }
     const wallNote = url.pathname.match(/^\/wall\/messages\/(\d+)$/);
     if (wallNote) {
       if (request.method === "DELETE")

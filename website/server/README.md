@@ -33,6 +33,9 @@ To add a feature: drop `src/features/<name>.ts`, register its routes in
 | POST   | `/wall/messages`      | create a note: `{ body, color, x, y, name?, owner, turnstileToken }` |
 | DELETE | `/wall/messages/:id`  | soft-delete. Owner-scoped via `x-wall-owner` (`hide_reason='user'`); with a valid `x-wall-admin` it hides ANY note (`hide_reason='admin-del'`). |
 | GET    | `/wall/admin`         | validate the admin secret (`x-wall-admin`) → `200 {ok:true}` / `401`. Lets the panel confirm the token before unlocking admin mode. Rate-limited (`RL_ADMIN`). |
+| GET    | `/wall/admin/notes` | admin-only moderation ledger: EVERY note (visible + hidden) with `hidden`, `hide_reason`, `x`/`y`. Auth via `x-wall-admin`, rate-limited (`RL_ADMIN`). |
+| POST   | `/wall/admin/notes/:id/restore` | admin-only: un-hide a note (`hidden=0`, `hide_reason=NULL`). |
+| POST   | `/wall/admin/flagged/hide` | admin-only: hide EVERY AI-flagged note in one atomic UPDATE (→ `admin-del`). Returns `{ hidden: n }`. Avoids per-note DELETEs tripping `RL_ADMIN`. |
 
 No `PATCH`: a note's position is set at POST time and **locked** (decision D3 —
 stick it and it stays). Rotation is not stored; the client derives it from `id`.
@@ -41,6 +44,13 @@ stick it and it stays). Rotation is not stored; the client derives it from `id`.
 10× to open a prompt for `ADMIN_TOKEN`. Once verified it's held in `sessionStorage`
 and a delete affordance appears on every note. Auth is enforced server-side — the
 client flag only shows the buttons; without a valid `x-wall-admin` the Worker rejects.
+
+Admin mode also surfaces a **moderation review** (top-right "Review N" pill →
+slide-out panel). It lists EVERY message and filters by `hide_reason` (chips: All /
+Live / AI / Spam / User / Admin-del, each with a count). Per row you can **Hide** a
+visible note (→ `admin-del`) or **Restore** a hidden one (→ visible). On the AI
+filter a **Hide all** bulk button clears the sweep's `ai-low-quality` flags at once.
+Each action calls its endpoint with a local per-row spinner.
 
 ## Local dev
 

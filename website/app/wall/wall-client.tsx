@@ -10,6 +10,7 @@ import {
 } from "framer-motion";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { StickyNote } from "@/app/components/Wall/StickyNote";
+import { WallReview } from "@/app/components/Wall/WallReview";
 import { WALL_TURNSTILE_ENABLED } from "@/app/components/Wall/TurnstileWidget";
 import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
 import { useWallAdmin } from "@/app/hooks/useWallAdmin";
@@ -22,10 +23,14 @@ import {
   canvasPadFor,
   clampToSafeArea,
   deleteNote,
+  hideAllFlagged,
   noteSizeFor,
   postNote,
+  restoreNote,
+  rotFromId,
   safeArea,
   sparsestSpot,
+  useAdminNotes,
   useWallNotes,
   type NoteColor,
 } from "@/app/services/wall";
@@ -56,6 +61,8 @@ export function WallClient() {
   const { t } = useI18n();
   const { admin } = useWallAdmin();
   const { data: notes, mutate, isLoading } = useWallNotes();
+  // Admin moderation ledger (only fetched while admin is unlocked).
+  const { data: adminNotes, mutate: mutateAdmin, isLoading: adminLoading } = useAdminNotes(admin);
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [ghostColor, setGhostColor] = useState<NoteColor | null>(null);
@@ -262,6 +269,69 @@ export function WallClient() {
     [mutate],
   );
 
+  // Panel actions are NON-optimistic: each awaits its request so the panel can show
+  // a per-row spinner, then updates state on success. The note stays in the ledger
+  // (flips hidden/visible in place); only the canvas gains/loses it.
+
+  // Hide one note: remove from the canvas, mark hidden in the ledger. Throws on
+  // failure so the row clears its spinner and keeps its state.
+  const hidePanelNote = useCallback(
+    async (id: string) => {
+      await deleteNote(id);
+      mutate((cur) => (cur ?? []).filter((n) => n.id !== id), { revalidate: false });
+      mutateAdmin(
+        (cur) => (cur ?? []).map((n) => (n.id === id ? { ...n, hidden: true, hideReason: "admin-del" } : n)),
+        { revalidate: false },
+      );
+    },
+    [mutate, mutateAdmin],
+  );
+
+  // Restore one note: un-hide in the ledger and re-place it on the canvas (its
+  // position came down with the ledger, so no refetch needed).
+  const restorePanelNote = useCallback(
+    async (id: string) => {
+      await restoreNote(id);
+      const note = (adminNotes ?? []).find((n) => n.id === id);
+      mutateAdmin(
+        (cur) => (cur ?? []).map((n) => (n.id === id ? { ...n, hidden: false, hideReason: null } : n)),
+        { revalidate: false },
+      );
+      if (note) {
+        mutate((cur) => {
+          if ((cur ?? []).some((n) => n.id === id)) return cur;
+          const restored = {
+            id,
+            name: note.name ?? "",
+            body: note.body,
+            color: note.color,
+            x: note.x,
+            y: note.y,
+            rot: rotFromId(id),
+            createdAt: note.createdAt,
+            mine: false,
+          };
+          return [...(cur ?? []), restored];
+        }, { revalidate: false });
+      }
+    },
+    [adminNotes, mutate, mutateAdmin],
+  );
+
+  // Hide every still-flagged AI note in one server call, then reconcile both views.
+  const hideAllAINotes = useCallback(async () => {
+    const ids = new Set(
+      (adminNotes ?? []).filter((n) => !n.hidden && n.hideReason === "ai-low-quality").map((n) => n.id),
+    );
+    if (ids.size === 0) return;
+    await hideAllFlagged();
+    mutate((cur) => (cur ?? []).filter((n) => !ids.has(n.id)), { revalidate: false });
+    mutateAdmin(
+      (cur) => (cur ?? []).map((n) => (ids.has(n.id) ? { ...n, hidden: true, hideReason: "admin-del" } : n)),
+      { revalidate: false },
+    );
+  }, [adminNotes, mutate, mutateAdmin]);
+
   // Placed notes shrink to fit more on a narrow (phone) canvas; the compose draft
   // stays full size (NOTE_SIZE). Insets tighten on phones too (see canvasPadFor).
   const noteSize = noteSizeFor(canvasSize.w);
@@ -317,6 +387,18 @@ export function WallClient() {
           )}
         </AnimatePresence>
 
+        {/* Initial load: a quiet centered spinner so the wall doesn't read as empty
+            while the first fetch is in flight (the tray also waits — see below). */}
+        {isLoading && (
+          <div className="pointer-events-none absolute inset-0 grid place-items-center">
+            <motion.span
+              className="h-7 w-7 rounded-full border-2 border-white/15 border-t-white/55"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, ease: "linear", duration: 0.8 }}
+            />
+          </div>
+        )}
+
         {!isLoading && (notes?.length ?? 0) === 0 && !draft && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             <p className="font-mono text-xs uppercase tracking-[0.22em] text-white/30">
@@ -355,7 +437,19 @@ export function WallClient() {
         )}
       </AnimatePresence>
 
-      <Tray onPointerDownSticky={startTrayDrag} hidden={!!draft || ghostColor !== null} />
+      {/* Dock waits out the initial load so it doesn't pop up over a spinner. */}
+      <Tray onPointerDownSticky={startTrayDrag} hidden={isLoading || !!draft || ghostColor !== null} />
+
+      {/* Admin-only moderation review: trigger pill + slide-out panel. */}
+      {admin && (
+        <WallReview
+          notes={adminNotes}
+          loading={adminLoading}
+          onHideOne={hidePanelNote}
+          onRestore={restorePanelNote}
+          onHideAllAI={hideAllAINotes}
+        />
+      )}
     </div>
   );
 }

@@ -259,18 +259,16 @@ export function StickyNote({
         transition={{ type: "spring", stiffness: 380, damping: 20 }}
       />
 
-      {/* Delete affordance — own placed notes, or ANY note in admin mode. Hover
-          reveals ×; first click arms a red "Delete?" confirm, second deletes.
-          Mouse-leave cancels. When an admin is deleting someone else's note the ×
-          is red and faintly always-visible — a clear "this isn't yours" warning. */}
+      {/* Delete affordance — own placed notes, or ANY note in admin mode. Hidden
+          until the note is hovered (or the button focused); first click arms a red
+          "Delete?" confirm, second deletes. Mouse-leave cancels. When an admin is
+          deleting someone else's note the × is red — a "this isn't yours" warning. */}
       {!composing && (mine || admin) && onDelete && (
         <button
           type="button"
           onClick={() => (confirmingDelete ? onDelete(note.id) : setConfirmingDelete(true))}
           aria-label={confirmingDelete ? t.wall.deleteConfirm : t.wall.delete}
-          className={`absolute -right-2.5 -top-2.5 z-30 grid h-6 place-items-center rounded-full shadow-md transition focus-visible:opacity-100 group-hover:opacity-100 ${
-            admin && !mine ? "opacity-80" : "opacity-0"
-          } ${
+          className={`absolute -right-2.5 -top-2.5 z-30 grid h-6 place-items-center rounded-full opacity-0 shadow-md transition focus-visible:opacity-100 group-hover:opacity-100 ${
             confirmingDelete
               ? "px-2 text-[10px] font-semibold"
               : "w-6 text-[14px] leading-none hover:scale-110"
