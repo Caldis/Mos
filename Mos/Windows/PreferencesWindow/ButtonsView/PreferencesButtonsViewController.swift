@@ -125,8 +125,8 @@ extension PreferencesButtonsViewController {
 
     // 保存界面到 Options, 并同步 divert 状态
     func syncViewWithOptions() {
+        // 缓存失效由 ButtonUtils 的 Options 订阅自动完成
         Options.shared.buttons.binding = buttonBindings
-        ButtonUtils.shared.invalidateCache()
         // 绑定变更后同步 HID++ divert: 只 divert 有绑定的按键
         let codes = collectButtonBindingCodes()
         LogiCenter.shared.setUsage(source: .buttonBinding, codes: codes)

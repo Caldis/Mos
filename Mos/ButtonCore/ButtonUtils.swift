@@ -17,7 +17,12 @@ class ButtonUtils {
 
     // 单例
     static let shared = ButtonUtils()
-    init() {}
+    init() {
+        // 绑定组变更时自动失效缓存 (订阅者为进程级单例, 无需注销)
+        Options.shared.observe([.buttons]) { [weak self] _ in
+            self?.invalidateCache()
+        }
+    }
 
     // MARK: - 缓存
 
