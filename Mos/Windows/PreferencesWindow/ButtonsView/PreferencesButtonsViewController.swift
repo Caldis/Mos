@@ -115,21 +115,10 @@ extension PreferencesButtonsViewController {
         toggleNoDataHint()
     }
 
-    private func collectButtonBindingCodes() -> Set<UInt16> {
-        var codes = Set<UInt16>()
-        for binding in ButtonUtils.shared.getButtonBindings() where binding.isEnabled && binding.triggerEvent.type == .mouse {
-            codes.insert(binding.triggerEvent.code)
-        }
-        return codes
-    }
-
-    // 保存界面到 Options, 并同步 divert 状态
+    // 保存界面到 Options
+    // 缓存失效与 HID++ divert 用量同步由 Options 订阅自动完成 (ButtonUtils / LogiUsageBootstrap)
     func syncViewWithOptions() {
-        // 缓存失效由 ButtonUtils 的 Options 订阅自动完成
         Options.shared.buttons.binding = buttonBindings
-        // 绑定变更后同步 HID++ divert: 只 divert 有绑定的按键
-        let codes = collectButtonBindingCodes()
-        LogiCenter.shared.setUsage(source: .buttonBinding, codes: codes)
     }
 
     // 更新删除按钮状态

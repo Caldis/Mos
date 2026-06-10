@@ -2,18 +2,28 @@
 //  LogiUsageBootstrap.swift
 //  Mos
 //
-//  Pushes initial Options state into LogiCenter at app launch.
-//  Idempotent. Preference-panel save paths push their own slice afterward.
+//  Pushes Options state into LogiCenter at app launch.
+//  Idempotent. Options 订阅驱动: 绑定/热键/应用列表变更时整体刷新 (installOptionsObservers).
 //
 
 import Foundation
 
 enum LogiUsageBootstrap {
 
+    /// 上次推送过 appScroll 用量的 app path, 用于 app 移除后推送空集清理注册表残留
+    private static var lastPushedAppPaths: Set<String> = []
+
+    /// 订阅 Options 变更, 集中刷新 Logi 用量 (替代偏好面板各处手动 setUsage)
+    static func installOptionsObservers() {
+        Options.shared.observe([.buttons, .scroll, .application]) { _ in
+            refreshAll()
+        }
+    }
+
     static func refreshAll() {
-        // 1. Button bindings
+        // 1. Button bindings (直读 Options, 不依赖 ButtonUtils 缓存失效的订阅顺序)
         let buttonCodes: Set<UInt16> = Set(
-            ButtonUtils.shared.getButtonBindings()
+            Options.shared.buttons.binding
                 .filter { $0.isEnabled && $0.triggerEvent.type == .mouse }
                 .map { $0.triggerEvent.code }
                 .filter { LogiCenter.shared.isLogiCode($0) }
@@ -27,14 +37,23 @@ enum LogiUsageBootstrap {
         }
 
         // 3. App scroll
+        var currentPaths: Set<String> = []
         let apps = Options.shared.application.applications
         for i in 0..<apps.count {
             guard let app = apps.get(by: i) else { continue }
+            currentPaths.insert(app.path)
             for role in ScrollRole.allCases {
                 let codes = appScrollCodes(app: app, role: role)
                 LogiCenter.shared.setUsage(source: .appScroll(key: app.path, role: role), codes: codes)
             }
         }
+        // 3b. 已移除 app 的用量清理
+        for stalePath in lastPushedAppPaths.subtracting(currentPaths) {
+            for role in ScrollRole.allCases {
+                LogiCenter.shared.setUsage(source: .appScroll(key: stalePath, role: role), codes: [])
+            }
+        }
+        lastPushedAppPaths = currentPaths
     }
 
     private static func globalScrollCodes(role: ScrollRole) -> Set<UInt16> {
