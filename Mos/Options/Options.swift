@@ -48,38 +48,117 @@ struct OptionItem {
     }
 }
 
+/// 配置分组: 变更通知与脏组写入的粒度
+enum OptionsGroup: CaseIterable {
+    case general, update, scroll, buttons, application
+}
+
 class Options {
-    
+
     // 单例
     static let shared = Options()
     init() { NSLog("Module initialized: Options") }
-    
+
     // 读取锁, 防止冲突
     private var readingOptionsLock = false
     // JSON 编解码工具
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
-    
+
     // 常规
-    var general = OPTIONS_GENERAL_DEFAULT()
+    var general = OPTIONS_GENERAL_DEFAULT() {
+        didSet { markChanged(.general) }
+    }
     // 更新
-    var update = OPTIONS_UPDATE_DEFAULT()
+    var update = OPTIONS_UPDATE_DEFAULT() {
+        didSet { markChanged(.update) }
+    }
     // 滚动
     var scroll = OPTIONS_SCROLL_DEFAULT() {
-        didSet { Options.shared.saveOptions() }
+        didSet { markChanged(.scroll) }
     }
     // 按钮绑定
     var buttons = OPTIONS_BUTTONS_DEFAULT() {
-        didSet { Options.shared.saveOptions() }
+        didSet { markChanged(.buttons) }
     }
     // 应用
     var application = OPTIONS_APPLICATION_DEFAULT() {
-        didSet { Options.shared.saveOptions() }
+        didSet { markChanged(.application) }
     }
 
     /// 保留无法 decode 的 binding 原始 JSON 元素 (来自未来 Mos 版本).
     /// 在 save 时再合回去, 防止用户升级后再降级时丢失新版数据.
     fileprivate var preservedUnknownBindings: [Any] = []
+
+    // 变更订阅 (append-only; 订阅者均为进程级单例, 无注销需求)
+    fileprivate var observers: [(groups: Set<OptionsGroup>, handler: (OptionsGroup) -> Void)] = []
+    // 待写入的脏组与调度标志
+    fileprivate var pendingSaveGroups: Set<OptionsGroup> = []
+    fileprivate var saveFlushScheduled = false
+    #if DEBUG
+    /// 测试钩子: flush 发生时回调脏组集合 (XCTest 下真实写入被跳过, 用它观测合并行为)
+    var onFlushForTests: ((Set<OptionsGroup>) -> Void)?
+    /// 测试钩子: 在读取锁内执行 body, 验证抑制语义
+    func withReadingLockForTests(_ body: () -> Void) {
+        readingOptionsLock = true
+        defer { readingOptionsLock = false }
+        body()
+    }
+    #endif
+}
+
+/**
+ * 变更订阅与脏组写入
+ **/
+extension Options {
+
+    /// 订阅指定组的变更 (同步派发, 主线程)
+    func observe(_ groups: Set<OptionsGroup>, handler: @escaping (OptionsGroup) -> Void) {
+        observers.append((groups: groups, handler: handler))
+    }
+
+    /// 变更入口: 通知订阅者并调度该组的延迟写入 (同 tick 合并)
+    func markChanged(_ group: OptionsGroup) {
+        assert(Thread.isMainThread, "Options.markChanged is main-thread-only")
+        // 读取期间 (readOptions) 抑制通知与保存
+        guard !readingOptionsLock else { return }
+        for observer in observers where observer.groups.contains(group) {
+            observer.handler(group)
+        }
+        pendingSaveGroups.insert(group)
+        scheduleSaveFlush()
+    }
+
+    /// 身份路由: scroll 容器被全局配置与 per-app (Application.scroll) 复用
+    func markChanged(scrollContainer: OPTIONS_SCROLL_DEFAULT) {
+        markChanged(scrollContainer === scroll ? .scroll : .application)
+    }
+    /// 身份路由: buttons 容器被全局配置与 per-app (Application.buttons) 复用
+    func markChanged(buttonsContainer: OPTIONS_BUTTONS_DEFAULT) {
+        markChanged(buttonsContainer === buttons ? .buttons : .application)
+    }
+
+    private func scheduleSaveFlush() {
+        guard !saveFlushScheduled else { return }
+        saveFlushScheduled = true
+        DispatchQueue.main.async { [weak self] in
+            self?.flushPendingSaves()
+        }
+    }
+
+    /// 写入所有脏组 (应用退出前由 AppDelegate 兜底调用)
+    func flushPendingSaves() {
+        saveFlushScheduled = false
+        guard !pendingSaveGroups.isEmpty else { return }
+        let groups = pendingSaveGroups
+        pendingSaveGroups = []
+        #if DEBUG
+        onFlushForTests?(groups)
+        #endif
+        guard !AppRuntime.isRunningXCTest else { return }
+        UserDefaults.standard.set("optionsExist", forKey: OptionItem.General.OptionsExist)
+        for group in groups { save(group: group) }
+    }
 }
 
 /**
@@ -144,19 +223,26 @@ extension Options {
         readingOptionsLock = false
     }
     
-    // 写入到 UserDefaults
+    // 同步写入全部配置 (首启播种与遗留路径; 常规变更走 markChanged 的脏组合并写入)
     func saveOptions() {
         guard !AppRuntime.isRunningXCTest else { return }
 
         if !readingOptionsLock {
             // 标识配置项存在
             UserDefaults.standard.set("optionsExist", forKey: OptionItem.General.OptionsExist)
-            // 常规
+            for group in OptionsGroup.allCases { save(group: group) }
+        }
+    }
+
+    // 按组写入 UserDefaults (键与全量写入逐一对应, 零增减)
+    private func save(group: OptionsGroup) {
+        switch group {
+        case .general:
             UserDefaults.standard.set(general.hideStatusItem, forKey: OptionItem.General.HideStatusItem)
-            // 更新
+        case .update:
             UserDefaults.standard.set(update.checkOnAppStart, forKey: OptionItem.Update.CheckOnAppStart)
             UserDefaults.standard.set(update.includingBetaVersion, forKey: OptionItem.Update.IncludingBetaVersion)
-            // 滚动
+        case .scroll:
             UserDefaults.standard.set(scroll.smooth, forKey: OptionItem.Scroll.Smooth)
             UserDefaults.standard.set(scroll.reverse, forKey: OptionItem.Scroll.Reverse)
             UserDefaults.standard.set(scroll.reverseVertical, forKey: OptionItem.Scroll.ReverseVertical)
@@ -171,15 +257,15 @@ extension Options {
             UserDefaults.standard.set(scroll.smoothSimTrackpad, forKey: OptionItem.Scroll.SmoothSimTrackpad)
             UserDefaults.standard.set(scroll.smoothVertical, forKey: OptionItem.Scroll.SmoothVertical)
             UserDefaults.standard.set(scroll.smoothHorizontal, forKey: OptionItem.Scroll.SmoothHorizontal)
-            // 应用
+        case .buttons:
+            saveButtonBindingsData()
+        case .application:
             UserDefaults.standard.set(application.allowlist, forKey: OptionItem.Application.Allowlist)
             if let applicationsData = application.applications.json() {
                 UserDefaults.standard.set(applicationsData, forKey: OptionItem.Application.Applications)
             } else {
                 NSLog("Failed to serialize applications data, skipping save")
             }
-            // 按钮绑定
-            saveButtonBindingsData()
         }
     }
 
@@ -303,7 +389,7 @@ extension Options {
     private func loadApplicationsData() -> EnhanceArray<Application> {
         let defaultArray = EnhanceArray<Application>(
             matchKey: "path",
-            forObserver: Options.shared.saveOptions
+            forObserver: { Options.shared.markChanged(.application) }
         )
 
         // 检查 UserDefaults 中的值类型
@@ -321,7 +407,7 @@ extension Options {
             return try EnhanceArray<Application>(
                 withData: data,
                 matchKey: "path",
-                forObserver: Options.shared.saveOptions
+                forObserver: { Options.shared.markChanged(.application) }
             )
         } catch {
             NSLog("Failed to decode applications data: \(error), resetting to defaults")

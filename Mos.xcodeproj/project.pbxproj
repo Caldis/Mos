@@ -11,6 +11,7 @@
 		0BE5A296253A119C006D61C0 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A295253A119C006D61C0 /* Charts */; };
 		0BE5A29A2F7A1C5B006D61C0 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A29B2F7A1C5B006D61C0 /* Sparkle */; };
 		0E590C87FC41F66FF48D518F /* MosTests/ScrollDispatchContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DD10CB06A5D177E3BD0845 /* MosTests/ScrollDispatchContextTests.swift */; };
+		C7A1B2C3D4E5F60718293A4B /* MosTests/OptionsChangePropagationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A1B2C3D4E5F60718293A4C /* MosTests/OptionsChangePropagationTests.swift */; };
 		296126EA068FF77D423ACAA9 /* MosTests/ScrollEventTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B8B50E951D72C6195DBA3A /* MosTests/ScrollEventTests.swift */; };
 		568F976CF65380A55E73E588 /* MosTests/ScrollHotkeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D69BB23DED610DCD5A0103 /* MosTests/ScrollHotkeyTests.swift */; };
 		754D86BF951F4E0C56F76E8D /* MosTests/ScrollPosterStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCA64306C761E8CA5D0759A /* MosTests/ScrollPosterStateTests.swift */; };
@@ -65,6 +66,7 @@
 		0B2C591D2F7ADB79003D88C9 /* Debug.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Debug.xctestplan; sourceTree = "<group>"; };
 		22142DA01E25344E00E4BFBF /* Mos Debug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mos Debug.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25DD10CB06A5D177E3BD0845 /* MosTests/ScrollDispatchContextTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollDispatchContextTests.swift; sourceTree = SOURCE_ROOT; };
+		C7A1B2C3D4E5F60718293A4C /* MosTests/OptionsChangePropagationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/OptionsChangePropagationTests.swift; sourceTree = SOURCE_ROOT; };
 		2D6CF5441214A14BB8FFEDA5 /* MosTests/ScrollCoreHotkeyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollCoreHotkeyTests.swift; sourceTree = SOURCE_ROOT; };
 		2F59E07FB2E69806EAED5405 /* MosTests/ScrollPhaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollPhaseTests.swift; sourceTree = SOURCE_ROOT; };
 		31AFD832EF49533E8168BAA0 /* MosTests/ScrollFilterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollFilterTests.swift; sourceTree = SOURCE_ROOT; };
@@ -180,6 +182,7 @@
 				9D4A7F821E5626C63C45D698 /* MosTests/InterpolatorTests.swift */,
 				2D6CF5441214A14BB8FFEDA5 /* MosTests/ScrollCoreHotkeyTests.swift */,
 				25DD10CB06A5D177E3BD0845 /* MosTests/ScrollDispatchContextTests.swift */,
+				C7A1B2C3D4E5F60718293A4C /* MosTests/OptionsChangePropagationTests.swift */,
 				E1B8B50E951D72C6195DBA3A /* MosTests/ScrollEventTests.swift */,
 				31AFD832EF49533E8168BAA0 /* MosTests/ScrollFilterTests.swift */,
 				E7D69BB23DED610DCD5A0103 /* MosTests/ScrollHotkeyTests.swift */,
@@ -387,6 +390,7 @@
 				B3D4E5F6A7B8C9D0E1F40100 /* MosTests/MouseInteractionSessionControllerTests.swift in Sources */,
 				FE05F3803FB8885AAC70ADC5 /* MosTests/ScrollCoreHotkeyTests.swift in Sources */,
 				0E590C87FC41F66FF48D518F /* MosTests/ScrollDispatchContextTests.swift in Sources */,
+				C7A1B2C3D4E5F60718293A4B /* MosTests/OptionsChangePropagationTests.swift in Sources */,
 				296126EA068FF77D423ACAA9 /* MosTests/ScrollEventTests.swift in Sources */,
 				BF0CC4D63CC0E5FE8FCF6E01 /* MosTests/ScrollFilterTests.swift in Sources */,
 				568F976CF65380A55E73E588 /* MosTests/ScrollHotkeyTests.swift in Sources */,

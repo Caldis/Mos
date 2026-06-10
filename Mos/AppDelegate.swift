@@ -146,6 +146,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         LogiCenter.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
+        // 写入尚未 flush 的脏配置组
+        Options.shared.flushPendingSaves()
     }
     
     // 检查是否有访问 accessibility 权限, 如果有则启动滚动处理, 并结束计时器
