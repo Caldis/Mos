@@ -28,3 +28,4 @@ build/*.zip
 /.agents/scheduled_tasks.lock
 /.claude/worktrees
 /.claude/scheduled_tasks.lock
+/.codex-archives
