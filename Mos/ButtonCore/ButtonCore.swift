@@ -20,6 +20,7 @@ class ButtonCore {
     // 拦截层
     var dispatchInterceptor: Interceptor?
     var primaryObservationInterceptor: Interceptor?
+    var mouseMovementInterceptor: Interceptor?
 
     // 组合的按钮事件掩码
     let leftDown = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
@@ -31,6 +32,10 @@ class ButtonCore {
     let flagsChanged = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
     let otherUp = CGEventMask(1 << CGEventType.otherMouseUp.rawValue)
     let keyUp = CGEventMask(1 << CGEventType.keyUp.rawValue)
+    let mouseMoved = CGEventMask(1 << CGEventType.mouseMoved.rawValue)
+    let leftMouseDragged = CGEventMask(1 << CGEventType.leftMouseDragged.rawValue)
+    let rightMouseDragged = CGEventMask(1 << CGEventType.rightMouseDragged.rawValue)
+    let otherMouseDragged = CGEventMask(1 << CGEventType.otherMouseDragged.rawValue)
     var dispatchEventMask: CGEventMask {
         return otherDown | otherUp | keyDown | keyUp
     }
@@ -39,16 +44,30 @@ class ButtonCore {
         return leftDown | leftUp | rightDown | rightUp
     }
 
+    var mouseMovementEventMask: CGEventMask {
+        return mouseMoved | leftMouseDragged | rightMouseDragged | otherMouseDragged
+    }
+
     // MARK: - 按钮事件处理
     let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
         // Tap 被系统禁用时, 清理活跃绑定状态并直接放行
         if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
             InputProcessor.shared.clearActiveBindings()
+            MouseGestureTracker.shared.stopTracking()
             return Unmanaged.passUnretained(event)
         }
         // 跳过 Mos 合成事件, 避免 executeCustom 发出的事件被重复处理
         if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
             return Unmanaged.passUnretained(event)
+        }
+
+        // 检测手势按键的按下/释放
+        if MouseGestureTracker.shared.gestureButton == 1 {  // 右键
+            if type == .rightMouseDown {
+                MouseGestureTracker.shared.startTracking(at: event.location)
+            } else if type == .rightMouseUp {
+                MouseGestureTracker.shared.stopTracking()
+            }
         }
 
         // 使用原始 flags 匹配绑定 (不注入虚拟修饰键, 保证匹配准确)
@@ -80,6 +99,27 @@ class ButtonCore {
         }
         return Unmanaged.passUnretained(event)
     }
+
+    // MARK: - 鼠标手势追踪回调
+    let mouseMovementCallBack: CGEventTapCallBack = { (_, type, event, _) in
+        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+            return Unmanaged.passUnretained(event)
+        }
+        if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
+            return Unmanaged.passUnretained(event)
+        }
+
+        let location = event.location
+
+        // 检查是否正在追踪手势
+        if MouseGestureTracker.shared.isTracking {
+            if let direction = MouseGestureTracker.shared.updateTracking(at: location) {
+                MouseGestureTracker.shared.executeAction(for: direction)
+            }
+        }
+
+        return Unmanaged.passUnretained(event)
+    }
     
     // MARK: - 启用和禁用
     
@@ -96,6 +136,7 @@ class ButtonCore {
                 )
                 dispatchInterceptor?.onRestart = {
                     InputProcessor.shared.clearActiveBindings()
+                    MouseGestureTracker.shared.stopTracking()
                 }
                 primaryObservationInterceptor = try Interceptor(
                     event: primaryObservationEventMask,
@@ -104,12 +145,21 @@ class ButtonCore {
                     placeAt: .tailAppendEventTap,
                     for: .listenOnly
                 )
+                mouseMovementInterceptor = try Interceptor(
+                    event: mouseMovementEventMask,
+                    handleBy: mouseMovementCallBack,
+                    listenOn: .cgAnnotatedSessionEventTap,
+                    placeAt: .tailAppendEventTap,
+                    for: .listenOnly
+                )
                 isActive = true
             } catch {
                 dispatchInterceptor?.stop()
                 primaryObservationInterceptor?.stop()
+                mouseMovementInterceptor?.stop()
                 dispatchInterceptor = nil
                 primaryObservationInterceptor = nil
+                mouseMovementInterceptor = nil
                 NSLog("ButtonCore: Failed to create interceptor: \(error)")
             }
         }
@@ -121,9 +171,12 @@ class ButtonCore {
             NSLog("ButtonCore disabled")
             dispatchInterceptor?.stop()
             primaryObservationInterceptor?.stop()
+            mouseMovementInterceptor?.stop()
             dispatchInterceptor = nil
             primaryObservationInterceptor = nil
+            mouseMovementInterceptor = nil
             InputProcessor.shared.clearActiveBindings()
+            MouseGestureTracker.shared.stopTracking()
             isActive = false
         }
     }
