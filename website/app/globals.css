@@ -30,6 +30,26 @@
     "Noto Sans CJK JP", "Noto Sans CJK KR", "Noto Sans SC";
 }
 
+/* The handwritten wall face (Caveat) has a very low glyph-fill: its letters sit
+   small inside the em box. CJK has no glyphs in Caveat, so 中文 falls back to
+   PingFang/YaHei — which fill the em box almost completely — and renders visibly
+   larger and heavier than the latin handwriting at the same font-size. Shrink
+   ONLY the CJK glyphs (matched by unicode-range) via size-adjust so they sit at
+   the same optical size as the latin script. Latin never reaches this face —
+   Caveat (var(--font-hand)) catches it first in the .font-hand stack. Systems
+   without any listed face fall through to var(--font-cjk) at full size (graceful
+   degrade); browsers without size-adjust (Safari <17) likewise just see no
+   shrink. */
+@font-face {
+  font-family: "HandCJKAdjust";
+  src: local("PingFang SC"), local("PingFang TC"), local("Hiragino Sans GB"),
+    local("Microsoft YaHei"), local("Microsoft JhengHei"),
+    local("Noto Sans CJK SC"), local("Noto Sans SC");
+  unicode-range: U+3000-303F, U+3040-30FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FF00-FFEF;
+  size-adjust: 75%;
+}
+
 html {
   /* Reserve the scrollbar's space so locking page scroll (e.g. opening a modal)
      never hides the scrollbar and reflows the layout wider. No-op for macOS
@@ -219,7 +239,7 @@ body::before {
   }
 
   .font-hand {
-    font-family: var(--font-hand), var(--font-cjk), "Bradley Hand", "Comic Sans MS", cursive;
+    font-family: var(--font-hand), "HandCJKAdjust", var(--font-cjk), "Bradley Hand", "Comic Sans MS", cursive;
   }
 
   /* Dot grid for the sticky-note canvas (/wall). */
