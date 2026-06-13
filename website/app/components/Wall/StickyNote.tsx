@@ -9,7 +9,7 @@ import {
   useTransform,
   useVelocity,
 } from "framer-motion";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import {
   CANVAS_PAD,
   NOTE_COLORS,
@@ -81,11 +81,15 @@ function Card({
   palette,
   active,
   size,
+  minHeight,
   children,
 }: {
   palette: { bg: string; ink: string; edge: string };
   active?: boolean;
   size: number;
+  // Lower bound on card height. Below the old square `size` so a short note can
+  // shrink; the flex column still grows past it when the body is long.
+  minHeight: number;
   children: ReactNode;
 }) {
   const k = size / BASE;
@@ -94,7 +98,7 @@ function Card({
       className="flex flex-col rounded-[3px]"
       style={{
         width: size,
-        minHeight: size,
+        minHeight,
         paddingLeft: 16 * k,
         paddingRight: 16 * k,
         paddingTop: 16 * k,
@@ -166,6 +170,21 @@ export function StickyNote({
     return () => window.cancelAnimationFrame(id);
   }, [composing]);
 
+  // Grow the compose textarea to fit its content (collapse to measure, then set
+  // to scrollHeight) so the editing card's height tracks what the placed note
+  // will be — instead of being frozen at a fixed row count. The CSS min-height on
+  // the textarea keeps an empty draft comfortably tall.
+  const resizeBody = useCallback(() => {
+    const el = bodyRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, []);
+
+  useLayoutEffect(() => {
+    if (composing) resizeBody();
+  }, [composing, note.body, resizeBody]);
+
   // Tilt against horizontal velocity, like the note lags behind the hand.
   // useVelocity is noisy at low speed (causes twitching), so spring-smooth it
   // first — the standard scroll-velocity-skew pattern — then map to an angle.
@@ -220,6 +239,13 @@ export function StickyNote({
   const STAGGER_STEP = 0.04;
   const STAGGER_TOTAL = 1.1;
   const entranceDelay = count > 1 ? index * Math.min(STAGGER_STEP, STAGGER_TOTAL / (count - 1)) : 0;
+
+  // Card floor: vertical padding (16+14) + footer gap & line (12+11) + ~one body
+  // line (23 × 1.14), scaled by k. Replaces the old square `size` minimum so a
+  // one- or two-line note sits compact instead of padded out to a square; longer
+  // bodies grow the flex column past it. compose's stacked controls already
+  // exceed this, so there the height is driven purely by the auto-grow textarea.
+  const minCardHeight = Math.round((16 + 14 + 12 + 11) * k + 23 * 1.14 * k);
 
   return (
     <motion.div
@@ -296,19 +322,22 @@ export function StickyNote({
         </button>
       )}
 
-      <Card palette={palette} active={composing} size={renderSize}>
+      <Card palette={palette} active={composing} size={renderSize} minHeight={minCardHeight}>
         {composing ? (
           <>
             <textarea
               ref={bodyRef}
               value={note.body}
               maxLength={NOTE_MAX_BODY}
-              rows={3}
-              onChange={(e) => onBodyChange?.(e.target.value)}
+              rows={1}
+              onChange={(e) => {
+                onBodyChange?.(e.target.value);
+                resizeBody();
+              }}
               onKeyDown={onKey}
               placeholder={t.wall.bodyPlaceholder}
-              className="font-hand w-full flex-1 resize-none select-text bg-transparent text-[23px] leading-[1.12] outline-none placeholder:opacity-60"
-              style={{ color: palette.ink }}
+              className="font-hand w-full resize-none select-text bg-transparent text-[23px] leading-[1.12] outline-none placeholder:opacity-60"
+              style={{ color: palette.ink, minHeight: "2.24em" }}
             />
 
             <div className="mt-2 flex items-center gap-1.5">
