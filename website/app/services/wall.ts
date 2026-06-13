@@ -22,6 +22,38 @@ export const NOTE_MAX_BODY = 180;
 export const NOTE_SIZE = 198; // px — full size (desktop + compose)
 export const CANVAS_PAD = { margin: 48, top: 104, tray: 124 };
 
+// --- Infinite (large-but-finite) world canvas ------------------------------
+// The wall is a fixed, large board that the viewport pans/zooms over. A note's
+// x/y is its CENTER as a fraction 0..1 of THIS WORLD (not the screen, as it was
+// before). The world is a reference viewport blown up 5× on each side; existing
+// notes were migrated into the centre fifth (see migrations/0002 + the seed
+// coords) so their original on-screen layout is preserved while 4/5 of the
+// board opens up around them. Notes render at a fixed world-pixel size; zooming
+// the viewport is what scales them on screen.
+export const WORLD_W = 7200; // 1440 reference × 5
+export const WORLD_H = 4500; // 900 reference × 5
+// Fixed on-screen size of a placed note in WORLD pixels (the viewport scale is
+// what shrinks/grows it visually). Compose still uses the full NOTE_SIZE.
+export const WORLD_NOTE_SIZE = 176;
+
+// Zoom clamps. ZOOM_MIN still shows a bit more than the whole world on a typical
+// viewport; ZOOM_MAX is "lean in to read". FIT_MAX_SCALE caps the enter-focus
+// animation so a sparse wall doesn't blow the notes up huge.
+export const ZOOM_MIN = 0.12;
+export const ZOOM_MAX = 2.5;
+export const FIT_MAX_SCALE = 1;
+
+// Allowed range for a note's CENTER in world px: the whole world inset by half a
+// note so no sticky hangs off the board edge.
+export function worldBounds(half: number): SafeArea {
+  return { minX: half, minY: half, maxX: WORLD_W - half, maxY: WORLD_H - half };
+}
+
+export function clampToWorld(x: number, y: number, half: number): { x: number; y: number } {
+  const b = worldBounds(half);
+  return { x: Math.min(b.maxX, Math.max(b.minX, x)), y: Math.min(b.maxY, Math.max(b.minY, y)) };
+}
+
 // Placed notes are capped a bit below the compose size (PLACED_MAX) so more fit
 // on the wall, and shrink further on a narrow phone canvas. Width-driven (~0.33
 // of the canvas, clamped 100–PLACED_MAX): desktop/tablet sit at PLACED_MAX, a
@@ -90,17 +122,14 @@ export function clampToSafeArea(x: number, y: number, a: SafeArea): { x: number;
 // non-square (portrait phone) canvas isn't distorted.
 export function sparsestSpot(
   notes: ReadonlyArray<{ x: number; y: number }>,
-  canvasW: number,
-  canvasH: number,
-  pad: { margin: number; top: number; tray: number },
-  half: number,
+  rect: SafeArea,
 ): { x: number; y: number } {
-  // Allowed range for a note's CENTER — shared with every other drag interaction.
-  const { minX, maxX, minY, maxY } = safeArea(canvasW, canvasH, pad, half);
-  // Unmeasured / too-small canvas: fall back to the historical center default.
-  if (!(maxX > minX) || !(maxY > minY)) return { x: 0.5, y: 0.4 };
+  // `rect` is the world-px range a note CENTER may occupy — normally the region
+  // currently visible in the viewport, so a click-placed note lands in view.
+  const { minX, maxX, minY, maxY } = rect;
+  if (!(maxX > minX) || !(maxY > minY)) return { x: 0.5, y: 0.45 };
 
-  const obstacles = notes.map((n) => ({ x: n.x * canvasW, y: n.y * canvasH }));
+  const obstacles = notes.map((n) => ({ x: n.x * WORLD_W, y: n.y * WORLD_H }));
   const cx0 = (minX + maxX) / 2;
   const cy0 = (minY + maxY) / 2;
 
@@ -126,7 +155,7 @@ export function sparsestSpot(
       }
     }
   }
-  return { x: best.x / canvasW, y: best.y / canvasH };
+  return { x: best.x / WORLD_W, y: best.y / WORLD_H };
 }
 
 export interface WallNote {
@@ -269,12 +298,26 @@ function fromServer(note: ServerNote): WallNote {
 
 // Demo seed shown until the Cloudflare Worker is configured. `rot` is derived
 // from the id at read time, and seed notes are never `mine`.
+// Coords are fractions 0..1 of the WORLD (see WORLD_W/H). The original five are
+// the historical notes migrated into the centre fifth (x' = 0.4 + 0.2·x), matching
+// the 0002 migration; the rest are demo notes spread across the board so the
+// infinite-canvas pan/zoom/minimap have something to explore in local seed mode.
 const SEED_NOTES: Omit<WallNote, "rot" | "mine">[] = [
-  { id: "seed-1", name: "Caldis", body: "Welcome to the wall — peel a sticky off the tray below and leave a note.", color: "amber", x: 0.5, y: 0.25, createdAt: 1717000000000 },
-  { id: "seed-2", name: "Lin", body: "Mos 让我的滚轮终于顺了，谢谢你 🙏", color: "mint", x: 0.23, y: 0.52, createdAt: 1717100000000 },
-  { id: "seed-3", name: "Aki", body: "scrolling feels like butter now", color: "sky", x: 0.75, y: 0.42, createdAt: 1717200000000 },
-  { id: "seed-4", name: "mira", body: "trackpad person on a mouse — finally bearable", color: "lilac", x: 0.62, y: 0.68, createdAt: 1717300000000 },
-  { id: "seed-5", name: "あお", body: "毎日つかってます。ありがとう！", color: "blush", x: 0.35, y: 0.78, createdAt: 1717400000000 },
+  { id: "seed-1", name: "Caldis", body: "Welcome to the wall — peel a sticky off the tray below and leave a note.", color: "amber", x: 0.5, y: 0.45, createdAt: 1717000000000 },
+  { id: "seed-2", name: "Lin", body: "Mos 让我的滚轮终于顺了，谢谢你 🙏", color: "mint", x: 0.446, y: 0.504, createdAt: 1717100000000 },
+  { id: "seed-3", name: "Aki", body: "scrolling feels like butter now", color: "sky", x: 0.55, y: 0.484, createdAt: 1717200000000 },
+  { id: "seed-4", name: "mira", body: "trackpad person on a mouse — finally bearable", color: "lilac", x: 0.524, y: 0.536, createdAt: 1717300000000 },
+  { id: "seed-5", name: "あお", body: "毎日つかってます。ありがとう！", color: "blush", x: 0.47, y: 0.556, createdAt: 1717400000000 },
+  { id: "seed-6", name: "Theo", body: "finally my MX Master scrolls like a Mac trackpad", color: "rose", x: 0.38, y: 0.4, createdAt: 1717500000000 },
+  { id: "seed-7", name: "小宇", body: "宝藏软件，安利给所有同事了", color: "amber", x: 0.6, y: 0.39, createdAt: 1717600000000 },
+  { id: "seed-8", name: "Dani", body: "smooth scrolling on external monitors, life changing", color: "sky", x: 0.63, y: 0.56, createdAt: 1717700000000 },
+  { id: "seed-9", name: "kenji", body: "ホイールがなめらかになった。最高！", color: "mint", x: 0.42, y: 0.6, createdAt: 1717800000000 },
+  { id: "seed-10", name: "Rae", body: "open source and it just works — thank you ❤", color: "lilac", x: 0.56, y: 0.62, createdAt: 1717900000000 },
+  { id: "seed-11", name: "阿杰", body: "反向滚动 + 平滑，终于不用忍受跳动了", color: "blush", x: 0.34, y: 0.48, createdAt: 1718000000000 },
+  { id: "seed-12", name: "Sam", body: "been using this for years, a must-have", color: "rose", x: 0.67, y: 0.47, createdAt: 1718100000000 },
+  { id: "seed-13", name: "noa", body: "tiny app, huge quality-of-life upgrade", color: "amber", x: 0.45, y: 0.36, createdAt: 1718200000000 },
+  { id: "seed-14", name: "린", body: "스크롤이 부드러워졌어요. 감사합니다!", color: "sky", x: 0.53, y: 0.64, createdAt: 1718300000000 },
+  { id: "seed-15", name: "Wei", body: "把它推荐进了公司的新人指南 🚀", color: "mint", x: 0.61, y: 0.51, createdAt: 1718400000000 },
 ];
 
 let localNotes: WallNote[] | null = null;
@@ -357,8 +400,27 @@ async function fetchNotes(): Promise<WallNote[]> {
   return data.notes.map(fromServer);
 }
 
-export function useWallNotes() {
-  return useSWR<WallNote[]>("wall-notes", fetchNotes, {
+// Debug-only: read the PRODUCTION wall (read-only) via the dev proxy
+// (/__live → mos-api.caldis.me; see next.config.ts). Never posts or deletes, and
+// sends no owner header so every note comes back `mine: false`. Until the 0002
+// world-coord migration is deployed, production still stores screen-fraction
+// coords, so we apply the same transform (x' = 0.4 + 0.2·x) here to preview how
+// the live wall will look once migrated. Flip LIVE_ASSUME_LEGACY_COORDS to false
+// after the migration ships.
+const LIVE_API_BASE = "/__live";
+const LIVE_ASSUME_LEGACY_COORDS = true;
+
+export async function fetchLiveNotes(): Promise<WallNote[]> {
+  const res = await fetch(`${LIVE_API_BASE}/wall/messages`, { headers: { accept: "application/json" } });
+  if (!res.ok) throw new Error(`live wall fetch failed: ${res.status}`);
+  const data = (await res.json()) as { notes: ServerNote[] };
+  return data.notes.map((n) =>
+    fromServer(LIVE_ASSUME_LEGACY_COORDS ? { ...n, x: 0.4 + 0.2 * n.x, y: 0.4 + 0.2 * n.y } : n),
+  );
+}
+
+export function useWallNotes(live = false) {
+  return useSWR<WallNote[]>(live ? "wall-notes-live" : "wall-notes", live ? fetchLiveNotes : fetchNotes, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     refreshInterval: 0,

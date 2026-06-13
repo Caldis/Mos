@@ -3,7 +3,6 @@
 import {
   AnimatePresence,
   motion,
-  useDragControls,
   useMotionValue,
   useSpring,
   useTransform,
@@ -11,22 +10,18 @@ import {
 } from "framer-motion";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import {
-  CANVAS_PAD,
   NOTE_COLORS,
   NOTE_COLOR_KEYS,
   NOTE_MAX_BODY,
   NOTE_MAX_NAME,
   NOTE_SIZE as BASE,
   bodyHasLink,
-  safeArea,
   type NoteColor,
   type WallNote,
 } from "@/app/services/wall";
 import { useI18n } from "@/app/i18n/context";
 import { format } from "@/app/i18n/format";
 import { TurnstileWidget, WALL_TURNSTILE_ENABLED } from "./TurnstileWidget";
-
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 // Localized relative time ("2h ago" / "2小时前") via Intl — no extra i18n keys.
 // Computed at render; runs client-side only (placed notes never render on the server).
@@ -56,16 +51,17 @@ interface StickyNoteProps {
   submitting?: boolean;
   canvasW?: number;
   canvasH?: number;
-  // Rendered side length in px. Placed notes shrink on narrow canvases; the
+  // Rendered side length in WORLD px. Placed notes use a fixed world size; the
   // compose draft always renders at the full BASE size.
   size?: number;
-  // Safe-area insets for the drag constraints (responsive — tighter on phones).
-  pad?: { margin: number; top: number; tray: number };
   // Set true once a Turnstile token is in hand (or when Turnstile is disabled),
   // gating the confirm button. Only relevant while composing.
   verified?: boolean;
   errorMessage?: string | null;
-  onDraftMove?: (x: number, y: number) => void;
+  // Begin a custom pointer-drag of the compose draft. Wall-client tracks the
+  // pointer via the viewport's screenToWorld and updates the draft x/y, so the
+  // drag stays scale-correct inside the zoomed world layer (framer drag wouldn't).
+  onComposeDragStart?: (e: React.PointerEvent) => void;
   onBodyChange?: (v: string) => void;
   onNameChange?: (v: string) => void;
   onColorChange?: (c: NoteColor) => void;
@@ -126,10 +122,9 @@ export function StickyNote({
   canvasW = 0,
   canvasH = 0,
   size = BASE,
-  pad = CANVAS_PAD,
   verified = false,
   errorMessage = null,
-  onDraftMove,
+  onComposeDragStart,
   onBodyChange,
   onNameChange,
   onColorChange,
@@ -150,16 +145,15 @@ export function StickyNote({
   // D3: only the in-progress draft is ever draggable. Once a note is placed its
   // position is locked forever — `mine` is purely a visual cue (brighter tape).
   const draggable = composing;
-  const dragControls = useDragControls();
   const x = useMotionValue(note.x * canvasW - HALF);
   const y = useMotionValue(note.y * canvasH - HALF);
-  const draggingRef = useRef(false);
   const [dragging, setDragging] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
 
+  // The draft's position is driven by note.x/y (wall-client updates them during a
+  // compose drag); placed notes never move. Either way x/y mirror note.x/y.
   useEffect(() => {
-    if (draggingRef.current) return;
     x.set(note.x * canvasW - HALF);
     y.set(note.y * canvasH - HALF);
   }, [note.x, note.y, canvasW, canvasH, HALF, x, y]);
@@ -193,28 +187,6 @@ export function StickyNote({
   // Held by the top tape: moving right makes the bottom lag left → clockwise (+).
   const sway = useTransform(smoothVel, [-1800, 0, 1800], [-12, 0, 12], { clamp: true });
   const rotate = useTransform(sway, (s) => note.rot + s);
-
-  // Drag bounds come from the shared safe area — the same module the tray-drag
-  // ghost and the drop clamp use, so every interaction is protected identically.
-  // The motion value is the note's TOP-LEFT, so shift the center-rect by HALF.
-  const a = safeArea(canvasW, canvasH, pad, HALF);
-  const constraints = {
-    left: a.minX - HALF,
-    right: a.maxX - HALF,
-    top: a.minY - HALF,
-    bottom: a.maxY - HALF,
-  };
-
-  const endDrag = () => {
-    draggingRef.current = false;
-    setDragging(false);
-    if (!canvasW || !canvasH) return;
-    // Only the draft moves; placed notes are never draggable (D3), so the only
-    // thing we report here is the draft's new position.
-    const nx = clamp((x.get() + HALF) / canvasW, 0.02, 0.98);
-    const ny = clamp((y.get() + HALF) / canvasH, 0.02, 0.98);
-    onDraftMove?.(nx, ny);
-  };
 
   // Links are banned: warn live and block submit while the body contains one, so
   // the user fixes it here instead of round-tripping to a server rejection.
@@ -250,30 +222,22 @@ export function StickyNote({
   return (
     <motion.div
       className="group absolute left-0 top-0 will-change-transform"
+      // The compose draft handles its own pointer-drag (see tape below); marking it
+      // no-pan stops that same pointerdown from also starting a canvas pan.
+      data-no-pan={composing ? "" : undefined}
       onMouseLeave={() => setConfirmingDelete(false)}
-      drag={draggable}
-      dragListener={false}
-      dragControls={dragControls}
-      dragConstraints={constraints}
-      dragElastic={0.04}
-      // Placed notes share one low z-index so they sit below the chrome (header
-      // 50 / compose 60 / ghost 90); their mutual order comes from DOM order,
-      // which wall-client sorts oldest → newest so the latest sticky is on top.
-      style={{ x, y, rotate, perspective: 720, zIndex: composing ? 60 : dragging ? 50 : 2 }}
+      // In the world layer a note is positioned by its world-px x/y; the viewport
+      // transform on the parent pans/scales it. Placed notes share one low z-index
+      // (mutual order from DOM order, oldest→newest); the compose draft floats above.
+      style={{ x, y, rotate, perspective: 720, zIndex: composing ? 60 : 2 }}
       initial={{ opacity: 0, scale: composing ? 0.6 : 0.7 }}
-      animate={{ opacity: 1, scale: 1 }}
+      animate={{ opacity: 1, scale: dragging ? 1.05 : 1 }}
       exit={composing ? { opacity: 0, scale: 0.66, transition: { duration: 0.16 } } : undefined}
       transition={
         composing
           ? { type: "spring", stiffness: 440, damping: 24 }
           : { type: "spring", stiffness: 260, damping: 22, delay: entranceDelay }
       }
-      whileDrag={{ scale: 1.06 }}
-      onDragStart={() => {
-        draggingRef.current = true;
-        setDragging(true);
-      }}
-      onDragEnd={endDrag}
     >
       {/* tape = top drag handle, peels up on grab (only for draggable notes) */}
       <motion.div
@@ -282,7 +246,9 @@ export function StickyNote({
           draggable
             ? (e) => {
                 e.preventDefault();
-                dragControls.start(e);
+                setDragging(true);
+                onComposeDragStart?.(e);
+                window.addEventListener("pointerup", () => setDragging(false), { once: true });
               }
             : undefined
         }

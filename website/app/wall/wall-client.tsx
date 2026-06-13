@@ -8,31 +8,36 @@ import {
   useTransform,
   useVelocity,
 } from "framer-motion";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StickyNote } from "@/app/components/Wall/StickyNote";
+import { Minimap } from "@/app/components/Wall/Minimap";
 import { WallReview } from "@/app/components/Wall/WallReview";
 import { WALL_TURNSTILE_ENABLED } from "@/app/components/Wall/TurnstileWidget";
 import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
 import { useWallAdmin } from "@/app/hooks/useWallAdmin";
 import { useI18n } from "@/app/i18n/context";
 import { format } from "@/app/i18n/format";
+import { notesBounds, useViewport, type Viewport } from "@/app/wall/useViewport";
 import {
+  FIT_MAX_SCALE,
   NOTE_COLOR_KEYS,
   NOTE_COLORS,
   NOTE_SIZE,
-  canvasPadFor,
-  clampToSafeArea,
+  WORLD_H,
+  WORLD_NOTE_SIZE,
+  WORLD_W,
+  clampToWorld,
   deleteNote,
   hideAllFlagged,
-  noteSizeFor,
   postNote,
   restoreNote,
   rotFromId,
-  safeArea,
   sparsestSpot,
   useAdminNotes,
   useWallNotes,
+  worldBounds,
   type NoteColor,
+  type SafeArea,
 } from "@/app/services/wall";
 
 interface Draft {
@@ -40,14 +45,11 @@ interface Draft {
   name: string;
   body: string;
   color: NoteColor;
+  // World coords (0..1 of WORLD_W/H), like a placed note.
   x: number;
   y: number;
-  // Display-only tilt for the compose preview. NOT sent to the server — placed
-  // notes derive their rotation from their id (rotFromId).
   rot: number;
   createdAt: number;
-  // Always false for a draft; present only so a Draft satisfies WallNote when
-  // passed to <StickyNote note=…>. (`mine` matters only for placed notes.)
   mine: boolean;
 }
 
@@ -55,68 +57,136 @@ const HALF = NOTE_SIZE / 2;
 function randRot(): number {
   return Math.round((Math.random() * 8 - 4) * 10) / 10;
 }
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
+// Chrome that overlaps the viewport edges, kept clear when fitting/placing so a
+// note never lands hidden under the header or tray.
+const FIT_INSETS = { top: 76, right: 28, bottom: 128, left: 28 };
+
+function readViewportFromUrl(): Viewport | null {
+  if (typeof window === "undefined") return null;
+  const p = new URLSearchParams(window.location.search);
+  const tx = parseFloat(p.get("x") ?? "");
+  const ty = parseFloat(p.get("y") ?? "");
+  const scale = parseFloat(p.get("z") ?? "");
+  if (![tx, ty, scale].every(Number.isFinite)) return null;
+  return { tx, ty, scale };
+}
 
 export function WallClient() {
   const { t } = useI18n();
   const { admin } = useWallAdmin();
-  const { data: notes, mutate, isLoading } = useWallNotes();
-  // Admin moderation ledger (only fetched while admin is unlocked).
+  // Debug-only: render the live production wall (read-only) instead of local seed.
+  // Off by default so e2e runs never touch real notes; toggled via the dev pill.
+  const isDev = process.env.NODE_ENV === "development";
+  const [liveDebug, setLiveDebug] = useState(false);
+  const { data: notes, mutate, isLoading } = useWallNotes(liveDebug);
   const { data: adminNotes, mutate: mutateAdmin, isLoading: adminLoading } = useAdminNotes(admin);
-  const canvasRef = useRef<HTMLDivElement | null>(null);
+
+  // Throttle URL writes to one per frame so panning/zooming stays smooth.
+  const urlRaf = useRef(0);
+  const pendingV = useRef<Viewport | null>(null);
+  const writeUrl = useCallback((v: Viewport) => {
+    pendingV.current = v;
+    if (urlRaf.current) return;
+    urlRaf.current = requestAnimationFrame(() => {
+      urlRaf.current = 0;
+      const v2 = pendingV.current;
+      if (!v2) return;
+      const p = new URLSearchParams(window.location.search);
+      p.set("x", v2.tx.toFixed(1));
+      p.set("y", v2.ty.toFixed(1));
+      p.set("z", v2.scale.toFixed(3));
+      window.history.replaceState(null, "", `${window.location.pathname}?${p.toString()}`);
+    });
+  }, []);
+
+  const vp = useViewport({ onChange: writeUrl });
+  const canvasRef = vp.containerRef;
+
+  // Viewport pixel size, for the minimap frame + fit math.
+  const [vpSize, setVpSize] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    const measure = () => setVpSize({ w: el.clientWidth, h: el.clientHeight });
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [canvasRef]);
+
   const [draft, setDraft] = useState<Draft | null>(null);
   const [ghostColor, setGhostColor] = useState<NoteColor | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  // Turnstile token for the current draft (empty until the challenge passes).
-  // When Turnstile is disabled there's no widget, so we treat the draft as
-  // pre-verified to keep dev / local-seed mode working.
   const [turnstileToken, setTurnstileToken] = useState("");
   const verified = !WALL_TURNSTILE_ENABLED || turnstileToken.length > 0;
-  // User-facing error surfaced near the compose buttons (cleared on retry/cancel).
   const [postError, setPostError] = useState<string | null>(null);
-  const [canvasSize, setCanvasSize] = useState({ w: 0, h: 0 });
-  const dragRef = useRef<{ startX: number; startY: number; color: NoteColor; moved: boolean } | null>(
-    null
-  );
+  const dragRef = useRef<{ startX: number; startY: number; color: NoteColor; moved: boolean } | null>(null);
   const ghostBaseRot = useRef(0);
 
-  // Ghost (sticky following the pointer while dragging from the tray) shares
-  // the same velocity → spring → tilt physics as a placed note.
+  // Ghost (sticky following the pointer while dragging from the tray) shares the
+  // same velocity → spring → tilt physics as a placed note. It lives in SCREEN
+  // space; only the drop point is converted to the world.
   const ghostX = useMotionValue(0);
   const ghostY = useMotionValue(0);
   const ghostVel = useVelocity(ghostX);
   const ghostSmoothVel = useSpring(ghostVel, { stiffness: 170, damping: 40, mass: 0.7 });
   const ghostTilt = useTransform(ghostSmoothVel, [-1800, 0, 1800], [-12, 0, 12], { clamp: true });
-  const ghostRotate = useTransform(ghostTilt, (t) => ghostBaseRot.current + t);
+  const ghostRotate = useTransform(ghostTilt, (tilt) => ghostBaseRot.current + tilt);
 
-  useLayoutEffect(() => {
-    const el = canvasRef.current;
-    if (!el) return;
-    const measure = () => setCanvasSize({ w: el.clientWidth, h: el.clientHeight });
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+  // The world rectangle (px) a click-placed note may land in: the visible region,
+  // inset for chrome and clamped to the board.
+  const placementRect = useCallback((): SafeArea => {
+    const v = vp.visibleWorldRect();
+    const s = vp.get().scale || 1;
+    const b = worldBounds(HALF);
+    return {
+      minX: Math.max(b.minX, v.minX + FIT_INSETS.left / s),
+      minY: Math.max(b.minY, v.minY + FIT_INSETS.top / s),
+      maxX: Math.min(b.maxX, v.maxX - FIT_INSETS.right / s),
+      maxY: Math.min(b.maxY, v.maxY - FIT_INSETS.bottom / s),
+    };
+  }, [vp]);
 
-  const beginDraft = useCallback(
+  // Open a compose draft at a world position and ease the viewport to frame it at
+  // a comfortable, readable scale (the editing card should never be tiny).
+  const beginDraftWorld = useCallback(
     (nx: number, ny: number, color: NoteColor, rot: number) => {
-      const { w, h } = canvasSize;
-      let x: number;
-      let y: number;
-      if (w && h) {
-        // Snap the drop point into the shared safe area so a placed note always
-        // clears the header/tray/edges, however it was placed.
-        const p = clampToSafeArea(nx * w, ny * h, safeArea(w, h, canvasPadFor(w), HALF));
-        x = p.x / w;
-        y = p.y / h;
-      } else {
-        x = clamp(nx, 0.12, 0.88);
-        y = clamp(ny, 0.14, 0.8);
-      }
-      setDraft({ id: "draft", name: "", body: "", color, x, y, rot, createdAt: Date.now(), mine: false });
+      setDraft({ id: "draft", name: "", body: "", color, x: nx, y: ny, rot, createdAt: Date.now(), mine: false });
+      const el = canvasRef.current;
+      if (!el) return;
+      const w = el.clientWidth;
+      const h = el.clientHeight;
+      if (!w || !h) return;
+      const targetScale = Math.min(Math.max(vp.get().scale, 0.92), 1.4);
+      const wx = nx * WORLD_W;
+      const wy = ny * WORLD_H;
+      vp.animateTo({ tx: w / 2 - wx * targetScale, ty: h * 0.42 - wy * targetScale, scale: targetScale }, { duration: 0.5 });
     },
-    [canvasSize]
+    [vp, canvasRef],
+  );
+
+  // Custom drag for the compose draft: convert the pointer to world space so the
+  // sticky tracks the cursor exactly at any zoom (framer drag would drift inside
+  // the scaled world layer). Keeps the tape roughly under the finger (+HALF).
+  const onComposeDragStart = useCallback(
+    () => {
+      const el = canvasRef.current;
+      if (!el) return;
+      const move = (ev: PointerEvent) => {
+        const rect = el.getBoundingClientRect();
+        const wpt = vp.screenToWorld(ev.clientX - rect.left, ev.clientY - rect.top);
+        const c = clampToWorld(wpt.x, wpt.y + HALF, HALF);
+        setDraft((d) => (d ? { ...d, x: c.x / WORLD_W, y: c.y / WORLD_H } : d));
+      };
+      const up = () => {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+      };
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up, { once: true });
+    },
+    [vp, canvasRef],
   );
 
   const onPointerMove = useCallback(
@@ -125,32 +195,12 @@ export function WallClient() {
       if (!d) return;
       if (!d.moved && Math.hypot(e.clientX - d.startX, e.clientY - d.startY) > 6) d.moved = true;
       if (d.moved) {
-        // Pin the ghost inside the SAME safe area as the in-canvas draft drag, so
-        // a note dragged out of the tray is blocked from the header/tray/edges too
-        // — not just clamped on drop. Outside the canvas it simply pins to the
-        // nearest edge (releasing there still cancels, via the inside check below).
-        const el = canvasRef.current;
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          const a = safeArea(rect.width, rect.height, canvasPadFor(rect.width), HALF);
-          // Top and side chrome are hard walls — the ghost is blocked from the
-          // header and page edges exactly like the in-canvas draft drag. The
-          // bottom is NOT a wall, because the ghost is dragged UP out of the tray;
-          // clamping it to the tray line would yank it off the cursor at grab
-          // time. It tracks the finger down to the screen edge, and the drop
-          // (beginDraft) still snaps the placed note above the tray.
-          const gx = clamp(e.clientX - rect.left, a.minX, a.maxX);
-          const gy = clamp(e.clientY - rect.top, a.minY, rect.height - HALF);
-          ghostX.set(rect.left + gx);
-          ghostY.set(rect.top + gy);
-        } else {
-          ghostX.set(e.clientX);
-          ghostY.set(e.clientY);
-        }
+        ghostX.set(e.clientX);
+        ghostY.set(e.clientY);
         setGhostColor((c) => c ?? d.color);
       }
     },
-    [ghostX, ghostY]
+    [ghostX, ghostY],
   );
 
   const onPointerUp = useCallback(
@@ -163,25 +213,22 @@ export function WallClient() {
       const el = canvasRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      // Land at the ghost's current angle (base + release-inertia) for continuity.
-      const rot = ghostBaseRot.current + ghostTilt.get();
       const inside =
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom;
+        e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+      const rot = ghostBaseRot.current + ghostTilt.get();
       if (d.moved) {
         if (inside) {
-          beginDraft((e.clientX - rect.left) / rect.width, (e.clientY - rect.top) / rect.height, d.color, rot);
+          const wpt = vp.screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
+          const c = clampToWorld(wpt.x, wpt.y, HALF);
+          beginDraftWorld(c.x / WORLD_W, c.y / WORLD_H, d.color, rot);
         }
       } else {
-        // No drag — a plain click. Drop into the emptiest spot on the wall rather
-        // than always stacking on the page center.
-        const spot = sparsestSpot(notes ?? [], rect.width, rect.height, canvasPadFor(rect.width), HALF);
-        beginDraft(spot.x, spot.y, d.color, ghostBaseRot.current);
+        // Plain click — drop into the emptiest spot currently in view.
+        const spot = sparsestSpot(notes ?? [], placementRect());
+        beginDraftWorld(spot.x, spot.y, d.color, ghostBaseRot.current);
       }
     },
-    [beginDraft, onPointerMove, ghostTilt, notes]
+    [onPointerMove, ghostTilt, vp, canvasRef, notes, beginDraftWorld, placementRect],
   );
 
   const startTrayDrag = useCallback(
@@ -195,12 +242,58 @@ export function WallClient() {
       window.addEventListener("pointermove", onPointerMove);
       window.addEventListener("pointerup", onPointerUp, { once: true });
     },
-    [draft, onPointerMove, onPointerUp, ghostX, ghostY]
+    [draft, onPointerMove, onPointerUp, ghostX, ghostY],
   );
 
   useEffect(() => () => window.removeEventListener("pointermove", onPointerMove), [onPointerMove]);
 
-  // Map a thrown error message (the Worker's `error` reason) → friendly copy.
+  // Initial framing: restore the viewport from the URL, else ease... no — snap to
+  // frame the existing notes (or the board centre when empty) once the container
+  // is measured. Runs once.
+  // Frame the wall once per dataset: on first load (honoring a URL viewport if
+  // present), and again whenever the live/seed mode flips. Keying off the MODE
+  // (not every notes change) means posting a note doesn't yank the viewport.
+  const fittedMode = useRef<"seed" | "live" | null>(null);
+  useEffect(() => {
+    if (isLoading || notes === undefined) return; // wait for the dataset to load
+    const mode = liveDebug ? "live" : "seed";
+    if (fittedMode.current === mode) return;
+    let raf = 0;
+    const run = () => {
+      const el = canvasRef.current;
+      if (!el || !el.clientWidth || !el.clientHeight) {
+        raf = requestAnimationFrame(run);
+        return;
+      }
+      const firstEver = fittedMode.current === null;
+      fittedMode.current = mode;
+      if (firstEver) {
+        const urlV = readViewportFromUrl();
+        if (urlV) {
+          vp.setViewport(urlV);
+          return;
+        }
+      }
+      const b = notes.length ? notesBounds(notes, WORLD_NOTE_SIZE / 2) : null;
+      const opts = { animate: !firstEver, insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE };
+      if (b) vp.fitToBounds(b, opts);
+      else
+        vp.fitToBounds(
+          { minX: WORLD_W / 2 - 500, minY: WORLD_H / 2 - 350, maxX: WORLD_W / 2 + 500, maxY: WORLD_H / 2 + 350 },
+          opts,
+        );
+    };
+    run();
+    return () => cancelAnimationFrame(raf);
+  }, [isLoading, notes, liveDebug, vp, canvasRef]);
+
+  const toggleLive = useCallback(() => setLiveDebug((v) => !v), []);
+
+  const fitAll = useCallback(() => {
+    const b = notesBounds(notes ?? [], WORLD_NOTE_SIZE / 2);
+    if (b) vp.fitToBounds(b, { insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE });
+  }, [notes, vp]);
+
   const friendlyError = useCallback(
     (message: string): string => {
       switch (message) {
@@ -217,7 +310,7 @@ export function WallClient() {
           return t.wall.errorGeneric;
       }
     },
-    [t]
+    [t],
   );
 
   const confirmDraft = useCallback(async () => {
@@ -231,17 +324,14 @@ export function WallClient() {
         color: draft.color,
         x: draft.x,
         y: draft.y,
-        // Position-tilt (rot) is no longer sent — derived from id server-side.
         turnstileToken: turnstileToken || undefined,
       });
-      // `created.mine` is true; the server is the source of truth for ownership.
       await mutate((cur) => [...(cur ?? []), created], { revalidate: false });
       setDraft(null);
       setTurnstileToken("");
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
       setPostError(friendlyError(message));
-      // The token (if any) was consumed by the failed attempt; force a re-verify.
       setTurnstileToken("");
     } finally {
       setSubmitting(false);
@@ -254,13 +344,6 @@ export function WallClient() {
     setTurnstileToken("");
   }, []);
 
-  const moveDraft = useCallback((nx: number, ny: number) => {
-    setDraft((d) => (d ? { ...d, x: nx, y: ny } : d));
-  }, []);
-
-  // Soft-delete a note (your own, or — in admin mode — any note; deleteNote
-  // attaches the admin token and the Worker enforces which is allowed).
-  // Optimistically drop it from the canvas; revalidate from the server on failure.
   const removeNote = useCallback(
     (id: string) => {
       mutate((cur) => (cur ?? []).filter((n) => n.id !== id), { revalidate: false });
@@ -269,12 +352,6 @@ export function WallClient() {
     [mutate],
   );
 
-  // Panel actions are NON-optimistic: each awaits its request so the panel can show
-  // a per-row spinner, then updates state on success. The note stays in the ledger
-  // (flips hidden/visible in place); only the canvas gains/loses it.
-
-  // Hide one note: remove from the canvas, mark hidden in the ledger. Throws on
-  // failure so the row clears its spinner and keeps its state.
   const hidePanelNote = useCallback(
     async (id: string) => {
       await deleteNote(id);
@@ -287,8 +364,6 @@ export function WallClient() {
     [mutate, mutateAdmin],
   );
 
-  // Restore one note: un-hide in the ledger and re-place it on the canvas (its
-  // position came down with the ledger, so no refetch needed).
   const restorePanelNote = useCallback(
     async (id: string) => {
       await restoreNote(id);
@@ -318,7 +393,6 @@ export function WallClient() {
     [adminNotes, mutate, mutateAdmin],
   );
 
-  // Hide every still-flagged AI note in one server call, then reconcile both views.
   const hideAllAINotes = useCallback(async () => {
     const ids = new Set(
       (adminNotes ?? []).filter((n) => !n.hidden && n.hideReason === "ai-low-quality").map((n) => n.id),
@@ -332,21 +406,30 @@ export function WallClient() {
     );
   }, [adminNotes, mutate, mutateAdmin]);
 
-  // Placed notes shrink to fit more on a narrow (phone) canvas; the compose draft
-  // stays full size (NOTE_SIZE). Insets tighten on phones too (see canvasPadFor).
-  const noteSize = noteSizeFor(canvasSize.w);
-  const pad = canvasPadFor(canvasSize.w);
+  const hasNotes = (notes?.length ?? 0) > 0;
 
   return (
     <div className="relative h-full w-full select-none overflow-hidden">
-      <div ref={canvasRef} className="wall-grid absolute inset-0">
-        <AnimatePresence>
-          {canvasSize.w > 0 &&
-            // Every placed note shares one low z-index (see StickyNote), so paint
-            // order is decided by DOM order. Render oldest → newest so the most
-            // recently posted sticky lands on top, like freshly stuck paper —
-            // regardless of the order the API returns them in.
-            [...(notes ?? [])]
+      {/* Viewport frame — captures wheel/drag/pinch via useViewport. */}
+      <div
+        ref={canvasRef}
+        className="absolute inset-0 cursor-grab overflow-hidden bg-black active:cursor-grabbing"
+        style={{ touchAction: "none" }}
+      >
+        {/* World layer — one transform pans/zooms every note. */}
+        <motion.div
+          className="wall-grid absolute left-0 top-0 origin-top-left"
+          style={{
+            x: vp.tx,
+            y: vp.ty,
+            scale: vp.scale,
+            width: WORLD_W,
+            height: WORLD_H,
+            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.05)",
+          }}
+        >
+          <AnimatePresence>
+            {[...(notes ?? [])]
               .sort((a, b) => a.createdAt - b.createdAt)
               .map((n, i, arr) => (
                 <StickyNote
@@ -356,40 +439,39 @@ export function WallClient() {
                   count={arr.length}
                   mine={n.mine}
                   admin={admin}
-                  size={noteSize}
-                  canvasW={canvasSize.w}
-                  canvasH={canvasSize.h}
-                  onDelete={removeNote}
+                  size={WORLD_NOTE_SIZE}
+                  canvasW={WORLD_W}
+                  canvasH={WORLD_H}
+                  onDelete={liveDebug ? undefined : removeNote}
                 />
               ))}
-        </AnimatePresence>
+          </AnimatePresence>
 
-        <AnimatePresence>
-          {draft && (
-            <StickyNote
-              key="draft"
-              note={draft}
-              composing
-              submitting={submitting}
-              verified={verified}
-              errorMessage={postError}
-              size={NOTE_SIZE}
-              pad={pad}
-              canvasW={canvasSize.w}
-              canvasH={canvasSize.h}
-              onDraftMove={moveDraft}
-              onBodyChange={(v) => setDraft((d) => (d ? { ...d, body: v } : d))}
-              onNameChange={(v) => setDraft((d) => (d ? { ...d, name: v } : d))}
-              onColorChange={(c) => setDraft((d) => (d ? { ...d, color: c } : d))}
-              onTurnstileToken={setTurnstileToken}
-              onConfirm={confirmDraft}
-              onCancel={cancelDraft}
-            />
-          )}
-        </AnimatePresence>
+          <AnimatePresence>
+            {draft && (
+              <StickyNote
+                key="draft"
+                note={draft}
+                composing
+                submitting={submitting}
+                verified={verified}
+                errorMessage={postError}
+                size={NOTE_SIZE}
+                canvasW={WORLD_W}
+                canvasH={WORLD_H}
+                onComposeDragStart={onComposeDragStart}
+                onBodyChange={(v) => setDraft((d) => (d ? { ...d, body: v } : d))}
+                onNameChange={(v) => setDraft((d) => (d ? { ...d, name: v } : d))}
+                onColorChange={(c) => setDraft((d) => (d ? { ...d, color: c } : d))}
+                onTurnstileToken={setTurnstileToken}
+                onConfirm={confirmDraft}
+                onCancel={cancelDraft}
+              />
+            )}
+          </AnimatePresence>
+        </motion.div>
 
-        {/* Initial load: a quiet centered spinner so the wall doesn't read as empty
-            while the first fetch is in flight (the tray also waits — see below). */}
+        {/* Initial load spinner (screen space). */}
         {isLoading && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             <motion.span
@@ -400,16 +482,14 @@ export function WallClient() {
           </div>
         )}
 
-        {!isLoading && (notes?.length ?? 0) === 0 && !draft && (
+        {!isLoading && !hasNotes && !draft && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
-            <p className="font-mono text-xs uppercase tracking-[0.22em] text-white/30">
-              {t.wall.empty}
-            </p>
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-white/30">{t.wall.empty}</p>
           </div>
         )}
       </div>
 
-      {/* Sticky following the pointer while dragging from the tray */}
+      {/* Sticky following the pointer while dragging from the tray (screen space). */}
       <AnimatePresence>
         {ghostColor && (
           <motion.div
@@ -439,9 +519,15 @@ export function WallClient() {
       </AnimatePresence>
 
       {/* Dock waits out the initial load so it doesn't pop up over a spinner. */}
-      <Tray onPointerDownSticky={startTrayDrag} hidden={isLoading || !!draft || ghostColor !== null} />
+      <Tray onPointerDownSticky={startTrayDrag} hidden={isLoading || !!draft || ghostColor !== null || liveDebug} />
 
-      {/* Admin-only moderation review: trigger pill + slide-out panel. */}
+      {/* Zoom controls (bottom-left) + minimap (bottom-right). */}
+      {!isLoading && (
+        <ZoomControls onIn={() => vp.zoomBy(1.25)} onOut={() => vp.zoomBy(0.8)} onFit={fitAll} />
+      )}
+      {!isLoading && hasNotes && <Minimap vp={vp} notes={notes ?? []} viewportSize={vpSize} />}
+
+      {/* Admin-only moderation review. */}
       {admin && (
         <WallReview
           notes={adminNotes}
@@ -451,6 +537,46 @@ export function WallClient() {
           onHideAllAI={hideAllAINotes}
         />
       )}
+
+      {/* Dev-only: switch between local seed and the live production wall (read-only). */}
+      {isDev && (
+        <div className="pointer-events-none absolute left-1/2 top-3 z-50 -translate-x-1/2">
+          <button
+            type="button"
+            onClick={toggleLive}
+            className="glass ring-accent pointer-events-auto rounded-full px-3.5 py-1.5 font-mono text-[11px] tracking-wide transition hover:brightness-125"
+            style={{ color: liveDebug ? "#fca5a5" : "rgba(255,255,255,0.55)" }}
+          >
+            {liveDebug ? "● LIVE 数据 · 只读" : "○ 用 Live 数据渲染"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ZoomControls({ onIn, onOut, onFit }: { onIn: () => void; onOut: () => void; onFit: () => void }) {
+  const { t } = useI18n();
+  const btn = "grid h-9 w-9 place-items-center text-white/70 transition hover:bg-white/10 hover:text-white";
+  return (
+    <div className="pointer-events-none absolute bottom-6 left-5 z-40 hidden sm:block">
+      <div className="glass ring-accent pointer-events-auto flex flex-col overflow-hidden rounded-[12px] divide-y divide-white/10">
+        <button type="button" aria-label={t.wall.zoomIn} className={btn} onClick={onIn}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+            <path d="M8 3.5v9M3.5 8h9" />
+          </svg>
+        </button>
+        <button type="button" aria-label={t.wall.zoomOut} className={btn} onClick={onOut}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+            <path d="M3.5 8h9" />
+          </svg>
+        </button>
+        <button type="button" aria-label={t.wall.zoomFit} className={btn} onClick={onFit}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }
@@ -466,37 +592,26 @@ function Tray({
   const reduceMotion = useHydratedReducedMotion();
   const mid = (NOTE_COLOR_KEYS.length - 1) / 2;
 
-  // Idle "swipe": auto-play each sticky's hover left→right (0.2s apart) on a 5s
-  // loop, so the tray reads as interactive. Reuses the hover transform — no new
-  // visual, just an automated cursor-swipe feel. Pauses while the pointer is on
-  // the tray (hover) or any drag/compose is in flight (the whole tray is `hidden`
-  // then), so it never fights a real interaction. Off under reduced motion.
   const [sweep, setSweep] = useState(-1);
   const [hovering, setHovering] = useState(false);
   const paused = hidden || hovering || reduceMotion;
-  // Force the wave to rest while paused via derivation, so we never setState in
-  // the effect just to reset — the interval callback is the only writer of `sweep`.
   const activeSweep = paused ? -1 : sweep;
-  // The very first sweep waits 3s after load so the page settles before the tray
-  // draws attention; later resumes (after a hover/drag) start right away.
   const firstSweepRef = useRef(true);
 
   useEffect(() => {
     if (paused) return;
     const COUNT = NOTE_COLOR_KEYS.length;
-    const STEP_MS = 200; // 0.2s between notes
-    const CYCLE_STEPS = Math.round(5000 / STEP_MS); // 5s loop
+    const STEP_MS = 200;
+    const CYCLE_STEPS = Math.round(5000 / STEP_MS);
     let step = 0;
     let intervalId = 0;
     const tick = () => {
-      // The lit note travels 0→last over the first COUNT steps, then idles for the
-      // rest of the cycle before repeating.
       setSweep(step < COUNT ? step : -1);
       step = (step + 1) % CYCLE_STEPS;
     };
     const startId = window.setTimeout(
       () => {
-        firstSweepRef.current = false; // mark only once a sweep actually plays
+        firstSweepRef.current = false;
         tick();
         intervalId = window.setInterval(tick, STEP_MS);
       },
@@ -512,6 +627,7 @@ function Tray({
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex justify-center pb-6 sm:pb-8">
       <motion.div
         className="glass ring-accent pointer-events-auto flex flex-col items-center gap-3 rounded-[var(--radius-xl)] px-6 pb-4 pt-5"
+        data-no-pan=""
         initial={false}
         animate={{ y: hidden ? 120 : 0, opacity: hidden ? 0 : 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 26 }}
