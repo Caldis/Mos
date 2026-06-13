@@ -133,6 +133,9 @@ export function WallClient() {
   const ghostSmoothVel = useSpring(ghostVel, { stiffness: 170, damping: 40, mass: 0.7 });
   const ghostTilt = useTransform(ghostSmoothVel, [-1800, 0, 1800], [-12, 0, 12], { clamp: true });
   const ghostRotate = useTransform(ghostTilt, (tilt) => ghostBaseRot.current + tilt);
+  // The drag preview scales with the board, so a sticky dropped while zoomed out
+  // lands at the same (small) size it previewed at — matching its neighbours.
+  const ghostSize = useTransform(vp.scale, (s) => Math.round(WORLD_NOTE_SIZE * s));
 
   // The world rectangle (px) a click-placed note may land in: the visible region,
   // inset for chrome and clamped to the board.
@@ -158,10 +161,12 @@ export function WallClient() {
       const w = el.clientWidth;
       const h = el.clientHeight;
       if (!w || !h) return;
-      const targetScale = Math.min(Math.max(vp.get().scale, 0.92), 1.4);
+      // Keep the current zoom so the new note scales with the board (a note placed
+      // while zoomed out stays small); just pan it into view, a little above centre.
+      const s = vp.get().scale;
       const wx = nx * WORLD_W;
       const wy = ny * WORLD_H;
-      vp.animateTo({ tx: w / 2 - wx * targetScale, ty: h * 0.42 - wy * targetScale, scale: targetScale }, { duration: 0.5 });
+      vp.animateTo({ tx: w / 2 - wx * s, ty: h * 0.42 - wy * s, scale: s }, { duration: 0.4 });
     },
     [vp, canvasRef],
   );
@@ -506,8 +511,8 @@ export function WallClient() {
                 animate={{ scale: 1.05 }}
                 style={{
                   rotate: ghostRotate,
-                  width: 124,
-                  height: 124,
+                  width: ghostSize,
+                  height: ghostSize,
                   background: NOTE_COLORS[ghostColor].bg,
                   borderRadius: 3,
                   boxShadow: "0 22px 46px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.25)",

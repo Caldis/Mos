@@ -26,6 +26,10 @@ export interface Insets {
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+// Mouse-wheel zoom eases toward a target instead of snapping, reusing Mos' scroll
+// transition math (Interpolator.lerp on the remaining gap): each frame closes this
+// fraction of the gap, dt-corrected so 60/120Hz feel identical. Higher = snappier.
+const ZOOM_SMOOTH = 0.2;
 
 // The viewport is a window onto the fixed world (WORLD_W × WORLD_H). It is
 // described by a single affine transform `translate(tx,ty) scale(scale)` with
@@ -82,6 +86,20 @@ export function useViewport(opts?: {
     animsRef.current = [];
   }, []);
 
+  // Mouse-wheel zoom smoother: a target scale the current scale eases toward, a
+  // cursor anchor held for the glide, and its rAF handle.
+  const zoomTargetRef = useRef<number | null>(null);
+  const zoomAnchorRef = useRef({ x: 0, y: 0 });
+  const zoomRafRef = useRef(0);
+  const zoomLastRef = useRef(0);
+  const stopZoom = useCallback(() => {
+    zoomTargetRef.current = null;
+    if (zoomRafRef.current) {
+      cancelAnimationFrame(zoomRafRef.current);
+      zoomRafRef.current = 0;
+    }
+  }, []);
+
   const size = useCallback(() => {
     const el = containerRef.current;
     return { w: el?.clientWidth ?? 0, h: el?.clientHeight ?? 0 };
@@ -90,16 +108,25 @@ export function useViewport(opts?: {
   // Pan clamp: a large world may pan until its far edge is `over` past the
   // matching viewport edge; a world smaller than the viewport (zoomed out) is
   // kept loosely centered. Prevents losing the board into empty space.
+  // Keep the viewport strictly inside the world: a viewport edge never passes the
+  // matching world edge, so the void outside the board is never revealed. With
+  // minScale ensuring the world always covers the viewport, the board fully fills
+  // the frame at every zoom level.
   const clampPan = useCallback((nx: number, ny: number, s: number) => {
     const { w, h } = size();
     const axis = (t: number, worldLen: number, viewLen: number) => {
       if (!viewLen) return t;
-      const over = 0.4 * viewLen;
-      const a = over; // world's near edge may sit `over` past the viewport's near edge
-      const b = viewLen - worldLen - over; // world's far edge, `over` past the far edge
-      return clamp(t, Math.min(a, b), Math.max(a, b));
+      const gap = viewLen - worldLen; // ≤ 0 once the world covers the viewport
+      return clamp(t, Math.min(0, gap), Math.max(0, gap));
     };
     return { x: axis(nx, WORLD_W * s, w), y: axis(ny, WORLD_H * s, h) };
+  }, [size]);
+
+  // Floor on zoom so the world always covers the viewport (can't reveal the void
+  // around the board). ZOOM_MIN is just an absolute fallback for the unmeasured case.
+  const minScale = useCallback(() => {
+    const { w, h } = size();
+    return w && h ? Math.max(ZOOM_MIN, w / WORLD_W, h / WORLD_H) : ZOOM_MIN;
   }, [size]);
 
   const notify = useCallback(() => {
@@ -121,7 +148,7 @@ export function useViewport(opts?: {
   // fixed on screen.
   const zoomAt = useCallback((cx: number, cy: number, factor: number) => {
     const s0 = scale.get();
-    const s1 = clamp(s0 * factor, ZOOM_MIN, ZOOM_MAX);
+    const s1 = clamp(s0 * factor, minScale(), ZOOM_MAX);
     const f = s1 / s0;
     if (f === 1) return;
     const nx = cx - (cx - tx.get()) * f;
@@ -129,7 +156,7 @@ export function useViewport(opts?: {
     scale.set(s1);
     applyPan(nx, ny, s1);
     notify();
-  }, [scale, tx, ty, applyPan, notify]);
+  }, [scale, tx, ty, applyPan, notify, minScale]);
 
   const screenToWorld = useCallback((sx: number, sy: number) => {
     const s = scale.get();
@@ -152,15 +179,17 @@ export function useViewport(opts?: {
 
   const setViewport = useCallback((v: Viewport) => {
     stopAnims();
-    const s = clamp(v.scale, ZOOM_MIN, ZOOM_MAX);
+    stopZoom();
+    const s = clamp(v.scale, minScale(), ZOOM_MAX);
     scale.set(s);
     applyPan(v.tx, v.ty, s);
     notify();
-  }, [stopAnims, scale, applyPan, notify]);
+  }, [stopAnims, stopZoom, minScale, scale, applyPan, notify]);
 
   const animateTo = useCallback((v: Viewport, animOpts?: { duration?: number }) => {
     stopAnims();
-    const s = clamp(v.scale, ZOOM_MIN, ZOOM_MAX);
+    stopZoom();
+    const s = clamp(v.scale, minScale(), ZOOM_MAX);
     const c = clampPan(v.tx, v.ty, s);
     const duration = animOpts?.duration ?? 0.6;
     animsRef.current = [
@@ -168,7 +197,7 @@ export function useViewport(opts?: {
       animate(ty, c.y, { duration, ease: EASE }),
       animate(scale, s, { duration, ease: EASE, onUpdate: notify }),
     ];
-  }, [stopAnims, clampPan, tx, ty, scale, notify]);
+  }, [stopAnims, stopZoom, minScale, clampPan, tx, ty, scale, notify]);
 
   const fitToBounds = useCallback((b: WorldRect, fitOpts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number }) => {
     const { w, h } = size();
@@ -180,7 +209,7 @@ export function useViewport(opts?: {
     const bw = Math.max(1, b.maxX - b.minX);
     const bh = Math.max(1, b.maxY - b.minY);
     const maxScale = fitOpts?.maxScale ?? FIT_MAX_SCALE;
-    const s = clamp(Math.min(availW / bw, availH / bh), ZOOM_MIN, maxScale);
+    const s = clamp(Math.min(availW / bw, availH / bh), minScale(), Math.max(minScale(), maxScale));
     // Center the bounds within the inset-adjusted viewport.
     const cx = (b.minX + b.maxX) / 2;
     const cy = (b.minY + b.maxY) / 2;
@@ -190,15 +219,16 @@ export function useViewport(opts?: {
     const targetTy = viewCy - cy * s;
     if (fitOpts?.animate === false) setViewport({ tx: targetTx, ty: targetTy, scale: s });
     else animateTo({ tx: targetTx, ty: targetTy, scale: s });
-  }, [size, setViewport, animateTo]);
+  }, [size, minScale, setViewport, animateTo]);
 
   // Smooth zoom step around the viewport centre, for the on-screen +/− buttons.
   const zoomBy = useCallback((factor: number) => {
     const { w, h } = size();
     if (!w || !h) return;
     stopAnims();
+    stopZoom();
     const s0 = scale.get();
-    const s1 = clamp(s0 * factor, ZOOM_MIN, ZOOM_MAX);
+    const s1 = clamp(s0 * factor, minScale(), ZOOM_MAX);
     const f = s1 / s0;
     if (f === 1) return;
     const cx = w / 2;
@@ -211,12 +241,47 @@ export function useViewport(opts?: {
       animate(tx, c.x, { duration: 0.25, ease: EASE }),
       animate(ty, c.y, { duration: 0.25, ease: EASE }),
     ];
-  }, [size, stopAnims, scale, tx, ty, clampPan, notify]);
+  }, [size, stopAnims, stopZoom, minScale, scale, tx, ty, clampPan, notify]);
 
   // --- Input: wheel (pan / pinch-zoom) + pointer (drag-pan / two-finger pinch).
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+
+    // Mouse-wheel zoom smoother — local to this effect so its recursive rAF doesn't
+    // trip the hooks ref rule. Eases scale toward zoomTargetRef each frame, anchored
+    // at the cursor (mirrors Mos' ScrollPoster.processing on the remaining gap).
+    const zoomFrame = (now: number) => {
+      const dt = clamp((now - zoomLastRef.current) / 1000, 0, 0.05);
+      zoomLastRef.current = now;
+      const target = zoomTargetRef.current;
+      if (target === null) {
+        zoomRafRef.current = 0;
+        return;
+      }
+      const cur = scale.get();
+      const transDt = 1 - Math.pow(1 - ZOOM_SMOOTH, dt * 60);
+      let next = cur + (target - cur) * transDt;
+      if (Math.abs(target - next) <= target * 0.0008) {
+        next = target;
+        zoomTargetRef.current = null;
+      }
+      const f = next / cur;
+      const a = zoomAnchorRef.current;
+      scale.set(next);
+      applyPan(a.x - (a.x - tx.get()) * f, a.y - (a.y - ty.get()) * f, next);
+      notify();
+      zoomRafRef.current = zoomTargetRef.current !== null ? requestAnimationFrame(zoomFrame) : 0;
+    };
+    const zoomWheelSmooth = (cx: number, cy: number, factor: number) => {
+      const base = zoomTargetRef.current ?? scale.get();
+      zoomTargetRef.current = clamp(base * factor, minScale(), ZOOM_MAX);
+      zoomAnchorRef.current = { x: cx, y: cy };
+      if (!zoomRafRef.current) {
+        zoomLastRef.current = performance.now();
+        zoomRafRef.current = requestAnimationFrame(zoomFrame);
+      }
+    };
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -231,11 +296,15 @@ export function useViewport(opts?: {
       const pinch = e.ctrlKey || e.metaKey;
       const mouseWheel = !pinch && e.deltaX === 0 && (e.deltaMode !== 0 || Math.abs(e.deltaY) >= 30);
       if (pinch) {
+        // Trackpad pinch is continuous — track it directly, no inertia smoothing.
+        stopZoom();
         zoomAt(cx, cy, Math.exp(-e.deltaY * 0.0125));
       } else if (mouseWheel) {
+        // Mouse wheel eases toward an accumulating target for a smooth glide.
         const step = e.deltaMode !== 0 ? e.deltaY * 16 : e.deltaY; // normalize line→px
-        zoomAt(cx, cy, Math.exp(-step * 0.0018));
+        zoomWheelSmooth(cx, cy, Math.exp(-step * 0.0018));
       } else {
+        stopZoom();
         panBy(-e.deltaX, -e.deltaY);
       }
     };
@@ -251,6 +320,7 @@ export function useViewport(opts?: {
       if (e.pointerType === "mouse" && e.button !== 0) return;
       if (isNoPan(e.target)) return; // tray / compose / interactive widgets handle their own drags
       stopAnims();
+      stopZoom();
       pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pts.size === 1) {
         panning.set(1);
@@ -309,8 +379,9 @@ export function useViewport(opts?: {
       el.removeEventListener("pointermove", onPointerMove);
       el.removeEventListener("pointerup", endPointer);
       el.removeEventListener("pointercancel", endPointer);
+      stopZoom();
     };
-  }, [stopAnims, zoomAt, panBy, panning]);
+  }, [stopAnims, stopZoom, zoomAt, panBy, panning, scale, tx, ty, applyPan, notify, minScale]);
 
   return useMemo(
     () => ({
