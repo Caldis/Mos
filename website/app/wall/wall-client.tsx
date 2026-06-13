@@ -348,11 +348,12 @@ export function WallClient() {
             // regardless of the order the API returns them in.
             [...(notes ?? [])]
               .sort((a, b) => a.createdAt - b.createdAt)
-              .map((n, i) => (
+              .map((n, i, arr) => (
                 <StickyNote
                   key={n.id}
                   note={n}
                   index={i}
+                  count={arr.length}
                   mine={n.mine}
                   admin={admin}
                   size={noteSize}

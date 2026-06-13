@@ -50,6 +50,9 @@ interface StickyNoteProps {
   // not just your own. The Worker still enforces the privilege via the token.
   admin?: boolean;
   index?: number;
+  // Total placed-note count, so the entrance stagger can compress its per-note
+  // step on a busy wall instead of clumping every late note at one delay.
+  count?: number;
   submitting?: boolean;
   canvasW?: number;
   canvasH?: number;
@@ -114,6 +117,7 @@ export function StickyNote({
   mine = false,
   admin = false,
   index = 0,
+  count = 1,
   submitting = false,
   canvasW = 0,
   canvasH = 0,
@@ -208,6 +212,15 @@ export function StickyNote({
     ? { w: 96, h: 28, bg: "rgba(255,255,255,0.4)" }
     : { w: 64 * k, h: 20 * k, bg: "rgba(255,255,255,0.13)" };
 
+  // Initial-load stagger: notes pop in oldest→newest. Keep the snappy STAGGER_STEP
+  // on a small wall, but once there are many notes shrink the step so the LAST one
+  // still lands within ~STAGGER_TOTAL. Every note stays sequential — unlike the old
+  // hard delay cap, which gave every note past the cap the same delay (they all
+  // appeared at once).
+  const STAGGER_STEP = 0.04;
+  const STAGGER_TOTAL = 1.1;
+  const entranceDelay = count > 1 ? index * Math.min(STAGGER_STEP, STAGGER_TOTAL / (count - 1)) : 0;
+
   return (
     <motion.div
       className="group absolute left-0 top-0 will-change-transform"
@@ -227,7 +240,7 @@ export function StickyNote({
       transition={
         composing
           ? { type: "spring", stiffness: 440, damping: 24 }
-          : { type: "spring", stiffness: 260, damping: 22, delay: Math.min(index * 0.045, 0.6) }
+          : { type: "spring", stiffness: 260, damping: 22, delay: entranceDelay }
       }
       whileDrag={{ scale: 1.06 }}
       onDragStart={() => {
