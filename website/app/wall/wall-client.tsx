@@ -61,6 +61,12 @@ function randRot(): number {
 // Chrome that overlaps the viewport edges, kept clear when fitting/placing so a
 // note never lands hidden under the header or tray.
 const FIT_INSETS = { top: 76, right: 28, bottom: 128, left: 28 };
+// Don't fit below this — keeps note text legible; a sprawling board overflows and
+// is explored by panning / the minimap instead of being shrunk to mush.
+const FIT_MIN_READABLE = 0.5;
+// When a draft is placed, lean in to at least this zoom so it's comfortably
+// editable even if the board was zoomed way out.
+const DRAFT_FOCUS_SCALE = 0.95;
 
 function readViewportFromUrl(): Viewport | null {
   if (typeof window === "undefined") return null;
@@ -161,12 +167,13 @@ export function WallClient() {
       const w = el.clientWidth;
       const h = el.clientHeight;
       if (!w || !h) return;
-      // Keep the current zoom so the new note scales with the board (a note placed
-      // while zoomed out stays small); just pan it into view, a little above centre.
-      const s = vp.get().scale;
+      // The ghost previewed at board scale (so it matched its neighbours); now lean
+      // in to a readable zoom and centre the card a little above middle, so the user
+      // can actually see what they're typing even if the board was zoomed way out.
+      const s = Math.max(vp.get().scale, DRAFT_FOCUS_SCALE);
       const wx = nx * WORLD_W;
       const wy = ny * WORLD_H;
-      vp.animateTo({ tx: w / 2 - wx * s, ty: h * 0.42 - wy * s, scale: s }, { duration: 0.4 });
+      vp.animateTo({ tx: w / 2 - wx * s, ty: h * 0.42 - wy * s, scale: s }, { duration: 0.45 });
     },
     [vp, canvasRef],
   );
@@ -280,7 +287,7 @@ export function WallClient() {
         }
       }
       const b = notes.length ? notesBounds(notes, WORLD_NOTE_SIZE / 2) : null;
-      const opts = { animate: !firstEver, insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE };
+      const opts = { animate: !firstEver, insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE, minReadable: FIT_MIN_READABLE };
       if (b) vp.fitToBounds(b, opts);
       else
         vp.fitToBounds(
@@ -296,7 +303,7 @@ export function WallClient() {
 
   const fitAll = useCallback(() => {
     const b = notesBounds(notes ?? [], WORLD_NOTE_SIZE / 2);
-    if (b) vp.fitToBounds(b, { insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE });
+    if (b) vp.fitToBounds(b, { insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE, minReadable: FIT_MIN_READABLE });
   }, [notes, vp]);
 
   const friendlyError = useCallback(
@@ -527,9 +534,7 @@ export function WallClient() {
       <Tray onPointerDownSticky={startTrayDrag} hidden={isLoading || !!draft || ghostColor !== null || liveDebug} />
 
       {/* Zoom controls (bottom-left) + minimap (bottom-right). */}
-      {!isLoading && (
-        <ZoomControls onIn={() => vp.zoomBy(1.25)} onOut={() => vp.zoomBy(0.8)} onFit={fitAll} />
-      )}
+      {!isLoading && <ZoomControls onFit={fitAll} />}
       {!isLoading && hasNotes && <Minimap vp={vp} notes={notes ?? []} viewportSize={vpSize} />}
 
       {/* Admin-only moderation review. */}
@@ -560,28 +565,20 @@ export function WallClient() {
   );
 }
 
-function ZoomControls({ onIn, onOut, onFit }: { onIn: () => void; onOut: () => void; onFit: () => void }) {
+function ZoomControls({ onFit }: { onFit: () => void }) {
   const { t } = useI18n();
-  const btn = "grid h-9 w-9 place-items-center text-white/70 transition hover:bg-white/10 hover:text-white";
   return (
     <div className="pointer-events-none absolute bottom-6 left-5 z-40 hidden sm:block">
-      <div className="glass ring-accent pointer-events-auto flex flex-col overflow-hidden rounded-[12px] divide-y divide-white/10">
-        <button type="button" aria-label={t.wall.zoomIn} className={btn} onClick={onIn}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-            <path d="M8 3.5v9M3.5 8h9" />
-          </svg>
-        </button>
-        <button type="button" aria-label={t.wall.zoomOut} className={btn} onClick={onOut}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-            <path d="M3.5 8h9" />
-          </svg>
-        </button>
-        <button type="button" aria-label={t.wall.zoomFit} className={btn} onClick={onFit}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
-          </svg>
-        </button>
-      </div>
+      <button
+        type="button"
+        aria-label={t.wall.zoomFit}
+        onClick={onFit}
+        className="glass ring-accent pointer-events-auto grid h-9 w-9 place-items-center rounded-[12px] text-white/70 transition hover:bg-white/10 hover:text-white"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
+        </svg>
+      </button>
     </div>
   );
 }

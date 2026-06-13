@@ -35,8 +35,10 @@ export function Minimap({
     (clientX: number, clientY: number, animate: boolean) => {
       const rect = ref.current?.getBoundingClientRect();
       if (!rect) return;
-      const wx = ((clientX - rect.left) / SCALE);
-      const wy = ((clientY - rect.top) / SCALE);
+      // Use the rendered rect (which already reflects the hover scale-down), so the
+      // click maps correctly whether the minimap is at 60% or full size.
+      const wx = ((clientX - rect.left) / rect.width) * WORLD_W;
+      const wy = ((clientY - rect.top) / rect.height) * WORLD_H;
       const s = vp.get().scale;
       const target = { tx: viewportSize.w / 2 - wx * s, ty: viewportSize.h / 2 - wy * s, scale: s };
       if (animate) vp.animateTo(target, { duration: 0.4 });
@@ -69,7 +71,8 @@ export function Minimap({
 
   return (
     <div className="pointer-events-none absolute bottom-6 right-5 z-40 hidden sm:block">
-      <div className="glass ring-accent pointer-events-auto rounded-[14px] p-2 shadow-xl">
+      {/* Idles at 60% to stay out of the way; springs to full size on hover. */}
+      <div className="glass ring-accent pointer-events-auto origin-bottom-right scale-[0.6] rounded-[14px] p-2 shadow-xl transition-transform duration-200 ease-out hover:scale-100">
         <div
           ref={ref}
           onPointerDown={onPointerDown}

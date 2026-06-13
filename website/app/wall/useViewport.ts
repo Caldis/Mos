@@ -56,8 +56,9 @@ export interface UseViewport {
   setViewport: (v: Viewport) => void;
   /** Ease to a viewport (the "leap"). Returns when started. */
   animateTo: (v: Viewport, opts?: { duration?: number }) => void;
-  /** Frame a world rectangle: center it and scale to fit, capped at maxScale. */
-  fitToBounds: (b: WorldRect, opts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number }) => void;
+  /** Frame a world rectangle: center it and scale to fit, capped at maxScale and
+   *  floored at minReadable (overflow-and-pan rather than shrink text too small). */
+  fitToBounds: (b: WorldRect, opts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number; minReadable?: number }) => void;
   /** Smoothly zoom by `factor` around the viewport centre (for +/− buttons). */
   zoomBy: (factor: number) => void;
   /** Read the current viewport synchronously. */
@@ -199,7 +200,7 @@ export function useViewport(opts?: {
     ];
   }, [stopAnims, stopZoom, minScale, clampPan, tx, ty, scale, notify]);
 
-  const fitToBounds = useCallback((b: WorldRect, fitOpts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number }) => {
+  const fitToBounds = useCallback((b: WorldRect, fitOpts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number; minReadable?: number }) => {
     const { w, h } = size();
     if (!w || !h) return;
     const ins = { top: 0, right: 0, bottom: 0, left: 0, ...fitOpts?.insets };
@@ -209,7 +210,10 @@ export function useViewport(opts?: {
     const bw = Math.max(1, b.maxX - b.minX);
     const bh = Math.max(1, b.maxY - b.minY);
     const maxScale = fitOpts?.maxScale ?? FIT_MAX_SCALE;
-    const s = clamp(Math.min(availW / bw, availH / bh), minScale(), Math.max(minScale(), maxScale));
+    // Never fit below a readable floor: better to overflow a sprawling board and let
+    // the user pan/use the minimap than to shrink the text to an illegible size.
+    const floor = Math.max(minScale(), fitOpts?.minReadable ?? 0);
+    const s = clamp(Math.min(availW / bw, availH / bh), floor, Math.max(floor, maxScale));
     // Center the bounds within the inset-adjusted viewport.
     const cx = (b.minX + b.maxX) / 2;
     const cy = (b.minY + b.maxY) / 2;
