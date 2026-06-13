@@ -242,11 +242,40 @@ body::before {
     font-family: var(--font-hand), "HandCJKAdjust", var(--font-cjk), "Bradley Hand", "Comic Sans MS", cursive;
   }
 
-  /* Dot grid for the sticky-note canvas (/wall). */
+  /* Dotted backdrop for the wall canvas. Screen-fixed so the rising wave reads the
+     same at any zoom; the note grid sits in the transformed world layer above it. */
   .wall-grid {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1.2px, transparent 1.2px);
-    background-size: 28px 28px;
-    background-position: -14px -14px;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1.3px, transparent 1.3px);
+    background-size: 30px 30px;
+    background-position: center;
+  }
+  /* Upward light wave: a brighter copy of the dots revealed by a band mask that
+     sweeps bottom → top, so the dots glow in a rising wave. */
+  .wall-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.5) 1.3px, transparent 1.3px);
+    background-size: 30px 30px;
+    background-position: center;
+    -webkit-mask-image: linear-gradient(to top, transparent, #000 50%, transparent);
+    mask-image: linear-gradient(to top, transparent, #000 50%, transparent);
+    -webkit-mask-size: 100% 55%;
+    mask-size: 100% 55%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    animation: wall-grid-wave 5s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes wall-grid-wave {
+    from {
+      -webkit-mask-position: 0 175%;
+      mask-position: 0 175%;
+    }
+    to {
+      -webkit-mask-position: 0 -75%;
+      mask-position: 0 -75%;
+    }
   }
 
   .glass {

@@ -68,12 +68,20 @@ export interface UseViewport {
 export function useViewport(opts?: {
   /** Called (throttled by rAF) whenever the viewport changes, for URL sync etc. */
   onChange?: (v: Viewport) => void;
+  /** Called when the USER moves the camera (wheel / drag-pan / pinch) — NOT on
+   *  programmatic moves (animateTo/fit). Lets callers know the camera was touched. */
+  onUserInteract?: () => void;
 }): UseViewport {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const tx = useMotionValue(0);
   const ty = useMotionValue(0);
   const scale = useMotionValue(1);
   const panning = useMotionValue(0);
+
+  const onUserInteractRef = useRef(opts?.onUserInteract);
+  useEffect(() => {
+    onUserInteractRef.current = opts?.onUserInteract;
+  }, [opts?.onUserInteract]);
 
   const onChangeRef = useRef(opts?.onChange);
   useEffect(() => {
@@ -290,6 +298,7 @@ export function useViewport(opts?: {
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       stopAnims();
+      onUserInteractRef.current?.();
       const rect = el.getBoundingClientRect();
       const cx = e.clientX - rect.left;
       const cy = e.clientY - rect.top;
@@ -325,6 +334,7 @@ export function useViewport(opts?: {
       if (isNoPan(e.target)) return; // tray / compose / interactive widgets handle their own drags
       stopAnims();
       stopZoom();
+      onUserInteractRef.current?.();
       pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pts.size === 1) {
         panning.set(1);

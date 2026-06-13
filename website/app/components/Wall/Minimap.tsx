@@ -17,10 +17,14 @@ export function Minimap({
   vp,
   notes,
   viewportSize,
+  onInteract,
 }: {
   vp: UseViewport;
   notes: WallNote[];
   viewportSize: { w: number; h: number };
+  // Fired whenever the user navigates via the minimap, so callers can note that
+  // the camera was moved.
+  onInteract?: () => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -35,16 +39,17 @@ export function Minimap({
     (clientX: number, clientY: number, animate: boolean) => {
       const rect = ref.current?.getBoundingClientRect();
       if (!rect) return;
+      onInteract?.();
       // Use the rendered rect (which already reflects the hover scale-down), so the
       // click maps correctly whether the minimap is at 60% or full size.
       const wx = ((clientX - rect.left) / rect.width) * WORLD_W;
       const wy = ((clientY - rect.top) / rect.height) * WORLD_H;
       const s = vp.get().scale;
       const target = { tx: viewportSize.w / 2 - wx * s, ty: viewportSize.h / 2 - wy * s, scale: s };
-      if (animate) vp.animateTo(target, { duration: 0.4 });
+      if (animate) vp.animateTo(target, { duration: 0.45 });
       else vp.setViewport(target);
     },
-    [vp, viewportSize.w, viewportSize.h],
+    [vp, viewportSize.w, viewportSize.h, onInteract],
   );
 
   const dragging = useRef(false);
@@ -53,7 +58,9 @@ export function Minimap({
       e.preventDefault();
       dragging.current = true;
       try { ref.current?.setPointerCapture(e.pointerId); } catch { /* capture is best-effort */ }
-      jumpTo(e.clientX, e.clientY, false);
+      // A click leaps (animated); a drag is taken over by onPointerMove and tracks
+      // the pointer instantly.
+      jumpTo(e.clientX, e.clientY, true);
     },
     [jumpTo],
   );
@@ -108,7 +115,7 @@ export function Minimap({
 
           {/* Current viewport frame */}
           <motion.div
-            className="absolute rounded-[3px]"
+            className="absolute rounded-[7px]"
             style={{
               left,
               top,

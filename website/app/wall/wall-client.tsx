@@ -63,7 +63,7 @@ function randRot(): number {
 const FIT_INSETS = { top: 76, right: 28, bottom: 128, left: 28 };
 // Don't fit below this — keeps note text legible; a sprawling board overflows and
 // is explored by panning / the minimap instead of being shrunk to mush.
-const FIT_MIN_READABLE = 0.5;
+const FIT_MIN_READABLE = 0.75;
 // When a draft is placed, lean in to at least this zoom so it's comfortably
 // editable even if the board was zoomed way out.
 const DRAFT_FOCUS_SCALE = 0.95;
@@ -106,7 +106,17 @@ export function WallClient() {
     });
   }, []);
 
-  const vp = useViewport({ onChange: writeUrl });
+  // Drop-focus undo: the viewport saved just before a place-focus, and whether the
+  // user has moved the camera since (so cancelling an untouched draft glides back).
+  const savedViewportRef = useRef<Viewport | null>(null);
+  const cameraMovedRef = useRef(false);
+
+  const vp = useViewport({
+    onChange: writeUrl,
+    onUserInteract: () => {
+      cameraMovedRef.current = true;
+    },
+  });
   const canvasRef = vp.containerRef;
 
   // Viewport pixel size, for the minimap frame + fit math.
@@ -167,6 +177,10 @@ export function WallClient() {
       const w = el.clientWidth;
       const h = el.clientHeight;
       if (!w || !h) return;
+      // Remember the camera before focusing, so cancelling an untouched draft can
+      // glide back here (see cancelDraft); reset the moved flag for this draft.
+      savedViewportRef.current = vp.get();
+      cameraMovedRef.current = false;
       // The ghost previewed at board scale (so it matched its neighbours); now lean
       // in to a readable zoom and centre the card a little above middle, so the user
       // can actually see what they're typing even if the board was zoomed way out.
@@ -302,6 +316,7 @@ export function WallClient() {
   const toggleLive = useCallback(() => setLiveDebug((v) => !v), []);
 
   const fitAll = useCallback(() => {
+    cameraMovedRef.current = true;
     const b = notesBounds(notes ?? [], WORLD_NOTE_SIZE / 2);
     if (b) vp.fitToBounds(b, { insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE, minReadable: FIT_MIN_READABLE });
   }, [notes, vp]);
@@ -341,6 +356,7 @@ export function WallClient() {
       await mutate((cur) => [...(cur ?? []), created], { revalidate: false });
       setDraft(null);
       setTurnstileToken("");
+      savedViewportRef.current = null; // committed — stay at the focused view
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
       setPostError(friendlyError(message));
@@ -354,7 +370,13 @@ export function WallClient() {
     setDraft(null);
     setPostError(null);
     setTurnstileToken("");
-  }, []);
+    // If the user never moved the camera after the auto-focus, glide back to where
+    // they were — cancelling then feels like an undo of the whole place gesture.
+    if (savedViewportRef.current && !cameraMovedRef.current) {
+      vp.animateTo(savedViewportRef.current, { duration: 0.45 });
+    }
+    savedViewportRef.current = null;
+  }, [vp]);
 
   const removeNote = useCallback(
     (id: string) => {
@@ -428,9 +450,12 @@ export function WallClient() {
         className="absolute inset-0 cursor-grab overflow-hidden bg-black active:cursor-grabbing"
         style={{ touchAction: "none" }}
       >
+        {/* Screen-fixed dotted backdrop with the rising wave (sits behind the world). */}
+        <div className="wall-grid pointer-events-none absolute inset-0" aria-hidden />
+
         {/* World layer — one transform pans/zooms every note. */}
         <motion.div
-          className="wall-grid absolute left-0 top-0 origin-top-left"
+          className="absolute left-0 top-0 origin-top-left"
           style={{
             x: vp.tx,
             y: vp.ty,
@@ -535,7 +560,16 @@ export function WallClient() {
 
       {/* Zoom controls (bottom-left) + minimap (bottom-right). */}
       {!isLoading && <ZoomControls onFit={fitAll} />}
-      {!isLoading && hasNotes && <Minimap vp={vp} notes={notes ?? []} viewportSize={vpSize} />}
+      {!isLoading && hasNotes && (
+        <Minimap
+          vp={vp}
+          notes={notes ?? []}
+          viewportSize={vpSize}
+          onInteract={() => {
+            cameraMovedRef.current = true;
+          }}
+        />
+      )}
 
       {/* Admin-only moderation review. */}
       {admin && (
@@ -573,7 +607,7 @@ function ZoomControls({ onFit }: { onFit: () => void }) {
         type="button"
         aria-label={t.wall.zoomFit}
         onClick={onFit}
-        className="glass ring-accent pointer-events-auto grid h-9 w-9 place-items-center rounded-[12px] text-white/70 transition hover:bg-white/10 hover:text-white"
+        className="glass ring-accent pointer-events-auto grid h-9 w-9 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
@@ -628,7 +662,7 @@ function Tray({
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex justify-center pb-6 sm:pb-8">
       <motion.div
-        className="glass ring-accent pointer-events-auto flex flex-col items-center gap-3 rounded-[var(--radius-xl)] px-6 pb-4 pt-5"
+        className="glass ring-accent pointer-events-auto flex flex-col items-center rounded-[14px] px-5 py-4"
         data-no-pan=""
         initial={false}
         animate={{ y: hidden ? 120 : 0, opacity: hidden ? 0 : 1 }}
@@ -662,7 +696,6 @@ function Tray({
             </motion.button>
           ))}
         </div>
-        <div className="font-mono text-[11px] text-white/45">{t.wall.trayHint}</div>
       </motion.div>
     </div>
   );
