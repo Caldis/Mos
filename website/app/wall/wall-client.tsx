@@ -617,14 +617,31 @@ function ZoomControls({ vp, onFit, hidden }: { vp: UseViewport; onFit: () => voi
   );
 }
 
-// Picks a round world-unit length (1/2/5 ×10ⁿ) spanning ~96 screen px at this zoom.
+// The world's x axis spans RA 0–360° across WORLD_W px, so the horizontal scale is a
+// real ANGLE on the sky. Pick a round angular length (1/2/5 ×10ⁿ in °, ′ or ″ — the
+// astronomical units of arc) spanning ~96 screen px at this zoom. Approximate: it's
+// the equatorial RA degree (no cos δ term), like a map scale bar.
 function computeScaleBar(s: number): { w: number; label: string } {
   if (!s) return { w: 96, label: "" };
-  const targetWorld = 96 / s;
-  const pow = Math.pow(10, Math.floor(Math.log10(targetWorld)));
-  const n = targetWorld / pow;
+  const pxPerDeg = WORLD_W / 360; // 20 world px per degree
+  const targetPx = 96 / s; // world px spanning ~96 screen px
+  let perUnit: number;
+  let unit: string;
+  if (targetPx >= pxPerDeg) {
+    perUnit = pxPerDeg;
+    unit = "°";
+  } else if (targetPx >= pxPerDeg / 60) {
+    perUnit = pxPerDeg / 60;
+    unit = "′"; // arcminute
+  } else {
+    perUnit = pxPerDeg / 3600;
+    unit = "″"; // arcsecond
+  }
+  const targetInUnit = targetPx / perUnit;
+  const pow = Math.pow(10, Math.floor(Math.log10(targetInUnit)));
+  const n = targetInUnit / pow;
   const nice = (n >= 5 ? 5 : n >= 2 ? 2 : 1) * pow;
-  return { w: Math.max(28, Math.round(nice * s)), label: nice >= 1000 ? `${nice / 1000}k` : `${nice}` };
+  return { w: Math.max(28, Math.round(nice * perUnit * s)), label: `${nice}${unit}` };
 }
 
 // Google-Maps-style scale bar (snaps to a round world-unit length as you zoom) with
@@ -636,7 +653,7 @@ function ScaleBar({ vp }: { vp: UseViewport }) {
   return (
     <div className="pointer-events-none select-none pb-1">
       <div className="mb-1 whitespace-nowrap text-center font-mono text-[10px] leading-none text-white/55" style={{ width: bar.w }}>
-        {bar.label} px
+        {bar.label}
       </div>
       <div className="relative" style={{ width: bar.w, height: 6 }}>
         <span className="absolute bottom-0 left-0 right-0 h-px bg-white/40" />
@@ -644,9 +661,9 @@ function ScaleBar({ vp }: { vp: UseViewport }) {
         <span className="absolute bottom-0 right-0 h-1.5 w-px bg-white/40" />
       </div>
       <div className="mt-1.5 text-[9px] leading-none text-white/35">
-        Source:{" "}
+        Stellar data:{" "}
         <a
-          href="https://github.com/astronexus/HYG-Database"
+          href="https://codeberg.org/astronexus/hyg"
           target="_blank"
           rel="noopener noreferrer"
           className="pointer-events-auto underline decoration-white/20 underline-offset-2 transition-colors hover:text-white/65"
