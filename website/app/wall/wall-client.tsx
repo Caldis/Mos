@@ -607,7 +607,7 @@ export function WallClient() {
             style={{ color: liveDebug ? "#fca5a5" : "rgba(255,255,255,0.55)" }}
             initial={{ opacity: 0, y: -14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           >
             {liveDebug ? "● LIVE 数据 · 只读" : "○ 用 Live 数据渲染"}
           </motion.button>
@@ -624,7 +624,7 @@ function ZoomControls({ onFit }: { onFit: () => void }) {
       className="pointer-events-none absolute bottom-6 left-5 z-40 hidden sm:block"
       initial={{ opacity: 0, x: -16, y: 16 }}
       animate={{ opacity: 1, x: 0, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 1, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
     >
       <button
         type="button"

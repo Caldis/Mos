@@ -81,7 +81,7 @@ export function Minimap({
       className="pointer-events-none absolute bottom-6 right-5 z-40 hidden sm:block"
       initial={{ opacity: 0, x: 16, y: 16 }}
       animate={{ opacity: 1, x: 0, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Idles at 60% to stay out of the way; springs to full size on hover. */}
       <div className="glass ring-accent pointer-events-auto origin-bottom-right scale-[0.6] rounded-[14px] p-2 shadow-xl transition-transform duration-200 ease-out hover:scale-100">

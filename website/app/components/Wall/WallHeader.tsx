@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 // Controls fade/slide in from their own edge on entry.
-const ENTER = { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const };
+const ENTER = { duration: 1, ease: [0.22, 1, 0.36, 1] as const };
 
 import { useI18n } from "@/app/i18n/context";
 import { useWallAdmin } from "@/app/hooks/useWallAdmin";
