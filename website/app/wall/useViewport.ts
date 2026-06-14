@@ -458,11 +458,15 @@ export function useViewport(opts?: {
       else if (pts.size === 1) { pinch = null; panning.set(1); }
     };
 
+    // wheel must stay non-passive (it calls preventDefault to own zoom/scroll). The
+    // pointer handlers never preventDefault — the container's `touch-action: none`
+    // already suppresses native gestures — so mark them passive: the browser can
+    // dispatch them without waiting to see if we'll cancel, smoothing drag/pinch.
     el.addEventListener("wheel", onWheel, { passive: false });
-    el.addEventListener("pointerdown", onPointerDown);
-    el.addEventListener("pointermove", onPointerMove);
-    el.addEventListener("pointerup", endPointer);
-    el.addEventListener("pointercancel", endPointer);
+    el.addEventListener("pointerdown", onPointerDown, { passive: true });
+    el.addEventListener("pointermove", onPointerMove, { passive: true });
+    el.addEventListener("pointerup", endPointer, { passive: true });
+    el.addEventListener("pointercancel", endPointer, { passive: true });
     return () => {
       el.removeEventListener("wheel", onWheel);
       el.removeEventListener("pointerdown", onPointerDown);

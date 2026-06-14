@@ -21,7 +21,11 @@ export function Starfield({ vp }: { vp: UseViewport }) {
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    // `desynchronized` opts into the low-latency canvas path: the backdrop is
+    // decoupled from DOM compositing so its rAF doesn't wait on a frame sync. Any
+    // tearing is imperceptible on a twinkling starfield, and unsupported browsers
+    // (Safari) silently ignore the hint. `alpha` stays true (black sky shows through).
+    const ctx = canvas.getContext("2d", { desynchronized: true });
     if (!ctx) return;
 
     const coarse = typeof window !== "undefined" && !!window.matchMedia?.("(pointer: coarse)").matches;
@@ -83,13 +87,17 @@ export function Starfield({ vp }: { vp: UseViewport }) {
       ctx.fillStyle = "#ffffff";
       for (let i = 0; i < N; i += STEP) {
         const star = STARS[i];
+        // Position-cull FIRST (cheap mod). Each frame ~75% of stars wrap off-screen;
+        // culling them before the twinkle sin() below skips thousands of sin() calls
+        // per frame — pure CPU saving, byte-identical pixels.
+        const px = (((star[0] * tile + offX) % tile) + tile) % tile;
+        if (px > w + 3) continue; // [w,tile) wraps off-screen
+        const py = (((star[1] * tile + offY) % tile) + tile) % tile;
+        if (py > h + 3) continue;
         const b = star[2]; // brightness 0..1
         const tw = 0.5 + 0.5 * Math.sin(t * speed[i] + phase[i]); // 0..1
         const a = Math.min(1, (0.3 + b * 0.95) * tw);
         if (a < 0.04) continue;
-        const px = (((star[0] * tile + offX) % tile) + tile) % tile;
-        const py = (((star[1] * tile + offY) % tile) + tile) % tile;
-        if (px > w + 3 || py > h + 3) continue; // [w,tile) wraps off-screen
         const size = b > 0.62 ? 2.4 : b > 0.36 ? 1.6 : 1;
         ctx.globalAlpha = a;
         if (b > 0.64) {
