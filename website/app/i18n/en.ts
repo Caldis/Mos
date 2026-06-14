@@ -148,7 +148,7 @@ export const en = {
   wall: {
     back: "Mos",
     title: "The Wall",
-    tagline: "leave a sticky",
+    tagline: "leave your thoughts",
     empty: "be the first to leave a note",
     trayHint: "Drag a sticky onto the wall",
     trayDragAria: "Drag a {color} sticky onto the wall",

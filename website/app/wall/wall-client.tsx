@@ -11,6 +11,7 @@ import {
 } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StickyNote } from "@/app/components/Wall/StickyNote";
+import { Magnetic } from "@/app/components/Magnetic/Magnetic";
 import { Minimap } from "@/app/components/Wall/Minimap";
 import { Starfield, DEFAULT_STAR_CONFIG, type StarfieldConfig } from "@/app/components/Wall/Starfield";
 import { StarPanel } from "@/app/components/Wall/StarPanel";
@@ -601,16 +602,18 @@ function ZoomControls({ vp, onFit, hidden }: { vp: UseViewport; onFit: () => voi
         animate={{ x: hidden ? -90 : 0, y: hidden ? 90 : 0, opacity: hidden ? 0 : 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 26 }}
       >
-        <button
-          type="button"
-          aria-label={t.wall.zoomFit}
-          onClick={onFit}
-          className="glass pointer-events-auto grid h-9 w-9 shrink-0 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
-          </svg>
-        </button>
+        <Magnetic strength={14} className="pointer-events-auto">
+          <button
+            type="button"
+            aria-label={t.wall.zoomFit}
+            onClick={onFit}
+            className="glass pointer-events-auto grid h-9 w-9 shrink-0 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
+            </svg>
+          </button>
+        </Magnetic>
         <ScaleBar vp={vp} />
       </motion.div>
     </div>

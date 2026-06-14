@@ -150,7 +150,7 @@ export const tr: Translations = {
   wall: {
     back: "Mos",
     title: "Duvar",
-    tagline: "bir not bırak",
+    tagline: "düşünceni bırak",
     empty: "ilk notu bırakan sen ol",
     trayHint: "Bir yapışkanı duvara sürükle",
     trayDragAria: "{color} yapışkanı duvara sürükle",

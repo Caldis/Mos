@@ -150,7 +150,7 @@ export const el: Translations = {
   wall: {
     back: "Mos",
     title: "Ο Τοίχος",
-    tagline: "άφησε ένα post-it",
+    tagline: "άφησε τις σκέψεις σου",
     empty: "γίνε ο πρώτος που αφήνει σημείωμα",
     trayHint: "Σύρε ένα post-it στον τοίχο",
     trayDragAria: "Σύρε ένα {color} post-it στον τοίχο",

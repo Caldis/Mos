@@ -150,7 +150,7 @@ export const ko: Translations = {
   wall: {
     back: "Mos",
     title: "더 월",
-    tagline: "메모지를 남겨요",
+    tagline: "당신의 생각을 남겨요",
     empty: "첫 번째 메모를 남겨보세요",
     trayHint: "메모지를 벽으로 드래그하세요",
     trayDragAria: "{color} 메모지를 벽으로 드래그",
