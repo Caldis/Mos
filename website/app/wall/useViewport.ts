@@ -30,6 +30,8 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 // transition math (Interpolator.lerp on the remaining gap): each frame closes this
 // fraction of the gap, dt-corrected so 60/120Hz feel identical. Higher = snappier.
 const ZOOM_SMOOTH = 0.2;
+// Parallax depth of the starfield backdrop — it follows the camera at this fraction.
+const STAR_DEPTH = 0.12;
 
 // The viewport is a window onto the fixed world (WORLD_W × WORLD_H). It is
 // described by a single affine transform `translate(tx,ty) scale(scale)` with
@@ -46,6 +48,11 @@ export interface UseViewport {
   scale: MotionValue<number>;
   /** Is a left-drag / one-finger pan in progress (1/0) — drives the grab cursor. */
   panning: MotionValue<number>;
+  /** Starfield backdrop layer transform (screen-space tiled plane). The Starfield
+   *  canvas reads these; they follow the camera attenuated by a far parallax depth. */
+  starScale: MotionValue<number>;
+  starOffX: MotionValue<number>;
+  starOffY: MotionValue<number>;
   /** Container-local screen px → world px. */
   screenToWorld: (sx: number, sy: number) => { x: number; y: number };
   /** World px → container-local screen px. */
@@ -77,6 +84,23 @@ export function useViewport(opts?: {
   const ty = useMotionValue(0);
   const scale = useMotionValue(1);
   const panning = useMotionValue(0);
+
+  // Starfield backdrop layer — a screen-space tiled plane the canvas Starfield reads.
+  // It is its own little camera that follows the notes camera but attenuated by
+  // STAR_DEPTH: zoom is anchored at the SAME cursor (so it never slides toward a
+  // corner) and pan uses the REAL clamped delta (so when the board can't move, nor
+  // can the sky). starOffX/Y are in screen px, starScale multiplies the base tile.
+  const starScale = useMotionValue(1);
+  const starOffX = useMotionValue(0);
+  const starOffY = useMotionValue(0);
+  // Zoom the backdrop about (cx,cy) by an attenuated factor, keeping the star under
+  // the cursor fixed — identical zoom-about-a-point math as the notes layer.
+  const applyStarZoom = useCallback((cx: number, cy: number, f: number) => {
+    const fs = 1 + (f - 1) * STAR_DEPTH;
+    starScale.set(starScale.get() * fs);
+    starOffX.set(cx - (cx - starOffX.get()) * fs);
+    starOffY.set(cy - (cy - starOffY.get()) * fs);
+  }, [starScale, starOffX, starOffY]);
 
   const onUserInteractRef = useRef(opts?.onUserInteract);
   useEffect(() => {
@@ -149,9 +173,15 @@ export function useViewport(opts?: {
   }, [clampPan, tx, ty]);
 
   const panBy = useCallback((dx: number, dy: number) => {
-    applyPan(tx.get() + dx, ty.get() + dy, scale.get());
+    const x0 = tx.get();
+    const y0 = ty.get();
+    applyPan(x0 + dx, y0 + dy, scale.get());
+    // Drive the backdrop by the REAL (post-clamp) delta, so a pan the board refuses
+    // (e.g. at min zoom, world already pinned to the edge) moves the sky by 0 too.
+    starOffX.set(starOffX.get() + (tx.get() - x0) * STAR_DEPTH);
+    starOffY.set(starOffY.get() + (ty.get() - y0) * STAR_DEPTH);
     notify();
-  }, [applyPan, tx, ty, scale, notify]);
+  }, [applyPan, tx, ty, scale, notify, starOffX, starOffY]);
 
   // Zoom by `factor` keeping the world point under (cx,cy) — container-local px —
   // fixed on screen.
@@ -164,8 +194,9 @@ export function useViewport(opts?: {
     const ny = cy - (cy - ty.get()) * f;
     scale.set(s1);
     applyPan(nx, ny, s1);
+    applyStarZoom(cx, cy, f);
     notify();
-  }, [scale, tx, ty, applyPan, notify, minScale]);
+  }, [scale, tx, ty, applyPan, notify, minScale, applyStarZoom]);
 
   const screenToWorld = useCallback((sx: number, sy: number) => {
     const s = scale.get();
@@ -248,12 +279,19 @@ export function useViewport(opts?: {
     const nx = cx - (cx - tx.get()) * f;
     const ny = cy - (cy - ty.get()) * f;
     const c = clampPan(nx, ny, s1);
+    // Ease the backdrop in lockstep (attenuated, anchored at the same centre).
+    const fs = 1 + (f - 1) * STAR_DEPTH;
+    const sOffX = cx - (cx - starOffX.get()) * fs;
+    const sOffY = cy - (cy - starOffY.get()) * fs;
     animsRef.current = [
       animate(scale, s1, { duration: 0.25, ease: EASE, onUpdate: notify }),
       animate(tx, c.x, { duration: 0.25, ease: EASE }),
       animate(ty, c.y, { duration: 0.25, ease: EASE }),
+      animate(starScale, starScale.get() * fs, { duration: 0.25, ease: EASE }),
+      animate(starOffX, sOffX, { duration: 0.25, ease: EASE }),
+      animate(starOffY, sOffY, { duration: 0.25, ease: EASE }),
     ];
-  }, [size, stopAnims, stopZoom, minScale, scale, tx, ty, clampPan, notify]);
+  }, [size, stopAnims, stopZoom, minScale, scale, tx, ty, clampPan, notify, starScale, starOffX, starOffY]);
 
   // --- Input: wheel (pan / pinch-zoom) + pointer (drag-pan / two-finger pinch).
   useEffect(() => {
@@ -282,6 +320,7 @@ export function useViewport(opts?: {
       const a = zoomAnchorRef.current;
       scale.set(next);
       applyPan(a.x - (a.x - tx.get()) * f, a.y - (a.y - ty.get()) * f, next);
+      applyStarZoom(a.x, a.y, f);
       notify();
       zoomRafRef.current = zoomTargetRef.current !== null ? requestAnimationFrame(zoomFrame) : 0;
     };
@@ -395,7 +434,7 @@ export function useViewport(opts?: {
       el.removeEventListener("pointercancel", endPointer);
       stopZoom();
     };
-  }, [stopAnims, stopZoom, zoomAt, panBy, panning, scale, tx, ty, applyPan, notify, minScale]);
+  }, [stopAnims, stopZoom, zoomAt, panBy, panning, scale, tx, ty, applyPan, notify, minScale, applyStarZoom]);
 
   return useMemo(
     () => ({
@@ -404,6 +443,9 @@ export function useViewport(opts?: {
       ty,
       scale,
       panning,
+      starScale,
+      starOffX,
+      starOffY,
       screenToWorld,
       worldToScreen,
       visibleWorldRect,
@@ -413,7 +455,7 @@ export function useViewport(opts?: {
       zoomBy,
       get,
     }),
-    [tx, ty, scale, panning, screenToWorld, worldToScreen, visibleWorldRect, setViewport, animateTo, fitToBounds, zoomBy, get],
+    [tx, ty, scale, panning, starScale, starOffX, starOffY, screenToWorld, worldToScreen, visibleWorldRect, setViewport, animateTo, fitToBounds, zoomBy, get],
   );
 }
 
