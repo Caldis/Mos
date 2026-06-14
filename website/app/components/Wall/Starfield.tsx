@@ -8,7 +8,7 @@ import type { UseViewport } from "@/app/wall/useViewport";
 // drifts them slowly (parallax depth) while zooming — which keeps the same world
 // centre under the cursor — does NOT slide them. Zoom only makes the field
 // breathe a touch (subtle zoom parallax), never pan.
-const PARALLAX_PAN = 0.15; // stars drift at 15% of the camera's world motion
+const PARALLAX_PAN = 0.15; // stars drift at 15% of the pan distance (screen px)
 const ZOOM_PARALLAX = 0.12; // star spacing scales at 12% of the zoom change
 
 export function Starfield({ vp }: { vp: UseViewport }) {
@@ -54,13 +54,14 @@ export function Starfield({ vp }: { vp: UseViewport }) {
       if (!startT) startT = now;
       const t = (now - startT) / 1000;
       const s = vp.scale.get();
-      // World point at the viewport centre — moves with pan, stays put under a
-      // cursor-anchored zoom.
-      const wcx = (w / 2 - vp.tx.get()) / s;
-      const wcy = (h / 2 - vp.ty.get()) / s;
-      const offX = -wcx * PARALLAX_PAN;
-      const offY = -wcy * PARALLAX_PAN;
-      const tile = baseTile * (1 + (s - 1) * ZOOM_PARALLAX);
+      // Parallax follows ONLY user pans (panX/panY ignore zoom), so a cursor-
+      // anchored zoom never slides the sky — it just lets the field breathe a touch.
+      const offX = vp.panX.get() * PARALLAX_PAN;
+      const offY = vp.panY.get() * PARALLAX_PAN;
+      // Fixed spacing → zoom never shifts star positions. The zoom parallax is
+      // expressed as a subtle change in star SIZE instead (distant → scales little).
+      const tile = baseTile;
+      const zoomF = 1 + (s - 1) * ZOOM_PARALLAX;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = "#ffffff";
@@ -73,7 +74,7 @@ export function Starfield({ vp }: { vp: UseViewport }) {
         const px = (((star[0] * tile + offX) % tile) + tile) % tile;
         const py = ((((1 - star[1]) * tile + offY) % tile) + tile) % tile; // flip dec → north up
         if (px > w + 3 || py > h + 3) continue;
-        const size = b > 0.62 ? 2.4 : b > 0.36 ? 1.6 : 1;
+        const size = (b > 0.62 ? 2.4 : b > 0.36 ? 1.6 : 1) * zoomF;
         ctx.globalAlpha = a;
         if (b > 0.64) {
           // Bright stars: sharp core + a small cool glow for crispness.
