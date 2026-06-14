@@ -4,12 +4,12 @@ import { useEffect, useRef } from "react";
 import { STARS } from "./stars";
 import type { UseViewport } from "@/app/wall/useViewport";
 
-// Stars track the viewport's WORLD centre (not its raw transform), so panning
-// drifts them slowly (parallax depth) while zooming — which keeps the same world
-// centre under the cursor — does NOT slide them. Zoom only makes the field
-// breathe a touch (subtle zoom parallax), never pan.
-const PARALLAX_PAN = 0.15; // stars drift at 15% of the pan distance (screen px)
-const ZOOM_PARALLAX = 0.12; // star spacing scales at 12% of the zoom change
+// The starfield is a single far plane behind the notes, driven by the SAME camera
+// (tx/ty/scale) but at a great distance, so its motion and zoom are attenuated by
+// DEPTH. Because it reads the real, already-clamped transform, when the board
+// can't pan or zoom (e.g. at min zoom the world fills the viewport and tx/ty are
+// pinned) the sky can't either — no special cases, no accumulators.
+const DEPTH = 0.12; // backdrop follows the camera at 12% (a far parallax layer)
 
 export function Starfield({ vp }: { vp: UseViewport }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
@@ -53,15 +53,13 @@ export function Starfield({ vp }: { vp: UseViewport }) {
     const draw = (now: number) => {
       if (!startT) startT = now;
       const t = (now - startT) / 1000;
+      // Far-plane camera = notes camera, attenuated by DEPTH. Reads the REAL
+      // (clamped) transform, so pan/zoom that the notes can't do, the sky can't either.
       const s = vp.scale.get();
-      // Parallax follows ONLY user pans (panX/panY ignore zoom), so a cursor-
-      // anchored zoom never slides the sky — it just lets the field breathe a touch.
-      const offX = vp.panX.get() * PARALLAX_PAN;
-      const offY = vp.panY.get() * PARALLAX_PAN;
-      // Fixed spacing → zoom never shifts star positions. The zoom parallax is
-      // expressed as a subtle change in star SIZE instead (distant → scales little).
-      const tile = baseTile;
-      const zoomF = 1 + (s - 1) * ZOOM_PARALLAX;
+      const starScale = 1 + (s - 1) * DEPTH; // zoom attenuated
+      const offX = vp.tx.get() * DEPTH; // pan attenuated
+      const offY = vp.ty.get() * DEPTH;
+      const tile = baseTile * starScale;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = "#ffffff";
@@ -74,7 +72,7 @@ export function Starfield({ vp }: { vp: UseViewport }) {
         const px = (((star[0] * tile + offX) % tile) + tile) % tile;
         const py = ((((1 - star[1]) * tile + offY) % tile) + tile) % tile; // flip dec → north up
         if (px > w + 3 || py > h + 3) continue;
-        const size = (b > 0.62 ? 2.4 : b > 0.36 ? 1.6 : 1) * zoomF;
+        const size = b > 0.62 ? 2.4 : b > 0.36 ? 1.6 : 1;
         ctx.globalAlpha = a;
         if (b > 0.64) {
           // Bright stars: sharp core + a small cool glow for crispness.

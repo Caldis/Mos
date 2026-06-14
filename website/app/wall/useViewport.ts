@@ -46,9 +46,6 @@ export interface UseViewport {
   scale: MotionValue<number>;
   /** Is a left-drag / one-finger pan in progress (1/0) — drives the grab cursor. */
   panning: MotionValue<number>;
-  /** Pan-only accumulators (screen px) for the parallax backdrop (ignores zoom). */
-  panX: MotionValue<number>;
-  panY: MotionValue<number>;
   /** Container-local screen px → world px. */
   screenToWorld: (sx: number, sy: number) => { x: number; y: number };
   /** World px → container-local screen px. */
@@ -80,11 +77,6 @@ export function useViewport(opts?: {
   const ty = useMotionValue(0);
   const scale = useMotionValue(1);
   const panning = useMotionValue(0);
-  // Pan-only accumulators (screen px): advanced by drag/wheel pans, untouched by
-  // zoom or programmatic fits — so the parallax starfield drifts with panning but
-  // never slides under a (cursor-anchored) zoom.
-  const panX = useMotionValue(0);
-  const panY = useMotionValue(0);
 
   const onUserInteractRef = useRef(opts?.onUserInteract);
   useEffect(() => {
@@ -158,10 +150,8 @@ export function useViewport(opts?: {
 
   const panBy = useCallback((dx: number, dy: number) => {
     applyPan(tx.get() + dx, ty.get() + dy, scale.get());
-    panX.set(panX.get() + dx);
-    panY.set(panY.get() + dy);
     notify();
-  }, [applyPan, tx, ty, scale, notify, panX, panY]);
+  }, [applyPan, tx, ty, scale, notify]);
 
   // Zoom by `factor` keeping the world point under (cx,cy) — container-local px —
   // fixed on screen.
@@ -414,8 +404,6 @@ export function useViewport(opts?: {
       ty,
       scale,
       panning,
-      panX,
-      panY,
       screenToWorld,
       worldToScreen,
       visibleWorldRect,
@@ -425,7 +413,7 @@ export function useViewport(opts?: {
       zoomBy,
       get,
     }),
-    [tx, ty, scale, panning, panX, panY, screenToWorld, worldToScreen, visibleWorldRect, setViewport, animateTo, fitToBounds, zoomBy, get],
+    [tx, ty, scale, panning, screenToWorld, worldToScreen, visibleWorldRect, setViewport, animateTo, fitToBounds, zoomBy, get],
   );
 }
 
