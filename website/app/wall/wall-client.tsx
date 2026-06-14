@@ -635,15 +635,25 @@ function ScaleBar({ vp }: { vp: UseViewport }) {
 
   return (
     <div className="pointer-events-none select-none pb-1">
-      <div className="mb-1 text-center font-mono text-[10px] leading-none text-white/55" style={{ width: bar.w }}>
-        {bar.label}
+      <div className="mb-1 whitespace-nowrap text-center font-mono text-[10px] leading-none text-white/55" style={{ width: bar.w }}>
+        {bar.label} px
       </div>
       <div className="relative" style={{ width: bar.w, height: 6 }}>
         <span className="absolute bottom-0 left-0 right-0 h-px bg-white/40" />
         <span className="absolute bottom-0 left-0 h-1.5 w-px bg-white/40" />
         <span className="absolute bottom-0 right-0 h-1.5 w-px bg-white/40" />
       </div>
-      <div className="mt-1.5 text-[9px] leading-none text-white/35">星图 · HYG Database</div>
+      <div className="mt-1.5 text-[9px] leading-none text-white/35">
+        Source:{" "}
+        <a
+          href="https://github.com/astronexus/HYG-Database"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pointer-events-auto underline decoration-white/20 underline-offset-2 transition-colors hover:text-white/65"
+        >
+          HYG Database
+        </a>
+      </div>
     </div>
   );
 }
