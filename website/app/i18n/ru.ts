@@ -150,7 +150,7 @@ export const ru: Translations = {
   wall: {
     back: "Mos",
     title: "Стена",
-    tagline: "оставь стикер",
+    tagline: "оставь свои мысли",
     empty: "будь первым, кто оставит заметку",
     trayHint: "Перетащи стикер на стену",
     trayDragAria: "Перетащи {color} стикер на стену",

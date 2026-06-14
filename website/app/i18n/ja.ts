@@ -150,7 +150,7 @@ export const ja: Translations = {
   wall: {
     back: "Mos",
     title: "ウォール",
-    tagline: "付箋を貼っていこう",
+    tagline: "あなたの思いを残そう",
     empty: "最初の一枚を貼ってみよう",
     trayHint: "付箋をウォールにドラッグ",
     trayDragAria: "{color}の付箋をウォールにドラッグ",

@@ -269,12 +269,23 @@ body::before {
     from { opacity: 0; transform: translate(54px, 54px); }
     to { opacity: 1; transform: none; }
   }
-  .wall-enter-up { animation: wall-enter-up 2s cubic-bezier(0.22, 1, 0.36, 1) both; }
-  .wall-enter-down { animation: wall-enter-down 2s cubic-bezier(0.22, 1, 0.36, 1) both; }
-  .wall-enter-tl { animation: wall-enter-tl 2s cubic-bezier(0.22, 1, 0.36, 1) both; }
-  .wall-enter-tr { animation: wall-enter-tr 2s cubic-bezier(0.22, 1, 0.36, 1) both; }
-  .wall-enter-bl { animation: wall-enter-bl 2s cubic-bezier(0.22, 1, 0.36, 1) both; }
-  .wall-enter-br { animation: wall-enter-br 2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  /* The 0.3s delay holds each control hidden (opacity:0, via `both`) for a beat after
+     mount, so the starfield begins lighting up first and the chrome slides in after. */
+  .wall-enter-up { animation: wall-enter-up 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+  .wall-enter-down { animation: wall-enter-down 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+  .wall-enter-tl { animation: wall-enter-tl 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+  .wall-enter-tr { animation: wall-enter-tr 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+  .wall-enter-bl { animation: wall-enter-bl 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+  .wall-enter-br { animation: wall-enter-br 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+
+  /* Starfield ignition: the canvas sits on the black viewport and fades up from 0, so
+     the sky reads as pure black at first frame and the stars slowly light up rather
+     than popping in. Opacity-only (no movement) so it's reduced-motion friendly. */
+  @keyframes wall-stars-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .wall-stars-in { animation: wall-stars-in 2.4s ease-out both; }
 
   /* Dotted backdrop for the wall canvas. Screen-fixed so the rising wave reads the
      same at any zoom; the note grid sits in the transformed world layer above it. */
@@ -441,5 +452,9 @@ body::before {
   .homebrew-highlight::after {
     animation: none;
     opacity: 0;
+  }
+  /* Reduced motion: skip the fade and show the stars at full brightness immediately. */
+  .wall-stars-in {
+    animation: none;
   }
 }

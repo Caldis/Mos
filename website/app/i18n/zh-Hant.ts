@@ -149,7 +149,7 @@ export const zhHant: Translations = {
   wall: {
     back: "Mos",
     title: "留言牆",
-    tagline: "貼張便條紙",
+    tagline: "留下你的想法",
     empty: "來當第一個留言的人吧",
     trayHint: "把便條紙拖到牆上",
     trayDragAria: "將{color}便條紙拖到牆上",

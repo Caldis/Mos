@@ -150,7 +150,7 @@ export const id: Translations = {
   wall: {
     back: "Mos",
     title: "Dinding",
-    tagline: "tinggalkan sticky",
+    tagline: "tinggalkan pikiranmu",
     empty: "jadilah yang pertama meninggalkan catatan",
     trayHint: "Seret sticky ke dinding",
     trayDragAria: "Seret sticky {color} ke dinding",

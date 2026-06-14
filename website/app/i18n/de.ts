@@ -150,7 +150,7 @@ export const de: Translations = {
   wall: {
     back: "Mos",
     title: "The Wall",
-    tagline: "hinterlass einen Zettel",
+    tagline: "hinterlass deine Gedanken",
     empty: "sei die erste Person, die eine Notiz hinterlässt",
     trayHint: "Zieh einen Zettel auf die Wand",
     trayDragAria: "Zieh einen {color} Zettel auf die Wand",

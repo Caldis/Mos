@@ -227,5 +227,5 @@ export function Starfield({ vp, config = DEFAULT_STAR_CONFIG }: { vp: UseViewpor
     };
   }, [vp]);
 
-  return <canvas ref={ref} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden />;
+  return <canvas ref={ref} className="wall-stars-in pointer-events-none absolute inset-0 h-full w-full" aria-hidden />;
 }

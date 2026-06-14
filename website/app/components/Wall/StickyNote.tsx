@@ -8,7 +8,7 @@ import {
   useTransform,
   useVelocity,
 } from "framer-motion";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import {
   NOTE_COLORS,
   NOTE_COLOR_KEYS,
@@ -71,6 +71,9 @@ interface StickyNoteProps {
   onCancel?: () => void;
   // Hide one of your own placed notes (only rendered when `mine`).
   onDelete?: (id: string) => void;
+  // Skip the entrance animation — used when the note is virtualized (it scrolls in/out
+  // of the DOM as the camera pans, so an enter animation would fire constantly).
+  instant?: boolean;
 }
 
 function Card({
@@ -111,7 +114,7 @@ function Card({
   );
 }
 
-export function StickyNote({
+function StickyNoteBase({
   note,
   composing = false,
   mine = false,
@@ -132,6 +135,7 @@ export function StickyNote({
   onConfirm,
   onCancel,
   onDelete,
+  instant = false,
 }: StickyNoteProps) {
   const { t, language } = useI18n();
   const palette = NOTE_COLORS[note.color];
@@ -238,7 +242,7 @@ export function StickyNote({
       // on each zoom step). The only thing needing 3D is the tape's rotateX, so the
       // perspective lives on the tape itself (transformPerspective) instead.
       style={{ x, y, rotate, zIndex: composing ? 60 : 2 }}
-      initial={{ opacity: 0, scale: composing ? 0.6 : 0.7 }}
+      initial={instant ? false : { opacity: 0, scale: composing ? 0.6 : 0.7 }}
       animate={{ opacity: 1, scale: dragging ? 1.05 : 1 }}
       exit={composing ? { opacity: 0, scale: 0.66, transition: { duration: 0.16 } } : undefined}
       transition={
@@ -443,3 +447,7 @@ export function StickyNote({
     </motion.div>
   );
 }
+
+// Memoized: with a windowed/virtualized wall the parent re-renders on every recompute;
+// memo lets notes whose props are unchanged skip re-rendering (note refs are stable).
+export const StickyNote = memo(StickyNoteBase);

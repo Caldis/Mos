@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { useI18n } from "@/app/i18n/context";
 import { useWallAdmin } from "@/app/hooks/useWallAdmin";
+import { Magnetic } from "@/app/components/Magnetic/Magnetic";
 
 // Hidden admin entry: clicking the wall title this many times (within a short
 // gap of each other) opens the admin-token prompt. No visual feedback by design —
@@ -68,13 +69,15 @@ export function WallHeader() {
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-50 flex items-start justify-between px-4 py-4 sm:px-7 sm:py-5">
       <div className="wall-enter-tl pointer-events-none">
-        <Link
-          href="/"
-          onClick={handleBack}
-          className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3.5 py-2 font-mono text-xs text-white/65 backdrop-blur-md transition-colors hover:border-white/20 hover:text-white"
-        >
-          <span aria-hidden>←</span> {t.wall.back}
-        </Link>
+        <Magnetic strength={14} className="pointer-events-auto">
+          <Link
+            href="/"
+            onClick={handleBack}
+            className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3.5 py-2 font-mono text-xs text-white/65 backdrop-blur-md transition-colors hover:border-white/20 hover:text-white"
+          >
+            <span aria-hidden>←</span> {t.wall.back}
+          </Link>
+        </Magnetic>
       </div>
       {/* Hidden admin entry: click the title ADMIN_CLICKS× to open the token
           prompt. Intentionally NOT announced as interactive (no role/keyboard

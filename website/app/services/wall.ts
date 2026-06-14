@@ -419,6 +419,53 @@ export async function fetchLiveNotes(): Promise<WallNote[]> {
   );
 }
 
+// --- Load simulation (?sim=N) ----------------------------------------------
+// Synthesise N deterministic mock notes to stress-test the canvas at a future
+// scale (e.g. "two years in"). Never persisted, never hits the API.
+const MOCK_BODIES = [
+  "best app for mac", "好用，谢谢你 🙏", "perfect, thank you!", "ありがとう！最高",
+  "scrolling feels like butter now", "life changing!!", "amazing", "신기하고 좋아요",
+  "把它推荐进了公司的新人指南", "love it ❤️", "banger app", "Tack så mycket!",
+  "Mos 让我的滚轮终于顺了", "smooth af honestly", "great work, keep it up", "đỉnh thật sự",
+  "trackpad person on a mouse — finally bearable", "毎日つかってます、ありがとう！", "this is just awesome",
+  "宝藏软件，安利给所有人", "noice", "meow....", "强了", "best wishes from Helsinki",
+  "用了之后滚动确实很有高级感，真的牛逼。请求增加鼠标速度调整就更好了", "cool!", "ttyl",
+  "Unexpectedly good and minimal with no application space consumed on the screen",
+  "这留言板有点 QQ 空间的感觉了（暴露年龄）", "thanks for the maintenance",
+];
+const MOCK_NAMES = ["匿名", "Lin", "Aki", "dylan", "kenji", "BOB", "Rae", "三文鱼", "Wei", "mika", "あお", "Dani", "—"];
+
+function hash01(n: number): number {
+  const v = Math.sin(n) * 43758.5453;
+  return v - Math.floor(v);
+}
+// Sum-of-uniforms ≈ gaussian, so mock notes cluster toward the middle and thin out —
+// closer to how a real board fills than a uniform scatter.
+function centred(seed: number): number {
+  const g = (hash01(seed) + hash01(seed + 11.1) + hash01(seed + 23.3)) / 3;
+  return Math.min(0.97, Math.max(0.03, 0.5 + (g - 0.5) * 1.7));
+}
+
+export function makeMockNotes(n: number): WallNote[] {
+  const now = Date.now();
+  const out: WallNote[] = new Array(n);
+  for (let i = 0; i < n; i++) {
+    const id = `sim_${i}`;
+    out[i] = {
+      id,
+      name: MOCK_NAMES[Math.floor(hash01(i * 5.1) * MOCK_NAMES.length)],
+      body: MOCK_BODIES[Math.floor(hash01(i * 7.3) * MOCK_BODIES.length)],
+      color: NOTE_COLOR_KEYS[Math.floor(hash01(i * 9.7) * NOTE_COLOR_KEYS.length)],
+      x: centred(i * 2.1),
+      y: centred(i * 3.7 + 100),
+      rot: rotFromId(id),
+      createdAt: now - i * 1000,
+      mine: false,
+    };
+  }
+  return out;
+}
+
 export function useWallNotes(live = false) {
   return useSWR<WallNote[]>(live ? "wall-notes-live" : "wall-notes", live ? fetchLiveNotes : fetchNotes, {
     revalidateOnFocus: false,

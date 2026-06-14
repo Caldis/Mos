@@ -9,11 +9,14 @@ import {
   useTransform,
   useVelocity,
 } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StickyNote } from "@/app/components/Wall/StickyNote";
+import { Magnetic } from "@/app/components/Magnetic/Magnetic";
 import { Minimap } from "@/app/components/Wall/Minimap";
 import { Starfield, DEFAULT_STAR_CONFIG, type StarfieldConfig } from "@/app/components/Wall/Starfield";
 import { StarPanel } from "@/app/components/Wall/StarPanel";
+import { PixiNoteLayer } from "@/app/components/Wall/PixiNoteLayer";
+import { SimPanel, DEFAULT_SIM, type SimConfig } from "@/app/components/Wall/SimControls";
 import { WallReview } from "@/app/components/Wall/WallReview";
 import { WALL_TURNSTILE_ENABLED } from "@/app/components/Wall/TurnstileWidget";
 import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
@@ -36,11 +39,13 @@ import {
   restoreNote,
   rotFromId,
   sparsestSpot,
+  makeMockNotes,
   useAdminNotes,
   useWallNotes,
   worldBounds,
   type NoteColor,
   type SafeArea,
+  type WallNote,
 } from "@/app/services/wall";
 
 interface Draft {
@@ -71,6 +76,78 @@ const FIT_MIN_READABLE = 0.75;
 // editable even if the board was zoomed way out.
 const DRAFT_FOCUS_SCALE = 0.95;
 
+// Below this on-screen note size the DOM text layer is dropped entirely — the WebGL
+// tiles carry the (too-small-to-read) read-only notes. Above it, the read-only notes
+// that are in view get a real DOM StickyNote on top of their tile, capped for safety.
+const READABLE_LOD_PX = 64;
+const MAX_READABLE_DOM = 200;
+// Above this note count, fit zooms all the way out to a tile-only overview (no readable
+// floor) — keeping the WebGL tiles small/non-overlapping (smooth) instead of stopping at
+// a dense, overdrawing mid-zoom. Small boards still fit to a comfortably readable size.
+const FIT_OVERVIEW_ABOVE = 1500;
+const EMPTY_NOTES: WallNote[] = [];
+
+// The read-only notes that deserve a DOM StickyNote right now: in the viewport (+ a
+// margin) AND large enough to read, sampled down to MAX_READABLE_DOM. Recomputed
+// (throttled) as the camera moves; below the size threshold it returns nothing.
+function useVisibleReadable(vp: UseViewport, readOnly: WallNote[]): WallNote[] {
+  const [vis, setVis] = useState<WallNote[]>(EMPTY_NOTES);
+  const recompute = useCallback(() => {
+    if (WORLD_NOTE_SIZE * vp.scale.get() < READABLE_LOD_PX) {
+      setVis((p) => (p.length === 0 ? p : EMPTY_NOTES));
+      return;
+    }
+    const r = vp.visibleWorldRect();
+    const mw = (r.maxX - r.minX) * 0.3;
+    const mh = (r.maxY - r.minY) * 0.3;
+    const minX = r.minX - mw;
+    const maxX = r.maxX + mw;
+    const minY = r.minY - mh;
+    const maxY = r.maxY + mh;
+    const inView: WallNote[] = [];
+    for (let i = 0; i < readOnly.length; i++) {
+      const n = readOnly[i];
+      const wx = n.x * WORLD_W;
+      const wy = n.y * WORLD_H;
+      if (wx >= minX && wx <= maxX && wy >= minY && wy <= maxY) inView.push(n);
+    }
+    const result =
+      inView.length <= MAX_READABLE_DOM
+        ? inView
+        : inView.filter((_, i) => i % Math.ceil(inView.length / MAX_READABLE_DOM) === 0);
+    setVis((p) => (sameIds(p, result) ? p : result));
+  }, [vp, readOnly]);
+
+  const timer = useRef(0);
+  const schedule = useCallback(() => {
+    if (timer.current) return;
+    timer.current = window.setTimeout(() => {
+      timer.current = 0;
+      recompute();
+    }, 100);
+  }, [recompute]);
+  useEffect(() => {
+    schedule();
+    return () => {
+      if (timer.current) {
+        clearTimeout(timer.current);
+        timer.current = 0;
+      }
+    };
+  }, [schedule]);
+  useMotionValueEvent(vp.tx, "change", schedule);
+  useMotionValueEvent(vp.ty, "change", schedule);
+  useMotionValueEvent(vp.scale, "change", schedule);
+
+  return vis;
+}
+
+function sameIds(a: WallNote[], b: WallNote[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i].id !== b[i].id) return false;
+  return true;
+}
+
 export function WallClient() {
   const { t } = useI18n();
   const { admin } = useWallAdmin();
@@ -84,7 +161,18 @@ export function WallClient() {
   useEffect(() => { setPlain(new URLSearchParams(window.location.search).has("plain")); }, []);
   // Live-tunable starfield look (real colour / Milky Way / magnitude curve / density).
   const [starCfg, setStarCfg] = useState<StarfieldConfig>(DEFAULT_STAR_CONFIG);
-  const { data: notes, mutate, isLoading } = useWallNotes(liveDebug);
+  const { data: rawNotes, mutate, isLoading: rawLoading } = useWallNotes(liveDebug);
+  // Load simulation: ?sim=N renders N deterministic mock notes (read-only) to
+  // stress-test the canvas at a future scale. Read after mount (avoids hydration gap).
+  const [simCfg, setSimCfg] = useState<SimConfig>(DEFAULT_SIM);
+  useEffect(() => {
+    const n = parseInt(new URLSearchParams(window.location.search).get("sim") ?? "", 10);
+    if (Number.isFinite(n) && n > 0) setSimCfg((c) => ({ ...c, count: Math.min(n, 40000) }));
+  }, []);
+  const isSim = simCfg.count > 0;
+  const simNotes = useMemo(() => (isSim ? makeMockNotes(simCfg.count) : null), [isSim, simCfg.count]);
+  const notes = simNotes ?? rawNotes;
+  const isLoading = isSim ? false : rawLoading;
   const { data: adminNotes, mutate: mutateAdmin, isLoading: adminLoading } = useAdminNotes(admin);
 
   // Drop-focus undo: the viewport saved just before a place-focus, and whether the
@@ -99,6 +187,17 @@ export function WallClient() {
     },
   });
   const canvasRef = vp.containerRef;
+
+  // Virtualization + LOD: which notes become full DOM StickyNotes. The rest are carried
+  // by the NoteCanvas tile layer (canvasOn). Driven by the SimPanel knobs.
+  // Three layers:
+  //   • readOnlyNotes → WebGL tiles (PixiNoteLayer): every read-only note, any count.
+  //   • interactiveNotes (yours / admin) → always DOM StickyNotes (editable/deletable).
+  //   • visibleReadable → read-only notes currently in view & large enough to read, given
+  //     a real DOM StickyNote on top of their tile so the text is crisp & selectable.
+  const interactiveNotes = useMemo(() => (notes ?? []).filter((n) => n.mine || admin), [notes, admin]);
+  const readOnlyNotes = useMemo(() => (admin ? EMPTY_NOTES : (notes ?? []).filter((n) => !n.mine)), [notes, admin]);
+  const visibleReadable = useVisibleReadable(vp, readOnlyNotes);
 
   // Viewport pixel size, for the minimap frame + fit math.
   const [vpSize, setVpSize] = useState({ w: 0, h: 0 });
@@ -263,10 +362,10 @@ export function WallClient() {
   // the live/seed mode flips. Keying off the MODE (not every notes change) means
   // posting a note doesn't yank the viewport. (The viewport is intentionally NOT
   // synced to the URL — every visit plays the intro instead of jumping to coords.)
-  const fittedMode = useRef<"seed" | "live" | null>(null);
+  const fittedMode = useRef<string | null>(null);
   useEffect(() => {
     if (isLoading || notes === undefined) return; // wait for the dataset to load
-    const mode = liveDebug ? "live" : "seed";
+    const mode = liveDebug ? "live" : isSim ? `sim:${simCfg.count}` : "seed";
     if (fittedMode.current === mode) return;
     let raf = 0;
     const run = () => {
@@ -278,7 +377,8 @@ export function WallClient() {
       const firstEver = fittedMode.current === null;
       fittedMode.current = mode;
       const b = notes.length ? notesBounds(notes, WORLD_NOTE_SIZE / 2) : null;
-      const opts = { animate: !firstEver, insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE, minReadable: FIT_MIN_READABLE };
+      const minReadable = notes.length > FIT_OVERVIEW_ABOVE ? 0 : FIT_MIN_READABLE;
+      const opts = { animate: !firstEver, insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE, minReadable };
       const empty = { minX: WORLD_W / 2 - 500, minY: WORLD_H / 2 - 350, maxX: WORLD_W / 2 + 500, maxY: WORLD_H / 2 + 350 };
       const box = b ?? empty;
       if (firstEver) {
@@ -295,14 +395,15 @@ export function WallClient() {
     };
     run();
     return () => cancelAnimationFrame(raf);
-  }, [isLoading, notes, liveDebug, vp, canvasRef]);
+  }, [isLoading, notes, liveDebug, isSim, simCfg.count, vp, canvasRef]);
 
   const toggleLive = useCallback(() => setLiveDebug((v) => !v), []);
 
   const fitAll = useCallback(() => {
     cameraMovedRef.current = true;
     const b = notesBounds(notes ?? [], WORLD_NOTE_SIZE / 2);
-    if (b) vp.fitToBounds(b, { insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE, minReadable: FIT_MIN_READABLE });
+    const minReadable = (notes?.length ?? 0) > FIT_OVERVIEW_ABOVE ? 0 : FIT_MIN_READABLE;
+    if (b) vp.fitToBounds(b, { insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE, minReadable });
   }, [notes, vp]);
 
   const friendlyError = useCallback(
@@ -442,6 +543,10 @@ export function WallClient() {
         {/* Screen-fixed real-star backdrop (HYG catalogue) with per-star twinkle. */}
         {!plain && <Starfield vp={vp} config={starCfg} />}
 
+        {/* Read-only notes as WebGL color tiles (PixiJS) — tens of thousands at 60fps.
+            Readable/interactive notes overlay as real DOM in the world layer below. */}
+        {readOnlyNotes.length > 0 && <PixiNoteLayer vp={vp} notes={readOnlyNotes} />}
+
         {/* World layer — one transform pans/zooms every note. Intentionally has NO
             width/height or boxShadow: a 7200×4500 transformed element becomes a
             ~32 Mpx (~130MB) compositor layer that iOS must re-rasterise on every zoom
@@ -452,8 +557,25 @@ export function WallClient() {
           className="absolute left-0 top-0 origin-top-left"
           style={{ x: vp.tx, y: vp.ty, scale: vp.scale }}
         >
+          {/* Read-only notes in view & big enough to read: a crisp DOM StickyNote on top
+              of their WebGL tile. No entrance animation (they stream in/out while panning)
+              and no delete (not yours). */}
+          {visibleReadable.map((n) => (
+            <StickyNote
+              key={n.id}
+              note={n}
+              mine={false}
+              admin={admin}
+              size={WORLD_NOTE_SIZE}
+              canvasW={WORLD_W}
+              canvasH={WORLD_H}
+              instant
+            />
+          ))}
+
+          {/* Interactive (DOM) notes — yours / admin. Small set, normal entrance animation. */}
           <AnimatePresence>
-            {[...(notes ?? [])]
+            {[...interactiveNotes]
               .sort((a, b) => a.createdAt - b.createdAt)
               .map((n, i, arr) => (
                 <StickyNote
@@ -466,7 +588,7 @@ export function WallClient() {
                   size={WORLD_NOTE_SIZE}
                   canvasW={WORLD_W}
                   canvasH={WORLD_H}
-                  onDelete={liveDebug ? undefined : removeNote}
+                  onDelete={liveDebug || isSim ? undefined : removeNote}
                 />
               ))}
           </AnimatePresence>
@@ -544,11 +666,22 @@ export function WallClient() {
 
       {/* Dock waits out the initial load so it doesn't pop up over a spinner. */}
       {!isLoading && (
-        <Tray onPointerDownSticky={startTrayDrag} hidden={!!draft || ghostColor !== null || liveDebug} />
+        <Tray onPointerDownSticky={startTrayDrag} hidden={!!draft || ghostColor !== null || liveDebug || isSim} />
       )}
 
       {/* Starfield tuning panel (top-left, collapsed) — dev only, never ships to prod. */}
       {isDev && !isLoading && !plain && <StarPanel config={starCfg} onChange={setStarCfg} />}
+
+      {/* Stress-test console (top-right) — dev only. */}
+      {isDev && (
+        <SimPanel
+          cfg={simCfg}
+          onChange={setSimCfg}
+          total={notes?.length ?? 0}
+          domCount={interactiveNotes.length + visibleReadable.length}
+          canvasCount={readOnlyNotes.length}
+        />
+      )}
 
       {/* Zoom controls (bottom-left) + minimap (bottom-right). */}
       {!isLoading && <ZoomControls vp={vp} onFit={fitAll} hidden={interacting} />}
@@ -601,16 +734,18 @@ function ZoomControls({ vp, onFit, hidden }: { vp: UseViewport; onFit: () => voi
         animate={{ x: hidden ? -90 : 0, y: hidden ? 90 : 0, opacity: hidden ? 0 : 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 26 }}
       >
-        <button
-          type="button"
-          aria-label={t.wall.zoomFit}
-          onClick={onFit}
-          className="glass pointer-events-auto grid h-9 w-9 shrink-0 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
-          </svg>
-        </button>
+        <Magnetic strength={14} className="pointer-events-auto">
+          <button
+            type="button"
+            aria-label={t.wall.zoomFit}
+            onClick={onFit}
+            className="glass pointer-events-auto grid h-9 w-9 shrink-0 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
+            </svg>
+          </button>
+        </Magnetic>
         <ScaleBar vp={vp} />
       </motion.div>
     </div>
