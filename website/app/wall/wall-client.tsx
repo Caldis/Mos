@@ -69,16 +69,6 @@ const FIT_MIN_READABLE = 0.75;
 // editable even if the board was zoomed way out.
 const DRAFT_FOCUS_SCALE = 0.95;
 
-function readViewportFromUrl(): Viewport | null {
-  if (typeof window === "undefined") return null;
-  const p = new URLSearchParams(window.location.search);
-  const tx = parseFloat(p.get("x") ?? "");
-  const ty = parseFloat(p.get("y") ?? "");
-  const scale = parseFloat(p.get("z") ?? "");
-  if (![tx, ty, scale].every(Number.isFinite)) return null;
-  return { tx, ty, scale };
-}
-
 export function WallClient() {
   const { t } = useI18n();
   const { admin } = useWallAdmin();
@@ -86,38 +76,12 @@ export function WallClient() {
   // Off by default so e2e runs never touch real notes; toggled via the dev pill.
   const isDev = process.env.NODE_ENV === "development";
   const [liveDebug, setLiveDebug] = useState(false);
+  // Diagnostic: ?plain drops the starfield backdrop, to isolate its GPU/CPU cost when
+  // chasing a mobile-Safari crash. Read after mount to avoid a hydration mismatch.
+  const [plain, setPlain] = useState(false);
+  useEffect(() => { setPlain(new URLSearchParams(window.location.search).has("plain")); }, []);
   const { data: notes, mutate, isLoading } = useWallNotes(liveDebug);
   const { data: adminNotes, mutate: mutateAdmin, isLoading: adminLoading } = useAdminNotes(admin);
-
-  // Debounce URL writes. Safari throws `SecurityError: Attempt to use
-  // history.replaceState() more than 100 times per 10 seconds`, and a drag or a
-  // fit/focus animation fires onChange every frame (~60/s) — which blows past that
-  // cap in well under two seconds and tears the page down. So we coalesce: only
-  // write once the camera has been still for a beat. The URL just needs the RESTING
-  // position (for share / reload), not every intermediate frame.
-  const urlTimer = useRef(0);
-  const pendingV = useRef<Viewport | null>(null);
-  const writeUrl = useCallback((v: Viewport) => {
-    pendingV.current = v;
-    if (urlTimer.current) clearTimeout(urlTimer.current);
-    urlTimer.current = window.setTimeout(() => {
-      urlTimer.current = 0;
-      const v2 = pendingV.current;
-      if (!v2) return;
-      const p = new URLSearchParams(window.location.search);
-      p.set("x", v2.tx.toFixed(1));
-      p.set("y", v2.ty.toFixed(1));
-      p.set("z", v2.scale.toFixed(3));
-      try {
-        window.history.replaceState(null, "", `${window.location.pathname}?${p.toString()}`);
-      } catch {
-        // Belt-and-braces: if we somehow still trip Safari's replaceState cap, skip
-        // this write rather than letting the SecurityError crash the page.
-      }
-    }, 280);
-  }, []);
-  // Flush the pending URL write on unmount so the last position isn't lost.
-  useEffect(() => () => { if (urlTimer.current) clearTimeout(urlTimer.current); }, []);
 
   // Drop-focus undo: the viewport saved just before a place-focus, and whether the
   // user has moved the camera since (so cancelling an untouched draft glides back).
@@ -126,7 +90,6 @@ export function WallClient() {
   const focusTimerRef = useRef(0);
 
   const vp = useViewport({
-    onChange: writeUrl,
     onUserInteract: () => {
       cameraMovedRef.current = true;
     },
@@ -291,12 +254,11 @@ export function WallClient() {
 
   useEffect(() => () => window.removeEventListener("pointermove", onPointerMove), [onPointerMove]);
 
-  // Initial framing: restore the viewport from the URL, else ease... no — snap to
-  // frame the existing notes (or the board centre when empty) once the container
-  // is measured. Runs once.
-  // Frame the wall once per dataset: on first load (honoring a URL viewport if
-  // present), and again whenever the live/seed mode flips. Keying off the MODE
-  // (not every notes change) means posting a note doesn't yank the viewport.
+  // Frame the wall once per dataset: snap to frame the existing notes (or the board
+  // centre when empty) on first load with a Google-Earth intro, and re-fit whenever
+  // the live/seed mode flips. Keying off the MODE (not every notes change) means
+  // posting a note doesn't yank the viewport. (The viewport is intentionally NOT
+  // synced to the URL — every visit plays the intro instead of jumping to coords.)
   const fittedMode = useRef<"seed" | "live" | null>(null);
   useEffect(() => {
     if (isLoading || notes === undefined) return; // wait for the dataset to load
@@ -311,13 +273,6 @@ export function WallClient() {
       }
       const firstEver = fittedMode.current === null;
       fittedMode.current = mode;
-      if (firstEver) {
-        const urlV = readViewportFromUrl();
-        if (urlV) {
-          vp.setViewport(urlV);
-          return;
-        }
-      }
       const b = notes.length ? notesBounds(notes, WORLD_NOTE_SIZE / 2) : null;
       const opts = { animate: !firstEver, insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE, minReadable: FIT_MIN_READABLE };
       const empty = { minX: WORLD_W / 2 - 500, minY: WORLD_H / 2 - 350, maxX: WORLD_W / 2 + 500, maxY: WORLD_H / 2 + 350 };
@@ -481,7 +436,7 @@ export function WallClient() {
         style={{ touchAction: "none" }}
       >
         {/* Screen-fixed real-star backdrop (Yale BSC5) with per-star twinkle. */}
-        <Starfield vp={vp} />
+        {!plain && <Starfield vp={vp} />}
 
         {/* World layer — one transform pans/zooms every note. */}
         <motion.div

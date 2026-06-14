@@ -221,7 +221,11 @@ export function StickyNote({
 
   return (
     <motion.div
-      className="group absolute left-0 top-0 will-change-transform"
+      // `will-change-transform` promotes a note to its own GPU compositor layer.
+      // Keeping it on permanently meant ~50 always-live layers — fine on desktop, but
+      // it pegs mobile WebKit's compositor budget (a prime suspect for the iOS crash).
+      // A placed note's transform is static, so only hint it while it's being dragged.
+      className={`group absolute left-0 top-0 ${dragging || composing ? "will-change-transform" : ""}`}
       // The compose draft handles its own pointer-drag (see tape below); marking it
       // no-pan stops that same pointerdown from also starting a canvas pan.
       data-no-pan={composing ? "" : undefined}

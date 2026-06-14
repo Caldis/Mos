@@ -7,13 +7,14 @@ import type { UseViewport } from "@/app/wall/useViewport";
 // The starfield is a far backdrop with its OWN little camera, maintained in
 // useViewport as (starScale, starOffX, starOffY). That camera follows the notes
 // camera but attenuated by a far parallax depth — zoom anchored at the same cursor,
-// pan using the real clamped delta. So here we just paint a tiled plane through it:
+// pan using the real clamped delta — so we just paint a tiled plane through it:
 //
 //   px = (star_base · tile + starOffX)  mod  tile ,   tile = baseTile · starScale
 //
-// No worldCentre, no clamping, no special cases: because the camera that produced
-// these values can't move when the board can't (and zooms about the cursor, not a
-// corner), the sky inherits exactly that behaviour.
+// It is the page's heaviest per-frame cost, so on phones (where WebKit enforces a
+// tight GPU/CPU budget and will kill the tab if a page pegs it) we sample fewer
+// stars, render at a lower backing resolution, drop to ~30fps when the camera is
+// still, and stop entirely while the page is hidden.
 export function Starfield({ vp }: { vp: UseViewport }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
 
@@ -22,6 +23,10 @@ export function Starfield({ vp }: { vp: UseViewport }) {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    const coarse = typeof window !== "undefined" && !!window.matchMedia?.("(pointer: coarse)").matches;
+    const STEP = coarse ? 3 : 1; // phones draw ~1/3 of the catalogue (still ~3000 stars)
+    const dprCap = coarse ? 1.5 : 2;
 
     const N = STARS.length;
     const phase = new Float32Array(N);
@@ -40,7 +45,7 @@ export function Starfield({ vp }: { vp: UseViewport }) {
     let dpr = 1;
     let baseTile = 1; // screen-space tile at starScale 1 (wraps for an endless sky)
     const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, dprCap);
       w = canvas.clientWidth;
       h = canvas.clientHeight;
       canvas.width = Math.max(1, Math.round(w * dpr));
@@ -53,17 +58,30 @@ export function Starfield({ vp }: { vp: UseViewport }) {
 
     let raf = 0;
     let startT = 0;
+    let lastDraw = 0;
+    let prevOffX = NaN;
+    let prevOffY = NaN;
+    let prevScale = NaN;
     const draw = (now: number) => {
+      raf = requestAnimationFrame(draw);
       if (!startT) startT = now;
-      const t = (now - startT) / 1000;
       const sScale = vp.starScale.get();
       const offX = vp.starOffX.get();
       const offY = vp.starOffY.get();
+      // 60fps while the camera moves (parallax needs to track it); a still field only
+      // twinkles, so halve its frame-rate to free the main thread.
+      const moving = offX !== prevOffX || offY !== prevOffY || sScale !== prevScale;
+      if (!moving && now - lastDraw < 32) return;
+      lastDraw = now;
+      prevOffX = offX;
+      prevOffY = offY;
+      prevScale = sScale;
+      const t = (now - startT) / 1000;
       const tile = baseTile * sScale;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = "#ffffff";
-      for (let i = 0; i < N; i++) {
+      for (let i = 0; i < N; i += STEP) {
         const star = STARS[i];
         const b = star[2]; // brightness 0..1
         const tw = 0.5 + 0.5 * Math.sin(t * speed[i] + phase[i]); // 0..1
@@ -85,12 +103,27 @@ export function Starfield({ vp }: { vp: UseViewport }) {
         }
       }
       ctx.globalAlpha = 1;
-      raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
 
+    // Stop the loop entirely when the tab/page is hidden — no point spending the
+    // (mobile) GPU/CPU budget or battery on an invisible canvas.
+    const onVisibility = () => {
+      if (document.hidden) {
+        if (raf) {
+          cancelAnimationFrame(raf);
+          raf = 0;
+        }
+      } else if (!raf) {
+        lastDraw = 0;
+        raf = requestAnimationFrame(draw);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     return () => {
-      cancelAnimationFrame(raf);
+      if (raf) cancelAnimationFrame(raf);
+      document.removeEventListener("visibilitychange", onVisibility);
       ro.disconnect();
     };
   }, [vp]);
