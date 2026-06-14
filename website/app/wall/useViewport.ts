@@ -217,27 +217,64 @@ export function useViewport(opts?: {
 
   const get = useCallback((): Viewport => ({ tx: tx.get(), ty: ty.get(), scale: scale.get() }), [tx, ty, scale]);
 
+  // Map an ABSOLUTE notes target (tx1,ty1,s1) to the backdrop's matching target.
+  // Programmatic moves (fit / draft-focus / minimap / URL restore) have no cursor,
+  // so we model the change as a zoom about the SCREEN CENTRE plus a residual pan —
+  // both attenuated by STAR_DEPTH — mirroring the incremental interaction math so the
+  // two paths stay consistent. Reads the CURRENT camera as the start, so it must be
+  // called BEFORE mutating tx/ty/scale.
+  const starTargetFor = useCallback((tx1: number, ty1: number, s1: number) => {
+    const { w, h } = size();
+    const cx = w / 2;
+    const cy = h / 2;
+    const s0 = scale.get();
+    const f = s0 ? s1 / s0 : 1;
+    const fs = 1 + (f - 1) * STAR_DEPTH;
+    // 1) zoom the backdrop about the centre to track the scale change…
+    const offXmid = cx - (cx - starOffX.get()) * fs;
+    const offYmid = cy - (cy - starOffY.get()) * fs;
+    // 2) …then attenuated pan for the translation left over after that centre-zoom.
+    const txMid = cx - (cx - tx.get()) * f;
+    const tyMid = cy - (cy - ty.get()) * f;
+    return {
+      scale: starScale.get() * fs,
+      offX: offXmid + (tx1 - txMid) * STAR_DEPTH,
+      offY: offYmid + (ty1 - tyMid) * STAR_DEPTH,
+    };
+  }, [size, scale, tx, ty, starScale, starOffX, starOffY]);
+
   const setViewport = useCallback((v: Viewport) => {
     stopAnims();
     stopZoom();
     const s = clamp(v.scale, minScale(), ZOOM_MAX);
+    const c = clampPan(v.tx, v.ty, s);
+    const st = starTargetFor(c.x, c.y, s); // before mutating the camera
     scale.set(s);
-    applyPan(v.tx, v.ty, s);
+    tx.set(c.x);
+    ty.set(c.y);
+    starScale.set(st.scale);
+    starOffX.set(st.offX);
+    starOffY.set(st.offY);
     notify();
-  }, [stopAnims, stopZoom, minScale, scale, applyPan, notify]);
+  }, [stopAnims, stopZoom, minScale, clampPan, scale, tx, ty, starScale, starOffX, starOffY, starTargetFor, notify]);
 
   const animateTo = useCallback((v: Viewport, animOpts?: { duration?: number }) => {
     stopAnims();
     stopZoom();
     const s = clamp(v.scale, minScale(), ZOOM_MAX);
     const c = clampPan(v.tx, v.ty, s);
+    const st = starTargetFor(c.x, c.y, s); // before the animations start mutating scale
     const duration = animOpts?.duration ?? 0.6;
     animsRef.current = [
       animate(tx, c.x, { duration, ease: EASE }),
       animate(ty, c.y, { duration, ease: EASE }),
       animate(scale, s, { duration, ease: EASE, onUpdate: notify }),
+      // Backdrop eases in lockstep so a fit / draft-focus / minimap leap carries the sky too.
+      animate(starScale, st.scale, { duration, ease: EASE }),
+      animate(starOffX, st.offX, { duration, ease: EASE }),
+      animate(starOffY, st.offY, { duration, ease: EASE }),
     ];
-  }, [stopAnims, stopZoom, minScale, clampPan, tx, ty, scale, notify]);
+  }, [stopAnims, stopZoom, minScale, clampPan, tx, ty, scale, starScale, starOffX, starOffY, starTargetFor, notify]);
 
   const fitToBounds = useCallback((b: WorldRect, fitOpts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number; minReadable?: number; duration?: number }) => {
     const { w, h } = size();
