@@ -233,7 +233,11 @@ export function StickyNote({
       // In the world layer a note is positioned by its world-px x/y; the viewport
       // transform on the parent pans/scales it. Placed notes share one low z-index
       // (mutual order from DOM order, oldest→newest); the compose draft floats above.
-      style={{ x, y, rotate, perspective: 720, zIndex: composing ? 60 : 2 }}
+      // No `perspective` here on purpose: as a 3D context it forced EVERY note onto
+      // its own GPU compositor layer (≈50 viewport-sized layers that iOS re-rasterises
+      // on each zoom step). The only thing needing 3D is the tape's rotateX, so the
+      // perspective lives on the tape itself (transformPerspective) instead.
+      style={{ x, y, rotate, zIndex: composing ? 60 : 2 }}
       initial={{ opacity: 0, scale: composing ? 0.6 : 0.7 }}
       animate={{ opacity: 1, scale: dragging ? 1.05 : 1 }}
       exit={composing ? { opacity: 0, scale: 0.66, transition: { duration: 0.16 } } : undefined}
@@ -260,10 +264,14 @@ export function StickyNote({
           draggable ? "cursor-grab touch-none active:cursor-grabbing" : ""
         }`}
         style={{ top: -10 * k, width: tape.w, height: tape.h, background: tape.bg, transformOrigin: "bottom center" }}
+        // 3D (perspective + rotateX) only while peeling on grab — a resting tape is
+        // flat 2D so it stays OFF the GPU compositor. Otherwise every visible tape is
+        // its own layer, and zooming out (more tapes on screen) re-balloons the GPU
+        // memory that was crashing mobile WebKit.
         animate={
           dragging
-            ? { rotateX: -62, y: -6, boxShadow: "0 9px 16px rgba(0,0,0,0.38)" }
-            : { rotateX: draggable ? -3 : -1, y: 0, boxShadow: "0 1px 2px rgba(0,0,0,0.16)" }
+            ? { rotateX: -62, y: -6, transformPerspective: 720, boxShadow: "0 9px 16px rgba(0,0,0,0.38)" }
+            : { rotateX: 0, y: 0, boxShadow: "0 1px 2px rgba(0,0,0,0.16)" }
         }
         transition={{ type: "spring", stiffness: 380, damping: 20 }}
       />

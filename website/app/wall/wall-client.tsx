@@ -438,17 +438,15 @@ export function WallClient() {
         {/* Screen-fixed real-star backdrop (Yale BSC5) with per-star twinkle. */}
         {!plain && <Starfield vp={vp} />}
 
-        {/* World layer — one transform pans/zooms every note. */}
+        {/* World layer — one transform pans/zooms every note. Intentionally has NO
+            width/height or boxShadow: a 7200×4500 transformed element becomes a
+            ~32 Mpx (~130MB) compositor layer that iOS must re-rasterise on every zoom
+            step — the prime cause of the mobile zoom crash. Notes are absolutely
+            positioned from this layer's top-left origin, so it needs no intrinsic
+            size; it is purely a pan/zoom transform holder. */}
         <motion.div
           className="absolute left-0 top-0 origin-top-left"
-          style={{
-            x: vp.tx,
-            y: vp.ty,
-            scale: vp.scale,
-            width: WORLD_W,
-            height: WORLD_H,
-            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.05)",
-          }}
+          style={{ x: vp.tx, y: vp.ty, scale: vp.scale }}
         >
           <AnimatePresence>
             {[...(notes ?? [])]
