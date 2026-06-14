@@ -2,11 +2,16 @@
 
 import { useEffect, useRef } from "react";
 import { STARS } from "./stars";
+import type { UseViewport } from "@/app/wall/useViewport";
 
-// Screen-fixed canvas starfield drawn from the real Yale Bright Star Catalog.
-// Each star sits at its catalog position (equirectangular RA/Dec) and twinkles on
-// its own random phase/speed — replacing the old dot grid as the wall's backdrop.
-export function Starfield() {
+// Stars track the viewport's WORLD centre (not its raw transform), so panning
+// drifts them slowly (parallax depth) while zooming — which keeps the same world
+// centre under the cursor — does NOT slide them. Zoom only makes the field
+// breathe a touch (subtle zoom parallax), never pan.
+const PARALLAX_PAN = 0.15; // stars drift at 15% of the camera's world motion
+const ZOOM_PARALLAX = 0.12; // star spacing scales at 12% of the zoom change
+
+export function Starfield({ vp }: { vp: UseViewport }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -16,7 +21,6 @@ export function Starfield() {
     if (!ctx) return;
 
     const N = STARS.length;
-    // Deterministic per-star twinkle params (no Math.random → stable across mounts).
     const phase = new Float32Array(N);
     const speed = new Float32Array(N);
     for (let i = 0; i < N; i++) {
@@ -31,36 +35,55 @@ export function Starfield() {
     let w = 0;
     let h = 0;
     let dpr = 1;
+    let baseTile = 1;
     const resize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       w = canvas.clientWidth;
       h = canvas.clientHeight;
       canvas.width = Math.max(1, Math.round(w * dpr));
       canvas.height = Math.max(1, Math.round(h * dpr));
+      baseTile = Math.max(w, h) * 1.6; // tiled star field; wraps for an endless sky
     };
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
     resize();
 
     let raf = 0;
-    let start = 0;
+    let startT = 0;
     const draw = (now: number) => {
-      if (!start) start = now;
-      const t = (now - start) / 1000;
+      if (!startT) startT = now;
+      const t = (now - startT) / 1000;
+      const s = vp.scale.get();
+      // World point at the viewport centre — moves with pan, stays put under a
+      // cursor-anchored zoom.
+      const wcx = (w / 2 - vp.tx.get()) / s;
+      const wcy = (h / 2 - vp.ty.get()) / s;
+      const offX = -wcx * PARALLAX_PAN;
+      const offY = -wcy * PARALLAX_PAN;
+      const tile = baseTile * (1 + (s - 1) * ZOOM_PARALLAX);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = "#ffffff";
       for (let i = 0; i < N; i++) {
-        const s = STARS[i];
-        const b = s[2]; // brightness 0..1
-        const tw = 0.6 + 0.4 * Math.sin(t * speed[i] + phase[i]); // 0.2..1
-        const a = Math.min(1, (0.1 + b * 0.85) * tw);
-        if (a < 0.02) continue;
-        const px = s[0] * w;
-        const py = (1 - s[1]) * h; // flip so northern declinations sit up top
-        const size = b > 0.62 ? 1.8 : b > 0.38 ? 1.2 : 0.85;
+        const star = STARS[i];
+        const b = star[2]; // brightness 0..1
+        const tw = 0.5 + 0.5 * Math.sin(t * speed[i] + phase[i]); // 0..1
+        const a = Math.min(1, (0.3 + b * 0.95) * tw);
+        if (a < 0.04) continue;
+        const px = (((star[0] * tile + offX) % tile) + tile) % tile;
+        const py = ((((1 - star[1]) * tile + offY) % tile) + tile) % tile; // flip dec → north up
+        if (px > w + 3 || py > h + 3) continue;
+        const size = b > 0.62 ? 2.4 : b > 0.36 ? 1.6 : 1;
         ctx.globalAlpha = a;
-        ctx.fillRect(px - size / 2, py - size / 2, size, size);
+        if (b > 0.64) {
+          // Bright stars: sharp core + a small cool glow for crispness.
+          ctx.shadowColor = "rgba(170,205,255,0.95)";
+          ctx.shadowBlur = 4;
+          ctx.fillRect(px - size / 2, py - size / 2, size, size);
+          ctx.shadowBlur = 0;
+        } else {
+          ctx.fillRect(px - size / 2, py - size / 2, size, size);
+        }
       }
       ctx.globalAlpha = 1;
       raf = requestAnimationFrame(draw);
@@ -71,7 +94,7 @@ export function Starfield() {
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, []);
+  }, [vp]);
 
   return <canvas ref={ref} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden />;
 }

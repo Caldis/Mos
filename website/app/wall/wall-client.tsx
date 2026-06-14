@@ -466,7 +466,7 @@ export function WallClient() {
         style={{ touchAction: "none" }}
       >
         {/* Screen-fixed real-star backdrop (Yale BSC5) with per-star twinkle. */}
-        <Starfield />
+        <Starfield vp={vp} />
 
         {/* World layer — one transform pans/zooms every note. */}
         <motion.div
@@ -605,7 +605,7 @@ export function WallClient() {
           <button
             type="button"
             onClick={toggleLive}
-            className="wall-enter-down glass ring-accent pointer-events-auto rounded-full px-3.5 py-1.5 font-mono text-[11px] tracking-wide transition hover:brightness-125"
+            className="wall-enter-down glass pointer-events-auto rounded-full px-3.5 py-1.5 font-mono text-[11px] tracking-wide transition hover:brightness-125"
             style={{ color: liveDebug ? "#fca5a5" : "rgba(255,255,255,0.55)" }}
           >
             {liveDebug ? "● LIVE 数据 · 只读" : "○ 用 Live 数据渲染"}
@@ -624,7 +624,7 @@ function ZoomControls({ onFit }: { onFit: () => void }) {
         type="button"
         aria-label={t.wall.zoomFit}
         onClick={onFit}
-        className="glass ring-accent pointer-events-auto grid h-9 w-9 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
+        className="glass pointer-events-auto grid h-9 w-9 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
@@ -679,7 +679,7 @@ function Tray({
   return (
     <div className="wall-enter-up pointer-events-none absolute inset-x-0 bottom-6 z-40 flex justify-center">
       <motion.div
-        className="glass ring-accent pointer-events-auto flex flex-col items-center rounded-[14px] px-5 py-4"
+        className="glass pointer-events-auto flex flex-col items-center rounded-[14px] px-5 py-4"
         data-no-pan=""
         initial={false}
         animate={{ y: hidden ? 130 : 0, opacity: hidden ? 0 : 1 }}

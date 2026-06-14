@@ -79,7 +79,7 @@ export function Minimap({
   return (
     <div className="wall-enter-br pointer-events-none absolute bottom-6 right-6 z-40 hidden sm:block">
       {/* Idles at 60% to stay out of the way; springs to full size on hover. */}
-      <div className="glass ring-accent pointer-events-auto origin-bottom-right scale-[0.6] rounded-[14px] p-2 shadow-xl transition-transform duration-200 ease-out hover:scale-100">
+      <div className="glass pointer-events-auto origin-bottom-right scale-[0.6] rounded-[14px] p-2 shadow-xl transition-transform duration-200 ease-out hover:scale-100">
         <div
           ref={ref}
           onPointerDown={onPointerDown}
