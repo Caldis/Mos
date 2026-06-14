@@ -619,7 +619,7 @@ export function WallClient() {
 function ZoomControls({ onFit }: { onFit: () => void }) {
   const { t } = useI18n();
   return (
-    <div className="wall-enter-up pointer-events-none absolute bottom-6 left-6 z-40 hidden sm:block">
+    <div className="wall-enter-bl pointer-events-none absolute bottom-6 left-6 z-40 hidden sm:block">
       <button
         type="button"
         aria-label={t.wall.zoomFit}

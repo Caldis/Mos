@@ -67,7 +67,7 @@ export function WallHeader() {
 
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-50 flex items-start justify-between px-4 py-4 sm:px-7 sm:py-5">
-      <div className="wall-enter-left pointer-events-none">
+      <div className="wall-enter-tl pointer-events-none">
         <Link
           href="/"
           onClick={handleBack}
@@ -80,7 +80,7 @@ export function WallHeader() {
           prompt. Intentionally NOT announced as interactive (no role/keyboard
           handler) — it's an unadvertised maintainer shortcut. */}
       <div
-        className="wall-enter-right pointer-events-auto select-none text-right"
+        className="wall-enter-tr pointer-events-auto select-none text-right"
         onClick={handleTitleClick}
       >
         <div className="font-display text-base font-semibold tracking-wide text-white">
