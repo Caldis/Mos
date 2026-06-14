@@ -1,8 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, type MouseEvent } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+// Controls fade/slide in from their own edge on entry.
+const ENTER = { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const };
 
 import { useI18n } from "@/app/i18n/context";
 import { useWallAdmin } from "@/app/hooks/useWallAdmin";
@@ -67,19 +71,24 @@ export function WallHeader() {
 
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-50 flex items-start justify-between px-4 py-4 sm:px-7 sm:py-5">
-      <Link
-        href="/"
-        onClick={handleBack}
-        className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3.5 py-2 font-mono text-xs text-white/65 backdrop-blur-md transition-colors hover:border-white/20 hover:text-white"
-      >
-        <span aria-hidden>←</span> {t.wall.back}
-      </Link>
+      <motion.div className="pointer-events-none" initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={ENTER}>
+        <Link
+          href="/"
+          onClick={handleBack}
+          className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3.5 py-2 font-mono text-xs text-white/65 backdrop-blur-md transition-colors hover:border-white/20 hover:text-white"
+        >
+          <span aria-hidden>←</span> {t.wall.back}
+        </Link>
+      </motion.div>
       {/* Hidden admin entry: click the title ADMIN_CLICKS× to open the token
           prompt. Intentionally NOT announced as interactive (no role/keyboard
           handler) — it's an unadvertised maintainer shortcut. */}
-      <div
+      <motion.div
         className="pointer-events-auto select-none text-right"
         onClick={handleTitleClick}
+        initial={{ opacity: 0, x: 18 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={ENTER}
       >
         <div className="font-display text-base font-semibold tracking-wide text-white">
           {t.wall.title}
@@ -87,7 +96,7 @@ export function WallHeader() {
         <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
           {t.wall.tagline}
         </div>
-      </div>
+      </motion.div>
     </header>
   );
 }

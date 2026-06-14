@@ -11,6 +11,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StickyNote } from "@/app/components/Wall/StickyNote";
 import { Minimap } from "@/app/components/Wall/Minimap";
+import { Starfield } from "@/app/components/Wall/Starfield";
 import { WallReview } from "@/app/components/Wall/WallReview";
 import { WALL_TURNSTILE_ENABLED } from "@/app/components/Wall/TurnstileWidget";
 import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
@@ -110,6 +111,7 @@ export function WallClient() {
   // user has moved the camera since (so cancelling an untouched draft glides back).
   const savedViewportRef = useRef<Viewport | null>(null);
   const cameraMovedRef = useRef(false);
+  const focusTimerRef = useRef(0);
 
   const vp = useViewport({
     onChange: writeUrl,
@@ -187,7 +189,11 @@ export function WallClient() {
       const s = Math.max(vp.get().scale, DRAFT_FOCUS_SCALE);
       const wx = nx * WORLD_W;
       const wy = ny * WORLD_H;
-      vp.animateTo({ tx: w / 2 - wx * s, ty: h * 0.42 - wy * s, scale: s }, { duration: 0.45 });
+      // Hold a 0.3s beat so the card lands at board scale first, then lean in.
+      window.clearTimeout(focusTimerRef.current);
+      focusTimerRef.current = window.setTimeout(() => {
+        vp.animateTo({ tx: w / 2 - wx * s, ty: h * 0.42 - wy * s, scale: s }, { duration: 0.5 });
+      }, 300);
     },
     [vp, canvasRef],
   );
@@ -302,12 +308,19 @@ export function WallClient() {
       }
       const b = notes.length ? notesBounds(notes, WORLD_NOTE_SIZE / 2) : null;
       const opts = { animate: !firstEver, insets: FIT_INSETS, padding: 48, maxScale: FIT_MAX_SCALE, minReadable: FIT_MIN_READABLE };
-      if (b) vp.fitToBounds(b, opts);
-      else
-        vp.fitToBounds(
-          { minX: WORLD_W / 2 - 500, minY: WORLD_H / 2 - 350, maxX: WORLD_W / 2 + 500, maxY: WORLD_H / 2 + 350 },
-          opts,
-        );
+      const empty = { minX: WORLD_W / 2 - 500, minY: WORLD_H / 2 - 350, maxX: WORLD_W / 2 + 500, maxY: WORLD_H / 2 + 350 };
+      const box = b ?? empty;
+      if (firstEver) {
+        // Google-Earth style intro: snap in close on the content's centre, then pull
+        // back to the fit over ~1.4s so the wall "lands" into view.
+        const cx = (box.minX + box.maxX) / 2;
+        const cy = (box.minY + box.maxY) / 2;
+        const intro = 1.8;
+        vp.setViewport({ tx: el.clientWidth / 2 - cx * intro, ty: el.clientHeight / 2 - cy * intro, scale: intro });
+        vp.fitToBounds(box, { ...opts, animate: true, duration: 1.4 });
+      } else {
+        vp.fitToBounds(box, opts);
+      }
     };
     run();
     return () => cancelAnimationFrame(raf);
@@ -354,6 +367,7 @@ export function WallClient() {
         turnstileToken: turnstileToken || undefined,
       });
       await mutate((cur) => [...(cur ?? []), created], { revalidate: false });
+      window.clearTimeout(focusTimerRef.current);
       setDraft(null);
       setTurnstileToken("");
       savedViewportRef.current = null; // committed — stay at the focused view
@@ -367,6 +381,7 @@ export function WallClient() {
   }, [draft, mutate, turnstileToken, friendlyError]);
 
   const cancelDraft = useCallback(() => {
+    window.clearTimeout(focusTimerRef.current);
     setDraft(null);
     setPostError(null);
     setTurnstileToken("");
@@ -450,8 +465,8 @@ export function WallClient() {
         className="absolute inset-0 cursor-grab overflow-hidden bg-black active:cursor-grabbing"
         style={{ touchAction: "none" }}
       >
-        {/* Screen-fixed dotted backdrop with the rising wave (sits behind the world). */}
-        <div className="wall-grid pointer-events-none absolute inset-0" aria-hidden />
+        {/* Screen-fixed real-star backdrop (Yale BSC5) with per-star twinkle. */}
+        <Starfield />
 
         {/* World layer — one transform pans/zooms every note. */}
         <motion.div
@@ -584,15 +599,18 @@ export function WallClient() {
 
       {/* Dev-only: switch between local seed and the live production wall (read-only). */}
       {isDev && (
-        <div className="pointer-events-none absolute left-1/2 top-3 z-50 -translate-x-1/2">
-          <button
+        <div className="pointer-events-none absolute inset-x-0 top-3 z-50 flex justify-center">
+          <motion.button
             type="button"
             onClick={toggleLive}
             className="glass ring-accent pointer-events-auto rounded-full px-3.5 py-1.5 font-mono text-[11px] tracking-wide transition hover:brightness-125"
             style={{ color: liveDebug ? "#fca5a5" : "rgba(255,255,255,0.55)" }}
+            initial={{ opacity: 0, y: -14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
             {liveDebug ? "● LIVE 数据 · 只读" : "○ 用 Live 数据渲染"}
-          </button>
+          </motion.button>
         </div>
       )}
     </div>
@@ -602,7 +620,12 @@ export function WallClient() {
 function ZoomControls({ onFit }: { onFit: () => void }) {
   const { t } = useI18n();
   return (
-    <div className="pointer-events-none absolute bottom-6 left-5 z-40 hidden sm:block">
+    <motion.div
+      className="pointer-events-none absolute bottom-6 left-5 z-40 hidden sm:block"
+      initial={{ opacity: 0, x: -16, y: 16 }}
+      animate={{ opacity: 1, x: 0, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+    >
       <button
         type="button"
         aria-label={t.wall.zoomFit}
@@ -613,7 +636,7 @@ function ZoomControls({ onFit }: { onFit: () => void }) {
           <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
         </svg>
       </button>
-    </div>
+    </motion.div>
   );
 }
 

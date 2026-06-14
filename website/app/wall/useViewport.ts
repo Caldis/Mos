@@ -58,7 +58,7 @@ export interface UseViewport {
   animateTo: (v: Viewport, opts?: { duration?: number }) => void;
   /** Frame a world rectangle: center it and scale to fit, capped at maxScale and
    *  floored at minReadable (overflow-and-pan rather than shrink text too small). */
-  fitToBounds: (b: WorldRect, opts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number; minReadable?: number }) => void;
+  fitToBounds: (b: WorldRect, opts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number; minReadable?: number; duration?: number }) => void;
   /** Smoothly zoom by `factor` around the viewport centre (for +/− buttons). */
   zoomBy: (factor: number) => void;
   /** Read the current viewport synchronously. */
@@ -208,7 +208,7 @@ export function useViewport(opts?: {
     ];
   }, [stopAnims, stopZoom, minScale, clampPan, tx, ty, scale, notify]);
 
-  const fitToBounds = useCallback((b: WorldRect, fitOpts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number; minReadable?: number }) => {
+  const fitToBounds = useCallback((b: WorldRect, fitOpts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number; minReadable?: number; duration?: number }) => {
     const { w, h } = size();
     if (!w || !h) return;
     const ins = { top: 0, right: 0, bottom: 0, left: 0, ...fitOpts?.insets };
@@ -230,7 +230,7 @@ export function useViewport(opts?: {
     const targetTx = viewCx - cx * s;
     const targetTy = viewCy - cy * s;
     if (fitOpts?.animate === false) setViewport({ tx: targetTx, ty: targetTy, scale: s });
-    else animateTo({ tx: targetTx, ty: targetTy, scale: s });
+    else animateTo({ tx: targetTx, ty: targetTy, scale: s }, { duration: fitOpts?.duration });
   }, [size, minScale, setViewport, animateTo]);
 
   // Smooth zoom step around the viewport centre, for the on-screen +/− buttons.
