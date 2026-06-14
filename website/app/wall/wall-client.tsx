@@ -4,6 +4,7 @@ import {
   AnimatePresence,
   motion,
   useMotionValue,
+  useMotionValueEvent,
   useSpring,
   useTransform,
   useVelocity,
@@ -19,7 +20,7 @@ import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
 import { useWallAdmin } from "@/app/hooks/useWallAdmin";
 import { useI18n } from "@/app/i18n/context";
 import { format } from "@/app/i18n/format";
-import { notesBounds, useViewport, type Viewport } from "@/app/wall/useViewport";
+import { notesBounds, useViewport, type UseViewport, type Viewport } from "@/app/wall/useViewport";
 import {
   FIT_MAX_SCALE,
   NOTE_COLOR_KEYS,
@@ -546,11 +547,11 @@ export function WallClient() {
         <Tray onPointerDownSticky={startTrayDrag} hidden={!!draft || ghostColor !== null || liveDebug} />
       )}
 
-      {/* Starfield tuning panel (top-left, collapsed). */}
-      {!isLoading && !plain && <StarPanel config={starCfg} onChange={setStarCfg} />}
+      {/* Starfield tuning panel (top-left, collapsed) — dev only, never ships to prod. */}
+      {isDev && !isLoading && !plain && <StarPanel config={starCfg} onChange={setStarCfg} />}
 
       {/* Zoom controls (bottom-left) + minimap (bottom-right). */}
-      {!isLoading && <ZoomControls onFit={fitAll} hidden={interacting} />}
+      {!isLoading && <ZoomControls vp={vp} onFit={fitAll} hidden={interacting} />}
       {!isLoading && hasNotes && (
         <Minimap
           vp={vp}
@@ -591,11 +592,12 @@ export function WallClient() {
   );
 }
 
-function ZoomControls({ onFit, hidden }: { onFit: () => void; hidden: boolean }) {
+function ZoomControls({ vp, onFit, hidden }: { vp: UseViewport; onFit: () => void; hidden: boolean }) {
   const { t } = useI18n();
   return (
     <div className="wall-enter-bl pointer-events-none absolute bottom-6 left-6 z-40 hidden sm:block">
       <motion.div
+        className="flex items-end gap-3"
         animate={{ x: hidden ? -90 : 0, y: hidden ? 90 : 0, opacity: hidden ? 0 : 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 26 }}
       >
@@ -603,13 +605,45 @@ function ZoomControls({ onFit, hidden }: { onFit: () => void; hidden: boolean })
           type="button"
           aria-label={t.wall.zoomFit}
           onClick={onFit}
-          className="glass pointer-events-auto grid h-9 w-9 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
+          className="glass pointer-events-auto grid h-9 w-9 shrink-0 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
             <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
           </svg>
         </button>
+        <ScaleBar vp={vp} />
       </motion.div>
+    </div>
+  );
+}
+
+// Picks a round world-unit length (1/2/5 ×10ⁿ) spanning ~96 screen px at this zoom.
+function computeScaleBar(s: number): { w: number; label: string } {
+  if (!s) return { w: 96, label: "" };
+  const targetWorld = 96 / s;
+  const pow = Math.pow(10, Math.floor(Math.log10(targetWorld)));
+  const n = targetWorld / pow;
+  const nice = (n >= 5 ? 5 : n >= 2 ? 2 : 1) * pow;
+  return { w: Math.max(28, Math.round(nice * s)), label: nice >= 1000 ? `${nice / 1000}k` : `${nice}` };
+}
+
+// Google-Maps-style scale bar (snaps to a round world-unit length as you zoom) with
+// the star-catalogue attribution beneath it.
+function ScaleBar({ vp }: { vp: UseViewport }) {
+  const [bar, setBar] = useState(() => computeScaleBar(vp.scale.get()));
+  useMotionValueEvent(vp.scale, "change", (s) => setBar(computeScaleBar(s)));
+
+  return (
+    <div className="pointer-events-none select-none pb-1">
+      <div className="mb-1 text-center font-mono text-[10px] leading-none text-white/55" style={{ width: bar.w }}>
+        {bar.label}
+      </div>
+      <div className="relative" style={{ width: bar.w, height: 6 }}>
+        <span className="absolute bottom-0 left-0 right-0 h-px bg-white/40" />
+        <span className="absolute bottom-0 left-0 h-1.5 w-px bg-white/40" />
+        <span className="absolute bottom-0 right-0 h-1.5 w-px bg-white/40" />
+      </div>
+      <div className="mt-1.5 text-[9px] leading-none text-white/35">星图 · HYG Database</div>
     </div>
   );
 }

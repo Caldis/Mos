@@ -16,7 +16,7 @@ export interface StarfieldConfig {
   density: number;
 }
 
-export const DEFAULT_STAR_CONFIG: StarfieldConfig = { color: true, milkyWay: true, gamma: 1.5, density: 0.5 };
+export const DEFAULT_STAR_CONFIG: StarfieldConfig = { color: true, milkyWay: false, gamma: 0.8, density: 1 };
 
 const CI_MIN = -0.4;
 const CI_MAX = 2.0;
