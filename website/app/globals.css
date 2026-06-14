@@ -242,6 +242,30 @@ body::before {
     font-family: var(--font-hand), "HandCJKAdjust", var(--font-cjk), "Bradley Hand", "Comic Sans MS", cursive;
   }
 
+  /* Wall control entrance: each floating control slides/fades in from its own edge.
+     Done in CSS (not framer initial/animate) so it plays reliably under React
+     StrictMode's double-mount in dev, identically to production. */
+  @keyframes wall-enter-up {
+    from { opacity: 0; transform: translateY(26px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes wall-enter-down {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes wall-enter-left {
+    from { opacity: 0; transform: translateX(-18px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes wall-enter-right {
+    from { opacity: 0; transform: translateX(18px); }
+    to { opacity: 1; transform: none; }
+  }
+  .wall-enter-up { animation: wall-enter-up 2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .wall-enter-down { animation: wall-enter-down 2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .wall-enter-left { animation: wall-enter-left 2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .wall-enter-right { animation: wall-enter-right 2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
   /* Dotted backdrop for the wall canvas. Screen-fixed so the rising wave reads the
      same at any zoom; the note grid sits in the transformed world layer above it. */
   .wall-grid {

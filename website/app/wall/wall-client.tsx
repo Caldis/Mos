@@ -571,7 +571,9 @@ export function WallClient() {
       </AnimatePresence>
 
       {/* Dock waits out the initial load so it doesn't pop up over a spinner. */}
-      <Tray onPointerDownSticky={startTrayDrag} hidden={isLoading || !!draft || ghostColor !== null || liveDebug} />
+      {!isLoading && (
+        <Tray onPointerDownSticky={startTrayDrag} hidden={!!draft || ghostColor !== null || liveDebug} />
+      )}
 
       {/* Zoom controls (bottom-left) + minimap (bottom-right). */}
       {!isLoading && <ZoomControls onFit={fitAll} />}
@@ -600,17 +602,14 @@ export function WallClient() {
       {/* Dev-only: switch between local seed and the live production wall (read-only). */}
       {isDev && (
         <div className="pointer-events-none absolute inset-x-0 top-3 z-50 flex justify-center">
-          <motion.button
+          <button
             type="button"
             onClick={toggleLive}
-            className="glass ring-accent pointer-events-auto rounded-full px-3.5 py-1.5 font-mono text-[11px] tracking-wide transition hover:brightness-125"
+            className="wall-enter-down glass ring-accent pointer-events-auto rounded-full px-3.5 py-1.5 font-mono text-[11px] tracking-wide transition hover:brightness-125"
             style={{ color: liveDebug ? "#fca5a5" : "rgba(255,255,255,0.55)" }}
-            initial={{ opacity: 0, y: -14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           >
             {liveDebug ? "● LIVE 数据 · 只读" : "○ 用 Live 数据渲染"}
-          </motion.button>
+          </button>
         </div>
       )}
     </div>
@@ -620,12 +619,7 @@ export function WallClient() {
 function ZoomControls({ onFit }: { onFit: () => void }) {
   const { t } = useI18n();
   return (
-    <motion.div
-      className="pointer-events-none absolute bottom-6 left-5 z-40 hidden sm:block"
-      initial={{ opacity: 0, x: -16, y: 16 }}
-      animate={{ opacity: 1, x: 0, y: 0 }}
-      transition={{ duration: 1, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <div className="wall-enter-up pointer-events-none absolute bottom-6 left-6 z-40 hidden sm:block">
       <button
         type="button"
         aria-label={t.wall.zoomFit}
@@ -636,7 +630,7 @@ function ZoomControls({ onFit }: { onFit: () => void }) {
           <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
         </svg>
       </button>
-    </motion.div>
+    </div>
   );
 }
 
@@ -683,12 +677,14 @@ function Tray({
   }, [paused]);
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 flex justify-center pb-6 sm:pb-8">
+    <div className="wall-enter-up pointer-events-none absolute inset-x-0 bottom-6 z-40 flex justify-center">
       <motion.div
         className="glass ring-accent pointer-events-auto flex flex-col items-center rounded-[14px] px-5 py-4"
         data-no-pan=""
         initial={false}
-        animate={{ y: hidden ? 120 : 0, opacity: hidden ? 0 : 1 }}
+        animate={{ y: hidden ? 130 : 0, opacity: hidden ? 0 : 1 }}
+        // CSS (wall-enter-up on the wrapper) plays the entrance; framer only drives
+        // the quick show/hide while composing.
         transition={{ type: "spring", stiffness: 260, damping: 26 }}
         onPointerEnter={() => setHovering(true)}
         onPointerLeave={() => setHovering(false)}
