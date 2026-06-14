@@ -4,33 +4,93 @@ import { useEffect, useRef } from "react";
 import { STARS } from "./stars";
 import type { UseViewport } from "@/app/wall/useViewport";
 
-// The starfield is a far backdrop with its OWN little camera, maintained in
-// useViewport as (starScale, starOffX, starOffY). That camera follows the notes
-// camera but attenuated by a far parallax depth — zoom anchored at the same cursor,
-// pan using the real clamped delta — so we just paint a tiled plane through it:
-//
-//   px = (star_base · tile + starOffX)  mod  tile ,   tile = baseTile · starScale
-//
-// It is the page's heaviest per-frame cost, so on phones (where WebKit enforces a
-// tight GPU/CPU budget and will kill the tab if a page pegs it) we sample fewer
-// stars, render at a lower backing resolution, drop to ~30fps when the camera is
-// still, and stop entirely while the page is hidden.
-export function Starfield({ vp }: { vp: UseViewport }) {
+// Tunables exposed by the on-screen star panel so the look can be compared live.
+export interface StarfieldConfig {
+  /** Real B-V stellar colour (blue-white → yellow → orange-red) vs flat white. */
+  color: boolean;
+  /** Diffuse glow along the galactic plane (the Milky Way band). */
+  milkyWay: boolean;
+  /** Magnitude curve contrast. 1 = linear; >1 makes bright stars pop, dims faint ones. */
+  gamma: number;
+  /** Fraction of the catalogue drawn, 0..1 (1 = all ~28k; lower = brighter stars only). */
+  density: number;
+}
+
+export const DEFAULT_STAR_CONFIG: StarfieldConfig = { color: true, milkyWay: true, gamma: 1.5, density: 0.5 };
+
+const CI_MIN = -0.4;
+const CI_MAX = 2.0;
+const CI_STEPS = 63;
+
+// B-V colour index → RGB. Realistic stellar hues but gently saturated (real stars read
+// near-white with a faint tint). One string per quantised index, built once.
+function buildPalette(): string[] {
+  const stops: [number, number, number, number][] = [
+    [-0.4, 162, 192, 255], // hot O/B — blue-white
+    [0.0, 202, 220, 255], // A — white with a blue cast
+    [0.3, 240, 243, 255], // F — white
+    [0.58, 255, 247, 240], // G (sun-like) — warm white
+    [0.81, 255, 232, 205], // early K — pale gold
+    [1.2, 255, 210, 168], // K — orange
+    [1.6, 255, 192, 148], // M — orange-red
+    [2.0, 255, 174, 132], // coolest — red
+  ];
+  const out: string[] = [];
+  for (let i = 0; i <= CI_STEPS; i++) {
+    const bv = CI_MIN + (i / CI_STEPS) * (CI_MAX - CI_MIN);
+    let s = 0;
+    while (s < stops.length - 2 && bv > stops[s + 1][0]) s++;
+    const [b0, r0, g0, bl0] = stops[s];
+    const [b1, r1, g1, bl1] = stops[s + 1];
+    const f = Math.max(0, Math.min(1, (bv - b0) / (b1 - b0)));
+    out.push(
+      `rgb(${Math.round(r0 + (r1 - r0) * f)},${Math.round(g0 + (g1 - g0) * f)},${Math.round(bl0 + (bl1 - bl0) * f)})`,
+    );
+  }
+  return out;
+}
+
+// Galactic-plane (b=0) sampled in equatorial coords, matching the star projection
+// (x = ra/2π, y = (dec+90)/180). Carries a per-point intensity that peaks toward the
+// galactic centre (l≈0, Sagittarius) and fades to the anticentre — like the real band.
+function buildGalacticPlane(): { x: number; y: number; w: number }[] {
+  const D2R = Math.PI / 180;
+  const NGP_dec = 27.128336 * D2R;
+  const NGP_ra = 192.859508 * D2R;
+  const lNCP = 122.932 * D2R;
+  const pts: { x: number; y: number; w: number }[] = [];
+  for (let l = 0; l < 360; l += 2.5) {
+    const lr = l * D2R;
+    const dec = Math.asin(Math.cos(NGP_dec) * Math.cos(lNCP - lr));
+    let ra = NGP_ra + Math.atan2(Math.sin(lNCP - lr), -Math.sin(NGP_dec) * Math.cos(lNCP - lr));
+    ra = ((ra % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    const intensity = 0.32 + 0.68 * Math.pow((1 + Math.cos(lr)) / 2, 1.6); // bright at centre
+    pts.push({ x: ra / (2 * Math.PI), y: (dec / D2R + 90) / 180, w: intensity });
+  }
+  return pts;
+}
+
+export function Starfield({ vp, config = DEFAULT_STAR_CONFIG }: { vp: UseViewport; config?: StarfieldConfig }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
+  // Panel changes flow through this ref so toggling a setting takes effect on the next
+  // frame without tearing down the rAF loop / rebuilding the twinkle tables.
+  const cfgRef = useRef(config);
+  useEffect(() => {
+    cfgRef.current = config;
+  }, [config]);
 
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    // `desynchronized` opts into the low-latency canvas path: the backdrop is
-    // decoupled from DOM compositing so its rAF doesn't wait on a frame sync. Any
-    // tearing is imperceptible on a twinkling starfield, and unsupported browsers
-    // (Safari) silently ignore the hint. `alpha` stays true (black sky shows through).
     const ctx = canvas.getContext("2d", { desynchronized: true });
     if (!ctx) return;
 
     const coarse = typeof window !== "undefined" && !!window.matchMedia?.("(pointer: coarse)").matches;
-    const STEP = coarse ? 3 : 1; // phones draw ~1/3 of the catalogue (still ~3000 stars)
+    const STEP = coarse ? 2 : 1; // phones draw a subset of the (now larger) catalogue
     const dprCap = coarse ? 1.5 : 2;
+
+    const palette = buildPalette();
+    const plane = buildGalacticPlane();
 
     const N = STARS.length;
     const phase = new Float32Array(N);
@@ -66,47 +126,76 @@ export function Starfield({ vp }: { vp: UseViewport }) {
     let prevOffX = NaN;
     let prevOffY = NaN;
     let prevScale = NaN;
+    let prevCfg = cfgRef.current;
     const draw = (now: number) => {
       raf = requestAnimationFrame(draw);
       if (!startT) startT = now;
+      const cfg = cfgRef.current;
       const sScale = vp.starScale.get();
       const offX = vp.starOffX.get();
       const offY = vp.starOffY.get();
-      // 60fps while the user is interactively panning/zooming (parallax must track the
-      // hand); but a still field only twinkles, AND during a programmatic ease (fit /
-      // focus / cancel-return) the user is watching the notes, not the backdrop — both
-      // those cases halve to ~30fps to free the main thread. At min zoom the sky has the
-      // most visible stars, so this is exactly where the eased re-draws were janking.
-      const moving = offX !== prevOffX || offY !== prevOffY || sScale !== prevScale;
+      // 60fps while interactively panning/zooming; drop to ~30fps when still or during a
+      // programmatic ease. A config change also forces a redraw so the panel feels live.
+      const moving = offX !== prevOffX || offY !== prevOffY || sScale !== prevScale || cfg !== prevCfg;
       const eased = vp.animating.get() === 1;
       if ((!moving || eased) && now - lastDraw < 32) return;
       lastDraw = now;
       prevOffX = offX;
       prevOffY = offY;
       prevScale = sScale;
+      prevCfg = cfg;
+
       const t = (now - startT) / 1000;
       const tile = baseTile * sScale;
+      const useColor = cfg.color;
+      const g = cfg.gamma;
+      const bMin = (1 - cfg.density) * 0.28; // brightness cutoff = effective magnitude limit
+
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = "#ffffff";
+
+      // --- Milky Way: diffuse glow blobs along the galactic plane (drawn under stars) ---
+      if (cfg.milkyWay) {
+        const R = tile * 0.055;
+        ctx.globalCompositeOperation = "lighter";
+        for (let i = 0; i < plane.length; i++) {
+          const p = plane[i];
+          if (p.w < 0.33) continue; // skip the faint anticentre segments — cheap + realistic
+          const mx = (((p.x * tile + offX) % tile) + tile) % tile;
+          if (mx < -R || mx > w + R) continue;
+          const my = (((p.y * tile + offY) % tile) + tile) % tile;
+          if (my < -R || my > h + R) continue;
+          const grad = ctx.createRadialGradient(mx, my, 0, mx, my, R);
+          const al = 0.035 * p.w; // subtle — the real band is a faint wash, not a ribbon
+          grad.addColorStop(0, `rgba(216,214,224,${al})`); // near-neutral, a hair cool
+          grad.addColorStop(1, "rgba(216,214,224,0)");
+          ctx.fillStyle = grad;
+          ctx.fillRect(mx - R, my - R, R * 2, R * 2);
+        }
+        ctx.globalCompositeOperation = "source-over";
+      }
+
+      // --- Stars ---
+      if (!useColor) ctx.fillStyle = "#ffffff";
       for (let i = 0; i < N; i += STEP) {
         const star = STARS[i];
-        // Position-cull FIRST (cheap mod). Each frame ~75% of stars wrap off-screen;
-        // culling them before the twinkle sin() below skips thousands of sin() calls
-        // per frame — pure CPU saving, byte-identical pixels.
+        const b = star[2]; // brightness 0..1
+        if (b < bMin) continue; // density cutoff (cheap, before the position/twinkle work)
+        // Position-cull next (cheap mod): ~75% of stars wrap off-screen each frame.
         const px = (((star[0] * tile + offX) % tile) + tile) % tile;
-        if (px > w + 3) continue; // [w,tile) wraps off-screen
+        if (px > w + 3) continue;
         const py = (((star[1] * tile + offY) % tile) + tile) % tile;
         if (py > h + 3) continue;
-        const b = star[2]; // brightness 0..1
         const tw = 0.5 + 0.5 * Math.sin(t * speed[i] + phase[i]); // 0..1
-        const a = Math.min(1, (0.3 + b * 0.95) * tw);
+        const bAdj = g === 1 ? b : Math.pow(b, g); // magnitude curve
+        const a = Math.min(1, (0.22 + bAdj * 1.05) * tw);
         if (a < 0.04) continue;
-        const size = b > 0.62 ? 2.4 : b > 0.36 ? 1.6 : 1;
+        const size = 0.7 + bAdj * 2.6; // continuous: bright → larger
+        if (useColor) ctx.fillStyle = palette[star[3]];
         ctx.globalAlpha = a;
-        if (b > 0.64) {
-          // Bright stars: sharp core + a small cool glow for crispness.
-          ctx.shadowColor = "rgba(170,205,255,0.95)";
+        if (bAdj > 0.6) {
+          // Bright stars: sharp core + a small glow (tinted to the star in colour mode).
+          ctx.shadowColor = useColor ? palette[star[3]] : "rgba(170,205,255,0.95)";
           ctx.shadowBlur = 4;
           ctx.fillRect(px - size / 2, py - size / 2, size, size);
           ctx.shadowBlur = 0;
@@ -118,8 +207,6 @@ export function Starfield({ vp }: { vp: UseViewport }) {
     };
     raf = requestAnimationFrame(draw);
 
-    // Stop the loop entirely when the tab/page is hidden — no point spending the
-    // (mobile) GPU/CPU budget or battery on an invisible canvas.
     const onVisibility = () => {
       if (document.hidden) {
         if (raf) {

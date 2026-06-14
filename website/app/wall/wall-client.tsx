@@ -11,7 +11,8 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StickyNote } from "@/app/components/Wall/StickyNote";
 import { Minimap } from "@/app/components/Wall/Minimap";
-import { Starfield } from "@/app/components/Wall/Starfield";
+import { Starfield, DEFAULT_STAR_CONFIG, type StarfieldConfig } from "@/app/components/Wall/Starfield";
+import { StarPanel } from "@/app/components/Wall/StarPanel";
 import { WallReview } from "@/app/components/Wall/WallReview";
 import { WALL_TURNSTILE_ENABLED } from "@/app/components/Wall/TurnstileWidget";
 import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
@@ -80,6 +81,8 @@ export function WallClient() {
   // chasing a mobile-Safari crash. Read after mount to avoid a hydration mismatch.
   const [plain, setPlain] = useState(false);
   useEffect(() => { setPlain(new URLSearchParams(window.location.search).has("plain")); }, []);
+  // Live-tunable starfield look (real colour / Milky Way / magnitude curve / density).
+  const [starCfg, setStarCfg] = useState<StarfieldConfig>(DEFAULT_STAR_CONFIG);
   const { data: notes, mutate, isLoading } = useWallNotes(liveDebug);
   const { data: adminNotes, mutate: mutateAdmin, isLoading: adminLoading } = useAdminNotes(admin);
 
@@ -435,8 +438,8 @@ export function WallClient() {
         className="absolute inset-0 cursor-grab overflow-hidden bg-black active:cursor-grabbing"
         style={{ touchAction: "none" }}
       >
-        {/* Screen-fixed real-star backdrop (Yale BSC5) with per-star twinkle. */}
-        {!plain && <Starfield vp={vp} />}
+        {/* Screen-fixed real-star backdrop (HYG catalogue) with per-star twinkle. */}
+        {!plain && <Starfield vp={vp} config={starCfg} />}
 
         {/* World layer — one transform pans/zooms every note. Intentionally has NO
             width/height or boxShadow: a 7200×4500 transformed element becomes a
@@ -542,6 +545,9 @@ export function WallClient() {
       {!isLoading && (
         <Tray onPointerDownSticky={startTrayDrag} hidden={!!draft || ghostColor !== null || liveDebug} />
       )}
+
+      {/* Starfield tuning panel (top-left, collapsed). */}
+      {!isLoading && !plain && <StarPanel config={starCfg} onChange={setStarCfg} />}
 
       {/* Zoom controls (bottom-left) + minimap (bottom-right). */}
       {!isLoading && <ZoomControls onFit={fitAll} hidden={interacting} />}
