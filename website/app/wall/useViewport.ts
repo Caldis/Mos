@@ -53,6 +53,9 @@ export interface UseViewport {
   starScale: MotionValue<number>;
   starOffX: MotionValue<number>;
   starOffY: MotionValue<number>;
+  /** 1 while a programmatic ease (fit / focus / cancel-return / zoom buttons) runs —
+   *  lets the backdrop drop to 30fps during eases without affecting interactive feel. */
+  animating: MotionValue<number>;
   /** Container-local screen px → world px. */
   screenToWorld: (sx: number, sy: number) => { x: number; y: number };
   /** World px → container-local screen px. */
@@ -93,6 +96,12 @@ export function useViewport(opts?: {
   const starScale = useMotionValue(1);
   const starOffX = useMotionValue(0);
   const starOffY = useMotionValue(0);
+  // 1 while a PROGRAMMATIC ease (fit / draft-focus / cancel-return / zoom buttons) is
+  // running. The starfield reads this to drop to ~30fps during those — at min zoom it
+  // has the most visible stars and the eased re-draws were dropping frames, but the
+  // user is watching the notes fly, not the backdrop. Interactive pan/zoom leaves this
+  // at 0 and keeps the sky at 60fps for parallax that tracks the hand.
+  const animating = useMotionValue(0);
   // Zoom the backdrop about (cx,cy) by an attenuated factor, keeping the star under
   // the cursor fixed — identical zoom-about-a-point math as the notes layer.
   const applyStarZoom = useCallback((cx: number, cy: number, f: number) => {
@@ -117,7 +126,8 @@ export function useViewport(opts?: {
   const stopAnims = useCallback(() => {
     for (const a of animsRef.current) a.stop();
     animsRef.current = [];
-  }, []);
+    animating.set(0);
+  }, [animating]);
 
   // Mouse-wheel zoom smoother: a target scale the current scale eases toward, a
   // cursor anchor held for the glide, and its rAF handle.
@@ -265,16 +275,17 @@ export function useViewport(opts?: {
     const c = clampPan(v.tx, v.ty, s);
     const st = starTargetFor(c.x, c.y, s); // before the animations start mutating scale
     const duration = animOpts?.duration ?? 0.6;
+    animating.set(1);
     animsRef.current = [
       animate(tx, c.x, { duration, ease: EASE }),
       animate(ty, c.y, { duration, ease: EASE }),
-      animate(scale, s, { duration, ease: EASE, onUpdate: notify }),
+      animate(scale, s, { duration, ease: EASE, onUpdate: notify, onComplete: () => animating.set(0) }),
       // Backdrop eases in lockstep so a fit / draft-focus / minimap leap carries the sky too.
       animate(starScale, st.scale, { duration, ease: EASE }),
       animate(starOffX, st.offX, { duration, ease: EASE }),
       animate(starOffY, st.offY, { duration, ease: EASE }),
     ];
-  }, [stopAnims, stopZoom, minScale, clampPan, tx, ty, scale, starScale, starOffX, starOffY, starTargetFor, notify]);
+  }, [stopAnims, stopZoom, minScale, clampPan, tx, ty, scale, starScale, starOffX, starOffY, starTargetFor, notify, animating]);
 
   const fitToBounds = useCallback((b: WorldRect, fitOpts?: { animate?: boolean; insets?: Partial<Insets>; maxScale?: number; padding?: number; minReadable?: number; duration?: number }) => {
     const { w, h } = size();
@@ -320,15 +331,16 @@ export function useViewport(opts?: {
     const fs = 1 + (f - 1) * STAR_DEPTH;
     const sOffX = cx - (cx - starOffX.get()) * fs;
     const sOffY = cy - (cy - starOffY.get()) * fs;
+    animating.set(1);
     animsRef.current = [
-      animate(scale, s1, { duration: 0.25, ease: EASE, onUpdate: notify }),
+      animate(scale, s1, { duration: 0.25, ease: EASE, onUpdate: notify, onComplete: () => animating.set(0) }),
       animate(tx, c.x, { duration: 0.25, ease: EASE }),
       animate(ty, c.y, { duration: 0.25, ease: EASE }),
       animate(starScale, starScale.get() * fs, { duration: 0.25, ease: EASE }),
       animate(starOffX, sOffX, { duration: 0.25, ease: EASE }),
       animate(starOffY, sOffY, { duration: 0.25, ease: EASE }),
     ];
-  }, [size, stopAnims, stopZoom, minScale, scale, tx, ty, clampPan, notify, starScale, starOffX, starOffY]);
+  }, [size, stopAnims, stopZoom, minScale, scale, tx, ty, clampPan, notify, starScale, starOffX, starOffY, animating]);
 
   // --- Input: wheel (pan / pinch-zoom) + pointer (drag-pan / two-finger pinch).
   useEffect(() => {
@@ -487,6 +499,7 @@ export function useViewport(opts?: {
       starScale,
       starOffX,
       starOffY,
+      animating,
       screenToWorld,
       worldToScreen,
       visibleWorldRect,
@@ -496,7 +509,7 @@ export function useViewport(opts?: {
       zoomBy,
       get,
     }),
-    [tx, ty, scale, panning, starScale, starOffX, starOffY, screenToWorld, worldToScreen, visibleWorldRect, setViewport, animateTo, fitToBounds, zoomBy, get],
+    [tx, ty, scale, panning, starScale, starOffX, starOffY, animating, screenToWorld, worldToScreen, visibleWorldRect, setViewport, animateTo, fitToBounds, zoomBy, get],
   );
 }
 

@@ -72,10 +72,14 @@ export function Starfield({ vp }: { vp: UseViewport }) {
       const sScale = vp.starScale.get();
       const offX = vp.starOffX.get();
       const offY = vp.starOffY.get();
-      // 60fps while the camera moves (parallax needs to track it); a still field only
-      // twinkles, so halve its frame-rate to free the main thread.
+      // 60fps while the user is interactively panning/zooming (parallax must track the
+      // hand); but a still field only twinkles, AND during a programmatic ease (fit /
+      // focus / cancel-return) the user is watching the notes, not the backdrop — both
+      // those cases halve to ~30fps to free the main thread. At min zoom the sky has the
+      // most visible stars, so this is exactly where the eased re-draws were janking.
       const moving = offX !== prevOffX || offY !== prevOffY || sScale !== prevScale;
-      if (!moving && now - lastDraw < 32) return;
+      const eased = vp.animating.get() === 1;
+      if ((!moving || eased) && now - lastDraw < 32) return;
       lastDraw = now;
       prevOffX = offX;
       prevOffY = offY;
