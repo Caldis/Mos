@@ -456,6 +456,9 @@ export function WallClient() {
   }, [adminNotes, mutate, mutateAdmin]);
 
   const hasNotes = (notes?.length ?? 0) > 0;
+  // While dragging a sticky out of the tray or composing one, tuck the bottom
+  // controls away (in step with the dock) so they don't crowd the placement.
+  const interacting = !!draft || ghostColor !== null;
 
   return (
     <div className="relative h-full w-full select-none overflow-hidden">
@@ -576,12 +579,13 @@ export function WallClient() {
       )}
 
       {/* Zoom controls (bottom-left) + minimap (bottom-right). */}
-      {!isLoading && <ZoomControls onFit={fitAll} />}
+      {!isLoading && <ZoomControls onFit={fitAll} hidden={interacting} />}
       {!isLoading && hasNotes && (
         <Minimap
           vp={vp}
           notes={notes ?? []}
           viewportSize={vpSize}
+          hidden={interacting}
           onInteract={() => {
             cameraMovedRef.current = true;
           }}
@@ -616,20 +620,25 @@ export function WallClient() {
   );
 }
 
-function ZoomControls({ onFit }: { onFit: () => void }) {
+function ZoomControls({ onFit, hidden }: { onFit: () => void; hidden: boolean }) {
   const { t } = useI18n();
   return (
     <div className="wall-enter-bl pointer-events-none absolute bottom-6 left-6 z-40 hidden sm:block">
-      <button
-        type="button"
-        aria-label={t.wall.zoomFit}
-        onClick={onFit}
-        className="glass pointer-events-auto grid h-9 w-9 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
+      <motion.div
+        animate={{ x: hidden ? -90 : 0, y: hidden ? 90 : 0, opacity: hidden ? 0 : 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 26 }}
       >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
-        </svg>
-      </button>
+        <button
+          type="button"
+          aria-label={t.wall.zoomFit}
+          onClick={onFit}
+          className="glass pointer-events-auto grid h-9 w-9 place-items-center rounded-[14px] text-white/70 transition hover:bg-white/10 hover:text-white"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5.5 2.5h-3v3M10.5 2.5h3v3M5.5 13.5h-3v-3M10.5 13.5h3v-3" />
+          </svg>
+        </button>
+      </motion.div>
     </div>
   );
 }
