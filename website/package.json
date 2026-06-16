@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "preinstall": "node scripts/only-npm.mjs",
     "dev": "next dev --turbopack",
     "build": "next build && node scripts/prepare-pages-artifact.mjs",
     "start": "next start",
@@ -32,5 +33,9 @@
   },
   "overrides": {
     "minimatch": "^10.2.1"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
   }
 }
