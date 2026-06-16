@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "check:ai": "node scripts/verify-ai-readiness.mjs",
-    "check:motion": "node scripts/verify-motion-hydration.mjs"
+    "check:motion": "node scripts/verify-motion-hydration.mjs",
+    "check:wheel": "node scripts/verify-wheel-gesture.mjs"
   },
   "dependencies": {
     "framer-motion": "^11.18.2",

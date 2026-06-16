@@ -3,6 +3,7 @@
 import { animate, useMotionValue, type AnimationPlaybackControls, type MotionValue } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { WORLD_H, WORLD_W, ZOOM_MAX, ZOOM_MIN, FIT_MAX_SCALE } from "@/app/services/wall";
+import { createWheelGesture, nextWheelMode, WHEEL_ZOOM_RATE, WHEEL_PINCH_RATE, WHEEL_LINE_TO_PX } from "./wheelGesture";
 
 export interface Viewport {
   tx: number;
@@ -135,6 +136,9 @@ export function useViewport(opts?: {
   const zoomAnchorRef = useRef({ x: 0, y: 0 });
   const zoomRafRef = useRef(0);
   const zoomLastRef = useRef(0);
+  // Wheel gesture classifier (mouse-wheel zoom vs trackpad pan vs pinch). Locked per
+  // gesture so a macOS momentum tail can't flip zoom→pan mid-flick. See wheelGesture.ts.
+  const wheelGestureRef = useRef(createWheelGesture());
   const stopZoom = useCallback(() => {
     zoomTargetRef.current = null;
     if (zoomRafRef.current) {
@@ -390,20 +394,20 @@ export function useViewport(opts?: {
       const rect = el.getBoundingClientRect();
       const cx = e.clientX - rect.left;
       const cy = e.clientY - rect.top;
-      // Trackpad pinch arrives as ctrl/⌘+wheel → zoom. A plain mouse wheel (no
-      // modifier, purely vertical, chunky deltas) also zooms — per product choice,
-      // no ctrl needed. A trackpad two-finger scroll (has an x-component or fine
-      // pixel deltas) pans, keeping the Figma-style trackpad feel.
-      const pinch = e.ctrlKey || e.metaKey;
-      const mouseWheel = !pinch && e.deltaX === 0 && (e.deltaMode !== 0 || Math.abs(e.deltaY) >= 30);
-      if (pinch) {
+      // Classify per GESTURE, not per event: ctrl/⌘+wheel is a trackpad pinch; a
+      // purely-vertical chunky wheel locks the whole gesture to zoom (per product
+      // choice, no modifier needed); everything else pans (trackpad swipe, keeping
+      // the Figma-style feel). Locking per gesture stops macOS scroll-acceleration's
+      // decaying momentum tail from flipping a wheel-zoom into a pan. See wheelGesture.ts.
+      const mode = nextWheelMode(wheelGestureRef.current, e, performance.now());
+      if (mode === "pinch") {
         // Trackpad pinch is continuous — track it directly, no inertia smoothing.
         stopZoom();
-        zoomAt(cx, cy, Math.exp(-e.deltaY * 0.0125));
-      } else if (mouseWheel) {
+        zoomAt(cx, cy, Math.exp(-e.deltaY * WHEEL_PINCH_RATE));
+      } else if (mode === "zoom") {
         // Mouse wheel eases toward an accumulating target for a smooth glide.
-        const step = e.deltaMode !== 0 ? e.deltaY * 16 : e.deltaY; // normalize line→px
-        zoomWheelSmooth(cx, cy, Math.exp(-step * 0.0018));
+        const step = e.deltaMode !== 0 ? e.deltaY * WHEEL_LINE_TO_PX : e.deltaY; // line→px
+        zoomWheelSmooth(cx, cy, Math.exp(-step * WHEEL_ZOOM_RATE));
       } else {
         stopZoom();
         panBy(-e.deltaX, -e.deltaY);
