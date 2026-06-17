@@ -237,6 +237,10 @@
   .sev.p2 { color: var(--amber); border: 1px solid var(--amber); }
   .sev.p3 { color: var(--ink-faint); border: 1px solid var(--ink-faint); }
   .sev.s  { color: var(--mint); border: 1px solid var(--mint); }
+  .sev.fixed { color: var(--mint); border: 1px solid var(--mint); opacity: 0.7; }
+  .card.done { opacity: 0.82; }
+  .card.done::after { content: ""; position: absolute; inset: 0; border-left: 2px solid var(--mint); pointer-events: none; }
+  .fixed-chip { margin-left: auto; align-self: center; font: 600 9.5px var(--mono); letter-spacing: 0.1em; color: var(--mint); border: 1px solid var(--mint); padding: 1px 7px; white-space: nowrap; }
   .card-t { font-size: 15.5px; font-weight: 700; color: #EFF5FD; line-height: 1.45; }
   .card-b { font-size: 13px; color: var(--ink-dim); }
   .card-b b { color: var(--ink); font-weight: 600; }
@@ -265,6 +269,8 @@
   .road-d { color: var(--ink-dim); font-size: 13px; flex: 1; min-width: 260px; }
   .road-risk { font: 500 10.5px var(--mono); flex-shrink: 0; letter-spacing: 0.1em; }
   .rr-low { color: var(--mint); } .rr-mid { color: var(--amber); } .rr-high { color: var(--coral); }
+  .road-item.done { opacity: 0.7; }
+  .road-risk.done { color: var(--mint); font-weight: 600; }
 
   /* ============ 审图记录 ============ */
   .rev-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
@@ -1074,23 +1080,23 @@
             <div class="ev">Mos/Logi/Core/LogiDeviceSession.swift（3,191 行）· 接收器枚举 phase 标志 :101-104, 764-795</div>
             <div class="fix">按职责拆出 DiscoveryEngine / ReportingQueryEngine / DivertController / ReceiverEnumerator，Session 只保留连接与报文路由。<b>FakeLogiDeviceSession 已证明接缝可行</b>，可逐个状态机搬迁、每步跑 Logi 单测矩阵。</div>
           </div>
-          <div class="card">
-            <div class="card-head"><span class="sev p1">P1-2</span><span class="card-t">核心三角循环依赖：ScrollCore ⇄ InputProcessor ⇄ ShortcutExecutor</span></div>
+          <div class="card done">
+            <div class="card-head"><span class="sev fixed">P1-2</span><span class="card-t">核心三角循环依赖：ScrollCore ⇄ InputProcessor ⇄ ShortcutExecutor</span><span class="fixed-chip">✓ 已修复 · STEP 03</span></div>
             <div class="card-b">三个单例互相直呼：滚动核心调输入处理器标记会话，输入处理器调执行器，执行器又回调滚动核心。<b>无法独立实例化测试任何一角</b>，初始化顺序是隐式的，新动作类型会继续加深耦合。</div>
             <div class="ev">ScrollCore.swift:76-77 → InputProcessor · InputProcessor.swift → ShortcutExecutor · ShortcutExecutor.swift:206 → ScrollCore.handleMosScrollAction</div>
-            <div class="fix">把"Mos 滚动动作"抽成中立端口协议（仿 LogiExternalBridge 的成功经验反向应用）：执行器依赖 <b>ScrollActionPort</b> 而非具体单例，ScrollCore 实现该端口。一次小型协议引入即可断环。</div>
+            <div class="fix"><b>已落地（2026-06-17）</b>：引入 <b>ScrollActionPort</b> + <b>ModifierFlagsProviding</b> 两个端口协议，executor 改依赖协议而非 ScrollCore/InputProcessor 具体类型，启动期注入。executor 现完全无环、可用 fake 端口独立测试。</div>
           </div>
-          <div class="card">
-            <div class="card-head"><span class="sev p1">P1-3</span><span class="card-t">Options 变更传播缺失 + 全量写放大</span></div>
+          <div class="card done">
+            <div class="card-head"><span class="sev fixed">P1-3</span><span class="card-t">Options 变更传播缺失 + 全量写放大</span><span class="fixed-chip">✓ 已修复 · STEP 02/03</span></div>
             <div class="card-b">任一属性 didSet 都触发<b>全部配置键同步重写</b>（含绑定/应用列表的 JSON 编码）——拖动滑杆期间高频全量落盘；无订阅机制，消费方靠手动 sync 与 isDirty 缓存失效；"readingOptionsLock"实为布尔重入标志而非锁，CVDisplayLink 线程读取配置无同步保证。</div>
             <div class="ev">Options.swift:68-78（didSet 全保存）· :148-200（全量写）· :58（布尔"锁"）· ScrollPoster.swift:414-418（帧线程读取）</div>
-            <div class="fix">三步走：① 脏键写入 + 短 debounce；② Options 提供变更订阅（closure 列表足矣），替换手动 sync；③ 热路径改读<b>不可变快照</b>（滚动开始时取一次，已有雏形），帧线程不再直读共享结构。</div>
+            <div class="fix"><b>已落地</b>：① STEP 02 OptionsGroup 变更订阅 + 脏组合并写入（只写变更组的键）；② ButtonUtils/LogiUsageBootstrap 改订阅驱动，替换手动 sync；③ STEP 03 ScrollPoster 在 update() 主线程捕获 {simTrackpadEnabled, deadZone} 快照，CVDisplayLink 线程在既有锁内只读，不再跨线程直读 Options/ScrollCore。</div>
           </div>
-          <div class="card">
-            <div class="card-head"><span class="sev p2">P2-1</span><span class="card-t">线程约定的执行力度两极分化</span></div>
+          <div class="card done">
+            <div class="card-head"><span class="sev fixed">P2-1</span><span class="card-t">线程约定的执行力度两极分化</span><span class="fixed-chip">✓ 已修复 · STEP 03</span></div>
             <div class="card-b">Logi 域用 precondition 把"主线程 only"焊死，而核心域（InputProcessor.activeBindings、ScrollCore 热键布尔、ButtonUtils 缓存）<b>零断言零锁</b>。当前拓扑下确实安全（都在主 RunLoop），但这是隐式约定——未来任何人把回调挪到队列上就会悄无声息地引入竞态。</div>
             <div class="ev">对照: UsageRegistry.swift（有断言）vs InputProcessor.swift（无断言、无锁的字典变更）</div>
-            <div class="fix">统一 assertMainThread 辅助函数撒到核心域入口（10.13 限制下 @MainActor 不可用，断言是最低成本的固化方式）。</div>
+            <div class="fix"><b>已落地</b>：新增 DEBUG-only <b>assertMainThread</b> 辅助，撒到 InputProcessor.process/clearActiveBindings、ScrollCore.handleScrollHotkey/handleMosScrollAction、ButtonUtils.invalidateCache 五个核心域入口（Release 零开销）。</div>
           </div>
           <div class="card">
             <div class="card-head"><span class="sev p2">P2-2</span><span class="card-t">UI 巨石群：323KB 单体 storyboard + 800 行级视图类</span></div>
@@ -1098,17 +1104,17 @@
             <div class="ev">Mos/Base.lproj/Main.storyboard（323KB）· ButtonsView/OpenTargetConfigPopover.swift · ButtonTableCellView.swift</div>
             <div class="fix">不必大迁移：约定<b>新窗口/新视图一律代码构建</b>（Toast 体系已证明可行），存量仅在大改时顺手拆分。</div>
           </div>
-          <div class="card">
-            <div class="card-head"><span class="sev p2">P2-3</span><span class="card-t">死代码与弃维护依赖</span></div>
+          <div class="card done">
+            <div class="card-head"><span class="sev fixed">P2-3</span><span class="card-t">死代码与弃维护依赖</span><span class="fixed-chip">✓ 已修复 · STEP 01 / 收尾</span></div>
             <div class="card-b">ButtonFilter.swift 全仓库<b>零引用</b>（留言墙式占位实现）；Charts 4.1.0 仅 Monitor 调试窗口使用，上游已更名 DGCharts 且 v4 停止维护，却随 release 包分发给全部用户。</div>
             <div class="ev">Mos/ButtonCore/ButtonFilter.swift（grep 零引用）· Package.resolved（Charts 4.1.0 + 2 个传递依赖）</div>
-            <div class="fix">删除 ButtonFilter；Monitor 图表自绘轻量折线（数据点本就 ≤200）或迁 DGCharts，顺手卸掉 swift-algorithms/numerics 传递依赖。</div>
+            <div class="fix"><b>已落地</b>：STEP 01 删除 ButtonFilter；收尾阶段 Charts 4.1.0 → <b>DGCharts 5.1.0</b>（图表功能按用户要求保留，用于收集反馈），DGCharts 5.x 零依赖，移除传递依赖 swift-algorithms + swift-numerics（依赖包 5→3）；最低系统 macOS 10.12 仍兼容 10.13。</div>
           </div>
-          <div class="card">
-            <div class="card-head"><span class="sev p3">P3-1</span><span class="card-t">权限轮询定时器引用管理松散</span></div>
+          <div class="card done">
+            <div class="card-head"><span class="sev fixed">P3-1</span><span class="card-t">权限轮询定时器引用管理松散</span><span class="fixed-chip">✓ 已修复 · STEP 01</span></div>
             <div class="card-b">启动路径创建的 10s 轮询 Timer 未存引用，sessionDidResign 只能取消 2s 恢复 Timer；反复睡眠/切换用户的极端序列下可能叠加多个轮询器。幂等守卫（isActive 检查）兜住了正确性，但属于侥幸而非设计。</div>
             <div class="ev">AppDelegate.swift:174-180（未持有引用）vs :190-191（仅取消 permissionRecoveryTimer）</div>
-            <div class="fix">两个 Timer 统一收编进 permissionRecoveryTimer 属性，创建前先 invalidate。</div>
+            <div class="fix"><b>已落地</b>：10s 轮询 Timer 统一收编进 permissionRecoveryTimer 属性，创建前先 invalidate。</div>
           </div>
           <div class="card">
             <div class="card-head"><span class="sev p3">P3-2</span><span class="card-t">云端的三项"已知取舍"，保持观察即可</span></div>
@@ -1123,23 +1129,23 @@
       <div>
         <div class="v-section-t"><span class="tag plan">ROADMAP</span>建议的改进顺序</div>
         <div class="road">
-          <div class="road-item">
+          <div class="road-item done">
             <span class="road-no"></span>
             <span class="road-t">无风险清理</span>
             <span class="road-d">删除 ButtonFilter 死代码；收编权限轮询 Timer。半天工作量，先把地扫干净。</span>
-            <span class="road-risk rr-low">风险 LOW</span>
+            <span class="road-risk done">✓ STEP 01 · 06-11</span>
           </div>
-          <div class="road-item">
+          <div class="road-item done">
             <span class="road-no"></span>
             <span class="road-t">Options 订阅 + 脏键写入</span>
             <span class="road-d">先加订阅 API 并迁移各 VC 的手动 sync，再做脏键 + debounce 落盘。每步可独立验证，回归面是偏好面板。</span>
-            <span class="road-risk rr-low">风险 LOW-MID</span>
+            <span class="road-risk done">✓ STEP 02 · 06-11</span>
           </div>
-          <div class="road-item">
+          <div class="road-item done">
             <span class="road-no"></span>
             <span class="road-t">ScrollActionPort 断环</span>
-            <span class="road-d">引入端口协议解开三角循环，顺手为核心域补 assertMainThread。改动小、杠杆大，让核心三件套可独立测试。</span>
-            <span class="road-risk rr-mid">风险 MID</span>
+            <span class="road-d">引入端口协议解开三角循环，顺手为核心域补 assertMainThread。收尾再加 ModifierFlagsProviding 端口切断 executor↔InputProcessor 残留边（executor 彻底无环）+ Charts→DGCharts 5.1.0 卸两个传递依赖。</span>
+            <span class="road-risk done">✓ STEP 03 · 06-17</span>
           </div>
           <div class="road-item">
             <span class="road-no"></span>
@@ -1172,7 +1178,7 @@
       <tbody>
         <tr><td>R0</td><td>2026-06-10</td><td>4 路并行勘察（事件管线 / Logi / 壳层 UI / Web 云端），关键论断逐条溯源核验后成图</td><td>Claude (Fable 5) + 4× Explore</td></tr>
         <tr><td>R1</td><td>2026-06-11</td><td>对抗性核查 17 项论断：15 确认；修正 2 处（Worker 路由 8→9；Toast 文件 13→8）</td><td>独立核查 Agent</td></tr>
-        <tr><td>R2</td><td>待定</td><td>Codex 交叉审图（暂阻塞：codex CLI 登录凭证过期，待重新登录后执行）</td><td>Codex</td></tr>
+        <tr><td>R2</td><td>2026-06-17</td><td>ROADMAP STEP 01/02/03 + 收尾全部落地（见各卡片 ✓ 标记），文档同步刷新。剩余 STEP 04（需设备）/ 05（长期）。</td><td>Claude (Fable 5)</td></tr>
       </tbody>
     </table>
   </div>
