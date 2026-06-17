@@ -722,7 +722,7 @@
 			repositoryURL = "https://github.com/danielgindi/Charts";
 			requirement = {
 				kind = exactVersion;
-				version = 4.1.0;
+				version = 5.1.0;
 			};
 		};
 		0BE5A29C2F7A1C5B006D61C0 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
@@ -744,7 +744,7 @@
 		0BE5A295253A119C006D61C0 /* Charts */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0BE5A294253A119C006D61C0 /* XCRemoteSwiftPackageReference "Charts" */;
-			productName = Charts;
+			productName = DGCharts;
 		};
 		0BE5A29B2F7A1C5B006D61C0 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
