@@ -19,7 +19,7 @@ enum InputResult: Equatable {
 /// 统一事件处理器
 /// 从 ButtonUtils 获取绑定配置, 匹配 InputEvent, 执行 ShortcutExecutor
 /// 使用 activeBindings 表跟踪按下中的绑定, 确保 Up 事件正确配对
-class InputProcessor {
+class InputProcessor: ModifierFlagsProviding {
     static let shared = InputProcessor()
     init() { NSLog("Module initialized: InputProcessor") }
 

@@ -10,6 +10,17 @@ private final class FakeScrollActionPort: ScrollActionPort {
     }
 }
 
+/// 记录调用并返回固定 flags 的修饰键 provider 替身。
+private final class FakeModifierFlagsProvider: ModifierFlagsProviding {
+    let returnFlags: CGEventFlags
+    var called = false
+    init(returnFlags: CGEventFlags) { self.returnFlags = returnFlags }
+    func combinedModifierFlags(physicalModifiers: CGEventFlags?) -> CGEventFlags {
+        called = true
+        return returnFlags
+    }
+}
+
 final class ScrollActionPortTests: XCTestCase {
 
     private var saved: ScrollActionPort?
@@ -38,5 +49,28 @@ final class ScrollActionPortTests: XCTestCase {
             .init(role: .dash, isDown: true),
             .init(role: .dash, isDown: false)
         ])
+    }
+
+    func testCustomMouseButton_usesInjectedModifierFlagsProvider() {
+        let fake = FakeModifierFlagsProvider(returnFlags: .maskShift)
+        let savedProvider = ShortcutExecutor.shared.modifierFlagsProvider
+        ShortcutExecutor.shared.modifierFlagsProvider = fake
+        var capturedFlags: CGEventFlags?
+        ShortcutExecutor.shared.setTestingMouseEventObserver { event in
+            capturedFlags = event.flags
+        }
+        defer {
+            ShortcutExecutor.shared.modifierFlagsProvider = savedProvider
+            ShortcutExecutor.shared.clearTestingMouseEventObserver()
+        }
+
+        // mouseMiddleClick → .mouseButton(.middle) → executeMouseButton, 合成事件时取 modifierFlagsProvider
+        guard let action = ShortcutExecutor.shared.resolveAction(named: "mouseMiddleClick") else {
+            return XCTFail("mouseMiddleClick 应解析为 mouseButton")
+        }
+        _ = ShortcutExecutor.shared.execute(action: action, phase: .down)
+
+        XCTAssertTrue(fake.called, "executor 应调用注入的 modifierFlagsProvider")
+        XCTAssertEqual(capturedFlags, .maskShift, "合成事件 flags 应取自注入 provider 的返回值")
     }
 }
