@@ -8,8 +8,8 @@
 
 import Cocoa
 
-class ScrollCore {
-    
+class ScrollCore: ScrollActionPort {
+
     // 单例
     static let shared = ScrollCore()
     init() { NSLog("Module initialized: ScrollCore") }

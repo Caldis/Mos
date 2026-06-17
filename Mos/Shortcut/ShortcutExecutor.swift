@@ -122,6 +122,9 @@ class ShortcutExecutor {
         NSLog("Module initialized: ShortcutExecutor")
     }
 
+    /// Mos 滚动动作端口 (启动期注入 ScrollCore.shared)。weak: 端口为永生单例, 避免强引用环。
+    weak var scrollActionPort: ScrollActionPort?
+
     private var testingMouseEventObserver: ((CGEvent) -> Void)?
 
     /// 快速识别 Mos Scroll 三个 stateful 动作, 供事件热路径避免完整 action 解析。
@@ -203,7 +206,7 @@ class ShortcutExecutor {
                 )
             )
         case .mosScroll(let role):
-            ScrollCore.shared.handleMosScrollAction(role: role, isDown: phase == .down)
+            scrollActionPort?.handleMosScrollAction(role: role, isDown: phase == .down)
             return .none
         case .logiAction(let identifier):
             guard phase == .down else { return .none }
