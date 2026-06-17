@@ -74,6 +74,7 @@ class ButtonUtils {
 
     /// 标记缓存失效 (绑定变更后调用)
     func invalidateCache() {
+        assertMainThread()
         isDirty = true
     }
 
