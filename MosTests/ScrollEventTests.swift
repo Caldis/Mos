@@ -29,6 +29,40 @@ final class ScrollEventTests: XCTestCase {
         return event
     }
 
+    // MARK: - 远程控制应用识别
+
+    func testRemoteControlApplicationDetectsToDeskExecutableKeyword() {
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: "/Applications/ToDesk.app/Contents/MacOS/ToDesk",
+            bundleIdentifier: nil
+        ))
+    }
+
+    func testRemoteControlApplicationDetectsToDeskBundleIdentifierKeyword() {
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: nil,
+            bundleIdentifier: "com.youqu.todesk"
+        ))
+    }
+
+    func testRemoteControlApplicationRequiresRawPassthroughForToDesk() {
+        XCTAssertTrue(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: "/Library/Application Support/ToDesk/ToDesk_Service",
+            bundleIdentifier: nil
+        ))
+    }
+
+    func testRemoteControlApplicationDoesNotRequireRawPassthroughForOtherRemoteApps() {
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: nil,
+            bundleIdentifier: "com.teamviewer.TeamViewer"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: nil,
+            bundleIdentifier: "com.teamviewer.TeamViewer"
+        ))
+    }
+
     // MARK: - initEvent: 优先级 (scrollPt > scrollFixPt > scrollFix)
 
     func testInitEvent_prefersPtOverFixPt() throws {
