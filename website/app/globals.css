@@ -82,6 +82,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.site-brand-title {
+  font-family:
+    var(--font-display, var(--font-body, ui-sans-serif)),
+    var(--font-cjk),
+    var(--font-body),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Helvetica,
+    Arial;
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }
@@ -208,7 +222,7 @@ body::before {
 @layer utilities {
   .font-display {
     font-family:
-      var(--font-display),
+      var(--font-display, var(--font-body, ui-sans-serif)),
       var(--font-cjk),
       var(--font-body),
       ui-sans-serif,

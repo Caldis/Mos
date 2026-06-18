@@ -137,7 +137,7 @@ export default function HomeClient({ initialRelease }: { initialRelease?: unknow
         >
           <div className="flex items-center gap-1">
             <Image src={logo512} alt={t.a11y.appIconAlt} width={36} height={36} className="rounded-[12px] object-contain" priority />
-            <div className="text-2xl font-extrabold tracking-[0.015em] text-white" style={{ fontFamily: "math" }}>
+            <div className="site-brand-title text-2xl font-normal leading-[1.02] tracking-[-0.02em] text-white">
               Mos
             </div>
           </div>
