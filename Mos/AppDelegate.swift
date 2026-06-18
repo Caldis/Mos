@@ -124,6 +124,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         guard AppRuntime.shouldRunAppStartupSideEffects else { return }
         LogiCenter.shared.installBridge(LogiIntegrationBridge.shared)
+        ShortcutExecutor.shared.scrollActionPort = ScrollCore.shared
+        ShortcutExecutor.shared.modifierFlagsProvider = InputProcessor.shared
         LogiUsageBootstrap.installOptionsObservers()
         LogiUsageBootstrap.refreshAll()
         startWithAccessibilityPermissionsChecker(nil)

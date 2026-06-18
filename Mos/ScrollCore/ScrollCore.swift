@@ -8,8 +8,8 @@
 
 import Cocoa
 
-class ScrollCore {
-    
+class ScrollCore: ScrollActionPort {
+
     // 单例
     static let shared = ScrollCore()
     init() { NSLog("Module initialized: ScrollCore") }
@@ -203,6 +203,7 @@ class ScrollCore {
     private var hidBlockHeldCode: UInt16?
 
     func handleMosScrollAction(role: ScrollRole, isDown: Bool) {
+        assertMainThread()
         switch role {
         case .dash:
             mosDashActionCount = updatedActionCount(mosDashActionCount, isDown: isDown)
@@ -239,6 +240,7 @@ class ScrollCore {
     /// 处理来自 Logitech HID++ 的按键事件, 匹配 dash/toggle/block 滚动热键
     @discardableResult
     func handleScrollHotkey(code: UInt16, isDown: Bool) -> Bool {
+        assertMainThread()
         // Key-up: 按跟踪的 code 清除状态 (不依赖当前 app 配置, 防止焦点切换导致状态卡死)
         if !isDown {
             var matched = false

@@ -18,6 +18,8 @@ final class InputProcessorTests: XCTestCase {
         ScrollCore.shared.dashKeyHeld = false
         ScrollCore.shared.toggleKeyHeld = false
         ScrollCore.shared.blockKeyHeld = false
+        ShortcutExecutor.shared.scrollActionPort = ScrollCore.shared
+        ShortcutExecutor.shared.modifierFlagsProvider = InputProcessor.shared
     }
 
     override func tearDown() {
