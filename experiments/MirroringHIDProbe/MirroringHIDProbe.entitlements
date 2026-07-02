@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- 创建虚拟 HID 设备所需。该 entitlement 受门控: 需在 App ID 上启用对应能力,
+         并用带该能力的描述文件签名, 否则 HIDVirtualDevice(properties:) 返回 nil。 -->
+    <key>com.apple.developer.hid.virtual.device</key>
+    <true/>
+</dict>
+</plist>

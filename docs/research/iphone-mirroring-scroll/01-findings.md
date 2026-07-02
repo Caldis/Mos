@@ -1,0 +1,105 @@
+# iPhone 镜像滚动方向/平滑失效 — 根因与方案（研究结论）
+
+关联 issue: [#762](https://github.com/Caldis/Mos/issues/762)
+环境: macOS 26 (25A5316i) / iOS 26,复现于 Mos 3.5.0
+调查方式: 系统二进制逆向（本机 dyld shared cache 提取 + 符号/字符串分析）+ 社区证据交叉验证
+
+---
+
+## TL;DR
+
+- **根因不是"加密所以不可篡改"**,而是**输入捕获的层级**:iPhone 镜像经私有框架 `UniversalHID` 直接订阅 **IOHIDEventSystem** 层的原始滚动事件,该层在 CGEvent **之下**。Mos 的 `CGEventTap` 在 CGEvent 层(之上),改的是下游副本,镜像读的是上游原件,**永远看不到**。
+- 系统"自然滚动"翻转在 IOHIDEvent 分发**之前**应用,且 `UniversalHID.ScrollFilter` 带 `ignoresNaturalScrollingPreference` 字段、**直接读系统偏好**——所以只有系统自然滚动开关对镜像有效。
+- **短期方案(路线 A,已实现)**:前台聚焦镜像时,用私有符号 `setSwipeScrollDirection` 即时切换系统自然滚动方向,失焦恢复。零 entitlement,只修方向、给不了平滑。
+- **长期方案(路线 B,验证中)**:虚拟 HID 设备(CoreHID `HIDVirtualDevice` 或 DriverKit),让翻转/平滑后的滚动以**真 IOHIDEvent** 从 IOHIDFamily 层进入,镜像可见。需向 Apple 申请 entitlement,已提交(Request ID 见 04)。**「镜像认不认虚拟 HID」这一关键假设尚未实测,是路线 B 的唯一未验证环节**。
+
+---
+
+## 1. 问题
+
+在系统开启「自然滚动」+ Mos 开启「翻转方向」时,几乎所有别处都表现为翻转后的方向,唯独 **iPhone 镜像内的滚轮方向不被翻转**;平滑滚动同样对镜像无效。Mos 的 per-app 例外规则也管不到它。
+
+## 2. 根因(二进制证据)
+
+### 2.1 输入实际由 WindowManager 承载,走 UniversalHID
+- iPhone 镜像 App = `com.apple.ScreenContinuity`,但链接 `UniversalHID.framework` 的进程是 **`/System/Library/CoreServices/WindowManager.app`**。
+- `ScreenContinuityUI` 链接私有 `UniversalHID.framework` + `ScreenSharingKit`;其对 CGEvent 的唯一调用是 `CGEventSetIntegerValueField`(仅用于拖拽设窗口坐标),**无读取滚动的 CGEvent 代码**。
+
+### 2.2 UniversalHID 走 IOHIDEventSystem,不是 CGEvent
+`UniversalHID` 导入符号清一色 IOHIDEvent 系:
+```
+IOHIDEventSystemConnectionDispatchEvent      // 在 IOHIDEvent 层收发
+IOHIDEventCreateScrollEvent / …DigitizerEvent / …FluidTouchGestureEvent
+IOHIDEventGetScrollMomentum / SetPhase
+```
+类结构:`HIDEventSystemClient` / `HIDServiceClient`(订阅端)、`HIDVirtualService` / `HIDVirtualServicePool`(注入端)、以及 `ScrollFilter` / `PointerFilter` / `DigitizerFilter` / `FluidTouchGestureFilter`。它把鼠标滚轮的原始 HIDEvent 转成 iOS 的 **digitizer/触摸手势**再转发——这印证了 Scroll Reverser 作者的原话「iPhone 镜像吃 gestures,不吃 scroll signals」。
+
+### 2.3 为什么只有系统自然滚动有效
+- `UniversalHID.ScrollFilter` 内含字符串 **`ignoresNaturalScrollingPreference`** → 它**直接读系统偏好 `com.apple.swipescrolldirection`** 来决定方向。
+- 自然滚动的翻转由 IOHIDFamily 的 `IOHIDPointerScrollFilter` 在 IOHIDEvent **分发之前**应用。
+- 因此系统自然滚动在镜像订阅点的**上游**生效(看得到),Mos 的 CGEvent 翻转在**下游**(看不到)。
+
+### 2.4 权限壁垒
+- `WindowManager` 持有私有 entitlement **`com.apple.private.hid.client.event-monitor`**(订阅 IOHIDEventSystem 原始流)。
+- 向该层**注入**需 **`com.apple.private.hid.client.event-dispatch`**。
+- 两者均为 `com.apple.private.*`,只发给 Apple 自家签名二进制,由 AMFI 强制,**第三方无法申请**。
+
+### 2.5 层级模型
+```
+   NSEvent (AppKit)
+        ▲
+   CGEvent / Quartz Event Services   ← CGEventTap 在这层 (Mos / Scroll Reverser / LinearMouse / Mac Mouse Fix)
+        ▲   (WindowServer/SkyLight 由 HID 事件合成 CGEvent)
+   IOHIDEventSystem 事件分发          ← iPhone 镜像/WindowManager 用 event-monitor entitlement 在这层订阅
+        ▲   IOHIDPointerScrollFilter 在此应用自然滚动翻转 + 加速
+   IOKit HID 驱动 (kext/dext)         ← 虚拟 HID 设备(路线 B)从这里进入,故镜像可见
+        ▲
+   物理鼠标
+```
+关键:即使 Mos 用最底层的 `kCGHIDEventTap` 挂钩,仍在 IOHIDEventSystem 向 event-monitor 客户端分发**之后**,够不到镜像。
+
+## 3. 各家工具现状(同一堵墙)
+
+| 工具 | 结论 | 依据 |
+|---|---|---|
+| LinearMouse | can't fix | 维护者:镜像用更底层系统滚动事件,不经 LinearMouse |
+| Scroll Reverser | can't fix | 作者:吃 gesture 不吃 scroll signal,取自更深事件流 |
+| Mac Mouse Fix | 未修复 | 作者只承诺"别更糟",无时间表 |
+| Logi Options+ | 能工作 | 走**自己的驱动**(即路线 B) |
+| Flutter engine | 已修复(独立佐证) | PR #55285:「iOS 18 屏幕镜像只发 pan/scale 手势,不发 hover」 |
+
+## 4. 方案评估
+
+### ✅ 路线 A — 前台聚焦时切系统自然滚动(已实现)
+- 机制:私有框架 `PreferencePanesSupport` 的 `setSwipeScrollDirection(bool)` / `swipeScrollDirection()`,即时生效、**无需注销**(`defaults write` 不即时生效);配合广播 `SwipeScrollDirectionDidChangeNotification`。
+- 逻辑:聚焦镜像时把系统自然滚动设为"用户在别处的等效方向 = 系统自然 XOR Mos 垂直翻转",失焦恢复。**只在用户开了 Mos 翻转时动作**(正是本 bug 场景)。
+- 代价:零 entitlement;只修方向,**给不了平滑**(平滑同样在 CGEvent 层进不去);会临时改动"自然滚动"这一可见系统设置(失焦即恢复),故默认关闭、显式门控。
+- 实现见 §6。
+
+### ⚠️ 路线 B — 虚拟 HID 设备(唯一能同时翻转+平滑)
+- 机制:seize 物理鼠标(可选)+ 用虚拟 HID 设备重发翻转/平滑后的滚轮,以**真 IOHIDEvent** 从 IOHIDFamily 进入 → 镜像可见(Logi Options+ 即此路)。
+- 两种 API:
+  - **CoreHID `HIDVirtualDevice`**(macOS 15+,公开框架,纯用户态,无需 dext)— 由 `com.apple.developer.hid.virtual.device` 门控。**本轮选定路线**。
+  - **DriverKit 虚拟 HID**(Karabiner 架构)— 需 dext + 系统扩展审批 + 重启,重一个数量级;需 `com.apple.developer.driverkit.*` + `family.hid.*`。
+- **未验证的关键假设**:没有任何来源(含本次逆向)实测过镜像会响应虚拟 HID 注入的滚动。架构上是对的层(真 IOHIDEvent,低于 tap),Logi Options+ 能工作是强旁证,但**必须实测**——见 `02-experiment-plan.md`。
+
+### ❌ 已排除
+- `CGEventPost` / CGEvent 内嵌 IOHIDEvent:仍进 WindowServer,在镜像订阅点下游,收不到。
+- 直接 `IOHIDEventSystemConnectionDispatchEvent` 注入:需 `com.apple.private.hid.client.event-dispatch`,私有不可申请。
+
+## 5. 结论与建议
+1. **短期**:发布路线 A(默认禁用列表保留 iPhone 镜像 + 一个 per-app/全局开关,系统级翻转)。
+2. **长期**:路线 B 是天花板,但先用 CoreHID 原型**验证"镜像认不认虚拟 HID"**再决定投入;分发需 Apple entitlement(已申请)。
+
+## 6. 路线 A 实现状态(本分支已含,编译通过)
+- `Mos/ScrollCore/SwipeScrollDirection.swift` — dlsym 调 `PreferencePanesSupport` 的 `setSwipeScrollDirection`/`swipeScrollDirection`,符号缺失静默降级。
+- `Mos/ScrollCore/MirroringScrollCoordinator.swift` — 监听 `com.apple.ScreenContinuity` 前台激活/失活,聚焦时改写方向、失焦/退出恢复;门控键 `overrideMirroringDirection`(默认关)。
+- `Mos/AppDelegate.swift` — 在 ScrollCore 的 enable/disable/terminate 四处对称启停协调器。
+- **待办(UX 决策未定)**:开关的正式 UI 与 Options 字段落地。三个候选:偏好设置全局开关(默认关,推荐)/ 复用现有例外列表做 per-app / 全局自动默认开。当前用独立 UserDefaults 键 `overrideMirroringDirection` 门控,可 `defaults write com.caldis.Mos.debug overrideMirroringDirection -bool true` 测试。
+
+## 7. 关键符号/路径速查
+- iPhone 镜像 App: `/System/Applications/iPhone Mirroring.app`(`com.apple.ScreenContinuity`)
+- 承载进程: `/System/Library/CoreServices/WindowManager.app`(链接 `UniversalHID`,持 `com.apple.private.hid.client.event-monitor`)
+- 私有框架: `UniversalHID.framework`、`ScreenContinuityUI.framework`、`PreferencePanesSupport.framework`
+- 公开框架: `CoreHID.framework`(`HIDVirtualDevice`,macOS 15+)
+- 自然滚动偏好: `com.apple.swipescrolldirection`(NSGlobalDomain)
