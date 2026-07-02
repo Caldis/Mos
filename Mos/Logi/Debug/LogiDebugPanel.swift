@@ -94,6 +94,7 @@ struct HIDPPInfo {
         0x1004: ("UnifiedBattery", "Unified battery reporting"),
         0x1814: ("ChangeHost", "Multi-host switching"),
         0x1815: ("HostsInfo", "Connected host info"),
+        0x19B0: ("Haptic", "Haptic feedback control"),
         0x1B04: ("ReprogControlsV4", "Button reprog and divert"),
         0x1D4B: ("WirelessStatus", "Wireless connection status"),
         0x2110: ("SmartShift", "Scroll wheel mode"),
@@ -131,6 +132,27 @@ struct HIDPPInfo {
         0x03: "OutOfRange", 0x04: "HWError", 0x05: "LogitechInternal",
         0x06: "InvalidFeatureIndex", 0x07: "InvalidFunctionID",
         0x08: "Busy", 0x09: "Unsupported",
+    ]
+
+    /// HAPTIC (0x19B0) 固件预置波形 (对齐 Solaar HapticWaveForms).
+    /// ID 稀疏: 0x0F~0x1A 无定义, 0x1B 是有意跳跃. 实际支持范围以 GetCapabilities 位掩码为准.
+    static let hapticWaveforms: [(id: UInt8, name: String)] = [
+        (0x00, "Sharp State Change"),
+        (0x01, "Damp State Change"),
+        (0x02, "Sharp Collision"),
+        (0x03, "Damp Collision"),
+        (0x04, "Subtle Collision"),
+        (0x05, "Happy Alert"),
+        (0x06, "Angry Alert"),
+        (0x07, "Completed"),
+        (0x08, "Square"),
+        (0x09, "Wave"),
+        (0x0A, "Firework"),
+        (0x0B, "Mad"),
+        (0x0C, "Knock"),
+        (0x0D, "Jingle"),
+        (0x0E, "Ringing"),
+        (0x1B, "Whisper Collision"),
     ]
 }
 
@@ -261,6 +283,17 @@ class LogiDebugPanel: NSObject {
     private var indexStepperLabel: NSTextField?
     private weak var featuresControlsSplit: NSSplitView?
 
+    // MARK: - Haptic Context (0x19B0)
+
+    private var hapticWaveformPopup: NSPopUpButton?
+    private var hapticLevelSlider: NSSlider?
+    private var hapticLevelValueLabel: NSTextField?
+    /// 跨重建保留的波形选择 (context 区随通知整体 rebuild)
+    private var hapticSelectedWaveformId: UInt8 = 0x00
+    /// 自动 state/capabilities 查询节流: 响应驱动的 rebuild 不应放大成查询风暴.
+    /// 按 session 记录, 快速切换设备时不误吞新设备的首次查询.
+    private var hapticAutoQueryStamp: (session: ObjectIdentifier, at: Date)?
+
     // MARK: - Log
 
     private var logTableView: NSTableView!
@@ -292,6 +325,7 @@ class LogiDebugPanel: NSObject {
     private var reportingCompleteObserver: NSObjectProtocol?
     private var discoveryStateObserver: NSObjectProtocol?
     private var spinnerObserver: NSObjectProtocol?
+    private var hapticStateObserver: NSObjectProtocol?
     private var windowCloseObserver: NSObjectProtocol?
 
     // Header 文本基座 (不含 spinner 后缀); spinner tick 时与当前帧拼接.
@@ -1174,6 +1208,10 @@ class LogiDebugPanel: NSObject {
         var by: CGFloat = 0
 
         if let featureId = selectedFeatureId {
+            if featureId == LogiDeviceSession.featureHaptic, let session = currentSession {
+                buildHapticContext(in: container, session: session, width: w)
+                return
+            }
             let actions = HIDPPFeatureActions.actions(for: featureId)
             for action in actions {
                 let btn = makeActionBtn(title: action.name, action: #selector(featureActionClicked(_:)))
@@ -1255,6 +1293,127 @@ class LogiDebugPanel: NSObject {
                 ph.topAnchor.constraint(equalTo: container.topAnchor, constant: L.pad),
             ])
         }
+    }
+
+    // MARK: - Haptic Context UI
+
+    /// HAPTIC feature 选中时的专属操作区: 波形选择 + 播放, 强度滑杆, 状态回读.
+    /// 布局语言与通用 context 一致 (手排 frame + FlippedView 坐标系).
+    private func buildHapticContext(in container: NSView, session: LogiDeviceSession, width w: CGFloat) {
+        let state = session.debugHapticState
+        let mask = session.debugHapticWaveformMask
+        var by: CGFloat = 0
+
+        // 首次选中 (或设备未应答过) 时自动拉取 capabilities + state; 同一 session 1s 节流防响应驱动的查询风暴
+        if state == nil || mask == nil {
+            let sid = ObjectIdentifier(session)
+            let throttled = hapticAutoQueryStamp.map {
+                $0.session == sid && Date().timeIntervalSince($0.at) < 1.0
+            } ?? false
+            if !throttled {
+                hapticAutoQueryStamp = (sid, Date())
+                session.hapticRefreshInfo()
+            }
+        }
+
+        // 波形选择
+        let popup = NSPopUpButton(frame: NSRect(x: L.pad, y: by, width: w, height: L.btnH), pullsDown: false)
+        stylePopupButton(popup)
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        for wf in HIDPPInfo.hapticWaveforms {
+            let item = NSMenuItem(title: wf.name, action: nil, keyEquivalent: "")
+            item.tag = Int(wf.id)
+            if let mask = mask { item.isEnabled = (mask >> UInt32(wf.id)) & 1 != 0 }
+            menu.addItem(item)
+        }
+        popup.menu = menu
+        popup.target = self
+        popup.action = #selector(hapticWaveformChanged(_:))
+        // 恢复上次选择; 若该波形被设备能力位掩码禁用则回落到第一个可用项
+        let restoreIdx = menu.items.firstIndex { $0.tag == Int(hapticSelectedWaveformId) && $0.isEnabled }
+            ?? menu.items.firstIndex { $0.isEnabled } ?? 0
+        popup.selectItem(at: restoreIdx)
+        hapticSelectedWaveformId = UInt8(menu.items[restoreIdx].tag)
+        container.addSubview(popup)
+        self.hapticWaveformPopup = popup
+        by += L.btnH + L.btnGap
+
+        let playBtn = makeActionBtn(title: "Play Waveform", action: #selector(hapticPlayClicked))
+        playBtn.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
+        container.addSubview(playBtn)
+        by += L.btnH + L.btnGap + 4
+
+        let sep = makeSep()
+        sep.frame = NSRect(x: L.pad, y: by, width: w, height: 1)
+        container.addSubview(sep)
+        by += 1 + 6
+
+        // 强度: 设备全局状态, 非单次播放参数
+        let hdr = makeSectionHeader("INTENSITY")
+        hdr.frame = NSRect(x: L.pad, y: by, width: w - 40, height: 14)
+        container.addSubview(hdr)
+
+        let valueText: String
+        if let state = state {
+            valueText = state.enabled ? "\(state.level)" : "Off"
+        } else {
+            valueText = "—"
+        }
+        let valueLabel = makeLabel(text: valueText, fontSize: 10, weight: .medium, color: .secondaryLabelColor)
+        valueLabel.alignment = .right
+        valueLabel.frame = NSRect(x: L.pad + w - 40, y: by, width: 40, height: 14)
+        container.addSubview(valueLabel)
+        self.hapticLevelValueLabel = valueLabel
+        by += 16
+
+        let level = (state?.enabled ?? false) ? Double(state?.level ?? 0) : 0
+        let slider = NSSlider(value: level, minValue: 0, maxValue: 100,
+                              target: self, action: #selector(hapticLevelChanged(_:)))
+        slider.controlSize = .small
+        slider.isContinuous = true
+        slider.isEnabled = state != nil
+        if state?.fourLevelsOnly == true {
+            slider.numberOfTickMarks = 5
+            slider.allowsTickMarkValuesOnly = true
+        }
+        slider.frame = NSRect(x: L.pad, y: by, width: w, height: 18)
+        container.addSubview(slider)
+        self.hapticLevelSlider = slider
+        by += 18 + L.btnGap + 2
+
+        let readBtn = makeActionBtn(title: "Read State", action: #selector(hapticReadStateClicked))
+        readBtn.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
+        container.addSubview(readBtn)
+        by += L.btnH + 6
+
+        // 协议边界说明: 波形时长/频率由固件内置, 不可参数化
+        let note = makeLabel(text: "Firmware preset waveforms", fontSize: 9, color: .tertiaryLabelColor)
+        note.frame = NSRect(x: L.pad, y: by, width: w, height: 12)
+        note.cell?.lineBreakMode = .byTruncatingTail
+        container.addSubview(note)
+    }
+
+    @objc private func hapticWaveformChanged(_ sender: NSPopUpButton) {
+        hapticSelectedWaveformId = UInt8(clamping: sender.selectedTag())
+    }
+
+    @objc private func hapticPlayClicked() {
+        currentSession?.hapticPlay(waveformId: hapticSelectedWaveformId)
+    }
+
+    @objc private func hapticLevelChanged(_ sender: NSSlider) {
+        let v = UInt8(clamping: sender.integerValue)
+        hapticLevelValueLabel?.stringValue = v == 0 ? "Off" : "\(v)"
+        // 拖动过程中只联动数字; 松手 / 点击 / 键盘调整时才真正下发
+        let eventType = NSApp.currentEvent?.type
+        if eventType != .leftMouseDragged && eventType != .leftMouseDown {
+            currentSession?.hapticSetLevel(v)
+        }
+    }
+
+    @objc private func hapticReadStateClicked() {
+        currentSession?.hapticRefreshInfo()
     }
 
     @objc private func indexMinusClicked() {
@@ -1750,6 +1909,26 @@ class LogiDebugPanel: NSObject {
             self?.renderRightPanelHeaders()
             self?.refreshSpinningSlotRow()
         }
+        hapticStateObserver = NotificationCenter.default.addObserver(
+            forName: LogiDeviceSession.hapticStateDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let session = notification.object as? LogiDeviceSession,
+                  session === self.currentSession else { return }
+            // Haptic feature 刚被发现: FEATURES 表补行, 并还原之前的行选中 (reload 会清选中)
+            if !self.featureRows.contains(where: { $0.featureId == LogiDeviceSession.featureHaptic }) {
+                let prior = self.selectedFeatureId
+                self.refreshFeatureTable()
+                if let fid = prior,
+                   let row = self.featureRows.firstIndex(where: { $0.featureId == fid }) {
+                    self.featureTableView?.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+                }
+            }
+            // 正在展示 haptic 操作区: 用最新 state / capabilities 重建 (滑杆位置, 波形可用性)
+            if self.selectedFeatureId == LogiDeviceSession.featureHaptic {
+                self.updateContextActions()
+            }
+        }
     }
 
     private func stopObserving() {
@@ -1766,6 +1945,10 @@ class LogiDebugPanel: NSObject {
         if let o = spinnerObserver {
             NotificationCenter.default.removeObserver(o)
             spinnerObserver = nil
+        }
+        if let o = hapticStateObserver {
+            NotificationCenter.default.removeObserver(o)
+            hapticStateObserver = nil
         }
         // Layout observers (frame change) are not tracked here — they're tied to the views
         // and auto-removed when the views are deallocated.
@@ -1859,6 +2042,17 @@ class LogiDebugPanel: NSObject {
         btn.font = NSFont.systemFont(ofSize: 13, weight: .medium)
         if #available(macOS 10.14, *) { btn.contentTintColor = .labelColor }
         return btn
+    }
+
+    private func stylePopupButton(_ p: NSPopUpButton) {
+        p.isBordered = false
+        p.wantsLayer = true
+        p.layer?.backgroundColor = NSColor(calibratedWhite: 1.0, alpha: 0.06).cgColor
+        p.layer?.borderColor = NSColor(calibratedWhite: 1.0, alpha: 0.18).cgColor
+        p.layer?.borderWidth = 1
+        p.layer?.cornerRadius = 4
+        p.font = NSFont.systemFont(ofSize: 11)
+        if #available(macOS 10.14, *) { p.contentTintColor = .labelColor }
     }
 
     private func configureDarkScroll(_ sv: NSScrollView) {
