@@ -230,8 +230,11 @@ public class Utils {
         return parseName(fromPath: validPath)
     }
     class func parseName(fromPath path: String) -> String {
-        let applicationRawName = FileManager().displayName(atPath: path).removingPercentEncoding!
-        return Utils.removingRegexMatches(target: applicationRawName, pattern: ".app")
+        // 显示名可能含无效百分号序列 (如 "100% Orange Juice"), removingPercentEncoding 返回 nil 时保留原名
+        let displayName = FileManager.default.displayName(atPath: path)
+        let applicationRawName = displayName.removingPercentEncoding ?? displayName
+        // 只去掉结尾的 .app 扩展名; 不能用 ".app" (regex 的 . 是通配符, 会把 "WhatsApp" 截成 "What")
+        return Utils.removingRegexMatches(target: applicationRawName, pattern: #"\.app$"#)
     }
     
     static var runningApplicationThreshold = 60.0

@@ -19,6 +19,8 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     }
     
     // MARK: - UI: 图表
+    // 图表滑动窗口容量 (可见范围 100, 留 6 倍余量供回看)
+    static let chartWindowSize = 600
     var lineChartCount = 0.0
     @IBOutlet weak var lineChart: LineChartView!
     
@@ -57,8 +59,6 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
         return Unmanaged.passUnretained(event)
     }
     // 更新面板
-    var prevScrollWheelEventScrollPhase = 0.0
-    var prevScrollWheelEventMomentumPhase = 0.0
     @objc private func updateScrollEventData(notification: NSNotification) {
         let event = notification.object as! CGEvent
         // 更新图表
@@ -82,15 +82,11 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
             let momentumPhase = Double(event.getIntegerValueField(.scrollWheelEventMomentumPhase))
             data.appendEntry(ChartDataEntry(x: lineChartCount, y: momentumPhase), toDataSet: 5)
 
-            // Logs
-            if prevScrollWheelEventScrollPhase != scrollPhase || prevScrollWheelEventMomentumPhase != momentumPhase {
-                if prevScrollWheelEventScrollPhase != scrollPhase {
-                    prevScrollWheelEventScrollPhase = scrollPhase
+            // 滑动窗口: 丢弃窗口外的旧数据点, 防止长会话无界增长
+            for dataSet in data.dataSets {
+                if let lineDataSet = dataSet as? LineChartDataSet, lineDataSet.entryCount > MonitorViewController.chartWindowSize {
+                    _ = lineDataSet.removeEntry(index: 0)
                 }
-                if prevScrollWheelEventMomentumPhase != momentumPhase {
-                    prevScrollWheelEventMomentumPhase = momentumPhase
-                }
-                NSLog("Phase updated -> prevScrollWheelEventScrollPhase: \(scrollPhase), prevScrollWheelEventMomentumPhase: \(momentumPhase)")
             }
 
             lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 100.0)

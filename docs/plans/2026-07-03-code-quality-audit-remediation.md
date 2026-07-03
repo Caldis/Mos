@@ -54,13 +54,13 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 |---|---|---|---|---|
 | P0-1 | ScrollUtils.swift:41-54 | 并发 | 高 | 待处理 |
 | P0-2 | ScrollUtils.swift:92-104 | 崩溃/性能 | 高 | 待处理 |
-| P0-3 | Utils.swift:233 | 崩溃 | 高 | 待处理 |
-| P0-4 | MonitorViewController.swift:96 / MonitorLogStore.swift:21 | 性能 | 高 | 待处理 |
+| P0-3 | Utils.swift:233 | 崩溃 | 高 | ✅ 2026-07-03 |
+| P0-4 | MonitorViewController.swift:96 / MonitorLogStore.swift:21 | 性能 | 高 | ✅ 2026-07-03 |
 | P0-5 | LogiDeviceSession.swift:2638,1074 | 并发 | 高 | 待处理 |
-| P0-6 | ShortcutExecutor.swift:367,529 | 正确性 | 高 | 待处理 |
+| P0-6 | ShortcutExecutor.swift:367,529 | 正确性 | 高 | ✅ 2026-07-03 |
 | P0-7 | LogiDeviceSession.swift:2568-2570 | 崩溃 | 高 | 待处理 |
-| P0-8 | KeyRecorder.swift:168-170 | 正确性 | 高 | 待处理 |
-| P0-9 | ShortcutExecutor.swift:152-163 | 正确性 | 高 | 待处理 |
+| P0-8 | KeyRecorder.swift:168-170 | 正确性 | 高 | ✅ 2026-07-03 |
+| P0-9 | ShortcutExecutor.swift:152-163 | 正确性 | 高 | ✅ 2026-07-03 |
 | P1-1 | LogiDebugPanel.swift:366-381 | 性能 | 中 | 待处理 |
 | P1-2 | LogiDebugPanel.swift:466 / CGEvent+Extensions.swift:234 | 性能 | 中 | 待处理 |
 | P1-3 | LogiDebugPanel.swift:1451-1453 | 性能 | 中 | 待处理 |
@@ -155,6 +155,7 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
   1. 改为 `let raw = FileManager().displayName(atPath: path); let name = raw.removingPercentEncoding ?? raw`。
   2. 顺手确认：这里每次调用新建 `FileManager()` 实例，改用 `FileManager.default`。
 - **验证**：新增单测：对含 `%` 的伪路径调用 `parseName` 不崩溃、返回原名。跑 `OptionsButtonsLoaderTests` + Debug build。
+- **修复记录 (2026-07-03)**：已修复。回归测试额外发现并修复同函数的正则 bug：`pattern: ".app"` 的 `.` 是通配符且大小写不敏感, 会把 "WhatsApp" 截成 "What", 已改为锚定结尾的 `\.app$`（`UtilsParseNameTests` 覆盖）。
 
 ### P0-4 监视窗口内存/CPU 无界增长
 

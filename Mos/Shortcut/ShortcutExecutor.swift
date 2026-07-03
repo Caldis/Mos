@@ -129,6 +129,7 @@ class ShortcutExecutor {
     weak var modifierFlagsProvider: ModifierFlagsProviding?
 
     private var testingMouseEventObserver: ((CGEvent) -> Void)?
+    private var testingKeyEventObserver: ((CGEvent) -> Void)?
 
     /// 快速识别 Mos Scroll 三个 stateful 动作, 供事件热路径避免完整 action 解析。
     static func isMosScrollActionIdentifier(_ shortcutName: String) -> Bool {
@@ -151,7 +152,9 @@ class ShortcutExecutor {
         // 发送按键按下事件
         if let keyDown = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: true) {
             keyDown.flags = CGEventFlags(rawValue: flags)
-            keyDown.post(tap: .cghidEventTap)
+            // 打上合成标记, 防止事件回流进 ButtonCore/InputProcessor 被再次匹配触发
+            keyDown.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
+            notifyOrPostKeyEvent(keyDown)
         }
 
         // 发送按键抬起事件
@@ -159,7 +162,8 @@ class ShortcutExecutor {
             if preserveFlagsOnKeyUp {
                 keyUp.flags = CGEventFlags(rawValue: flags)
             }
-            keyUp.post(tap: .cghidEventTap)
+            keyUp.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
+            notifyOrPostKeyEvent(keyUp)
         }
     }
 
@@ -362,10 +366,7 @@ class ShortcutExecutor {
         inputModifiers: CGEventFlags?
     ) -> UUID? {
         guard let source = CGEventSource(stateID: .hidSystemState) else { return nil }
-        let location = NSEvent.mouseLocation
-        // 转换坐标: NSEvent 用左下角原点, CGEvent 用左上角原点
-        let screenHeight = NSScreen.main?.frame.height ?? 0
-        let point = CGPoint(x: location.x, y: screenHeight - location.y)
+        let point = currentMouseLocationForCGEvent()
         let spec = mouseEventSpec(for: kind, phase: phase)
         guard let event = CGEvent(
             mouseEventSource: source,
@@ -405,6 +406,14 @@ class ShortcutExecutor {
 
     func clearTestingMouseEventObserver() {
         testingMouseEventObserver = nil
+    }
+
+    func setTestingKeyEventObserver(_ observer: @escaping (CGEvent) -> Void = { _ in }) {
+        testingKeyEventObserver = observer
+    }
+
+    func clearTestingKeyEventObserver() {
+        testingKeyEventObserver = nil
     }
 
     func mouseTapReplayContext(for event: InputEvent) -> MouseTapReplayContext? {
@@ -527,8 +536,14 @@ class ShortcutExecutor {
     }
 
     private func currentMouseLocationForCGEvent() -> CGPoint {
+        // CGEvent(source: nil) 直接给出 CG 坐标系 (主屏左上角原点) 的当前鼠标位置, 无需手工翻转
+        if let event = CGEvent(source: nil) {
+            return event.location
+        }
+        // 兜底: 手工翻转坐标 (NSEvent 左下角原点 -> CGEvent 左上角原点)
+        // 翻转基准必须是主屏 screens[0] 的高度, 不能用焦点屏 NSScreen.main, 否则多显示器下 Y 坐标错位
         let location = NSEvent.mouseLocation
-        let screenHeight = NSScreen.main?.frame.height ?? 0
+        let screenHeight = NSScreen.screens.first?.frame.height ?? 0
         return CGPoint(x: location.x, y: screenHeight - location.y)
     }
 
@@ -756,6 +771,14 @@ class ShortcutExecutor {
     private func notifyOrPostMouseEvent(_ event: CGEvent) {
         if let testingMouseEventObserver {
             testingMouseEventObserver(event)
+            return
+        }
+        event.post(tap: .cghidEventTap)
+    }
+
+    private func notifyOrPostKeyEvent(_ event: CGEvent) {
+        if let testingKeyEventObserver {
+            testingKeyEventObserver(event)
             return
         }
         event.post(tap: .cghidEventTap)

@@ -164,50 +164,7 @@ class KeyRecorder: NSObject {
             interceptor = try Interceptor(
                 event: eventMask,
                 handleBy: { (proxy, type, event, refcon) in
-                    // 跳过 Mos 合成事件, 避免 executeCustom 的合成事件干扰录制
-                    if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
-                        return nil
-                    }
-                    let recordedEvent = event
-                    switch type {
-                    case .flagsChanged:
-                        // 修饰键变化，发送通知 (单键模式下也用于完成录制)
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(
-                                name: KeyRecorder.FLAG_CHANGE_NOTI_NAME,
-                                object: recordedEvent
-                            )
-                        }
-                    case .leftMouseDown, .rightMouseDown, .otherMouseDown:
-                        // 鼠标按键
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(
-                                name: KeyRecorder.FINISH_NOTI_NAME,
-                                object: recordedEvent
-                            )
-                        }
-                    case .keyDown:
-                        // ESC键特殊处理：取消录制
-                        if recordedEvent.keyCode == KeyCode.escape {
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(
-                                    name: KeyRecorder.CANCEL_NOTI_NAME,
-                                    object: nil
-                                )
-                            }
-                        } else {
-                            // 普通按键录制
-                            DispatchQueue.main.async {
-                                NotificationCenter.default.post(
-                                    name: KeyRecorder.FINISH_NOTI_NAME,
-                                    object: recordedEvent
-                                )
-                            }
-                        }
-                    default:
-                        break
-                    }
-                    return nil
+                    KeyRecorder.handleRecordingTapEvent(type: type, event: event)
                 },
                 listenOn: CGEventTapLocation.cgSessionEventTap,
                 placeAt: CGEventTapPlacement.headInsertEventTap,
@@ -236,6 +193,56 @@ class KeyRecorder: NSObject {
             // 如果创建失败，重置状态
             isRecording = false
         }
+    }
+    // 录制 tap 的事件处理 (静态无状态, 供单测直接注入事件验证)
+    // 返回值语义 (defaultTap): 返回事件 = 放行, 返回 nil = 吞掉
+    static func handleRecordingTapEvent(type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
+        // 跳过 Mos 合成事件, 避免 executeCustom 的合成事件干扰录制
+        // 注意必须放行 (而非 return nil 删除): 吞掉合成的 flagsChanged
+        // 会让系统修饰键状态卡死 (与 ButtonCore 的放行语义一致)
+        if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
+            return Unmanaged.passUnretained(event)
+        }
+        let recordedEvent = event
+        switch type {
+        case .flagsChanged:
+            // 修饰键变化，发送通知 (单键模式下也用于完成录制)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(
+                    name: KeyRecorder.FLAG_CHANGE_NOTI_NAME,
+                    object: recordedEvent
+                )
+            }
+        case .leftMouseDown, .rightMouseDown, .otherMouseDown:
+            // 鼠标按键
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(
+                    name: KeyRecorder.FINISH_NOTI_NAME,
+                    object: recordedEvent
+                )
+            }
+        case .keyDown:
+            // ESC键特殊处理：取消录制
+            if recordedEvent.keyCode == KeyCode.escape {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(
+                        name: KeyRecorder.CANCEL_NOTI_NAME,
+                        object: nil
+                    )
+                }
+            } else {
+                // 普通按键录制
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(
+                        name: KeyRecorder.FINISH_NOTI_NAME,
+                        object: recordedEvent
+                    )
+                }
+            }
+        default:
+            break
+        }
+        return nil
     }
     // 修饰键变化处理
     @objc private func handleModifierFlagsChanged(_ notification: NSNotification) {
