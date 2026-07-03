@@ -290,11 +290,6 @@ extension PreferencesButtonsViewController: NSTableViewDelegate, NSTableViewData
         updateViewVisibility(view: tableHead, visible: hasData)
         updateViewVisibility(view: tableFoot, visible: hasData)
     }
-    private func updateViewVisibility(view: NSView, visible: Bool) {
-        view.isHidden = !visible
-        view.animator().alphaValue = visible ? 1 : 0
-    }
-    
     // 表格数据源
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         guard let tableColumnIdentifier = tableColumn?.identifier else { return nil }

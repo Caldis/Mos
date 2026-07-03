@@ -64,104 +64,67 @@ struct SystemShortcut {
             return NSLocalizedString(identifier, comment: "")
         }
 
+        /// identifier → SF Symbol 名称 (macOS 11.0+); 纯数据用字典表达, 新增快捷键只需加一行
+        private static let symbolByIdentifier: [String: String] = [
+            // 功能键
+            "missionControl": "square.grid.3x2", "appExpose": "square.grid.3x3",
+            "spotlightSys": "magnifyingglass.circle", "dictation": "mic",
+            "doNotDisturb": "moon", "showDesktop": "rectangle.on.rectangle", "escapeKey": "escape",
+            // 应用切换
+            "switchApp": "arrow.right.circle", "switchAppReverse": "arrow.left.circle",
+            // 文档编辑
+            "copy": "doc.on.doc", "paste": "doc.on.clipboard", "cut": "scissors",
+            "undo": "arrow.uturn.backward", "redo": "arrow.uturn.forward",
+            "selectAll": "selection.pin.in.out", "find": "magnifyingglass",
+            "bold": "bold", "italic": "italic", "underline": "underline",
+            // Finder 操作
+            "newFinderWindow": "macwindow.badge.plus", "moveToTrash": "trash",
+            "emptyTrash": "trash.slash", "duplicateFile": "plus.square.on.square",
+            "getInfo": "info.circle", "newFolder": "folder.badge.plus",
+            "goToFolder": "folder.badge.gearshape", "viewAsIcons": "square.grid.2x2",
+            "viewAsList": "list.bullet", "viewAsColumns": "rectangle.split.3x1",
+            "viewAsGallery": "square.grid.3x3.fill.square",
+            // 系统控制
+            "spotlight": "magnifyingglass", "characterViewer": "face.smiling",
+            "forceQuit": "exclamationmark.triangle", "lockScreen": "lock.shield",
+            "logout": "rectangle.portrait.and.arrow.right", "shutdownDialog": "power",
+            "screenshot": "camera.viewfinder", "screenshotSelection": "viewfinder.rectangular",
+            "screenshotAndRecording": "camera.metering.center.weighted",
+            "moveSpaceLeft": "arrow.left.to.line", "moveSpaceRight": "arrow.right.to.line",
+            // 窗口管理
+            "minimizeWindow": "minus.rectangle", "hideApplication": "eye.slash",
+            "hideOthers": "eye.slash.circle", "nextWindow": "arrow.right.square",
+            "closeWindow": "xmark.rectangle", "closeAllWindows": "xmark.circle.fill",
+            "quitApp": "power.circle",
+            // 标签与导航
+            "navigateBack": "chevron.backward", "navigateForward": "chevron.forward",
+            "nextTab": "rectangle.on.rectangle", "previousTab": "rectangle.fill.on.rectangle.fill",
+            "switchTabRight": "arrow.right.circle", "switchTabLeft": "arrow.left.circle",
+            // 辅助功能
+            "invertColors": "circle.lefthalf.filled.inverse",
+            "zoomIn": "plus.magnifyingglass", "zoomOut": "minus.magnifyingglass",
+            // 鼠标按键
+            "mouseLeftClick": "cursorarrow.click", "mouseRightClick": "cursorarrow.click.2",
+            "mouseMiddleClick": "computermouse", "mouseBackClick": "chevron.backward",
+            "mouseForwardClick": "chevron.forward",
+            // Mos 鼠标滚动
+            "mosScrollDash": "speedometer", "mosScrollToggle": "arrow.left.arrow.right",
+            "mosScrollBlock": "hand.raised",
+            // 修饰键
+            "modifierShift": "shift", "modifierOption": "option", "modifierControl": "control",
+            "modifierCommand": "command", "modifierFn": "fn",
+            // Logi
+            "logiSmartShiftToggle": "gearshape.2", "logiDPICycleUp": "arrow.up.circle",
+            "logiDPICycleDown": "arrow.down.circle", "logiHost1": "1.circle",
+            "logiHost2": "2.circle", "logiHost3": "3.circle",
+            "logiHiResScrollToggle": "lines.measurement.vertical",
+            "logiScrollInvertToggle": "arrow.up.arrow.down",
+            "logiThumbWheelToggle": "dial.low", "logiPointerSpeedCycle": "cursorarrow.motionlines",
+        ]
+
         /// 获取 SF Symbol 图标名称 (macOS 11.0+)
         var symbolName: String {
-            switch identifier {
-                // 功能键
-                case "missionControl": return "square.grid.3x2"
-                case "appExpose": return "square.grid.3x3"
-                case "spotlightSys": return "magnifyingglass.circle"
-                case "dictation": return "mic"
-                case "doNotDisturb": return "moon"
-                case "showDesktop": return "rectangle.on.rectangle"
-                case "escapeKey": return "escape"
-                // 应用切换
-                case "switchApp": return "arrow.right.circle"
-                case "switchAppReverse": return "arrow.left.circle"
-                // 文档编辑
-                case "copy": return "doc.on.doc"
-                case "paste": return "doc.on.clipboard"
-                case "cut": return "scissors"
-                case "undo": return "arrow.uturn.backward"
-                case "redo": return "arrow.uturn.forward"
-                case "selectAll": return "selection.pin.in.out"
-                case "find": return "magnifyingglass"
-                case "bold": return "bold"
-                case "italic": return "italic"
-                case "underline": return "underline"
-                // Finder 操作
-                case "newFinderWindow": return "macwindow.badge.plus"
-                case "moveToTrash": return "trash"
-                case "emptyTrash": return "trash.slash"
-                case "duplicateFile": return "plus.square.on.square"
-                case "getInfo": return "info.circle"
-                case "newFolder": return "folder.badge.plus"
-                case "goToFolder": return "folder.badge.gearshape"
-                case "viewAsIcons": return "square.grid.2x2"
-                case "viewAsList": return "list.bullet"
-                case "viewAsColumns": return "rectangle.split.3x1"
-                case "viewAsGallery": return "square.grid.3x3.fill.square"
-                // 系统控制
-                case "spotlight": return "magnifyingglass"
-                case "characterViewer": return "face.smiling"
-                case "forceQuit": return "exclamationmark.triangle"
-                case "lockScreen": return "lock.shield"
-                case "logout": return "rectangle.portrait.and.arrow.right"
-                case "shutdownDialog": return "power"
-                case "screenshot": return "camera.viewfinder"
-                case "screenshotSelection": return "viewfinder.rectangular"
-                case "screenshotAndRecording": return "camera.metering.center.weighted"
-                case "moveSpaceLeft": return "arrow.left.to.line"
-                case "moveSpaceRight": return "arrow.right.to.line"
-                // 窗口管理
-                case "minimizeWindow": return "minus.rectangle"
-                case "hideApplication": return "eye.slash"
-                case "hideOthers": return "eye.slash.circle"
-                case "nextWindow": return "arrow.right.square"
-                case "closeWindow": return "xmark.rectangle"
-                case "closeAllWindows": return "xmark.circle.fill"
-                case "quitApp": return "power.circle"
-                // 标签与导航
-                case "navigateBack": return "chevron.backward"
-                case "navigateForward": return "chevron.forward"
-                case "nextTab": return "rectangle.on.rectangle"
-                case "previousTab": return "rectangle.fill.on.rectangle.fill"
-                case "switchTabRight": return "arrow.right.circle"
-                case "switchTabLeft": return "arrow.left.circle"
-                // 辅助功能
-                case "invertColors": return "circle.lefthalf.filled.inverse"
-                case "zoomIn": return "plus.magnifyingglass"
-                case "zoomOut": return "minus.magnifyingglass"
-                // 鼠标按键
-                case "mouseLeftClick": return "cursorarrow.click"
-                case "mouseRightClick": return "cursorarrow.click.2"
-                case "mouseMiddleClick": return "computermouse"
-                case "mouseBackClick": return "chevron.backward"
-                case "mouseForwardClick": return "chevron.forward"
-                // Mos 鼠标滚动
-                case "mosScrollDash": return "speedometer"
-                case "mosScrollToggle": return "arrow.left.arrow.right"
-                case "mosScrollBlock": return "hand.raised"
-                // 修饰键
-                case "modifierShift": return "shift"
-                case "modifierOption": return "option"
-                case "modifierControl": return "control"
-                case "modifierCommand": return "command"
-                case "modifierFn": return "fn"
-                // Logi
-                case "logiSmartShiftToggle": return "gearshape.2"
-                case "logiDPICycleUp": return "arrow.up.circle"
-                case "logiDPICycleDown": return "arrow.down.circle"
-                case "logiHost1": return "1.circle"
-                case "logiHost2": return "2.circle"
-                case "logiHost3": return "3.circle"
-                case "logiHiResScrollToggle": return "lines.measurement.vertical"
-                case "logiScrollInvertToggle": return "arrow.up.arrow.down"
-                case "logiThumbWheelToggle": return "dial.low"
-                case "logiPointerSpeedCycle": return "cursorarrow.motionlines"
-                // 其他
-                default: return "questionmark.circle"
-            }
+            return Shortcut.symbolByIdentifier[identifier] ?? "questionmark.circle"
         }
 
         /// Equatable 协议实现
@@ -471,22 +434,24 @@ struct SystemShortcut {
     }
 
     /// 获取分类的 SF Symbol 图标名称 (macOS 11.0+)
+    /// 分类 identifier → SF Symbol 名称; 纯数据用字典表达, 与 symbolByIdentifier 同法
+    private static let categorySymbolByIdentifier: [String: String] = [
+        "categoryFunctionKeys": "keyboard",
+        "categoryAppsAndWindows": "macwindow.on.rectangle",
+        "categoryDocumentEditing": "doc.text",
+        "categoryFinderActions": "folder",
+        "categorySystem": "gearshape",
+        "categoryScreenshot": "camera.viewfinder",
+        "categoryNavigation": "arrow.left.and.right",
+        "categoryAccessibility": "eye",
+        "categoryModifierKeys": "command",
+        "categoryMouseButtons": "computermouse",
+        "categoryMosMouseScroll": "scroll",
+        "categoryLogiActions": "gear.badge",
+    ]
+
     static func categorySymbolName(_ categoryIdentifier: String) -> String {
-        switch categoryIdentifier {
-        case "categoryFunctionKeys": return "keyboard"
-        case "categoryAppsAndWindows": return "macwindow.on.rectangle"
-        case "categoryDocumentEditing": return "doc.text"
-        case "categoryFinderActions": return "folder"
-        case "categorySystem": return "gearshape"
-        case "categoryScreenshot": return "camera.viewfinder"
-        case "categoryNavigation": return "arrow.left.and.right"
-        case "categoryAccessibility": return "eye"
-        case "categoryModifierKeys": return "command"
-        case "categoryMouseButtons": return "computermouse"
-        case "categoryMosMouseScroll": return "scroll"
-        case "categoryLogiActions": return "gear.badge"
-        default: return "questionmark.folder"
-        }
+        return categorySymbolByIdentifier[categoryIdentifier] ?? "questionmark.folder"
     }
 
     private static let predefinedModifierCodes: [String: UInt16] = [

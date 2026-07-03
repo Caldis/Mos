@@ -53,15 +53,22 @@ struct ScrollHotkey: Codable, Equatable {
     }
 
     // MARK: - 显示名称
+
+    /// 鼠标按键的基础显示名: Logi 名 → 通用鼠标键名 → "🖱code" 兜底
+    /// (录制界面与滚动设置界面共用, 避免两处各自维护同一套回退链)
+    static func mouseButtonDisplayName(for code: UInt16) -> String {
+        if LogiCenter.shared.isLogiCode(code) {
+            return (LogiCenter.shared.name(forMosCode: code) ?? "")
+        }
+        return KeyCode.mouseMap[code] ?? "🖱\(code)"
+    }
+
     var displayName: String {
         switch type {
         case .keyboard:
             return KeyCode.keyMap[code] ?? "Key \(code)"
         case .mouse:
-            if LogiCenter.shared.isLogiCode(code) {
-                return (LogiCenter.shared.name(forMosCode: code) ?? "")
-            }
-            return KeyCode.mouseMap[code] ?? "🖱\(code)"
+            return ScrollHotkey.mouseButtonDisplayName(for: code)
         }
     }
 

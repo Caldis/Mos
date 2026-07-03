@@ -125,10 +125,6 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
         updateViewVisibility(view: tableHead, visible: hasData)
         updateViewVisibility(view: tableFoot, visible: hasData)
     }
-    private func updateViewVisibility(view: NSView, visible: Bool) {
-        view.isHidden = !visible
-        view.animator().alphaValue = visible ? 1 : 0
-    }
     // 点击设置
     @objc func settingScrollingButtonClick(_ sender: NSButton!) {
         // 行号

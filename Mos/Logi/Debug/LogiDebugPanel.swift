@@ -367,6 +367,19 @@ class LogiDebugPanel: NSObject {
     }
     private(set) static var panelHasBeenShown = false
 
+    /// 日志条目的统一文本格式 (DEBUG autoLog 落盘与手动导出共用)
+    class func formatLogEntry(_ entry: LogEntry) -> String {
+        let device = entry.deviceName.isEmpty ? "" : "[\(entry.deviceName)] "
+        var output = "[\(entry.timestamp)] \(device)[\(entry.type.rawValue)] \(entry.message)\n"
+        if let decoded = entry.decoded {
+            output += "  > \(decoded)\n"
+        }
+        if let rawBytes = entry.rawBytes {
+            output += "  HEX: \(rawBytes.map { String(format: "%02X", $0) }.joined(separator: " "))\n"
+        }
+        return output
+    }
+
     class func log(_ message: @autoclosure () -> String) {
         guard isLoggingEnabled else { return }
         let entry = LogEntry(timestamp: timestamp(), deviceName: "", type: .info, message: message(), decoded: nil, rawBytes: nil)
@@ -396,7 +409,7 @@ class LogiDebugPanel: NSObject {
         autoLogQueue.async {
             do {
                 try ensureAutoLogInitializedLocked()
-                let line = formatAutoLogEntry(entry)
+                let line = formatLogEntry(entry)
                 let directory = autoLogDirectoryLocked()
                 let latestURL = directory.appendingPathComponent(autoLogLatestFileName)
                 try append(line, to: latestURL)
@@ -448,18 +461,6 @@ class LogiDebugPanel: NSObject {
             "# Latest file: \(autoLogLatestFileName)",
             "",
         ].joined(separator: "\n")
-    }
-
-    private class func formatAutoLogEntry(_ entry: LogEntry) -> String {
-        let device = entry.deviceName.isEmpty ? "" : "[\(entry.deviceName)] "
-        var output = "[\(entry.timestamp)] \(device)[\(entry.type.rawValue)] \(entry.message)\n"
-        if let decoded = entry.decoded {
-            output += "  > \(decoded)\n"
-        }
-        if let rawBytes = entry.rawBytes {
-            output += "  HEX: \(rawBytes.map { String(format: "%02X", $0) }.joined(separator: " "))\n"
-        }
-        return output
     }
 
     private class func append(_ text: String, to url: URL) throws {
@@ -759,11 +760,8 @@ class LogiDebugPanel: NSObject {
             slot.session.setTargetSlot(slot: slot.slot)
             refreshRightPanelsLoading()
             slot.session.rediscoverFeatures()
-            // 与 rediscoverClicked 行为对齐: 6s 后兜底刷一次, 防止 Bolt 响应丢包导致 UI 卡在 loading.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 6) { [weak self] in
-                self?.refreshSidebar()
-                self?.refreshRightPanels()
-            }
+            // 与 rediscoverClicked 行为对齐: 兜底刷一次, 防止 Bolt 响应丢包导致 UI 卡在 loading.
+            scheduleFallbackRefresh(after: FallbackRefreshDelay.afterDiscovery)
         }
     }
 
@@ -1290,28 +1288,45 @@ class LogiDebugPanel: NSObject {
 
     // MARK: - Global Actions
 
+    /// 延时兜底刷新: 防止 Bolt 响应丢包等场景 UI 卡在 stale 状态。
+    /// 合批语义 (后调覆盖前调) 也顺带规避 "定时器触发时刷的是届时选中的会话" 的旧竞态。
+    /// 刷新统一为 sidebar + 右侧面板超集 —— 均为幂等读取, 超集无副作用。
+    private enum FallbackRefreshDelay {
+        static let afterDiscovery: TimeInterval = 6   // discovery/枚举链路最长耗时
+        static let afterDivert: TimeInterval = 1     // SetControlReporting ACK 周期
+        static let afterToggle: TimeInterval = 0.5   // 单个 divert toggle 响应
+    }
+    private var fallbackRefreshWorkItem: DispatchWorkItem?
+    private func scheduleFallbackRefresh(after delay: TimeInterval) {
+        fallbackRefreshWorkItem?.cancel()
+        let item = DispatchWorkItem { [weak self] in
+            guard let self = self else { return }
+            self.refreshSidebar()
+            self.refreshRightPanels()
+        }
+        fallbackRefreshWorkItem = item
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: item)
+    }
+
     @objc private func rediscoverClicked() {
         currentSession?.rediscoverFeatures()
         refreshRightPanelsLoading()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 6) { [weak self] in self?.refreshRightPanels() }
+        scheduleFallbackRefresh(after: FallbackRefreshDelay.afterDiscovery)
     }
 
     @objc private func redivertClicked() {
         currentSession?.redivertAllControls()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in self?.refreshControls() }
+        scheduleFallbackRefresh(after: FallbackRefreshDelay.afterDivert)
     }
 
     @objc private func undivertClicked() {
         currentSession?.undivertAllControls()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in self?.refreshControls() }
+        scheduleFallbackRefresh(after: FallbackRefreshDelay.afterDivert)
     }
 
     @objc private func enumerateClicked() {
         currentSession?.enumerateReceiverDevices()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 6) { [weak self] in
-            self?.refreshSidebar()
-            self?.refreshRightPanels()
-        }
+        scheduleFallbackRefresh(after: FallbackRefreshDelay.afterDiscovery)
     }
 
     @objc private func clearLogClicked() {
@@ -1354,10 +1369,7 @@ class LogiDebugPanel: NSObject {
     @objc private func toggleDivertClicked() {
         guard let session = currentSession, let cid = selectedControlCID else { return }
         session.toggleDivert(cid: cid)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.refreshControls()
-            self?.updateContextActions()
-        }
+        scheduleFallbackRefresh(after: FallbackRefreshDelay.afterToggle)
     }
 
     @objc private func queryReportingClicked() {
@@ -1374,7 +1386,11 @@ class LogiDebugPanel: NSObject {
         report[2] = featureIndex
         report[3] = (functionId << 4) | 0x01
         for (i, p) in params.prefix(16).enumerated() { report[4 + i] = p }
+        sendReportLogged(report, to: session)
+    }
 
+    /// TX 日志 + IOHIDDeviceSetReport + 失败日志的统一发送通道 (面板内发包共用)
+    private func sendReportLogged(_ report: [UInt8], to session: LogiDeviceSession) {
         let hex = report.map { String(format: "%02X", $0) }.joined(separator: " ")
         LogiDebugPanel.log(device: session.deviceInfo.name, type: .tx, message: "TX: \(hex)", rawBytes: report)
 
@@ -1425,16 +1441,18 @@ class LogiDebugPanel: NSObject {
         panel.nameFieldStringValue = "hidpp-debug-\(dateStr).log"
         panel.beginSheetModal(for: win) { response in
             guard response == .OK, let url = panel.url else { return }
-            var output = ""
-            for entry in LogiDebugPanel.logBuffer {
-                let dev = entry.deviceName.isEmpty ? "" : "[\(entry.deviceName)] "
-                output += "[\(entry.timestamp)] \(dev)[\(entry.type.rawValue)] \(entry.message)\n"
-                if let decoded = entry.decoded { output += "  > \(decoded)\n" }
-                if let raw = entry.rawBytes {
-                    output += "  HEX: \(raw.map { String(format: "%02X", $0) }.joined(separator: " "))\n"
-                }
+            let output = LogiDebugPanel.logBuffer.map { LogiDebugPanel.formatLogEntry($0) }.joined()
+            do {
+                try output.write(to: url, atomically: true, encoding: .utf8)
+            } catch {
+                // 导出失败给出可见反馈 (调试面板为开发者界面, 文案不本地化)
+                LogiDebugPanel.log("Export failed: \(error.localizedDescription)")
+                let alert = NSAlert()
+                alert.alertStyle = .warning
+                alert.messageText = "Export Failed"
+                alert.informativeText = error.localizedDescription
+                alert.runModal()
             }
-            try? output.write(to: url, atomically: true, encoding: .utf8)
         }
     }
 
@@ -1459,14 +1477,7 @@ class LogiDebugPanel: NSObject {
         let srcBytes: [UInt8] = (bytes.first == 0x10 || bytes.first == 0x11) ? Array(bytes.dropFirst()) : bytes
         for (i, b) in srcBytes.prefix(reportLen - 1).enumerated() { report[1 + i] = b }
 
-        let hex = report.map { String(format: "%02X", $0) }.joined(separator: " ")
-        LogiDebugPanel.log(device: session.deviceInfo.name, type: .tx, message: "TX: \(hex)", rawBytes: report)
-
-        let result = IOHIDDeviceSetReport(session.hidDevice, kIOHIDReportTypeOutput, CFIndex(report[0]), report, report.count)
-        if result != kIOReturnSuccess {
-            LogiDebugPanel.log(device: session.deviceInfo.name, type: .error,
-                                      message: "IOHIDDeviceSetReport failed: \(String(format: "0x%08X", result))")
-        }
+        sendReportLogged(report, to: session)
     }
 
     /// 过滤结果缓存: heightOfRow/logCell 逐行调用本方法, 无缓存时整表 reload 为 O(N²)。

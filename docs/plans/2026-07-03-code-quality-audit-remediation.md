@@ -92,13 +92,13 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P3-5 | ShortcutExecutor.swift:316-353,358,478 | DRY | 中 | 待处理 |
 | P3-6 | ShortcutExecutor.swift:459-476 | DRY | 中 | 待处理 |
 | P3-7 | ShortcutManager.swift:70-118,195-246 | DRY | 低 | 待处理 |
-| P3-8 | SystemShortcut.swift:68-165,494-510 | 坏味道 | 低 | 待处理 |
+| P3-8 | SystemShortcut.swift:68-165,494-510 | 坏味道 | 低 | ✅ 2026-07-04 |
 | P3-9 | ToastManager.swift:139-190 | DRY | 中 | ✅ 2026-07-04 |
-| P3-10 | 两个偏好 VC 三方法重复 | DRY | 中 | 待处理 |
+| P3-10 | 两个偏好 VC 三方法重复 | DRY | 中 | ✅ 2026-07-04 (updateViewVisibility 共享化并修复隐藏动画顺序; toggleNoDataHint 各自保留) |
 | P3-11 | Options.swift:184-215 | DRY | 中 | ✅ 2026-07-04 |
 | P3-12 | AppDelegate.swift 停机序列 ×3 | DRY | 低 | ✅ 2026-07-04 |
-| P3-13 | RecordedEvent.swift:56-66 等 | DRY/本地化 | 低 | 待处理 |
-| P3-14 | LogiDebugPanel 内部重复 ×3 组 | DRY | 低 | 待处理 |
+| P3-13 | RecordedEvent.swift:56-66 等 | DRY/本地化 | 低 | ✅ 2026-07-04 (显示名收敛; 兜底文案为符号+数字, 本地化评估为低价值不改) |
+| P3-14 | LogiDebugPanel 内部重复 ×3 组 | DRY | 低 | ✅ 2026-07-04 |
 | P4-1 | 8 个 VC 生命周期缺 super | 最佳实践 | 中 | 待处理 |
 | P4-2 | ScrollCore 系 4 个单例 init | 最佳实践 | 低 | 待处理 |
 | P4-3 | LogiDebugPanel.swift:1075 / AppDelegate.swift:106 | 泄漏 | 中 | 待处理 |
@@ -106,7 +106,7 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P4-5 | KeyRecorder.swift:234,243,533 | 错误处理/竞态 | 中 | 待处理 |
 | P4-6 | LogiSelfTestWizard.swift:169-173 | 竞态 | 中 | 待处理 |
 | P4-7 | LogiDeviceSession.swift:2386,1514 | 错误处理 | 中 | 待处理 |
-| P4-8 | LogiDebugPanel.swift:1416 | 错误处理 | 低 | 待处理 |
+| P4-8 | LogiDebugPanel.swift:1416 | 错误处理 | 低 | ✅ 2026-07-04 (随 P3-14 重写导出函数一并修复) |
 | P4-9 | SystemShortcut.swift:168-176 | 正确性 | 中 | 待处理 |
 | P4-10 | Utils.swift:165-167 | 正确性 | 中 | 待处理 |
 | P4-11 | UI 层 force cast/unwrap 6 处 | 最佳实践 | 中 | 待处理 |
