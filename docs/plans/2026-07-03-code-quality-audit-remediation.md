@@ -93,10 +93,10 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P3-6 | ShortcutExecutor.swift:459-476 | DRY | 中 | 待处理 |
 | P3-7 | ShortcutManager.swift:70-118,195-246 | DRY | 低 | 待处理 |
 | P3-8 | SystemShortcut.swift:68-165,494-510 | 坏味道 | 低 | 待处理 |
-| P3-9 | ToastManager.swift:139-190 | DRY | 中 | 待处理 |
+| P3-9 | ToastManager.swift:139-190 | DRY | 中 | ✅ 2026-07-04 |
 | P3-10 | 两个偏好 VC 三方法重复 | DRY | 中 | 待处理 |
-| P3-11 | Options.swift:184-215 | DRY | 中 | 待处理 |
-| P3-12 | AppDelegate.swift 停机序列 ×3 | DRY | 低 | 待处理 |
+| P3-11 | Options.swift:184-215 | DRY | 中 | ✅ 2026-07-04 |
+| P3-12 | AppDelegate.swift 停机序列 ×3 | DRY | 低 | ✅ 2026-07-04 |
 | P3-13 | RecordedEvent.swift:56-66 等 | DRY/本地化 | 低 | 待处理 |
 | P3-14 | LogiDebugPanel 内部重复 ×3 组 | DRY | 低 | 待处理 |
 | P4-1 | 8 个 VC 生命周期缺 super | 最佳实践 | 中 | 待处理 |

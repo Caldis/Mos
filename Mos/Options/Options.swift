@@ -166,6 +166,13 @@ extension Options {
  **/
 extension Options {
     
+    // 读取 Bool 配置; 键不存在时返回默认值
+    // (bool(forKey:) 对缺失键固定返回 false, 无法表达"默认开启"的配置项)
+    private func readBool(forKey key: String, default defaultValue: Bool) -> Bool {
+        guard UserDefaults.standard.object(forKey: key) != nil else { return defaultValue }
+        return UserDefaults.standard.bool(forKey: key)
+    }
+
     // 从 UserDefaults 中读取到 currentOptions
     func readOptions() {
         // 配置项如果不存在则尝试用当前设置(默认设置)保存一次
@@ -181,16 +188,8 @@ extension Options {
         // 滚动
         scroll.smooth = UserDefaults.standard.bool(forKey: OptionItem.Scroll.Smooth)
         scroll.reverse = UserDefaults.standard.bool(forKey: OptionItem.Scroll.Reverse)
-        if UserDefaults.standard.object(forKey: OptionItem.Scroll.ReverseVertical) == nil {
-            scroll.reverseVertical = true
-        } else {
-            scroll.reverseVertical = UserDefaults.standard.bool(forKey: OptionItem.Scroll.ReverseVertical)
-        }
-        if UserDefaults.standard.object(forKey: OptionItem.Scroll.ReverseHorizontal) == nil {
-            scroll.reverseHorizontal = true
-        } else {
-            scroll.reverseHorizontal = UserDefaults.standard.bool(forKey: OptionItem.Scroll.ReverseHorizontal)
-        }
+        scroll.reverseVertical = readBool(forKey: OptionItem.Scroll.ReverseVertical, default: true)
+        scroll.reverseHorizontal = readBool(forKey: OptionItem.Scroll.ReverseHorizontal, default: true)
         scroll.dash = loadScrollHotkey(forKey: OptionItem.Scroll.Dash, default: OPTIONS_SCROLL_DEFAULT().dash)
         scroll.toggle = loadScrollHotkey(forKey: OptionItem.Scroll.Toggle, default: OPTIONS_SCROLL_DEFAULT().toggle)
         scroll.block = loadScrollHotkey(forKey: OptionItem.Scroll.Block, default: OPTIONS_SCROLL_DEFAULT().block)
@@ -203,16 +202,8 @@ extension Options {
             scroll.deadZone = OPTIONS_SCROLL_DEFAULT().deadZone
         }
         scroll.smoothSimTrackpad = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothSimTrackpad)
-        if UserDefaults.standard.object(forKey: OptionItem.Scroll.SmoothVertical) == nil {
-            scroll.smoothVertical = true
-        } else {
-            scroll.smoothVertical = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothVertical)
-        }
-        if UserDefaults.standard.object(forKey: OptionItem.Scroll.SmoothHorizontal) == nil {
-            scroll.smoothHorizontal = true
-        } else {
-            scroll.smoothHorizontal = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothHorizontal)
-        }
+        scroll.smoothVertical = readBool(forKey: OptionItem.Scroll.SmoothVertical, default: true)
+        scroll.smoothHorizontal = readBool(forKey: OptionItem.Scroll.SmoothHorizontal, default: true)
         // 按钮绑定
         buttons.binding = loadButtonsData()
         ButtonUtils.shared.invalidateCache()

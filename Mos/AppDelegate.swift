@@ -143,14 +143,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return false
     }
     
-    // 关闭前停止滚动处理
-    func applicationWillTerminate(_ aNotification: Notification) {
-        guard AppRuntime.shouldRunAppStartupSideEffects else { return }
+    // 统一的引擎启停序列: 权限恢复、会话切换、权限丢失、退出等路径共用
+    private func startAllEngines() {
+        ScrollCore.shared.enable()
+        ButtonCore.shared.enable()
+        MirroringScrollCoordinator.shared.enable()
+        LogiCenter.shared.start()
+    }
+    private func stopAllEngines() {
         LogiCenter.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
         // 恢复因 iPhone 镜像临时改写的系统自然滚动方向
         MirroringScrollCoordinator.shared.disable()
+    }
+
+    // 关闭前停止滚动处理
+    func applicationWillTerminate(_ aNotification: Notification) {
+        guard AppRuntime.shouldRunAppStartupSideEffects else { return }
+        stopAllEngines()
         // 写入尚未 flush 的脏配置组
         Options.shared.flushPendingSaves()
     }
@@ -164,18 +175,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 validTimer.invalidate()
                 permissionRecoveryTimer = nil
                 NSLog("First Initialization (Accessibility Authorization Needed)")
-                ScrollCore.shared.enable()
-                ButtonCore.shared.enable()
-                MirroringScrollCoordinator.shared.enable()
-                LogiCenter.shared.start()
+                startAllEngines()
             }
         } else {
             if Utils.isHadAccessibilityPermissions() {
                 NSLog("Regular Initialization")
-                ScrollCore.shared.enable()
-                ButtonCore.shared.enable()
-                MirroringScrollCoordinator.shared.enable()
-                LogiCenter.shared.start()
+                startAllEngines()
             } else {
                 // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
                 WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.introductionWindowController, withTitle: "")
@@ -200,20 +205,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func sessionDidResign(notification: NSNotification){
         permissionRecoveryTimer?.invalidate()
         permissionRecoveryTimer = nil
-        LogiCenter.shared.stop()
-        ScrollCore.shared.disable()
-        ButtonCore.shared.disable()
-        MirroringScrollCoordinator.shared.disable()
+        stopAllEngines()
     }
     // 辅助功能权限在运行时被撤销 (可能由多个 Interceptor 同时触发, 此方法必须幂等)
     @objc func handleAccessibilityPermissionLost() {
         // 避免多个 Interceptor 同时触发导致重复处理
         guard ScrollCore.shared.isActive || ButtonCore.shared.isActive else { return }
         NSLog("Accessibility permission lost at runtime, disabling cores")
-        LogiCenter.shared.stop()
-        ScrollCore.shared.disable()
-        ButtonCore.shared.disable()
-        MirroringScrollCoordinator.shared.disable()
+        stopAllEngines()
         Toast.show(
             NSLocalizedString("Accessibility permission lost, Mos has been paused", comment: ""),
             style: .warning,

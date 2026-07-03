@@ -137,24 +137,7 @@ class ToastManager {
     /// 关闭指定 ID 的 toast
     func dismiss(id: UInt) {
         guard let index = activeToasts.firstIndex(where: { $0.id == id }) else { return }
-        guard !activeToasts[index].isDismissing else { return }
-
-        activeToasts[index].dismissTimer?.invalidate()
-        activeToasts[index].dismissTimer = nil
-        activeToasts[index].isDismissing = true
-        let entry = activeToasts[index]
-
-        // 淡出 panel (系统阴影自然跟随)
-        NSAnimationContext.runAnimationGroup({ context in
-            context.duration = 0.3
-            context.timingFunction = CAMediaTimingFunction(name: .easeIn)
-            entry.panel.animator().alphaValue = 0
-        }, completionHandler: { [weak self] in
-            entry.panel.orderOut(nil)
-            self?.removeToast(id: id)
-            // 剩余 toast 归位
-            self?.repositionAllToasts(animated: true)
-        })
+        dismissToast(at: index, fadeDuration: 0.3)
     }
 
     /// 关闭所有 toast
@@ -165,28 +148,37 @@ class ToastManager {
         }
     }
 
-    /// 淘汰最旧的 toast
+    /// 淘汰最旧的 toast (淘汰用更快的淡出节奏)
     private func dismissOldest(animated: Bool) {
         guard let index = ToastVisibilityRules.oldestActiveIndex(in: visibilityEntries()) else { return }
+        dismissToast(at: index, fadeDuration: animated ? 0.2 : nil)
+    }
+
+    /// 统一的 toast 关闭流程: 取消定时器 → 标记 dismissing → (可选)淡出 → 移除并归位
+    /// - Parameter fadeDuration: nil 表示无动画立即移除
+    private func dismissToast(at index: Int, fadeDuration: TimeInterval?) {
+        guard activeToasts.indices.contains(index), !activeToasts[index].isDismissing else { return }
         activeToasts[index].dismissTimer?.invalidate()
         activeToasts[index].dismissTimer = nil
         activeToasts[index].isDismissing = true
         let entry = activeToasts[index]
 
-        if animated {
-            NSAnimationContext.runAnimationGroup({ context in
-                context.duration = 0.2
-                context.timingFunction = CAMediaTimingFunction(name: .easeIn)
-                entry.panel.animator().alphaValue = 0
-            }, completionHandler: { [weak self] in
-                entry.panel.orderOut(nil)
-                self?.removeToast(id: entry.id)
-                self?.repositionAllToasts(animated: true)
-            })
-        } else {
+        guard let fadeDuration else {
             entry.panel.orderOut(nil)
             removeToast(id: entry.id)
+            return
         }
+        // 淡出 panel (系统阴影自然跟随)
+        NSAnimationContext.runAnimationGroup({ context in
+            context.duration = fadeDuration
+            context.timingFunction = CAMediaTimingFunction(name: .easeIn)
+            entry.panel.animator().alphaValue = 0
+        }, completionHandler: { [weak self] in
+            entry.panel.orderOut(nil)
+            self?.removeToast(id: entry.id)
+            // 剩余 toast 归位
+            self?.repositionAllToasts(animated: true)
+        })
     }
 
     // MARK: - Layout
