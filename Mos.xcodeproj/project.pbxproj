@@ -45,6 +45,7 @@
 		D1A2B3C4E5F6A7B8C9D01306 /* MosTests/LogiReceiverConnectionStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6A7B8C9D01307 /* MosTests/LogiReceiverConnectionStateTests.swift */; };
 		D1A2B3C4E5F6A7B8C9D01400 /* MosTests/LogiStandardMouseButtonAliasTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6A7B8C9D01401 /* MosTests/LogiStandardMouseButtonAliasTests.swift */; };
 		D1A2B3C4E5F6A7B8C9D01500 /* MosTests/LogiHapticTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6A7B8C9D01501 /* MosTests/LogiHapticTests.swift */; };
+		D1A2B3C4E5F6A7B8C9D01600 /* MosTests/InterceptorAutoRestartTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6A7B8C9D01601 /* MosTests/InterceptorAutoRestartTests.swift */; };
 		D1A2B3C4E5F6A7B8C9D01402 /* MosTests/LogiButtonDeliveryModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6A7B8C9D01403 /* MosTests/LogiButtonDeliveryModeTests.swift */; };
 		D3A1B2C3D4E5F60718293A50 /* MosTests/ScrollActionPortTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A1B2C3D4E5F60718293A51 /* MosTests/ScrollActionPortTests.swift */; };
 		D3A1B2C3D4E5F60718293A60 /* MosTests/ScrollPosterConfigSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A1B2C3D4E5F60718293A61 /* MosTests/ScrollPosterConfigSnapshotTests.swift */; };
@@ -104,6 +105,7 @@
 		D1A2B3C4E5F6A7B8C9D01307 /* MosTests/LogiReceiverConnectionStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/LogiReceiverConnectionStateTests.swift; sourceTree = SOURCE_ROOT; };
 		D1A2B3C4E5F6A7B8C9D01401 /* MosTests/LogiStandardMouseButtonAliasTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/LogiStandardMouseButtonAliasTests.swift; sourceTree = SOURCE_ROOT; };
 		D1A2B3C4E5F6A7B8C9D01501 /* MosTests/LogiHapticTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/LogiHapticTests.swift; sourceTree = SOURCE_ROOT; };
+		D1A2B3C4E5F6A7B8C9D01601 /* MosTests/InterceptorAutoRestartTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/InterceptorAutoRestartTests.swift; sourceTree = SOURCE_ROOT; };
 		D1A2B3C4E5F6A7B8C9D01403 /* MosTests/LogiButtonDeliveryModeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/LogiButtonDeliveryModeTests.swift; sourceTree = SOURCE_ROOT; };
 		D3A1B2C3D4E5F60718293A51 /* MosTests/ScrollActionPortTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollActionPortTests.swift; sourceTree = SOURCE_ROOT; };
 		D3A1B2C3D4E5F60718293A61 /* MosTests/ScrollPosterConfigSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollPosterConfigSnapshotTests.swift; sourceTree = SOURCE_ROOT; };
@@ -183,6 +185,7 @@
 				D1A2B3C4E5F6A7B8C9D01307 /* MosTests/LogiReceiverConnectionStateTests.swift */,
 				D1A2B3C4E5F6A7B8C9D01401 /* MosTests/LogiStandardMouseButtonAliasTests.swift */,
 				D1A2B3C4E5F6A7B8C9D01501 /* MosTests/LogiHapticTests.swift */,
+				D1A2B3C4E5F6A7B8C9D01601 /* MosTests/InterceptorAutoRestartTests.swift */,
 				D1A2B3C4E5F6A7B8C9D01403 /* MosTests/LogiButtonDeliveryModeTests.swift */,
 				D1A2B3C4E5F6A7B8C9D0120E /* LogiTestDoubles */,
 				B3D4E5F6A7B8C9D0E1F40101 /* MosTests/MouseInteractionSessionControllerTests.swift */,
@@ -396,6 +399,7 @@
 				C4E5F6A7B8C9D0E1F3020200 /* MosTests/ButtonCapturePresentationStatusTests.swift in Sources */,
 				D1A2B3C4E5F6A7B8C9D01400 /* MosTests/LogiStandardMouseButtonAliasTests.swift in Sources */,
 				D1A2B3C4E5F6A7B8C9D01500 /* MosTests/LogiHapticTests.swift in Sources */,
+				D1A2B3C4E5F6A7B8C9D01600 /* MosTests/InterceptorAutoRestartTests.swift in Sources */,
 				D1A2B3C4E5F6A7B8C9D01402 /* MosTests/LogiButtonDeliveryModeTests.swift in Sources */,
 				B3D4E5F6A7B8C9D0E1F40100 /* MosTests/MouseInteractionSessionControllerTests.swift in Sources */,
 				FE05F3803FB8885AAC70ADC5 /* MosTests/ScrollCoreHotkeyTests.swift in Sources */,
