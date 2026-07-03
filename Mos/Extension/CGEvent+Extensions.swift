@@ -231,11 +231,15 @@ extension CGEvent {
     }
 
     /// 时间戳
-    var timestampFormatted: String {
+    /// DateFormatter 创建成本毫秒级, 本属性被监视窗口逐事件调用, 缓存复用; 仅主线程访问
+    private static let timestampFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss.SSS"
         formatter.timeZone = TimeZone.current
-        return formatter.string(from: Date(timeIntervalSince1970: (Double(self.timestamp)) / 1_000_000_000.0))
+        return formatter
+    }()
+    var timestampFormatted: String {
+        return CGEvent.timestampFormatter.string(from: Date(timeIntervalSince1970: (Double(self.timestamp)) / 1_000_000_000.0))
     }
 
     /// 显示名称 (原始分组)

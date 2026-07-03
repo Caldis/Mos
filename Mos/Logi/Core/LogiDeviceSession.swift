@@ -2371,14 +2371,16 @@ class LogiDeviceSession {
         guard report.count >= 7 else { return }
         guard report[0] == Self.hidppShortReportId || report[0] == Self.hidppLongReportId else { return }
 
-        let hex = report.prefix(min(report.count, 20)).map { String(format: "%02X", $0) }.joined(separator: " ")
         let featureIdx = report[2]
         let functionId = report[3] >> 4
-        let rxDecoded = decodeReport(report)
         let isError = featureIdx == Self.hidppErrorFeatureIdx ||
             (connectionMode == .receiver && featureIdx == Self.hidpp10ErrorMsg)
-        let rxType: LogEntryType = isError ? .error : .rx
-        LogiDebugPanel.log(device: deviceInfo.name, type: rxType, message: "RX: \(hex)", decoded: rxDecoded)
+        // RX 热路径: hex 格式化与 decodeReport 只服务于调试日志, 未开启时整块跳过
+        if LogiDebugPanel.isLoggingEnabled {
+            let hex = report.prefix(min(report.count, 20)).map { String(format: "%02X", $0) }.joined(separator: " ")
+            let rxType: LogEntryType = isError ? .error : .rx
+            LogiDebugPanel.log(device: deviceInfo.name, type: rxType, message: "RX: \(hex)", decoded: decodeReport(report))
+        }
 
         // Receiver mode: route HID++ 1.0 responses first
         if connectionMode == .receiver {

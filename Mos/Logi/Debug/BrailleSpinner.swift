@@ -20,11 +20,18 @@ final class BrailleSpinner {
 
     private var frameIndex: Int = 0
     private var timer: Timer?
+    private var activeConsumers = 0
 
     /// 当前帧字符. 读者侧按需拉取.
     private(set) var currentFrame: String = BrailleSpinner.frames[0]
 
-    private init() {
+    private init() {}
+
+    /// 消费方 (调试面板等) 需要动画时调用; 与 endTicking 配对。
+    /// 无消费方时定时器完全停止, 避免 12.5Hz 常驻空转阻止 App Nap。
+    func beginTicking() {
+        activeConsumers += 1
+        guard timer == nil else { return }
         let t = Timer.scheduledTimer(withTimeInterval: Self.tickInterval, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             self.frameIndex = (self.frameIndex + 1) % Self.frames.count
@@ -34,5 +41,13 @@ final class BrailleSpinner {
         // 主 RunLoop common modes: 让 timer 在 menu tracking / modal 期间也能 tick.
         RunLoop.main.add(t, forMode: .common)
         self.timer = t
+    }
+
+    func endTicking() {
+        activeConsumers = max(0, activeConsumers - 1)
+        if activeConsumers == 0 {
+            timer?.invalidate()
+            timer = nil
+        }
     }
 }

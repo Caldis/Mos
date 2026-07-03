@@ -61,12 +61,12 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P0-7 | LogiDeviceSession.swift:2568-2570 | 崩溃 | 高 | ✅ 2026-07-03 |
 | P0-8 | KeyRecorder.swift:168-170 | 正确性 | 高 | ✅ 2026-07-03 |
 | P0-9 | ShortcutExecutor.swift:152-163 | 正确性 | 高 | ✅ 2026-07-03 |
-| P1-1 | LogiDebugPanel.swift:366-381 | 性能 | 中 | 待处理 |
-| P1-2 | LogiDebugPanel.swift:466 / CGEvent+Extensions.swift:234 | 性能 | 中 | 待处理 |
-| P1-3 | LogiDebugPanel.swift:1451-1453 | 性能 | 中 | 待处理 |
-| P1-4 | LogiDebugPanel.swift:1671-1687 | 性能 | 中 | 待处理 |
-| P1-5 | BrailleSpinner.swift:27-37 | 性能 | 中 | 待处理 |
-| P1-6 | LogiDebugPanel.swift:1721-1724 | 性能 | 中 | 待处理 |
+| P1-1 | LogiDebugPanel.swift:366-381 | 性能 | 中 | ✅ 2026-07-03 |
+| P1-2 | LogiDebugPanel.swift:466 / CGEvent+Extensions.swift:234 | 性能 | 中 | ✅ 2026-07-03 |
+| P1-3 | LogiDebugPanel.swift:1451-1453 | 性能 | 中 | ✅ 2026-07-03 |
+| P1-4 | LogiDebugPanel.swift:1671-1687 | 性能 | 中 | ✅ 2026-07-03 |
+| P1-5 | BrailleSpinner.swift:27-37 | 性能 | 中 | ✅ 2026-07-03 |
+| P1-6 | LogiDebugPanel.swift:1721-1724 | 性能 | 中 | ✅ 2026-07-03 |
 | P1-7 | ScrollFilter.swift:38-41 | 性能 | 中 | 待处理 |
 | P1-8 | ScrollEvent.swift:58-84 | 坏味道/性能 | 中 | 待处理 |
 | P1-9 | PreferencesButtonsViewController.swift:149 等 | 性能 | 中 | 待处理 |

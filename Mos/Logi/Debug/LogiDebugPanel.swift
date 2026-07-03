@@ -358,13 +358,26 @@ class LogiDebugPanel: NSObject {
     }
     #endif
 
-    class func log(_ message: String) {
-        let entry = LogEntry(timestamp: timestamp(), deviceName: "", type: .info, message: message, decoded: nil, rawBytes: nil)
+    /// release 下面板从未打开时跳过全部日志开销 (@autoclosure 令字符串插值一并惰性化);
+    /// DEBUG 始终记录 (autoLog 落盘依赖)。一旦打开保持开启, buffer 有 maxLogLines 上限。
+    static var isLoggingEnabled: Bool {
+        #if DEBUG
+        return true
+        #else
+        return panelHasBeenShown
+        #endif
+    }
+    private(set) static var panelHasBeenShown = false
+
+    class func log(_ message: @autoclosure () -> String) {
+        guard isLoggingEnabled else { return }
+        let entry = LogEntry(timestamp: timestamp(), deviceName: "", type: .info, message: message(), decoded: nil, rawBytes: nil)
         appendToBuffer(entry)
     }
 
-    class func log(device: String, type: LogEntryType, message: String, decoded: String? = nil, rawBytes: [UInt8]? = nil) {
-        let entry = LogEntry(timestamp: timestamp(), deviceName: device, type: type, message: message, decoded: decoded, rawBytes: rawBytes)
+    class func log(device: String, type: LogEntryType, message: @autoclosure () -> String, decoded: @autoclosure () -> String? = nil, rawBytes: @autoclosure () -> [UInt8]? = nil) {
+        guard isLoggingEnabled else { return }
+        let entry = LogEntry(timestamp: timestamp(), deviceName: device, type: type, message: message(), decoded: decoded(), rawBytes: rawBytes())
         appendToBuffer(entry)
     }
 
@@ -463,10 +476,14 @@ class LogiDebugPanel: NSObject {
     }
     #endif
 
-    private static func timestamp() -> String {
+    // DateFormatter 创建成本毫秒级, 缓存复用; 仅主线程调用 (HID 回调与 UI 均在主 RunLoop)
+    private static let timestampFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "HH:mm:ss.SSS"
-        return f.string(from: Date())
+        return f
+    }()
+    private static func timestamp() -> String {
+        return timestampFormatter.string(from: Date())
     }
 
     #if DEBUG
@@ -486,6 +503,7 @@ class LogiDebugPanel: NSObject {
     // MARK: - Show / Hide
 
     func show() {
+        LogiDebugPanel.panelHasBeenShown = true
         if let w = window {
             w.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
@@ -517,6 +535,8 @@ class LogiDebugPanel: NSObject {
         panel.center()
         panel.isReleasedWhenClosed = false
         panel.isMovableByWindowBackground = true
+        // 关闭时停止观察 (spinner 定时器/日志观察者随之释放), show() 会重新注册
+        panel.delegate = self
         panel.hasShadow = true
         panel.hidesOnDeactivate = false
 
@@ -1298,6 +1318,7 @@ class LogiDebugPanel: NSObject {
 
     @objc private func clearLogClicked() {
         LogiDebugPanel.logBuffer.removeAll()
+        invalidateFilteredLogCache()
         lastFilteredLogCount = 0
         logTableView?.reloadData()
     }
@@ -1379,6 +1400,7 @@ class LogiDebugPanel: NSObject {
             logTypeFilter.insert(type)
             sender.layer?.opacity = 1.0
         }
+        invalidateFilteredLogCache()
         lastFilteredLogCount = filteredLogEntries().count
         logTableView?.reloadData()
     }
@@ -1389,6 +1411,7 @@ class LogiDebugPanel: NSObject {
         guard row >= 0, row < filtered.count else { return }
         let bufferIdx = filtered[row].0
         LogiDebugPanel.logBuffer[bufferIdx].isExpanded.toggle()
+        invalidateFilteredLogCache()
         logTableView.noteHeightOfRows(withIndexesChanged: IndexSet(integer: row))
         logTableView.reloadData(forRowIndexes: IndexSet(integer: row), columnIndexes: IndexSet(integer: 0))
     }
@@ -1448,8 +1471,19 @@ class LogiDebugPanel: NSObject {
         }
     }
 
+    /// 过滤结果缓存: heightOfRow/logCell 逐行调用本方法, 无缓存时整表 reload 为 O(N²)。
+    /// 失效点: 新日志追加 / 过滤条件变化 / 清空 / 行展开切换 / refreshAll。
+    private var cachedFilteredLogEntries: [(Int, LogEntry)]?
+    private func invalidateFilteredLogCache() {
+        cachedFilteredLogEntries = nil
+    }
     private func filteredLogEntries() -> [(Int, LogEntry)] {
-        return LogiDebugPanel.logBuffer.enumerated().filter { logTypeFilter.contains($0.element.type) }
+        if let cached = cachedFilteredLogEntries { return cached }
+        let computed = LogiDebugPanel.logBuffer.enumerated()
+            .filter { logTypeFilter.contains($0.element.type) }
+            .map { ($0.offset, $0.element) }
+        cachedFilteredLogEntries = computed
+        return computed
     }
 
     // MARK: - Refresh
@@ -1460,6 +1494,7 @@ class LogiDebugPanel: NSObject {
         refreshFeatureTable()
         refreshControls()
         updateContextActions()
+        invalidateFilteredLogCache()
         logTableView?.reloadData()
     }
 
@@ -1668,13 +1703,22 @@ class LogiDebugPanel: NSObject {
         renderRightPanelHeaders()
     }
 
+    // header label 引用缓存: spinner 每 80ms 刷新两个 header, 每次递归遍历视图树代价过高
+    private var headerLabelCache: [Int: NSTextField] = [:]
     private func applyHeaderLabel(tag: Int, text: String) {
+        if let cached = headerLabelCache[tag], cached.window != nil {
+            cached.stringValue = text
+            return
+        }
         func find(in view: NSView) -> NSTextField? {
             if let tf = view as? NSTextField, tf.tag == tag { return tf }
             for sub in view.subviews { if let f = find(in: sub) { return f } }
             return nil
         }
-        if let cv = window?.contentView, let lbl = find(in: cv) { lbl.stringValue = text }
+        if let cv = window?.contentView, let lbl = find(in: cv) {
+            headerLabelCache[tag] = lbl
+            lbl.stringValue = text
+        }
     }
 
     /// Refresh FEATURES/CONTROLS headers with current base text, appending the
@@ -1697,6 +1741,7 @@ class LogiDebugPanel: NSObject {
             guard let self = self, let table = self.logTableView else { return }
             // 增量更新: 单条追加走 insertRows (O(1) 视图工作); 过滤掉的条目静默跳过;
             // 其它异常 (buffer 前置裁剪导致行数倒退) 回落 reloadData.
+            self.invalidateFilteredLogCache()
             let newCount = self.filteredLogEntries().count
             let previousCount = self.lastFilteredLogCount
             if newCount == previousCount + 1 {
@@ -1718,9 +1763,10 @@ class LogiDebugPanel: NSObject {
             // 只匹配 setControlReporting 的 "... divert=ON/OFF" 明确 toggle 日志.
             // 排除 RX flags 里的 "tmpDivert/persistDivert" 等被动描述 —— 那类状态变化由
             // reportingQueryDidCompleteNotification 在 discovery 结束时统一 refresh.
+            // 合批: 每次物理按键产生 2-3 条日志, 逐条整表 reload 浪费, 100ms 内合并为一次
             if let entry = notification.object as? LogEntry,
                entry.type == .buttonEvent || entry.message.contains(" divert=") {
-                self.refreshControls()
+                self.scheduleControlsRefresh()
             }
         }
         sessionObserver = NotificationCenter.default.addObserver(
@@ -1750,6 +1796,18 @@ class LogiDebugPanel: NSObject {
             self?.renderRightPanelHeaders()
             self?.refreshSpinningSlotRow()
         }
+        BrailleSpinner.shared.beginTicking()
+    }
+
+    private var controlsRefreshScheduled = false
+    private func scheduleControlsRefresh() {
+        guard !controlsRefreshScheduled else { return }
+        controlsRefreshScheduled = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self = self else { return }
+            self.controlsRefreshScheduled = false
+            self.refreshControls()
+        }
     }
 
     private func stopObserving() {
@@ -1766,6 +1824,7 @@ class LogiDebugPanel: NSObject {
         if let o = spinnerObserver {
             NotificationCenter.default.removeObserver(o)
             spinnerObserver = nil
+            BrailleSpinner.shared.endTicking()
         }
         // Layout observers (frame change) are not tracked here — they're tied to the views
         // and auto-removed when the views are deallocated.
@@ -2238,6 +2297,12 @@ extension LogiDebugPanel: NSTableViewDataSource {
         case 300: return filteredLogEntries().count
         default: return 0
         }
+    }
+}
+
+extension LogiDebugPanel: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        stopObserving()
     }
 }
 
