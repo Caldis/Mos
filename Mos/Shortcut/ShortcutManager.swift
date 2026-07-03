@@ -66,55 +66,15 @@ class ShortcutManager {
 
         var totalShortcuts = 0
 
-        // 按分类构建分级菜单（顺序由 shortcutsByCategory 数组定义）
-        for (categoryIdentifier, shortcuts) in SystemShortcut.shortcutsByCategory {
-            // 创建分类主菜单项 (使用本地化名称)
-            let categoryName = SystemShortcut.localizedCategoryName(categoryIdentifier)
-            let categoryMenuItem = NSMenuItem(title: categoryName, action: nil, keyEquivalent: "")
-
-            // 为分类添加图标 (macOS 11.0+)
-            if supportsSFSymbols {
-                if #available(macOS 11.0, *) {
-                    let symbolName = SystemShortcut.categorySymbolName(categoryIdentifier)
-                    categoryMenuItem.image = createSymbolImage(symbolName)
-                }
-            }
-
-            // 创建子菜单
-            let subMenu = NSMenu(title: categoryName)
-            subMenu.autoenablesItems = false
-
-            // 添加该分类下的所有快捷键到子菜单(过滤掉当前系统不支持的,保持原始顺序)
-            let availableShortcuts = shortcuts.filter { $0.isAvailable }
-            for shortcut in availableShortcuts {
-                let menuKeyEquivalent = shortcut.keyEquivalent
-
-                let shortcutMenuItem = NSMenuItem(
-                    title: shortcut.localizedName,
-                    action: action,
-                    keyEquivalent: menuKeyEquivalent.keyEquivalent
-                )
-                shortcutMenuItem.keyEquivalentModifierMask = menuKeyEquivalent.modifierMask
-                shortcutMenuItem.target = target
-                shortcutMenuItem.representedObject = shortcut
-                shortcutMenuItem.toolTip = shortcut.localizedName
-
-                // 为快捷键添加图标 (macOS 11.0+)
-                if supportsSFSymbols {
-                    if #available(macOS 11.0, *) {
-                        shortcutMenuItem.image = createSymbolImage(shortcut.symbolName)
-                    }
-                }
-
-                subMenu.addItem(shortcutMenuItem)
-                totalShortcuts += 1
-            }
-
-            // 将子菜单关联到分类菜单项
-            categoryMenuItem.submenu = subMenu
-
-            // 将分类菜单项添加到主菜单
-            menu.addItem(categoryMenuItem)
+        // 按分类构建分级菜单（顺序由 shortcutsByCategory 数组定义, 构建逻辑与下方特殊分类共用）
+        for category in SystemShortcut.shortcutsByCategory {
+            addCategoryToMenu(
+                menu: menu,
+                category: category,
+                target: target,
+                action: action,
+                totalShortcuts: &totalShortcuts
+            )
         }
 
         // 修饰键分类 (始终显示)

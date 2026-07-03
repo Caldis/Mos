@@ -317,46 +317,61 @@ class ShortcutExecutor {
         }
     }
 
+    // MARK: - Mouse Actions
+
+    private typealias MouseEventSpec = (type: CGEventType, button: CGMouseButton, buttonNumber: Int64?)
+
+    /// 合成鼠标事件构造 (三条发送路径共用); 创建失败返回 nil, 调用方不得在此之前产生副作用
+    private func makeSyntheticMouseEvent(spec: MouseEventSpec, location: CGPoint) -> CGEvent? {
+        guard let source = CGEventSource(stateID: .hidSystemState) else { return nil }
+        return CGEvent(
+            mouseEventSource: source,
+            mouseType: spec.type,
+            mouseCursorPosition: location,
+            mouseButton: spec.button
+        )
+    }
+
+    /// 合成鼠标事件的唯一装饰与发送通道: setButtonNumber → flags → 合成标记 → post
+    private func decorateAndPostSyntheticMouseEvent(_ event: CGEvent, spec: MouseEventSpec, flags: CGEventFlags) {
+        if let buttonNumber = spec.buttonNumber {
+            event.setIntegerValueField(.mouseEventButtonNumber, value: buttonNumber)
+        }
+        event.flags = flags
+        event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
+        notifyOrPostMouseEvent(event)
+    }
+
+    /// down 开启合成会话并返回其 ID; up 结束指定会话 (无 ID 时清空兜底)
+    private func manageSyntheticSession(phase: InputPhase, target: SyntheticMouseTarget, mouseSessionID: UUID?) -> UUID? {
+        if phase == .down {
+            return MouseInteractionSessionController.shared.beginSession(target: target)
+        }
+        if let mouseSessionID {
+            MouseInteractionSessionController.shared.endSession(id: mouseSessionID)
+        } else {
+            MouseInteractionSessionController.shared.clearAllSessions()
+        }
+        return nil
+    }
+
     private func executeCustomMouseButton(
         buttonNumber: UInt16,
         modifiers: UInt64,
         phase: InputPhase,
         mouseSessionID: UUID?
     ) -> UUID? {
-        guard let source = CGEventSource(stateID: .hidSystemState) else { return nil }
         let number = Int64(buttonNumber)
         let spec = mouseEventSpec(buttonNumber: number, phase: phase)
-        guard let event = CGEvent(
-            mouseEventSource: source,
-            mouseType: spec.type,
-            mouseCursorPosition: currentMouseLocationForCGEvent(),
-            mouseButton: spec.button
-        ) else {
+        guard let event = makeSyntheticMouseEvent(spec: spec, location: currentMouseLocationForCGEvent()) else {
             return nil
         }
-
-        let createdSessionID: UUID?
-        if phase == .down {
-            createdSessionID = MouseInteractionSessionController.shared.beginSession(target: syntheticTarget(buttonNumber: number))
-        } else {
-            createdSessionID = nil
-            if let mouseSessionID {
-                MouseInteractionSessionController.shared.endSession(id: mouseSessionID)
-            } else {
-                MouseInteractionSessionController.shared.clearAllSessions()
-            }
-        }
-
-        if let buttonNumber = spec.buttonNumber {
-            event.setIntegerValueField(.mouseEventButtonNumber, value: buttonNumber)
-        }
-        event.flags = CGEventFlags(rawValue: modifiers)
-        event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
-        notifyOrPostMouseEvent(event)
+        let createdSessionID = manageSyntheticSession(
+            phase: phase, target: syntheticTarget(buttonNumber: number), mouseSessionID: mouseSessionID
+        )
+        decorateAndPostSyntheticMouseEvent(event, spec: spec, flags: CGEventFlags(rawValue: modifiers))
         return createdSessionID
     }
-
-    // MARK: - Mouse Actions
 
     /// 执行鼠标按键动作 (1:1 down/up 映射)
     private func executeMouseButton(
@@ -365,38 +380,17 @@ class ShortcutExecutor {
         mouseSessionID: UUID?,
         inputModifiers: CGEventFlags?
     ) -> UUID? {
-        guard let source = CGEventSource(stateID: .hidSystemState) else { return nil }
-        let point = currentMouseLocationForCGEvent()
         let spec = mouseEventSpec(for: kind, phase: phase)
-        guard let event = CGEvent(
-            mouseEventSource: source,
-            mouseType: spec.type,
-            mouseCursorPosition: point,
-            mouseButton: spec.button
-        ) else {
+        guard let event = makeSyntheticMouseEvent(spec: spec, location: currentMouseLocationForCGEvent()) else {
             return nil
         }
-
-        let createdSessionID: UUID?
-        if phase == .down {
-            createdSessionID = MouseInteractionSessionController.shared.beginSession(target: syntheticTarget(for: kind))
-        } else {
-            createdSessionID = nil
-            if let mouseSessionID {
-                MouseInteractionSessionController.shared.endSession(id: mouseSessionID)
-            } else {
-                MouseInteractionSessionController.shared.clearAllSessions()
-            }
-        }
-
-        if let buttonNumber = spec.buttonNumber {
-            event.setIntegerValueField(.mouseEventButtonNumber, value: buttonNumber)
-        }
-        event.flags = modifierFlagsProvider?.combinedModifierFlags(physicalModifiers: inputModifiers)
+        let createdSessionID = manageSyntheticSession(
+            phase: phase, target: syntheticTarget(for: kind), mouseSessionID: mouseSessionID
+        )
+        let flags = modifierFlagsProvider?.combinedModifierFlags(physicalModifiers: inputModifiers)
             ?? inputModifiers
             ?? CGEventSource.flagsState(.combinedSessionState)
-        event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
-        notifyOrPostMouseEvent(event)
+        decorateAndPostSyntheticMouseEvent(event, spec: spec, flags: flags)
         return createdSessionID
     }
 
@@ -465,48 +459,30 @@ class ShortcutExecutor {
         }
     }
 
+    /// 普通系统按钮号段 (2...20) 直接重放; Logi 虚拟键码 → 系统按钮号的映射
+    /// 知识由 Logi 模块的键码目录一处维护, 经 LogiCenter 查询 (Logi 侧改码不再需要同步此处)
+    private static let replayableSystemButtonRange: ClosedRange<UInt16> = 2...20
     private func mouseButtonNumberForTapReplay(_ event: InputEvent) -> Int64? {
-        switch event.code {
-        case 2...20:
+        if Self.replayableSystemButtonRange.contains(event.code) {
             return Int64(event.code)
-        case 1003:
-            return 0
-        case 1004:
-            return 1
-        case 1005:
-            return 2
-        case 1006:
-            return 3
-        case 1007:
-            return 4
-        default:
-            return nil
         }
+        return LogiCenter.shared.replayMouseButtonNumber(forMosCode: event.code)
     }
 
     private func replayMouseEvent(
         _ context: MouseTapReplayContext,
         phase: InputPhase
     ) {
-        guard let source = CGEventSource(stateID: .hidSystemState) else { return }
         let spec = mouseEventSpec(buttonNumber: context.buttonNumber, phase: phase)
-        guard let event = CGEvent(
-            mouseEventSource: source,
-            mouseType: spec.type,
-            mouseCursorPosition: context.location ?? currentMouseLocationForCGEvent(),
-            mouseButton: spec.button
+        guard let event = makeSyntheticMouseEvent(
+            spec: spec, location: context.location ?? currentMouseLocationForCGEvent()
         ) else {
             return
         }
-
-        if let buttonNumber = spec.buttonNumber {
-            event.setIntegerValueField(.mouseEventButtonNumber, value: buttonNumber)
-        }
         // context.modifiers 非可选, provider 未接线时直接退化为它
-        event.flags = modifierFlagsProvider?.combinedModifierFlags(physicalModifiers: context.modifiers)
+        let flags = modifierFlagsProvider?.combinedModifierFlags(physicalModifiers: context.modifiers)
             ?? context.modifiers
-        event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
-        notifyOrPostMouseEvent(event)
+        decorateAndPostSyntheticMouseEvent(event, spec: spec, flags: flags)
     }
 
     private func mouseEventSpec(for kind: MouseButtonActionKind, phase: InputPhase) -> (type: CGEventType, button: CGMouseButton, buttonNumber: Int64?) {

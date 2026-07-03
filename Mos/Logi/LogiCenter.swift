@@ -69,6 +69,11 @@ final class LogiCenter {
         #endif
         return nativeButton
     }
+    /// Tap replay 专用: 标准鼠标键 MosCode → 系统按钮号。
+    /// 与 nativeMouseButton 的绑定别名语义不同 —— 此映射包含左/右主键 (重放原始物理点击)
+    func replayMouseButtonNumber(forMosCode code: UInt16) -> Int64? {
+        return LogiCIDDirectory.replayMouseButtonNumber(forMosCode: code)
+    }
 
     // MARK: - Conflict
     func buttonCaptureDiagnosis(forMosCode code: UInt16) -> LogiButtonCaptureDiagnosis {

@@ -354,6 +354,22 @@ struct LogiCIDDirectory {
         0x0056: 4,  // Forward Button
     ]
 
+    /// 五个标准鼠标按键的固定 MosCode → 系统按钮号 (tap replay 专用)。
+    /// 与 cidToNativeMouseButton 的绑定别名语义不同: 别名刻意排除左/右主键
+    /// (left-click-safety), 而 tap replay 需要原样重放包括主键在内的物理点击。
+    private static let mosCodeToReplayButtonNumber: [UInt16: Int64] = [
+        1003: 0,  // Left Button
+        1004: 1,  // Right Button
+        1005: 2,  // Middle Button
+        1006: 3,  // Back Button
+        1007: 4,  // Forward Button
+    ]
+
+    /// Tap replay 用的系统按钮号; 非标准键返回 nil
+    static func replayMouseButtonNumber(forMosCode mosCode: UInt16) -> Int64? {
+        return mosCodeToReplayButtonNumber[mosCode]
+    }
+
     private static let nativeMouseButtonToCID: [UInt16: UInt16] = {
         var reversed: [UInt16: UInt16] = [:]
         for (cid, button) in cidToNativeMouseButton { reversed[button] = cid }
