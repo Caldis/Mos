@@ -104,36 +104,36 @@ struct LogiCIDDirectory {
         0x004E: "Scroll Lock",
         0x004F: "Contextual Menu",
         // --- 鼠标按键 (0x0050~0x006D) ---
-        0x0050: "Left Button",
-        0x0051: "Right Button",
-        0x0052: "Middle Button",
-        0x0053: "Back Button",
+        0x0050: "Left",
+        0x0051: "Right",
+        0x0052: "Middle",
+        0x0053: "Back",
         0x0054: "Back",
         0x0055: "Back As Alt Win Arrow",
-        0x0056: "Forward Button",
+        0x0056: "Forward",
         0x0057: "Forward As HID",
         0x0058: "Forward As Alt Win Arrow",
-        0x0059: "Button 6",
-        0x005A: "Left Scroll As Button 7",
+        0x0059: "Btn 6",
+        0x005A: "Left Scroll As Btn 7",
         0x005B: "Left Tilt",
-        0x005C: "Right Scroll As Button 8",
+        0x005C: "Right Scroll As Btn 8",
         0x005D: "Right Tilt",
-        0x005E: "Button 9",
-        0x005F: "Button 10",
-        0x0060: "Button 11",
-        0x0061: "Button 12",
-        0x0062: "Button 13",
-        0x0063: "Button 14",
-        0x0064: "Button 15",
-        0x0065: "Button 16",
-        0x0066: "Button 17",
-        0x0067: "Button 18",
-        0x0068: "Button 19",
-        0x0069: "Button 20",
-        0x006A: "Button 21",
-        0x006B: "Button 22",
-        0x006C: "Button 23",
-        0x006D: "Button 24",
+        0x005E: "Btn 9",
+        0x005F: "Btn 10",
+        0x0060: "Btn 11",
+        0x0061: "Btn 12",
+        0x0062: "Btn 13",
+        0x0063: "Btn 14",
+        0x0064: "Btn 15",
+        0x0065: "Btn 16",
+        0x0066: "Btn 17",
+        0x0067: "Btn 18",
+        0x0068: "Btn 19",
+        0x0069: "Btn 20",
+        0x006A: "Btn 21",
+        0x006B: "Btn 22",
+        0x006C: "Btn 23",
+        0x006D: "Btn 24",
         // --- 桌面 & 功能键 (0x006E~0x0082) ---
         0x006E: "Show Desktop",
         0x006F: "Screen Lock",
@@ -205,7 +205,7 @@ struct LogiCIDDirectory {
         0x00C0: "Fn Down",
         0x00C1: "Fn Up",
         0x00C2: "Multiplatform Lock",
-        0x00C3: "Mouse Gesture Button",
+        0x00C3: "Gesture",
         0x00C4: "Smart Shift",
         0x00C5: "Microphone",
         0x00C6: "Wifi",
@@ -218,19 +218,19 @@ struct LogiCIDDirectory {
         0x00CD: "Fn Inversion Change",
         0x00CE: "MultiPlatform Back",
         0x00CF: "MultiPlatform Forward",
-        0x00D0: "MultiPlatform Gesture Button",
+        0x00D0: "MultiPlatform Gesture",
         0x00D1: "Host Switch Channel 1",
         0x00D2: "Host Switch Channel 2",
         0x00D3: "Host Switch Channel 3",
         0x00D4: "MultiPlatform Search",
         0x00D5: "MultiPlatform Home / Mission Control",
         0x00D6: "MultiPlatform Menu / Show / Hide Virtual Keyboard / Launchpad",
-        0x00D7: "Virtual Gesture Button",
-        0x00D8: "Cursor Button Long Press",
-        0x00D9: "Next Button Shortpress",
-        0x00DA: "Next Button Long Press",
-        0x00DB: "Back Button Short Press",
-        0x00DC: "Back Button Long Press",
+        0x00D7: "Virtual Gesture",
+        0x00D8: "Cursor Long Press",
+        0x00D9: "Next Short Press",
+        0x00DA: "Next Long Press",
+        0x00DB: "Back Short Press",
+        0x00DC: "Back Long Press",
         0x00DD: "Multi Platform Language Switch",
         0x00DE: "F Lock",
         0x00DF: "Switch Highlight",
@@ -261,8 +261,8 @@ struct LogiCIDDirectory {
         0x00F8: "Increase Color Effect Speed",
         0x00F9: "Decrease Color Effect Speed",
         0x00FA: "Load Lighting Custom Profile",
-        0x00FB: "Laser Button Short Press",
-        0x00FC: "Laser Button Long Press",
+        0x00FB: "Laser Short Press",
+        0x00FC: "Laser Long Press",
         0x00FD: "DPI Switch",
         0x00FE: "Multiplatform Home / Show Desktop",
         0x00FF: "Multiplatform App Switch / Show Dashboard",
@@ -336,22 +336,22 @@ struct LogiCIDDirectory {
     /// 为常见鼠标按钮保留固定 MosCode (1000~1007)
     /// 其余 CID 使用公式: 2000 + CID
     private static let cidToCode: [UInt16: UInt16] = [
-        0x0050: 1003,  // Left Button (diverted)
-        0x0051: 1004,  // Right Button (diverted)
-        0x0052: 1005,  // Middle Button (diverted)
-        0x0053: 1006,  // Back Button (diverted)
-        0x0056: 1007,  // Forward Button (diverted)
-        0x00C3: 1000,  // Mouse Gesture Button
+        0x0050: 1003,  // Left (diverted)
+        0x0051: 1004,  // Right (diverted)
+        0x0052: 1005,  // Middle (diverted)
+        0x0053: 1006,  // Back (diverted)
+        0x0056: 1007,  // Forward (diverted)
+        0x00C3: 1000,  // Gesture
         0x00C4: 1001,  // Smart Shift
-        0x00D7: 1002,  // Virtual Gesture Button
+        0x00D7: 1002,  // Virtual Gesture
     ]
 
     /// HID++ controls that also surface as stable macOS mouse button numbers.
     /// These can fall back to the CGEvent path when BLE divert ownership is contested.
     private static let cidToNativeMouseButton: [UInt16: UInt16] = [
-        0x0052: 2,  // Middle Button
-        0x0053: 3,  // Back Button
-        0x0056: 4,  // Forward Button
+        0x0052: 2,  // Middle
+        0x0053: 3,  // Back
+        0x0056: 4,  // Forward
     ]
 
     private static let nativeMouseButtonToCID: [UInt16: UInt16] = {

@@ -474,8 +474,8 @@ final class ButtonBindingTests: XCTestCase {
             device: nil
         )
 
-        XCTAssertEqual(back.displayComponents, ["🖱️ Back Button"])
-        XCTAssertEqual(forward.displayComponents, ["🖱️ Forward Button"])
+        XCTAssertEqual(back.displayComponents, ["🖱️ Back"])
+        XCTAssertEqual(forward.displayComponents, ["🖱️ Forward"])
     }
 
     func testRecordedEventDisplayComponentsRefreshLegacyStandardMouseButtonNames() {
@@ -494,8 +494,8 @@ final class ButtonBindingTests: XCTestCase {
             deviceFilter: nil
         )
 
-        XCTAssertEqual(back.displayComponents, ["🖱️ Back Button"])
-        XCTAssertEqual(forward.displayComponents, ["⇧", "🖱️ Forward Button"])
+        XCTAssertEqual(back.displayComponents, ["🖱️ Back"])
+        XCTAssertEqual(forward.displayComponents, ["⇧", "🖱️ Forward"])
     }
 
     func testRecordedEventDecodesLegacyDisplayComponentsButIgnoresStoredPresentation() throws {
@@ -512,7 +512,7 @@ final class ButtonBindingTests: XCTestCase {
 
         let event = try JSONDecoder().decode(RecordedEvent.self, from: json.data(using: .utf8)!)
 
-        XCTAssertEqual(event.displayComponents, ["⇧", "🖱️ Back Button"])
+        XCTAssertEqual(event.displayComponents, ["⇧", "🖱️ Back"])
     }
 
     func testRecordedEventEncodingOmitsDisplayComponents() throws {
@@ -536,7 +536,7 @@ final class ButtonBindingTests: XCTestCase {
         let presentation = makeResolvedPresentation(customBindingName: "custom::1007:0")
 
         XCTAssertEqual(presentation.kind, .namedAction)
-        XCTAssertEqual(presentation.title, "Forward Button")
+        XCTAssertEqual(presentation.title, "Forward")
         XCTAssertTrue(presentation.badgeComponents.isEmpty)
         XCTAssertEqual(presentation.brand?.name, BrandTagConfig.logi.name)
     }
@@ -582,7 +582,7 @@ final class ButtonBindingTests: XCTestCase {
 
         let cell = makeButtonCell(binding: binding)
 
-        XCTAssertEqual(cell.actionPopUpButton.menu?.items.first?.title, "Forward Button")
+        XCTAssertEqual(cell.actionPopUpButton.menu?.items.first?.title, "Forward")
         XCTAssertNotNil(cell.actionPopUpButton.menu?.items.first?.image)
     }
 
@@ -614,14 +614,14 @@ final class ButtonBindingTests: XCTestCase {
         let plainPopup = makeActionPopupButton()
         let branded = ActionPresentation(
             kind: .namedAction,
-            title: "Forward Button",
+            title: "Forward",
             symbolName: "chevron.forward",
             badgeComponents: [],
             brand: .logi
         )
         let plain = ActionPresentation(
             kind: .namedAction,
-            title: "Forward Button",
+            title: "Forward",
             symbolName: "chevron.forward",
             badgeComponents: [],
             brand: nil

@@ -457,7 +457,7 @@ final class InputProcessorTests: XCTestCase {
             type: .mouse,
             code: 1007,
             modifiers: 0,
-            displayComponents: ["[Logi]", "Forward Button"],
+            displayComponents: ["[Logi]", "Forward"],
             deviceFilter: nil
         )
         let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollToggle", isEnabled: true)
@@ -482,7 +482,7 @@ final class InputProcessorTests: XCTestCase {
             type: .mouse,
             code: 1007,
             modifiers: 0,
-            displayComponents: ["[Logi]", "Forward Button"],
+            displayComponents: ["[Logi]", "Forward"],
             deviceFilter: nil
         )
         let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollToggle", isEnabled: true)
