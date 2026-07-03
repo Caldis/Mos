@@ -164,7 +164,6 @@ public class Utils {
     // 匹配字符
     class func extractRegexMatches(target: String = "", pattern: String) -> String {
         do {
-            let pattern = #"\/?.*\.app"#
             let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)
             let range = NSRange(location: 0, length: target.count)
             let result = regex.firstMatch(in: target, options: [], range: range)

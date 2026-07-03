@@ -66,6 +66,7 @@ class PreferencesButtonsViewController: NSViewController {
     }
 
     override func viewWillAppear() {
+        super.viewWillAppear()
         // 检查表格数据
         toggleNoDataHint()
         // 设置录制按钮回调
@@ -77,6 +78,7 @@ class PreferencesButtonsViewController: NSViewController {
     }
 
     override func viewWillDisappear() {
+        super.viewWillDisappear()
         // 切 tab / 关窗时彻底收敛 popover + 轮询, 避免后台空转.
         closeActivityPopoverIfNeeded()
     }

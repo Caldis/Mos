@@ -15,6 +15,7 @@ class PreferencesGeneralViewController: NSViewController {
     @IBOutlet weak var hideStatusBarIconCheckBox: NSButton!
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         // 读取设置
         syncViewWithOptions()
     }

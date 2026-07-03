@@ -12,8 +12,10 @@ class ScrollUtils {
     
     // 单例
     static let shared = ScrollUtils()
-    init() { NSLog("Module initialized: ScrollUtils") }
+    private init() { NSLog("Module initialized: ScrollUtils") }  // 缓存字段依赖单例不变量, 禁止二次实例化
     private let syntheticSmoothEventMarker: Int64 = 0x4D4F53534D4F4F54
+    // Chrome 需要显式 TrackingEnd 收尾事件 (ScrollPoster.stop 的特判依赖此判定)
+    private static let chromeBundleID = "com.google.Chrome"
     
     func markSyntheticSmoothEvent(_ event: CGEvent) {
         event.setIntegerValueField(.eventSourceUserData, value: syntheticSmoothEventMarker)
@@ -58,7 +60,7 @@ class ScrollUtils {
         guard let targetRunningApplication = getRunningApplication(from: validEvent) else {
             return false
         }
-        if let targetBundleIdentifier = targetRunningApplication.bundleIdentifier, targetBundleIdentifier == "com.google.Chrome" {
+        if let targetBundleIdentifier = targetRunningApplication.bundleIdentifier, targetBundleIdentifier == ScrollUtils.chromeBundleID {
             return true
         }
         return false

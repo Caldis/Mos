@@ -12,12 +12,14 @@ class ScrollCore: ScrollActionPort {
 
     // 单例
     static let shared = ScrollCore()
-    init() { NSLog("Module initialized: ScrollCore") }
+    private init() { NSLog("Module initialized: ScrollCore") }  // 热键/应用状态依赖单例不变量, 禁止二次实例化
     
     // 执行状态
     var isActive = false
     // 热键数据
     var dashScroll = false
+    // Dash 模式的滚动增幅倍率
+    static let dashAmplificationFactor = 5.0
     var dashAmplification = 1.0
     var toggleScroll = false {
         didSet { ScrollPoster.shared.updateShifting(enable: toggleScroll) }
@@ -226,7 +228,7 @@ class ScrollCore: ScrollActionPort {
 
     private func refreshDashState() {
         dashScroll = dashKeyHeld || mosDashActionCount > 0
-        dashAmplification = dashScroll ? 5.0 : 1.0
+        dashAmplification = dashScroll ? ScrollCore.dashAmplificationFactor : 1.0
     }
 
     private func refreshToggleState() {

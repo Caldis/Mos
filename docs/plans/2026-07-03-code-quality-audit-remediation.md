@@ -99,8 +99,8 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P3-12 | AppDelegate.swift 停机序列 ×3 | DRY | 低 | ✅ 2026-07-04 |
 | P3-13 | RecordedEvent.swift:56-66 等 | DRY/本地化 | 低 | ✅ 2026-07-04 (显示名收敛; 兜底文案为符号+数字, 本地化评估为低价值不改) |
 | P3-14 | LogiDebugPanel 内部重复 ×3 组 | DRY | 低 | ✅ 2026-07-04 |
-| P4-1 | 8 个 VC 生命周期缺 super | 最佳实践 | 中 | 待处理 |
-| P4-2 | ScrollCore 系 4 个单例 init | 最佳实践 | 低 | 待处理 |
+| P4-1 | 8 个 VC 生命周期缺 super | 最佳实践 | 中 | ✅ 2026-07-04 (9 处) |
+| P4-2 | ScrollCore 系 4 个单例 init | 最佳实践 | 低 | ✅ 2026-07-04 (ScrollCore/ScrollUtils 改 private; ScrollPoster/ScrollPhase 保持可构造 — 测试以独立实例为 SUT) |
 | P4-3 | LogiDebugPanel.swift:1075 / AppDelegate.swift:106 | 泄漏 | 中 | 待处理 |
 | P4-4 | LogiDeviceSession.swift:907-942 | 潜伏 UAF | 中 | 待处理 |
 | P4-5 | KeyRecorder.swift:234,243,533 | 错误处理/竞态 | 中 | 待处理 |
@@ -108,12 +108,12 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P4-7 | LogiDeviceSession.swift:2386,1514 | 错误处理 | 中 | 待处理 |
 | P4-8 | LogiDebugPanel.swift:1416 | 错误处理 | 低 | ✅ 2026-07-04 (随 P3-14 重写导出函数一并修复) |
 | P4-9 | SystemShortcut.swift:168-176 | 正确性 | 中 | 待处理 |
-| P4-10 | Utils.swift:165-167 | 正确性 | 中 | 待处理 |
+| P4-10 | Utils.swift:165-167 | 正确性 | 中 | ✅ 2026-07-04 |
 | P4-11 | UI 层 force cast/unwrap 6 处 | 最佳实践 | 中 | 待处理 |
 | P4-12 | PreferencesTabViewController.swift:31-43 | 最佳实践 | 中 | 待处理 |
 | P4-13 | PreferencesScrollingViewController.swift:226-228 | 坏味道 | 低 | 待处理 |
 | P4-14 | Interceptor.swift:48,77,113 | 并发 | 低 | 待处理 |
-| P4-15 | 魔法数字 2 处 | 坏味道 | 低 | 待处理 |
+| P4-15 | 魔法数字 2 处 | 坏味道 | 低 | ✅ 2026-07-04 |
 | P5-1 | LogiDeviceSession 拆分 | 结构 | 高 | 待处理 |
 | P5-2 | LogiDebugPanel 拆分 | 结构 | 中 | 待处理 |
 | P5-3 | ScrollCore.swift:53-195 拆分 | 结构 | 中 | 待处理 |

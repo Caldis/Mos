@@ -29,6 +29,7 @@ class PreferencesApplicationViewController: NSViewController {
     @IBOutlet weak var manuallySelectFromFinderMenuItem: NSMenuItem!
 
     override func viewDidLoad() {
+        super.viewDidLoad()
         // 为 "Running Applications" 菜单项动态创建 submenu (避免 Storyboard 中的 menu 父子关系警告)
         runningAndInstalledMenuChildrenContainer = NSMenu(title: "")
         runningAndInstalledManuItem.submenu = runningAndInstalledMenuChildrenContainer
@@ -43,6 +44,7 @@ class PreferencesApplicationViewController: NSViewController {
         updateDelButtonState()
     }
     override func viewWillAppear() {
+        super.viewWillAppear()
         // 检查表格数据
         toggleNoDataHint()
         // 设置添加按钮回调

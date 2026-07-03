@@ -46,6 +46,7 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     private weak var currentRecordingPopup: NSButton?
 
     override func viewDidLoad() {
+        super.viewDidLoad()
         // 禁止自动 Focus
         scrollStepInput.refusesFirstResponder = true
         scrollSpeedInput.refusesFirstResponder = true

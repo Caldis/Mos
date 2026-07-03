@@ -29,6 +29,7 @@ class PreferencesTabViewController: NSTabViewController {
     let backgroundVisualEffectView = NSVisualEffectView()
     
     override func viewDidAppear() {
+        super.viewDidAppear()
         // 移除已有约束
         view.removeConstraints(view.constraints)
         // 将 tabView 固定于界面左上

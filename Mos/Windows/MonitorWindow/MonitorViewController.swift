@@ -38,12 +38,14 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
 
     // MARK: - 生命周期
     override func viewWillAppear() {
+        super.viewWillAppear()
         initCharts()
         initScrollObserver()
         initButtonObserver()
         setupShortcutMenu()
     }
     override func viewWillDisappear() {
+        super.viewWillDisappear()
         uninitScrollObserver()
         uninitButtonObserver()
         NotificationCenter.default.removeObserver(self)
