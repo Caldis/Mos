@@ -2367,9 +2367,12 @@ class LogiDeviceSession {
             let errorCode = report.count > 6 ? report[6] : 0
             LogiDebugPanel.log("[\(deviceInfo.name)] HID++ Error: feat=\(String(format: "0x%02X", originalFeatureIdx)) func=\(originalFuncId) err=\(String(format: "0x%02X", errorCode))")
 
-            // Feature discovery: 串行队列下只结算飞行中的队头
-            // (精确按 originalFeatureIdx==0x00 过滤属 P4-7, 此处保持旧语义: 任何错误都结算)
-            settleCurrentDiscovery(result: nil, reason: "failed (HID++ 2.0 error)")
+            // Feature discovery: 错误报文回显了出错请求的 feature index,
+            // 只有 IRoot (0x00) 的错误才对应飞行中的 GetFeature 队头;
+            // REPROG 查询等无关错误不再连带 fail 正在进行的 discovery
+            if originalFeatureIdx == 0x00 {
+                settleCurrentDiscovery(result: nil, reason: "failed (HID++ 2.0 error)")
+            }
 
             // REPROG_V4 query 错误: 跳过该 CID 继续下一个, 防止 Bolt receiver 上 query 链路卡死
             if let reprogIdx = featureIndex[Self.featureReprogV4],

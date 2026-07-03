@@ -41,3 +41,10 @@
 ## 发布
 
 准备发布、更新 appcast、生成或签名 release artifact、notarization 和 GitHub release draft 必须使用 `.agents/skills/release-preparation/SKILL.md`。每次 release 都必须让 `CURRENT_PROJECT_VERSION` 唯一递增。不要在没有用户确认的情况下发布 release 或推送发布分支；在计划或命令列表中也要把 push/publish 与可自动执行步骤分开。
+
+## 依赖升级检查项
+
+升级或替换第三方依赖 (尤其涉及模块改名, 如 Charts→DGCharts) 时:
+
+1. `grep -rn 'customModule="<旧模块名>"' Mos --include="*.storyboard" --include="*.xib"` — storyboard/xib 的类引用是运行时字符串, 编译期不校验; 解析失败会静默回落 NSView, 首次打开对应窗口才崩溃 (2026-07-04 DGCharts 事故)。
+2. 跑 `MosTests/StoryboardModuleLinkageTests` — 该金丝雀不显示窗口即可断言 storyboard 场景的外部模块类正确解码; 新增外部 UI 类时在此测试中补对应断言。

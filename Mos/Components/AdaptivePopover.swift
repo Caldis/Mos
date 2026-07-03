@@ -23,9 +23,7 @@ class AdaptivePopover: NSViewController {
     func updatePreferredContentSize() {
         view.layout()
 
-        let subviews = view.subviews
-
-        let contentView = subviews.first!
+        guard let contentView = view.subviews.first else { return }
         var contentSize = contentView.intrinsicContentSize
         if contentSize.equalTo(.zero) {
             contentSize = contentView.fittingSize

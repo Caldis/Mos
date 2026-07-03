@@ -31,9 +31,11 @@ class PreferencesScrollingWithApplicationViewController: NSViewController {
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        currentContentViewController = (segue.destinationController as! PreferencesScrollingViewController)
-        if let vaildContentViewController = currentContentViewController, let validTargetApplication = currentTargetApplication {
-            vaildContentViewController.currentTargetApplication = validTargetApplication
+        // 安全转换: 未来新增其他 segue 时静默跳过而非崩溃
+        guard let contentViewController = segue.destinationController as? PreferencesScrollingViewController else { return }
+        currentContentViewController = contentViewController
+        if let validTargetApplication = currentTargetApplication {
+            contentViewController.currentTargetApplication = validTargetApplication
         }
     }
     

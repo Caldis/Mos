@@ -62,7 +62,9 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     }
     // 更新面板
     @objc private func updateScrollEventData(notification: NSNotification) {
-        let event = notification.object as! CGEvent
+        // CGEvent 是 CF 类型, as? 桥接不可靠, 用 CFGetTypeID 校验后强转
+        guard let object = notification.object, CFGetTypeID(object as CFTypeRef) == CGEvent.typeID else { return }
+        let event = object as! CGEvent
         // 更新图表
         if let data = lineChart.data {
             // scrollWheelEventPointDelta
@@ -157,7 +159,8 @@ class MonitorViewController: NSViewController, ChartViewDelegate {
     private var isButtonPreviewRefreshScheduled = false
     // 更新面板
     @objc private func updateButtonEventData(notification: NSNotification) {
-        let event = notification.object as! CGEvent
+        guard let object = notification.object, CFGetTypeID(object as CFTypeRef) == CGEvent.typeID else { return }
+        let event = object as! CGEvent
         buttonEventLogStore.append(buttonEventLogLine(for: event), to: .buttonEvent)
         scheduleButtonPreviewRefresh()
     }

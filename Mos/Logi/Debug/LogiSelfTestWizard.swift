@@ -152,6 +152,11 @@ final class LogiSelfTestWizard {
         }
     }
 
+    // 等待代际: 超时闭包只对发起时的那一轮等待生效。
+    // 仅凭 pendingObserver != nil 判断会误杀 —— 前一步 Skip/通过后, 下一步的 Run
+    // 重新赋值 observer, 旧定时器看到非 nil 即判 fail 并摘掉新步骤的 observer。
+    private var waitGeneration = 0
+
     private func startWait(_ condition: WaitCondition, timeout: TimeInterval) {
         // For now, only handle .rawButtonEvent — sufficient for the example step.
         switch condition {
@@ -164,8 +169,12 @@ final class LogiSelfTestWizard {
                 self?.handleOutcome(.pass)
             }
             pendingObserver = token
+            waitGeneration += 1
+            let generation = waitGeneration
             DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { [weak self] in
-                guard let self = self, self.pendingObserver != nil else { return }
+                guard let self = self,
+                      self.pendingObserver != nil,
+                      self.waitGeneration == generation else { return }
                 self.endWait()
                 self.handleOutcome(.fail(reason: "Timed out after \(Int(timeout))s"))
             }

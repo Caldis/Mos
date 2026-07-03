@@ -27,9 +27,15 @@ import Cocoa
 class PreferencesTabViewController: NSTabViewController {
     
     let backgroundVisualEffectView = NSVisualEffectView()
-    
+    // 一次性布局标志: viewDidAppear 在每次窗口重新显示时都会执行,
+    // 不加守卫会反复清空约束/重复 addSubview/叠加锚点约束
+    private var didSetupTransitionLayout = false
+
     override func viewDidAppear() {
         super.viewDidAppear()
+        // 布局操作必须留在 viewDidAppear (利用 View 出现时的自动布局避免首屏错位, 见文件头踩坑指南), 但只执行一次
+        guard !didSetupTransitionLayout else { return }
+        didSetupTransitionLayout = true
         // 移除已有约束
         view.removeConstraints(view.constraints)
         // 将 tabView 固定于界面左上
@@ -39,9 +45,15 @@ class PreferencesTabViewController: NSTabViewController {
         backgroundVisualEffectView.blendingMode = NSVisualEffectView.BlendingMode.behindWindow
         if #available(OSX 10.14, *) { backgroundVisualEffectView.material = NSVisualEffectView.Material.toolTip }
         view.addSubview(backgroundVisualEffectView, positioned: NSWindow.OrderingMode.below, relativeTo: tabView)
-        backgroundVisualEffectView.frame.size = NSSize(width: 1000, height: 1000) // 只要比预期内容大就行, 不会有额外占用
-        backgroundVisualEffectView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
-        backgroundVisualEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true        
+        // 显式尺寸 + 左下锚点 (等价于原 frame + autoresizing 转换的效果, 但不再产生约束冲突)
+        backgroundVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            backgroundVisualEffectView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            backgroundVisualEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            // 只要比预期内容大就行, 不会有额外占用
+            backgroundVisualEffectView.widthAnchor.constraint(equalToConstant: 1000),
+            backgroundVisualEffectView.heightAnchor.constraint(equalToConstant: 1000),
+        ])
     }
 
     override func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {

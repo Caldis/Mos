@@ -156,7 +156,7 @@ extension PreferencesApplicationViewController: NSTableViewDelegate, NSTableView
                 return cell
             // 设定: 滚动
             case CellIdentifiers.scrollingCell:
-                let button = cell.subviews[0] as! NSButton
+                guard let button = cell.subviews.first as? NSButton else { return cell }
                 button.tag = row
                 button.target = self
                 button.action = #selector(settingScrollingButtonClick)
@@ -201,7 +201,8 @@ extension PreferencesApplicationViewController: NSMenuDelegate {
         // 允许的文件类型
         // openPanel.allowedFileTypes = ["app", "App", "APP"]
         // 打开文件选择窗口并读取文件添加到 Applications 列表中
-        openPanel.beginSheetModal(for: view.window!, completionHandler: { result in
+        guard let window = view.window else { return }
+        openPanel.beginSheetModal(for: window, completionHandler: { result in
             if result == .OK {
                 // 根据路径获取 application 信息并保存到 Applications 列表中
                 if let bundlePath = openPanel.url?.path {

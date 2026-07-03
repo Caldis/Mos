@@ -101,14 +101,14 @@ public class Utils {
     // 禁止重复运行
     // killExist = true 则杀掉已有进程, 否则自杀
     class func preventMultiRunning(killExist kill: Bool = false) {
-        // 自己的 BundleId
-        let mainBundleID = Bundle.main.bundleIdentifier!
+        // 自己的 BundleId (bundleIdentifier 缺失时无从判重, 直接放弃检查)
+        guard let mainBundleID = Bundle.main.bundleIdentifier else { return }
         // 如果检测到在运行
         if NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID).count > 1 {
             if kill {
                 let runningInst = NSRunningApplication.runningApplications(withBundleIdentifier: mainBundleID)[0]
                 runningInst.terminate()
-                NSLog("Terminate: Other instance", runningInst.processIdentifier)
+                NSLog("Terminate: Other instance (pid %d)", runningInst.processIdentifier)
             } else {
                 NSApp.terminate(nil)
                 NSLog("Terminate: Suicide")
