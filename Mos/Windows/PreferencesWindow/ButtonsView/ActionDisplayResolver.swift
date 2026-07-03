@@ -141,7 +141,16 @@ struct ActionDisplayResolver {
         )
     }
 
+    /// openTarget 展示结果缓存: 解析涉及 LaunchServices 查询 + Info.plist 读取 + 图标加载
+    /// (同步磁盘 I/O), 而本方法在每次 cell 渲染时被调用。key 含完整 payload, 绑定变更后
+    /// 自然产生新 key; 条目数受用户配置的 openTarget 数量约束。仅主线程访问。
+    private static var openTargetPresentationCache: [String: ActionPresentation] = [:]
+
     private func openTargetPresentation(for payload: OpenTargetPayload) -> ActionPresentation {
+        let cacheKey = "\(payload.kind)|\(payload.bundleID ?? "")|\(payload.path)"
+        if let cached = Self.openTargetPresentationCache[cacheKey] {
+            return cached
+        }
         let workspace = NSWorkspace.shared
         let resolvedURL: URL? = {
             if let bundleID = payload.bundleID,
@@ -166,18 +175,26 @@ struct ActionDisplayResolver {
             icon = workspace.icon(forFile: url.path)
         } else {
             // Stale path: show filename + unavailable marker
+            // 不缓存未解析成功的结果: 目标应用随后被安装/恢复时应立即恢复正常展示
             let basename = (payload.path as NSString).lastPathComponent
             let staleTag = NSLocalizedString("open-target-placeholder-stale", comment: "")
             title = basename.isEmpty ? staleTag : "\(basename) \(staleTag)"
-            icon = nil
+            return ActionPresentation(
+                kind: .openTarget,
+                title: title,
+                symbolName: nil,
+                image: nil
+            )
         }
 
-        return ActionPresentation(
+        let presentation = ActionPresentation(
             kind: .openTarget,
             title: title,
             symbolName: nil,
             image: icon
         )
+        Self.openTargetPresentationCache[cacheKey] = presentation
+        return presentation
     }
 
     private func customBindingPresentation(for customBindingName: String) -> ActionPresentation? {

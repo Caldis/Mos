@@ -146,7 +146,8 @@ extension PreferencesButtonsViewController {
 
         let binding = ButtonBinding(triggerEvent: recordedEvent, systemShortcutName: "", isEnabled: false)
         buttonBindings.append(binding)
-        tableView.reloadData()
+        // 精准插入: 全表 reload 会让每个 cell 重建完整菜单并重注册观察者
+        tableView.insertRows(at: IndexSet(integer: buttonBindings.count - 1), withAnimation: .effectFade)
         toggleNoDataHint()
         notifyBLEHIDPPUnstableIfNeeded(for: recordedEvent)
         syncViewWithOptions()
@@ -174,8 +175,9 @@ extension PreferencesButtonsViewController {
 
     // 删除按钮绑定
     func removeButtonBinding(id: UUID) {
-        buttonBindings.removeAll(where: { $0.id == id })
-        tableView.reloadData()
+        guard let index = buttonBindings.firstIndex(where: { $0.id == id }) else { return }
+        buttonBindings.remove(at: index)
+        tableView.removeRows(at: IndexSet(integer: index), withAnimation: .effectFade)
         toggleNoDataHint()
         syncViewWithOptions()
     }
@@ -238,13 +240,20 @@ extension PreferencesButtonsViewController {
             createdAt: old.createdAt
         )
         syncViewWithOptions()
-        tableView.reloadData()
+        tableView.reloadData(forRowIndexes: IndexSet(integer: index), columnIndexes: IndexSet(integer: 0))
     }
 
     func replaceButtonBinding(_ binding: ButtonBinding) {
         guard buttonBindings.contains(where: { $0.id == binding.id }) else { return }
+        let countBefore = buttonBindings.count
         buttonBindings = ButtonBindingReplacement.replacing(binding, in: buttonBindings)
-        tableView.reloadData()
+        if buttonBindings.count == countBefore,
+           let index = buttonBindings.firstIndex(where: { $0.id == binding.id }) {
+            tableView.reloadData(forRowIndexes: IndexSet(integer: index), columnIndexes: IndexSet(integer: 0))
+        } else {
+            // 替换可能触发重复触发键合并 (行数变化), 回落全表 reload
+            tableView.reloadData()
+        }
         toggleNoDataHint()
         syncViewWithOptions()
     }

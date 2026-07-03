@@ -69,10 +69,10 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P1-6 | LogiDebugPanel.swift:1721-1724 | 性能 | 中 | ✅ 2026-07-03 |
 | P1-7 | ScrollFilter.swift:38-41 | 性能 | 中 | ✅ 2026-07-03 |
 | P1-8 | ScrollEvent.swift:58-84 | 坏味道/性能 | 中 | ✅ 2026-07-03 |
-| P1-9 | PreferencesButtonsViewController.swift:149 等 | 性能 | 中 | 待处理 |
-| P1-10 | ActionDisplayResolver.swift:146-166 | 性能 | 中 | 待处理 |
-| P1-11 | LogiDeviceSession.swift:2695-2713 | 性能 | 低 | 待处理 |
-| P1-12 | ScrollCore.swift:305-310,383-389 | 性能 | 低 | 待处理 |
+| P1-9 | PreferencesButtonsViewController.swift:149 等 | 性能 | 中 | ✅ 2026-07-03 (菜单缓存部分并入 P5-5) |
+| P1-10 | ActionDisplayResolver.swift:146-166 | 性能 | 中 | ✅ 2026-07-03 |
+| P1-11 | LogiDeviceSession.swift:2695-2713 | 性能 | 低 | 待处理 (需真机验证, 建议与 P4-4 同批) |
+| P1-12 | ScrollCore.swift:305-310,383-389 | 性能 | 低 | 待处理 (并入 P5-3) |
 | P1-13 | ScrollUtils.swift:111-114 | 性能 | 低 | ✅ 2026-07-03 |
 | P2-1 | Utils/Archieve.swift | 死代码 | 中 | 待处理 |
 | P2-2 | Utils.swift:250-265 | 死代码 | 低 | 待处理 |
