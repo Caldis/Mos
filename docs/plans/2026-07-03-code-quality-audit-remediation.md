@@ -85,10 +85,10 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P2-9 | BrandTag.swift:88,120 | 死代码/架构 | 低 | ✅ 2026-07-04 (isLogiCode 耦合留 P5-8; brandForCode 有调用方保留) |
 | P2-10 | LogiSelfTestWizard.swift:23 等 | 死代码 | 低 | ✅ 2026-07-04 |
 | P2-11 | PreferencesApplicationViewController.swift:209,77-82 | 死代码 | 低 | ✅ 2026-07-04 |
-| P3-1 | LogiDeviceSession.swift:1868-2051 | DRY | 中 | 待处理 |
-| P3-2 | LogiDeviceSession.swift:962-989 | DRY | 低 | 待处理 |
-| P3-3 | LogiDeviceSession 常量散落 | DRY | 低 | 待处理 |
-| P3-4 | LogiDeviceSession handshake 终点 ×3 | DRY | 低 | 待处理 |
+| P3-1 | LogiDeviceSession.swift:1868-2051 | DRY | 中 | ✅ 2026-07-04 |
+| P3-2 | LogiDeviceSession.swift:962-989 | DRY | 低 | ✅ 2026-07-04 |
+| P3-3 | LogiDeviceSession 常量散落 | DRY | 低 | ✅ 2026-07-04 |
+| P3-4 | LogiDeviceSession handshake 终点 ×3 | DRY | 低 | ⏸ 挂起 (三处通知语义刻意不同: receiver ping 完成不可清 peripheral spinner、divertBoundControls 刻意不 post; 机械统一有破坏 sidebar 状态风险, 并入 P5-1 状态机重构) |
 | P3-5 | ShortcutExecutor.swift:316-353,358,478 | DRY | 中 | 待处理 |
 | P3-6 | ShortcutExecutor.swift:459-476 | DRY | 中 | 待处理 |
 | P3-7 | ShortcutManager.swift:70-118,195-246 | DRY | 低 | 待处理 |

@@ -244,6 +244,20 @@ class LogiDeviceSession {
     private static let featureHiResWheel: UInt16 = 0x2121
     private static let featureThumbWheel: UInt16 = 0x2150
     private static let featurePointerSpeed: UInt16 = 0x2205
+    private static let featureSmartShift: UInt16 = 0x2110
+    private static let featureAdjustableDPI: UInt16 = 0x2201
+    private static let featureChangeHost: UInt16 = 0x1814
+
+    // Logitech vendor-specific usage pages (USB 上只有这些 page 支持 HID++)
+    private static let hidppVendorUsagePages: Set<Int> = [0xFF00, 0xFF43, 0xFFC0]
+
+    // HID++ 1.0 错误码名称 (错误处理与 debug 解码共用)
+    private static let hidpp10ErrorNames: [UInt8: String] = [
+        0x00: "Success", 0x01: "InvalidSubID", 0x02: "InvalidAddress",
+        0x03: "InvalidValue", 0x04: "ConnectFailed", 0x05: "TooManyDevices",
+        0x06: "AlreadyExists", 0x07: "Busy", 0x08: "UnknownDevice",
+        0x09: "ResourceError", 0x0A: "RequestUnavailable", 0x0B: "InvalidParamValue",
+    ]
     private static let hidppShortReportId: UInt8 = 0x10
     private static let hidppLongReportId: UInt8 = 0x11
     private static let hidppErrorFeatureIdx: UInt8 = 0xFF
@@ -312,7 +326,7 @@ class LogiDeviceSession {
     var isHIDPPCandidate: Bool {
         // USB: 只有 vendor-specific usage page 支持 HID++
         if !isBLE {
-            return usagePage == 0xFF00 || usagePage == 0xFF43 || usagePage == 0xFFC0
+            return Self.hidppVendorUsagePages.contains(usagePage)
         }
         // BLE: HID++ 复用标准 mouse interface
         return usagePage == 0x0001 && usage == 0x0002
@@ -875,7 +889,7 @@ class LogiDeviceSession {
         if isBLE {
             connectionMode = .bleDirect
             deviceIndex = 0xFF
-        } else if usagePage == 0xFF00 || usagePage == 0xFF43 || usagePage == 0xFFC0 {
+        } else if Self.hidppVendorUsagePages.contains(usagePage) {
             connectionMode = .receiver
             deviceIndex = 0x01  // 临时值, 枚举后会自动更新到实际在线 slot
         } else {
@@ -983,23 +997,10 @@ class LogiDeviceSession {
         let result: IOReturn
 
         switch connectionMode {
-        case .bleDirect:
-            // BLE: long report, hidapi 兼容 (report ID in payload)
-            report = [UInt8](repeating: 0, count: 20)
-            report[0] = Self.hidppLongReportId
-            report[1] = deviceIndex
-            report[2] = featureIndex
-            report[3] = (functionId << 4) | 0x01
-            for (i, p) in params.prefix(16).enumerated() { report[4 + i] = p }
-            result = IOHIDDeviceSetReport(
-                hidDevice, kIOHIDReportTypeOutput,
-                CFIndex(report[0]), report, report.count
-            )
-
-        case .receiver:
-            // TODO: Unifying/Bolt receiver 传输
-            // 可能需要: short report (7 bytes), 不同的 payload 格式
-            // 需要先实现 HID++ 1.0 槽位枚举
+        case .bleDirect, .receiver:
+            // 两种传输恰好共用同一 long report 布局: BLE 直连为 hidapi 兼容
+            // (report ID in payload); receiver 转发由 deviceIndex 字节路由到对应 slot
+            // (TODO 保留: Unifying/Bolt 是否需要 7 字节 short report 视后续真机验证)
             report = [UInt8](repeating: 0, count: 20)
             report[0] = Self.hidppLongReportId
             report[1] = deviceIndex
@@ -1535,13 +1536,7 @@ class LogiDeviceSession {
         let devIdx = report[1]
         let errorCode = report.count > 5 ? report[5] : 0
 
-        let hidpp10ErrorNames: [UInt8: String] = [
-            0x00: "Success", 0x01: "InvalidSubID", 0x02: "InvalidAddress",
-            0x03: "InvalidValue", 0x04: "ConnectFailed", 0x05: "TooManyDevices",
-            0x06: "AlreadyExists", 0x07: "Busy", 0x08: "UnknownDevice",
-            0x09: "ResourceError", 0x0A: "RequestUnavailable", 0x0B: "InvalidParamValue",
-        ]
-        let errorName = hidpp10ErrorNames[errorCode] ?? "0x\(String(format: "%02X", errorCode))"
+        let errorName = Self.hidpp10ErrorNames[errorCode] ?? "0x\(String(format: "%02X", errorCode))"
 
         // 更新 receiver slot 状态 (如果是 ping 错误)
         if devIdx >= 1 && devIdx <= 6 && pendingSlotPings.contains(devIdx) {
@@ -1784,12 +1779,7 @@ class LogiDeviceSession {
         if connectionMode == .receiver && featIdx == Self.hidpp10ErrorMsg {
             let errorSubId = report[3]
             let errorCode = report.count > 5 ? report[5] : 0
-            let hidpp10ErrNames: [UInt8: String] = [
-                0x01: "InvalidSubID", 0x02: "InvalidAddress", 0x03: "InvalidValue",
-                0x04: "ConnectFailed", 0x05: "TooManyDevices", 0x06: "AlreadyExists",
-                0x07: "Busy", 0x08: "UnknownDevice", 0x09: "ResourceError",
-            ]
-            let errName = hidpp10ErrNames[errorCode] ?? "0x\(String(format: "%02X", errorCode))"
+            let errName = Self.hidpp10ErrorNames[errorCode] ?? "0x\(String(format: "%02X", errorCode))"
             return "HID++ 1.0 ERROR: dev=\(String(format: "0x%02X", devIdx)) subId=\(String(format: "0x%02X", errorSubId)) err=\(errName)"
         }
 
@@ -1906,23 +1896,40 @@ class LogiDeviceSession {
     private var pendingThumbWheelToggle = false
     private var pendingPointerSpeedCycle = false
 
+    /// feature 动作执行的统一入口: featureIndex 命中则立即执行,
+    /// 否则先 discovery (成功后缓存 index 再执行)
+    /// - Parameters:
+    ///   - name: 功能名, 用于不支持时的日志/提示文案
+    ///   - toastIfUnavailable: 设备不支持时是否弹 Toast (false 仅记调试日志)
+    private func withFeature(
+        _ featureId: UInt16,
+        name: String,
+        toastIfUnavailable: Bool,
+        then action: @escaping (UInt8) -> Void
+    ) {
+        if let idx = featureIndex[featureId] {
+            action(idx)
+            return
+        }
+        discoverFeature(featureId: featureId) { [weak self] idx in
+            guard let self = self else { return }
+            guard let idx = idx else {
+                if toastIfUnavailable {
+                    self.showFeatureNotAvailable(name)
+                } else {
+                    LogiDebugPanel.log("[\(self.deviceInfo.name)] \(name) feature not supported")
+                }
+                return
+            }
+            self.featureIndex[featureId] = idx
+            action(idx)
+        }
+    }
+
     /// SmartShift 切换
     func executeSmartShiftToggle() {
-        // SmartShift feature ID = 0x2110
-        let smartShiftFeatureId: UInt16 = 0x2110
-        if let idx = featureIndex[smartShiftFeatureId] {
-            // 已知 feature index, 直接切换
-            toggleSmartShift(featureIndex: idx)
-        } else {
-            // 先发现 feature
-            discoverFeature(featureId: smartShiftFeatureId) { [weak self] idx in
-                guard let self = self, let idx = idx else {
-                    LogiDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] SmartShift feature not supported")
-                    return
-                }
-                self.featureIndex[smartShiftFeatureId] = idx
-                self.toggleSmartShift(featureIndex: idx)
-            }
+        withFeature(Self.featureSmartShift, name: "SmartShift", toastIfUnavailable: false) { [weak self] idx in
+            self?.toggleSmartShift(featureIndex: idx)
         }
     }
 
@@ -1936,19 +1943,8 @@ class LogiDeviceSession {
 
     /// DPI 循环
     func executeDPICycle(direction: Direction) {
-        // AdjustableDPI feature ID = 0x2201
-        let dpiFeatureId: UInt16 = 0x2201
-        if let idx = featureIndex[dpiFeatureId] {
-            cycleDPI(featureIndex: idx, direction: direction)
-        } else {
-            discoverFeature(featureId: dpiFeatureId) { [weak self] idx in
-                guard let self = self, let idx = idx else {
-                    LogiDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] AdjustableDPI feature not supported")
-                    return
-                }
-                self.featureIndex[dpiFeatureId] = idx
-                self.cycleDPI(featureIndex: idx, direction: direction)
-            }
+        withFeature(Self.featureAdjustableDPI, name: "AdjustableDPI", toastIfUnavailable: false) { [weak self] idx in
+            self?.cycleDPI(featureIndex: idx, direction: direction)
         }
     }
 
@@ -1975,38 +1971,18 @@ class LogiDeviceSession {
 
     /// 切换到指定主机 (0-based index)
     func executeChangeHost(hostIndex: UInt8) {
-        let changeHostFeatureId: UInt16 = 0x1814
-        if let idx = featureIndex[changeHostFeatureId] {
-            switchToHost(featureIndex: idx, hostIndex: hostIndex)
-        } else {
-            discoverFeature(featureId: changeHostFeatureId) { [weak self] idx in
-                guard let self = self, let idx = idx else {
-                    LogiDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ChangeHost feature not supported")
-                    return
-                }
-                self.featureIndex[changeHostFeatureId] = idx
-                self.switchToHost(featureIndex: idx, hostIndex: hostIndex)
-            }
+        withFeature(Self.featureChangeHost, name: "ChangeHost", toastIfUnavailable: false) { [weak self] idx in
+            self?.switchToHost(featureIndex: idx, hostIndex: hostIndex)
         }
     }
 
     /// 循环切换主机
     func executeHostCycle() {
-        let changeHostFeatureId: UInt16 = 0x1814
-        if let idx = featureIndex[changeHostFeatureId] {
-            // 先查询当前主机信息, 然后切换到下一个
-            sendRequest(featureIndex: idx, functionId: 0)
-            pendingHostCycle = idx
-        } else {
-            discoverFeature(featureId: changeHostFeatureId) { [weak self] idx in
-                guard let self = self, let idx = idx else {
-                    LogiDebugPanel.log("[\(self?.deviceInfo.name ?? "?")] ChangeHost feature not supported")
-                    return
-                }
-                self.featureIndex[changeHostFeatureId] = idx
-                self.sendRequest(featureIndex: idx, functionId: 0)
-                self.pendingHostCycle = idx
-            }
+        withFeature(Self.featureChangeHost, name: "ChangeHost", toastIfUnavailable: false) { [weak self] idx in
+            guard let self = self else { return }
+            // 先查询当前主机信息 (getHostInfo: function 0), 响应后切换到下一个
+            self.sendRequest(featureIndex: idx, functionId: 0)
+            self.pendingHostCycle = idx
         }
     }
 
@@ -2021,74 +1997,38 @@ class LogiDeviceSession {
 
     /// Hi-Res 滚轮模式切换
     private func executeHiResScrollToggle() {
-        if let idx = featureIndex[Self.featureHiResWheel] {
-            pendingHiResScrollToggle = true
+        withFeature(Self.featureHiResWheel, name: "Hi-Res Scroll", toastIfUnavailable: true) { [weak self] idx in
+            guard let self = self else { return }
+            self.pendingHiResScrollToggle = true
             // Get current mode (function 0x10)
-            sendRequest(featureIndex: idx, functionId: 0x10, params: [])
-        } else {
-            discoverFeature(featureId: Self.featureHiResWheel) { [weak self] idx in
-                guard let self = self, let idx = idx else {
-                    self?.showFeatureNotAvailable("Hi-Res Scroll")
-                    return
-                }
-                self.featureIndex[Self.featureHiResWheel] = idx
-                self.pendingHiResScrollToggle = true
-                self.sendRequest(featureIndex: idx, functionId: 0x10, params: [])
-            }
+            self.sendRequest(featureIndex: idx, functionId: 0x10, params: [])
         }
     }
 
     /// 滚轮方向反转切换
     private func executeScrollInvertToggle() {
-        if let idx = featureIndex[Self.featureHiResWheel] {
-            pendingScrollInvertToggle = true
-            sendRequest(featureIndex: idx, functionId: 0x10, params: [])
-        } else {
-            discoverFeature(featureId: Self.featureHiResWheel) { [weak self] idx in
-                guard let self = self, let idx = idx else {
-                    self?.showFeatureNotAvailable("Scroll Invert")
-                    return
-                }
-                self.featureIndex[Self.featureHiResWheel] = idx
-                self.pendingScrollInvertToggle = true
-                self.sendRequest(featureIndex: idx, functionId: 0x10, params: [])
-            }
+        withFeature(Self.featureHiResWheel, name: "Scroll Invert", toastIfUnavailable: true) { [weak self] idx in
+            guard let self = self else { return }
+            self.pendingScrollInvertToggle = true
+            self.sendRequest(featureIndex: idx, functionId: 0x10, params: [])
         }
     }
 
     /// 拇指轮模式切换
     private func executeThumbWheelToggle() {
-        if let idx = featureIndex[Self.featureThumbWheel] {
-            pendingThumbWheelToggle = true
-            sendRequest(featureIndex: idx, functionId: 0x10, params: [])
-        } else {
-            discoverFeature(featureId: Self.featureThumbWheel) { [weak self] idx in
-                guard let self = self, let idx = idx else {
-                    self?.showFeatureNotAvailable("Thumb Wheel")
-                    return
-                }
-                self.featureIndex[Self.featureThumbWheel] = idx
-                self.pendingThumbWheelToggle = true
-                self.sendRequest(featureIndex: idx, functionId: 0x10, params: [])
-            }
+        withFeature(Self.featureThumbWheel, name: "Thumb Wheel", toastIfUnavailable: true) { [weak self] idx in
+            guard let self = self else { return }
+            self.pendingThumbWheelToggle = true
+            self.sendRequest(featureIndex: idx, functionId: 0x10, params: [])
         }
     }
 
     /// 指针速度循环 (0.5x → 1x → 1.5x → 2x → 0.5x)
     private func executePointerSpeedCycle() {
-        if let idx = featureIndex[Self.featurePointerSpeed] {
-            pendingPointerSpeedCycle = true
-            sendRequest(featureIndex: idx, functionId: 0x00, params: [])
-        } else {
-            discoverFeature(featureId: Self.featurePointerSpeed) { [weak self] idx in
-                guard let self = self, let idx = idx else {
-                    self?.showFeatureNotAvailable("Pointer Speed")
-                    return
-                }
-                self.featureIndex[Self.featurePointerSpeed] = idx
-                self.pendingPointerSpeedCycle = true
-                self.sendRequest(featureIndex: idx, functionId: 0x00, params: [])
-            }
+        withFeature(Self.featurePointerSpeed, name: "Pointer Speed", toastIfUnavailable: true) { [weak self] idx in
+            guard let self = self else { return }
+            self.pendingPointerSpeedCycle = true
+            self.sendRequest(featureIndex: idx, functionId: 0x00, params: [])
         }
     }
 
