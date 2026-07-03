@@ -30,11 +30,6 @@ final class ScrollFilterTests: XCTestCase {
         XCTAssertEqual(val.x, 0.0, accuracy: 1e-10)
     }
 
-    func testInitialCurveWindows_areZeroArrays() {
-        XCTAssertEqual(sut.curveWindowY, [0.0, 0.0])
-        XCTAssertEqual(sut.curveWindowX, [0.0, 0.0])
-    }
-
     // MARK: - reset
 
     func testReset_clearsToZero() {
@@ -43,33 +38,29 @@ final class ScrollFilterTests: XCTestCase {
         let val = sut.value()
         XCTAssertEqual(val.y, 0.0, accuracy: 1e-10)
         XCTAssertEqual(val.x, 0.0, accuracy: 1e-10)
-        XCTAssertEqual(sut.curveWindowY, [0.0, 0.0])
-        XCTAssertEqual(sut.curveWindowX, [0.0, 0.0])
+        // reset 后应与全新实例行为一致: 首次 fill 输出 0
+        XCTAssertEqual(sut.fill(with: (y: 10.0, x: 0.0)).y, 0.0, accuracy: 1e-10)
     }
 
     // MARK: - fill: 首次填充
 
     func testFill_firstCall_smoothsFromZero() {
-        // 初始 curveWindowY = [0.0, 0.0]
-        // polish([0, 0], with: 10) -> first=0, diff=10
-        // result = [0, 0+0.23*10, 0+0.5*10, 0+0.77*10, 10] = [0, 2.3, 5, 7.7, 10]
-        // value = result[0] = 0
+        // 平滑递推: output(n) = s(n-1), s(n) = s(n-1) + 0.23*(input - s(n-1)), s(0) = 0
+        // 首次 fill(10): 输出 s(0) = 0, s(1) = 2.3
         let result = sut.fill(with: (y: 10.0, x: 0.0))
-        XCTAssertEqual(result.y, 0.0, accuracy: 1e-10, "first fill Y should return array[0] which is the old first")
+        XCTAssertEqual(result.y, 0.0, accuracy: 1e-10, "first fill Y should return the pre-smoothing state (0)")
         XCTAssertEqual(result.x, 0.0, accuracy: 1e-10)
     }
 
     // MARK: - fill: 连续填充产生平滑效果
 
     func testFill_secondCall_advancesToNextSmoothedValue() {
-        // 第一次: curveWindowY 从 [0,0] -> [0, 2.3, 5, 7.7, 10]
+        // 第一次 fill(10): s(1) = 0 + 0.23*10 = 2.3
         _ = sut.fill(with: (y: 10.0, x: 0.0))
 
-        // 第二次: polish 使用 array[1]=2.3 作为 first
-        // polish([0, 2.3, 5, 7.7, 10], with: 10) -> first=2.3, diff=10-2.3=7.7
-        // result = [2.3, 2.3+0.23*7.7, 2.3+0.5*7.7, 2.3+0.77*7.7, 10]
+        // 第二次 fill(10): 输出 s(1) = 2.3
         let result2 = sut.fill(with: (y: 10.0, x: 0.0))
-        XCTAssertEqual(result2.y, 2.3, accuracy: 1e-10, "second fill should return smoothed value from previous polish")
+        XCTAssertEqual(result2.y, 2.3, accuracy: 1e-10, "second fill should return smoothed value from previous step")
     }
 
     func testFill_convergesToTarget_afterMultipleCalls() {
@@ -134,19 +125,16 @@ final class ScrollFilterTests: XCTestCase {
         XCTAssertLessThan(twoStepsAfter, oneStepAfter, "direction change should start moving value toward new target after smoothing delay")
     }
 
-    // MARK: - polish 机制验证
+    // MARK: - 平滑递推序列验证 (等价性规格: 与旧版 5 元素曲线窗口的可观察输出一致)
 
-    func testPolish_generatesCorrectIntermediateValues() {
-        // 直接验证 curveWindow 的中间值
-        _ = sut.fill(with: (y: 10.0, x: 0.0))
-
-        // curveWindowY 应该是 [0, 2.3, 5, 7.7, 10]
-        XCTAssertEqual(sut.curveWindowY.count, 5)
-        XCTAssertEqual(sut.curveWindowY[0], 0.0, accuracy: 1e-10)
-        XCTAssertEqual(sut.curveWindowY[1], 2.3, accuracy: 1e-10)
-        XCTAssertEqual(sut.curveWindowY[2], 5.0, accuracy: 1e-10)
-        XCTAssertEqual(sut.curveWindowY[3], 7.7, accuracy: 1e-10)
-        XCTAssertEqual(sut.curveWindowY[4], 10.0, accuracy: 1e-10)
+    func testFill_outputSequence_matchesSmoothingRecurrence() {
+        // output(n) = s(n-1); s(n) = s(n-1) + 0.23*(10 - s(n-1))
+        // 序列: 0, 2.3, 2.3+0.23*7.7=4.071, ...
+        XCTAssertEqual(sut.fill(with: (y: 10.0, x: 10.0)).y, 0.0, accuracy: 1e-10)
+        XCTAssertEqual(sut.fill(with: (y: 10.0, x: 10.0)).y, 2.3, accuracy: 1e-10)
+        let third = sut.fill(with: (y: 10.0, x: 10.0))
+        XCTAssertEqual(third.y, 4.071, accuracy: 1e-10)
+        XCTAssertEqual(third.x, 4.071, accuracy: 1e-10, "两轴递推应一致")
     }
 
     // MARK: - value 与 fill 返回值一致

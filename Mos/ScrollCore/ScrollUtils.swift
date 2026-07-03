@@ -39,6 +39,9 @@ class ScrollUtils {
     private var lastEventTargetPID: pid_t = 1  // 事件的目标进程 PID (先前)
     private var currEventTargetPID: pid_t = 1  // 事件的目标进程 PID (当前)
     private var cachedRunningApplication: NSRunningApplication?
+    // 路径随 PID 缓存一并翻新: 避免热路径每个滚动事件做两次 URL→String 转换分配
+    private var cachedBundlePath: String?
+    private var cachedExecutablePath: String?
     func getRunningApplication(from event: CGEvent) -> NSRunningApplication? {
         assertMainThread()
         // Guard
@@ -52,6 +55,8 @@ class ScrollUtils {
         // 如果目标 PID 变化, 则重新获取一次窗口 BID
         if lastEventTargetPID != currEventTargetPID {
             cachedRunningApplication = NSRunningApplication.init(processIdentifier: pid)
+            cachedBundlePath = cachedRunningApplication?.bundleURL?.path
+            cachedExecutablePath = cachedRunningApplication?.executableURL?.path
         }
         return cachedRunningApplication
     }
@@ -103,10 +108,21 @@ class ScrollUtils {
     // 从 Applications 中取回符合传入的 key 的 Application 对象
     // Key 在 applications 初始化时指定于 Application 中
     func getTargetApplication(from runningApplication: NSRunningApplication?) -> Application? {
-        if let applicationByBundlePath = Options.shared.application.applications.get(by: runningApplication?.bundleURL?.path) {
+        // 热路径传入的正是 getRunningApplication 缓存的对象, 直接复用缓存路径;
+        // 其他调用方 (偏好设置/前台应用查询) 传入不同对象时回退实时计算
+        let bundlePath: String?
+        let executablePath: String?
+        if runningApplication != nil && runningApplication === cachedRunningApplication {
+            bundlePath = cachedBundlePath
+            executablePath = cachedExecutablePath
+        } else {
+            bundlePath = runningApplication?.bundleURL?.path
+            executablePath = runningApplication?.executableURL?.path
+        }
+        if let applicationByBundlePath = Options.shared.application.applications.get(by: bundlePath) {
             return applicationByBundlePath
         }
-        if let applicationByExecutablePath = Options.shared.application.applications.get(by: runningApplication?.executableURL?.path) {
+        if let applicationByExecutablePath = Options.shared.application.applications.get(by: executablePath) {
             return applicationByExecutablePath
         }
         return nil

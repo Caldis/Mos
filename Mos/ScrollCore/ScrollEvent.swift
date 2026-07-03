@@ -55,33 +55,25 @@ class ScrollEvent {
 // MARK: - 工具方法
 extension ScrollEvent {
     // 类型判断
-    static var isTrackpadCallSamplingRate = 3
-    static var isTrackpadCallCount = 2
-    static var isTrackpadCallCache = true
+    // 每个事件独立判定, 不做跨事件缓存: 旧版"每 3 次采样"的计数重置逻辑令采样恒命中,
+    // 缓存从未生效; 即使生效, 鼠标/触控板交替输入时也会误判 2/3 的事件
     class func isTrackpad(with event: CGEvent) -> Bool {
-        ScrollEvent.isTrackpadCallCount += 1
-        if isTrackpadCallCount % isTrackpadCallSamplingRate == 0 {
-            ScrollEvent.isTrackpadCallCache = false
-            // 根据滚动特征值判定
-            if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
-                // MomentumPhase 或 ScrollPhase 任一不为零, 则为触控板
-                ScrollEvent.isTrackpadCallCache = true
-            } else if event.getDoubleValueField(.scrollWheelEventScrollCount) != 0.0 {
-                // 累计加速度不为零, 则为触控板
-                ScrollEvent.isTrackpadCallCache = true
-            }
-            // 根据输入事件源增强判断
-            if ScrollEvent.isTrackpadCallCache {
-                if let specialProcessID = Utils.getRunningApplicationProcessIdentifier(withBundleIdentifier: SPECIAL_EVENT_SOURCE_APPLICATION.logitechOptions)?.processIdentifier {
-                    let sourceProcessID = event.getIntegerValueField(.eventSourceUnixProcessID)
-                    if sourceProcessID == specialProcessID {
-                        ScrollEvent.isTrackpadCallCache = false
-                    }
-                }
-            }
-            ScrollEvent.isTrackpadCallCount = isTrackpadCallSamplingRate - 1 
+        // 根据滚动特征值判定
+        var isTrackpad = false
+        if (event.getDoubleValueField(.scrollWheelEventMomentumPhase) != 0.0) || (event.getDoubleValueField(.scrollWheelEventScrollPhase) != 0.0) {
+            // MomentumPhase 或 ScrollPhase 任一不为零, 则为触控板
+            isTrackpad = true
+        } else if event.getDoubleValueField(.scrollWheelEventScrollCount) != 0.0 {
+            // 累计加速度不为零, 则为触控板
+            isTrackpad = true
         }
-        return ScrollEvent.isTrackpadCallCache
+        // 根据输入事件源增强判断 (Logi Options 合成的事件带触控板特征, 但应按鼠标处理)
+        if isTrackpad,
+           let specialProcessID = Utils.getRunningApplicationProcessIdentifier(withBundleIdentifier: SPECIAL_EVENT_SOURCE_APPLICATION.logitechOptions)?.processIdentifier,
+           event.getIntegerValueField(.eventSourceUnixProcessID) == specialProcessID {
+            isTrackpad = false
+        }
+        return isTrackpad
     }
     
     // 初始化轴数据

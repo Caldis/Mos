@@ -9,35 +9,34 @@
 import Cocoa
 
 class ScrollFilter {
-    
-    var curveWindowY = [0.0, 0.0]
-    var curveWindowX = [0.0, 0.0]
-    
+
+    // 一阶平滑递推 (系数 0.23), 输出滞后一帧:
+    //   output(n) = s(n-1);  s(n) = s(n-1) + 0.23 * (input - s(n-1))
+    // 与旧版 5 元素曲线窗口的可观察行为完全一致 —— 窗口的 [2][3][4] 从未被
+    // 消费, 属每帧死计算; 本类运行在 CVDisplayLink 热路径, 避免每帧堆分配数组
+    private var currentY = 0.0
+    private var smoothedY = 0.0
+    private var currentX = 0.0
+    private var smoothedX = 0.0
+
     // 填充值
     public func fill(with nextValue: ( y: Double, x: Double )) -> ( y: Double, x: Double ) {
-        curveWindowY = polish(curveWindowY, with: nextValue.y)
-        curveWindowX = polish(curveWindowX, with: nextValue.x)
+        currentY = smoothedY
+        smoothedY += 0.23 * (nextValue.y - smoothedY)
+        currentX = smoothedX
+        smoothedX += 0.23 * (nextValue.x - smoothedX)
         return value()
     }
     // 获取值
     public func value() -> ( y: Double, x: Double ) {
-        return ( y: curveWindowY[0], x: curveWindowX[0] )
+        return ( y: currentY, x: currentX )
     }
     // 清空
     public func reset() {
-        curveWindowY = [0.0, 0.0]
-        curveWindowX = [0.0, 0.0]
+        currentY = 0.0
+        smoothedY = 0.0
+        currentX = 0.0
+        smoothedX = 0.0
     }
 
-}
-
-extension ScrollFilter {
-    // 曲线平滑
-    // 计算曲线窗口数组首位与 nextValue 的距离, 用定长的非线性数列填充以平滑曲线
-    // 例如: 数组首位为 1, nextValue 为 2, 则生成数列 [1.00, 1.23, 1.50, 1.77, 2.00]
-    private func polish(_ array: [Double], with nextValue: Double) -> [Double] {
-        let first = array[1]
-        let diff = nextValue - first
-        return [first, first+0.23*diff, first+0.5*diff, first+0.77*diff, nextValue]
-    }
 }
