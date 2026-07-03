@@ -209,7 +209,6 @@ class ToastManager {
     private func recalculateDirection() {
         let anchorPoint = resolvedAnchorPoint()
         currentStackDirection = stackDirection(for: anchorPoint)
-        ToastWindow.shared.currentStackDirection = currentStackDirection
     }
 
     /// 重新定位所有 toast (基于层叠深度)

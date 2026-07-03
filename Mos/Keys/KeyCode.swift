@@ -37,8 +37,6 @@ struct KeyCode {
         KeyCode.fnL,
         KeyCode.fnR
     ]
-    static let modifierLKeys = [KeyCode.controlL, KeyCode.optionL, KeyCode.commandL, KeyCode.shiftL]
-    static let modifierRKeys = [KeyCode.controlL, KeyCode.optionL, KeyCode.commandL, KeyCode.shiftL]
     // 掩码
     static let modifiersMask: UInt64 =
         CGEventFlags.maskControl.rawValue |

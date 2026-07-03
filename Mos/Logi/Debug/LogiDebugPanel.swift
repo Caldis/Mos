@@ -231,8 +231,6 @@ class LogiDebugPanel: NSObject {
         static let btnGap: CGFloat = 4
         // Min height for Actions panel context area. Fits worst-known feature (ReprogControlsV4: 4 action buttons + params field + index stepper ≈ 168pt) with slack.
         static let ctxMinH: CGFloat = 180
-        static let topRatio: CGFloat = 0.4
-        static let devInfoH: CGFloat = 140
         static let logToolbarH: CGFloat = 28
         static let rawInputH: CGFloat = 30
         static let sectionHdrH: CGFloat = 20

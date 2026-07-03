@@ -15,17 +15,6 @@ class ScrollUtils {
     init() { NSLog("Module initialized: ScrollUtils") }
     private let syntheticSmoothEventMarker: Int64 = 0x4D4F53534D4F4F54
     
-    // 判断事件目标是否变化
-    var previousScrollTargetProcessID = 0.0 // 用于在鼠标移动到不同窗口时停止滚动
-    var currentScrollTargetProcessID = 0.0
-    func isTargetChanged(_ event: CGEvent) -> Bool {
-        // 更新当前 ProcessID
-        previousScrollTargetProcessID = currentScrollTargetProcessID
-        currentScrollTargetProcessID = event.getDoubleValueField(.eventTargetUnixProcessID)
-        // 判断是否变化
-        return previousScrollTargetProcessID != currentScrollTargetProcessID && previousScrollTargetProcessID != 0.0
-    }
-    
     func markSyntheticSmoothEvent(_ event: CGEvent) {
         event.setIntegerValueField(.eventSourceUserData, value: syntheticSmoothEventMarker)
     }

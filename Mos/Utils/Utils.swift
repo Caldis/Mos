@@ -249,23 +249,6 @@ public class Utils {
         }
         return runningApplicationCache[bundleIdentifier] ?? nil
     }
-    
-    class func debounce(delay: Int, action: @escaping (() -> Void)) -> () -> Void {
-        var lastFireTime = DispatchTime.now()
-        let dispatchDelay = DispatchTimeInterval.milliseconds(delay)
-
-        return {
-            lastFireTime = DispatchTime.now()
-            let dispatchTime: DispatchTime = DispatchTime.now() + dispatchDelay
-            DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
-                let when: DispatchTime = lastFireTime + dispatchDelay
-                let now = DispatchTime.now()
-                if now.rawValue >= when.rawValue {
-                    action()
-                }
-            }
-        }
-    }
 }
 
 /// DEBUG 下断言当前在主线程; Release 零开销。

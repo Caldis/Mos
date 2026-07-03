@@ -74,17 +74,17 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P1-11 | LogiDeviceSession.swift:2695-2713 | 性能 | 低 | 待处理 (需真机验证, 建议与 P4-4 同批) |
 | P1-12 | ScrollCore.swift:305-310,383-389 | 性能 | 低 | 待处理 (并入 P5-3) |
 | P1-13 | ScrollUtils.swift:111-114 | 性能 | 低 | ✅ 2026-07-03 |
-| P2-1 | Utils/Archieve.swift | 死代码 | 中 | 待处理 |
-| P2-2 | Utils.swift:250-265 | 死代码 | 低 | 待处理 |
-| P2-3 | ScrollUtils.swift:19-27 | 死代码 | 低 | 待处理 |
-| P2-4 | KeyCode.swift:40-41 | 死代码 | 低 | 待处理 |
-| P2-5 | SystemShortcut.swift:351-373 | 死代码 | 低 | 待处理 |
-| P2-6 | Logger.swift:101-137 | 死代码 | 低 | 待处理 |
-| P2-7 | Toast 组件 3 处 | 死代码 | 低 | 待处理 |
-| P2-8 | ButtonCore.swift:31,74-82 | 死代码 | 低 | 待处理 |
-| P2-9 | BrandTag.swift:88,120 | 死代码/架构 | 低 | 待处理 |
-| P2-10 | LogiSelfTestWizard.swift:23 等 | 死代码 | 低 | 待处理 |
-| P2-11 | PreferencesApplicationViewController.swift:209,77-82 | 死代码 | 低 | 待处理 |
+| P2-1 | Utils/Archieve.swift | 死代码 | 中 | ✅ 2026-07-04 |
+| P2-2 | Utils.swift:250-265 | 死代码 | 低 | ✅ 2026-07-04 |
+| P2-3 | ScrollUtils.swift:19-27 | 死代码 | 低 | ✅ 2026-07-04 |
+| P2-4 | KeyCode.swift:40-41 | 死代码 | 低 | ✅ 2026-07-04 |
+| P2-5 | SystemShortcut.swift:351-373 | 死代码 | 低 | ✅ 2026-07-04 |
+| P2-6 | Logger.swift:101-137 | 死代码 | 低 | ✅ 2026-07-04 |
+| P2-7 | Toast 组件 3 处 | 死代码 | 低 | ✅ 2026-07-04 |
+| P2-8 | ButtonCore.swift:31,74-82 | 死代码 | 低 | ✅ 2026-07-04 |
+| P2-9 | BrandTag.swift:88,120 | 死代码/架构 | 低 | ✅ 2026-07-04 (isLogiCode 耦合留 P5-8; brandForCode 有调用方保留) |
+| P2-10 | LogiSelfTestWizard.swift:23 等 | 死代码 | 低 | ✅ 2026-07-04 |
+| P2-11 | PreferencesApplicationViewController.swift:209,77-82 | 死代码 | 低 | ✅ 2026-07-04 |
 | P3-1 | LogiDeviceSession.swift:1868-2051 | DRY | 中 | 待处理 |
 | P3-2 | LogiDeviceSession.swift:962-989 | DRY | 低 | 待处理 |
 | P3-3 | LogiDeviceSession 常量散落 | DRY | 低 | 待处理 |

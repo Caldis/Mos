@@ -20,7 +20,6 @@ final class LogiSelfTestWizard {
     private let runner = LogiSelfTestRunner()
     private var steps: [Step] = []
     private var currentIndex = 0
-    private var lastOutcome: StepOutcome?
 
     private var headerLabel: NSTextField?
     private var instructionLabel: NSTextField?
@@ -39,7 +38,6 @@ final class LogiSelfTestWizard {
         }
         steps = runner.buildBoltSuite()    // future: detect + pick suite
         currentIndex = 0
-        lastOutcome = nil
         buildWindow()
         renderCurrent()
     }
@@ -185,7 +183,6 @@ final class LogiSelfTestWizard {
     }
 
     private func handleOutcome(_ outcome: StepOutcome) {
-        lastOutcome = outcome
         switch outcome {
         case .pass:
             statusLabel?.stringValue = "\u{2713} Passed"

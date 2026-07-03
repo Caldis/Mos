@@ -14,10 +14,6 @@ class ToastWindow {
 
     static let shared = ToastWindow()
 
-    // MARK: - Stack Direction (set by ToastManager)
-
-    var currentStackDirection: ToastStackDirection = .down
-
     // MARK: - Panel Factory
 
     /// 为单个 toast 创建独立 NSPanel
@@ -67,7 +63,6 @@ class ToastWindow {
 
 enum ToastLayoutConstants {
     static let spacing: CGFloat = 8
-    static let containerWidth: CGFloat = 360
     static let cornerRadius: CGFloat = 10
 }
 

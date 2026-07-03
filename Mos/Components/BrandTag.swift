@@ -116,11 +116,6 @@ struct BrandTag {
         return tagForCode(code)
     }
 
-    /// 获取快捷键 ID 对应的品牌配置 (兼容旧调用, nil = 非品牌/标签动作)
-    static func brandForAction(_ identifier: String) -> BrandTagConfig? {
-        return tagForAction(identifier)
-    }
-
     // MARK: - 标签文字 (用于 NSButton.title 等纯文本场景)
 
     /// 在名称前添加品牌前缀 (纯文本 fallback)

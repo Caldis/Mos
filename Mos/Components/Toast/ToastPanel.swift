@@ -358,12 +358,6 @@ class ToastPanel: NSObject {
             if row == 0 {
                 button.topAnchor.constraint(equalTo: testHeader.bottomAnchor, constant: 8).isActive = true
             } else {
-                // Find the button directly above (same column, previous row)
-                let aboveIdx = (row - 1) * gridCols + col
-                if aboveIdx < index {
-                    // Get the button view — we need to track them
-                }
-                // Use row calculation
                 let topOffset: CGFloat = 8 + CGFloat(row) * (M.gridCellHeight + M.gridCellSpacing)
                 button.topAnchor.constraint(equalTo: testHeader.bottomAnchor, constant: topOffset).isActive = true
             }
@@ -431,10 +425,6 @@ class ToastPanel: NSObject {
 
     @objc private func durationChanged() {
         durationLabel.stringValue = String(format: "%.1fs", durationSlider.doubleValue)
-    }
-
-    @objc private func fireToast() {
-        emitToast(allowDuplicateVisibleMessage: false)
     }
 
     @objc private func showsAccentRibbonChanged(_ sender: NSButton) {

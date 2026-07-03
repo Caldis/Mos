@@ -96,44 +96,5 @@ class Logger {
         eventSourceStateID: \(event.getDoubleValueField(.eventSourceStateID))
         """
     }
-    
-    // tablet(画板) 相关信息
-    class func getTabletEventLog(form event: CGEvent) -> String {
-        return """
-        tabletEventPointX: \(event.getDoubleValueField(.tabletEventPointX))
-        tabletEventPointY: \(event.getDoubleValueField(.tabletEventPointY))
-        tabletEventPointZ: \(event.getDoubleValueField(.tabletEventPointZ))
-        tabletEventPointButtons: \(event.getDoubleValueField(.tabletEventPointButtons))
-        tabletEventPointPressure: \(event.getDoubleValueField(.tabletEventPointPressure))
-        tabletEventTiltX: \(event.getDoubleValueField(.tabletEventTiltX))
-        tabletEventTiltY: \(event.getDoubleValueField(.tabletEventTiltY))
-        tabletEventRotation: \(event.getDoubleValueField(.tabletEventRotation))
-        tabletEventTangentialPressure: \(event.getDoubleValueField(.tabletEventTangentialPressure))
-        tabletEventDeviceID: \(event.getDoubleValueField(.tabletEventDeviceID))
-        tabletEventVendor1: \(event.getDoubleValueField(.tabletEventVendor1))
-        tabletEventVendor2: \(event.getDoubleValueField(.tabletEventVendor2))
-        tabletEventVendor3: \(event.getDoubleValueField(.tabletEventVendor3))
-        """
-    }
-    class func getTabletProximityLog(form event: CGEvent) -> String {
-        return """
-        tabletProximityEventVendorID: \(event.getDoubleValueField(.tabletProximityEventVendorID))
-        tabletProximityEventTabletID: \(event.getDoubleValueField(.tabletProximityEventTabletID))
-        tabletProximityEventPointerID: \(event.getDoubleValueField(.tabletProximityEventPointerID))
-        tabletProximityEventDeviceID: \(event.getDoubleValueField(.tabletProximityEventDeviceID))
-        tabletProximityEventSystemTabletID: \(event.getDoubleValueField(.tabletProximityEventSystemTabletID))
-        tabletProximityEventVendorPointerType: \(event.getDoubleValueField(.tabletProximityEventVendorPointerType))
-        tabletProximityEventVendorPointerSerialNumber: \(event.getDoubleValueField(.tabletProximityEventVendorPointerSerialNumber))
-        tabletProximityEventVendorUniqueID: \(event.getDoubleValueField(.tabletProximityEventVendorUniqueID))
-        tabletProximityEventCapabilityMask: \(event.getDoubleValueField(.tabletProximityEventCapabilityMask))
-        tabletProximityEventPointerType: \(event.getDoubleValueField(.tabletProximityEventPointerType))
-        tabletProximityEventEnterProximity: \(event.getDoubleValueField(.tabletProximityEventEnterProximity))
-        """
-    }
-    
-    // 打印 Log
-    class func printLog(form event: CGEvent) {
-//        print(self.getTabletLog(form: event))
-    }
-    
+
 }
