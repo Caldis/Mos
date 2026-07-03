@@ -35,10 +35,12 @@ class ScrollUtils {
     }
     
     // 从 CGEvent 中携带的 PID 获取应用信息
+    // 缓存字段无锁, 主线程 only; CVDisplayLink 线程需要的结果 (如 Chrome 判定) 由 ScrollPoster 在 update 时捕获进快照
     private var lastEventTargetPID: pid_t = 1  // 事件的目标进程 PID (先前)
     private var currEventTargetPID: pid_t = 1  // 事件的目标进程 PID (当前)
     private var cachedRunningApplication: NSRunningApplication?
     func getRunningApplication(from event: CGEvent) -> NSRunningApplication? {
+        assertMainThread()
         // Guard
         let pid = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
         if pid == pid_t(1) { return nil }
@@ -82,25 +84,18 @@ class ScrollUtils {
         // 10.15 - 26 以下判断是否为 Dock (LaunchPad 依附于 Dock 进程)
         // FIXME: 当 Dock 的目录设置为 "叠放" 时, 应用对 Dock 的目录预览无法平滑, 且发送平滑后的滚动事件无法被识别, 需要找别的方式
         if #available(OSX 10.15, *) {
-            if validRunningApplication.executableURL?.path == "/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock" {
-                launchpadActiveCache = true
-                return launchpadActiveCache
-            }
+            // 10.15+ 无录屏权限读不到 kCGWindowName, 窗口扫描无效, 只依赖 Dock 进程判断
+            launchpadActiveCache = validRunningApplication.executableURL?.path == "/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock"
+            return launchpadActiveCache
         }
-        // 如果距离上次检测时间大于 1s, 则重新检测一遍, 否则直接返回上次的结果
+        // 10.15 以下根据 windowList 判断; 距离上次检测大于 1s 才重新检测, 否则直接返回上次的结果
         let nowTime = NSDate().timeIntervalSince1970
         if nowTime - launchpadLastDetectTime > 1.0 {
-            // 10.15以下需要根据 windowList 判断
-            let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as [AnyObject]?
-            for windowInfo in windowInfoList! {
-                let windowName = windowInfo[kCGWindowName]!
-                if windowName != nil && windowName as! String == "LPSpringboard" {
-                    launchpadActiveCache = true
-                    return true
-                }
-            }
-            launchpadActiveCache = false
             launchpadLastDetectTime = nowTime
+            // CGWindowListCopyWindowInfo 在锁屏等场景可能返回 nil, 此时保留上次结果
+            if let windowInfoList = CGWindowListCopyWindowInfo(CGWindowListOption.optionOnScreenOnly, CGWindowID(0)) as? [[String: Any]] {
+                launchpadActiveCache = windowInfoList.contains { ($0[kCGWindowName as String] as? String) == "LPSpringboard" }
+            }
         }
         return launchpadActiveCache
     }

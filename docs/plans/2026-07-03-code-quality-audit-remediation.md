@@ -52,8 +52,8 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 
 | ID | 位置 | 分类 | 严重度 | 状态 |
 |---|---|---|---|---|
-| P0-1 | ScrollUtils.swift:41-54 | 并发 | 高 | 待处理 |
-| P0-2 | ScrollUtils.swift:92-104 | 崩溃/性能 | 高 | 待处理 |
+| P0-1 | ScrollUtils.swift:41-54 | 并发 | 高 | ✅ 2026-07-03 |
+| P0-2 | ScrollUtils.swift:92-104 | 崩溃/性能 | 高 | ✅ 2026-07-03 |
 | P0-3 | Utils.swift:233 | 崩溃 | 高 | ✅ 2026-07-03 |
 | P0-4 | MonitorViewController.swift:96 / MonitorLogStore.swift:21 | 性能 | 高 | ✅ 2026-07-03 |
 | P0-5 | LogiDeviceSession.swift:2638,1074 | 并发 | 高 | 待处理 |

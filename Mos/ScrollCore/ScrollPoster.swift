@@ -41,19 +41,24 @@ class ScrollPoster {
     // 状态锁和投递上下文
     private var stateLock = os_unfair_lock_s()
     private let dispatchContext = ScrollDispatchContext.shared
-    // 滚动配置快照: 主线程在 update 时捕获, CVDisplayLink 线程只读, 避免热路径跨线程读 Options/ScrollCore
+    // 滚动配置快照: 主线程在 update 时捕获, CVDisplayLink 线程只读, 避免热路径跨线程读 Options/ScrollCore/ScrollUtils
     private struct ConfigSnapshot {
         var simTrackpadEnabled: Bool
         var deadZone: Double
+        var targetIsChrome: Bool
     }
-    private var config = ConfigSnapshot(simTrackpadEnabled: false, deadZone: 1.0)
+    private var config = ConfigSnapshot(simTrackpadEnabled: false, deadZone: 1.0, targetIsChrome: false)
     // CVDisplayLink 恢复机制
     private var keeper: Timer?
     private var lastCallbackTime: CFTimeInterval = 0.0
     private var lastRecreateAttempt: CFTimeInterval = 0.0
     private let recreateCooldown: CFTimeInterval = 3.0
-    // 主线程访问, 无需锁
-    var isAvailable: Bool { return poster != nil }
+    // poster 引用受 stateLock 保护: stop() 可能在 CVDisplayLink 线程执行, 与主线程 create/tryStart 并发
+    var isAvailable: Bool {
+        os_unfair_lock_lock(&stateLock)
+        defer { os_unfair_lock_unlock(&stateLock) }
+        return poster != nil
+    }
 }
 
 // MARK: - 滚动数据更新控制
@@ -62,10 +67,13 @@ extension ScrollPoster {
         guard dispatchContext.capture(event: event) else {
             return self
         }
+        // 主线程判定目标是否为 Chrome 并存入快照, stop() 在 CVDisplayLink 线程只读快照
+        // (isEventTargetingChrome 会改写 ScrollUtils 的无锁缓存, 只允许主线程调用)
+        let targetIsChrome = ScrollUtils.shared.isEventTargetingChrome(event)
         os_unfair_lock_lock(&stateLock)
         defer { os_unfair_lock_unlock(&stateLock) }
         // 捕获本次手势的配置快照 (主线程读 Options/ScrollCore, CVDisplayLink 线程只读)
-        captureConfigSnapshotLocked()
+        captureConfigSnapshotLocked(targetIsChrome: targetIsChrome)
         // 更新滚动配置
         self.duration = duration
         // 更新滚动数据
@@ -135,7 +143,7 @@ extension ScrollPoster {
 #if DEBUG
     func captureConfigSnapshotForTests() {
         os_unfair_lock_lock(&stateLock)
-        captureConfigSnapshotLocked()
+        captureConfigSnapshotLocked(targetIsChrome: config.targetIsChrome)
         os_unfair_lock_unlock(&stateLock)
     }
     var configSnapshotForTests: (simTrackpadEnabled: Bool, deadZone: Double) {
@@ -174,12 +182,13 @@ extension ScrollPoster {
 extension ScrollPoster {
     // 初始化 CVDisplayLink
     func create() {
-        // 清理旧的 CVDisplayLink
-        if let old = poster {
-            if CVDisplayLinkIsRunning(old) {
-                CVDisplayLinkStop(old)
-            }
-            poster = nil
+        // 清理旧的 CVDisplayLink (引用在锁内交换, CV 调用在锁外)
+        os_unfair_lock_lock(&stateLock)
+        let old = poster
+        poster = nil
+        os_unfair_lock_unlock(&stateLock)
+        if let old, CVDisplayLinkIsRunning(old) {
+            CVDisplayLinkStop(old)
         }
         // 创建新的 CVDisplayLink, 检查返回值
         var newPoster: CVDisplayLink?
@@ -189,15 +198,19 @@ extension ScrollPoster {
                 ScrollPoster.shared.processing()
                 return kCVReturnSuccess
             }, nil)
+            os_unfair_lock_lock(&stateLock)
             poster = validPoster
+            os_unfair_lock_unlock(&stateLock)
         } else {
-            poster = nil
             NSLog("ScrollPoster: CVDisplayLink creation failed (%d)", result)
         }
     }
     // 启动事件发送器
     func tryStart() {
-        guard let validPoster = poster else {
+        os_unfair_lock_lock(&stateLock)
+        let posterRef = poster
+        os_unfair_lock_unlock(&stateLock)
+        guard let validPoster = posterRef else {
             if !recreateDisplayLink() {
                 // cooldown 拒绝了重建; 清理陈旧 buffer 防止恢复后滚动跳变
                 reset()
@@ -219,7 +232,12 @@ extension ScrollPoster {
     // 停止事件发送器
     func stop(_ requestedPhase: Phase = Phase.MomentumEnd) {
         // 停止循环, 然后准备发送最后一次事件
-        if let validPoster = poster {
+        // poster 引用在锁内拷贝, CV 调用在锁外执行 (本函数可能运行在 CVDisplayLink 线程,
+        // 持锁调 CVDisplayLinkStop 会与等锁的回调线程互等)
+        os_unfair_lock_lock(&stateLock)
+        let posterRef = poster
+        os_unfair_lock_unlock(&stateLock)
+        if let validPoster = posterRef {
             CVDisplayLinkStop(validPoster)
         }
         // 失效旧会话异步帧，收尾帧使用新代次
@@ -239,8 +257,9 @@ extension ScrollPoster {
         if enableSimTrackpad {
             perform(plan, emitTargetImmediately: true)
         } else {
-            if let snapshot = dispatchContext.preparePostingSnapshot(),
-               ScrollUtils.shared.isEventTargetingChrome(snapshot.event),
+            // Chrome 判定读 update 时主线程捕获的快照, 禁止在此线程调用 ScrollUtils (其缓存无锁、主线程 only)
+            if config.targetIsChrome,
+               let snapshot = dispatchContext.preparePostingSnapshot(),
                let phaseValues = phaseValues(for: .TrackingEnd) {
                 _ = post(
                     snapshot,
@@ -271,7 +290,10 @@ extension ScrollPoster {
         guard now - lastRecreateAttempt >= recreateCooldown else { return false }
         lastRecreateAttempt = now
         create()
-        if let validPoster = poster {
+        os_unfair_lock_lock(&stateLock)
+        let posterRef = poster
+        os_unfair_lock_unlock(&stateLock)
+        if let validPoster = posterRef {
             let result = CVDisplayLinkStart(validPoster)
             if result == kCVReturnSuccess {
                 os_unfair_lock_lock(&stateLock)
@@ -295,7 +317,10 @@ extension ScrollPoster {
         keeper = nil
     }
     private func healthCheck() {
-        guard let validPoster = poster else {
+        os_unfair_lock_lock(&stateLock)
+        let posterRef = poster
+        os_unfair_lock_unlock(&stateLock)
+        guard let validPoster = posterRef else {
             recreateDisplayLink()
             return
         }
@@ -426,7 +451,7 @@ private extension ScrollPoster {
     }
 
     /// 主线程读取当前 (全局 / 例外应用) 配置存入快照。调用方须持有 stateLock。
-    func captureConfigSnapshotLocked() {
+    func captureConfigSnapshotLocked(targetIsChrome: Bool) {
         let simTrackpad: Bool
         if let application = ScrollCore.shared.application, !application.inherit {
             simTrackpad = application.scroll.smoothSimTrackpad
@@ -435,7 +460,8 @@ private extension ScrollPoster {
         }
         config = ConfigSnapshot(
             simTrackpadEnabled: simTrackpad,
-            deadZone: Options.shared.scroll.deadZone
+            deadZone: Options.shared.scroll.deadZone,
+            targetIsChrome: targetIsChrome
         )
     }
 
