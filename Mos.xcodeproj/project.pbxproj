@@ -52,6 +52,7 @@
 		F00A00000000000000000005 /* MosTests/ShortcutExecutorOpenTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00A00000000000000000006 /* MosTests/ShortcutExecutorOpenTargetTests.swift */; };
 		F00A00000000000000000007 /* MosTests/UtilsParseNameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00A00000000000000000008 /* MosTests/UtilsParseNameTests.swift */; };
 		F00A000000000000000000000000000B /* MosTests/ShortcutExecutorSyntheticMarkerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00A000000000000000000000000000C /* MosTests/ShortcutExecutorSyntheticMarkerTests.swift */; };
+		F00A000000000000000000000000000D /* MosTests/LogiFeatureDiscoveryQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00A000000000000000000000000000E /* MosTests/LogiFeatureDiscoveryQueueTests.swift */; };
 		F00A0000000000000000000000000009 /* MosTests/KeyRecorderTapPassthroughTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00A000000000000000000000000000A /* MosTests/KeyRecorderTapPassthroughTests.swift */; };
 		FE05F3803FB8885AAC70ADC5 /* MosTests/ScrollCoreHotkeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CF5441214A14BB8FFEDA5 /* MosTests/ScrollCoreHotkeyTests.swift */; };
 		FECC8D1CC04A0A99B1E1A8EB /* MosTests/InterpolatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4A7F821E5626C63C45D698 /* MosTests/InterpolatorTests.swift */; };
@@ -116,6 +117,7 @@
 		F00A00000000000000000006 /* MosTests/ShortcutExecutorOpenTargetTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ShortcutExecutorOpenTargetTests.swift; sourceTree = SOURCE_ROOT; };
 		F00A00000000000000000008 /* MosTests/UtilsParseNameTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/UtilsParseNameTests.swift; sourceTree = SOURCE_ROOT; };
 		F00A000000000000000000000000000C /* MosTests/ShortcutExecutorSyntheticMarkerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ShortcutExecutorSyntheticMarkerTests.swift; sourceTree = SOURCE_ROOT; };
+		F00A000000000000000000000000000E /* MosTests/LogiFeatureDiscoveryQueueTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/LogiFeatureDiscoveryQueueTests.swift; sourceTree = SOURCE_ROOT; };
 		F00A000000000000000000000000000A /* MosTests/KeyRecorderTapPassthroughTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/KeyRecorderTapPassthroughTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -164,6 +166,7 @@
 				F00A00000000000000000006 /* MosTests/ShortcutExecutorOpenTargetTests.swift */,
 				F00A00000000000000000008 /* MosTests/UtilsParseNameTests.swift */,
 				F00A000000000000000000000000000C /* MosTests/ShortcutExecutorSyntheticMarkerTests.swift */,
+				F00A000000000000000000000000000E /* MosTests/LogiFeatureDiscoveryQueueTests.swift */,
 				F00A000000000000000000000000000A /* MosTests/KeyRecorderTapPassthroughTests.swift */,
 				A1B2C3D4E5F6A7B8C9D0E1F3 /* MosTests/ButtonBindingTests.swift */,
 				B2C3D4E5F6A7B8C9D0E1F201 /* MosTests/ButtonUtilsCacheTests.swift */,
@@ -376,6 +379,7 @@
 				F00A00000000000000000005 /* MosTests/ShortcutExecutorOpenTargetTests.swift in Sources */,
 				F00A00000000000000000007 /* MosTests/UtilsParseNameTests.swift in Sources */,
 				F00A000000000000000000000000000B /* MosTests/ShortcutExecutorSyntheticMarkerTests.swift in Sources */,
+				F00A000000000000000000000000000D /* MosTests/LogiFeatureDiscoveryQueueTests.swift in Sources */,
 				F00A0000000000000000000000000009 /* MosTests/KeyRecorderTapPassthroughTests.swift in Sources */,
 				FECC8D1CC04A0A99B1E1A8EB /* MosTests/InterpolatorTests.swift in Sources */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* MosTests/ButtonBindingTests.swift in Sources */,

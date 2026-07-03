@@ -56,9 +56,9 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P0-2 | ScrollUtils.swift:92-104 | 崩溃/性能 | 高 | ✅ 2026-07-03 |
 | P0-3 | Utils.swift:233 | 崩溃 | 高 | ✅ 2026-07-03 |
 | P0-4 | MonitorViewController.swift:96 / MonitorLogStore.swift:21 | 性能 | 高 | ✅ 2026-07-03 |
-| P0-5 | LogiDeviceSession.swift:2638,1074 | 并发 | 高 | 待处理 |
+| P0-5 | LogiDeviceSession.swift:2638,1074 | 并发 | 高 | ✅ 2026-07-03 |
 | P0-6 | ShortcutExecutor.swift:367,529 | 正确性 | 高 | ✅ 2026-07-03 |
-| P0-7 | LogiDeviceSession.swift:2568-2570 | 崩溃 | 高 | 待处理 |
+| P0-7 | LogiDeviceSession.swift:2568-2570 | 崩溃 | 高 | ✅ 2026-07-03 |
 | P0-8 | KeyRecorder.swift:168-170 | 正确性 | 高 | ✅ 2026-07-03 |
 | P0-9 | ShortcutExecutor.swift:152-163 | 正确性 | 高 | ✅ 2026-07-03 |
 | P1-1 | LogiDebugPanel.swift:366-381 | 性能 | 中 | 待处理 |

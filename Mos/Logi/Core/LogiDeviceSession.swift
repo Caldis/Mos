@@ -108,7 +108,32 @@ class LogiDeviceSession {
     private static let reportBufferSize = 64
 
     // MARK: - Async Discovery
-    private var pendingDiscovery: [UInt16: (UInt8?) -> Void] = [:]
+    /// IRoot.GetFeature 请求的 FIFO 串行队列 (纯状态机, 无 IO/Timer, 可直接单测).
+    /// IRoot 响应不回显 featureId, 并发请求无法关联响应 —— 必须串行: 同一时刻只有
+    /// 队头在飞行中, 响应/超时/错误只结算队头, 结算后由调用方发送下一个.
+    struct FeatureDiscoveryQueue {
+        typealias Completion = (UInt8?) -> Void
+        private var entries: [(featureId: UInt16, completion: Completion)] = []
+        var isIdle: Bool { entries.isEmpty }
+        var inFlightFeatureId: UInt16? { entries.first?.featureId }
+
+        /// 入队; 若队列原本为空, 返回该 featureId, 调用方应立即发送请求并启动超时
+        mutating func enqueue(featureId: UInt16, completion: @escaping Completion) -> UInt16? {
+            entries.append((featureId: featureId, completion: completion))
+            return entries.count == 1 ? featureId : nil
+        }
+
+        /// 结算队头 (响应/超时/错误), 返回其回调与下一个待发送的 featureId (队列已空则为 nil)
+        mutating func settleHead() -> (completion: Completion, nextFeatureId: UInt16?)? {
+            guard !entries.isEmpty else { return nil }
+            let head = entries.removeFirst()
+            return (completion: head.completion, nextFeatureId: entries.first?.featureId)
+        }
+
+        /// 静默清空 (teardown / 切 slot): 不触发任何 callback
+        mutating func clear() { entries.removeAll() }
+    }
+    private var discoveryQueue = FeatureDiscoveryQueue()
     private var discoveryTimer: Timer?
     private static let discoveryTimeout: TimeInterval = 5.0
     private var pendingCacheValidation: UInt8? = nil  // 等待 ping 响应验证缓存
@@ -915,13 +940,11 @@ class LogiDeviceSession {
 
     func teardown() {
         LogiDebugPanel.log("[\(deviceInfo.name)] Teardown")
-        discoveryTimer?.invalidate()
-        discoveryTimer = nil
+        clearDiscoveryQueue()
         controlInfoQueryTimer?.invalidate()
         controlInfoQueryTimer = nil
         reportingQueryTimer?.invalidate()
         reportingQueryTimer = nil
-        pendingDiscovery.removeAll()
         controlInfoRetryCounts.removeAll()
         cancelDivertReassertion()
         cancelBLEStandardUndivertGuard()
@@ -1067,18 +1090,40 @@ class LogiDeviceSession {
     }
 
     private func discoverFeature(featureId: UInt16, completion: @escaping (UInt8?) -> Void) {
+        if let toSend = discoveryQueue.enqueue(featureId: featureId, completion: completion) {
+            sendDiscoveryRequest(featureId: toSend)
+        }
+    }
+
+    private func sendDiscoveryRequest(featureId: UInt16) {
         let params: [UInt8] = [UInt8(featureId >> 8), UInt8(featureId & 0xFF)]
         sendRequest(featureIndex: 0x00, functionId: 0, params: params)
-        pendingDiscovery[featureId] = completion
-
         discoveryTimer?.invalidate()
         discoveryTimer = Timer.scheduledTimer(withTimeInterval: Self.discoveryTimeout, repeats: false) { [weak self] _ in
             guard let self = self else { return }
-            if let pending = self.pendingDiscovery.removeValue(forKey: featureId) {
-                LogiDebugPanel.log("[\(self.deviceInfo.name)] Feature discovery timed out for \(String(format: "0x%04X", featureId))")
-                pending(nil)
-            }
+            self.settleCurrentDiscovery(result: nil, reason: "timed out")
         }
+    }
+
+    /// 结算飞行中的队头 discovery (响应到达 / 超时 / 错误), 并自动发送队列中的下一个
+    private func settleCurrentDiscovery(result: UInt8?, reason: String? = nil) {
+        discoveryTimer?.invalidate()
+        discoveryTimer = nil
+        guard let settled = discoveryQueue.settleHead() else { return }
+        if let reason = reason {
+            LogiDebugPanel.log("[\(deviceInfo.name)] Feature discovery \(reason)")
+        }
+        settled.completion(result)
+        if let next = settled.nextFeatureId {
+            sendDiscoveryRequest(featureId: next)
+        }
+    }
+
+    /// 静默清空 discovery 队列 (teardown / 切 slot), 不触发任何 callback
+    private func clearDiscoveryQueue() {
+        discoveryTimer?.invalidate()
+        discoveryTimer = nil
+        discoveryQueue.clear()
     }
 
     // MARK: - REPROG_CONTROLS_V4 Flow
@@ -1285,10 +1330,9 @@ class LogiDeviceSession {
     /// 只清 dict 不主动触发 callback(nil): 旧响应到达时找不到 callback 自然被忽略,
     /// 避免触发 markHandshakeComplete 造成 ready→init 的 UI 闪烁.
     private func cancelInflightDiscovery() {
-        discoveryTimer?.invalidate(); discoveryTimer = nil
+        clearDiscoveryQueue()
         controlInfoQueryTimer?.invalidate(); controlInfoQueryTimer = nil
         reportingQueryTimer?.invalidate(); reportingQueryTimer = nil
-        pendingDiscovery.removeAll()
         pendingCacheValidation = nil
         controlInfoRetryCounts.removeAll()
         cancelDivertReassertion()
@@ -1511,11 +1555,9 @@ class LogiDeviceSession {
 
         // 只处理来自当前目标设备的 feature discovery 错误
         // (receiver 自身的 register 错误 devIdx=0xFF 不应影响设备的 feature discovery)
+        // 串行队列下只结算飞行中的队头, 排队中的请求随后各自发送、各自结算
         if devIdx == deviceIndex {
-            for (featureId, callback) in pendingDiscovery {
-                callback(nil)
-                pendingDiscovery.removeValue(forKey: featureId)
-            }
+            settleCurrentDiscovery(result: nil, reason: "failed (HID++ 1.0 error \(errorName))")
         }
     }
 
@@ -2383,11 +2425,9 @@ class LogiDeviceSession {
             let errorCode = report.count > 6 ? report[6] : 0
             LogiDebugPanel.log("[\(deviceInfo.name)] HID++ Error: feat=\(String(format: "0x%02X", originalFeatureIdx)) func=\(originalFuncId) err=\(String(format: "0x%02X", errorCode))")
 
-            // Feature discovery pending callbacks
-            for (featureId, callback) in pendingDiscovery {
-                callback(nil)
-                pendingDiscovery.removeValue(forKey: featureId)
-            }
+            // Feature discovery: 串行队列下只结算飞行中的队头
+            // (精确按 originalFeatureIdx==0x00 过滤属 P4-7, 此处保持旧语义: 任何错误都结算)
+            settleCurrentDiscovery(result: nil, reason: "failed (HID++ 2.0 error)")
 
             // REPROG_V4 query 错误: 跳过该 CID 继续下一个, 防止 Bolt receiver 上 query 链路卡死
             if let reprogIdx = featureIndex[Self.featureReprogV4],
@@ -2415,7 +2455,7 @@ class LogiDeviceSession {
                 sendGetControlCount(featureIndex: reprogIdx)
                 return
             }
-            if !pendingDiscovery.isEmpty {
+            if !discoveryQueue.isIdle {
                 handleDiscoveryResponse(report)
             }
             return
@@ -2567,8 +2607,13 @@ class LogiDeviceSession {
             pendingHostCycle = nil
             let hostCount = report[4]
             let currentHost = report[5]
-            let nextHost = (currentHost + 1) % hostCount
-            LogiDebugPanel.log("[\(deviceInfo.name)] Host: \(currentHost + 1)/\(hostCount) -> \(nextHost + 1)")
+            // HID 报文是外部输入: hostCount=0 会除零 trap, currentHost=255 会加法溢出 trap
+            guard hostCount > 0 else {
+                LogiDebugPanel.log("[\(deviceInfo.name)] Host cycle aborted: device reported hostCount=0")
+                return
+            }
+            let nextHost = UInt8((UInt16(currentHost) + 1) % UInt16(hostCount))
+            LogiDebugPanel.log("[\(deviceInfo.name)] Host: \(UInt16(currentHost) + 1)/\(hostCount) -> \(UInt16(nextHost) + 1)")
             switchToHost(featureIndex: hostIdx, hostIndex: nextHost)
             return
         }
@@ -2635,11 +2680,8 @@ class LogiDeviceSession {
     private func handleDiscoveryResponse(_ report: UnsafeBufferPointer<UInt8>) {
         let discoveredIndex = report[4]
         LogiDebugPanel.log("[\(deviceInfo.name)] IRoot response: discoveredIndex=\(String(format: "0x%02X", discoveredIndex))")
-        if let (featureId, callback) = pendingDiscovery.first {
-            discoveryTimer?.invalidate()
-            pendingDiscovery.removeValue(forKey: featureId)
-            callback(discoveredIndex == 0 ? nil : discoveredIndex)
-        }
+        // FIFO 串行: 响应必然对应飞行中的队头 (IRoot 响应不回显 featureId, 串行是唯一可靠的关联方式)
+        settleCurrentDiscovery(result: discoveredIndex == 0 ? nil : discoveredIndex)
     }
 
     private func handleGetControlCountResponse(_ report: UnsafeBufferPointer<UInt8>) {
