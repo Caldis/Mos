@@ -120,9 +120,14 @@ class KeyRecorder: NSObject {
     ///   - sourceView: 触发录制的视图，用于显示 Popover
     ///   - mode: 录制模式，默认为组合键模式
     func startRecording(from sourceView: NSView, mode: KeyRecordingMode = .combination) {
-        // Guard: 防止重复执行
-        guard !isRecording else { return }
+        // Guard: 防止重复执行。isRecording 在 stopRecording 后延迟 0.5s 复位 (等 popover 动画),
+        // 该窗口内 interceptor 已为 nil, 允许立即重启录制 (取消挂起的延迟复位接管状态)
+        guard !isRecording || interceptor == nil else { return }
+        resetStateWorkItem?.cancel()
+        resetStateWorkItem = nil
         isRecording = true
+        isRecorded = false
+        invalidKeyPressCount = 0
         recordingMode = mode
         delegate?.onRecordingStarted(self)
         // Log
@@ -190,8 +195,11 @@ class KeyRecorder: NSObject {
             NSLog("[EventRecorder] Started")
         } catch {
             NSLog("[EventRecorder] Failed to start: \(error)")
-            // 如果创建失败，重置状态
-            isRecording = false
+            // 统一走 stopRecording 回滚: 移除已注册的观察者、隐藏 popover、
+            // 结束 Logi divert、通知 delegate (原先只复位标志, 残留半初始化状态)。
+            // 异步派发: beginKeyRecording 是 async 排队的, 回滚必须排在它之后
+            // 才能正确 endKeyRecording
+            DispatchQueue.main.async { [weak self] in self?.stopRecording() }
         }
     }
     // 录制 tap 的事件处理 (静态无状态, 供单测直接注入事件验证)
@@ -247,7 +255,9 @@ class KeyRecorder: NSObject {
     // 修饰键变化处理
     @objc private func handleModifierFlagsChanged(_ notification: NSNotification) {
         guard isRecording && !isRecorded else { return }
-        let event = notification.object as! CGEvent
+        // CGEvent 是 CF 类型, 用 CFGetTypeID 校验后再转换 (与 handleRecordedEvent 一致)
+        guard let object = notification.object, CFGetTypeID(object as CFTypeRef) == CGEvent.typeID else { return }
+        let event = object as! CGEvent
 
         // Adaptive 模式: 使用状态机处理修饰键
         if recordingMode == .adaptive {
@@ -536,14 +546,22 @@ class KeyRecorder: NSObject {
         delegate?.onRecordingStopped(self, didRecord: didRecord)
         // 录制结束: 恢复到只 divert 有绑定的按键
         LogiCenter.shared.endKeyRecording()
-        // 重置状态 (添加延迟确保 Popover 结束动画完成, 避免多个 popover 重复出现导致卡住)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+        // 重置状态 (延迟确保 Popover 结束动画完成, 避免多个 popover 重复出现导致卡住)
+        // 用可取消的 WorkItem: 期间用户重新开始录制时由 startRecording 取消并立即接管,
+        // 不再出现 "ESC 后 0.5s 内点录制静默失败" 的竞态窗口
+        let reset = DispatchWorkItem { [weak self] in
             self?.isRecording = false
             self?.isRecorded = false
             self?.invalidKeyPressCount = 0
+            self?.resetStateWorkItem = nil
             NSLog("[EventRecorder] Stopped")
         }
+        resetStateWorkItem = reset
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: reset)
     }
+
+    // stopRecording 的延迟状态复位 (可被 startRecording 取消)
+    private var resetStateWorkItem: DispatchWorkItem?
     
     // MARK: - Timeout Protection
     private func startTimeoutTimer() {

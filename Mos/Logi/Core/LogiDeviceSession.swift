@@ -318,8 +318,18 @@ class LogiDeviceSession {
     }
 
     deinit {
+        // 兜底注销 (teardown 已做; 此处防未走 teardown 的路径):
+        // 回调注册时传入 passUnretained(self) 与裸 buffer 指针, 必须先注销再释放 buffer,
+        // 否则依赖 "回调只在主 runloop 同步执行" 的时序偶然性避免 use-after-free
+        unregisterInputReportCallback()
         if deviceOpened { IOHIDDeviceClose(hidDevice, IOOptionBits(kIOHIDOptionsTypeNone)) }
         reportBufferPtr?.deallocate()
+    }
+
+    /// 以 NULL callback 注销 HID 输入回调 (Apple 认可的注销方式); 幂等
+    private func unregisterInputReportCallback() {
+        guard let buffer = reportBufferPtr else { return }
+        IOHIDDeviceRegisterInputReportCallback(hidDevice, buffer, Self.reportBufferSize, nil, nil)
     }
 
     /// 是否为 HID++ 候选接口
@@ -954,6 +964,7 @@ class LogiDeviceSession {
 
     func teardown() {
         LogiDebugPanel.log("[\(deviceInfo.name)] Teardown")
+        unregisterInputReportCallback()
         clearDiscoveryQueue()
         controlInfoQueryTimer?.invalidate()
         controlInfoQueryTimer = nil

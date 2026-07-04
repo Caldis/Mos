@@ -13,6 +13,9 @@ class Interceptor {
     private var keeper: Timer?
     private var _eventTapRef: CFMachPort?
     private var _runLoopSourceRef: CFRunLoopSource?
+    // source 所属 run loop 在创建时捕获: stop/deinit 可能发生在其他线程
+    // (deinit 由最后一个强引用的释放线程决定), 届时再取 current run loop 会指向错误的 run loop
+    private let owningRunLoop: CFRunLoop = CFRunLoopGetCurrent()
 
     /// 重启时的额外清理操作 (由调用方注入, 避免 Interceptor 耦合特定子系统)
     /// 注意: 闭包不应捕获 Interceptor 实例, 否则会形成循环引用
@@ -45,8 +48,8 @@ class Interceptor {
         }
         // 清理 run loop source
         if let source = _runLoopSourceRef {
-            if CFRunLoopContainsSource(CFRunLoopGetCurrent(), source, .commonModes) {
-                CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, .commonModes)
+            if CFRunLoopContainsSource(owningRunLoop, source, .commonModes) {
+                CFRunLoopRemoveSource(owningRunLoop, source, .commonModes)
             }
             _runLoopSourceRef = nil
         }
@@ -74,8 +77,8 @@ extension Interceptor {
             throw InterceptorError.eventTapEnableFailed
         }
         // 确保 source 没有被重复添加
-        if !CFRunLoopContainsSource(CFRunLoopGetCurrent(), source, .commonModes) {
-            CFRunLoopAddSource(CFRunLoopGetCurrent(), source, .commonModes)
+        if !CFRunLoopContainsSource(owningRunLoop, source, .commonModes) {
+            CFRunLoopAddSource(owningRunLoop, source, .commonModes)
         }
         // 启动拦截层
         CGEvent.tapEnable(tap: tap, enable: true)
@@ -110,8 +113,8 @@ extension Interceptor {
         // 关闭拦截层
         if let tap = _eventTapRef, let source = _runLoopSourceRef {
             CGEvent.tapEnable(tap: tap, enable: false)
-            if removeFromRunLoop, CFRunLoopContainsSource(CFRunLoopGetCurrent(), source, .commonModes) {
-                CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, .commonModes)
+            if removeFromRunLoop, CFRunLoopContainsSource(owningRunLoop, source, .commonModes) {
+                CFRunLoopRemoveSource(owningRunLoop, source, .commonModes)
             }
         }
     }

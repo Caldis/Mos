@@ -224,6 +224,9 @@ extension PreferencesScrollingViewController {
         let resolvedDuration: Double
         if isSimTrackpadEnabled {
             resolvedDuration = ScrollDurationLimits.simulateTrackpadDefault
+            // 旧数据迁移兜底 (非常规副作用): duration 锁定由 simulateTrackpadToggle
+            // 写路径保证, 但历史版本可能持久化了不一致的值; 此处一次性校正,
+            // 校正后条件不再命中, 常规读路径无写入
             if scroll.duration != resolvedDuration {
                 scroll.duration = resolvedDuration
             }

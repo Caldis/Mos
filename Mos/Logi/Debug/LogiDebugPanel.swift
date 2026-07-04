@@ -1088,13 +1088,17 @@ class LogiDebugPanel: NSObject {
         // Position clear/export/self-test from right using frame + autoresizingMask
         // Will be repositioned after layout
         toolbar.postsFrameChangedNotifications = true
-        NotificationCenter.default.addObserver(forName: NSView.frameDidChangeNotification, object: toolbar, queue: .main) { _ in
+        // token 必须持有: block 式观察者不会随视图释放自动移除, 丢弃 token 意味着
+        // NotificationCenter 永久强持有闭包及其捕获的按钮。生命周期与窗口一致
+        // (窗口只构建一次且 isReleasedWhenClosed=false), deinit 时统一移除。
+        let token = NotificationCenter.default.addObserver(forName: NSView.frameDidChangeNotification, object: toolbar, queue: .main) { _ in
             let w = toolbar.bounds.width
             clearBtn.frame.origin.x = w - 50
             exportBtn.frame.origin.x = w - 100
             // exportBtn.x (w-100) - selfTest width (70) - gap (4) = w - 174
             selfTestBtn.frame.origin.x = w - 174
         }
+        layoutObserverTokens.append(token)
     }
 
     @objc private func selfTestClicked() {
@@ -1835,8 +1839,14 @@ class LogiDebugPanel: NSObject {
             spinnerObserver = nil
             BrailleSpinner.shared.endTicking()
         }
-        // Layout observers (frame change) are not tracked here — they're tied to the views
-        // and auto-removed when the views are deallocated.
+        // 布局观察者 (frame change) 的生命周期与窗口一致, token 存于
+        // layoutObserverTokens, 在 deinit 统一移除 (不随 show/hide 反复注册)。
+    }
+
+    private var layoutObserverTokens: [NSObjectProtocol] = []
+
+    deinit {
+        layoutObserverTokens.forEach { NotificationCenter.default.removeObserver($0) }
     }
 
     // MARK: - Helpers

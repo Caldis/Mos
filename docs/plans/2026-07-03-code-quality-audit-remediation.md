@@ -101,9 +101,9 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P3-14 | LogiDebugPanel 内部重复 ×3 组 | DRY | 低 | ✅ 2026-07-04 |
 | P4-1 | 8 个 VC 生命周期缺 super | 最佳实践 | 中 | ✅ 2026-07-04 (9 处) |
 | P4-2 | ScrollCore 系 4 个单例 init | 最佳实践 | 低 | ✅ 2026-07-04 (ScrollCore/ScrollUtils 改 private; ScrollPoster/ScrollPhase 保持可构造 — 测试以独立实例为 SUT) |
-| P4-3 | LogiDebugPanel.swift:1075 / AppDelegate.swift:106 | 泄漏 | 中 | 待处理 |
-| P4-4 | LogiDeviceSession.swift:907-942 | 潜伏 UAF | 中 | 待处理 |
-| P4-5 | KeyRecorder.swift:234,243,533 | 错误处理/竞态 | 中 | 待处理 |
+| P4-3 | LogiDebugPanel.swift:1075 / AppDelegate.swift:106 | 泄漏 | 中 | ✅ 2026-07-04 |
+| P4-4 | LogiDeviceSession.swift:907-942 | 潜伏 UAF | 中 | ✅ 2026-07-04 代码完成 (teardown+deinit NULL 注销); ⚠️ 待真机插拔/休眠唤醒循环验证 |
+| P4-5 | KeyRecorder.swift:234,243,533 | 错误处理/竞态 | 中 | ✅ 2026-07-04 (catch 统一走 stopRecording 回滚且 async 排序在 beginKeyRecording 后; 延迟复位改可取消 WorkItem) |
 | P4-6 | LogiSelfTestWizard.swift:169-173 | 竞态 | 中 | ✅ 2026-07-04 |
 | P4-7 | LogiDeviceSession.swift:2386,1514 | 错误处理 | 中 | ✅ 2026-07-04 (2.0 错误按 featureIdx==0x00 精确结算; 1.0 错误保持旧语义 — 报文不可靠回显失败请求身份) |
 | P4-8 | LogiDebugPanel.swift:1416 | 错误处理 | 低 | ✅ 2026-07-04 (随 P3-14 重写导出函数一并修复) |
@@ -111,8 +111,8 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P4-10 | Utils.swift:165-167 | 正确性 | 中 | ✅ 2026-07-04 |
 | P4-11 | UI 层 force cast/unwrap 6 处 | 最佳实践 | 中 | ✅ 2026-07-04 |
 | P4-12 | PreferencesTabViewController.swift:31-43 | 最佳实践 | 中 | ✅ 2026-07-04 (一次性守卫 + 显式等价约束; 审查建议的去 frame 方案会破坏背景, 已改用 width/height 常量约束) |
-| P4-13 | PreferencesScrollingViewController.swift:226-228 | 坏味道 | 低 | 待处理 |
-| P4-14 | Interceptor.swift:48,77,113 | 并发 | 低 | 待处理 |
+| P4-13 | PreferencesScrollingViewController.swift:226-228 | 坏味道 | 低 | ✅ 2026-07-04 (核实为旧数据一次性迁移兜底 — 写路径已有完整归一化, 删除会致旧数据显示/引擎不一致; 已注释固化语义) |
+| P4-14 | Interceptor.swift:48,77,113 | 并发 | 低 | ✅ 2026-07-04 (owningRunLoop 创建时捕获) |
 | P4-15 | 魔法数字 2 处 | 坏味道 | 低 | ✅ 2026-07-04 |
 | P5-1 | LogiDeviceSession 拆分 | 结构 | 高 | 待处理 |
 | P5-2 | LogiDebugPanel 拆分 | 结构 | 中 | 待处理 |

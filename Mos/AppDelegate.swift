@@ -47,6 +47,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var screenChangeTimer: Timer?
     // 权限恢复轮询定时器
     private var permissionRecoveryTimer: Timer?
+    // 显示器参数变化观察者 token (与 app 同生命周期)
+    private var screenParamsObserverToken: NSObjectProtocol?
 
     // 运行前预处理
     func applicationWillFinishLaunching(_ notification: Notification) {
@@ -103,7 +105,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             object: nil
         )
         // 监听显示器参数变化 (热插拔/分辨率/显示器休眠唤醒), 延迟重建 CVDisplayLink
-        NotificationCenter.default.addObserver(
+        // token 落袋: block 式观察者不会自动移除 (AppDelegate 与 app 同生命周期, 此处主要是契约一致性)
+        screenParamsObserverToken = NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification,
             object: nil, queue: .main
         ) { [weak self] _ in
