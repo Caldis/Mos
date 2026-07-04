@@ -107,7 +107,7 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P4-6 | LogiSelfTestWizard.swift:169-173 | 竞态 | 中 | ✅ 2026-07-04 |
 | P4-7 | LogiDeviceSession.swift:2386,1514 | 错误处理 | 中 | ✅ 2026-07-04 (2.0 错误按 featureIdx==0x00 精确结算; 1.0 错误保持旧语义 — 报文不可靠回显失败请求身份) |
 | P4-8 | LogiDebugPanel.swift:1416 | 错误处理 | 低 | ✅ 2026-07-04 (随 P3-14 重写导出函数一并修复) |
-| P4-9 | SystemShortcut.swift:168-176 | 正确性 | 中 | 待处理 |
+| P4-9 | SystemShortcut.swift:168-176 | 正确性 | 中 | ✅ 2026-07-04 (全仓核实 ==/hash 零直接调用方, Shortcut 不参与 Codable 持久化 — 零风险语义修正; 补 hasSameKeyCombination 显式组合等价 API) |
 | P4-10 | Utils.swift:165-167 | 正确性 | 中 | ✅ 2026-07-04 |
 | P4-11 | UI 层 force cast/unwrap 6 处 | 最佳实践 | 中 | ✅ 2026-07-04 |
 | P4-12 | PreferencesTabViewController.swift:31-43 | 最佳实践 | 中 | ✅ 2026-07-04 (一次性守卫 + 显式等价约束; 审查建议的去 frame 方案会破坏背景, 已改用 width/height 常量约束) |

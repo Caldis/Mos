@@ -127,15 +127,22 @@ struct SystemShortcut {
             return Shortcut.symbolByIdentifier[identifier] ?? "questionmark.circle"
         }
 
-        /// Equatable 协议实现
+        /// Equatable: 必须纳入 identifier —— 库内存在相同按键组合的不同动作
+        /// (如 getInfo 与 italic 同为 ⌘+34), 仅比较组合会令二者互相相等
         static func == (lhs: Shortcut, rhs: Shortcut) -> Bool {
-            return lhs.code == rhs.code && lhs.modifiers == rhs.modifiers
+            return lhs.identifier == rhs.identifier && lhs.code == rhs.code && lhs.modifiers == rhs.modifiers
         }
 
-        /// Hashable 协议实现
+        /// Hashable 协议实现 (与 == 一致纳入 identifier)
         func hash(into hasher: inout Hasher) {
+            hasher.combine(identifier)
             hasher.combine(modifiers.rawValue)
             hasher.combine(code)
+        }
+
+        /// 按键组合等价判断 (不含 identifier): 需要 "相同物理组合" 语义的场合显式使用
+        func hasSameKeyCombination(as other: Shortcut) -> Bool {
+            return code == other.code && modifiers == other.modifiers
         }
 
         /// 获取 NSMenuItem 的 keyEquivalent 和 modifierMask
