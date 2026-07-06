@@ -265,12 +265,8 @@ class ButtonCore {
             return Unmanaged.passUnretained(event)
         }
 
-        // 任何鼠标点击都会停止自动滚动
-        if AutoScrollCore.shared.isActive {
-            if type == .leftMouseDown || type == .rightMouseDown {
-                AutoScrollCore.shared.stopAutoScroll()
-            }
-        }
+        // 主键点击停止自动滚动的逻辑已移至 primaryMouseObservationCallBack
+        // (leftMouseDown/rightMouseDown 由 primaryObservation tap 处理)
 
         // 使用原始 flags 匹配绑定 (不注入虚拟修饰键, 保证匹配准确)
         let mosEvent = InputEvent(fromCGEvent: event)
@@ -298,6 +294,11 @@ class ButtonCore {
         }
         if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
             return Unmanaged.passUnretained(event)
+        }
+        // 主键点击停止自动滚动 (此 tap 为 listenOnly, 不消费事件, 点击照常生效)
+        if AutoScrollCore.shared.isActive,
+           type == .leftMouseDown || type == .rightMouseDown {
+            AutoScrollCore.shared.stopAutoScroll()
         }
         return Unmanaged.passUnretained(event)
     }
