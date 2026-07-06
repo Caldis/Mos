@@ -14,19 +14,19 @@ class Application: Codable, Equatable {
     var path: String // executablePath or bundlePath
     // 配置: 名称
     var displayName: String? = "" {
-        didSet { Options.shared.saveOptions() }
+        didSet { Options.shared.markChanged(.application) }
     }
     // 配置: 继承
     var inherit = true {
-        didSet { Options.shared.saveOptions() }
+        didSet { Options.shared.markChanged(.application) }
     }
     // 配置: 滚动
     var scroll = OPTIONS_SCROLL_DEFAULT() {
-        didSet { Options.shared.saveOptions() }
+        didSet { Options.shared.markChanged(.application) }
     }
     // 配置: 按钮绑定 (可选表示继承全局配置)
     var buttons: OPTIONS_BUTTONS_DEFAULT? {
-        didSet { Options.shared.saveOptions() }
+        didSet { Options.shared.markChanged(.application) }
     }
     // 初始化
     init(path: String) {

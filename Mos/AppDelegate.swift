@@ -124,6 +124,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         guard AppRuntime.shouldRunAppStartupSideEffects else { return }
         LogiCenter.shared.installBridge(LogiIntegrationBridge.shared)
+        ShortcutExecutor.shared.scrollActionPort = ScrollCore.shared
+        ShortcutExecutor.shared.modifierFlagsProvider = InputProcessor.shared
+        LogiUsageBootstrap.installOptionsObservers()
         LogiUsageBootstrap.refreshAll()
         startWithAccessibilityPermissionsChecker(nil)
         UpdateManager.shared.scheduleCheckOnAppStartIfNeeded()
@@ -146,6 +149,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         LogiCenter.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
+        // 写入尚未 flush 的脏配置组
+        Options.shared.flushPendingSaves()
     }
     
     // 检查是否有访问 accessibility 权限, 如果有则启动滚动处理, 并结束计时器
@@ -171,7 +176,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
                 WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.introductionWindowController, withTitle: "")
                 // 启动定时器检测权限, 当拥有授权时启动滚动处理
-                Timer.scheduledTimer(
+                // 统一由 permissionRecoveryTimer 持有, 使 sessionDidResign 可取消, 避免反复休眠/切换用户时叠加
+                permissionRecoveryTimer?.invalidate()
+                permissionRecoveryTimer = Timer.scheduledTimer(
                     timeInterval: 10.0,
                     target: self,
                     selector: #selector(startWithAccessibilityPermissionsChecker(_:)),

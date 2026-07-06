@@ -139,11 +139,33 @@ function HomepageStructuredSummary() {
   );
 }
 
-export default function Page() {
+// Fetch the latest release at build time so the version always renders, even
+// when a visitor's anonymous client fetch is rate-limited (60/hr/IP → 403). In
+// CI this runs authenticated via GITHUB_TOKEN (5000/hr); locally it may return
+// null (and the client retry takes over). Result is passed to HomeClient as
+// SWR fallbackData.
+async function fetchLatestRelease(): Promise<unknown> {
+  const token = process.env.GITHUB_TOKEN;
+  try {
+    const res = await fetch("https://api.github.com/repos/Caldis/Mos/releases/latest", {
+      headers: {
+        accept: "application/vnd.github+json",
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
+      },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export default async function Page() {
+  const initialRelease = await fetchLatestRelease();
   return (
     <>
       <AgentModeRedirect />
-      <HomeClient />
+      <HomeClient initialRelease={initialRelease} />
       <HomepageStructuredSummary />
     </>
   );

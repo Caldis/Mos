@@ -56,7 +56,7 @@ final class OptionsButtonsLoaderTests: XCTestCase {
         let data = json.data(using: .utf8)!
         let bindings = Options.decodeButtonBindings(from: data)
 
-        XCTAssertEqual(bindings.first?.triggerEvent.displayComponents, ["🖱️ Back Button"])
+        XCTAssertEqual(bindings.first?.triggerEvent.displayComponents, ["🖱️ Back"])
     }
 
     func testDecode_corruptOuterArray_returnsEmpty() {

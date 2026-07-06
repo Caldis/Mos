@@ -122,6 +122,12 @@ class ShortcutExecutor {
         NSLog("Module initialized: ShortcutExecutor")
     }
 
+    /// Mos 滚动动作端口 (启动期注入 ScrollCore.shared)。weak: 端口为永生单例, 避免强引用环。
+    weak var scrollActionPort: ScrollActionPort?
+
+    /// 修饰键 provider (启动期注入 InputProcessor.shared)。weak: provider 为永生单例。
+    weak var modifierFlagsProvider: ModifierFlagsProviding?
+
     private var testingMouseEventObserver: ((CGEvent) -> Void)?
 
     /// 快速识别 Mos Scroll 三个 stateful 动作, 供事件热路径避免完整 action 解析。
@@ -203,7 +209,7 @@ class ShortcutExecutor {
                 )
             )
         case .mosScroll(let role):
-            ScrollCore.shared.handleMosScrollAction(role: role, isDown: phase == .down)
+            scrollActionPort?.handleMosScrollAction(role: role, isDown: phase == .down)
             return .none
         case .logiAction(let identifier):
             guard phase == .down else { return .none }
@@ -385,7 +391,9 @@ class ShortcutExecutor {
         if let buttonNumber = spec.buttonNumber {
             event.setIntegerValueField(.mouseEventButtonNumber, value: buttonNumber)
         }
-        event.flags = InputProcessor.shared.combinedModifierFlags(physicalModifiers: inputModifiers)
+        event.flags = modifierFlagsProvider?.combinedModifierFlags(physicalModifiers: inputModifiers)
+            ?? inputModifiers
+            ?? CGEventSource.flagsState(.combinedSessionState)
         event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
         notifyOrPostMouseEvent(event)
         return createdSessionID
@@ -485,7 +493,9 @@ class ShortcutExecutor {
         if let buttonNumber = spec.buttonNumber {
             event.setIntegerValueField(.mouseEventButtonNumber, value: buttonNumber)
         }
-        event.flags = InputProcessor.shared.combinedModifierFlags(physicalModifiers: context.modifiers)
+        // context.modifiers 非可选, provider 未接线时直接退化为它
+        event.flags = modifierFlagsProvider?.combinedModifierFlags(physicalModifiers: context.modifiers)
+            ?? context.modifiers
         event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
         notifyOrPostMouseEvent(event)
     }

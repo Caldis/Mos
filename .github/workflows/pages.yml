@@ -28,14 +28,14 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: website/.nvmrc
           cache: npm
           cache-dependency-path: website/package-lock.json
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Install website dependencies
         run: npm ci
@@ -44,6 +44,16 @@ jobs:
       - name: Build website artifact
         run: npm run build
         working-directory: website
+        env:
+          # Wall backend — public values injected at static-export build time.
+          # Leaving the Turnstile key unset keeps the widget inert (and the
+          # wall on its local-seed fallback). Set the WALL_TURNSTILE_SITE_KEY
+          # repo variable to enable it.
+          NEXT_PUBLIC_SERVER_URL: https://mos-api.caldis.me
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.WALL_TURNSTILE_SITE_KEY }}
+          # Authenticated build-time fetch of the latest release (5000/hr) so the
+          # version number is baked into the static page; see app/page.tsx.
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
@@ -61,4 +71,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -1,5 +1,5 @@
 import Script from "next/script";
-import { IBM_Plex_Mono, Space_Grotesk, Syne } from "next/font/google";
+import { Caveat, IBM_Plex_Mono, Space_Grotesk, Syne } from "next/font/google";
 import "./globals.css";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "./site";
 import { Providers } from "./providers";
@@ -20,6 +20,13 @@ const fontMono = IBM_Plex_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+});
+
+// Handwritten face for the sticky-note wall (/wall).
+const fontHand = Caveat({
+  variable: "--font-hand",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const GA_ID = "G-9M7WPLB8BR";
@@ -214,7 +221,7 @@ export default function RootLayout({
           <style>{`html.js .reveal{opacity:1!important;transform:none!important;filter:none!important}`}</style>
         </noscript>
       </head>
-      <body className={`${fontDisplay.variable} ${fontBody.variable} ${fontMono.variable} antialiased`}>
+      <body className={`${fontDisplay.variable} ${fontBody.variable} ${fontMono.variable} ${fontHand.variable} antialiased`}>
         <Providers>{children}</Providers>
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}

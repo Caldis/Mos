@@ -9,10 +9,25 @@
 import Cocoa
 
 class Interceptor {
-    
+
     private var keeper: Timer?
     private var _eventTapRef: CFMachPort?
     private var _runLoopSourceRef: CFRunLoopSource?
+
+    /// keeper 触发的自动重启时间戳, 仅保留冷却窗口内的记录
+    private var autoRestartHistory: [Date] = []
+
+    // 防自锁: 主线程被阻塞时 (如 TCC 权限弹窗挂起同步文件调用), active tap 无响应,
+    // 系统超时禁用 tap 后输入才恢复; keeper 若盲目重启会把刚恢复的输入再次冻住,
+    // 用户永远点不到弹窗. 窗口期内重启达到上限即进入冷却, 让系统输入保持可用.
+    static let autoRestartWindow: TimeInterval = 60
+    static let autoRestartLimit = 3
+
+    /// 纯函数: 窗口期内自动重启次数达到上限 → 冷却 (跳过本轮重启)
+    static func isAutoRestartThrottled(history: [Date], now: Date) -> Bool {
+        let windowStart = now.addingTimeInterval(-autoRestartWindow)
+        return history.filter { $0 > windowStart }.count >= autoRestartLimit
+    }
 
     /// 重启时的额外清理操作 (由调用方注入, 避免 Interceptor 耦合特定子系统)
     /// 注意: 闭包不应捕获 Interceptor 实例, 否则会形成循环引用
@@ -90,6 +105,14 @@ extension Interceptor {
                 return
             }
             if !self.isRunning() {
+                let now = Date()
+                self.autoRestartHistory.removeAll { now.timeIntervalSince($0) >= Self.autoRestartWindow }
+                guard !Self.isAutoRestartThrottled(history: self.autoRestartHistory, now: now) else {
+                    NSLog("Mos: event tap auto-restart throttled (%d restarts within %.0fs), cooling down",
+                          Self.autoRestartLimit, Self.autoRestartWindow)
+                    return
+                }
+                self.autoRestartHistory.append(now)
                 self.restart()
             }
         }

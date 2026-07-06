@@ -5,6 +5,9 @@ website/node_modules
 website/out
 *.tsbuildinfo
 
+# Playwright MCP browser-automation artifacts (screenshots, snapshots, logs)
+.playwright-mcp/
+
 # macOS
 .DS_Store
 
@@ -25,3 +28,10 @@ build/*.zip
 /.agents/scheduled_tasks.lock
 /.claude/worktrees
 /.claude/scheduled_tasks.lock
+/.codex-archives
+
+# Single package manager: npm only (enforced by scripts/only-npm.mjs on preinstall).
+# Block stray lockfiles from other managers so they can't be committed.
+pnpm-lock.yaml
+yarn.lock
+bun.lockb

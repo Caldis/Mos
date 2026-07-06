@@ -264,3 +264,14 @@ public class Utils {
         }
     }
 }
+
+/// DEBUG 下断言当前在主线程; Release 零开销。
+/// 核心事件域 (ScrollCore 热键状态 / InputProcessor 绑定表 / ButtonUtils 缓存) 约定主线程 only,
+/// 当前所有 CGEventTap 与 IOHIDManager 回调均调度于主 RunLoop。固化该隐式约定 (架构评估 P2-1)。
+@inline(__always)
+func assertMainThread(_ message: @autoclosure () -> String = "must run on main thread",
+                      file: StaticString = #fileID, line: UInt = #line) {
+    #if DEBUG
+    assert(Thread.isMainThread, message(), file: file, line: line)
+    #endif
+}

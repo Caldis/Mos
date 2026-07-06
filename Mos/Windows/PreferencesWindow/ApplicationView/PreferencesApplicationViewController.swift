@@ -83,26 +83,14 @@ class PreferencesApplicationViewController: NSViewController {
     @IBAction func removeItemClick(_ sender: NSButton) {
         // 确保选择了行
         guard tableView.selectedRow != -1 else { return }
-        // 捕获将要被删除的 application (引用类型, 数组移除后仍可使用)
-        guard let removedApp = Options.shared.application.applications.get(by: tableView.selectedRow) else { return }
-        // 删除
+        // 删除 (appScroll 用量清理由 LogiUsageBootstrap 的 Options 订阅自动完成)
         Options.shared.application.applications.remove(at: tableView.selectedRow)
-        // 清除该应用所有 appScroll 占用 (codes=[] -> source 移除 -> Logi divert 同步)
-        clearAppUsage(removedApp)
         // 重新加载
         tableView.reloadData()
         // 立即更新空状态显示
         toggleNoDataHint()
         // 更新删除按钮状态
         updateDelButtonState()
-    }
-
-    // MARK: - Logi usage helpers
-    private func clearAppUsage(_ app: Application) {
-        let key = app.path
-        for role: ScrollRole in [.dash, .toggle, .block] {
-            LogiCenter.shared.setUsage(source: .appScroll(key: key, role: role), codes: [])
-        }
     }
 }
 

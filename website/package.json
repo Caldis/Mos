@@ -3,22 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "preinstall": "node scripts/only-npm.mjs",
     "dev": "next dev --turbopack",
     "build": "next build && node scripts/prepare-pages-artifact.mjs",
     "start": "next start",
     "lint": "eslint .",
     "check:ai": "node scripts/verify-ai-readiness.mjs",
-    "check:motion": "node scripts/verify-motion-hydration.mjs"
+    "check:motion": "node scripts/verify-motion-hydration.mjs",
+    "check:wheel": "node scripts/verify-wheel-gesture.mjs"
   },
   "dependencies": {
     "framer-motion": "^11.18.2",
-    "next": "16.2.3",
+    "next": "16.2.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "swr": "^2.3.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^0.1.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -30,6 +31,12 @@
     "typescript": "^5"
   },
   "overrides": {
-    "minimatch": "^10.2.1"
+    "minimatch": "^10.2.1",
+    "@babel/core": "^7.29.6",
+    "js-yaml": "^4.2.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
   }
 }

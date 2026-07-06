@@ -20,6 +20,41 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   --noise-opacity: 0.065;
+
+  /* Unified CJK fallback so 中日韩 text renders consistently across every font
+     slot (display/body/mono/hand) instead of each latin font's own system
+     fallback. Latin is always caught by the primary font first, so this only
+     affects CJK glyphs. */
+  --font-cjk: "PingFang SC", "PingFang TC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Microsoft JhengHei", "Malgun Gothic", "Noto Sans CJK SC", "Noto Sans CJK TC",
+    "Noto Sans CJK JP", "Noto Sans CJK KR", "Noto Sans SC";
+}
+
+/* The handwritten wall face (Caveat) has a very low glyph-fill: its letters sit
+   small inside the em box. CJK has no glyphs in Caveat, so 中文 falls back to
+   PingFang/YaHei — which fill the em box almost completely — and renders visibly
+   larger and heavier than the latin handwriting at the same font-size. Shrink
+   ONLY the CJK glyphs (matched by unicode-range) via size-adjust so they sit at
+   the same optical size as the latin script. Latin never reaches this face —
+   Caveat (var(--font-hand)) catches it first in the .font-hand stack. Systems
+   without any listed face fall through to var(--font-cjk) at full size (graceful
+   degrade); browsers without size-adjust (Safari <17) likewise just see no
+   shrink. */
+@font-face {
+  font-family: "HandCJKAdjust";
+  src: local("PingFang SC"), local("PingFang TC"), local("Hiragino Sans GB"),
+    local("Microsoft YaHei"), local("Microsoft JhengHei"),
+    local("Noto Sans CJK SC"), local("Noto Sans SC");
+  unicode-range: U+3000-303F, U+3040-30FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FF00-FFEF;
+  size-adjust: 75%;
+}
+
+html {
+  /* Reserve the scrollbar's space so locking page scroll (e.g. opening a modal)
+     never hides the scrollbar and reflows the layout wider. No-op for macOS
+     overlay scrollbars; fixes the width jump with classic scrollbars (Windows). */
+  scrollbar-gutter: stable;
 }
 
 html,
@@ -32,6 +67,7 @@ body {
   background: #000;
   font-family:
     var(--font-body),
+    var(--font-cjk),
     ui-sans-serif,
     system-ui,
     -apple-system,
@@ -44,6 +80,20 @@ body {
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.site-brand-title {
+  font-family:
+    var(--font-display, var(--font-body, ui-sans-serif)),
+    var(--font-cjk),
+    var(--font-body),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Helvetica,
+    Arial;
 }
 
 * {
@@ -109,6 +159,16 @@ body::before {
   }
 }
 
+/* Subtle "lub-dub" heartbeat for the support (cat) icon. */
+@keyframes meow-heartbeat {
+  0% { transform: scale(1) translateY(0); }
+  14% { transform: scale(1.24) translateY(-1.5px); }
+  28% { transform: scale(1) translateY(0); }
+  42% { transform: scale(1.14) translateY(-1px); }
+  56% { transform: scale(1) translateY(0); }
+  100% { transform: scale(1) translateY(0); }
+}
+
 @keyframes stroke-in {
   from {
     stroke-dashoffset: 1;
@@ -162,7 +222,8 @@ body::before {
 @layer utilities {
   .font-display {
     font-family:
-      var(--font-display),
+      var(--font-display, var(--font-body, ui-sans-serif)),
+      var(--font-cjk),
       var(--font-body),
       ui-sans-serif,
       system-ui,
@@ -176,6 +237,7 @@ body::before {
   .font-mono {
     font-family:
       var(--font-mono),
+      var(--font-cjk),
       ui-monospace,
       SFMono-Regular,
       Menlo,
@@ -190,9 +252,94 @@ body::before {
     text-wrap: balance;
   }
 
+  .font-hand {
+    font-family: var(--font-hand), "HandCJKAdjust", var(--font-cjk), "Bradley Hand", "Comic Sans MS", cursive;
+  }
+
+  /* Wall control entrance: each floating control slides/fades in from its own edge.
+     Done in CSS (not framer initial/animate) so it plays reliably under React
+     StrictMode's double-mount in dev, identically to production. */
+  @keyframes wall-enter-up {
+    from { opacity: 0; transform: translateY(78px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes wall-enter-down {
+    from { opacity: 0; transform: translateY(-48px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes wall-enter-tl {
+    from { opacity: 0; transform: translate(-54px, -54px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes wall-enter-tr {
+    from { opacity: 0; transform: translate(54px, -54px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes wall-enter-bl {
+    from { opacity: 0; transform: translate(-54px, 54px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes wall-enter-br {
+    from { opacity: 0; transform: translate(54px, 54px); }
+    to { opacity: 1; transform: none; }
+  }
+  /* The 0.3s delay holds each control hidden (opacity:0, via `both`) for a beat after
+     mount, so the starfield begins lighting up first and the chrome slides in after. */
+  .wall-enter-up { animation: wall-enter-up 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+  .wall-enter-down { animation: wall-enter-down 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+  .wall-enter-tl { animation: wall-enter-tl 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+  .wall-enter-tr { animation: wall-enter-tr 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+  .wall-enter-bl { animation: wall-enter-bl 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+  .wall-enter-br { animation: wall-enter-br 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+
+  /* Starfield ignition: the canvas sits on the black viewport and fades up from 0, so
+     the sky reads as pure black at first frame and the stars slowly light up rather
+     than popping in. Opacity-only (no movement) so it's reduced-motion friendly. */
+  @keyframes wall-stars-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .wall-stars-in { animation: wall-stars-in 2.4s ease-out both; }
+
+  /* Dotted backdrop for the wall canvas. Screen-fixed so the rising wave reads the
+     same at any zoom; the note grid sits in the transformed world layer above it. */
+  .wall-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1.3px, transparent 1.3px);
+    background-size: 30px 30px;
+    background-position: center;
+  }
+  /* Upward light wave: a brighter copy of the dots revealed by a band mask that
+     sweeps bottom → top, so the dots glow in a rising wave. */
+  .wall-grid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.5) 1.3px, transparent 1.3px);
+    background-size: 30px 30px;
+    background-position: center;
+    -webkit-mask-image: linear-gradient(to top, transparent, #000 50%, transparent);
+    mask-image: linear-gradient(to top, transparent, #000 50%, transparent);
+    -webkit-mask-size: 100% 55%;
+    mask-size: 100% 55%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    animation: wall-grid-wave 5s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes wall-grid-wave {
+    from {
+      -webkit-mask-position: 0 175%;
+      mask-position: 0 175%;
+    }
+    to {
+      -webkit-mask-position: 0 -75%;
+      mask-position: 0 -75%;
+    }
+  }
+
   .glass {
     background: rgba(8, 9, 14, 0.60);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255, 255, 255, 0.07);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     box-shadow:
@@ -319,5 +466,9 @@ body::before {
   .homebrew-highlight::after {
     animation: none;
     opacity: 0;
+  }
+  /* Reduced motion: skip the fade and show the stars at full brightness immediately. */
+  .wall-stars-in {
+    animation: none;
   }
 }

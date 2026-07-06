@@ -19,7 +19,7 @@ enum InputResult: Equatable {
 /// 统一事件处理器
 /// 从 ButtonUtils 获取绑定配置, 匹配 InputEvent, 执行 ShortcutExecutor
 /// 使用 activeBindings 表跟踪按下中的绑定, 确保 Up 事件正确配对
-class InputProcessor {
+class InputProcessor: ModifierFlagsProviding {
     static let shared = InputProcessor()
     init() { NSLog("Module initialized: InputProcessor") }
 
@@ -50,6 +50,7 @@ class InputProcessor {
 
     /// 清空所有活跃绑定和虚拟修饰键状态 (ButtonCore disable 时调用, 防止状态残留)
     func clearActiveBindings() {
+        assertMainThread()
         for session in activeBindings.values where session.action.executionMode == .stateful {
             ShortcutExecutor.shared.execute(
                 action: session.action,
@@ -90,6 +91,7 @@ class InputProcessor {
     /// - Parameter event: 统一输入事件
     /// - Returns: .consumed 表示事件已处理, .passthrough 表示未匹配
     func process(_ event: InputEvent) -> InputResult {
+        assertMainThread()
         if event.phase == .up {
             // Up 事件: 按 (type, code) 查表, 忽略 modifiers (用户可能已松开修饰键)
             if releaseActiveBinding(for: event) {

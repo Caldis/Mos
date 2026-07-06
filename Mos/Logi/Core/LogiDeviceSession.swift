@@ -219,6 +219,8 @@ class LogiDeviceSession {
     private static let featureHiResWheel: UInt16 = 0x2121
     private static let featureThumbWheel: UInt16 = 0x2150
     private static let featurePointerSpeed: UInt16 = 0x2205
+    /// Haptic feedback (MX Master 4 等). internal: Debug 面板需要引用同一常量.
+    static let featureHaptic: UInt16 = 0x19B0
     private static let hidppShortReportId: UInt8 = 0x10
     private static let hidppLongReportId: UInt8 = 0x11
     private static let hidppErrorFeatureIdx: UInt8 = 0xFF
@@ -1027,6 +1029,7 @@ class LogiDeviceSession {
         guard !handshakeComplete else { return }
         handshakeComplete = true
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+        probeHapticFeature()
     }
 
     /// discoveryInFlight 切换 + 通知. idempotent: 只在状态变化时 post.
@@ -1262,6 +1265,7 @@ class LogiDeviceSession {
     func rediscoverFeatures() {
         cancelInflightDiscovery()
         featureIndex.removeAll()
+        resetHapticDiscoveryState()
         discoveredControls.removeAll()
         reprogInitComplete = false
         handshakeComplete = false  // 允许 markHandshakeComplete 再次 post sessionChanged 以刷右侧面板
@@ -1364,6 +1368,7 @@ class LogiDeviceSession {
         deviceIndex = slot
         // 重置 feature 状态, 等待新一轮 discovery
         featureIndex.removeAll()
+        resetHapticDiscoveryState()  // 新 slot 是另一台设备, haptic 状态/探测守卫必须清零
         discoveredControls.removeAll()
         reprogInitComplete = false
         handshakeComplete = false  // 允许 markHandshakeComplete 再次 post, 使 sidebar/panels 刷新回 loading/ready 切换
@@ -1728,6 +1733,23 @@ class LogiDeviceSession {
             default: return "REPROG.func\(functionId)"
             }
         }
+        if let hapticIdx = self.featureIndex[Self.featureHaptic], featureIndex == hapticIdx {
+            switch functionId {
+            case 0: return "HAPTIC.GetCapabilities()"
+            case 1: return "HAPTIC.GetState()"
+            case 2:
+                if params.count >= 2 {
+                    return "HAPTIC.SetState(\(params[0] & 0x01 != 0 ? "on" : "off"), level=\(params[1]))"
+                }
+                return "HAPTIC.SetState"
+            case 4:
+                let name = params.first.flatMap { id in
+                    HIDPPInfo.hapticWaveforms.first(where: { $0.id == id })?.name
+                } ?? "?"
+                return "HAPTIC.PlayWaveform(\(name))"
+            default: return "HAPTIC.func\(functionId)"
+            }
+        }
         return "Feature[0x\(String(format: "%02X", featureIndex))].func\(functionId)"
     }
 
@@ -1835,6 +1857,26 @@ class LogiDeviceSession {
                 return "REPROG.SetControlReporting ACK"
             }
         }
+        // Haptic responses
+        if let hapticIdx = featureIndex[Self.featureHaptic], featIdx == hapticIdx {
+            switch funcId {
+            case 0:
+                if let mask = Self.parseHapticCapabilitiesMask(report) {
+                    let count = HIDPPInfo.hapticWaveforms.filter { (mask >> UInt32($0.id)) & 1 != 0 }.count
+                    return "HAPTIC.Capabilities: \(count) waveforms, mask=0x\(String(format: "%08X", mask))"
+                }
+                return "HAPTIC.Capabilities"
+            case 1:
+                if let s = Self.parseHapticState(report) {
+                    return "HAPTIC.State: \(s.enabled ? "on" : "off"), level=\(s.level)\(s.fourLevelsOnly ? " (4-level)" : "")"
+                }
+                return "HAPTIC.State"
+            case 2: return "HAPTIC.SetState ACK"
+            case 4: return "HAPTIC.PlayWaveform ACK"
+            default: return "HAPTIC.func\(funcId) response"
+            }
+        }
+
         // SmartShift or other feature notifications
         if let name = findFeatureName(forIndex: featIdx) {
             return "\(name) notification (func=\(funcId))"
@@ -2050,6 +2092,114 @@ class LogiDeviceSession {
         }
     }
 
+    // MARK: - Haptic (0x19B0)
+
+    /// Haptic state / capabilities 响应抵达或本地缓存更新时发出. object = 本 session.
+    static let hapticStateDidChangeNotification = Notification.Name("LogiHapticStateDidChange")
+
+    struct HapticState: Equatable {
+        let enabled: Bool
+        let level: UInt8          // 0-100
+        let fourLevelsOnly: Bool  // 设备仅支持 Off/25/50/75/100 五档
+    }
+
+    /// 最近一次 GetState (fn1) 解析结果; 未查询过为 nil
+    private(set) var hapticState: HapticState? = nil
+    /// GetCapabilities (fn0) 返回的波形支持位掩码 (bit n = waveform ID n); 未查询过为 nil
+    private(set) var hapticWaveformMask: UInt32? = nil
+    private var hapticProbeSent = false
+
+    var debugHapticState: HapticState? { hapticState }
+    var debugHapticWaveformMask: UInt32? { hapticWaveformMask }
+
+    /// 握手完成后探测一次 HAPTIC feature, 让 Debug 面板 FEATURES 表能列出它.
+    /// 不支持的设备 IRoot 返回 index 0 → callback nil, 仅多一条被忽略的请求.
+    private func probeHapticFeature() {
+        guard !hapticProbeSent else { return }
+        hapticProbeSent = true
+        guard featureIndex[Self.featureHaptic] == nil else { return }  // 缓存已含, 无需探测
+        discoverFeature(featureId: Self.featureHaptic) { [weak self] idx in
+            guard let self = self, let idx = idx else { return }
+            self.featureIndex[Self.featureHaptic] = idx
+            Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+            LogiDebugPanel.log("[\(self.deviceInfo.name)] HAPTIC (0x19B0) at index \(String(format: "0x%02X", idx))")
+            NotificationCenter.default.post(name: Self.hapticStateDidChangeNotification, object: self)
+        }
+    }
+
+    /// 查询 capabilities (fn0) + 当前状态 (fn1); 响应在 handleInputReport 解析后发通知
+    func hapticRefreshInfo() {
+        withHapticFeature { [weak self] idx in
+            self?.sendRequest(featureIndex: idx, functionId: 0)
+            self?.sendRequest(featureIndex: idx, functionId: 1)
+        }
+    }
+
+    /// 播放固件预置波形 (fn4). 波形内容 (时长/频率) 由固件内置, 协议无参数可调.
+    func hapticPlay(waveformId: UInt8) {
+        withHapticFeature { [weak self] idx in
+            self?.sendRequest(featureIndex: idx, functionId: 4, params: [waveformId])
+        }
+    }
+
+    /// 设置全局强度 (fn2, 设备级状态, 非单次播放参数).
+    /// level=0 按 Solaar 约定写 [disable, 50]; 写后回读 GetState 校准 UI.
+    func hapticSetLevel(_ level: UInt8) {
+        let params = Self.hapticSetLevelParams(level)
+        withHapticFeature { [weak self] idx in
+            guard let self = self else { return }
+            self.sendRequest(featureIndex: idx, functionId: 2, params: params)
+            self.sendRequest(featureIndex: idx, functionId: 1)
+        }
+    }
+
+    /// fn0 GetCapabilities 响应: payload[4..7] = 波形支持位掩码 (BE), 即 report bytes [8..11]
+    private static func parseHapticCapabilitiesMask(_ report: UnsafeBufferPointer<UInt8>) -> UInt32? {
+        guard report.count >= 12 else { return nil }
+        return (UInt32(report[8]) << 24) | (UInt32(report[9]) << 16)
+             | (UInt32(report[10]) << 8) | UInt32(report[11])
+    }
+
+    /// fn1 GetState 响应: byte[4] bit0 = 开关, byte[5] = 强度 0-100, byte[6] bit0 = 四档设备
+    private static func parseHapticState(_ report: UnsafeBufferPointer<UInt8>) -> HapticState? {
+        guard report.count >= 7 else { return nil }
+        return HapticState(
+            enabled: report[4] & 0x01 != 0,
+            level: report[5],
+            fourLevelsOnly: report[6] & 0x01 != 0
+        )
+    }
+
+    /// fn2 SetState 参数编码: level=0 → [disable, 50%] (Solaar 约定), 其余 clamp 到 100
+    private static func hapticSetLevelParams(_ level: UInt8) -> [UInt8] {
+        let clamped = min(level, 100)
+        return clamped == 0 ? [0x00, 0x32] : [0x01, clamped]
+    }
+
+    /// rediscover / 切 slot 会清空 featureIndex, haptic 的探测守卫与缓存状态必须一并复位,
+    /// 否则 Haptic 行永久消失 (probe 不再发) 或跨设备读到脏 state.
+    private func resetHapticDiscoveryState() {
+        hapticProbeSent = false
+        hapticState = nil
+        hapticWaveformMask = nil
+    }
+
+    private func withHapticFeature(_ body: @escaping (UInt8) -> Void) {
+        if let idx = featureIndex[Self.featureHaptic] {
+            body(idx)
+        } else {
+            discoverFeature(featureId: Self.featureHaptic) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    self?.showFeatureNotAvailable("Haptic")
+                    return
+                }
+                self.featureIndex[Self.featureHaptic] = idx
+                Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+                body(idx)
+            }
+        }
+    }
+
     /// 显示设备不支持某功能的 Toast 提示
     private func showFeatureNotAvailable(_ featureName: String) {
         let message = String(format: NSLocalizedString("featureNotAvailable", comment: ""),
@@ -2255,6 +2405,22 @@ class LogiDeviceSession {
                 state: state
             )
         }
+    }
+
+    internal static func parseHapticCapabilitiesMaskForTests(_ bytes: [UInt8]) -> UInt32? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseHapticCapabilitiesMask(report)
+        }
+    }
+
+    internal static func parseHapticStateForTests(_ bytes: [UInt8]) -> HapticState? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseHapticState(report)
+        }
+    }
+
+    internal static func hapticSetLevelParamsForTests(_ level: UInt8) -> [UInt8] {
+        return hapticSetLevelParams(level)
     }
 
     #endif
@@ -2474,6 +2640,28 @@ class LogiDeviceSession {
                     handleGetControlReportingResponse(report)
                 default: break  // ACK 等直接忽略, 不当作 button event
                 }
+            }
+            return
+        }
+
+        // Haptic (0x19B0) responses: fn0=GetCapabilities, fn1=GetState; fn2/fn4 仅为 ACK
+        if let hapticIdx = featureIndex[Self.featureHaptic], featureIdx == hapticIdx {
+            switch functionId {
+            case 0:
+                guard let mask = Self.parseHapticCapabilitiesMask(report) else { break }
+                hapticWaveformMask = mask
+                let names = HIDPPInfo.hapticWaveforms
+                    .filter { (mask >> UInt32($0.id)) & 1 != 0 }
+                    .map { $0.name }
+                LogiDebugPanel.log("[\(deviceInfo.name)] HAPTIC capabilities: \(names.count) waveforms [\(names.joined(separator: ", "))]")
+                NotificationCenter.default.post(name: Self.hapticStateDidChangeNotification, object: self)
+            case 1:
+                guard let state = Self.parseHapticState(report) else { break }
+                hapticState = state
+                LogiDebugPanel.log("[\(deviceInfo.name)] HAPTIC state: \(state.enabled ? "on" : "off"), level=\(state.level)\(state.fourLevelsOnly ? " (4-level device)" : "")")
+                NotificationCenter.default.post(name: Self.hapticStateDidChangeNotification, object: self)
+            default:
+                break  // SetState / PlayWaveform 的 ACK
             }
             return
         }
@@ -2906,6 +3094,9 @@ class LogiDeviceSession {
         #endif
         primeFromRegistry()
         LogiDebugPanel.log("[\(deviceInfo.name)] Init complete, listening for button events")
+        // 正常 init 终点直接赋值 handshakeComplete, 不经过 markHandshakeComplete;
+        // haptic 探测必须在此单独触发 (probeHapticFeature 自带 once 守卫, 重复调用安全).
+        probeHapticFeature()
     }
 
     private var queriedControlStates: [QueriedControlState] {

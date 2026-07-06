@@ -18,6 +18,8 @@ final class InputProcessorTests: XCTestCase {
         ScrollCore.shared.dashKeyHeld = false
         ScrollCore.shared.toggleKeyHeld = false
         ScrollCore.shared.blockKeyHeld = false
+        ShortcutExecutor.shared.scrollActionPort = ScrollCore.shared
+        ShortcutExecutor.shared.modifierFlagsProvider = InputProcessor.shared
     }
 
     override func tearDown() {
@@ -455,7 +457,7 @@ final class InputProcessorTests: XCTestCase {
             type: .mouse,
             code: 1007,
             modifiers: 0,
-            displayComponents: ["[Logi]", "Forward Button"],
+            displayComponents: ["[Logi]", "Forward"],
             deviceFilter: nil
         )
         let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollToggle", isEnabled: true)
@@ -480,7 +482,7 @@ final class InputProcessorTests: XCTestCase {
             type: .mouse,
             code: 1007,
             modifiers: 0,
-            displayComponents: ["[Logi]", "Forward Button"],
+            displayComponents: ["[Logi]", "Forward"],
             deviceFilter: nil
         )
         let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "mosScrollToggle", isEnabled: true)
