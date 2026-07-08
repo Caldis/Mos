@@ -102,6 +102,10 @@ class LogiDeviceSession {
     private(set) var receiverPairedDevices: [ReceiverPairedDevice] = []
     private var pendingSlotPings: Set<UInt8> = []
     private var receiverEnumPhase: Int = 0  // 0=idle, 1=pinging, 2=querying info
+    /// 启动枚举后, 巡检游标默认选择推迟到 device-info 到齐/超时再做一次 (prefer-mouse, 不锁最低号).
+    private var pendingInitialTargetSelection: Bool = false
+    private var pendingDeviceInfoSlots: Set<UInt8> = []
+    private static let initialTargetSelectionTimeout: TimeInterval = 1.5
 
     // MARK: - Report Buffer
     private var reportBufferPtr: UnsafeMutablePointer<UInt8>?
@@ -240,6 +244,9 @@ class LogiDeviceSession {
     private static let receiverPairingInfo: UInt8 = 0xB5
     private static let pairingInfoDeviceInfo: UInt8 = 0x20
     private static let pairingInfoDeviceName: UInt8 = 0x40
+
+    // Receiver device types (register 0xB5 report[10])
+    static let receiverDeviceTypeMouse: UInt8 = 0x02
 
     private struct ReportingResponse {
         let cid: UInt16
@@ -801,6 +808,16 @@ class LogiDeviceSession {
         return .retarget(incomingDeviceIndex)
     }
 
+    /// 巡检游标默认选择: 优先在线的鼠标 slot, 无鼠标回退首个在线 slot, 全空返回 nil.
+    /// 取代 finishPingPhase 旧的"锁编号最低在线 slot"逻辑, 避免锁到键盘/另一只鼠标.
+    static func chooseReceiverTargetSlot(devices: [ReceiverPairedDevice]) -> UInt8? {
+        let connected = devices.filter { $0.isConnected }
+        if let mouse = connected.first(where: { $0.deviceType == receiverDeviceTypeMouse }) {
+            return mouse.slot
+        }
+        return connected.first?.slot
+    }
+
     #if DEBUG
     internal static func receiverTargetIsConnectedForTests(
         connectionMode: ConnectionMode,
@@ -922,6 +939,8 @@ class LogiDeviceSession {
 
     func teardown() {
         LogiDebugPanel.log("[\(deviceInfo.name)] Teardown")
+        pendingInitialTargetSelection = false
+        pendingDeviceInfoSlots.removeAll()
         discoveryTimer?.invalidate()
         discoveryTimer = nil
         controlInfoQueryTimer?.invalidate()
@@ -1372,6 +1391,9 @@ class LogiDeviceSession {
     /// 切换目标 slot (debug 面板交互/自动选择)
     func setTargetSlot(slot: UInt8) {
         guard connectionMode == .receiver, slot >= 1, slot <= 6 else { return }
+        // 手动/主动 target 覆盖启动时的默认巡检游标选择, 取消 pending 的自动选择,
+        // 防止 device-info 到齐/超时后的回调覆盖此次显式选择.
+        pendingInitialTargetSelection = false
         cancelInflightDiscovery()
         deviceIndex = slot
         // 重置 feature 状态, 等待新一轮 discovery
@@ -1565,31 +1587,64 @@ class LogiDeviceSession {
         let connectedSlots = receiverPairedDevices.filter { $0.isConnected }
         LogiDebugPanel.log("[\(deviceInfo.name)] Ping complete: \(connectedSlots.count)/6 slots connected")
 
-        // 查询已连接设备的详细信息 (register 0xB5, 可能在 Bolt receiver 上失败)
-        for dev in connectedSlots {
-            queryReceiverDeviceInfo(slot: dev.slot)
-        }
-
-        // 自动 target 第一个在线设备并启动 feature discovery
-        if let firstConnected = connectedSlots.first {
-            deviceIndex = firstConnected.slot
-            featureIndex.removeAll()
-            discoveredControls.removeAll()
-            reprogInitComplete = false
-            LogiDebugPanel.log("[\(deviceInfo.name)] Auto-targeted slot \(firstConnected.slot)")
-
-            let tag = "[\(deviceInfo.name):slot\(firstConnected.slot)]"
-            LogiDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
-            startFreshDiscovery(tag: tag)
-        } else {
+        guard !connectedSlots.isEmpty else {
             receiverEnumPhase = 0
             LogiDebugPanel.log("[\(deviceInfo.name)] No devices found on receiver")
             // 无设备 -> 不会进 peripheral discovery, 此处必须清 inflight 防止 spinner 一直转.
             setDiscoveryInFlight(false)
+            // Receiver dongle 本身的握手 = slot ping 完成.
+            handshakeComplete = true
+            NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+            return
         }
 
-        // Receiver dongle 本身的握手 = slot ping 完成. 后续 peripheral discovery 状态与此独立.
+        // 查询已连接设备的详细信息 (register 0xB5, 可能在 Bolt receiver 上失败).
+        // 巡检游标默认选择需要 deviceType 才能 prefer-mouse, 因此推迟到 device-info 到齐
+        // (或超时) 后再选一次, 避免像旧逻辑那样锁到编号最低的 slot (可能是键盘/另一只鼠标).
+        pendingInitialTargetSelection = true
+        pendingDeviceInfoSlots = Set(connectedSlots.map { $0.slot })
+        for dev in connectedSlots {
+            queryReceiverDeviceInfo(slot: dev.slot)
+        }
+
+        // 超时兜底: device-info 始终不回 (如 Bolt register 失败) 时,
+        // chooseReceiverTargetSlot 在无类型信息下回退首个在线 slot, 不退化.
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.initialTargetSelectionTimeout) { [weak self] in
+            guard let self = self, self.pendingInitialTargetSelection else { return }
+            LogiDebugPanel.log("[\(self.deviceInfo.name)] Device-info wait timed out; selecting target with known types")
+            self.selectInitialReceiverTargetAndDiscover()
+        }
+
+        // Receiver dongle 本身的握手 = slot ping 完成. discovery 保持 inflight 直到选定 target.
         handshakeComplete = true
+        NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+    }
+
+    /// device-info 到齐或超时后, 选定巡检游标并启动 feature discovery (只执行一次).
+    private func selectInitialReceiverTargetAndDiscover() {
+        guard pendingInitialTargetSelection else { return }
+        pendingInitialTargetSelection = false
+        pendingDeviceInfoSlots.removeAll()
+
+        guard let slot = Self.chooseReceiverTargetSlot(devices: receiverPairedDevices) else {
+            // 选择窗口内全部断开 -> 无目标, 清 inflight 防止 spinner 卡住.
+            receiverEnumPhase = 0
+            LogiDebugPanel.log("[\(deviceInfo.name)] No connected devices at target selection")
+            setDiscoveryInFlight(false)
+            NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+            return
+        }
+
+        deviceIndex = slot
+        featureIndex.removeAll()
+        discoveredControls.removeAll()
+        reprogInitComplete = false
+        let selected = receiverPairedDevices.first(where: { $0.slot == slot })
+        LogiDebugPanel.log("[\(deviceInfo.name)] Auto-targeted slot \(slot) (\(selected?.deviceTypeName ?? "--"))")
+
+        let tag = "[\(deviceInfo.name):slot\(slot)]"
+        LogiDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
+        startFreshDiscovery(tag: tag)
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
     }
 
@@ -1610,6 +1665,13 @@ class LogiDeviceSession {
                 receiverPairedDevices[idx].deviceType = report[10]
                 LogiDebugPanel.log(device: deviceInfo.name, type: .info,
                     message: "Slot \(slot) info: type=\(receiverPairedDevices[idx].deviceTypeName) wirelessPID=\(String(format: "0x%04X", receiverPairedDevices[idx].wirelessPID))")
+                // 巡检游标默认选择等待 device-info: 该 slot 类型已知, 若全部到齐则立即选定.
+                if pendingInitialTargetSelection {
+                    pendingDeviceInfoSlots.remove(slot)
+                    if pendingDeviceInfoSlots.isEmpty {
+                        selectInitialReceiverTargetAndDiscover()
+                    }
+                }
             } else if infoType == Self.pairingInfoDeviceName && report.count > 7 {
                 // [entityIdx, 0x40, nameLen, char0, char1, ...]
                 let nameLen = min(Int(report[6]), report.count - 7)
