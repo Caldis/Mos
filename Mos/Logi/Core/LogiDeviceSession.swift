@@ -1465,8 +1465,10 @@ class LogiDeviceSession {
     /// 接管已由 sweep 常驻, 点击只为"看哪个 slot 的 features", 无需重发现.
     func inspectSlot(_ slot: UInt8) {
         guard connectionMode == .receiver, slot >= 1, slot <= 6 else { return }
-        let discovered = (slotStates[slot]?.reprogInitComplete ?? false)
-            && !(slotStates[slot]?.discoveredControls.isEmpty ?? true)
+        // 判"是否已发现过"用 discoveredControls 而非 reprogInitComplete: 非鼠标 slot(键盘)
+        // 被排除出接管集时 reprogInitComplete 置了 false, 但其控件已发现过、可直接读缓存,
+        // 不该因此每次都重发现.
+        let discovered = !(slotStates[slot]?.discoveredControls.isEmpty ?? true)
         let idle = !receiverSweepActive && pendingDiscovery.isEmpty
             && discoveryTimer == nil && controlInfoQueryTimer == nil && reportingQueryTimer == nil
         guard discovered, idle else {
