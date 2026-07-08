@@ -232,7 +232,8 @@ class LogiDeviceSession {
         var protocolMajor: UInt8 = 0
         var protocolMinor: UInt8 = 0
         var wirelessPID: UInt16 = 0
-        var deviceType: UInt8 = 0
+        var deviceType: UInt8 = 0              // register 0xB5 枚举 (部分接收器不返回)
+        var hidppDeviceType: UInt8? = nil      // feature 0x0005 getDeviceType 枚举 (权威, 与上面不同)
         var name: String = ""
         var lastError: String? = nil
 
@@ -251,6 +252,36 @@ class LogiDeviceSession {
             case 0x09: return "Touchpad"
             default: return deviceType == 0 ? "--" : "0x\(String(format: "%02X", deviceType))"
             }
+        }
+
+        /// feature 0x0005 getDeviceType 的类型名 (权威). 原始字节一并显示便于核对枚举映射.
+        var hidppDeviceTypeName: String? {
+            guard let t = hidppDeviceType else { return nil }
+            let name: String
+            switch t {
+            case 0x00: name = "Keyboard"
+            case 0x01: name = "Remote Control"
+            case 0x02: name = "Numpad"
+            case 0x03: name = "Mouse"
+            case 0x04: name = "Touchpad"
+            case 0x05: name = "Trackball"
+            case 0x06: name = "Presenter"
+            case 0x07: name = "Receiver"
+            case 0x08: name = "Headset"
+            case 0x09: name = "Webcam"
+            case 0x0A: name = "Steering Wheel"
+            case 0x0B: name = "Joystick"
+            case 0x0C: name = "Gamepad"
+            case 0x0D: name = "Dock"
+            case 0x0E: name = "Speaker"
+            case 0x0F: name = "Microphone"
+            case 0x10: name = "Illumination Light"
+            case 0x11: name = "Programmable Controller"
+            case 0x12: name = "Car Sim Pedals"
+            case 0x13: name = "Adapter"
+            default: name = "Unknown"
+            }
+            return String(format: "%@ (0x%02X)", name, t)
         }
     }
 
@@ -292,6 +323,9 @@ class LogiDeviceSession {
     static let featureSmartShiftEnhanced: UInt16 = 0x2111
     /// Force Sensing Button (MX Master 4 压感按钮): 调节按压激活阈值. internal: Debug 面板需引用.
     static let featureForceSensing: UInt16 = 0x19C0
+    /// DeviceNameType (0x0005): fn2 getDeviceType 返回权威设备类型枚举. 用于接收器 slot 显示类型
+    /// (register 0xB5 在部分接收器失败时的替代). 注: 0x0005 的类型枚举与 register 0xB5 不同.
+    static let featureDeviceNameType: UInt16 = 0x0005
     private static let hidppShortReportId: UInt8 = 0x10
     private static let hidppLongReportId: UInt8 = 0x11
     private static let hidppErrorFeatureIdx: UInt8 = 0xFF
@@ -2445,6 +2479,7 @@ class LogiDeviceSession {
     /// 面板可选功能探测清单. 前三个有专属 context (haptic / scroll force / force sensing),
     /// 其余仅需在 FEATURES 表列出 + 命名/通用 action. 顺序无关紧要, 但必须逐个串行探测.
     private static let optionalProbeFeatures: [UInt16] = [
+        featureDeviceNameType,     // 0x0005 (查权威设备类型, 见 probeNextOptionalFeature)
         featureHaptic,             // 0x19B0
         featureSmartShiftEnhanced, // 0x2111
         featureForceSensing,       // 0x19C0
@@ -2481,6 +2516,7 @@ class LogiDeviceSession {
             if featureIndex[fid] != nil {
                 // 缓存已含: 无需探测, 直接发对应通知让 UI 补行/建 context, 继续下一个
                 postOptionalFeatureNotification(fid)
+                if fid == Self.featureDeviceNameType { requestDeviceTypeIfNeeded() }
                 continue
             }
             discoverFeature(featureId: fid) { [weak self] idx in
@@ -2490,6 +2526,7 @@ class LogiDeviceSession {
                     Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
                     LogiDebugPanel.log("[\(self.deviceInfo.name)] feature \(String(format: "0x%04X", fid)) at index \(String(format: "0x%02X", idx))")
                     self.postOptionalFeatureNotification(fid)
+                    if fid == Self.featureDeviceNameType { self.requestDeviceTypeIfNeeded() }
                 }
                 self.probeNextOptionalFeature()  // 串行: 本次 discovery 完成后再发下一个
             }
@@ -2498,6 +2535,18 @@ class LogiDeviceSession {
         // 可选功能探测链走完(pendingDiscovery 此刻已空): 排空热插拔期间入队的 slot.
         // 探测链较长(~18 个 feature, 含超时), 期间设备重连很常见, 必须在此排空避免搁置.
         pumpPendingDivertQueue()
+    }
+
+    /// 当前巡检 slot 的权威类型(0x0005)未知时, 发 getDeviceType(fn2). 响应在 handleInputReport 解析.
+    /// fire-and-forget: getDeviceType 是 fn2 响应, 不占用 getFeature 的 pendingDiscovery, 不阻塞探测链.
+    /// 纯显示用, 不影响接管/divert(那条路径用 slotLooksLikeMouse 的控件判定).
+    private func requestDeviceTypeIfNeeded() {
+        guard connectionMode == .receiver,
+              let idx = featureIndex[Self.featureDeviceNameType] else { return }
+        let slot = deviceIndex
+        guard let devIdx = receiverPairedDevices.firstIndex(where: { $0.slot == slot }),
+              receiverPairedDevices[devIdx].hidppDeviceType == nil else { return }
+        sendRequest(featureIndex: idx, functionId: 2)  // getDeviceType
     }
 
     /// 每个 feature 发现后发对应通知: 有专属 context 的走各自通知 (面板据此补行 + 建 context),
@@ -3256,6 +3305,19 @@ class LogiDeviceSession {
                     handleGetControlReportingResponse(report)
                 default: break  // ACK 等直接忽略, 不当作 button event
                 }
+            }
+            return
+        }
+
+        // DeviceNameType (0x0005) fn2 getDeviceType 响应: report[4] = 权威设备类型枚举.
+        // 纯显示用: 存到当前 slot 的 hidppDeviceType, 刷新 sidebar. (deviceIndex 此刻已 scoped 到该 slot.)
+        if let dntIdx = featureIndex[Self.featureDeviceNameType], featureIdx == dntIdx, functionId == 2 {
+            if report.count > 4,
+               let devIdx = receiverPairedDevices.firstIndex(where: { $0.slot == deviceIndex }) {
+                receiverPairedDevices[devIdx].hidppDeviceType = report[4]
+                LogiDebugPanel.log(device: deviceInfo.name, type: .info,
+                    message: "Slot \(deviceIndex) device type: \(receiverPairedDevices[devIdx].hidppDeviceTypeName ?? "--")")
+                NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
             }
             return
         }

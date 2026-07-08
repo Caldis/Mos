@@ -197,6 +197,26 @@ final class LogiReceiverConnectionStateTests: XCTestCase {
         )
     }
 
+    // MARK: - hidppDeviceTypeName (feature 0x0005 getDeviceType 枚举映射)
+
+    func testHidppDeviceTypeNameMapping() {
+        func name(_ t: UInt8) -> String? {
+            var d = LogiDeviceSession.ReceiverPairedDevice(slot: 1)
+            d.hidppDeviceType = t
+            return d.hidppDeviceTypeName
+        }
+        XCTAssertEqual(name(0x00), "Keyboard (0x00)")
+        XCTAssertEqual(name(0x03), "Mouse (0x03)")
+        XCTAssertEqual(name(0x05), "Trackball (0x05)")
+        XCTAssertEqual(name(0x06), "Presenter (0x06)")
+        XCTAssertEqual(name(0x99), "Unknown (0x99)")
+    }
+
+    func testHidppDeviceTypeNameNilWhenUnknown() {
+        let d = LogiDeviceSession.ReceiverPairedDevice(slot: 1)
+        XCTAssertNil(d.hidppDeviceTypeName)  // 未查询 -> nil
+    }
+
     // MARK: - controlsLookLikeMouse (类型不可知接收器上据控件识别鼠标)
 
     func testControlsLookLikeMouseWithLeftAndRight() {

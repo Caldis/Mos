@@ -2553,7 +2553,13 @@ extension LogiDebugPanel: NSOutlineViewDelegate {
             let dev = paired[idx]
             let baseText: String
             if dev.isConnected {
-                baseText = dev.name.isEmpty ? "Slot \(dev.slot)" : dev.name
+                let base = dev.name.isEmpty ? "Slot \(dev.slot)" : dev.name
+                // 权威类型(feature 0x0005)已知则附上; 首次巡检该 slot 时查得(见 requestDeviceTypeIfNeeded).
+                if let type = dev.hidppDeviceTypeName {
+                    baseText = "\(base) · \(type)"
+                } else {
+                    baseText = base
+                }
                 label.textColor = .labelColor
             } else {
                 // 空 slot: 视觉显式降级, 暗示不可点击.
