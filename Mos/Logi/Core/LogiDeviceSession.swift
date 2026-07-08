@@ -105,6 +105,9 @@ class LogiDeviceSession {
     /// 非周期轮询, 不违红线(§2). 按 slot 各自去抖.
     private var receiverTakeoverDebounce: [UInt8: DispatchWorkItem] = [:]
     private static let receiverTakeoverDebounceDelay: TimeInterval = 0.4
+    /// 已探测过可选功能的 slot: 面板巡检切换时每 slot 只探一次, 避免每次切都重探(拖慢/撞在飞探测).
+    /// slot 重新发现(sweep / setTargetSlot)时清除, 以便重探.
+    private var receiverOptionalProbedSlots: Set<UInt8> = []
 
     // MARK: - Receiver Enumeration State
     private(set) var receiverPairedDevices: [ReceiverPairedDevice] = []
@@ -981,6 +984,7 @@ class LogiDeviceSession {
         receiverManagedSlots.removeAll()
         pendingDivertSlots.removeAll()
         receiverInspectionSlot = nil
+        receiverOptionalProbedSlots.removeAll()
         receiverTakeoverDebounce.values.forEach { $0.cancel() }
         receiverTakeoverDebounce.removeAll()
         discoveryTimer?.invalidate()
@@ -1441,6 +1445,7 @@ class LogiDeviceSession {
         pendingInitialTargetSelection = false
         cancelInflightDiscovery()
         deviceIndex = slot
+        receiverOptionalProbedSlots.remove(slot)  // 完整重发现 -> 可选功能允许重探
         // 重置 feature 状态, 等待新一轮 discovery
         featureIndex.removeAll()
         resetOptionalProbeState()  // 新 slot 是另一台设备, 探测守卫与所有缓存状态必须清零
@@ -1466,25 +1471,31 @@ class LogiDeviceSession {
     func inspectSlot(_ slot: UInt8) {
         guard connectionMode == .receiver, slot >= 1, slot <= 6 else { return }
         // 判"是否已发现过"用 discoveredControls 而非 reprogInitComplete: 非鼠标 slot(键盘)
-        // 被排除出接管集时 reprogInitComplete 置了 false, 但其控件已发现过、可直接读缓存,
-        // 不该因此每次都重发现.
+        // 被排除出接管集时 reprogInitComplete 置了 false, 但其控件已发现过、可直接读缓存.
+        // 关键: idle 不参与"轻/重"决策 —— 已发现的 slot 永远走轻量, 即使此刻正好有别的 slot
+        // 的可选功能探测在飞(否则会每次撞上探测链而误判成"需重发现"). idle 只用来门控本次探测.
         let discovered = !(slotStates[slot]?.discoveredControls.isEmpty ?? true)
-        let idle = !receiverSweepActive && pendingDiscovery.isEmpty
-            && discoveryTimer == nil && controlInfoQueryTimer == nil && reportingQueryTimer == nil
-        guard discovered, idle else {
+        guard discovered else {
             setTargetSlot(slot: slot)
             rediscoverFeatures()
             return
         }
-        // 轻量切换: 控件已缓存, 只切游标; 可选功能上下文按 §4.3 是单值, 需 reset 后重探该 slot.
+        // 轻量切换: 控件已缓存, 只切游标读缓存, 永不重跑 REPROG.
         pendingInitialTargetSelection = false
         deviceIndex = slot
-        resetOptionalProbeState()
-        resetHapticDiscoveryState()
-        resetScrollForceDiscoveryState()
-        resetForceSensingState()
         setDiscoveryInFlight(false)
-        probeOptionalFeatures()  // 缓存命中的 feature 直接发通知; 未探过的串行探测该 slot 可选功能
+        // 可选功能每个 slot 只探一次, 且仅在空闲时(避免每次切都重探; 本接收器 getFeature 可能
+        // 超时, 重探会拖慢并让后续点击撞上在飞探测). 未探过 + 空闲才 reset+探.
+        let idle = !receiverSweepActive && pendingDiscovery.isEmpty
+            && discoveryTimer == nil && controlInfoQueryTimer == nil && reportingQueryTimer == nil
+        if idle && !receiverOptionalProbedSlots.contains(slot) {
+            receiverOptionalProbedSlots.insert(slot)
+            resetOptionalProbeState()
+            resetHapticDiscoveryState()
+            resetScrollForceDiscoveryState()
+            resetForceSensingState()
+            probeOptionalFeatures()
+        }
         LogiDebugPanel.log("[\(deviceInfo.name)] Inspecting slot \(slot) (cached, no REPROG rediscover)")
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
     }
@@ -1744,6 +1755,7 @@ class LogiDeviceSession {
         }
         let slot = pendingDivertSlots.removeFirst()
         deviceIndex = slot
+        receiverOptionalProbedSlots.remove(slot)  // 全新发现 -> 可选功能允许重探
         // 全新发现: 清该 slot 的 per-slot 发现状态(startup 本为默认, 显式清以支持 Phase 4 重扫).
         featureIndex.removeAll()
         discoveredControls.removeAll()
@@ -1822,6 +1834,7 @@ class LogiDeviceSession {
         deviceIndex = mouseSlot ?? receiverInspectionSlot ?? deviceIndex
         // 在最终巡检的那台(鼠标)探测可选功能(haptic/scrollForce 等). 移到此处(而非逐 slot)
         // 才能只探测巡检的鼠标而非 sweep 最后一个 slot. probeOptionalFeatures 自带 once 守卫.
+        receiverOptionalProbedSlots.insert(deviceIndex)  // 巡检游标那台已探, inspectSlot 不重探
         probeOptionalFeatures()
         LogiDebugPanel.log("[\(deviceInfo.name)] Takeover sweep complete: managed=\(receiverManagedSlots.sorted()) cursor=\(deviceIndex)\(mouseSlot != nil ? " (mouse)" : "")")
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
