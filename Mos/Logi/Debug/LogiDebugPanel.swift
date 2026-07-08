@@ -835,11 +835,11 @@ class LogiDebugPanel: NSObject {
             let paired = slot.session.debugReceiverPairedDevices
             let idx = Int(slot.slot) - 1
             guard idx >= 0, idx < paired.count, paired[idx].isConnected else { return }
-            // currentSession likewise derived from selection.
-            slot.session.setTargetSlot(slot: slot.slot)
-            refreshRightPanelsLoading()
-            slot.session.rediscoverFeatures()
-            // 与 rediscoverClicked 行为对齐: 6s 后兜底刷一次, 防止 Bolt 响应丢包导致 UI 卡在 loading.
+            // 轻量巡检切换: 已发现的 slot 只切游标读缓存, 不重跑 REPROG 发现(接管已常驻);
+            // 未发现的 slot inspectSlot 内部回退到完整重发现.
+            slot.session.inspectSlot(slot.slot)
+            refreshRightPanels()
+            // 兜底: 6s 后刷一次(可选功能探测异步 / 回退重发现时防 UI 卡 loading).
             DispatchQueue.main.asyncAfter(deadline: .now() + 6) { [weak self] in
                 self?.refreshSidebar()
                 self?.refreshRightPanels()

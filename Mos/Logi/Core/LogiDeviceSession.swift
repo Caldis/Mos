@@ -1460,6 +1460,33 @@ class LogiDeviceSession {
         LogiDebugPanel.log("[\(deviceInfo.name)] Target slot changed to \(slot)")
     }
 
+    /// 面板巡检切换: slot 已发现过且当前空闲时, 只切游标 + 刷新可选功能上下文, 不重跑 REPROG 发现
+    /// (控件已缓存在 slotState). 否则回退完整 setTargetSlot + rediscoverFeatures.
+    /// 接管已由 sweep 常驻, 点击只为"看哪个 slot 的 features", 无需重发现.
+    func inspectSlot(_ slot: UInt8) {
+        guard connectionMode == .receiver, slot >= 1, slot <= 6 else { return }
+        let discovered = (slotStates[slot]?.reprogInitComplete ?? false)
+            && !(slotStates[slot]?.discoveredControls.isEmpty ?? true)
+        let idle = !receiverSweepActive && pendingDiscovery.isEmpty
+            && discoveryTimer == nil && controlInfoQueryTimer == nil && reportingQueryTimer == nil
+        guard discovered, idle else {
+            setTargetSlot(slot: slot)
+            rediscoverFeatures()
+            return
+        }
+        // 轻量切换: 控件已缓存, 只切游标; 可选功能上下文按 §4.3 是单值, 需 reset 后重探该 slot.
+        pendingInitialTargetSelection = false
+        deviceIndex = slot
+        resetOptionalProbeState()
+        resetHapticDiscoveryState()
+        resetScrollForceDiscoveryState()
+        resetForceSensingState()
+        setDiscoveryInFlight(false)
+        probeOptionalFeatures()  // 缓存命中的 feature 直接发通知; 未探过的串行探测该 slot 可选功能
+        LogiDebugPanel.log("[\(deviceInfo.name)] Inspecting slot \(slot) (cached, no REPROG rediscover)")
+        NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+    }
+
     // MARK: - Receiver Device Enumeration
 
     /// 枚举 receiver 上的配对设备 (ping 所有 slot + 查询设备信息)
@@ -1741,12 +1768,35 @@ class LogiDeviceSession {
         // "已 managed -> ignore" 挡住而不再重新 divert. 断开后重连会由 0x41 重新触发 takeover.
         let stillConnected = receiverPairedDevices.first(where: { $0.slot == slot })?.isConnected ?? false
         if didDivert && stillConnected {
-            receiverManagedSlots.insert(slot)
+            // 只接管像鼠标的 slot (有标准 Left/Right 点击); 键盘/数字键盘/演示器不进接管集 (计划 §8).
+            // 类型不可知的接收器上据实际发现的控件判定. 非鼠标撤销 applyUsage 可能下发的 divert,
+            // 恢复其原生功能 (通常 divertedCIDs 为空, 即无操作).
+            if slotLooksLikeMouse(slot) {
+                receiverManagedSlots.insert(slot)
+            } else {
+                undivertCurrentSlotControls(reason: "not a mouse")
+            }
         }
         if !pendingDivertSlots.isEmpty {
             discoverNextSweepSlot()
         } else {
             finishReceiverSweep()
+        }
+    }
+
+    /// 撤销当前游标 slot 上已下发的 divert, 恢复其原生功能. 用于把非鼠标 slot 排除出接管集.
+    private func undivertCurrentSlotControls(reason: String) {
+        let toUndivert = divertedCIDs
+        if let idx = featureIndex[Self.featureReprogV4] {
+            for cid in toUndivert {
+                setControlReporting(featureIndex: idx, cid: cid, divert: false)
+            }
+        }
+        lastApplied.removeAll()
+        divertedCIDs.removeAll()
+        reprogInitComplete = false
+        if !toUndivert.isEmpty {
+            LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(deviceIndex) excluded from takeover (\(reason)); undiverted \(toUndivert.count) control(s)")
         }
     }
 
