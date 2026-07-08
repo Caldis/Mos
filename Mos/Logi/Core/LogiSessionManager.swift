@@ -109,17 +109,40 @@ internal class LogiSessionManager {
         let vendorId = IOHIDDeviceGetProperty(device, kIOHIDVendorIDKey as CFString) as? Int ?? 0
         let productId = IOHIDDeviceGetProperty(device, kIOHIDProductIDKey as CFString) as? Int ?? 0
         let productName = IOHIDDeviceGetProperty(device, kIOHIDProductKey as CFString) as? String ?? "Unknown"
+        let usagePage = IOHIDDeviceGetProperty(device, kIOHIDPrimaryUsagePageKey as CFString) as? Int ?? 0
+        let usage = IOHIDDeviceGetProperty(device, kIOHIDPrimaryUsageKey as CFString) as? Int ?? 0
 
         LogiDebugPanel.log("[LogitechHID] Device connected: \(productName) (VID: \(String(format: "0x%04X", vendorId)), PID: \(String(format: "0x%04X", productId)))")
 
         // 避免重复会话
         guard sessions[device] == nil else { return }
 
+        // 键盘接口跳过: Mos 对键盘没有 HID++ 用途, 一旦创建会话会在接口上注册
+        // input-report 回调, 使键盘无法进入休眠, 导致背光常亮 (issue #948)。
+        // 不创建 LogiDeviceSession 即可完全不触碰该 HID 接口。
+        guard Self.shouldAttachSession(usagePage: usagePage, usage: usage) else {
+            LogiDebugPanel.log("[LogitechHID] Skipping keyboard interface (keeps device awake): \(productName)")
+            return
+        }
+
         // 创建会话
         let session = LogiDeviceSession(hidDevice: device)
         sessions[device] = session
         session.setup()
         NotificationCenter.default.post(name: Self.sessionChangedNotification, object: nil)
+    }
+
+    /// 决定 Mos 是否应为某条 Logitech HID 接口创建会话。
+    ///
+    /// 键盘接口 (Generic Desktop `0x0001` / Keyboard `0x0006`) 永远不是 HID++ 候选
+    /// (`isHIDPPCandidate` 已为 false), 但 `setup()` 仍会在非候选接口上注册
+    /// input-report 回调。该回调对键盘毫无用处 (`handleInputReport` 只处理
+    /// HID++ 报文 `0x10/0x11`, 键盘不发), 却会让键盘 HID 端点保持活跃, 使其
+    /// 无法休眠、背光常亮。因此对键盘接口整条跳过, 不创建会话。见 issue #948。
+    static func shouldAttachSession(usagePage: Int, usage: Int) -> Bool {
+        // Generic Desktop (0x0001) Keyboard (0x0006)
+        if usagePage == 0x0001 && usage == 0x0006 { return false }
+        return true
     }
 
     private func deviceDisconnected(_ device: IOHIDDevice) {
