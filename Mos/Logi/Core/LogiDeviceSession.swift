@@ -116,6 +116,9 @@ class LogiDeviceSession {
     private var pendingDivertSlots: [UInt8] = []
     /// sweep 结束后路由游标停靠的巡检 slot(prefer-mouse 选定, 最后发现, 负责可选功能探测).
     private var receiverInspectionSlot: UInt8? = nil
+    /// 接管 sweep 是否进行中. 区分"sweep 驱动的逐 slot 发现"与手动 rediscover: 前者完成后
+    /// 推进队列, 后者按原逻辑(仅巡检 slot 探测可选功能). 也用于抑制 sweep 中的 0x41 抢占 retarget.
+    private var receiverSweepActive: Bool = false
 
     // MARK: - Receiver Enumeration State
     private(set) var receiverPairedDevices: [ReceiverPairedDevice] = []
@@ -1141,6 +1144,8 @@ class LogiDeviceSession {
                 self.markHandshakeComplete()
                 NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
                 LogiSessionManager.shared.recomputeAndNotifyActivityState()
+                // 该 slot 无 REPROG(不可 divert), 但仍需推进接管 sweep 到下一个 slot.
+                self.receiverSlotDiscoveryDidFinish(didDivert: false)
                 return
             }
             self.featureIndex[Self.featureReprogV4] = index
@@ -1731,7 +1736,7 @@ class LogiDeviceSession {
         pendingInitialTargetSelection = false
         pendingDeviceInfoSlots.removeAll()
 
-        guard let slot = Self.chooseReceiverTargetSlot(devices: receiverPairedDevices) else {
+        guard let inspectionSlot = Self.chooseReceiverTargetSlot(devices: receiverPairedDevices) else {
             // 选择窗口内全部断开 -> 无目标, 清 inflight 防止 spinner 卡住.
             receiverEnumPhase = 0
             LogiDebugPanel.log("[\(deviceInfo.name)] No connected devices at target selection")
@@ -1740,16 +1745,78 @@ class LogiDeviceSession {
             return
         }
 
+        // 接管集合: 已连接 + 鼠标 + 有绑定的 slot 各自 discovery+divert 常驻接管.
+        // 绑定当前是全局的(UsageRegistry 单一 aggregate), 有任一绑定则所有鼠标进入接管集.
+        let bindingsExist = !LogiCenter.shared.registry.aggregatedCacheIsEmpty
+        let divertSlots = Self.receiverDivertSlots(devices: receiverPairedDevices) { _ in bindingsExist }
+
+        // 巡检 slot 始终发现(面板要显示其 features)且排最后, 让路由游标最终停靠它;
+        // 其余接管 slot 在前, 只做 discovery+divert, 不做可选功能探测(§4.3).
+        receiverInspectionSlot = inspectionSlot
+        var queue = divertSlots.filter { $0 != inspectionSlot }
+        queue.append(inspectionSlot)
+
+        let selected = receiverPairedDevices.first(where: { $0.slot == inspectionSlot })
+        LogiDebugPanel.log("[\(deviceInfo.name)] Takeover sweep: divert=\(divertSlots) inspection=\(inspectionSlot)(\(selected?.deviceTypeName ?? "--")) queue=\(queue)")
+        startReceiverDivertSweep(queue: queue)
+        NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+    }
+
+    // MARK: - Receiver Divert Sweep (§3.1 串行逐 slot 发现)
+
+    /// 启动接管 sweep: 逐 slot 串行 discovery+divert. 一次只发现一个 slot,
+    /// 满足 IRoot 发现响应不带 featureId 的串行约束(§3.1).
+    private func startReceiverDivertSweep(queue: [UInt8]) {
+        receiverSweepActive = true
+        pendingDivertSlots = queue
+        discoverNextSweepSlot()
+    }
+
+    /// 取队首 slot 开始其 discovery; 队空则收尾.
+    private func discoverNextSweepSlot() {
+        guard !pendingDivertSlots.isEmpty else {
+            finishReceiverSweep()
+            return
+        }
+        let slot = pendingDivertSlots.removeFirst()
         deviceIndex = slot
+        // 全新发现: 清该 slot 的 per-slot 发现状态(startup 本为默认, 显式清以支持 Phase 4 重扫).
         featureIndex.removeAll()
         discoveredControls.removeAll()
         reprogInitComplete = false
+        reprogControlCount = 0
+        reprogQueryIndex = 0
+        reportingQueryIndex = 0
+        controlInfoRetryCounts.removeAll()
+        setDiscoveryInFlight(true)
         let selected = receiverPairedDevices.first(where: { $0.slot == slot })
-        LogiDebugPanel.log("[\(deviceInfo.name)] Auto-targeted slot \(slot) (\(selected?.deviceTypeName ?? "--"))")
-
         let tag = "[\(deviceInfo.name):slot\(slot)]"
-        LogiDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
+        LogiDebugPanel.log("\(tag) Sweep discovery (\(selected?.deviceTypeName ?? "--")); \(pendingDivertSlots.count) slot(s) queued after")
         startFreshDiscovery(tag: tag)
+    }
+
+    /// 单 slot discovery 走到终点(divert 成功 / 无 REPROG / 0 控件)时调用.
+    /// 推进 sweep: 还有 slot 则发现下一个(接管 slot 不做可选探测); 否则当前为巡检 slot,
+    /// 探测其可选功能并收尾. 手动 rediscover(sweep 未激活)不进此路径.
+    private func receiverSlotDiscoveryDidFinish(didDivert: Bool) {
+        guard receiverSweepActive else { return }
+        if didDivert {
+            receiverManagedSlots.insert(deviceIndex)
+        }
+        if !pendingDivertSlots.isEmpty {
+            discoverNextSweepSlot()
+        } else {
+            probeOptionalFeatures()  // 仅巡检 slot(sweep 最后一个)探测可选功能(§4.3)
+            finishReceiverSweep()
+        }
+    }
+
+    private func finishReceiverSweep() {
+        receiverSweepActive = false
+        if let inspection = receiverInspectionSlot {
+            deviceIndex = inspection  // 路由游标停靠巡检 slot
+        }
+        LogiDebugPanel.log("[\(deviceInfo.name)] Takeover sweep complete: managed=\(receiverManagedSlots.sorted()) cursor=\(deviceIndex)")
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
     }
 
@@ -1813,7 +1880,8 @@ class LogiDeviceSession {
                 receiverPairedDevices.sort { $0.slot < $1.slot }
             }
 
-            let hasInflightWork = discoveryTimer != nil || controlInfoQueryTimer != nil || reportingQueryTimer != nil
+            // sweep 进行中也视为 inflight, 抑制 0x41 抢占式 retarget 打断逐 slot 接管发现.
+            let hasInflightWork = discoveryTimer != nil || controlInfoQueryTimer != nil || reportingQueryTimer != nil || receiverSweepActive
             let action = Self.receiverConnectionNotificationAction(
                 currentDeviceIndex: deviceIndex,
                 incomingDeviceIndex: devIdx,
@@ -3378,6 +3446,8 @@ class LogiDeviceSession {
             markHandshakeComplete()
             NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
             LogiSessionManager.shared.recomputeAndNotifyActivityState()
+            // 无可 divert 控件, 但仍需推进接管 sweep 到下一个 slot.
+            receiverSlotDiscoveryDidFinish(didDivert: false)
         }
     }
 
@@ -3629,9 +3699,14 @@ class LogiDeviceSession {
         #endif
         primeFromRegistry()
         LogiDebugPanel.log("[\(deviceInfo.name)] Init complete, listening for button events")
-        // 正常 init 终点直接赋值 handshakeComplete, 不经过 markHandshakeComplete;
-        // 可选功能探测必须在此单独触发 (probeOptionalFeatures 自带 once 守卫, 重复调用安全).
-        probeOptionalFeatures()
+        // 正常 init 终点直接赋值 handshakeComplete, 不经过 markHandshakeComplete.
+        // sweep 中: 由 receiverSlotDiscoveryDidFinish 决定推进下一个 slot 还是(巡检 slot)探测可选功能;
+        // 非 sweep(BLE / 手动 rediscover): 直接探测可选功能(probeOptionalFeatures 自带 once 守卫).
+        if receiverSweepActive {
+            receiverSlotDiscoveryDidFinish(didDivert: true)
+        } else {
+            probeOptionalFeatures()
+        }
     }
 
     private var queriedControlStates: [QueriedControlState] {
