@@ -29,55 +29,6 @@ final class LogiReceiverConnectionStateTests: XCTestCase {
         ))
     }
 
-    func testReconnectWithCompleteControlCacheRefreshesReporting() {
-        XCTAssertEqual(LogiDeviceSession.receiverReconnectActionForTests(
-            hasReprogFeature: true,
-            discoveredControlCount: 7,
-            reprogControlCount: 7,
-            hasInflightWork: false
-        ), .refreshReporting)
-    }
-
-    func testReconnectWithPartialControlCacheRediscoveresFeatures() {
-        XCTAssertEqual(LogiDeviceSession.receiverReconnectActionForTests(
-            hasReprogFeature: true,
-            discoveredControlCount: 3,
-            reprogControlCount: 7,
-            hasInflightWork: false
-        ), .rediscoverFeatures)
-    }
-
-    func testReconnectWhileWorkIsInFlightDoesNothing() {
-        XCTAssertEqual(LogiDeviceSession.receiverReconnectActionForTests(
-            hasReprogFeature: true,
-            discoveredControlCount: 7,
-            reprogControlCount: 7,
-            hasInflightWork: true
-        ), .ignore)
-    }
-
-    func testConnectedNonCurrentSlotRetargetsWhenCurrentTargetIsDisconnected() {
-        XCTAssertEqual(LogiDeviceSession.receiverConnectionNotificationActionForTests(
-            currentDeviceIndex: 0x01,
-            incomingDeviceIndex: 0x03,
-            connected: true,
-            currentTargetIsConnected: false,
-            reprogInitComplete: false,
-            hasInflightWork: false
-        ), .retarget(0x03))
-    }
-
-    func testConnectedNonCurrentSlotDoesNotRetargetWhenCurrentTargetIsReady() {
-        XCTAssertEqual(LogiDeviceSession.receiverConnectionNotificationActionForTests(
-            currentDeviceIndex: 0x01,
-            incomingDeviceIndex: 0x03,
-            connected: true,
-            currentTargetIsConnected: true,
-            reprogInitComplete: true,
-            hasInflightWork: false
-        ), .ignore)
-    }
-
     // MARK: - chooseReceiverTargetSlot (Phase 0 prefer-mouse 巡检游标)
 
     private func device(

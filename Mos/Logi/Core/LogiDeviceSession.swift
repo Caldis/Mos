@@ -64,12 +64,6 @@ class LogiDeviceSession {
 
     private(set) var connectionMode: ConnectionMode = .unsupported
 
-    enum ReceiverReconnectAction: Equatable {
-        case ignore
-        case refreshReporting
-        case rediscoverFeatures
-    }
-
     /// 多设备热插拔: 收到某 slot 的 0x41 该做什么.
     enum ReceiverSlotConnectionAction: Equatable {
         case ignore
@@ -85,26 +79,6 @@ class LogiDeviceSession {
         case processCurrent
         case processScoped(UInt8)
         case drop
-    }
-
-    enum ReceiverConnectionNotificationAction: Equatable {
-        case ignore
-        case currentTargetConnected
-        case currentTargetDisconnected
-        case retarget(UInt8)
-
-        var debugLabel: String {
-            switch self {
-            case .ignore:
-                return "ignore"
-            case .currentTargetConnected:
-                return "currentTargetConnected"
-            case .currentTargetDisconnected:
-                return "currentTargetDisconnected"
-            case .retarget(let slot):
-                return "retarget(\(slot))"
-            }
-        }
     }
 
     // MARK: - HID++ State
@@ -835,24 +809,6 @@ class LogiDeviceSession {
         )
     }
 
-    private var currentReceiverTargetConnectionIsKnown: Bool {
-        return Self.receiverTargetConnectionIsKnown(
-            connectionMode: connectionMode,
-            deviceIndex: deviceIndex,
-            pairedDevices: receiverPairedDevices
-        )
-    }
-
-    private static func receiverTargetConnectionIsKnown(
-        connectionMode: ConnectionMode,
-        deviceIndex: UInt8,
-        pairedDevices: [ReceiverPairedDevice]
-    ) -> Bool {
-        guard connectionMode == .receiver else { return true }
-        guard deviceIndex >= 1 && deviceIndex <= 6 else { return false }
-        return pairedDevices.contains(where: { $0.slot == deviceIndex })
-    }
-
     private static func receiverTargetIsConnected(
         connectionMode: ConnectionMode,
         deviceIndex: UInt8,
@@ -861,40 +817,6 @@ class LogiDeviceSession {
         guard connectionMode == .receiver else { return true }
         guard deviceIndex >= 1 && deviceIndex <= 6 else { return false }
         return pairedDevices.first(where: { $0.slot == deviceIndex })?.isConnected ?? true
-    }
-
-    private static func receiverReconnectAction(
-        hasReprogFeature: Bool,
-        discoveredControlCount: Int,
-        reprogControlCount: Int,
-        hasInflightWork: Bool
-    ) -> ReceiverReconnectAction {
-        if hasInflightWork { return .ignore }
-        if hasReprogFeature,
-           discoveredControlCount > 0,
-           discoveredControlCount == reprogControlCount {
-            return .refreshReporting
-        }
-        return .rediscoverFeatures
-    }
-
-    private static func receiverConnectionNotificationAction(
-        currentDeviceIndex: UInt8,
-        incomingDeviceIndex: UInt8,
-        connected: Bool,
-        currentTargetConnectionIsKnown: Bool,
-        currentTargetIsConnected: Bool,
-        reprogInitComplete: Bool,
-        hasInflightWork: Bool
-    ) -> ReceiverConnectionNotificationAction {
-        guard incomingDeviceIndex >= 1 && incomingDeviceIndex <= 6 else { return .ignore }
-        if incomingDeviceIndex == currentDeviceIndex {
-            return connected ? .currentTargetConnected : .currentTargetDisconnected
-        }
-        guard connected else { return .ignore }
-        let currentTargetReady = currentTargetConnectionIsKnown && currentTargetIsConnected && reprogInitComplete
-        guard !currentTargetReady && !hasInflightWork else { return .ignore }
-        return .retarget(incomingDeviceIndex)
     }
 
     /// 巡检游标默认选择: 优先在线的鼠标 slot, 无鼠标回退首个在线 slot, 全空返回 nil.
@@ -976,39 +898,6 @@ class LogiDeviceSession {
             connectionMode: connectionMode,
             deviceIndex: deviceIndex,
             pairedDevices: pairedDevices
-        )
-    }
-
-    internal static func receiverReconnectActionForTests(
-        hasReprogFeature: Bool,
-        discoveredControlCount: Int,
-        reprogControlCount: Int,
-        hasInflightWork: Bool
-    ) -> ReceiverReconnectAction {
-        return receiverReconnectAction(
-            hasReprogFeature: hasReprogFeature,
-            discoveredControlCount: discoveredControlCount,
-            reprogControlCount: reprogControlCount,
-            hasInflightWork: hasInflightWork
-        )
-    }
-
-    internal static func receiverConnectionNotificationActionForTests(
-        currentDeviceIndex: UInt8,
-        incomingDeviceIndex: UInt8,
-        connected: Bool,
-        currentTargetIsConnected: Bool,
-        reprogInitComplete: Bool,
-        hasInflightWork: Bool
-    ) -> ReceiverConnectionNotificationAction {
-        return receiverConnectionNotificationAction(
-            currentDeviceIndex: currentDeviceIndex,
-            incomingDeviceIndex: incomingDeviceIndex,
-            connected: connected,
-            currentTargetConnectionIsKnown: true,
-            currentTargetIsConnected: currentTargetIsConnected,
-            reprogInitComplete: reprogInitComplete,
-            hasInflightWork: hasInflightWork
         )
     }
     #endif
@@ -2016,8 +1905,10 @@ class LogiDeviceSession {
     /// (真机复现: mx4 重连时被 queued 后从未 discovery, 拇指键退回原生鼠标键).
     private func pumpPendingDivertQueue() {
         guard !receiverSweepActive, !pendingDivertSlots.isEmpty else { return }
-        let anyDiscoveryInFlight = discoveryTimer != nil || controlInfoQueryTimer != nil
-            || reportingQueryTimer != nil || !pendingDiscovery.isEmpty
+        // getFeature 在飞用 pendingDiscovery(权威集)判定, 不用 discoveryTimer != nil ——
+        // 后者曾因完成后漏置 nil 变成"已失效但非 nil"永远误判在飞, 把 pump 毒死(见 29f3bd1).
+        let anyDiscoveryInFlight = !pendingDiscovery.isEmpty
+            || controlInfoQueryTimer != nil || reportingQueryTimer != nil
         guard !anyDiscoveryInFlight else { return }
         LogiDebugPanel.log("[\(deviceInfo.name)] Draining takeover queue \(pendingDivertSlots)")
         receiverSweepActive = true
