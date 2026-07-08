@@ -814,6 +814,13 @@ class LogiDebugPanel: NSObject {
     }
 
     @objc private func outlineViewClicked(_ sender: Any?) {
+        // 点接收器父行(不可选)不做任何事: 否则会带着"仍停在上一个 slot"的 selectedRow
+        // 误触发那个 slot 的 rediscover. 展开/收起由 disclosure 三角自行处理.
+        if outlineView.clickedRow >= 0,
+           let clicked = outlineView.item(atRow: outlineView.clickedRow) as? DeviceNode,
+           clicked.isReceiver {
+            return
+        }
         let row = outlineView.selectedRow
         guard row >= 0 else { return }
         let item = outlineView.item(atRow: row)
@@ -1991,15 +1998,42 @@ class LogiDebugPanel: NSObject {
     private func chooseSelectionTarget(prior: SidebarSelection?,
                                        sessions: [LogiDeviceSession],
                                        in outlineView: NSOutlineView) -> SidebarSelection? {
+        // 保留上次选择, 但 receiver header 不可选 -> 降级到其默认 slot.
         if let prior = prior, row(for: prior, in: outlineView) != nil {
+            if case let .device(sessionID) = prior,
+               let session = sessions.first(where: { ObjectIdentifier($0) == sessionID }),
+               session.connectionMode == .receiver {
+                return defaultSelection(for: session)
+            }
             return prior
         }
+        // 上次选的 slot 所在 session 还在 -> 回该 session 的默认(某个在线 slot).
         if case let .slot(sessionID, _)? = prior,
-           sessions.contains(where: { ObjectIdentifier($0) == sessionID }) {
+           let session = sessions.first(where: { ObjectIdentifier($0) == sessionID }) {
+            return defaultSelection(for: session)
+        }
+        // 首个设备的默认.
+        if let first = deviceNodes.first {
+            return defaultSelection(for: first.session)
+        }
+        return nil
+    }
+
+    /// 某 session 默认应选中的 sidebar 项. 接收器: 选真实 slot(优先当前路由游标那台 ——
+    /// Phase 3 已让它落在鼠标上 —— 否则首个在线 slot); 无在线 slot 返回 nil(父行不可选).
+    /// BLE 直连: 设备本身即可选.
+    private func defaultSelection(for session: LogiDeviceSession) -> SidebarSelection? {
+        let sessionID = ObjectIdentifier(session)
+        guard session.connectionMode == .receiver else {
             return .device(sessionID: sessionID)
         }
-        if let first = deviceNodes.first {
-            return .device(sessionID: ObjectIdentifier(first.session))
+        let paired = session.debugReceiverPairedDevices
+        let cursor = session.debugDeviceIndex
+        if paired.first(where: { $0.slot == cursor })?.isConnected == true {
+            return .slot(sessionID: sessionID, slot: cursor)
+        }
+        if let firstConnected = paired.first(where: { $0.isConnected }) {
+            return .slot(sessionID: sessionID, slot: firstConnected.slot)
         }
         return nil
     }
@@ -2471,6 +2505,11 @@ extension LogiDebugPanel: NSOutlineViewDelegate {
     }
 
     func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
+        // 接收器父行只是容器, 只有其下的 slot 才代表真实设备; 禁止选中父行.
+        // (BLE 直连 DeviceNode 无子 slot, 本身即设备, 仍可选中.)
+        if let node = item as? DeviceNode, node.isReceiver {
+            return false
+        }
         // 空 slot 不可选中: 视觉已经降级, 再阻止 selection 避免 highlight 落在空行.
         if let slot = item as? SlotNode {
             let paired = slot.session.debugReceiverPairedDevices
