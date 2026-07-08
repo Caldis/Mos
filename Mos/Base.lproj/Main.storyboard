@@ -2327,7 +2327,7 @@
                             <visualEffectView blendingMode="behindWindow" material="underWindowBackground" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="mt4-oP-Qe0">
                                 <rect key="frame" x="0.0" y="0.0" width="1100" height="574"/>
                                 <subviews>
-                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="5GB-25-6Oj" customClass="LineChartView" customModule="Charts">
+                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="5GB-25-6Oj" customClass="LineChartView" customModule="DGCharts">
                                         <rect key="frame" x="20" y="339" width="1060" height="200"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="200" id="nhE-dy-pu3"/>
