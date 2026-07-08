@@ -189,6 +189,32 @@ final class LogiReceiverConnectionStateTests: XCTestCase {
         )
     }
 
+    func testDivertSlotsIncludesUnknownTypeSlots() {
+        // 关键回归: 接收器不返回 deviceType (寄存器 0xB5 InvalidSubID) 时类型恒为 0(未知).
+        // 未知类型的鼠标必须纳入接管, 否则永不 divert (真实 USB Receiver 上的现象).
+        let devices = [
+            device(slot: 1, connected: true, type: 0x00, pid: 0x0000),  // 未知(实为键盘, 但类型拿不到)
+            device(slot: 4, connected: true, type: 0x00, pid: 0x0000)   // 未知(实为鼠标)
+        ]
+        XCTAssertEqual(
+            LogiDeviceSession.receiverDivertSlots(devices: devices) { _ in true },
+            [1, 4]
+        )
+    }
+
+    func testDivertSlotsExcludesKnownKeyboardIncludesUnknownMouse() {
+        // 类型部分已知: 键盘(0x01)排除, 未知/鼠标纳入.
+        let devices = [
+            device(slot: 1, connected: true, type: 0x01, pid: 0x0000),  // Keyboard -> excluded
+            device(slot: 4, connected: true, type: 0x00, pid: 0x0000),  // Unknown -> included
+            device(slot: 5, connected: true, type: 0x02, pid: 0x0000)   // Mouse -> included
+        ]
+        XCTAssertEqual(
+            LogiDeviceSession.receiverDivertSlots(devices: devices) { _ in true },
+            [4, 5]
+        )
+    }
+
     // MARK: - receiverReportRoute (Phase 2 报文分发)
 
     func testReportRouteProcessesCurrentSlot() {

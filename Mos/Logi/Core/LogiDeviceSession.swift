@@ -895,17 +895,28 @@ class LogiDeviceSession {
         return connected.first?.slot
     }
 
+    /// 明确不接管的设备类型: 键盘 / 数字键盘 / 演示器. 其余(鼠标 / 轨迹球 / 触控板 / 未知)
+    /// 都纳入接管候选. 关键: 有些接收器(如 Bolt / 较新 USB Receiver)不支持 HID++ 1.0 寄存器
+    /// 0xB5 读设备信息(返回 InvalidSubID), deviceType 恒为 0(未知). 此时若按"必须 == Mouse"
+    /// 过滤, 鼠标(类型未知)会被错误排除、永不 divert. 故改为"排除已知非鼠标类型", 未知放行.
+    private static let receiverNonDivertDeviceTypes: Set<UInt8> = [
+        0x01, // Keyboard
+        0x03, // Numpad
+        0x04, // Presenter
+    ]
+
     /// 接管集合: 需要各自 discovery+divert 常驻接管的 slot.
-    /// 过滤 isConnected && deviceType==Mouse && hasBinding(wirelessPID); 按 slot 升序.
+    /// 过滤 isConnected && hasBinding(wirelessPID) && 非已知非鼠标类型; 按 slot 升序.
     /// 绑定过滤是性能考虑(§4.6): 不给用户没绑定的设备做 divert, 避免无谓 HID++ 负载与 Options+ 争用.
-    /// 注: 当前绑定注册表是全局的(UsageRegistry 单一 aggregate), hasBinding 对所有鼠标同真同假;
-    /// 保留 wirelessPID 参数以便未来按设备细分.
+    /// 注: 当前绑定注册表是全局的(UsageRegistry 单一 aggregate), hasBinding 对所有设备同真同假;
+    /// 保留 wirelessPID 参数以便未来按设备细分. 类型未知的 slot 也会纳入(见 receiverNonDivertDeviceTypes),
+    /// 其 divert 仍被 applyUsage 按各设备实际 divertable CID 过滤, 不会误伤键盘按键.
     static func receiverDivertSlots(
         devices: [ReceiverPairedDevice],
         hasBinding: (UInt16) -> Bool
     ) -> [UInt8] {
         return devices
-            .filter { $0.isConnected && $0.deviceType == receiverDeviceTypeMouse && hasBinding($0.wirelessPID) }
+            .filter { $0.isConnected && hasBinding($0.wirelessPID) && !receiverNonDivertDeviceTypes.contains($0.deviceType) }
             .map { $0.slot }
             .sorted()
     }
