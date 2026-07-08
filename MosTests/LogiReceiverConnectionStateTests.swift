@@ -256,4 +256,63 @@ final class LogiReceiverConnectionStateTests: XCTestCase {
             .drop
         )
     }
+
+    // MARK: - receiverSlotConnectionAction (Phase 4 热插拔)
+
+    func testSlotConnectionDisconnectedManagedReleases() {
+        // 已接管的 slot 断开 -> 释放其接管状态
+        XCTAssertEqual(
+            LogiDeviceSession.receiverSlotConnectionAction(
+                slot: 4, connected: false, isDivertCandidate: false, alreadyManaged: true),
+            .release(4)
+        )
+    }
+
+    func testSlotConnectionDisconnectedUnmanagedIgnored() {
+        XCTAssertEqual(
+            LogiDeviceSession.receiverSlotConnectionAction(
+                slot: 4, connected: false, isDivertCandidate: false, alreadyManaged: false),
+            .ignore
+        )
+    }
+
+    func testSlotConnectionReconnectUnmanagedCandidateTakesOver() {
+        // 关键: 鼠标关机/切 slot 再回来 -> 未接管 + 候选 -> 重新 discovery+divert
+        XCTAssertEqual(
+            LogiDeviceSession.receiverSlotConnectionAction(
+                slot: 4, connected: true, isDivertCandidate: true, alreadyManaged: false),
+            .takeover(4)
+        )
+    }
+
+    func testSlotConnectionConnectedAlreadyManagedIgnored() {
+        // 防振荡: 已接管且在线的 slot 再收到 connected 通知 -> 忽略, 不重复 discovery
+        XCTAssertEqual(
+            LogiDeviceSession.receiverSlotConnectionAction(
+                slot: 4, connected: true, isDivertCandidate: true, alreadyManaged: true),
+            .ignore
+        )
+    }
+
+    func testSlotConnectionConnectedNonCandidateIgnored() {
+        // 键盘等非候选设备连接 -> 不接管
+        XCTAssertEqual(
+            LogiDeviceSession.receiverSlotConnectionAction(
+                slot: 1, connected: true, isDivertCandidate: false, alreadyManaged: false),
+            .ignore
+        )
+    }
+
+    func testSlotConnectionOutOfRangeIgnored() {
+        XCTAssertEqual(
+            LogiDeviceSession.receiverSlotConnectionAction(
+                slot: 0, connected: true, isDivertCandidate: true, alreadyManaged: false),
+            .ignore
+        )
+        XCTAssertEqual(
+            LogiDeviceSession.receiverSlotConnectionAction(
+                slot: 7, connected: false, isDivertCandidate: false, alreadyManaged: true),
+            .ignore
+        )
+    }
 }

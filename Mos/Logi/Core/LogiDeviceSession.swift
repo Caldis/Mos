@@ -70,6 +70,13 @@ class LogiDeviceSession {
         case rediscoverFeatures
     }
 
+    /// 多设备热插拔: 收到某 slot 的 0x41 该做什么.
+    enum ReceiverSlotConnectionAction: Equatable {
+        case ignore
+        case takeover(UInt8)  // 起该 slot 一次 discovery+divert
+        case release(UInt8)   // 释放该 slot 按键状态 + 标记未 init
+    }
+
     /// 接收器模式下, 一个 peripheral(设备)报文应路由到哪个 slot 的状态.
     /// - processCurrent: report[1] 就是当前路由 slot(deviceIndex), 按现状处理
     /// - processScoped(slot): report[1] 是另一个已接管 slot, 临时把路由游标切到它再处理
@@ -932,6 +939,26 @@ class LogiDeviceSession {
         if incomingSlot == currentSlot { return .processCurrent }
         if managedSlots.contains(incomingSlot) { return .processScoped(incomingSlot) }
         return .drop
+    }
+
+    /// 多设备热插拔(§Phase 4): 某 slot 的 0x41 连接/断开通知该做什么(纯决策).
+    /// - 断开: 若该 slot 正被接管 -> release(释放其按键状态 + 标记未 init); 否则 ignore
+    /// - 连接: 若已接管 -> ignore(防振荡, "已 init 且在线则忽略"); 否则若是 divert 候选 -> takeover
+    /// 关键: 鼠标关机 / 按背面键切 Bolt 主机再切回, 重连会丢失 divert 状态, 必须重新
+    /// discovery+divert(takeover), 否则其 HID++ 按键不再生效. 全为离散事件驱动, 不违红线(§2).
+    static func receiverSlotConnectionAction(
+        slot: UInt8,
+        connected: Bool,
+        isDivertCandidate: Bool,
+        alreadyManaged: Bool
+    ) -> ReceiverSlotConnectionAction {
+        guard slot >= 1 && slot <= 6 else { return .ignore }
+        if !connected {
+            return alreadyManaged ? .release(slot) : .ignore
+        }
+        if alreadyManaged { return .ignore }
+        guard isDivertCandidate else { return .ignore }
+        return .takeover(slot)
     }
 
     #if DEBUG
@@ -1807,17 +1834,23 @@ class LogiDeviceSession {
     }
 
     /// 单 slot discovery 走到终点(divert 成功 / 无 REPROG / 0 控件)时调用.
-    /// 推进 sweep: 还有 slot 则发现下一个(接管 slot 不做可选探测); 否则当前为巡检 slot,
-    /// 探测其可选功能并收尾. 手动 rediscover(sweep 未激活)不进此路径.
+    /// 巡检 slot 完成时探测其可选功能(§4.3, 与队列顺序无关); 队列还有 slot 则发现下一个,
+    /// 否则收尾. 手动 rediscover(sweep 未激活)不进此路径. 全部离散事件驱动, 无周期活动.
     private func receiverSlotDiscoveryDidFinish(didDivert: Bool) {
         guard receiverSweepActive else { return }
-        if didDivert {
-            receiverManagedSlots.insert(deviceIndex)
+        let slot = deviceIndex
+        // 防快速切换(flap)竞态: 若该 slot 在发现过程中已断开, 不标记 managed, 否则重连时会被
+        // "已 managed -> ignore" 挡住而不再重新 divert. 断开后重连会由 0x41 重新触发 takeover.
+        let stillConnected = receiverPairedDevices.first(where: { $0.slot == slot })?.isConnected ?? false
+        if didDivert && stillConnected {
+            receiverManagedSlots.insert(slot)
+        }
+        if slot == receiverInspectionSlot {
+            probeOptionalFeatures()  // 仅巡检 slot 探测可选功能; probeOptionalFeatures 自带 once 守卫
         }
         if !pendingDivertSlots.isEmpty {
             discoverNextSweepSlot()
         } else {
-            probeOptionalFeatures()  // 仅巡检 slot(sweep 最后一个)探测可选功能(§4.3)
             finishReceiverSweep()
         }
     }
@@ -1891,68 +1924,64 @@ class LogiDeviceSession {
                 receiverPairedDevices.sort { $0.slot < $1.slot }
             }
 
-            // sweep 进行中也视为 inflight, 抑制 0x41 抢占式 retarget 打断逐 slot 接管发现.
-            let hasInflightWork = discoveryTimer != nil || controlInfoQueryTimer != nil || reportingQueryTimer != nil || receiverSweepActive
-            let action = Self.receiverConnectionNotificationAction(
-                currentDeviceIndex: deviceIndex,
-                incomingDeviceIndex: devIdx,
+            // 多设备热插拔(Phase 4): 每个 slot 的 0x41 各自决策, 不再单目标抢占式 retarget.
+            let dev = receiverPairedDevices.first(where: { $0.slot == devIdx })
+            let bindingsExist = !LogiCenter.shared.registry.aggregatedCacheIsEmpty
+            let isDivertCandidate = connected
+                && !Self.receiverNonDivertDeviceTypes.contains(dev?.deviceType ?? 0)
+                && bindingsExist
+            let action = Self.receiverSlotConnectionAction(
+                slot: devIdx,
                 connected: connected,
-                currentTargetConnectionIsKnown: currentReceiverTargetConnectionIsKnown,
-                currentTargetIsConnected: currentReceiverTargetIsConnected,
-                reprogInitComplete: reprogInitComplete,
-                hasInflightWork: hasInflightWork
+                isDivertCandidate: isDivertCandidate,
+                alreadyManaged: receiverManagedSlots.contains(devIdx)
             )
             LogiDebugPanel.log(
-                "[\(deviceInfo.name)] DeviceConnection action=\(action.debugLabel) current=\(deviceIndex) incoming=\(devIdx) currentKnown=\(currentReceiverTargetConnectionIsKnown) currentConnected=\(currentReceiverTargetIsConnected) reprogInit=\(reprogInitComplete) inflight=\(hasInflightWork)"
+                "[\(deviceInfo.name)] SlotConnection slot=\(devIdx) connected=\(connected) candidate=\(isDivertCandidate) managed=\(receiverManagedSlots.contains(devIdx)) -> \(action)"
             )
 
             switch action {
             case .ignore:
                 break
-            case .currentTargetConnected:
-                handleCurrentReceiverTargetReconnected()
-            case .currentTargetDisconnected:
-                handleCurrentReceiverTargetDisconnected()
-            case .retarget(let slot):
-                setTargetSlot(slot: slot)
-                rediscoverFeatures()
+            case .takeover(let slot):
+                handleReceiverSlotTakeover(slot: slot)
+            case .release(let slot):
+                handleReceiverSlotRelease(slot: slot)
             }
             NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
         }
     }
 
-    private func handleCurrentReceiverTargetDisconnected() {
-        cancelInflightDiscovery()
-        releaseAllActiveButtonState(reason: "receiver target disconnected")
+    /// 某接管 slot 断开: 只释放该 slot 的按键状态并标记未 init, 不动别的 slot.
+    private func handleReceiverSlotRelease(slot: UInt8) {
+        receiverManagedSlots.remove(slot)
+        pendingDivertSlots.removeAll { $0 == slot }
+        // scoped 到该 slot 释放其 per-slot 状态 (buttonStateTracker/divertedCIDs/lastApplied 均按 slot).
+        let saved = deviceIndex
+        deviceIndex = slot
+        releaseAllActiveButtonState(reason: "slot \(slot) disconnected")
+        reprogInitComplete = false
         lastApplied.removeAll()
         divertedCIDs.removeAll()
-        reprogInitComplete = false
-        handshakeComplete = false
-        reportingQueryIndex = 0
-        setDiscoveryInFlight(false)
-        LogiDebugPanel.log("[\(deviceInfo.name)] Current receiver target disconnected; local divert state cleared")
+        deviceIndex = saved
+        LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(slot) disconnected; released takeover state (managed=\(receiverManagedSlots.sorted()))")
     }
 
-    private func handleCurrentReceiverTargetReconnected() {
-        guard connectionMode == .receiver else { return }
-        let hasInflightWork = discoveryTimer != nil || controlInfoQueryTimer != nil || reportingQueryTimer != nil
-        let action = Self.receiverReconnectAction(
-            hasReprogFeature: featureIndex[Self.featureReprogV4] != nil,
-            discoveredControlCount: discoveredControls.count,
-            reprogControlCount: reprogControlCount,
-            hasInflightWork: hasInflightWork
-        )
-
-        switch action {
-        case .ignore:
-            return
-        case .refreshReporting:
-            LogiDebugPanel.log("[\(deviceInfo.name)] Current receiver target reconnected; refreshing reporting state")
-            setDiscoveryInFlight(true)
-            startReportingQuery()
-        case .rediscoverFeatures:
-            LogiDebugPanel.log("[\(deviceInfo.name)] Current receiver target reconnected; rediscovering features")
-            rediscoverFeatures()
+    /// 某 divert 候选 slot(重新)连接: 起该 slot 一次 discovery+divert.
+    /// 入接管队列; 若当前无发现在飞则立即起 sweep 处理, 否则由进行中的 sweep 依次消费.
+    private func handleReceiverSlotTakeover(slot: UInt8) {
+        // 已排队 / 正在发现该 slot -> 不重复.
+        if pendingDivertSlots.contains(slot) { return }
+        if receiverSweepActive && deviceIndex == slot { return }
+        pendingDivertSlots.append(slot)
+        let anyDiscoveryInFlight = discoveryTimer != nil || controlInfoQueryTimer != nil
+            || reportingQueryTimer != nil || !pendingDiscovery.isEmpty
+        if !receiverSweepActive && !anyDiscoveryInFlight {
+            LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(slot) (re)connected; starting takeover")
+            receiverSweepActive = true
+            discoverNextSweepSlot()
+        } else {
+            LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(slot) (re)connected; queued for takeover (discovery in flight)")
         }
     }
 
