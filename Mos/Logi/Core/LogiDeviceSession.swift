@@ -101,10 +101,21 @@ class LogiDeviceSession {
     }
 
     // MARK: - HID++ State
-    private var buttonStateTracker = LogiButtonStateTracker()
+    /// 当前路由游标: 出站 report[1] 与 per-slot 计算属性都用它.
+    /// 稳态时 = 巡检游标(用户在看哪个 slot); discovery sweep 中 = 正在发现的 slot;
+    /// 处理入站 peripheral 报文时临时 = report[1](见 handleInputReport 的 scoped 路由).
     private var deviceIndex: UInt8 = 0x01
     private var isBLE: Bool = false
     private var deviceOpened: Bool = false
+
+    // MARK: - Receiver Multi-Device Takeover State
+    /// 已完成 discovery+divert、常驻接管其按键的 slot 集. 入站 peripheral 报文按 report[1]
+    /// 命中此集合时被 scoped 路由到对应 slot 处理, 而非旧的"非当前 target 一律 drop".
+    private var receiverManagedSlots: Set<UInt8> = []
+    /// 启动接管 sweep 的待发现队列(§3.1 串行: 一次只发现一个 slot).
+    private var pendingDivertSlots: [UInt8] = []
+    /// sweep 结束后路由游标停靠的巡检 slot(prefer-mouse 选定, 最后发现, 负责可选功能探测).
+    private var receiverInspectionSlot: UInt8? = nil
 
     // MARK: - Receiver Enumeration State
     private(set) var receiverPairedDevices: [ReceiverPairedDevice] = []
@@ -145,9 +156,17 @@ class LogiDeviceSession {
         var reportingQueryIndex: Int = 0      // GetControlReporting 逐按键查询进度
         var controlInfoRetryCounts: [Int: Int] = [:]
         var lastApplied: Set<UInt16> = []     // divert 对账缓存: 上次下发的 divert 目标集
+        // 按键按下/抬起状态跟踪: 必须按 slot 独立, 否则同型号两只鼠标 (CID 相同) 的
+        // 交错报文会互相污染 press/release delta.
+        var buttonStateTracker = LogiButtonStateTracker()
     }
 
     private var slotStates: [UInt8: PerSlotState] = [:]
+
+    private var buttonStateTracker: LogiButtonStateTracker {
+        get { slotStates[deviceIndex]?.buttonStateTracker ?? LogiButtonStateTracker() }
+        set { slotStates[deviceIndex, default: PerSlotState()].buttonStateTracker = newValue }
+    }
 
     private var featureIndex: [UInt16: UInt8] {
         get { slotStates[deviceIndex]?.featureIndex ?? [:] }
@@ -1024,6 +1043,9 @@ class LogiDeviceSession {
         LogiDebugPanel.log("[\(deviceInfo.name)] Teardown")
         pendingInitialTargetSelection = false
         pendingDeviceInfoSlots.removeAll()
+        receiverManagedSlots.removeAll()
+        pendingDivertSlots.removeAll()
+        receiverInspectionSlot = nil
         discoveryTimer?.invalidate()
         discoveryTimer = nil
         controlInfoQueryTimer?.invalidate()
@@ -2963,6 +2985,12 @@ class LogiDeviceSession {
         let rxType: LogEntryType = isError ? .error : .rx
         LogiDebugPanel.log(device: deviceInfo.name, type: rxType, message: "RX: \(hex)", decoded: rxDecoded)
 
+        // 入站 peripheral 报文可能来自另一个已接管 slot(非当前路由游标). 若是, 临时把 deviceIndex
+        // scoped 到 report[1] 处理该 slot 的状态, 函数退出时 defer 还原. 报文处理是同步的, 中途无
+        // 定时器插入, 故 save/restore 安全. 详见 receiverReportRoute.
+        var scopedSlotRestore: UInt8? = nil
+        defer { if let saved = scopedSlotRestore { deviceIndex = saved } }
+
         // Receiver mode: route HID++ 1.0 responses first
         if connectionMode == .receiver {
             let devIdx = report[1]
@@ -2991,13 +3019,23 @@ class LogiDeviceSession {
                 return
             }
 
-            // Stale-peripheral filter: 用户 retarget 后, 旧 slot 仍可能有 in-flight 响应抵达.
-            // 按 deviceIndex 过滤掉"非当前 target"的 peripheral 响应, 防止污染新一轮
-            // REPROG discovery state (append 错误 control / advance 错误 index).
-            // 0xFF (receiver register) 和 pending ping 已在上面各自处理, 不会进入这里.
-            if devIdx >= 1 && devIdx <= 6 && devIdx != deviceIndex {
-                LogiDebugPanel.log("[\(deviceInfo.name)] Stale report from slot \(devIdx) (current target=\(deviceIndex)) dropped")
-                return
+            // Peripheral(设备)报文按 report[1] 路由. 0xFF(register)/pending ping 已在上面处理.
+            // 当前游标 slot 直接处理; 其它已接管 slot scoped 处理; 未知/未接管 slot drop.
+            if devIdx >= 1 && devIdx <= 6 {
+                switch Self.receiverReportRoute(
+                    incomingSlot: devIdx,
+                    currentSlot: deviceIndex,
+                    managedSlots: receiverManagedSlots
+                ) {
+                case .processCurrent:
+                    break
+                case .processScoped(let slot):
+                    scopedSlotRestore = deviceIndex
+                    deviceIndex = slot
+                case .drop:
+                    LogiDebugPanel.log("[\(deviceInfo.name)] Report from slot \(devIdx) (current target=\(deviceIndex)) dropped (unmanaged)")
+                    return
+                }
             }
         }
 
