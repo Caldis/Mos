@@ -70,6 +70,16 @@ class LogiDeviceSession {
         case rediscoverFeatures
     }
 
+    /// 接收器模式下, 一个 peripheral(设备)报文应路由到哪个 slot 的状态.
+    /// - processCurrent: report[1] 就是当前路由 slot(deviceIndex), 按现状处理
+    /// - processScoped(slot): report[1] 是另一个已接管 slot, 临时把路由游标切到它再处理
+    /// - drop: 未知 / 未接管 slot, 丢弃(旧 stale-peripheral 过滤语义)
+    enum ReceiverReportRoute: Equatable {
+        case processCurrent
+        case processScoped(UInt8)
+        case drop
+    }
+
     enum ReceiverConnectionNotificationAction: Equatable {
         case ignore
         case currentTargetConnected
@@ -861,6 +871,34 @@ class LogiDeviceSession {
             return mouse.slot
         }
         return connected.first?.slot
+    }
+
+    /// 接管集合: 需要各自 discovery+divert 常驻接管的 slot.
+    /// 过滤 isConnected && deviceType==Mouse && hasBinding(wirelessPID); 按 slot 升序.
+    /// 绑定过滤是性能考虑(§4.6): 不给用户没绑定的设备做 divert, 避免无谓 HID++ 负载与 Options+ 争用.
+    /// 注: 当前绑定注册表是全局的(UsageRegistry 单一 aggregate), hasBinding 对所有鼠标同真同假;
+    /// 保留 wirelessPID 参数以便未来按设备细分.
+    static func receiverDivertSlots(
+        devices: [ReceiverPairedDevice],
+        hasBinding: (UInt16) -> Bool
+    ) -> [UInt8] {
+        return devices
+            .filter { $0.isConnected && $0.deviceType == receiverDeviceTypeMouse && hasBinding($0.wirelessPID) }
+            .map { $0.slot }
+            .sorted()
+    }
+
+    /// 决定接收器 peripheral 报文按 report[1] 路由到哪个 slot.
+    /// 单设备时 managedSlots = {currentSlot}, 任何非 current 的 slot 都 drop, 与旧 stale 过滤等价.
+    static func receiverReportRoute(
+        incomingSlot: UInt8,
+        currentSlot: UInt8,
+        managedSlots: Set<UInt8>
+    ) -> ReceiverReportRoute {
+        guard incomingSlot >= 1 && incomingSlot <= 6 else { return .drop }
+        if incomingSlot == currentSlot { return .processCurrent }
+        if managedSlots.contains(incomingSlot) { return .processScoped(incomingSlot) }
+        return .drop
     }
 
     #if DEBUG

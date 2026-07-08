@@ -136,4 +136,98 @@ final class LogiReceiverConnectionStateTests: XCTestCase {
         ]))
         XCTAssertNil(LogiDeviceSession.chooseReceiverTargetSlot(devices: []))
     }
+
+    // MARK: - receiverDivertSlots (Phase 2 接管集合)
+
+    private func device(
+        slot: UInt8,
+        connected: Bool,
+        type: UInt8,
+        pid: UInt16
+    ) -> LogiDeviceSession.ReceiverPairedDevice {
+        var d = LogiDeviceSession.ReceiverPairedDevice(slot: slot)
+        d.isConnected = connected
+        d.deviceType = type
+        d.wirelessPID = pid
+        return d
+    }
+
+    func testDivertSlotsIncludesOnlyConnectedBoundMice() {
+        let devices = [
+            device(slot: 1, connected: true, type: 0x01, pid: 0xB350),  // Keyboard -> excluded
+            device(slot: 2, connected: true, type: 0x02, pid: 0x4082),  // Mouse, bound
+            device(slot: 3, connected: false, type: 0x02, pid: 0x4082), // Mouse, disconnected -> excluded
+            device(slot: 4, connected: true, type: 0x02, pid: 0x999),   // Mouse, no binding -> excluded
+            device(slot: 5, connected: true, type: 0x02, pid: 0x4082)   // Mouse, bound
+        ]
+        let bound: Set<UInt16> = [0x4082]
+        XCTAssertEqual(
+            LogiDeviceSession.receiverDivertSlots(devices: devices) { bound.contains($0) },
+            [2, 5]
+        )
+    }
+
+    func testDivertSlotsEmptyWhenNoBindings() {
+        let devices = [
+            device(slot: 2, connected: true, type: 0x02, pid: 0x4082),
+            device(slot: 3, connected: true, type: 0x02, pid: 0x4083)
+        ]
+        XCTAssertEqual(
+            LogiDeviceSession.receiverDivertSlots(devices: devices) { _ in false },
+            []
+        )
+    }
+
+    func testDivertSlotsSortedAscending() {
+        let devices = [
+            device(slot: 5, connected: true, type: 0x02, pid: 0x4082),
+            device(slot: 2, connected: true, type: 0x02, pid: 0x4082)
+        ]
+        XCTAssertEqual(
+            LogiDeviceSession.receiverDivertSlots(devices: devices) { _ in true },
+            [2, 5]
+        )
+    }
+
+    // MARK: - receiverReportRoute (Phase 2 报文分发)
+
+    func testReportRouteProcessesCurrentSlot() {
+        XCTAssertEqual(
+            LogiDeviceSession.receiverReportRoute(incomingSlot: 2, currentSlot: 2, managedSlots: [2, 5]),
+            .processCurrent
+        )
+    }
+
+    func testReportRouteScopesToOtherManagedSlot() {
+        XCTAssertEqual(
+            LogiDeviceSession.receiverReportRoute(incomingSlot: 5, currentSlot: 2, managedSlots: [2, 5]),
+            .processScoped(5)
+        )
+    }
+
+    func testReportRouteDropsUnmanagedSlot() {
+        XCTAssertEqual(
+            LogiDeviceSession.receiverReportRoute(incomingSlot: 4, currentSlot: 2, managedSlots: [2, 5]),
+            .drop
+        )
+    }
+
+    func testReportRouteSingleDeviceDropsNonCurrent() {
+        // 单设备: managedSlots = {current}, 其它 slot 一律 drop (与旧 stale 过滤等价)
+        XCTAssertEqual(
+            LogiDeviceSession.receiverReportRoute(incomingSlot: 3, currentSlot: 1, managedSlots: [1]),
+            .drop
+        )
+    }
+
+    func testReportRouteDropsOutOfRangeSlot() {
+        XCTAssertEqual(
+            LogiDeviceSession.receiverReportRoute(incomingSlot: 0, currentSlot: 1, managedSlots: [1]),
+            .drop
+        )
+        XCTAssertEqual(
+            LogiDeviceSession.receiverReportRoute(incomingSlot: 7, currentSlot: 1, managedSlots: [1]),
+            .drop
+        )
+    }
 }
