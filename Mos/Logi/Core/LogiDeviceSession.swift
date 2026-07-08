@@ -126,6 +126,11 @@ class LogiDeviceSession {
     /// 接管 sweep 是否进行中. 区分"sweep 驱动的逐 slot 发现"与手动 rediscover: 前者完成后
     /// 推进队列, 后者按原逻辑(仅巡检 slot 探测可选功能). 也用于抑制 sweep 中的 0x41 抢占 retarget.
     private var receiverSweepActive: Bool = false
+    /// 热插拔 takeover 去抖: 用户疯狂快切时, 0x41 连接不立即接管, 等该 slot 稳定在线
+    /// receiverTakeoverDebounceDelay 后才 discovery+divert; 窗口内又断开就取消. 一次性(每事件重置),
+    /// 非周期轮询, 不违红线(§2). 按 slot 各自去抖.
+    private var receiverTakeoverDebounce: [UInt8: DispatchWorkItem] = [:]
+    private static let receiverTakeoverDebounceDelay: TimeInterval = 0.4
 
     // MARK: - Receiver Enumeration State
     private(set) var receiverPairedDevices: [ReceiverPairedDevice] = []
@@ -1087,6 +1092,8 @@ class LogiDeviceSession {
         receiverManagedSlots.removeAll()
         pendingDivertSlots.removeAll()
         receiverInspectionSlot = nil
+        receiverTakeoverDebounce.values.forEach { $0.cancel() }
+        receiverTakeoverDebounce.removeAll()
         discoveryTimer?.invalidate()
         discoveryTimer = nil
         controlInfoQueryTimer?.invalidate()
@@ -1944,12 +1951,34 @@ class LogiDeviceSession {
             case .ignore:
                 break
             case .takeover(let slot):
-                handleReceiverSlotTakeover(slot: slot)
+                scheduleReceiverSlotTakeover(slot: slot)
             case .release(let slot):
+                cancelReceiverSlotTakeoverDebounce(slot: slot)
                 handleReceiverSlotRelease(slot: slot)
             }
             NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
         }
+    }
+
+    /// 去抖调度 takeover: 每次 0x41 连接重置定时器, 该 slot 稳定在线 debounce 窗口后才真正接管.
+    /// 疯狂快切期间连接/断开成对到达, 定时器被反复取消, 一次发现都不触发.
+    private func scheduleReceiverSlotTakeover(slot: UInt8) {
+        receiverTakeoverDebounce[slot]?.cancel()
+        let item = DispatchWorkItem { [weak self] in
+            guard let self = self else { return }
+            self.receiverTakeoverDebounce[slot] = nil
+            // 去抖窗口结束时仍在线且仍未接管才真正 takeover.
+            let connected = self.receiverPairedDevices.first(where: { $0.slot == slot })?.isConnected ?? false
+            guard connected, !self.receiverManagedSlots.contains(slot) else { return }
+            self.handleReceiverSlotTakeover(slot: slot)
+        }
+        receiverTakeoverDebounce[slot] = item
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.receiverTakeoverDebounceDelay, execute: item)
+    }
+
+    private func cancelReceiverSlotTakeoverDebounce(slot: UInt8) {
+        receiverTakeoverDebounce[slot]?.cancel()
+        receiverTakeoverDebounce[slot] = nil
     }
 
     /// 某接管 slot 断开: 只释放该 slot 的按键状态并标记未 init, 不动别的 slot.
