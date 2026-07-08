@@ -91,8 +91,6 @@ class LogiDeviceSession {
     }
 
     // MARK: - HID++ State
-    private var featureIndex: [UInt16: UInt8] = [:]
-    private var divertedCIDs: Set<UInt16> = []
     private var buttonStateTracker = LogiButtonStateTracker()
     private var deviceIndex: UInt8 = 0x01
     private var isBLE: Bool = false
@@ -122,14 +120,57 @@ class LogiDeviceSession {
     private var reportingQueryTimer: Timer?
     private static let reprogQueryTimeout: TimeInterval = 1.0
     private static let bleControlInfoRetryLimit = 1
-    private var controlInfoRetryCounts: [Int: Int] = [:]
 
-    // MARK: - Reprog Controls State
-    private var reprogControlCount: Int = 0
-    private var reprogQueryIndex: Int = 0
-    private var discoveredControls: [ControlInfo] = []
-    private var reprogInitComplete: Bool = false  // init 完成后, function 0 = button event 而非 GetControlCount
-    private var reportingQueryIndex: Int = 0      // GetControlReporting 逐按键查询进度
+    // MARK: - Per-Slot State (按 slot 拆分, 支持接收器多设备并行接管)
+    // 接收器一个 HID++ 接口转发 6 个 slot 的设备 (report[1]=deviceIndex 区分). 每个 slot
+    // 是一台独立设备, feature/divert/reprog 发现进度各自独立. deviceIndex 作为"当前巡检游标",
+    // 下列计算属性透明路由到该游标 slot 的状态; BLE 直连用 0xFF slot, 单目标语义与拆分前一致.
+    struct PerSlotState {
+        var featureIndex: [UInt16: UInt8] = [:]
+        var divertedCIDs: Set<UInt16> = []
+        var discoveredControls: [ControlInfo] = []
+        var reprogInitComplete: Bool = false  // init 完成后, function 0 = button event 而非 GetControlCount
+        var reprogControlCount: Int = 0
+        var reprogQueryIndex: Int = 0
+        var reportingQueryIndex: Int = 0      // GetControlReporting 逐按键查询进度
+        var controlInfoRetryCounts: [Int: Int] = [:]
+        var lastApplied: Set<UInt16> = []     // divert 对账缓存: 上次下发的 divert 目标集
+    }
+
+    private var slotStates: [UInt8: PerSlotState] = [:]
+
+    private var featureIndex: [UInt16: UInt8] {
+        get { slotStates[deviceIndex]?.featureIndex ?? [:] }
+        set { slotStates[deviceIndex, default: PerSlotState()].featureIndex = newValue }
+    }
+    private var divertedCIDs: Set<UInt16> {
+        get { slotStates[deviceIndex]?.divertedCIDs ?? [] }
+        set { slotStates[deviceIndex, default: PerSlotState()].divertedCIDs = newValue }
+    }
+    private var discoveredControls: [ControlInfo] {
+        get { slotStates[deviceIndex]?.discoveredControls ?? [] }
+        set { slotStates[deviceIndex, default: PerSlotState()].discoveredControls = newValue }
+    }
+    private var reprogInitComplete: Bool {
+        get { slotStates[deviceIndex]?.reprogInitComplete ?? false }
+        set { slotStates[deviceIndex, default: PerSlotState()].reprogInitComplete = newValue }
+    }
+    private var reprogControlCount: Int {
+        get { slotStates[deviceIndex]?.reprogControlCount ?? 0 }
+        set { slotStates[deviceIndex, default: PerSlotState()].reprogControlCount = newValue }
+    }
+    private var reprogQueryIndex: Int {
+        get { slotStates[deviceIndex]?.reprogQueryIndex ?? 0 }
+        set { slotStates[deviceIndex, default: PerSlotState()].reprogQueryIndex = newValue }
+    }
+    private var reportingQueryIndex: Int {
+        get { slotStates[deviceIndex]?.reportingQueryIndex ?? 0 }
+        set { slotStates[deviceIndex, default: PerSlotState()].reportingQueryIndex = newValue }
+    }
+    private var controlInfoRetryCounts: [Int: Int] {
+        get { slotStates[deviceIndex]?.controlInfoRetryCounts ?? [:] }
+        set { slotStates[deviceIndex, default: PerSlotState()].controlInfoRetryCounts = newValue }
+    }
 
     /// 握手终态: receiver 枚举完成 / direct 设备 discovery 走到终点(成功或失败).
     /// sidebar 圆点据此判定 Ready vs Initializing; 与 reprogInitComplete 不同 —— 后者不覆盖
@@ -309,7 +350,11 @@ class LogiDeviceSession {
 
     /// CID set last passed to setControlReporting. Diffed against next applyUsage's
     /// projection so we only emit setControlReporting for state changes.
-    internal var lastApplied: Set<UInt16> = []
+    /// 按 slot 拆分 (存 PerSlotState), 计算属性路由到当前巡检游标 slot.
+    internal var lastApplied: Set<UInt16> {
+        get { slotStates[deviceIndex]?.lastApplied ?? [] }
+        set { slotStates[deviceIndex, default: PerSlotState()].lastApplied = newValue }
+    }
     private var pendingSetControlReportingAcks: [UInt16: PendingSetControlReportingAck] = [:]
     private var divertReassertionWorkItem: DispatchWorkItem?
     private let bleStandardButtonUndivertPlanner = LogiBLEStandardButtonUndivertPlanner()
