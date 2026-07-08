@@ -1743,9 +1743,6 @@ class LogiDeviceSession {
         if didDivert && stillConnected {
             receiverManagedSlots.insert(slot)
         }
-        if slot == receiverInspectionSlot {
-            probeOptionalFeatures()  // 仅巡检 slot 探测可选功能; probeOptionalFeatures 自带 once 守卫
-        }
         if !pendingDivertSlots.isEmpty {
             discoverNextSweepSlot()
         } else {
@@ -1753,12 +1750,28 @@ class LogiDeviceSession {
         }
     }
 
+    /// 该 slot 已发现的控件是否像鼠标: 有标准 Left(0x50)+Right(0x51)点击, 键盘没有.
+    private func slotLooksLikeMouse(_ slot: UInt8) -> Bool {
+        guard let controls = slotStates[slot]?.discoveredControls else { return false }
+        return Self.controlsLookLikeMouse(cids: Set(controls.map { $0.cid }))
+    }
+
+    /// 纯判定: 一组已发现的 CID 是否像鼠标. 用于类型不可知的接收器(寄存器 0xB5 返 InvalidSubID,
+    /// deviceType 恒为 0): sweep 后据实际控件把巡检游标落到真正的鼠标, 无需额外 HID++ 流量.
+    static func controlsLookLikeMouse(cids: Set<UInt16>) -> Bool {
+        return cids.contains(0x0050) && cids.contains(0x0051)  // Left + Right click
+    }
+
     private func finishReceiverSweep() {
         receiverSweepActive = false
-        if let inspection = receiverInspectionSlot {
-            deviceIndex = inspection  // 路由游标停靠巡检 slot
-        }
-        LogiDebugPanel.log("[\(deviceInfo.name)] Takeover sweep complete: managed=\(receiverManagedSlots.sorted()) cursor=\(deviceIndex)")
+        // 巡检游标: 优先落到真正的鼠标(据发现的控件判定, 键盘无 Left/Right); 无鼠标回退预选 slot.
+        // 修类型不可知接收器上"游标回退到键盘, 面板默认显示键盘"的问题.
+        let mouseSlot = receiverManagedSlots.sorted().first(where: { slotLooksLikeMouse($0) })
+        deviceIndex = mouseSlot ?? receiverInspectionSlot ?? deviceIndex
+        // 在最终巡检的那台(鼠标)探测可选功能(haptic/scrollForce 等). 移到此处(而非逐 slot)
+        // 才能只探测巡检的鼠标而非 sweep 最后一个 slot. probeOptionalFeatures 自带 once 守卫.
+        probeOptionalFeatures()
+        LogiDebugPanel.log("[\(deviceInfo.name)] Takeover sweep complete: managed=\(receiverManagedSlots.sorted()) cursor=\(deviceIndex)\(mouseSlot != nil ? " (mouse)" : "")")
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
         // sweep 结束后再排空一次: 消费其间因 0x41 新入队的 slot.
         pumpPendingDivertQueue()

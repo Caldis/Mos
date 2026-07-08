@@ -197,6 +197,26 @@ final class LogiReceiverConnectionStateTests: XCTestCase {
         )
     }
 
+    // MARK: - controlsLookLikeMouse (类型不可知接收器上据控件识别鼠标)
+
+    func testControlsLookLikeMouseWithLeftAndRight() {
+        // 鼠标: 有 Left(0x50) + Right(0x51) + 其它
+        XCTAssertTrue(LogiDeviceSession.controlsLookLikeMouse(
+            cids: [0x0050, 0x0051, 0x0052, 0x0053, 0x00C3]))
+    }
+
+    func testControlsLookLikeKeyboardWithoutLeftRight() {
+        // 键盘: media/backlight 类 CID, 无标准 Left/Right
+        XCTAssertFalse(LogiDeviceSession.controlsLookLikeMouse(
+            cids: [0x00D1, 0x00D2, 0x00E2, 0x00E5, 0x0103]))
+    }
+
+    func testControlsLookLikeMouseNeedsBothButtons() {
+        XCTAssertFalse(LogiDeviceSession.controlsLookLikeMouse(cids: [0x0050]))
+        XCTAssertFalse(LogiDeviceSession.controlsLookLikeMouse(cids: [0x0051]))
+        XCTAssertFalse(LogiDeviceSession.controlsLookLikeMouse(cids: []))
+    }
+
     func testReportRouteDropsOutOfRangeSlot() {
         XCTAssertEqual(
             LogiDeviceSession.receiverReportRoute(incomingSlot: 0, currentSlot: 1, managedSlots: [1]),
