@@ -1844,7 +1844,8 @@ class LogiDeviceSession {
     /// 巡检 slot 完成时探测其可选功能(§4.3, 与队列顺序无关); 队列还有 slot 则发现下一个,
     /// 否则收尾. 手动 rediscover(sweep 未激活)不进此路径. 全部离散事件驱动, 无周期活动.
     private func receiverSlotDiscoveryDidFinish(didDivert: Bool) {
-        guard receiverSweepActive else { return }
+        // 非 sweep 发现终点(无 REPROG / 0 控件的手动 rediscover)也要排空热插拔队列.
+        guard receiverSweepActive else { pumpPendingDivertQueue(); return }
         let slot = deviceIndex
         // 防快速切换(flap)竞态: 若该 slot 在发现过程中已断开, 不标记 managed, 否则重连时会被
         // "已 managed -> ignore" 挡住而不再重新 divert. 断开后重连会由 0x41 重新触发 takeover.
@@ -1869,6 +1870,8 @@ class LogiDeviceSession {
         }
         LogiDebugPanel.log("[\(deviceInfo.name)] Takeover sweep complete: managed=\(receiverManagedSlots.sorted()) cursor=\(deviceIndex)")
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+        // sweep 结束后再排空一次: 消费其间因 0x41 新入队的 slot.
+        pumpPendingDivertQueue()
     }
 
     /// 处理 receiver register 响应
@@ -1996,22 +1999,28 @@ class LogiDeviceSession {
         LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(slot) disconnected; released takeover state (managed=\(receiverManagedSlots.sorted()))")
     }
 
-    /// 某 divert 候选 slot(重新)连接: 起该 slot 一次 discovery+divert.
-    /// 入接管队列; 若当前无发现在飞则立即起 sweep 处理, 否则由进行中的 sweep 依次消费.
+    /// 某 divert 候选 slot(重新)连接: 入接管队列并尝试排空.
     private func handleReceiverSlotTakeover(slot: UInt8) {
         // 已排队 / 正在发现该 slot -> 不重复.
         if pendingDivertSlots.contains(slot) { return }
         if receiverSweepActive && deviceIndex == slot { return }
         pendingDivertSlots.append(slot)
+        LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(slot) (re)connected; queued for takeover")
+        pumpPendingDivertQueue()
+    }
+
+    /// 排空接管队列: 若有待接管 slot 且当前无发现在飞, 起 sweep 逐个消费(§3.1 串行).
+    /// 必须在每个发现/上报查询终点调用, 保证热插拔期间入队的 slot 最终一定被处理 ——
+    /// 不能只靠 receiverSweepActive, 否则"入队时正好有非 sweep 发现在飞"的 slot 会被永久搁置
+    /// (真机复现: mx4 重连时被 queued 后从未 discovery, 拇指键退回原生鼠标键).
+    private func pumpPendingDivertQueue() {
+        guard !receiverSweepActive, !pendingDivertSlots.isEmpty else { return }
         let anyDiscoveryInFlight = discoveryTimer != nil || controlInfoQueryTimer != nil
             || reportingQueryTimer != nil || !pendingDiscovery.isEmpty
-        if !receiverSweepActive && !anyDiscoveryInFlight {
-            LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(slot) (re)connected; starting takeover")
-            receiverSweepActive = true
-            discoverNextSweepSlot()
-        } else {
-            LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(slot) (re)connected; queued for takeover (discovery in flight)")
-        }
+        guard !anyDiscoveryInFlight else { return }
+        LogiDebugPanel.log("[\(deviceInfo.name)] Draining takeover queue \(pendingDivertSlots)")
+        receiverSweepActive = true
+        discoverNextSweepSlot()
     }
 
     // MARK: - Report Decoding (for debug panel)
@@ -2516,6 +2525,9 @@ class LogiDeviceSession {
             }
             return
         }
+        // 可选功能探测链走完(pendingDiscovery 此刻已空): 排空热插拔期间入队的 slot.
+        // 探测链较长(~18 个 feature, 含超时), 期间设备重连很常见, 必须在此排空避免搁置.
+        pumpPendingDivertQueue()
     }
 
     /// 每个 feature 发现后发对应通知: 有专属 context 的走各自通知 (面板据此补行 + 建 context),
@@ -3775,6 +3787,8 @@ class LogiDeviceSession {
             receiverSlotDiscoveryDidFinish(didDivert: true)
         } else {
             probeOptionalFeatures()
+            // 非 sweep 发现(refresh / 手动 rediscover)完成: 排空热插拔期间入队的 slot.
+            pumpPendingDivertQueue()
         }
     }
 
