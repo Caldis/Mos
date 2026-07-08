@@ -105,6 +105,22 @@ struct HIDPPInfo {
         0x2201: ("AdjustableDPI", "DPI adjustment"),
         0x2205: ("PointerSpeed", "Pointer speed control"),
         0x4521: ("HiResWheel", "Hi-res scroll wheel"),
+        // 扩展可选功能 (MX Master 4 等); 由串行探测填充到 FEATURES 表
+        0x1010: ("ChargingControl", "Charging behavior control"),
+        0x1802: ("DeviceReset", "Reset device to factory"),
+        0x19C0: ("ForceSensing", "Force-sensing button threshold"),
+        0x1C00: ("PersistentRemap", "Persistent button mapping"),
+        0x2001: ("LeftRightSwap", "Swap left/right buttons"),
+        0x2006: ("AxisOrientation", "Pointer axis orientation"),
+        0x2130: ("LowResWheel", "Low-res wheel / diversion"),
+        0x2202: ("ExtendedDPI", "Extended DPI (per-axis, high)"),
+        0x2230: ("AngleSnapping", "Angle snapping"),
+        0x2240: ("SurfaceTuning", "Surface calibration"),
+        0x2250: ("XYStats", "XY movement stats"),
+        0x2251: ("WheelStats", "Wheel usage stats"),
+        0x8060: ("ReportRate", "Report / polling rate"),
+        0x8061: ("ExtReportRate", "Extended report rate"),
+        0x8100: ("OnboardProfiles", "Onboard profiles"),
     ]
 
     static let controlFlagBits: [(bit: Int, short: String, desc: String)] = [
@@ -212,6 +228,23 @@ struct HIDPPFeatureActions {
             HIDPPFeatureAction(name: "SetDPI", functionId: 0x02, paramType: .hex, defaultParams: [0x00, 0x00, 0x03, 0x20]),
             HIDPPFeatureAction(name: "GetDPIList", functionId: 0x03, paramType: .index, defaultParams: []),
         ],
+        // Report Rate (0x8060): fn0 档位位图, fn1 读当前, fn2 写 (值=ms 1-8)
+        0x8060: [
+            HIDPPFeatureAction(name: "GetRateList", functionId: 0x00, paramType: .none, defaultParams: []),
+            HIDPPFeatureAction(name: "GetRate", functionId: 0x01, paramType: .none, defaultParams: []),
+            HIDPPFeatureAction(name: "SetRate", functionId: 0x02, paramType: .hex, defaultParams: [0x01]),
+        ],
+        // Extended Report Rate (0x8061): fn1 caps 位图, fn2 读, fn3 写 (值=档位 index 0-6)
+        0x8061: [
+            HIDPPFeatureAction(name: "GetCapabilities", functionId: 0x01, paramType: .none, defaultParams: []),
+            HIDPPFeatureAction(name: "GetRate", functionId: 0x02, paramType: .none, defaultParams: []),
+            HIDPPFeatureAction(name: "SetRate", functionId: 0x03, paramType: .hex, defaultParams: [0x00]),
+        ],
+        // Extended Adjustable DPI (0x2202): 只放安全的读操作; 写 (fn6) 参数因传感器而异, 用 hex 手动发
+        0x2202: [
+            HIDPPFeatureAction(name: "GetSensorCount", functionId: 0x00, paramType: .none, defaultParams: []),
+            HIDPPFeatureAction(name: "GetSensorDPI", functionId: 0x05, paramType: .index, defaultParams: []),
+        ],
     ]
 
     static func actions(for featureId: UInt16) -> [HIDPPFeatureAction] {
@@ -305,6 +338,16 @@ class LogiDebugPanel: NSObject {
     private var scrollForcePendingTorque: UInt8?
     private var scrollForceLastSentTorque: UInt8?
 
+    // MARK: - Force Sensing Context (0x19C0)
+
+    private var forceSensingSlider: NSSlider?
+    private var forceSensingValueLabel: NSTextField?
+    private var forceSensingAutoQueryStamp: (session: ObjectIdentifier, at: Date)?
+    /// 阈值写入 trailing 去抖, 与 scroll force 同构
+    private var forceSensingSendWork: DispatchWorkItem?
+    private var forceSensingPendingValue: UInt16?
+    private var forceSensingLastSentValue: UInt16?
+
     // MARK: - Log
 
     private var logTableView: NSTableView!
@@ -338,6 +381,8 @@ class LogiDebugPanel: NSObject {
     private var spinnerObserver: NSObjectProtocol?
     private var hapticStateObserver: NSObjectProtocol?
     private var scrollForceStateObserver: NSObjectProtocol?
+    private var forceSensingStateObserver: NSObjectProtocol?
+    private var auxiliaryFeaturesObserver: NSObjectProtocol?
     private var windowCloseObserver: NSObjectProtocol?
 
     // Header 文本基座 (不含 spinner 后缀); spinner tick 时与当前帧拼接.
@@ -1228,6 +1273,10 @@ class LogiDebugPanel: NSObject {
                 buildScrollForceContext(in: container, session: session, width: w)
                 return
             }
+            if featureId == LogiDeviceSession.featureForceSensing, let session = currentSession {
+                buildForceSensingContext(in: container, session: session, width: w)
+                return
+            }
             let actions = HIDPPFeatureActions.actions(for: featureId)
             for action in actions {
                 let btn = makeActionBtn(title: action.name, action: #selector(featureActionClicked(_:)))
@@ -1528,6 +1577,109 @@ class LogiDebugPanel: NSObject {
 
     @objc private func scrollForceReadStateClicked() {
         currentSession?.scrollForceRefreshInfo()
+    }
+
+    // MARK: - Force Sensing Context UI
+
+    /// 0x19C0 (Force Sensing Button) 选中时的操作区: 按压激活阈值滑杆 (即 Logi Options+ 的力度感应).
+    /// 布局语言与 Haptic / Scroll Force 一致; 滑杆量程用设备上报的 min/max.
+    private func buildForceSensingContext(in container: NSView, session: LogiDeviceSession, width w: CGFloat) {
+        let info = session.debugForceSensingInfo
+        let current = session.debugForceSensingCurrent
+        var by: CGFloat = 0
+
+        // 首次选中自动拉取按钮能力 (fn1) + 当前力度 (fn2); 同一 session 1s 节流
+        if info == nil || current == nil {
+            let sid = ObjectIdentifier(session)
+            let throttled = forceSensingAutoQueryStamp.map {
+                $0.session == sid && Date().timeIntervalSince($0.at) < 1.0
+            } ?? false
+            if !throttled {
+                forceSensingAutoQueryStamp = (sid, Date())
+                session.forceSensingRefreshInfo()
+            }
+        }
+
+        let changeable = info?.changeable ?? true  // 能力未知前不禁用 (乐观)
+        let hasData = info != nil && current != nil
+
+        let hdr = makeSectionHeader("FORCE SENSING")
+        hdr.frame = NSRect(x: L.pad, y: by, width: w - 50, height: 14)
+        container.addSubview(hdr)
+
+        let valueText: String
+        if info?.changeable == false {
+            valueText = "Locked"
+        } else if let current = current {
+            valueText = "\(current)"
+        } else {
+            valueText = "—"
+        }
+        let valueLabel = makeLabel(text: valueText, fontSize: 10, weight: .medium, color: .secondaryLabelColor)
+        valueLabel.alignment = .right
+        valueLabel.frame = NSRect(x: L.pad + w - 50, y: by, width: 50, height: 14)
+        container.addSubview(valueLabel)
+        self.forceSensingValueLabel = valueLabel
+        by += 16
+
+        // 量程用设备上报的 min/max; 未知时给个安全占位 0-100, maxValue 至少比 min 大 1 防非法 range
+        let minV = Double(info?.minValue ?? 0)
+        let maxV = max(minV + 1, Double(info?.maxValue ?? 100))
+        let cur = min(max(Double(current ?? UInt16(minV)), minV), maxV)
+        let slider = NSSlider(value: cur, minValue: minV, maxValue: maxV,
+                              target: self, action: #selector(forceSensingChanged(_:)))
+        slider.controlSize = .small
+        slider.isContinuous = true
+        slider.isEnabled = changeable && hasData
+        slider.frame = NSRect(x: L.pad, y: by, width: w, height: 18)
+        container.addSubview(slider)
+        self.forceSensingSlider = slider
+        by += 18 + L.btnGap + 2
+
+        let readBtn = makeActionBtn(title: "Read State", action: #selector(forceSensingReadStateClicked))
+        readBtn.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
+        container.addSubview(readBtn)
+        by += L.btnH + 6
+
+        let noteText: String
+        if info?.changeable == false {
+            noteText = "Force not changeable on this device"
+        } else if let info = info {
+            noteText = "Press-activation force (\(info.minValue)-\(info.maxValue))"
+        } else {
+            noteText = "Press-activation force threshold"
+        }
+        let note = makeLabel(text: noteText, fontSize: 9, color: .tertiaryLabelColor)
+        note.frame = NSRect(x: L.pad, y: by, width: w, height: 12)
+        note.cell?.lineBreakMode = .byTruncatingTail
+        container.addSubview(note)
+    }
+
+    @objc private func forceSensingChanged(_ sender: NSSlider) {
+        let v = UInt16(clamping: sender.integerValue)
+        forceSensingValueLabel?.stringValue = "\(v)"
+        // 拖动 / 按下过程只联动数字, 不下发
+        let eventType = NSApp.currentEvent?.type
+        guard eventType != .leftMouseDragged && eventType != .leftMouseDown else { return }
+        scheduleForceSensingSend(v)
+    }
+
+    /// 阈值写入去抖: 去重 + 80ms trailing, 与 scroll force 同构, 防 HID 洪泛
+    private func scheduleForceSensingSend(_ value: UInt16) {
+        guard value != forceSensingLastSentValue else { return }
+        forceSensingPendingValue = value
+        forceSensingSendWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            guard let self = self, let v = self.forceSensingPendingValue else { return }
+            self.forceSensingLastSentValue = v
+            self.currentSession?.forceSensingSetCurrent(v)
+        }
+        forceSensingSendWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08, execute: work)
+    }
+
+    @objc private func forceSensingReadStateClicked() {
+        currentSession?.forceSensingRefreshInfo()
     }
 
     @objc private func indexMinusClicked() {
@@ -2063,6 +2215,40 @@ class LogiDebugPanel: NSObject {
                 self.updateContextActions()
             }
         }
+        forceSensingStateObserver = NotificationCenter.default.addObserver(
+            forName: LogiDeviceSession.forceSensingStateDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let session = notification.object as? LogiDeviceSession,
+                  session === self.currentSession else { return }
+            // 0x19C0 刚被发现: FEATURES 表补行, 还原之前的行选中 (reload 会清选中)
+            if !self.featureRows.contains(where: { $0.featureId == LogiDeviceSession.featureForceSensing }) {
+                let prior = self.selectedFeatureId
+                self.refreshFeatureTable()
+                if let fid = prior,
+                   let row = self.featureRows.firstIndex(where: { $0.featureId == fid }) {
+                    self.featureTableView?.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+                }
+            }
+            // 正在展示 force sensing 操作区: 用最新 info / current 重建 (滑杆量程与位置)
+            if self.selectedFeatureId == LogiDeviceSession.featureForceSensing {
+                self.updateContextActions()
+            }
+        }
+        auxiliaryFeaturesObserver = NotificationCenter.default.addObserver(
+            forName: LogiDeviceSession.auxiliaryFeaturesDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let session = notification.object as? LogiDeviceSession,
+                  session === self.currentSession else { return }
+            // 无专属 context 的可选 feature 被发现: 只补 FEATURES 表, 保留当前行选中
+            let prior = self.selectedFeatureId
+            self.refreshFeatureTable()
+            if let fid = prior,
+               let row = self.featureRows.firstIndex(where: { $0.featureId == fid }) {
+                self.featureTableView?.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+            }
+        }
     }
 
     private func stopObserving() {
@@ -2087,6 +2273,14 @@ class LogiDebugPanel: NSObject {
         if let o = scrollForceStateObserver {
             NotificationCenter.default.removeObserver(o)
             scrollForceStateObserver = nil
+        }
+        if let o = forceSensingStateObserver {
+            NotificationCenter.default.removeObserver(o)
+            forceSensingStateObserver = nil
+        }
+        if let o = auxiliaryFeaturesObserver {
+            NotificationCenter.default.removeObserver(o)
+            auxiliaryFeaturesObserver = nil
         }
         // Layout observers (frame change) are not tracked here — they're tied to the views
         // and auto-removed when the views are deallocated.

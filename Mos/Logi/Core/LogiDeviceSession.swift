@@ -224,6 +224,8 @@ class LogiDeviceSession {
     /// SmartShift v2 / enhanced: 提供可调 ratchet torque (即 Logi Options+ 的 Scroll force 齿感力度).
     /// internal: Debug 面板需要引用同一常量.
     static let featureSmartShiftEnhanced: UInt16 = 0x2111
+    /// Force Sensing Button (MX Master 4 压感按钮): 调节按压激活阈值. internal: Debug 面板需引用.
+    static let featureForceSensing: UInt16 = 0x19C0
     private static let hidppShortReportId: UInt8 = 0x10
     private static let hidppLongReportId: UInt8 = 0x11
     private static let hidppErrorFeatureIdx: UInt8 = 0xFF
@@ -1032,8 +1034,7 @@ class LogiDeviceSession {
         guard !handshakeComplete else { return }
         handshakeComplete = true
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
-        probeHapticFeature()
-        probeScrollForceFeature()
+        probeOptionalFeatures()
     }
 
     /// discoveryInFlight 切换 + 通知. idempotent: 只在状态变化时 post.
@@ -1269,8 +1270,10 @@ class LogiDeviceSession {
     func rediscoverFeatures() {
         cancelInflightDiscovery()
         featureIndex.removeAll()
+        resetOptionalProbeState()
         resetHapticDiscoveryState()
         resetScrollForceDiscoveryState()
+        resetForceSensingState()
         discoveredControls.removeAll()
         reprogInitComplete = false
         handshakeComplete = false  // 允许 markHandshakeComplete 再次 post sessionChanged 以刷右侧面板
@@ -1373,8 +1376,10 @@ class LogiDeviceSession {
         deviceIndex = slot
         // 重置 feature 状态, 等待新一轮 discovery
         featureIndex.removeAll()
-        resetHapticDiscoveryState()  // 新 slot 是另一台设备, haptic 状态/探测守卫必须清零
+        resetOptionalProbeState()  // 新 slot 是另一台设备, 探测守卫与所有缓存状态必须清零
+        resetHapticDiscoveryState()
         resetScrollForceDiscoveryState()
+        resetForceSensingState()
         discoveredControls.removeAll()
         reprogInitComplete = false
         handshakeComplete = false  // 允许 markHandshakeComplete 再次 post, 使 sidebar/panels 刷新回 loading/ready 切换
@@ -1899,6 +1904,24 @@ class LogiDeviceSession {
             default: return "ScrollForce.func\(funcId) response"
             }
         }
+        // Force Sensing (0x19C0) responses
+        if let fsIdx = featureIndex[Self.featureForceSensing], featIdx == fsIdx {
+            switch funcId {
+            case 0: return "ForceSensing.ButtonCount"
+            case 1:
+                if let info = Self.parseForceSensingInfo(report) {
+                    return "ForceSensing.Info: changeable=\(info.changeable), range=\(info.minValue)-\(info.maxValue), default=\(info.defaultValue)"
+                }
+                return "ForceSensing.Info"
+            case 2:
+                if let current = Self.parseForceSensingCurrent(report) {
+                    return "ForceSensing.Current: \(current)"
+                }
+                return "ForceSensing.Current"
+            case 3: return "ForceSensing.SetConfig ACK"
+            default: return "ForceSensing.func\(funcId) response"
+            }
+        }
 
         // SmartShift or other feature notifications
         if let name = findFeatureName(forIndex: featIdx) {
@@ -2130,24 +2153,85 @@ class LogiDeviceSession {
     private(set) var hapticState: HapticState? = nil
     /// GetCapabilities (fn0) 返回的波形支持位掩码 (bit n = waveform ID n); 未查询过为 nil
     private(set) var hapticWaveformMask: UInt32? = nil
-    private var hapticProbeSent = false
 
     var debugHapticState: HapticState? { hapticState }
     var debugHapticWaveformMask: UInt32? { hapticWaveformMask }
 
-    /// 握手完成后探测一次 HAPTIC feature, 让 Debug 面板 FEATURES 表能列出它.
-    /// 不支持的设备 IRoot 返回 index 0 → callback nil, 仅多一条被忽略的请求.
-    private func probeHapticFeature() {
-        guard !hapticProbeSent else { return }
-        hapticProbeSent = true
-        guard featureIndex[Self.featureHaptic] == nil else { return }  // 缓存已含, 无需探测
-        discoverFeature(featureId: Self.featureHaptic) { [weak self] idx in
-            guard let self = self, let idx = idx else { return }
-            self.featureIndex[Self.featureHaptic] = idx
-            Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
-            LogiDebugPanel.log("[\(self.deviceInfo.name)] HAPTIC (0x19B0) at index \(String(format: "0x%02X", idx))")
-            NotificationCenter.default.post(name: Self.hapticStateDidChangeNotification, object: self)
+    // MARK: - Optional Feature Probing (串行)
+
+    /// 面板可选功能探测清单. 前三个有专属 context (haptic / scroll force / force sensing),
+    /// 其余仅需在 FEATURES 表列出 + 命名/通用 action. 顺序无关紧要, 但必须逐个串行探测.
+    private static let optionalProbeFeatures: [UInt16] = [
+        featureHaptic,             // 0x19B0
+        featureSmartShiftEnhanced, // 0x2111
+        featureForceSensing,       // 0x19C0
+        0x8060, 0x8061,            // Report Rate / Extended Report Rate
+        0x2202,                    // Extended Adjustable DPI
+        0x2001,                    // Left/Right Swap
+        0x2006,                    // Pointer Axis Orientation
+        0x2130,                    // LowRes Wheel
+        0x2230,                    // Angle Snapping
+        0x2240,                    // Surface Tuning
+        0x2250, 0x2251,            // XY Stats / Wheel Stats
+        0x1010,                    // Charging Control
+        0x1802,                    // Device Reset
+        0x1C00,                    // Persistent Remappable Action
+        0x8100,                    // Onboard Profiles
+    ]
+    private var optionalProbeSent = false
+    private var optionalProbeIndex = 0
+
+    /// 握手完成后探测一批可选 feature, 让 Debug 面板 FEATURES 表能列出它们.
+    /// 必须串行 (一次一个): IRoot getFeature 响应不带 featureId, handleDiscoveryResponse
+    /// 只能按 pendingDiscovery 唯一项匹配; 并发探测会把 index 张冠李戴.
+    private func probeOptionalFeatures() {
+        guard !optionalProbeSent else { return }
+        optionalProbeSent = true
+        optionalProbeIndex = 0
+        probeNextOptionalFeature()
+    }
+
+    private func probeNextOptionalFeature() {
+        while optionalProbeIndex < Self.optionalProbeFeatures.count {
+            let fid = Self.optionalProbeFeatures[optionalProbeIndex]
+            optionalProbeIndex += 1
+            if featureIndex[fid] != nil {
+                // 缓存已含: 无需探测, 直接发对应通知让 UI 补行/建 context, 继续下一个
+                postOptionalFeatureNotification(fid)
+                continue
+            }
+            discoverFeature(featureId: fid) { [weak self] idx in
+                guard let self = self else { return }
+                if let idx = idx {
+                    self.featureIndex[fid] = idx
+                    Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+                    LogiDebugPanel.log("[\(self.deviceInfo.name)] feature \(String(format: "0x%04X", fid)) at index \(String(format: "0x%02X", idx))")
+                    self.postOptionalFeatureNotification(fid)
+                }
+                self.probeNextOptionalFeature()  // 串行: 本次 discovery 完成后再发下一个
+            }
+            return
         }
+    }
+
+    /// 每个 feature 发现后发对应通知: 有专属 context 的走各自通知 (面板据此补行 + 建 context),
+    /// 其余统一走 auxiliary 通知 (面板仅刷新 FEATURES 表).
+    private func postOptionalFeatureNotification(_ fid: UInt16) {
+        switch fid {
+        case Self.featureHaptic:
+            NotificationCenter.default.post(name: Self.hapticStateDidChangeNotification, object: self)
+        case Self.featureSmartShiftEnhanced:
+            NotificationCenter.default.post(name: Self.scrollForceStateDidChangeNotification, object: self)
+        case Self.featureForceSensing:
+            NotificationCenter.default.post(name: Self.forceSensingStateDidChangeNotification, object: self)
+        default:
+            NotificationCenter.default.post(name: Self.auxiliaryFeaturesDidChangeNotification, object: self)
+        }
+    }
+
+    private func resetOptionalProbeState() {
+        optionalProbeSent = false
+        optionalProbeIndex = 0
     }
 
     /// 查询 capabilities (fn0) + 当前状态 (fn1); 响应在 handleInputReport 解析后发通知
@@ -2202,7 +2286,6 @@ class LogiDeviceSession {
     /// rediscover / 切 slot 会清空 featureIndex, haptic 的探测守卫与缓存状态必须一并复位,
     /// 否则 Haptic 行永久消失 (probe 不再发) 或跨设备读到脏 state.
     private func resetHapticDiscoveryState() {
-        hapticProbeSent = false
         hapticState = nil
         hapticWaveformMask = nil
     }
@@ -2245,25 +2328,9 @@ class LogiDeviceSession {
     private(set) var scrollForceTunableTorque: Bool? = nil
     /// 最近一次 GetStatus (fn1) 解析结果; 未查询过为 nil
     private(set) var scrollForceStatus: ScrollForceStatus? = nil
-    private var scrollForceProbeSent = false
 
     var debugScrollForceTunableTorque: Bool? { scrollForceTunableTorque }
     var debugScrollForceStatus: ScrollForceStatus? { scrollForceStatus }
-
-    /// 握手完成后探测一次 0x2111, 让 Debug 面板 FEATURES 表能列出它.
-    /// 不支持的设备 IRoot 返回 index 0 → callback nil, 仅多一条被忽略的请求.
-    private func probeScrollForceFeature() {
-        guard !scrollForceProbeSent else { return }
-        scrollForceProbeSent = true
-        guard featureIndex[Self.featureSmartShiftEnhanced] == nil else { return }  // 缓存已含, 无需探测
-        discoverFeature(featureId: Self.featureSmartShiftEnhanced) { [weak self] idx in
-            guard let self = self, let idx = idx else { return }
-            self.featureIndex[Self.featureSmartShiftEnhanced] = idx
-            Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
-            LogiDebugPanel.log("[\(self.deviceInfo.name)] SmartShiftV2 (0x2111) at index \(String(format: "0x%02X", idx))")
-            NotificationCenter.default.post(name: Self.scrollForceStateDidChangeNotification, object: self)
-        }
-    }
 
     /// 查询 capabilities (fn0) + 当前状态 (fn1); 响应在 handleInputReport 解析后发通知
     func scrollForceRefreshInfo() {
@@ -2306,7 +2373,6 @@ class LogiDeviceSession {
     /// rediscover / 切 slot 会清空 featureIndex, scroll force 的探测守卫与缓存状态必须一并复位,
     /// 否则该行永久消失 (probe 不再发) 或跨设备读到脏 state.
     private func resetScrollForceDiscoveryState() {
-        scrollForceProbeSent = false
         scrollForceTunableTorque = nil
         scrollForceStatus = nil
     }
@@ -2321,6 +2387,99 @@ class LogiDeviceSession {
                     return
                 }
                 self.featureIndex[Self.featureSmartShiftEnhanced] = idx
+                Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+                body(idx)
+            }
+        }
+    }
+
+    // MARK: - Force Sensing Button (0x19C0)
+
+    /// Force sensing info / current 响应抵达或缓存更新时发出. object = 本 session.
+    static let forceSensingStateDidChangeNotification = Notification.Name("LogiForceSensingStateDidChange")
+    /// 无专属 context 的可选 feature 被发现时发出, 面板据此刷新 FEATURES 表. object = 本 session.
+    static let auxiliaryFeaturesDidChangeNotification = Notification.Name("LogiAuxiliaryFeaturesDidChange")
+
+    /// 只操作第 0 号压感按钮 (MX Master 4 仅一颗).
+    private static let forceSensingButtonNumber: UInt8 = 0
+
+    struct ForceSensingInfo: Equatable {
+        let changeable: Bool      // 固件是否允许改这颗按钮的力度
+        let minValue: UInt16
+        let maxValue: UInt16
+        let defaultValue: UInt16
+    }
+
+    /// fn1 GetButtonInfo 解析结果; 未查询过为 nil
+    private(set) var forceSensingInfo: ForceSensingInfo? = nil
+    /// fn2 GetButtonCurrent 当前力度; 未查询过为 nil
+    private(set) var forceSensingCurrent: UInt16? = nil
+
+    var debugForceSensingInfo: ForceSensingInfo? { forceSensingInfo }
+    var debugForceSensingCurrent: UInt16? { forceSensingCurrent }
+
+    /// 查询按钮能力 (fn1: changeable/min/max/default) + 当前力度 (fn2); 响应解析后发通知
+    func forceSensingRefreshInfo() {
+        withForceSensingFeature { [weak self] idx in
+            self?.sendRequest(featureIndex: idx, functionId: 1, params: [Self.forceSensingButtonNumber])
+            self?.sendRequest(featureIndex: idx, functionId: 2, params: [Self.forceSensingButtonNumber])
+        }
+    }
+
+    /// 设置按压激活阈值 (fn3 SetButtonConfig). clamp 到设备上报的 min/max, 写后回读 fn2 校准 UI.
+    func forceSensingSetCurrent(_ value: UInt16) {
+        let clamped = Self.forceSensingClamp(value, info: forceSensingInfo)
+        let params = Self.forceSensingSetCurrentParams(number: Self.forceSensingButtonNumber, current: clamped)
+        withForceSensingFeature { [weak self] idx in
+            guard let self = self else { return }
+            self.sendRequest(featureIndex: idx, functionId: 3, params: params)
+            self.sendRequest(featureIndex: idx, functionId: 2, params: [Self.forceSensingButtonNumber])
+        }
+    }
+
+    /// fn1 GetButtonInfo 响应: payload 为 4 个 BE UInt16 [changeable, default, max, min]
+    /// (对齐 Solaar struct "!HHHH"). changeable 取首个 UInt16 的 bit0.
+    private static func parseForceSensingInfo(_ report: UnsafeBufferPointer<UInt8>) -> ForceSensingInfo? {
+        guard report.count >= 12 else { return nil }
+        let changeable = (((UInt16(report[4]) << 8) | UInt16(report[5])) & 0x01) != 0
+        let defaultValue = (UInt16(report[6]) << 8) | UInt16(report[7])
+        let maxValue = (UInt16(report[8]) << 8) | UInt16(report[9])
+        let minValue = (UInt16(report[10]) << 8) | UInt16(report[11])
+        return ForceSensingInfo(changeable: changeable, minValue: minValue, maxValue: maxValue, defaultValue: defaultValue)
+    }
+
+    /// fn2 GetButtonCurrent 响应: payload[0:2] = 当前力度 (BE UInt16)
+    private static func parseForceSensingCurrent(_ report: UnsafeBufferPointer<UInt8>) -> UInt16? {
+        guard report.count >= 6 else { return nil }
+        return (UInt16(report[4]) << 8) | UInt16(report[5])
+    }
+
+    /// fn3 SetButtonConfig 参数: [buttonNumber, currentHi, currentLo] (对齐 Solaar struct "!BH")
+    private static func forceSensingSetCurrentParams(number: UInt8, current: UInt16) -> [UInt8] {
+        return [number, UInt8(current >> 8), UInt8(current & 0xFF)]
+    }
+
+    /// 将目标力度约束到设备上报的 [min, max]; info 未知时原样返回
+    private static func forceSensingClamp(_ value: UInt16, info: ForceSensingInfo?) -> UInt16 {
+        guard let info = info, info.maxValue >= info.minValue else { return value }
+        return min(max(value, info.minValue), info.maxValue)
+    }
+
+    private func resetForceSensingState() {
+        forceSensingInfo = nil
+        forceSensingCurrent = nil
+    }
+
+    private func withForceSensingFeature(_ body: @escaping (UInt8) -> Void) {
+        if let idx = featureIndex[Self.featureForceSensing] {
+            body(idx)
+        } else {
+            discoverFeature(featureId: Self.featureForceSensing) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    self?.showFeatureNotAvailable("Force Sensing")
+                    return
+                }
+                self.featureIndex[Self.featureForceSensing] = idx
                 Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
                 body(idx)
             }
@@ -2556,6 +2715,26 @@ class LogiDeviceSession {
 
     internal static func scrollForceSetTorqueParamsForTests(torque: UInt8, mode: UInt8) -> [UInt8] {
         return scrollForceSetTorqueParams(torque: torque, mode: mode)
+    }
+
+    internal static func parseForceSensingInfoForTests(_ bytes: [UInt8]) -> ForceSensingInfo? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseForceSensingInfo(report)
+        }
+    }
+
+    internal static func parseForceSensingCurrentForTests(_ bytes: [UInt8]) -> UInt16? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseForceSensingCurrent(report)
+        }
+    }
+
+    internal static func forceSensingSetCurrentParamsForTests(number: UInt8, current: UInt16) -> [UInt8] {
+        return forceSensingSetCurrentParams(number: number, current: current)
+    }
+
+    internal static func forceSensingClampForTests(_ value: UInt16, info: ForceSensingInfo?) -> UInt16 {
+        return forceSensingClamp(value, info: info)
     }
 
     #endif
@@ -2816,6 +2995,25 @@ class LogiDeviceSession {
                 NotificationCenter.default.post(name: Self.scrollForceStateDidChangeNotification, object: self)
             default:
                 break  // SetState 的 ACK
+            }
+            return
+        }
+
+        // Force Sensing (0x19C0) responses: fn1=ButtonInfo, fn2=Current; fn3 仅为 ACK
+        if let forceSensingIdx = featureIndex[Self.featureForceSensing], featureIdx == forceSensingIdx {
+            switch functionId {
+            case 1:
+                guard let info = Self.parseForceSensingInfo(report) else { break }
+                forceSensingInfo = info
+                LogiDebugPanel.log("[\(deviceInfo.name)] ForceSensing info: changeable=\(info.changeable), range=\(info.minValue)-\(info.maxValue), default=\(info.defaultValue)")
+                NotificationCenter.default.post(name: Self.forceSensingStateDidChangeNotification, object: self)
+            case 2:
+                guard let current = Self.parseForceSensingCurrent(report) else { break }
+                forceSensingCurrent = current
+                LogiDebugPanel.log("[\(deviceInfo.name)] ForceSensing current: \(current)")
+                NotificationCenter.default.post(name: Self.forceSensingStateDidChangeNotification, object: self)
+            default:
+                break  // ButtonCount / SetConfig 的 ACK
             }
             return
         }
@@ -3249,9 +3447,8 @@ class LogiDeviceSession {
         primeFromRegistry()
         LogiDebugPanel.log("[\(deviceInfo.name)] Init complete, listening for button events")
         // 正常 init 终点直接赋值 handshakeComplete, 不经过 markHandshakeComplete;
-        // haptic 探测必须在此单独触发 (probeHapticFeature 自带 once 守卫, 重复调用安全).
-        probeHapticFeature()
-        probeScrollForceFeature()
+        // 可选功能探测必须在此单独触发 (probeOptionalFeatures 自带 once 守卫, 重复调用安全).
+        probeOptionalFeatures()
     }
 
     private var queriedControlStates: [QueriedControlState] {
