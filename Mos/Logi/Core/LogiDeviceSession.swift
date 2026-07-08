@@ -1256,6 +1256,7 @@ class LogiDeviceSession {
         discoveryTimer?.invalidate()
         discoveryTimer = Timer.scheduledTimer(withTimeInterval: Self.discoveryTimeout, repeats: false) { [weak self] _ in
             guard let self = self else { return }
+            self.discoveryTimer = nil  // 一次性 timer 已触发, 置 nil 以免 anyDiscoveryInFlight 误判为在飞
             if let pending = self.pendingDiscovery.removeValue(forKey: featureId) {
                 LogiDebugPanel.log("[\(self.deviceInfo.name)] Feature discovery timed out for \(String(format: "0x%04X", featureId))")
                 pending(nil)
@@ -3509,6 +3510,7 @@ class LogiDeviceSession {
         LogiDebugPanel.log("[\(deviceInfo.name)] IRoot response: discoveredIndex=\(String(format: "0x%02X", discoveredIndex))")
         if let (featureId, callback) = pendingDiscovery.first {
             discoveryTimer?.invalidate()
+            discoveryTimer = nil  // 置 nil: 否则 anyDiscoveryInFlight 会因已失效但非 nil 的 timer 永远误判在飞, 毒死 pump
             pendingDiscovery.removeValue(forKey: featureId)
             callback(discoveredIndex == 0 ? nil : discoveredIndex)
         }
