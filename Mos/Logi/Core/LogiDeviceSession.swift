@@ -221,6 +221,9 @@ class LogiDeviceSession {
     private static let featurePointerSpeed: UInt16 = 0x2205
     /// Haptic feedback (MX Master 4 等). internal: Debug 面板需要引用同一常量.
     static let featureHaptic: UInt16 = 0x19B0
+    /// SmartShift v2 / enhanced: 提供可调 ratchet torque (即 Logi Options+ 的 Scroll force 齿感力度).
+    /// internal: Debug 面板需要引用同一常量.
+    static let featureSmartShiftEnhanced: UInt16 = 0x2111
     private static let hidppShortReportId: UInt8 = 0x10
     private static let hidppLongReportId: UInt8 = 0x11
     private static let hidppErrorFeatureIdx: UInt8 = 0xFF
@@ -1030,6 +1033,7 @@ class LogiDeviceSession {
         handshakeComplete = true
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
         probeHapticFeature()
+        probeScrollForceFeature()
     }
 
     /// discoveryInFlight 切换 + 通知. idempotent: 只在状态变化时 post.
@@ -1266,6 +1270,7 @@ class LogiDeviceSession {
         cancelInflightDiscovery()
         featureIndex.removeAll()
         resetHapticDiscoveryState()
+        resetScrollForceDiscoveryState()
         discoveredControls.removeAll()
         reprogInitComplete = false
         handshakeComplete = false  // 允许 markHandshakeComplete 再次 post sessionChanged 以刷右侧面板
@@ -1369,6 +1374,7 @@ class LogiDeviceSession {
         // 重置 feature 状态, 等待新一轮 discovery
         featureIndex.removeAll()
         resetHapticDiscoveryState()  // 新 slot 是另一台设备, haptic 状态/探测守卫必须清零
+        resetScrollForceDiscoveryState()
         discoveredControls.removeAll()
         reprogInitComplete = false
         handshakeComplete = false  // 允许 markHandshakeComplete 再次 post, 使 sidebar/panels 刷新回 loading/ready 切换
@@ -1876,6 +1882,23 @@ class LogiDeviceSession {
             default: return "HAPTIC.func\(funcId) response"
             }
         }
+        // Scroll Force (0x2111) responses
+        if let sfIdx = featureIndex[Self.featureSmartShiftEnhanced], featIdx == sfIdx {
+            switch funcId {
+            case 0:
+                if let tunable = Self.parseScrollForceTunableTorque(report) {
+                    return "ScrollForce.Capabilities: tunable torque \(tunable ? "yes" : "no")"
+                }
+                return "ScrollForce.Capabilities"
+            case 1:
+                if let status = Self.parseScrollForceStatus(report) {
+                    return "ScrollForce.Status: mode=\(status.mode), torque=\(status.torque)"
+                }
+                return "ScrollForce.Status"
+            case 2: return "ScrollForce.SetState ACK"
+            default: return "ScrollForce.func\(funcId) response"
+            }
+        }
 
         // SmartShift or other feature notifications
         if let name = findFeatureName(forIndex: featIdx) {
@@ -2208,6 +2231,102 @@ class LogiDeviceSession {
         LogiCenter.shared.externalBridge.showLogiToast(message, severity: .warning)
     }
 
+    // MARK: - Scroll Force / Ratchet Torque (0x2111 SmartShift Enhanced)
+
+    /// SmartShift v2 capabilities / status 响应抵达或本地缓存更新时发出. object = 本 session.
+    static let scrollForceStateDidChangeNotification = Notification.Name("LogiScrollForceStateDidChange")
+
+    struct ScrollForceStatus: Equatable {
+        let mode: UInt8    // 1=freewheel, 2=ratchet, 0=未知
+        let torque: UInt8  // 齿感力度 0-100
+    }
+
+    /// GetCapabilities (fn0) 返回: 设备是否支持可调 torque; 未查询过为 nil
+    private(set) var scrollForceTunableTorque: Bool? = nil
+    /// 最近一次 GetStatus (fn1) 解析结果; 未查询过为 nil
+    private(set) var scrollForceStatus: ScrollForceStatus? = nil
+    private var scrollForceProbeSent = false
+
+    var debugScrollForceTunableTorque: Bool? { scrollForceTunableTorque }
+    var debugScrollForceStatus: ScrollForceStatus? { scrollForceStatus }
+
+    /// 握手完成后探测一次 0x2111, 让 Debug 面板 FEATURES 表能列出它.
+    /// 不支持的设备 IRoot 返回 index 0 → callback nil, 仅多一条被忽略的请求.
+    private func probeScrollForceFeature() {
+        guard !scrollForceProbeSent else { return }
+        scrollForceProbeSent = true
+        guard featureIndex[Self.featureSmartShiftEnhanced] == nil else { return }  // 缓存已含, 无需探测
+        discoverFeature(featureId: Self.featureSmartShiftEnhanced) { [weak self] idx in
+            guard let self = self, let idx = idx else { return }
+            self.featureIndex[Self.featureSmartShiftEnhanced] = idx
+            Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+            LogiDebugPanel.log("[\(self.deviceInfo.name)] SmartShiftV2 (0x2111) at index \(String(format: "0x%02X", idx))")
+            NotificationCenter.default.post(name: Self.scrollForceStateDidChangeNotification, object: self)
+        }
+    }
+
+    /// 查询 capabilities (fn0) + 当前状态 (fn1); 响应在 handleInputReport 解析后发通知
+    func scrollForceRefreshInfo() {
+        withScrollForceFeature { [weak self] idx in
+            self?.sendRequest(featureIndex: idx, functionId: 0)
+            self?.sendRequest(featureIndex: idx, functionId: 1)
+        }
+    }
+
+    /// 设置齿感力度 (fn2 SetState). 只改 torque, mode/autoDisengage 用 0=不变;
+    /// MX Master 4 需带回当前 mode 才生效, 故取最近读到的 mode. 写后回读 fn1 校准 UI.
+    func scrollForceSetTorque(_ torque: UInt8) {
+        let mode = scrollForceStatus?.mode ?? 0
+        let params = Self.scrollForceSetTorqueParams(torque: torque, mode: mode)
+        withScrollForceFeature { [weak self] idx in
+            guard let self = self else { return }
+            self.sendRequest(featureIndex: idx, functionId: 2, params: params)
+            self.sendRequest(featureIndex: idx, functionId: 1)
+        }
+    }
+
+    /// fn0 GetCapabilities 响应: report[4] bit0 = 支持可调 torque
+    private static func parseScrollForceTunableTorque(_ report: UnsafeBufferPointer<UInt8>) -> Bool? {
+        guard report.count >= 5 else { return nil }
+        return report[4] & 0x01 != 0
+    }
+
+    /// fn1 GetStatus 响应: report[4] = wheelMode, report[6] = torque (byte[5] 为 autoDisengage 阈值, 跳过)
+    private static func parseScrollForceStatus(_ report: UnsafeBufferPointer<UInt8>) -> ScrollForceStatus? {
+        guard report.count >= 7 else { return nil }
+        return ScrollForceStatus(mode: report[4], torque: report[6])
+    }
+
+    /// fn2 SetState 参数编码: [mode, autoDisengage, torque]. mode/autoDisengage=0 表示不改变
+    /// (Solaar 约定 write_prefix_bytes=[0x00,0x00]); torque clamp 到 1-100.
+    private static func scrollForceSetTorqueParams(torque: UInt8, mode: UInt8) -> [UInt8] {
+        return [mode, 0x00, min(max(torque, 1), 100)]
+    }
+
+    /// rediscover / 切 slot 会清空 featureIndex, scroll force 的探测守卫与缓存状态必须一并复位,
+    /// 否则该行永久消失 (probe 不再发) 或跨设备读到脏 state.
+    private func resetScrollForceDiscoveryState() {
+        scrollForceProbeSent = false
+        scrollForceTunableTorque = nil
+        scrollForceStatus = nil
+    }
+
+    private func withScrollForceFeature(_ body: @escaping (UInt8) -> Void) {
+        if let idx = featureIndex[Self.featureSmartShiftEnhanced] {
+            body(idx)
+        } else {
+            discoverFeature(featureId: Self.featureSmartShiftEnhanced) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    self?.showFeatureNotAvailable("Scroll Force")
+                    return
+                }
+                self.featureIndex[Self.featureSmartShiftEnhanced] = idx
+                Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+                body(idx)
+            }
+        }
+    }
+
     // MARK: - Report Parsing
 
     private static func isGetControlReportingQueryResponse(_ report: UnsafeBufferPointer<UInt8>) -> Bool {
@@ -2421,6 +2540,22 @@ class LogiDeviceSession {
 
     internal static func hapticSetLevelParamsForTests(_ level: UInt8) -> [UInt8] {
         return hapticSetLevelParams(level)
+    }
+
+    internal static func parseScrollForceTunableTorqueForTests(_ bytes: [UInt8]) -> Bool? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseScrollForceTunableTorque(report)
+        }
+    }
+
+    internal static func parseScrollForceStatusForTests(_ bytes: [UInt8]) -> ScrollForceStatus? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseScrollForceStatus(report)
+        }
+    }
+
+    internal static func scrollForceSetTorqueParamsForTests(torque: UInt8, mode: UInt8) -> [UInt8] {
+        return scrollForceSetTorqueParams(torque: torque, mode: mode)
     }
 
     #endif
@@ -2662,6 +2797,25 @@ class LogiDeviceSession {
                 NotificationCenter.default.post(name: Self.hapticStateDidChangeNotification, object: self)
             default:
                 break  // SetState / PlayWaveform 的 ACK
+            }
+            return
+        }
+
+        // Scroll Force (0x2111) responses: fn0=Capabilities, fn1=Status; fn2 仅为 ACK
+        if let scrollForceIdx = featureIndex[Self.featureSmartShiftEnhanced], featureIdx == scrollForceIdx {
+            switch functionId {
+            case 0:
+                guard let tunable = Self.parseScrollForceTunableTorque(report) else { break }
+                scrollForceTunableTorque = tunable
+                LogiDebugPanel.log("[\(deviceInfo.name)] ScrollForce capabilities: tunable torque \(tunable ? "supported" : "unsupported")")
+                NotificationCenter.default.post(name: Self.scrollForceStateDidChangeNotification, object: self)
+            case 1:
+                guard let status = Self.parseScrollForceStatus(report) else { break }
+                scrollForceStatus = status
+                LogiDebugPanel.log("[\(deviceInfo.name)] ScrollForce status: mode=\(status.mode), torque=\(status.torque)")
+                NotificationCenter.default.post(name: Self.scrollForceStateDidChangeNotification, object: self)
+            default:
+                break  // SetState 的 ACK
             }
             return
         }
@@ -3097,6 +3251,7 @@ class LogiDeviceSession {
         // 正常 init 终点直接赋值 handshakeComplete, 不经过 markHandshakeComplete;
         // haptic 探测必须在此单独触发 (probeHapticFeature 自带 once 守卫, 重复调用安全).
         probeHapticFeature()
+        probeScrollForceFeature()
     }
 
     private var queriedControlStates: [QueriedControlState] {

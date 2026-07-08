@@ -98,7 +98,7 @@ struct HIDPPInfo {
         0x1B04: ("ReprogControlsV4", "Button reprog and divert"),
         0x1D4B: ("WirelessStatus", "Wireless connection status"),
         0x2110: ("SmartShift", "Scroll wheel mode"),
-        0x2111: ("SmartShiftV2", "SmartShift v2"),
+        0x2111: ("SmartShiftV2", "Scroll force / ratchet torque"),
         0x2121: ("HiResWheel", "Hi-res scroll wheel"),
         0x2150: ("ThumbWheel", "Thumb wheel control"),
         0x2200: ("MouseButtonSpy", "Mouse button spy"),
@@ -294,6 +294,17 @@ class LogiDebugPanel: NSObject {
     /// 按 session 记录, 快速切换设备时不误吞新设备的首次查询.
     private var hapticAutoQueryStamp: (session: ObjectIdentifier, at: Date)?
 
+    // MARK: - Scroll Force Context (0x2111)
+
+    private var scrollForceSlider: NSSlider?
+    private var scrollForceValueLabel: NSTextField?
+    /// 与 haptic 同构的自动查询节流戳
+    private var scrollForceAutoQueryStamp: (session: ObjectIdentifier, at: Date)?
+    /// torque 写入的 trailing 去抖: 拖动/键盘连发只在静止后发最后一次值, 防止 HID 洪泛打崩鼠标
+    private var scrollForceSendWork: DispatchWorkItem?
+    private var scrollForcePendingTorque: UInt8?
+    private var scrollForceLastSentTorque: UInt8?
+
     // MARK: - Log
 
     private var logTableView: NSTableView!
@@ -326,6 +337,7 @@ class LogiDebugPanel: NSObject {
     private var discoveryStateObserver: NSObjectProtocol?
     private var spinnerObserver: NSObjectProtocol?
     private var hapticStateObserver: NSObjectProtocol?
+    private var scrollForceStateObserver: NSObjectProtocol?
     private var windowCloseObserver: NSObjectProtocol?
 
     // Header 文本基座 (不含 spinner 后缀); spinner tick 时与当前帧拼接.
@@ -1212,6 +1224,10 @@ class LogiDebugPanel: NSObject {
                 buildHapticContext(in: container, session: session, width: w)
                 return
             }
+            if featureId == LogiDeviceSession.featureSmartShiftEnhanced, let session = currentSession {
+                buildScrollForceContext(in: container, session: session, width: w)
+                return
+            }
             let actions = HIDPPFeatureActions.actions(for: featureId)
             for action in actions {
                 let btn = makeActionBtn(title: action.name, action: #selector(featureActionClicked(_:)))
@@ -1414,6 +1430,104 @@ class LogiDebugPanel: NSObject {
 
     @objc private func hapticReadStateClicked() {
         currentSession?.hapticRefreshInfo()
+    }
+
+    // MARK: - Scroll Force Context UI
+
+    /// 0x2111 (SmartShift v2) 选中时的专属操作区: 齿感力度滑杆 (即 Logi Options+ 的 Scroll force).
+    /// 布局语言与 Haptic context / 通用 context 完全一致 (手排 frame + FlippedView 坐标系).
+    private func buildScrollForceContext(in container: NSView, session: LogiDeviceSession, width w: CGFloat) {
+        let tunable = session.debugScrollForceTunableTorque
+        let status = session.debugScrollForceStatus
+        var by: CGFloat = 0
+
+        // 首次选中 (或设备未应答过) 时自动拉取 capabilities + status; 同一 session 1s 节流防查询风暴
+        if tunable == nil || status == nil {
+            let sid = ObjectIdentifier(session)
+            let throttled = scrollForceAutoQueryStamp.map {
+                $0.session == sid && Date().timeIntervalSince($0.at) < 1.0
+            } ?? false
+            if !throttled {
+                scrollForceAutoQueryStamp = (sid, Date())
+                session.scrollForceRefreshInfo()
+            }
+        }
+
+        // capabilities 未回来前先不禁用 (乐观); 明确 false 才锁死滑杆
+        let torqueSupported = tunable ?? true
+
+        let hdr = makeSectionHeader("SCROLL FORCE")
+        hdr.frame = NSRect(x: L.pad, y: by, width: w - 40, height: 14)
+        container.addSubview(hdr)
+
+        let valueText: String
+        if tunable == false {
+            valueText = "N/A"
+        } else if let status = status {
+            valueText = "\(status.torque)"
+        } else {
+            valueText = "—"
+        }
+        let valueLabel = makeLabel(text: valueText, fontSize: 10, weight: .medium, color: .secondaryLabelColor)
+        valueLabel.alignment = .right
+        valueLabel.frame = NSRect(x: L.pad + w - 40, y: by, width: 40, height: 14)
+        container.addSubview(valueLabel)
+        self.scrollForceValueLabel = valueLabel
+        by += 16
+
+        // 齿感力度: 设备级状态, 1(最轻/最顺滑) - 100(最硬/最精确)
+        let torque = Double(status?.torque ?? 1)
+        let slider = NSSlider(value: max(1, torque), minValue: 1, maxValue: 100,
+                              target: self, action: #selector(scrollForceChanged(_:)))
+        slider.controlSize = .small
+        slider.isContinuous = true
+        // 支持且已读到当前值才可拖动; 值到达前拖动会写入陈旧默认
+        slider.isEnabled = torqueSupported && status != nil
+        slider.frame = NSRect(x: L.pad, y: by, width: w, height: 18)
+        container.addSubview(slider)
+        self.scrollForceSlider = slider
+        by += 18 + L.btnGap + 2
+
+        let readBtn = makeActionBtn(title: "Read State", action: #selector(scrollForceReadStateClicked))
+        readBtn.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
+        container.addSubview(readBtn)
+        by += L.btnH + 6
+
+        // 设备/协议边界说明
+        let noteText = tunable == false ? "Tunable torque not supported" : "Ratchet detent strength"
+        let note = makeLabel(text: noteText, fontSize: 9, color: .tertiaryLabelColor)
+        note.frame = NSRect(x: L.pad, y: by, width: w, height: 12)
+        note.cell?.lineBreakMode = .byTruncatingTail
+        container.addSubview(note)
+    }
+
+    @objc private func scrollForceChanged(_ sender: NSSlider) {
+        let v = UInt8(clamping: sender.integerValue)
+        scrollForceValueLabel?.stringValue = "\(v)"
+        // 第一道: 拖动 / 按下过程中只联动数字, 不下发 (连续 drag 一个事件都不发给设备)
+        let eventType = NSApp.currentEvent?.type
+        guard eventType != .leftMouseDragged && eventType != .leftMouseDown else { return }
+        // 第二道: 松手 / 键盘调整走 trailing 去抖, 静止 80ms 后只发最后一次值, 键盘连发不会洪泛
+        scheduleScrollForceSend(v)
+    }
+
+    /// torque 写入去抖: 去掉重复值 + 80ms trailing, 保证一串快速变更只落一次 HID 写.
+    /// 始终发送最终值 (trailing 而非 leading), 不会丢用户停下时的目标力度.
+    private func scheduleScrollForceSend(_ torque: UInt8) {
+        guard torque != scrollForceLastSentTorque else { return }
+        scrollForcePendingTorque = torque
+        scrollForceSendWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            guard let self = self, let t = self.scrollForcePendingTorque else { return }
+            self.scrollForceLastSentTorque = t
+            self.currentSession?.scrollForceSetTorque(t)
+        }
+        scrollForceSendWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08, execute: work)
+    }
+
+    @objc private func scrollForceReadStateClicked() {
+        currentSession?.scrollForceRefreshInfo()
     }
 
     @objc private func indexMinusClicked() {
@@ -1929,6 +2043,26 @@ class LogiDebugPanel: NSObject {
                 self.updateContextActions()
             }
         }
+        scrollForceStateObserver = NotificationCenter.default.addObserver(
+            forName: LogiDeviceSession.scrollForceStateDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let session = notification.object as? LogiDeviceSession,
+                  session === self.currentSession else { return }
+            // 0x2111 刚被发现: FEATURES 表补行, 并还原之前的行选中 (reload 会清选中)
+            if !self.featureRows.contains(where: { $0.featureId == LogiDeviceSession.featureSmartShiftEnhanced }) {
+                let prior = self.selectedFeatureId
+                self.refreshFeatureTable()
+                if let fid = prior,
+                   let row = self.featureRows.firstIndex(where: { $0.featureId == fid }) {
+                    self.featureTableView?.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+                }
+            }
+            // 正在展示 scroll force 操作区: 用最新 capabilities / status 重建 (滑杆位置与可用性)
+            if self.selectedFeatureId == LogiDeviceSession.featureSmartShiftEnhanced {
+                self.updateContextActions()
+            }
+        }
     }
 
     private func stopObserving() {
@@ -1949,6 +2083,10 @@ class LogiDebugPanel: NSObject {
         if let o = hapticStateObserver {
             NotificationCenter.default.removeObserver(o)
             hapticStateObserver = nil
+        }
+        if let o = scrollForceStateObserver {
+            NotificationCenter.default.removeObserver(o)
+            scrollForceStateObserver = nil
         }
         // Layout observers (frame change) are not tracked here — they're tied to the views
         // and auto-removed when the views are deallocated.
