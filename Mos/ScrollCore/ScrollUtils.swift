@@ -121,33 +121,21 @@ class ScrollUtils {
     // 远程桌面事件检测缓存
     private var lastSourcePID: pid_t = 0
     private var lastSourceIsRemoteControl: Bool = false
+    private var lastSourceNeedsRawScrollPassthrough: Bool = false
 
     /// 检测事件来源是否为远程桌面应用
     func isFromRemoteApplication(_ event: CGEvent) -> Bool {
-        let sourcePID = pid_t(event.getIntegerValueField(.eventSourceUnixProcessID))
-        if sourcePID == 0 { return false }
-
-        if sourcePID != lastSourcePID {
-            lastSourcePID = sourcePID
-            lastSourceIsRemoteControl = false
-
-            if let app = NSRunningApplication(processIdentifier: sourcePID) {
-                // 检查可执行文件路径（系统守护进程）
-                if let path = app.executableURL?.path {
-                    for keyword in REMOTE_CONTROL_APPLICATION.executableKeywords {
-                        if path.contains(keyword) {
-                            lastSourceIsRemoteControl = true
-                            break
-                        }
-                    }
-                }
-                // 检查 Bundle Identifier（第三方应用）
-                if !lastSourceIsRemoteControl, let bundleId = app.bundleIdentifier {
-                    lastSourceIsRemoteControl = REMOTE_CONTROL_APPLICATION.bundleIdentifiers.contains(bundleId)
-                }
-            }
-        }
+        refreshRemoteSourceCacheIfNeeded(event)
         return lastSourceIsRemoteControl
+    }
+
+    /// ToDesk 等远程控制应用对 Mos 合成的连续滚轮事件兼容性差，需禁用平滑但保留方向翻转等原始事件处理。
+    func shouldDisableSmoothForRemoteControl(_ event: CGEvent, targetRunningApplication: NSRunningApplication?) -> Bool {
+        if needsRawScrollPassthrough(from: targetRunningApplication) {
+            return true
+        }
+        refreshRemoteSourceCacheIfNeeded(event)
+        return lastSourceNeedsRawScrollPassthrough
     }
 
     /// 检测事件是否来自已被平滑的远程源
@@ -157,6 +145,87 @@ class ScrollUtils {
         // 检查 isContinuous 字段判断是否为连续的
         let isContinuous = event.getDoubleValueField(.scrollWheelEventIsContinuous)
         return isContinuous == 1.0  // 1.0 表示主控端已平滑
+    }
+
+    func isKnownRemoteControlApplication(executablePath: String?, bundleIdentifier: String?) -> Bool {
+        if containsAnyKeyword(in: executablePath, keywords: REMOTE_CONTROL_APPLICATION.executableKeywords) {
+            return true
+        }
+        if let bundleIdentifier = bundleIdentifier,
+           REMOTE_CONTROL_APPLICATION.bundleIdentifiers.contains(bundleIdentifier) {
+            return true
+        }
+        return containsAnyKeyword(
+            in: bundleIdentifier,
+            keywords: REMOTE_CONTROL_APPLICATION.bundleIdentifierKeywords
+        )
+    }
+
+    func needsRawScrollPassthrough(executablePath: String?, bundleIdentifier: String?) -> Bool {
+        return containsAnyKeyword(
+            in: executablePath,
+            keywords: REMOTE_CONTROL_APPLICATION.rawScrollPassthroughExecutableKeywords
+        ) || containsAnyKeyword(
+            in: bundleIdentifier,
+            keywords: REMOTE_CONTROL_APPLICATION.rawScrollPassthroughBundleIdentifierKeywords
+        )
+    }
+
+    private func needsRawScrollPassthrough(from runningApplication: NSRunningApplication?) -> Bool {
+        guard let runningApplication = runningApplication else { return false }
+        return needsRawScrollPassthrough(
+            executablePath: runningApplication.executableURL?.path,
+            bundleIdentifier: runningApplication.bundleIdentifier
+        ) || needsRawScrollPassthrough(
+            executablePath: runningApplication.bundleURL?.path,
+            bundleIdentifier: runningApplication.bundleIdentifier
+        )
+    }
+
+    private func refreshRemoteSourceCacheIfNeeded(_ event: CGEvent) {
+        let sourcePID = pid_t(event.getIntegerValueField(.eventSourceUnixProcessID))
+        if sourcePID == 0 {
+            lastSourcePID = 0
+            lastSourceIsRemoteControl = false
+            lastSourceNeedsRawScrollPassthrough = false
+            return
+        }
+
+        if sourcePID != lastSourcePID {
+            lastSourcePID = sourcePID
+            lastSourceIsRemoteControl = false
+            lastSourceNeedsRawScrollPassthrough = false
+
+            guard let app = NSRunningApplication(processIdentifier: sourcePID) else { return }
+            let executablePath = app.executableURL?.path
+            let bundlePath = app.bundleURL?.path
+            let bundleIdentifier = app.bundleIdentifier
+
+            lastSourceIsRemoteControl = isKnownRemoteControlApplication(
+                executablePath: executablePath,
+                bundleIdentifier: bundleIdentifier
+            ) || isKnownRemoteControlApplication(
+                executablePath: bundlePath,
+                bundleIdentifier: bundleIdentifier
+            )
+            lastSourceNeedsRawScrollPassthrough = needsRawScrollPassthrough(
+                executablePath: executablePath,
+                bundleIdentifier: bundleIdentifier
+            ) || needsRawScrollPassthrough(
+                executablePath: bundlePath,
+                bundleIdentifier: bundleIdentifier
+            )
+        }
+    }
+
+    private func containsAnyKeyword(in value: String?, keywords: [String]) -> Bool {
+        guard let lowercasedValue = value?.lowercased() else { return false }
+        for keyword in keywords {
+            if lowercasedValue.contains(keyword.lowercased()) {
+                return true
+            }
+        }
+        return false
     }
 
     // MARK: - 滚动参数: 热键
