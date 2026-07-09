@@ -94,16 +94,33 @@ struct HIDPPInfo {
         0x1004: ("UnifiedBattery", "Unified battery reporting"),
         0x1814: ("ChangeHost", "Multi-host switching"),
         0x1815: ("HostsInfo", "Connected host info"),
+        0x19B0: ("Haptic", "Haptic feedback control"),
         0x1B04: ("ReprogControlsV4", "Button reprog and divert"),
         0x1D4B: ("WirelessStatus", "Wireless connection status"),
         0x2110: ("SmartShift", "Scroll wheel mode"),
-        0x2111: ("SmartShiftV2", "SmartShift v2"),
+        0x2111: ("SmartShiftV2", "Scroll force / ratchet torque"),
         0x2121: ("HiResWheel", "Hi-res scroll wheel"),
         0x2150: ("ThumbWheel", "Thumb wheel control"),
         0x2200: ("MouseButtonSpy", "Mouse button spy"),
         0x2201: ("AdjustableDPI", "DPI adjustment"),
         0x2205: ("PointerSpeed", "Pointer speed control"),
         0x4521: ("HiResWheel", "Hi-res scroll wheel"),
+        // 扩展可选功能 (MX Master 4 等); 由串行探测填充到 FEATURES 表
+        0x1010: ("ChargingControl", "Charging behavior control"),
+        0x1802: ("DeviceReset", "Reset device to factory"),
+        0x19C0: ("ForceSensing", "Force-sensing button threshold"),
+        0x1C00: ("PersistentRemap", "Persistent button mapping"),
+        0x2001: ("LeftRightSwap", "Swap left/right buttons"),
+        0x2006: ("AxisOrientation", "Pointer axis orientation"),
+        0x2130: ("LowResWheel", "Low-res wheel / diversion"),
+        0x2202: ("ExtendedDPI", "Extended DPI (per-axis, high)"),
+        0x2230: ("AngleSnapping", "Angle snapping"),
+        0x2240: ("SurfaceTuning", "Surface calibration"),
+        0x2250: ("XYStats", "XY movement stats"),
+        0x2251: ("WheelStats", "Wheel usage stats"),
+        0x8060: ("ReportRate", "Report / polling rate"),
+        0x8061: ("ExtReportRate", "Extended report rate"),
+        0x8100: ("OnboardProfiles", "Onboard profiles"),
     ]
 
     static let controlFlagBits: [(bit: Int, short: String, desc: String)] = [
@@ -131,6 +148,27 @@ struct HIDPPInfo {
         0x03: "OutOfRange", 0x04: "HWError", 0x05: "LogitechInternal",
         0x06: "InvalidFeatureIndex", 0x07: "InvalidFunctionID",
         0x08: "Busy", 0x09: "Unsupported",
+    ]
+
+    /// HAPTIC (0x19B0) 固件预置波形 (对齐 Solaar HapticWaveForms).
+    /// ID 稀疏: 0x0F~0x1A 无定义, 0x1B 是有意跳跃. 实际支持范围以 GetCapabilities 位掩码为准.
+    static let hapticWaveforms: [(id: UInt8, name: String)] = [
+        (0x00, "Sharp State Change"),
+        (0x01, "Damp State Change"),
+        (0x02, "Sharp Collision"),
+        (0x03, "Damp Collision"),
+        (0x04, "Subtle Collision"),
+        (0x05, "Happy Alert"),
+        (0x06, "Angry Alert"),
+        (0x07, "Completed"),
+        (0x08, "Square"),
+        (0x09, "Wave"),
+        (0x0A, "Firework"),
+        (0x0B, "Mad"),
+        (0x0C, "Knock"),
+        (0x0D, "Jingle"),
+        (0x0E, "Ringing"),
+        (0x1B, "Whisper Collision"),
     ]
 }
 
@@ -189,6 +227,23 @@ struct HIDPPFeatureActions {
             HIDPPFeatureAction(name: "GetDPI", functionId: 0x01, paramType: .index, defaultParams: []),
             HIDPPFeatureAction(name: "SetDPI", functionId: 0x02, paramType: .hex, defaultParams: [0x00, 0x00, 0x03, 0x20]),
             HIDPPFeatureAction(name: "GetDPIList", functionId: 0x03, paramType: .index, defaultParams: []),
+        ],
+        // Report Rate (0x8060): fn0 档位位图, fn1 读当前, fn2 写 (值=ms 1-8)
+        0x8060: [
+            HIDPPFeatureAction(name: "GetRateList", functionId: 0x00, paramType: .none, defaultParams: []),
+            HIDPPFeatureAction(name: "GetRate", functionId: 0x01, paramType: .none, defaultParams: []),
+            HIDPPFeatureAction(name: "SetRate", functionId: 0x02, paramType: .hex, defaultParams: [0x01]),
+        ],
+        // Extended Report Rate (0x8061): fn1 caps 位图, fn2 读, fn3 写 (值=档位 index 0-6)
+        0x8061: [
+            HIDPPFeatureAction(name: "GetCapabilities", functionId: 0x01, paramType: .none, defaultParams: []),
+            HIDPPFeatureAction(name: "GetRate", functionId: 0x02, paramType: .none, defaultParams: []),
+            HIDPPFeatureAction(name: "SetRate", functionId: 0x03, paramType: .hex, defaultParams: [0x00]),
+        ],
+        // Extended Adjustable DPI (0x2202): 只放安全的读操作; 写 (fn6) 参数因传感器而异, 用 hex 手动发
+        0x2202: [
+            HIDPPFeatureAction(name: "GetSensorCount", functionId: 0x00, paramType: .none, defaultParams: []),
+            HIDPPFeatureAction(name: "GetSensorDPI", functionId: 0x05, paramType: .index, defaultParams: []),
         ],
     ]
 
@@ -259,6 +314,38 @@ class LogiDebugPanel: NSObject {
     private var indexStepperLabel: NSTextField?
     private weak var featuresControlsSplit: NSSplitView?
 
+    // MARK: - Haptic Context (0x19B0)
+
+    private var hapticWaveformPopup: NSPopUpButton?
+    private var hapticLevelSlider: NSSlider?
+    private var hapticLevelValueLabel: NSTextField?
+    /// 跨重建保留的波形选择 (context 区随通知整体 rebuild)
+    private var hapticSelectedWaveformId: UInt8 = 0x00
+    /// 自动 state/capabilities 查询节流: 响应驱动的 rebuild 不应放大成查询风暴.
+    /// 按 session 记录, 快速切换设备时不误吞新设备的首次查询.
+    private var hapticAutoQueryStamp: (session: ObjectIdentifier, at: Date)?
+
+    // MARK: - Scroll Force Context (0x2111)
+
+    private var scrollForceSlider: NSSlider?
+    private var scrollForceValueLabel: NSTextField?
+    /// 与 haptic 同构的自动查询节流戳
+    private var scrollForceAutoQueryStamp: (session: ObjectIdentifier, at: Date)?
+    /// torque 写入的 trailing 去抖: 拖动/键盘连发只在静止后发最后一次值, 防止 HID 洪泛打崩鼠标
+    private var scrollForceSendWork: DispatchWorkItem?
+    private var scrollForcePendingTorque: UInt8?
+    private var scrollForceLastSentTorque: UInt8?
+
+    // MARK: - Force Sensing Context (0x19C0)
+
+    private var forceSensingSlider: NSSlider?
+    private var forceSensingValueLabel: NSTextField?
+    private var forceSensingAutoQueryStamp: (session: ObjectIdentifier, at: Date)?
+    /// 阈值写入 trailing 去抖, 与 scroll force 同构
+    private var forceSensingSendWork: DispatchWorkItem?
+    private var forceSensingPendingValue: UInt16?
+    private var forceSensingLastSentValue: UInt16?
+
     // MARK: - Log
 
     private var logTableView: NSTableView!
@@ -290,6 +377,10 @@ class LogiDebugPanel: NSObject {
     private var reportingCompleteObserver: NSObjectProtocol?
     private var discoveryStateObserver: NSObjectProtocol?
     private var spinnerObserver: NSObjectProtocol?
+    private var hapticStateObserver: NSObjectProtocol?
+    private var scrollForceStateObserver: NSObjectProtocol?
+    private var forceSensingStateObserver: NSObjectProtocol?
+    private var auxiliaryFeaturesObserver: NSObjectProtocol?
     private var windowCloseObserver: NSObjectProtocol?
 
     // Header 文本基座 (不含 spinner 后缀); spinner tick 时与当前帧拼接.
@@ -742,6 +833,13 @@ class LogiDebugPanel: NSObject {
     }
 
     @objc private func outlineViewClicked(_ sender: Any?) {
+        // 点接收器父行(不可选)不做任何事: 否则会带着"仍停在上一个 slot"的 selectedRow
+        // 误触发那个 slot 的 rediscover. 展开/收起由 disclosure 三角自行处理.
+        if outlineView.clickedRow >= 0,
+           let clicked = outlineView.item(atRow: outlineView.clickedRow) as? DeviceNode,
+           clicked.isReceiver {
+            return
+        }
         let row = outlineView.selectedRow
         guard row >= 0 else { return }
         let item = outlineView.item(atRow: row)
@@ -756,11 +854,11 @@ class LogiDebugPanel: NSObject {
             let paired = slot.session.debugReceiverPairedDevices
             let idx = Int(slot.slot) - 1
             guard idx >= 0, idx < paired.count, paired[idx].isConnected else { return }
-            // currentSession likewise derived from selection.
-            slot.session.setTargetSlot(slot: slot.slot)
-            refreshRightPanelsLoading()
-            slot.session.rediscoverFeatures()
-            // 与 rediscoverClicked 行为对齐: 兜底刷一次, 防止 Bolt 响应丢包导致 UI 卡在 loading.
+            // 轻量巡检切换: 已发现的 slot 只切游标读缓存, 不重跑 REPROG 发现(接管已常驻);
+            // 未发现的 slot inspectSlot 内部回退到完整重发现.
+            slot.session.inspectSlot(slot.slot)
+            refreshRightPanels()
+            // 兜底刷一次(可选功能探测异步 / 回退重发现时防 UI 卡 loading).
             scheduleFallbackRefresh(after: FallbackRefreshDelay.afterDiscovery)
         }
     }
@@ -1194,6 +1292,18 @@ class LogiDebugPanel: NSObject {
         var by: CGFloat = 0
 
         if let featureId = selectedFeatureId {
+            if featureId == LogiDeviceSession.featureHaptic, let session = currentSession {
+                buildHapticContext(in: container, session: session, width: w)
+                return
+            }
+            if featureId == LogiDeviceSession.featureSmartShiftEnhanced, let session = currentSession {
+                buildScrollForceContext(in: container, session: session, width: w)
+                return
+            }
+            if featureId == LogiDeviceSession.featureForceSensing, let session = currentSession {
+                buildForceSensingContext(in: container, session: session, width: w)
+                return
+            }
             let actions = HIDPPFeatureActions.actions(for: featureId)
             for action in actions {
                 let btn = makeActionBtn(title: action.name, action: #selector(featureActionClicked(_:)))
@@ -1275,6 +1385,328 @@ class LogiDebugPanel: NSObject {
                 ph.topAnchor.constraint(equalTo: container.topAnchor, constant: L.pad),
             ])
         }
+    }
+
+    // MARK: - Haptic Context UI
+
+    /// HAPTIC feature 选中时的专属操作区: 波形选择 + 播放, 强度滑杆, 状态回读.
+    /// 布局语言与通用 context 一致 (手排 frame + FlippedView 坐标系).
+    private func buildHapticContext(in container: NSView, session: LogiDeviceSession, width w: CGFloat) {
+        let state = session.debugHapticState
+        let mask = session.debugHapticWaveformMask
+        var by: CGFloat = 0
+
+        // 首次选中 (或设备未应答过) 时自动拉取 capabilities + state; 同一 session 1s 节流防响应驱动的查询风暴
+        if state == nil || mask == nil {
+            let sid = ObjectIdentifier(session)
+            let throttled = hapticAutoQueryStamp.map {
+                $0.session == sid && Date().timeIntervalSince($0.at) < 1.0
+            } ?? false
+            if !throttled {
+                hapticAutoQueryStamp = (sid, Date())
+                session.hapticRefreshInfo()
+            }
+        }
+
+        // 波形选择
+        let popup = NSPopUpButton(frame: NSRect(x: L.pad, y: by, width: w, height: L.btnH), pullsDown: false)
+        stylePopupButton(popup)
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        for wf in HIDPPInfo.hapticWaveforms {
+            let item = NSMenuItem(title: wf.name, action: nil, keyEquivalent: "")
+            item.tag = Int(wf.id)
+            if let mask = mask { item.isEnabled = (mask >> UInt32(wf.id)) & 1 != 0 }
+            menu.addItem(item)
+        }
+        popup.menu = menu
+        popup.target = self
+        popup.action = #selector(hapticWaveformChanged(_:))
+        // 恢复上次选择; 若该波形被设备能力位掩码禁用则回落到第一个可用项
+        let restoreIdx = menu.items.firstIndex { $0.tag == Int(hapticSelectedWaveformId) && $0.isEnabled }
+            ?? menu.items.firstIndex { $0.isEnabled } ?? 0
+        popup.selectItem(at: restoreIdx)
+        hapticSelectedWaveformId = UInt8(menu.items[restoreIdx].tag)
+        container.addSubview(popup)
+        self.hapticWaveformPopup = popup
+        by += L.btnH + L.btnGap
+
+        let playBtn = makeActionBtn(title: "Play Waveform", action: #selector(hapticPlayClicked))
+        playBtn.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
+        container.addSubview(playBtn)
+        by += L.btnH + L.btnGap + 4
+
+        let sep = makeSep()
+        sep.frame = NSRect(x: L.pad, y: by, width: w, height: 1)
+        container.addSubview(sep)
+        by += 1 + 6
+
+        // 强度: 设备全局状态, 非单次播放参数
+        let hdr = makeSectionHeader("INTENSITY")
+        hdr.frame = NSRect(x: L.pad, y: by, width: w - 40, height: 14)
+        container.addSubview(hdr)
+
+        let valueText: String
+        if let state = state {
+            valueText = state.enabled ? "\(state.level)" : "Off"
+        } else {
+            valueText = "—"
+        }
+        let valueLabel = makeLabel(text: valueText, fontSize: 10, weight: .medium, color: .secondaryLabelColor)
+        valueLabel.alignment = .right
+        valueLabel.frame = NSRect(x: L.pad + w - 40, y: by, width: 40, height: 14)
+        container.addSubview(valueLabel)
+        self.hapticLevelValueLabel = valueLabel
+        by += 16
+
+        let level = (state?.enabled ?? false) ? Double(state?.level ?? 0) : 0
+        let slider = NSSlider(value: level, minValue: 0, maxValue: 100,
+                              target: self, action: #selector(hapticLevelChanged(_:)))
+        slider.controlSize = .small
+        slider.isContinuous = true
+        slider.isEnabled = state != nil
+        if state?.fourLevelsOnly == true {
+            slider.numberOfTickMarks = 5
+            slider.allowsTickMarkValuesOnly = true
+        }
+        slider.frame = NSRect(x: L.pad, y: by, width: w, height: 18)
+        container.addSubview(slider)
+        self.hapticLevelSlider = slider
+        by += 18 + L.btnGap + 2
+
+        let readBtn = makeActionBtn(title: "Read State", action: #selector(hapticReadStateClicked))
+        readBtn.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
+        container.addSubview(readBtn)
+        by += L.btnH + 6
+
+        // 协议边界说明: 波形时长/频率由固件内置, 不可参数化
+        let note = makeLabel(text: "Firmware preset waveforms", fontSize: 9, color: .tertiaryLabelColor)
+        note.frame = NSRect(x: L.pad, y: by, width: w, height: 12)
+        note.cell?.lineBreakMode = .byTruncatingTail
+        container.addSubview(note)
+    }
+
+    @objc private func hapticWaveformChanged(_ sender: NSPopUpButton) {
+        hapticSelectedWaveformId = UInt8(clamping: sender.selectedTag())
+    }
+
+    @objc private func hapticPlayClicked() {
+        currentSession?.hapticPlay(waveformId: hapticSelectedWaveformId)
+    }
+
+    @objc private func hapticLevelChanged(_ sender: NSSlider) {
+        let v = UInt8(clamping: sender.integerValue)
+        hapticLevelValueLabel?.stringValue = v == 0 ? "Off" : "\(v)"
+        // 拖动过程中只联动数字; 松手 / 点击 / 键盘调整时才真正下发
+        let eventType = NSApp.currentEvent?.type
+        if eventType != .leftMouseDragged && eventType != .leftMouseDown {
+            currentSession?.hapticSetLevel(v)
+        }
+    }
+
+    @objc private func hapticReadStateClicked() {
+        currentSession?.hapticRefreshInfo()
+    }
+
+    // MARK: - Scroll Force Context UI
+
+    /// 0x2111 (SmartShift v2) 选中时的专属操作区: 齿感力度滑杆 (即 Logi Options+ 的 Scroll force).
+    /// 布局语言与 Haptic context / 通用 context 完全一致 (手排 frame + FlippedView 坐标系).
+    private func buildScrollForceContext(in container: NSView, session: LogiDeviceSession, width w: CGFloat) {
+        let tunable = session.debugScrollForceTunableTorque
+        let status = session.debugScrollForceStatus
+        var by: CGFloat = 0
+
+        // 首次选中 (或设备未应答过) 时自动拉取 capabilities + status; 同一 session 1s 节流防查询风暴
+        if tunable == nil || status == nil {
+            let sid = ObjectIdentifier(session)
+            let throttled = scrollForceAutoQueryStamp.map {
+                $0.session == sid && Date().timeIntervalSince($0.at) < 1.0
+            } ?? false
+            if !throttled {
+                scrollForceAutoQueryStamp = (sid, Date())
+                session.scrollForceRefreshInfo()
+            }
+        }
+
+        // capabilities 未回来前先不禁用 (乐观); 明确 false 才锁死滑杆
+        let torqueSupported = tunable ?? true
+
+        let hdr = makeSectionHeader("SCROLL FORCE")
+        hdr.frame = NSRect(x: L.pad, y: by, width: w - 40, height: 14)
+        container.addSubview(hdr)
+
+        let valueText: String
+        if tunable == false {
+            valueText = "N/A"
+        } else if let status = status {
+            valueText = "\(status.torque)"
+        } else {
+            valueText = "—"
+        }
+        let valueLabel = makeLabel(text: valueText, fontSize: 10, weight: .medium, color: .secondaryLabelColor)
+        valueLabel.alignment = .right
+        valueLabel.frame = NSRect(x: L.pad + w - 40, y: by, width: 40, height: 14)
+        container.addSubview(valueLabel)
+        self.scrollForceValueLabel = valueLabel
+        by += 16
+
+        // 齿感力度: 设备级状态, 1(最轻/最顺滑) - 100(最硬/最精确)
+        let torque = Double(status?.torque ?? 1)
+        let slider = NSSlider(value: max(1, torque), minValue: 1, maxValue: 100,
+                              target: self, action: #selector(scrollForceChanged(_:)))
+        slider.controlSize = .small
+        slider.isContinuous = true
+        // 支持且已读到当前值才可拖动; 值到达前拖动会写入陈旧默认
+        slider.isEnabled = torqueSupported && status != nil
+        slider.frame = NSRect(x: L.pad, y: by, width: w, height: 18)
+        container.addSubview(slider)
+        self.scrollForceSlider = slider
+        by += 18 + L.btnGap + 2
+
+        let readBtn = makeActionBtn(title: "Read State", action: #selector(scrollForceReadStateClicked))
+        readBtn.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
+        container.addSubview(readBtn)
+        by += L.btnH + 6
+
+        // 设备/协议边界说明
+        let noteText = tunable == false ? "Tunable torque not supported" : "Ratchet detent strength"
+        let note = makeLabel(text: noteText, fontSize: 9, color: .tertiaryLabelColor)
+        note.frame = NSRect(x: L.pad, y: by, width: w, height: 12)
+        note.cell?.lineBreakMode = .byTruncatingTail
+        container.addSubview(note)
+    }
+
+    @objc private func scrollForceChanged(_ sender: NSSlider) {
+        let v = UInt8(clamping: sender.integerValue)
+        scrollForceValueLabel?.stringValue = "\(v)"
+        // 第一道: 拖动 / 按下过程中只联动数字, 不下发 (连续 drag 一个事件都不发给设备)
+        let eventType = NSApp.currentEvent?.type
+        guard eventType != .leftMouseDragged && eventType != .leftMouseDown else { return }
+        // 第二道: 松手 / 键盘调整走 trailing 去抖, 静止 80ms 后只发最后一次值, 键盘连发不会洪泛
+        scheduleScrollForceSend(v)
+    }
+
+    /// torque 写入去抖: 去掉重复值 + 80ms trailing, 保证一串快速变更只落一次 HID 写.
+    /// 始终发送最终值 (trailing 而非 leading), 不会丢用户停下时的目标力度.
+    private func scheduleScrollForceSend(_ torque: UInt8) {
+        guard torque != scrollForceLastSentTorque else { return }
+        scrollForcePendingTorque = torque
+        scrollForceSendWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            guard let self = self, let t = self.scrollForcePendingTorque else { return }
+            self.scrollForceLastSentTorque = t
+            self.currentSession?.scrollForceSetTorque(t)
+        }
+        scrollForceSendWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08, execute: work)
+    }
+
+    @objc private func scrollForceReadStateClicked() {
+        currentSession?.scrollForceRefreshInfo()
+    }
+
+    // MARK: - Force Sensing Context UI
+
+    /// 0x19C0 (Force Sensing Button) 选中时的操作区: 按压激活阈值滑杆 (即 Logi Options+ 的力度感应).
+    /// 布局语言与 Haptic / Scroll Force 一致; 滑杆量程用设备上报的 min/max.
+    private func buildForceSensingContext(in container: NSView, session: LogiDeviceSession, width w: CGFloat) {
+        let info = session.debugForceSensingInfo
+        let current = session.debugForceSensingCurrent
+        var by: CGFloat = 0
+
+        // 首次选中自动拉取按钮能力 (fn1) + 当前力度 (fn2); 同一 session 1s 节流
+        if info == nil || current == nil {
+            let sid = ObjectIdentifier(session)
+            let throttled = forceSensingAutoQueryStamp.map {
+                $0.session == sid && Date().timeIntervalSince($0.at) < 1.0
+            } ?? false
+            if !throttled {
+                forceSensingAutoQueryStamp = (sid, Date())
+                session.forceSensingRefreshInfo()
+            }
+        }
+
+        let changeable = info?.changeable ?? true  // 能力未知前不禁用 (乐观)
+        let hasData = info != nil && current != nil
+
+        let hdr = makeSectionHeader("FORCE SENSING")
+        hdr.frame = NSRect(x: L.pad, y: by, width: w - 50, height: 14)
+        container.addSubview(hdr)
+
+        let valueText: String
+        if info?.changeable == false {
+            valueText = "Locked"
+        } else if let current = current {
+            valueText = "\(current)"
+        } else {
+            valueText = "—"
+        }
+        let valueLabel = makeLabel(text: valueText, fontSize: 10, weight: .medium, color: .secondaryLabelColor)
+        valueLabel.alignment = .right
+        valueLabel.frame = NSRect(x: L.pad + w - 50, y: by, width: 50, height: 14)
+        container.addSubview(valueLabel)
+        self.forceSensingValueLabel = valueLabel
+        by += 16
+
+        // 量程用设备上报的 min/max; 未知时给个安全占位 0-100, maxValue 至少比 min 大 1 防非法 range
+        let minV = Double(info?.minValue ?? 0)
+        let maxV = max(minV + 1, Double(info?.maxValue ?? 100))
+        let cur = min(max(Double(current ?? UInt16(minV)), minV), maxV)
+        let slider = NSSlider(value: cur, minValue: minV, maxValue: maxV,
+                              target: self, action: #selector(forceSensingChanged(_:)))
+        slider.controlSize = .small
+        slider.isContinuous = true
+        slider.isEnabled = changeable && hasData
+        slider.frame = NSRect(x: L.pad, y: by, width: w, height: 18)
+        container.addSubview(slider)
+        self.forceSensingSlider = slider
+        by += 18 + L.btnGap + 2
+
+        let readBtn = makeActionBtn(title: "Read State", action: #selector(forceSensingReadStateClicked))
+        readBtn.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
+        container.addSubview(readBtn)
+        by += L.btnH + 6
+
+        let noteText: String
+        if info?.changeable == false {
+            noteText = "Force not changeable on this device"
+        } else if let info = info {
+            noteText = "Press-activation force (\(info.minValue)-\(info.maxValue))"
+        } else {
+            noteText = "Press-activation force threshold"
+        }
+        let note = makeLabel(text: noteText, fontSize: 9, color: .tertiaryLabelColor)
+        note.frame = NSRect(x: L.pad, y: by, width: w, height: 12)
+        note.cell?.lineBreakMode = .byTruncatingTail
+        container.addSubview(note)
+    }
+
+    @objc private func forceSensingChanged(_ sender: NSSlider) {
+        let v = UInt16(clamping: sender.integerValue)
+        forceSensingValueLabel?.stringValue = "\(v)"
+        // 拖动 / 按下过程只联动数字, 不下发
+        let eventType = NSApp.currentEvent?.type
+        guard eventType != .leftMouseDragged && eventType != .leftMouseDown else { return }
+        scheduleForceSensingSend(v)
+    }
+
+    /// 阈值写入去抖: 去重 + 80ms trailing, 与 scroll force 同构, 防 HID 洪泛
+    private func scheduleForceSensingSend(_ value: UInt16) {
+        guard value != forceSensingLastSentValue else { return }
+        forceSensingPendingValue = value
+        forceSensingSendWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in
+            guard let self = self, let v = self.forceSensingPendingValue else { return }
+            self.forceSensingLastSentValue = v
+            self.currentSession?.forceSensingSetCurrent(v)
+        }
+        forceSensingSendWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08, execute: work)
+    }
+
+    @objc private func forceSensingReadStateClicked() {
+        currentSession?.forceSensingRefreshInfo()
     }
 
     @objc private func indexMinusClicked() {
@@ -1614,15 +2046,42 @@ class LogiDebugPanel: NSObject {
     private func chooseSelectionTarget(prior: SidebarSelection?,
                                        sessions: [LogiDeviceSession],
                                        in outlineView: NSOutlineView) -> SidebarSelection? {
+        // 保留上次选择, 但 receiver header 不可选 -> 降级到其默认 slot.
         if let prior = prior, row(for: prior, in: outlineView) != nil {
+            if case let .device(sessionID) = prior,
+               let session = sessions.first(where: { ObjectIdentifier($0) == sessionID }),
+               session.connectionMode == .receiver {
+                return defaultSelection(for: session)
+            }
             return prior
         }
+        // 上次选的 slot 所在 session 还在 -> 回该 session 的默认(某个在线 slot).
         if case let .slot(sessionID, _)? = prior,
-           sessions.contains(where: { ObjectIdentifier($0) == sessionID }) {
+           let session = sessions.first(where: { ObjectIdentifier($0) == sessionID }) {
+            return defaultSelection(for: session)
+        }
+        // 首个设备的默认.
+        if let first = deviceNodes.first {
+            return defaultSelection(for: first.session)
+        }
+        return nil
+    }
+
+    /// 某 session 默认应选中的 sidebar 项. 接收器: 选真实 slot(优先当前路由游标那台 ——
+    /// Phase 3 已让它落在鼠标上 —— 否则首个在线 slot); 无在线 slot 返回 nil(父行不可选).
+    /// BLE 直连: 设备本身即可选.
+    private func defaultSelection(for session: LogiDeviceSession) -> SidebarSelection? {
+        let sessionID = ObjectIdentifier(session)
+        guard session.connectionMode == .receiver else {
             return .device(sessionID: sessionID)
         }
-        if let first = deviceNodes.first {
-            return .device(sessionID: ObjectIdentifier(first.session))
+        let paired = session.debugReceiverPairedDevices
+        let cursor = session.debugDeviceIndex
+        if paired.first(where: { $0.slot == cursor })?.isConnected == true {
+            return .slot(sessionID: sessionID, slot: cursor)
+        }
+        if let firstConnected = paired.first(where: { $0.isConnected }) {
+            return .slot(sessionID: sessionID, slot: firstConnected.slot)
         }
         return nil
     }
@@ -1809,6 +2268,80 @@ class LogiDebugPanel: NSObject {
             self?.renderRightPanelHeaders()
             self?.refreshSpinningSlotRow()
         }
+        hapticStateObserver = NotificationCenter.default.addObserver(
+            forName: LogiDeviceSession.hapticStateDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let session = notification.object as? LogiDeviceSession,
+                  session === self.currentSession else { return }
+            // Haptic feature 刚被发现: FEATURES 表补行, 并还原之前的行选中 (reload 会清选中)
+            if !self.featureRows.contains(where: { $0.featureId == LogiDeviceSession.featureHaptic }) {
+                let prior = self.selectedFeatureId
+                self.refreshFeatureTable()
+                if let fid = prior,
+                   let row = self.featureRows.firstIndex(where: { $0.featureId == fid }) {
+                    self.featureTableView?.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+                }
+            }
+            // 正在展示 haptic 操作区: 用最新 state / capabilities 重建 (滑杆位置, 波形可用性)
+            if self.selectedFeatureId == LogiDeviceSession.featureHaptic {
+                self.updateContextActions()
+            }
+        }
+        scrollForceStateObserver = NotificationCenter.default.addObserver(
+            forName: LogiDeviceSession.scrollForceStateDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let session = notification.object as? LogiDeviceSession,
+                  session === self.currentSession else { return }
+            // 0x2111 刚被发现: FEATURES 表补行, 并还原之前的行选中 (reload 会清选中)
+            if !self.featureRows.contains(where: { $0.featureId == LogiDeviceSession.featureSmartShiftEnhanced }) {
+                let prior = self.selectedFeatureId
+                self.refreshFeatureTable()
+                if let fid = prior,
+                   let row = self.featureRows.firstIndex(where: { $0.featureId == fid }) {
+                    self.featureTableView?.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+                }
+            }
+            // 正在展示 scroll force 操作区: 用最新 capabilities / status 重建 (滑杆位置与可用性)
+            if self.selectedFeatureId == LogiDeviceSession.featureSmartShiftEnhanced {
+                self.updateContextActions()
+            }
+        }
+        forceSensingStateObserver = NotificationCenter.default.addObserver(
+            forName: LogiDeviceSession.forceSensingStateDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let session = notification.object as? LogiDeviceSession,
+                  session === self.currentSession else { return }
+            // 0x19C0 刚被发现: FEATURES 表补行, 还原之前的行选中 (reload 会清选中)
+            if !self.featureRows.contains(where: { $0.featureId == LogiDeviceSession.featureForceSensing }) {
+                let prior = self.selectedFeatureId
+                self.refreshFeatureTable()
+                if let fid = prior,
+                   let row = self.featureRows.firstIndex(where: { $0.featureId == fid }) {
+                    self.featureTableView?.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+                }
+            }
+            // 正在展示 force sensing 操作区: 用最新 info / current 重建 (滑杆量程与位置)
+            if self.selectedFeatureId == LogiDeviceSession.featureForceSensing {
+                self.updateContextActions()
+            }
+        }
+        auxiliaryFeaturesObserver = NotificationCenter.default.addObserver(
+            forName: LogiDeviceSession.auxiliaryFeaturesDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] notification in
+            guard let self = self,
+                  let session = notification.object as? LogiDeviceSession,
+                  session === self.currentSession else { return }
+            // 无专属 context 的可选 feature 被发现: 只补 FEATURES 表, 保留当前行选中
+            let prior = self.selectedFeatureId
+            self.refreshFeatureTable()
+            if let fid = prior,
+               let row = self.featureRows.firstIndex(where: { $0.featureId == fid }) {
+                self.featureTableView?.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+            }
+        }
         BrailleSpinner.shared.beginTicking()
     }
 
@@ -1838,6 +2371,22 @@ class LogiDebugPanel: NSObject {
             NotificationCenter.default.removeObserver(o)
             spinnerObserver = nil
             BrailleSpinner.shared.endTicking()
+        }
+        if let o = hapticStateObserver {
+            NotificationCenter.default.removeObserver(o)
+            hapticStateObserver = nil
+        }
+        if let o = scrollForceStateObserver {
+            NotificationCenter.default.removeObserver(o)
+            scrollForceStateObserver = nil
+        }
+        if let o = forceSensingStateObserver {
+            NotificationCenter.default.removeObserver(o)
+            forceSensingStateObserver = nil
+        }
+        if let o = auxiliaryFeaturesObserver {
+            NotificationCenter.default.removeObserver(o)
+            auxiliaryFeaturesObserver = nil
         }
         // 布局观察者 (frame change) 的生命周期与窗口一致, token 存于
         // layoutObserverTokens, 在 deinit 统一移除 (不随 show/hide 反复注册)。
@@ -1939,6 +2488,17 @@ class LogiDebugPanel: NSObject {
         return btn
     }
 
+    private func stylePopupButton(_ p: NSPopUpButton) {
+        p.isBordered = false
+        p.wantsLayer = true
+        p.layer?.backgroundColor = NSColor(calibratedWhite: 1.0, alpha: 0.06).cgColor
+        p.layer?.borderColor = NSColor(calibratedWhite: 1.0, alpha: 0.18).cgColor
+        p.layer?.borderWidth = 1
+        p.layer?.cornerRadius = 4
+        p.font = NSFont.systemFont(ofSize: 11)
+        if #available(macOS 10.14, *) { p.contentTintColor = .labelColor }
+    }
+
     private func configureDarkScroll(_ sv: NSScrollView) {
         sv.scrollerStyle = .overlay
         sv.scrollerKnobStyle = .light
@@ -2023,6 +2583,11 @@ extension LogiDebugPanel: NSOutlineViewDelegate {
     }
 
     func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
+        // 接收器父行只是容器, 只有其下的 slot 才代表真实设备; 禁止选中父行.
+        // (BLE 直连 DeviceNode 无子 slot, 本身即设备, 仍可选中.)
+        if let node = item as? DeviceNode, node.isReceiver {
+            return false
+        }
         // 空 slot 不可选中: 视觉已经降级, 再阻止 selection 避免 highlight 落在空行.
         if let slot = item as? SlotNode {
             let paired = slot.session.debugReceiverPairedDevices
@@ -2066,7 +2631,13 @@ extension LogiDebugPanel: NSOutlineViewDelegate {
             let dev = paired[idx]
             let baseText: String
             if dev.isConnected {
-                baseText = dev.name.isEmpty ? "Slot \(dev.slot)" : dev.name
+                let base = dev.name.isEmpty ? "Slot \(dev.slot)" : dev.name
+                // 权威类型(feature 0x0005)已知则附上; 首次巡检该 slot 时查得(见 requestDeviceTypeIfNeeded).
+                if let type = dev.hidppDeviceTypeName {
+                    baseText = "\(base) · \(type)"
+                } else {
+                    baseText = base
+                }
                 label.textColor = .labelColor
             } else {
                 // 空 slot: 视觉显式降级, 暗示不可点击.

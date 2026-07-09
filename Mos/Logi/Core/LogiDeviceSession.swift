@@ -64,44 +64,59 @@ class LogiDeviceSession {
 
     private(set) var connectionMode: ConnectionMode = .unsupported
 
-    enum ReceiverReconnectAction: Equatable {
+    /// 多设备热插拔: 收到某 slot 的 0x41 该做什么.
+    enum ReceiverSlotConnectionAction: Equatable {
         case ignore
-        case refreshReporting
-        case rediscoverFeatures
+        case takeover(UInt8)  // 起该 slot 一次 discovery+divert
+        case release(UInt8)   // 释放该 slot 按键状态 + 标记未 init
     }
 
-    enum ReceiverConnectionNotificationAction: Equatable {
-        case ignore
-        case currentTargetConnected
-        case currentTargetDisconnected
-        case retarget(UInt8)
-
-        var debugLabel: String {
-            switch self {
-            case .ignore:
-                return "ignore"
-            case .currentTargetConnected:
-                return "currentTargetConnected"
-            case .currentTargetDisconnected:
-                return "currentTargetDisconnected"
-            case .retarget(let slot):
-                return "retarget(\(slot))"
-            }
-        }
+    /// 接收器模式下, 一个 peripheral(设备)报文应路由到哪个 slot 的状态.
+    /// - processCurrent: report[1] 就是当前路由 slot(deviceIndex), 按现状处理
+    /// - processScoped(slot): report[1] 是另一个已接管 slot, 临时把路由游标切到它再处理
+    /// - drop: 未知 / 未接管 slot, 丢弃(旧 stale-peripheral 过滤语义)
+    enum ReceiverReportRoute: Equatable {
+        case processCurrent
+        case processScoped(UInt8)
+        case drop
     }
 
     // MARK: - HID++ State
-    private var featureIndex: [UInt16: UInt8] = [:]
-    private var divertedCIDs: Set<UInt16> = []
-    private var buttonStateTracker = LogiButtonStateTracker()
+    /// 当前路由游标: 出站 report[1] 与 per-slot 计算属性都用它.
+    /// 稳态时 = 巡检游标(用户在看哪个 slot); discovery sweep 中 = 正在发现的 slot;
+    /// 处理入站 peripheral 报文时临时 = report[1](见 handleInputReport 的 scoped 路由).
     private var deviceIndex: UInt8 = 0x01
     private var isBLE: Bool = false
     private var deviceOpened: Bool = false
+
+    // MARK: - Receiver Multi-Device Takeover State
+    /// 已完成 discovery+divert、常驻接管其按键的 slot 集. 入站 peripheral 报文按 report[1]
+    /// 命中此集合时被 scoped 路由到对应 slot 处理, 而非旧的"非当前 target 一律 drop".
+    private var receiverManagedSlots: Set<UInt8> = []
+    /// 启动接管 sweep 的待发现队列(§3.1 串行: 一次只发现一个 slot).
+    private var pendingDivertSlots: [UInt8] = []
+    /// sweep 结束后路由游标停靠的巡检 slot(prefer-mouse 选定, 最后发现, 负责可选功能探测).
+    private var receiverInspectionSlot: UInt8? = nil
+    /// 接管 sweep 是否进行中. 区分"sweep 驱动的逐 slot 发现"与手动 rediscover: 前者完成后
+    /// 推进队列, 后者按原逻辑(仅巡检 slot 探测可选功能). 也用于抑制 sweep 中的 0x41 抢占 retarget.
+    private var receiverSweepActive: Bool = false
+    /// 热插拔 takeover 去抖: 用户疯狂快切时, 0x41 连接不立即接管, 等该 slot 稳定在线
+    /// receiverTakeoverDebounceDelay 后才 discovery+divert; 窗口内又断开就取消. 一次性(每事件重置),
+    /// 非周期轮询, 不违红线(§2). 按 slot 各自去抖.
+    private var receiverTakeoverDebounce: [UInt8: DispatchWorkItem] = [:]
+    private static let receiverTakeoverDebounceDelay: TimeInterval = 0.4
+    /// 已探测过可选功能的 slot: 面板巡检切换时每 slot 只探一次, 避免每次切都重探(拖慢/撞在飞探测).
+    /// slot 重新发现(sweep / setTargetSlot)时清除, 以便重探.
+    private var receiverOptionalProbedSlots: Set<UInt8> = []
 
     // MARK: - Receiver Enumeration State
     private(set) var receiverPairedDevices: [ReceiverPairedDevice] = []
     private var pendingSlotPings: Set<UInt8> = []
     private var receiverEnumPhase: Int = 0  // 0=idle, 1=pinging, 2=querying info
+    /// 启动枚举后, 巡检游标默认选择推迟到 device-info 到齐/超时再做一次 (prefer-mouse, 不锁最低号).
+    private var pendingInitialTargetSelection: Bool = false
+    private var pendingDeviceInfoSlots: Set<UInt8> = []
+    private static let initialTargetSelectionTimeout: TimeInterval = 1.5
 
     // MARK: - Report Buffer
     private var reportBufferPtr: UnsafeMutablePointer<UInt8>?
@@ -143,14 +158,65 @@ class LogiDeviceSession {
     private var reportingQueryTimer: Timer?
     private static let reprogQueryTimeout: TimeInterval = 1.0
     private static let bleControlInfoRetryLimit = 1
-    private var controlInfoRetryCounts: [Int: Int] = [:]
 
-    // MARK: - Reprog Controls State
-    private var reprogControlCount: Int = 0
-    private var reprogQueryIndex: Int = 0
-    private var discoveredControls: [ControlInfo] = []
-    private var reprogInitComplete: Bool = false  // init 完成后, function 0 = button event 而非 GetControlCount
-    private var reportingQueryIndex: Int = 0      // GetControlReporting 逐按键查询进度
+    // MARK: - Per-Slot State (按 slot 拆分, 支持接收器多设备并行接管)
+    // 接收器一个 HID++ 接口转发 6 个 slot 的设备 (report[1]=deviceIndex 区分). 每个 slot
+    // 是一台独立设备, feature/divert/reprog 发现进度各自独立. deviceIndex 作为"当前巡检游标",
+    // 下列计算属性透明路由到该游标 slot 的状态; BLE 直连用 0xFF slot, 单目标语义与拆分前一致.
+    struct PerSlotState {
+        var featureIndex: [UInt16: UInt8] = [:]
+        var divertedCIDs: Set<UInt16> = []
+        var discoveredControls: [ControlInfo] = []
+        var reprogInitComplete: Bool = false  // init 完成后, function 0 = button event 而非 GetControlCount
+        var reprogControlCount: Int = 0
+        var reprogQueryIndex: Int = 0
+        var reportingQueryIndex: Int = 0      // GetControlReporting 逐按键查询进度
+        var controlInfoRetryCounts: [Int: Int] = [:]
+        var lastApplied: Set<UInt16> = []     // divert 对账缓存: 上次下发的 divert 目标集
+        // 按键按下/抬起状态跟踪: 必须按 slot 独立, 否则同型号两只鼠标 (CID 相同) 的
+        // 交错报文会互相污染 press/release delta.
+        var buttonStateTracker = LogiButtonStateTracker()
+    }
+
+    private var slotStates: [UInt8: PerSlotState] = [:]
+
+    private var buttonStateTracker: LogiButtonStateTracker {
+        get { slotStates[deviceIndex]?.buttonStateTracker ?? LogiButtonStateTracker() }
+        set { slotStates[deviceIndex, default: PerSlotState()].buttonStateTracker = newValue }
+    }
+
+    private var featureIndex: [UInt16: UInt8] {
+        get { slotStates[deviceIndex]?.featureIndex ?? [:] }
+        set { slotStates[deviceIndex, default: PerSlotState()].featureIndex = newValue }
+    }
+    private var divertedCIDs: Set<UInt16> {
+        get { slotStates[deviceIndex]?.divertedCIDs ?? [] }
+        set { slotStates[deviceIndex, default: PerSlotState()].divertedCIDs = newValue }
+    }
+    private var discoveredControls: [ControlInfo] {
+        get { slotStates[deviceIndex]?.discoveredControls ?? [] }
+        set { slotStates[deviceIndex, default: PerSlotState()].discoveredControls = newValue }
+    }
+    private var reprogInitComplete: Bool {
+        get { slotStates[deviceIndex]?.reprogInitComplete ?? false }
+        set { slotStates[deviceIndex, default: PerSlotState()].reprogInitComplete = newValue }
+    }
+    private var reprogControlCount: Int {
+        get { slotStates[deviceIndex]?.reprogControlCount ?? 0 }
+        set { slotStates[deviceIndex, default: PerSlotState()].reprogControlCount = newValue }
+    }
+    private var reprogQueryIndex: Int {
+        get { slotStates[deviceIndex]?.reprogQueryIndex ?? 0 }
+        set { slotStates[deviceIndex, default: PerSlotState()].reprogQueryIndex = newValue }
+    }
+    private var reportingQueryIndex: Int {
+        get { slotStates[deviceIndex]?.reportingQueryIndex ?? 0 }
+        set { slotStates[deviceIndex, default: PerSlotState()].reportingQueryIndex = newValue }
+    }
+    private var controlInfoRetryCounts: [Int: Int] {
+        get { slotStates[deviceIndex]?.controlInfoRetryCounts ?? [:] }
+        set { slotStates[deviceIndex, default: PerSlotState()].controlInfoRetryCounts = newValue }
+    }
 
     /// 握手终态: receiver 枚举完成 / direct 设备 discovery 走到终点(成功或失败).
     /// sidebar 圆点据此判定 Ready vs Initializing; 与 reprogInitComplete 不同 —— 后者不覆盖
@@ -191,7 +257,8 @@ class LogiDeviceSession {
         var protocolMajor: UInt8 = 0
         var protocolMinor: UInt8 = 0
         var wirelessPID: UInt16 = 0
-        var deviceType: UInt8 = 0
+        var deviceType: UInt8 = 0              // register 0xB5 枚举 (部分接收器不返回)
+        var hidppDeviceType: UInt8? = nil      // feature 0x0005 getDeviceType 枚举 (权威, 与上面不同)
         var name: String = ""
         var lastError: String? = nil
 
@@ -210,6 +277,36 @@ class LogiDeviceSession {
             case 0x09: return "Touchpad"
             default: return deviceType == 0 ? "--" : "0x\(String(format: "%02X", deviceType))"
             }
+        }
+
+        /// feature 0x0005 getDeviceType 的类型名 (权威). 原始字节一并显示便于核对枚举映射.
+        var hidppDeviceTypeName: String? {
+            guard let t = hidppDeviceType else { return nil }
+            let name: String
+            switch t {
+            case 0x00: name = "Keyboard"
+            case 0x01: name = "Remote Control"
+            case 0x02: name = "Numpad"
+            case 0x03: name = "Mouse"
+            case 0x04: name = "Touchpad"
+            case 0x05: name = "Trackball"
+            case 0x06: name = "Presenter"
+            case 0x07: name = "Receiver"
+            case 0x08: name = "Headset"
+            case 0x09: name = "Webcam"
+            case 0x0A: name = "Steering Wheel"
+            case 0x0B: name = "Joystick"
+            case 0x0C: name = "Gamepad"
+            case 0x0D: name = "Dock"
+            case 0x0E: name = "Speaker"
+            case 0x0F: name = "Microphone"
+            case 0x10: name = "Illumination Light"
+            case 0x11: name = "Programmable Controller"
+            case 0x12: name = "Car Sim Pedals"
+            case 0x13: name = "Adapter"
+            default: name = "Unknown"
+            }
+            return String(format: "%@ (0x%02X)", name, t)
         }
     }
 
@@ -247,6 +344,16 @@ class LogiDeviceSession {
     private static let featureSmartShift: UInt16 = 0x2110
     private static let featureAdjustableDPI: UInt16 = 0x2201
     private static let featureChangeHost: UInt16 = 0x1814
+    /// Haptic feedback (MX Master 4 等). internal: Debug 面板需要引用同一常量.
+    static let featureHaptic: UInt16 = 0x19B0
+    /// SmartShift v2 / enhanced: 提供可调 ratchet torque (即 Logi Options+ 的 Scroll force 齿感力度).
+    /// internal: Debug 面板需要引用同一常量.
+    static let featureSmartShiftEnhanced: UInt16 = 0x2111
+    /// Force Sensing Button (MX Master 4 压感按钮): 调节按压激活阈值. internal: Debug 面板需引用.
+    static let featureForceSensing: UInt16 = 0x19C0
+    /// DeviceNameType (0x0005): fn2 getDeviceType 返回权威设备类型枚举. 用于接收器 slot 显示类型
+    /// (register 0xB5 在部分接收器失败时的替代). 注: 0x0005 的类型枚举与 register 0xB5 不同.
+    static let featureDeviceNameType: UInt16 = 0x0005
 
     // Logitech vendor-specific usage pages (USB 上只有这些 page 支持 HID++)
     private static let hidppVendorUsagePages: Set<Int> = [0xFF00, 0xFF43, 0xFFC0]
@@ -272,6 +379,9 @@ class LogiDeviceSession {
     private static let receiverPairingInfo: UInt8 = 0xB5
     private static let pairingInfoDeviceInfo: UInt8 = 0x20
     private static let pairingInfoDeviceName: UInt8 = 0x40
+
+    // Receiver device types (register 0xB5 report[10])
+    static let receiverDeviceTypeMouse: UInt8 = 0x02
 
     private struct ReportingResponse {
         let cid: UInt16
@@ -344,7 +454,11 @@ class LogiDeviceSession {
 
     /// CID set last passed to setControlReporting. Diffed against next applyUsage's
     /// projection so we only emit setControlReporting for state changes.
-    internal var lastApplied: Set<UInt16> = []
+    /// 按 slot 拆分 (存 PerSlotState), 计算属性路由到当前巡检游标 slot.
+    internal var lastApplied: Set<UInt16> {
+        get { slotStates[deviceIndex]?.lastApplied ?? [] }
+        set { slotStates[deviceIndex, default: PerSlotState()].lastApplied = newValue }
+    }
     private var pendingSetControlReportingAcks: [UInt16: PendingSetControlReportingAck] = [:]
     private var divertReassertionWorkItem: DispatchWorkItem?
     private let bleStandardButtonUndivertPlanner = LogiBLEStandardButtonUndivertPlanner()
@@ -781,24 +895,6 @@ class LogiDeviceSession {
         )
     }
 
-    private var currentReceiverTargetConnectionIsKnown: Bool {
-        return Self.receiverTargetConnectionIsKnown(
-            connectionMode: connectionMode,
-            deviceIndex: deviceIndex,
-            pairedDevices: receiverPairedDevices
-        )
-    }
-
-    private static func receiverTargetConnectionIsKnown(
-        connectionMode: ConnectionMode,
-        deviceIndex: UInt8,
-        pairedDevices: [ReceiverPairedDevice]
-    ) -> Bool {
-        guard connectionMode == .receiver else { return true }
-        guard deviceIndex >= 1 && deviceIndex <= 6 else { return false }
-        return pairedDevices.contains(where: { $0.slot == deviceIndex })
-    }
-
     private static func receiverTargetIsConnected(
         connectionMode: ConnectionMode,
         deviceIndex: UInt8,
@@ -809,38 +905,73 @@ class LogiDeviceSession {
         return pairedDevices.first(where: { $0.slot == deviceIndex })?.isConnected ?? true
     }
 
-    private static func receiverReconnectAction(
-        hasReprogFeature: Bool,
-        discoveredControlCount: Int,
-        reprogControlCount: Int,
-        hasInflightWork: Bool
-    ) -> ReceiverReconnectAction {
-        if hasInflightWork { return .ignore }
-        if hasReprogFeature,
-           discoveredControlCount > 0,
-           discoveredControlCount == reprogControlCount {
-            return .refreshReporting
+    /// 巡检游标默认选择: 优先在线的鼠标 slot, 无鼠标回退首个在线 slot, 全空返回 nil.
+    /// 取代 finishPingPhase 旧的"锁编号最低在线 slot"逻辑, 避免锁到键盘/另一只鼠标.
+    static func chooseReceiverTargetSlot(devices: [ReceiverPairedDevice]) -> UInt8? {
+        let connected = devices.filter { $0.isConnected }
+        if let mouse = connected.first(where: { $0.deviceType == receiverDeviceTypeMouse }) {
+            return mouse.slot
         }
-        return .rediscoverFeatures
+        return connected.first?.slot
     }
 
-    private static func receiverConnectionNotificationAction(
-        currentDeviceIndex: UInt8,
-        incomingDeviceIndex: UInt8,
+    /// 明确不接管的设备类型: 键盘 / 数字键盘 / 演示器. 其余(鼠标 / 轨迹球 / 触控板 / 未知)
+    /// 都纳入接管候选. 关键: 有些接收器(如 Bolt / 较新 USB Receiver)不支持 HID++ 1.0 寄存器
+    /// 0xB5 读设备信息(返回 InvalidSubID), deviceType 恒为 0(未知). 此时若按"必须 == Mouse"
+    /// 过滤, 鼠标(类型未知)会被错误排除、永不 divert. 故改为"排除已知非鼠标类型", 未知放行.
+    private static let receiverNonDivertDeviceTypes: Set<UInt8> = [
+        0x01, // Keyboard
+        0x03, // Numpad
+        0x04, // Presenter
+    ]
+
+    /// 接管集合: 需要各自 discovery+divert 常驻接管的 slot.
+    /// 过滤 isConnected && hasBinding(wirelessPID) && 非已知非鼠标类型; 按 slot 升序.
+    /// 绑定过滤是性能考虑(§4.6): 不给用户没绑定的设备做 divert, 避免无谓 HID++ 负载与 Options+ 争用.
+    /// 注: 当前绑定注册表是全局的(UsageRegistry 单一 aggregate), hasBinding 对所有设备同真同假;
+    /// 保留 wirelessPID 参数以便未来按设备细分. 类型未知的 slot 也会纳入(见 receiverNonDivertDeviceTypes),
+    /// 其 divert 仍被 applyUsage 按各设备实际 divertable CID 过滤, 不会误伤键盘按键.
+    static func receiverDivertSlots(
+        devices: [ReceiverPairedDevice],
+        hasBinding: (UInt16) -> Bool
+    ) -> [UInt8] {
+        return devices
+            .filter { $0.isConnected && hasBinding($0.wirelessPID) && !receiverNonDivertDeviceTypes.contains($0.deviceType) }
+            .map { $0.slot }
+            .sorted()
+    }
+
+    /// 决定接收器 peripheral 报文按 report[1] 路由到哪个 slot.
+    /// 单设备时 managedSlots = {currentSlot}, 任何非 current 的 slot 都 drop, 与旧 stale 过滤等价.
+    static func receiverReportRoute(
+        incomingSlot: UInt8,
+        currentSlot: UInt8,
+        managedSlots: Set<UInt8>
+    ) -> ReceiverReportRoute {
+        guard incomingSlot >= 1 && incomingSlot <= 6 else { return .drop }
+        if incomingSlot == currentSlot { return .processCurrent }
+        if managedSlots.contains(incomingSlot) { return .processScoped(incomingSlot) }
+        return .drop
+    }
+
+    /// 多设备热插拔(§Phase 4): 某 slot 的 0x41 连接/断开通知该做什么(纯决策).
+    /// - 断开: 若该 slot 正被接管 -> release(释放其按键状态 + 标记未 init); 否则 ignore
+    /// - 连接: 若已接管 -> ignore(防振荡, "已 init 且在线则忽略"); 否则若是 divert 候选 -> takeover
+    /// 关键: 鼠标关机 / 按背面键切 Bolt 主机再切回, 重连会丢失 divert 状态, 必须重新
+    /// discovery+divert(takeover), 否则其 HID++ 按键不再生效. 全为离散事件驱动, 不违红线(§2).
+    static func receiverSlotConnectionAction(
+        slot: UInt8,
         connected: Bool,
-        currentTargetConnectionIsKnown: Bool,
-        currentTargetIsConnected: Bool,
-        reprogInitComplete: Bool,
-        hasInflightWork: Bool
-    ) -> ReceiverConnectionNotificationAction {
-        guard incomingDeviceIndex >= 1 && incomingDeviceIndex <= 6 else { return .ignore }
-        if incomingDeviceIndex == currentDeviceIndex {
-            return connected ? .currentTargetConnected : .currentTargetDisconnected
+        isDivertCandidate: Bool,
+        alreadyManaged: Bool
+    ) -> ReceiverSlotConnectionAction {
+        guard slot >= 1 && slot <= 6 else { return .ignore }
+        if !connected {
+            return alreadyManaged ? .release(slot) : .ignore
         }
-        guard connected else { return .ignore }
-        let currentTargetReady = currentTargetConnectionIsKnown && currentTargetIsConnected && reprogInitComplete
-        guard !currentTargetReady && !hasInflightWork else { return .ignore }
-        return .retarget(incomingDeviceIndex)
+        if alreadyManaged { return .ignore }
+        guard isDivertCandidate else { return .ignore }
+        return .takeover(slot)
     }
 
     #if DEBUG
@@ -853,39 +984,6 @@ class LogiDeviceSession {
             connectionMode: connectionMode,
             deviceIndex: deviceIndex,
             pairedDevices: pairedDevices
-        )
-    }
-
-    internal static func receiverReconnectActionForTests(
-        hasReprogFeature: Bool,
-        discoveredControlCount: Int,
-        reprogControlCount: Int,
-        hasInflightWork: Bool
-    ) -> ReceiverReconnectAction {
-        return receiverReconnectAction(
-            hasReprogFeature: hasReprogFeature,
-            discoveredControlCount: discoveredControlCount,
-            reprogControlCount: reprogControlCount,
-            hasInflightWork: hasInflightWork
-        )
-    }
-
-    internal static func receiverConnectionNotificationActionForTests(
-        currentDeviceIndex: UInt8,
-        incomingDeviceIndex: UInt8,
-        connected: Bool,
-        currentTargetIsConnected: Bool,
-        reprogInitComplete: Bool,
-        hasInflightWork: Bool
-    ) -> ReceiverConnectionNotificationAction {
-        return receiverConnectionNotificationAction(
-            currentDeviceIndex: currentDeviceIndex,
-            incomingDeviceIndex: incomingDeviceIndex,
-            connected: connected,
-            currentTargetConnectionIsKnown: true,
-            currentTargetIsConnected: currentTargetIsConnected,
-            reprogInitComplete: reprogInitComplete,
-            hasInflightWork: hasInflightWork
         )
     }
     #endif
@@ -965,6 +1063,14 @@ class LogiDeviceSession {
     func teardown() {
         LogiDebugPanel.log("[\(deviceInfo.name)] Teardown")
         unregisterInputReportCallback()
+        pendingInitialTargetSelection = false
+        pendingDeviceInfoSlots.removeAll()
+        receiverManagedSlots.removeAll()
+        pendingDivertSlots.removeAll()
+        receiverInspectionSlot = nil
+        receiverOptionalProbedSlots.removeAll()
+        receiverTakeoverDebounce.values.forEach { $0.cancel() }
+        receiverTakeoverDebounce.removeAll()
         clearDiscoveryQueue()
         controlInfoQueryTimer?.invalidate()
         controlInfoQueryTimer = nil
@@ -1045,6 +1151,8 @@ class LogiDeviceSession {
                 self.markHandshakeComplete()
                 NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
                 LogiSessionManager.shared.recomputeAndNotifyActivityState()
+                // 该 slot 无 REPROG(不可 divert), 但仍需推进接管 sweep 到下一个 slot.
+                self.receiverSlotDiscoveryDidFinish(didDivert: false)
                 return
             }
             self.featureIndex[Self.featureReprogV4] = index
@@ -1062,6 +1170,7 @@ class LogiDeviceSession {
         guard !handshakeComplete else { return }
         handshakeComplete = true
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+        probeOptionalFeatures()
     }
 
     /// discoveryInFlight 切换 + 通知. idempotent: 只在状态变化时 post.
@@ -1113,6 +1222,7 @@ class LogiDeviceSession {
         discoveryTimer?.invalidate()
         discoveryTimer = Timer.scheduledTimer(withTimeInterval: Self.discoveryTimeout, repeats: false) { [weak self] _ in
             guard let self = self else { return }
+            // settleCurrentDiscovery 会先 invalidate + 置 nil timer, 保证 anyDiscoveryInFlight 不误判为在飞
             self.settleCurrentDiscovery(result: nil, reason: "timed out")
         }
     }
@@ -1319,6 +1429,10 @@ class LogiDeviceSession {
     func rediscoverFeatures() {
         cancelInflightDiscovery()
         featureIndex.removeAll()
+        resetOptionalProbeState()
+        resetHapticDiscoveryState()
+        resetScrollForceDiscoveryState()
+        resetForceSensingState()
         discoveredControls.removeAll()
         reprogInitComplete = false
         handshakeComplete = false  // 允许 markHandshakeComplete 再次 post sessionChanged 以刷右侧面板
@@ -1416,10 +1530,18 @@ class LogiDeviceSession {
     /// 切换目标 slot (debug 面板交互/自动选择)
     func setTargetSlot(slot: UInt8) {
         guard connectionMode == .receiver, slot >= 1, slot <= 6 else { return }
+        // 手动/主动 target 覆盖启动时的默认巡检游标选择, 取消 pending 的自动选择,
+        // 防止 device-info 到齐/超时后的回调覆盖此次显式选择.
+        pendingInitialTargetSelection = false
         cancelInflightDiscovery()
         deviceIndex = slot
+        receiverOptionalProbedSlots.remove(slot)  // 完整重发现 -> 可选功能允许重探
         // 重置 feature 状态, 等待新一轮 discovery
         featureIndex.removeAll()
+        resetOptionalProbeState()  // 新 slot 是另一台设备, 探测守卫与所有缓存状态必须清零
+        resetHapticDiscoveryState()
+        resetScrollForceDiscoveryState()
+        resetForceSensingState()
         discoveredControls.removeAll()
         reprogInitComplete = false
         handshakeComplete = false  // 允许 markHandshakeComplete 再次 post, 使 sidebar/panels 刷新回 loading/ready 切换
@@ -1431,6 +1553,41 @@ class LogiDeviceSession {
         divertedCIDs.removeAll()
         setDiscoveryInFlight(true)
         LogiDebugPanel.log("[\(deviceInfo.name)] Target slot changed to \(slot)")
+    }
+
+    /// 面板巡检切换: slot 已发现过且当前空闲时, 只切游标 + 刷新可选功能上下文, 不重跑 REPROG 发现
+    /// (控件已缓存在 slotState). 否则回退完整 setTargetSlot + rediscoverFeatures.
+    /// 接管已由 sweep 常驻, 点击只为"看哪个 slot 的 features", 无需重发现.
+    func inspectSlot(_ slot: UInt8) {
+        guard connectionMode == .receiver, slot >= 1, slot <= 6 else { return }
+        // 判"是否已发现过"用 discoveredControls 而非 reprogInitComplete: 非鼠标 slot(键盘)
+        // 被排除出接管集时 reprogInitComplete 置了 false, 但其控件已发现过、可直接读缓存.
+        // 关键: idle 不参与"轻/重"决策 —— 已发现的 slot 永远走轻量, 即使此刻正好有别的 slot
+        // 的可选功能探测在飞(否则会每次撞上探测链而误判成"需重发现"). idle 只用来门控本次探测.
+        let discovered = !(slotStates[slot]?.discoveredControls.isEmpty ?? true)
+        guard discovered else {
+            setTargetSlot(slot: slot)
+            rediscoverFeatures()
+            return
+        }
+        // 轻量切换: 控件已缓存, 只切游标读缓存, 永不重跑 REPROG.
+        pendingInitialTargetSelection = false
+        deviceIndex = slot
+        setDiscoveryInFlight(false)
+        // 可选功能每个 slot 只探一次, 且仅在空闲时(避免每次切都重探; 本接收器 getFeature 可能
+        // 超时, 重探会拖慢并让后续点击撞上在飞探测). 未探过 + 空闲才 reset+探.
+        let idle = !receiverSweepActive && discoveryQueue.isIdle
+            && discoveryTimer == nil && controlInfoQueryTimer == nil && reportingQueryTimer == nil
+        if idle && !receiverOptionalProbedSlots.contains(slot) {
+            receiverOptionalProbedSlots.insert(slot)
+            resetOptionalProbeState()
+            resetHapticDiscoveryState()
+            resetScrollForceDiscoveryState()
+            resetForceSensingState()
+            probeOptionalFeatures()
+        }
+        LogiDebugPanel.log("[\(deviceInfo.name)] Inspecting slot \(slot) (cached, no REPROG rediscover)")
+        NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
     }
 
     // MARK: - Receiver Device Enumeration
@@ -1597,32 +1754,174 @@ class LogiDeviceSession {
         let connectedSlots = receiverPairedDevices.filter { $0.isConnected }
         LogiDebugPanel.log("[\(deviceInfo.name)] Ping complete: \(connectedSlots.count)/6 slots connected")
 
-        // 查询已连接设备的详细信息 (register 0xB5, 可能在 Bolt receiver 上失败)
-        for dev in connectedSlots {
-            queryReceiverDeviceInfo(slot: dev.slot)
-        }
-
-        // 自动 target 第一个在线设备并启动 feature discovery
-        if let firstConnected = connectedSlots.first {
-            deviceIndex = firstConnected.slot
-            featureIndex.removeAll()
-            discoveredControls.removeAll()
-            reprogInitComplete = false
-            LogiDebugPanel.log("[\(deviceInfo.name)] Auto-targeted slot \(firstConnected.slot)")
-
-            let tag = "[\(deviceInfo.name):slot\(firstConnected.slot)]"
-            LogiDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
-            startFreshDiscovery(tag: tag)
-        } else {
+        guard !connectedSlots.isEmpty else {
             receiverEnumPhase = 0
             LogiDebugPanel.log("[\(deviceInfo.name)] No devices found on receiver")
             // 无设备 -> 不会进 peripheral discovery, 此处必须清 inflight 防止 spinner 一直转.
             setDiscoveryInFlight(false)
+            // Receiver dongle 本身的握手 = slot ping 完成.
+            handshakeComplete = true
+            NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+            return
         }
 
-        // Receiver dongle 本身的握手 = slot ping 完成. 后续 peripheral discovery 状态与此独立.
+        // 查询已连接设备的详细信息 (register 0xB5, 可能在 Bolt receiver 上失败).
+        // 巡检游标默认选择需要 deviceType 才能 prefer-mouse, 因此推迟到 device-info 到齐
+        // (或超时) 后再选一次, 避免像旧逻辑那样锁到编号最低的 slot (可能是键盘/另一只鼠标).
+        pendingInitialTargetSelection = true
+        pendingDeviceInfoSlots = Set(connectedSlots.map { $0.slot })
+        for dev in connectedSlots {
+            queryReceiverDeviceInfo(slot: dev.slot)
+        }
+
+        // 超时兜底: device-info 始终不回 (如 Bolt register 失败) 时,
+        // chooseReceiverTargetSlot 在无类型信息下回退首个在线 slot, 不退化.
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.initialTargetSelectionTimeout) { [weak self] in
+            guard let self = self, self.pendingInitialTargetSelection else { return }
+            LogiDebugPanel.log("[\(self.deviceInfo.name)] Device-info wait timed out; selecting target with known types")
+            self.selectInitialReceiverTargetAndDiscover()
+        }
+
+        // Receiver dongle 本身的握手 = slot ping 完成. discovery 保持 inflight 直到选定 target.
         handshakeComplete = true
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+    }
+
+    /// device-info 到齐或超时后, 选定巡检游标并启动 feature discovery (只执行一次).
+    private func selectInitialReceiverTargetAndDiscover() {
+        guard pendingInitialTargetSelection else { return }
+        pendingInitialTargetSelection = false
+        pendingDeviceInfoSlots.removeAll()
+
+        guard let inspectionSlot = Self.chooseReceiverTargetSlot(devices: receiverPairedDevices) else {
+            // 选择窗口内全部断开 -> 无目标, 清 inflight 防止 spinner 卡住.
+            receiverEnumPhase = 0
+            LogiDebugPanel.log("[\(deviceInfo.name)] No connected devices at target selection")
+            setDiscoveryInFlight(false)
+            NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+            return
+        }
+
+        // 接管集合: 已连接 + 鼠标 + 有绑定的 slot 各自 discovery+divert 常驻接管.
+        // 绑定当前是全局的(UsageRegistry 单一 aggregate), 有任一绑定则所有鼠标进入接管集.
+        let bindingsExist = !LogiCenter.shared.registry.aggregatedCacheIsEmpty
+        let divertSlots = Self.receiverDivertSlots(devices: receiverPairedDevices) { _ in bindingsExist }
+
+        // 巡检 slot 始终发现(面板要显示其 features)且排最后, 让路由游标最终停靠它;
+        // 其余接管 slot 在前, 只做 discovery+divert, 不做可选功能探测(§4.3).
+        receiverInspectionSlot = inspectionSlot
+        var queue = divertSlots.filter { $0 != inspectionSlot }
+        queue.append(inspectionSlot)
+
+        let selected = receiverPairedDevices.first(where: { $0.slot == inspectionSlot })
+        LogiDebugPanel.log("[\(deviceInfo.name)] Takeover sweep: divert=\(divertSlots) inspection=\(inspectionSlot)(\(selected?.deviceTypeName ?? "--")) queue=\(queue)")
+        startReceiverDivertSweep(queue: queue)
+        NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+    }
+
+    // MARK: - Receiver Divert Sweep (§3.1 串行逐 slot 发现)
+
+    /// 启动接管 sweep: 逐 slot 串行 discovery+divert. 一次只发现一个 slot,
+    /// 满足 IRoot 发现响应不带 featureId 的串行约束(§3.1).
+    private func startReceiverDivertSweep(queue: [UInt8]) {
+        receiverSweepActive = true
+        pendingDivertSlots = queue
+        discoverNextSweepSlot()
+    }
+
+    /// 取队首 slot 开始其 discovery; 队空则收尾.
+    private func discoverNextSweepSlot() {
+        guard !pendingDivertSlots.isEmpty else {
+            finishReceiverSweep()
+            return
+        }
+        let slot = pendingDivertSlots.removeFirst()
+        deviceIndex = slot
+        receiverOptionalProbedSlots.remove(slot)  // 全新发现 -> 可选功能允许重探
+        // 全新发现: 清该 slot 的 per-slot 发现状态(startup 本为默认, 显式清以支持 Phase 4 重扫).
+        featureIndex.removeAll()
+        discoveredControls.removeAll()
+        reprogInitComplete = false
+        reprogControlCount = 0
+        reprogQueryIndex = 0
+        reportingQueryIndex = 0
+        controlInfoRetryCounts.removeAll()
+        setDiscoveryInFlight(true)
+        let selected = receiverPairedDevices.first(where: { $0.slot == slot })
+        let tag = "[\(deviceInfo.name):slot\(slot)]"
+        LogiDebugPanel.log("\(tag) Sweep discovery (\(selected?.deviceTypeName ?? "--")); \(pendingDivertSlots.count) slot(s) queued after")
+        startFreshDiscovery(tag: tag)
+    }
+
+    /// 单 slot discovery 走到终点(divert 成功 / 无 REPROG / 0 控件)时调用.
+    /// 巡检 slot 完成时探测其可选功能(§4.3, 与队列顺序无关); 队列还有 slot 则发现下一个,
+    /// 否则收尾. 手动 rediscover(sweep 未激活)不进此路径. 全部离散事件驱动, 无周期活动.
+    private func receiverSlotDiscoveryDidFinish(didDivert: Bool) {
+        // 非 sweep 发现终点(无 REPROG / 0 控件的手动 rediscover)也要排空热插拔队列.
+        guard receiverSweepActive else { pumpPendingDivertQueue(); return }
+        let slot = deviceIndex
+        // 防快速切换(flap)竞态: 若该 slot 在发现过程中已断开, 不标记 managed, 否则重连时会被
+        // "已 managed -> ignore" 挡住而不再重新 divert. 断开后重连会由 0x41 重新触发 takeover.
+        let stillConnected = receiverPairedDevices.first(where: { $0.slot == slot })?.isConnected ?? false
+        if didDivert && stillConnected {
+            // 只接管像鼠标的 slot (有标准 Left/Right 点击); 键盘/数字键盘/演示器不进接管集 (计划 §8).
+            // 类型不可知的接收器上据实际发现的控件判定. 非鼠标撤销 applyUsage 可能下发的 divert,
+            // 恢复其原生功能 (通常 divertedCIDs 为空, 即无操作).
+            if slotLooksLikeMouse(slot) {
+                receiverManagedSlots.insert(slot)
+            } else {
+                undivertCurrentSlotControls(reason: "not a mouse")
+            }
+        }
+        if !pendingDivertSlots.isEmpty {
+            discoverNextSweepSlot()
+        } else {
+            finishReceiverSweep()
+        }
+    }
+
+    /// 撤销当前游标 slot 上已下发的 divert, 恢复其原生功能. 用于把非鼠标 slot 排除出接管集.
+    private func undivertCurrentSlotControls(reason: String) {
+        let toUndivert = divertedCIDs
+        if let idx = featureIndex[Self.featureReprogV4] {
+            for cid in toUndivert {
+                setControlReporting(featureIndex: idx, cid: cid, divert: false)
+            }
+        }
+        lastApplied.removeAll()
+        divertedCIDs.removeAll()
+        reprogInitComplete = false
+        if !toUndivert.isEmpty {
+            LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(deviceIndex) excluded from takeover (\(reason)); undiverted \(toUndivert.count) control(s)")
+        }
+    }
+
+    /// 该 slot 已发现的控件是否像鼠标: 有标准 Left(0x50)+Right(0x51)点击, 键盘没有.
+    private func slotLooksLikeMouse(_ slot: UInt8) -> Bool {
+        guard let controls = slotStates[slot]?.discoveredControls else { return false }
+        return Self.controlsLookLikeMouse(cids: Set(controls.map { $0.cid }))
+    }
+
+    /// 纯判定: 一组已发现的 CID 是否像鼠标. 用于类型不可知的接收器(寄存器 0xB5 返 InvalidSubID,
+    /// deviceType 恒为 0): sweep 后据实际控件把巡检游标落到真正的鼠标, 无需额外 HID++ 流量.
+    static func controlsLookLikeMouse(cids: Set<UInt16>) -> Bool {
+        return cids.contains(0x0050) && cids.contains(0x0051)  // Left + Right click
+    }
+
+    private func finishReceiverSweep() {
+        receiverSweepActive = false
+        // 巡检游标: 优先落到真正的鼠标(据发现的控件判定, 键盘无 Left/Right); 无鼠标回退预选 slot.
+        // 修类型不可知接收器上"游标回退到键盘, 面板默认显示键盘"的问题.
+        let mouseSlot = receiverManagedSlots.sorted().first(where: { slotLooksLikeMouse($0) })
+        deviceIndex = mouseSlot ?? receiverInspectionSlot ?? deviceIndex
+        // 在最终巡检的那台(鼠标)探测可选功能(haptic/scrollForce 等). 移到此处(而非逐 slot)
+        // 才能只探测巡检的鼠标而非 sweep 最后一个 slot. probeOptionalFeatures 自带 once 守卫.
+        receiverOptionalProbedSlots.insert(deviceIndex)  // 巡检游标那台已探, inspectSlot 不重探
+        probeOptionalFeatures()
+        LogiDebugPanel.log("[\(deviceInfo.name)] Takeover sweep complete: managed=\(receiverManagedSlots.sorted()) cursor=\(deviceIndex)\(mouseSlot != nil ? " (mouse)" : "")")
+        NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+        // sweep 结束后再排空一次: 消费其间因 0x41 新入队的 slot.
+        pumpPendingDivertQueue()
     }
 
     /// 处理 receiver register 响应
@@ -1642,6 +1941,13 @@ class LogiDeviceSession {
                 receiverPairedDevices[idx].deviceType = report[10]
                 LogiDebugPanel.log(device: deviceInfo.name, type: .info,
                     message: "Slot \(slot) info: type=\(receiverPairedDevices[idx].deviceTypeName) wirelessPID=\(String(format: "0x%04X", receiverPairedDevices[idx].wirelessPID))")
+                // 巡检游标默认选择等待 device-info: 该 slot 类型已知, 若全部到齐则立即选定.
+                if pendingInitialTargetSelection {
+                    pendingDeviceInfoSlots.remove(slot)
+                    if pendingDeviceInfoSlots.isEmpty {
+                        selectInitialReceiverTargetAndDiscover()
+                    }
+                }
             } else if infoType == Self.pairingInfoDeviceName && report.count > 7 {
                 // [entityIdx, 0x40, nameLen, char0, char1, ...]
                 let nameLen = min(Int(report[6]), report.count - 7)
@@ -1678,68 +1984,95 @@ class LogiDeviceSession {
                 receiverPairedDevices.sort { $0.slot < $1.slot }
             }
 
-            let hasInflightWork = discoveryTimer != nil || controlInfoQueryTimer != nil || reportingQueryTimer != nil
-            let action = Self.receiverConnectionNotificationAction(
-                currentDeviceIndex: deviceIndex,
-                incomingDeviceIndex: devIdx,
+            // 多设备热插拔(Phase 4): 每个 slot 的 0x41 各自决策, 不再单目标抢占式 retarget.
+            let dev = receiverPairedDevices.first(where: { $0.slot == devIdx })
+            let bindingsExist = !LogiCenter.shared.registry.aggregatedCacheIsEmpty
+            let isDivertCandidate = connected
+                && !Self.receiverNonDivertDeviceTypes.contains(dev?.deviceType ?? 0)
+                && bindingsExist
+            let action = Self.receiverSlotConnectionAction(
+                slot: devIdx,
                 connected: connected,
-                currentTargetConnectionIsKnown: currentReceiverTargetConnectionIsKnown,
-                currentTargetIsConnected: currentReceiverTargetIsConnected,
-                reprogInitComplete: reprogInitComplete,
-                hasInflightWork: hasInflightWork
+                isDivertCandidate: isDivertCandidate,
+                alreadyManaged: receiverManagedSlots.contains(devIdx)
             )
             LogiDebugPanel.log(
-                "[\(deviceInfo.name)] DeviceConnection action=\(action.debugLabel) current=\(deviceIndex) incoming=\(devIdx) currentKnown=\(currentReceiverTargetConnectionIsKnown) currentConnected=\(currentReceiverTargetIsConnected) reprogInit=\(reprogInitComplete) inflight=\(hasInflightWork)"
+                "[\(deviceInfo.name)] SlotConnection slot=\(devIdx) connected=\(connected) candidate=\(isDivertCandidate) managed=\(receiverManagedSlots.contains(devIdx)) -> \(action)"
             )
 
             switch action {
             case .ignore:
                 break
-            case .currentTargetConnected:
-                handleCurrentReceiverTargetReconnected()
-            case .currentTargetDisconnected:
-                handleCurrentReceiverTargetDisconnected()
-            case .retarget(let slot):
-                setTargetSlot(slot: slot)
-                rediscoverFeatures()
+            case .takeover(let slot):
+                scheduleReceiverSlotTakeover(slot: slot)
+            case .release(let slot):
+                cancelReceiverSlotTakeoverDebounce(slot: slot)
+                handleReceiverSlotRelease(slot: slot)
             }
             NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
         }
     }
 
-    private func handleCurrentReceiverTargetDisconnected() {
-        cancelInflightDiscovery()
-        releaseAllActiveButtonState(reason: "receiver target disconnected")
-        lastApplied.removeAll()
-        divertedCIDs.removeAll()
-        reprogInitComplete = false
-        handshakeComplete = false
-        reportingQueryIndex = 0
-        setDiscoveryInFlight(false)
-        LogiDebugPanel.log("[\(deviceInfo.name)] Current receiver target disconnected; local divert state cleared")
+    /// 去抖调度 takeover: 每次 0x41 连接重置定时器, 该 slot 稳定在线 debounce 窗口后才真正接管.
+    /// 疯狂快切期间连接/断开成对到达, 定时器被反复取消, 一次发现都不触发.
+    private func scheduleReceiverSlotTakeover(slot: UInt8) {
+        receiverTakeoverDebounce[slot]?.cancel()
+        let item = DispatchWorkItem { [weak self] in
+            guard let self = self else { return }
+            self.receiverTakeoverDebounce[slot] = nil
+            // 去抖窗口结束时仍在线且仍未接管才真正 takeover.
+            let connected = self.receiverPairedDevices.first(where: { $0.slot == slot })?.isConnected ?? false
+            guard connected, !self.receiverManagedSlots.contains(slot) else { return }
+            self.handleReceiverSlotTakeover(slot: slot)
+        }
+        receiverTakeoverDebounce[slot] = item
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.receiverTakeoverDebounceDelay, execute: item)
     }
 
-    private func handleCurrentReceiverTargetReconnected() {
-        guard connectionMode == .receiver else { return }
-        let hasInflightWork = discoveryTimer != nil || controlInfoQueryTimer != nil || reportingQueryTimer != nil
-        let action = Self.receiverReconnectAction(
-            hasReprogFeature: featureIndex[Self.featureReprogV4] != nil,
-            discoveredControlCount: discoveredControls.count,
-            reprogControlCount: reprogControlCount,
-            hasInflightWork: hasInflightWork
-        )
+    private func cancelReceiverSlotTakeoverDebounce(slot: UInt8) {
+        receiverTakeoverDebounce[slot]?.cancel()
+        receiverTakeoverDebounce[slot] = nil
+    }
 
-        switch action {
-        case .ignore:
-            return
-        case .refreshReporting:
-            LogiDebugPanel.log("[\(deviceInfo.name)] Current receiver target reconnected; refreshing reporting state")
-            setDiscoveryInFlight(true)
-            startReportingQuery()
-        case .rediscoverFeatures:
-            LogiDebugPanel.log("[\(deviceInfo.name)] Current receiver target reconnected; rediscovering features")
-            rediscoverFeatures()
-        }
+    /// 某接管 slot 断开: 只释放该 slot 的按键状态并标记未 init, 不动别的 slot.
+    private func handleReceiverSlotRelease(slot: UInt8) {
+        receiverManagedSlots.remove(slot)
+        pendingDivertSlots.removeAll { $0 == slot }
+        // scoped 到该 slot 释放其 per-slot 状态 (buttonStateTracker/divertedCIDs/lastApplied 均按 slot).
+        let saved = deviceIndex
+        deviceIndex = slot
+        releaseAllActiveButtonState(reason: "slot \(slot) disconnected")
+        reprogInitComplete = false
+        lastApplied.removeAll()
+        divertedCIDs.removeAll()
+        deviceIndex = saved
+        LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(slot) disconnected; released takeover state (managed=\(receiverManagedSlots.sorted()))")
+    }
+
+    /// 某 divert 候选 slot(重新)连接: 入接管队列并尝试排空.
+    private func handleReceiverSlotTakeover(slot: UInt8) {
+        // 已排队 / 正在发现该 slot -> 不重复.
+        if pendingDivertSlots.contains(slot) { return }
+        if receiverSweepActive && deviceIndex == slot { return }
+        pendingDivertSlots.append(slot)
+        LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(slot) (re)connected; queued for takeover")
+        pumpPendingDivertQueue()
+    }
+
+    /// 排空接管队列: 若有待接管 slot 且当前无发现在飞, 起 sweep 逐个消费(§3.1 串行).
+    /// 必须在每个发现/上报查询终点调用, 保证热插拔期间入队的 slot 最终一定被处理 ——
+    /// 不能只靠 receiverSweepActive, 否则"入队时正好有非 sweep 发现在飞"的 slot 会被永久搁置
+    /// (真机复现: mx4 重连时被 queued 后从未 discovery, 拇指键退回原生鼠标键).
+    private func pumpPendingDivertQueue() {
+        guard !receiverSweepActive, !pendingDivertSlots.isEmpty else { return }
+        // getFeature 在飞用 discoveryQueue(权威集)判定, 不用 discoveryTimer != nil ——
+        // 后者曾因完成后漏置 nil 变成"已失效但非 nil"永远误判在飞, 把 pump 毒死(见 29f3bd1).
+        let anyDiscoveryInFlight = !discoveryQueue.isIdle
+            || controlInfoQueryTimer != nil || reportingQueryTimer != nil
+        guard !anyDiscoveryInFlight else { return }
+        LogiDebugPanel.log("[\(deviceInfo.name)] Draining takeover queue \(pendingDivertSlots)")
+        receiverSweepActive = true
+        discoverNextSweepSlot()
     }
 
     // MARK: - Report Decoding (for debug panel)
@@ -1774,6 +2107,23 @@ class LogiDeviceSession {
                 }
                 return "REPROG.SetControlReporting"
             default: return "REPROG.func\(functionId)"
+            }
+        }
+        if let hapticIdx = self.featureIndex[Self.featureHaptic], featureIndex == hapticIdx {
+            switch functionId {
+            case 0: return "HAPTIC.GetCapabilities()"
+            case 1: return "HAPTIC.GetState()"
+            case 2:
+                if params.count >= 2 {
+                    return "HAPTIC.SetState(\(params[0] & 0x01 != 0 ? "on" : "off"), level=\(params[1]))"
+                }
+                return "HAPTIC.SetState"
+            case 4:
+                let name = params.first.flatMap { id in
+                    HIDPPInfo.hapticWaveforms.first(where: { $0.id == id })?.name
+                } ?? "?"
+                return "HAPTIC.PlayWaveform(\(name))"
+            default: return "HAPTIC.func\(functionId)"
             }
         }
         return "Feature[0x\(String(format: "%02X", featureIndex))].func\(functionId)"
@@ -1878,6 +2228,61 @@ class LogiDeviceSession {
                 return "REPROG.SetControlReporting ACK"
             }
         }
+        // Haptic responses
+        if let hapticIdx = featureIndex[Self.featureHaptic], featIdx == hapticIdx {
+            switch funcId {
+            case 0:
+                if let mask = Self.parseHapticCapabilitiesMask(report) {
+                    let count = HIDPPInfo.hapticWaveforms.filter { (mask >> UInt32($0.id)) & 1 != 0 }.count
+                    return "HAPTIC.Capabilities: \(count) waveforms, mask=0x\(String(format: "%08X", mask))"
+                }
+                return "HAPTIC.Capabilities"
+            case 1:
+                if let s = Self.parseHapticState(report) {
+                    return "HAPTIC.State: \(s.enabled ? "on" : "off"), level=\(s.level)\(s.fourLevelsOnly ? " (4-level)" : "")"
+                }
+                return "HAPTIC.State"
+            case 2: return "HAPTIC.SetState ACK"
+            case 4: return "HAPTIC.PlayWaveform ACK"
+            default: return "HAPTIC.func\(funcId) response"
+            }
+        }
+        // Scroll Force (0x2111) responses
+        if let sfIdx = featureIndex[Self.featureSmartShiftEnhanced], featIdx == sfIdx {
+            switch funcId {
+            case 0:
+                if let tunable = Self.parseScrollForceTunableTorque(report) {
+                    return "ScrollForce.Capabilities: tunable torque \(tunable ? "yes" : "no")"
+                }
+                return "ScrollForce.Capabilities"
+            case 1:
+                if let status = Self.parseScrollForceStatus(report) {
+                    return "ScrollForce.Status: mode=\(status.mode), torque=\(status.torque)"
+                }
+                return "ScrollForce.Status"
+            case 2: return "ScrollForce.SetState ACK"
+            default: return "ScrollForce.func\(funcId) response"
+            }
+        }
+        // Force Sensing (0x19C0) responses
+        if let fsIdx = featureIndex[Self.featureForceSensing], featIdx == fsIdx {
+            switch funcId {
+            case 0: return "ForceSensing.ButtonCount"
+            case 1:
+                if let info = Self.parseForceSensingInfo(report) {
+                    return "ForceSensing.Info: changeable=\(info.changeable), range=\(info.minValue)-\(info.maxValue), default=\(info.defaultValue)"
+                }
+                return "ForceSensing.Info"
+            case 2:
+                if let current = Self.parseForceSensingCurrent(report) {
+                    return "ForceSensing.Current: \(current)"
+                }
+                return "ForceSensing.Current"
+            case 3: return "ForceSensing.SetConfig ACK"
+            default: return "ForceSensing.func\(funcId) response"
+            }
+        }
+
         // SmartShift or other feature notifications
         if let name = findFeatureName(forIndex: featIdx) {
             return "\(name) notification (func=\(funcId))"
@@ -2043,12 +2448,370 @@ class LogiDeviceSession {
         }
     }
 
+    // MARK: - Haptic (0x19B0)
+
+    /// Haptic state / capabilities 响应抵达或本地缓存更新时发出. object = 本 session.
+    static let hapticStateDidChangeNotification = Notification.Name("LogiHapticStateDidChange")
+
+    struct HapticState: Equatable {
+        let enabled: Bool
+        let level: UInt8          // 0-100
+        let fourLevelsOnly: Bool  // 设备仅支持 Off/25/50/75/100 五档
+    }
+
+    /// 最近一次 GetState (fn1) 解析结果; 未查询过为 nil
+    private(set) var hapticState: HapticState? = nil
+    /// GetCapabilities (fn0) 返回的波形支持位掩码 (bit n = waveform ID n); 未查询过为 nil
+    private(set) var hapticWaveformMask: UInt32? = nil
+
+    var debugHapticState: HapticState? { hapticState }
+    var debugHapticWaveformMask: UInt32? { hapticWaveformMask }
+
+    // MARK: - Optional Feature Probing (串行)
+
+    /// 面板可选功能探测清单. 前三个有专属 context (haptic / scroll force / force sensing),
+    /// 其余仅需在 FEATURES 表列出 + 命名/通用 action. 顺序无关紧要, 但必须逐个串行探测.
+    private static let optionalProbeFeatures: [UInt16] = [
+        featureDeviceNameType,     // 0x0005 (查权威设备类型, 见 probeNextOptionalFeature)
+        featureHaptic,             // 0x19B0
+        featureSmartShiftEnhanced, // 0x2111
+        featureForceSensing,       // 0x19C0
+        0x8060, 0x8061,            // Report Rate / Extended Report Rate
+        0x2202,                    // Extended Adjustable DPI
+        0x2001,                    // Left/Right Swap
+        0x2006,                    // Pointer Axis Orientation
+        0x2130,                    // LowRes Wheel
+        0x2230,                    // Angle Snapping
+        0x2240,                    // Surface Tuning
+        0x2250, 0x2251,            // XY Stats / Wheel Stats
+        0x1010,                    // Charging Control
+        0x1802,                    // Device Reset
+        0x1C00,                    // Persistent Remappable Action
+        0x8100,                    // Onboard Profiles
+    ]
+    private var optionalProbeSent = false
+    private var optionalProbeIndex = 0
+
+    /// 握手完成后探测一批可选 feature, 让 Debug 面板 FEATURES 表能列出它们.
+    /// 必须串行 (一次一个): IRoot getFeature 响应不带 featureId, handleDiscoveryResponse
+    /// 只能按 discoveryQueue 飞行中的队头匹配; 并发探测会把 index 张冠李戴.
+    private func probeOptionalFeatures() {
+        guard !optionalProbeSent else { return }
+        optionalProbeSent = true
+        optionalProbeIndex = 0
+        probeNextOptionalFeature()
+    }
+
+    private func probeNextOptionalFeature() {
+        while optionalProbeIndex < Self.optionalProbeFeatures.count {
+            let fid = Self.optionalProbeFeatures[optionalProbeIndex]
+            optionalProbeIndex += 1
+            if featureIndex[fid] != nil {
+                // 缓存已含: 无需探测, 直接发对应通知让 UI 补行/建 context, 继续下一个
+                postOptionalFeatureNotification(fid)
+                if fid == Self.featureDeviceNameType { requestDeviceTypeIfNeeded() }
+                continue
+            }
+            discoverFeature(featureId: fid) { [weak self] idx in
+                guard let self = self else { return }
+                if let idx = idx {
+                    self.featureIndex[fid] = idx
+                    Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+                    LogiDebugPanel.log("[\(self.deviceInfo.name)] feature \(String(format: "0x%04X", fid)) at index \(String(format: "0x%02X", idx))")
+                    self.postOptionalFeatureNotification(fid)
+                    if fid == Self.featureDeviceNameType { self.requestDeviceTypeIfNeeded() }
+                }
+                self.probeNextOptionalFeature()  // 串行: 本次 discovery 完成后再发下一个
+            }
+            return
+        }
+        // 可选功能探测链走完(discoveryQueue 此刻已空): 排空热插拔期间入队的 slot.
+        // 探测链较长(~18 个 feature, 含超时), 期间设备重连很常见, 必须在此排空避免搁置.
+        pumpPendingDivertQueue()
+    }
+
+    /// 当前巡检 slot 的权威类型(0x0005)未知时, 发 getDeviceType(fn2). 响应在 handleInputReport 解析.
+    /// fire-and-forget: getDeviceType 是 fn2 响应, 不占用 getFeature 的 discovery 队列, 不阻塞探测链.
+    /// 纯显示用, 不影响接管/divert(那条路径用 slotLooksLikeMouse 的控件判定).
+    private func requestDeviceTypeIfNeeded() {
+        guard connectionMode == .receiver,
+              let idx = featureIndex[Self.featureDeviceNameType] else { return }
+        let slot = deviceIndex
+        guard let devIdx = receiverPairedDevices.firstIndex(where: { $0.slot == slot }),
+              receiverPairedDevices[devIdx].hidppDeviceType == nil else { return }
+        sendRequest(featureIndex: idx, functionId: 2)  // getDeviceType
+    }
+
+    /// 每个 feature 发现后发对应通知: 有专属 context 的走各自通知 (面板据此补行 + 建 context),
+    /// 其余统一走 auxiliary 通知 (面板仅刷新 FEATURES 表).
+    private func postOptionalFeatureNotification(_ fid: UInt16) {
+        switch fid {
+        case Self.featureHaptic:
+            NotificationCenter.default.post(name: Self.hapticStateDidChangeNotification, object: self)
+        case Self.featureSmartShiftEnhanced:
+            NotificationCenter.default.post(name: Self.scrollForceStateDidChangeNotification, object: self)
+        case Self.featureForceSensing:
+            NotificationCenter.default.post(name: Self.forceSensingStateDidChangeNotification, object: self)
+        default:
+            NotificationCenter.default.post(name: Self.auxiliaryFeaturesDidChangeNotification, object: self)
+        }
+    }
+
+    private func resetOptionalProbeState() {
+        optionalProbeSent = false
+        optionalProbeIndex = 0
+    }
+
+    /// 查询 capabilities (fn0) + 当前状态 (fn1); 响应在 handleInputReport 解析后发通知
+    func hapticRefreshInfo() {
+        withHapticFeature { [weak self] idx in
+            self?.sendRequest(featureIndex: idx, functionId: 0)
+            self?.sendRequest(featureIndex: idx, functionId: 1)
+        }
+    }
+
+    /// 播放固件预置波形 (fn4). 波形内容 (时长/频率) 由固件内置, 协议无参数可调.
+    func hapticPlay(waveformId: UInt8) {
+        withHapticFeature { [weak self] idx in
+            self?.sendRequest(featureIndex: idx, functionId: 4, params: [waveformId])
+        }
+    }
+
+    /// 设置全局强度 (fn2, 设备级状态, 非单次播放参数).
+    /// level=0 按 Solaar 约定写 [disable, 50]; 写后回读 GetState 校准 UI.
+    func hapticSetLevel(_ level: UInt8) {
+        let params = Self.hapticSetLevelParams(level)
+        withHapticFeature { [weak self] idx in
+            guard let self = self else { return }
+            self.sendRequest(featureIndex: idx, functionId: 2, params: params)
+            self.sendRequest(featureIndex: idx, functionId: 1)
+        }
+    }
+
+    /// fn0 GetCapabilities 响应: payload[4..7] = 波形支持位掩码 (BE), 即 report bytes [8..11]
+    private static func parseHapticCapabilitiesMask(_ report: UnsafeBufferPointer<UInt8>) -> UInt32? {
+        guard report.count >= 12 else { return nil }
+        return (UInt32(report[8]) << 24) | (UInt32(report[9]) << 16)
+             | (UInt32(report[10]) << 8) | UInt32(report[11])
+    }
+
+    /// fn1 GetState 响应: byte[4] bit0 = 开关, byte[5] = 强度 0-100, byte[6] bit0 = 四档设备
+    private static func parseHapticState(_ report: UnsafeBufferPointer<UInt8>) -> HapticState? {
+        guard report.count >= 7 else { return nil }
+        return HapticState(
+            enabled: report[4] & 0x01 != 0,
+            level: report[5],
+            fourLevelsOnly: report[6] & 0x01 != 0
+        )
+    }
+
+    /// fn2 SetState 参数编码: level=0 → [disable, 50%] (Solaar 约定), 其余 clamp 到 100
+    private static func hapticSetLevelParams(_ level: UInt8) -> [UInt8] {
+        let clamped = min(level, 100)
+        return clamped == 0 ? [0x00, 0x32] : [0x01, clamped]
+    }
+
+    /// rediscover / 切 slot 会清空 featureIndex, haptic 的探测守卫与缓存状态必须一并复位,
+    /// 否则 Haptic 行永久消失 (probe 不再发) 或跨设备读到脏 state.
+    private func resetHapticDiscoveryState() {
+        hapticState = nil
+        hapticWaveformMask = nil
+    }
+
+    private func withHapticFeature(_ body: @escaping (UInt8) -> Void) {
+        if let idx = featureIndex[Self.featureHaptic] {
+            body(idx)
+        } else {
+            discoverFeature(featureId: Self.featureHaptic) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    self?.showFeatureNotAvailable("Haptic")
+                    return
+                }
+                self.featureIndex[Self.featureHaptic] = idx
+                Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+                body(idx)
+            }
+        }
+    }
+
     /// 显示设备不支持某功能的 Toast 提示
     private func showFeatureNotAvailable(_ featureName: String) {
         let message = String(format: NSLocalizedString("featureNotAvailable", comment: ""),
                             deviceInfo.name, featureName)
         LogiDebugPanel.log("[\(deviceInfo.name)] \(featureName): feature not available")
         LogiCenter.shared.externalBridge.showLogiToast(message, severity: .warning)
+    }
+
+    // MARK: - Scroll Force / Ratchet Torque (0x2111 SmartShift Enhanced)
+
+    /// SmartShift v2 capabilities / status 响应抵达或本地缓存更新时发出. object = 本 session.
+    static let scrollForceStateDidChangeNotification = Notification.Name("LogiScrollForceStateDidChange")
+
+    struct ScrollForceStatus: Equatable {
+        let mode: UInt8    // 1=freewheel, 2=ratchet, 0=未知
+        let torque: UInt8  // 齿感力度 0-100
+    }
+
+    /// GetCapabilities (fn0) 返回: 设备是否支持可调 torque; 未查询过为 nil
+    private(set) var scrollForceTunableTorque: Bool? = nil
+    /// 最近一次 GetStatus (fn1) 解析结果; 未查询过为 nil
+    private(set) var scrollForceStatus: ScrollForceStatus? = nil
+
+    var debugScrollForceTunableTorque: Bool? { scrollForceTunableTorque }
+    var debugScrollForceStatus: ScrollForceStatus? { scrollForceStatus }
+
+    /// 查询 capabilities (fn0) + 当前状态 (fn1); 响应在 handleInputReport 解析后发通知
+    func scrollForceRefreshInfo() {
+        withScrollForceFeature { [weak self] idx in
+            self?.sendRequest(featureIndex: idx, functionId: 0)
+            self?.sendRequest(featureIndex: idx, functionId: 1)
+        }
+    }
+
+    /// 设置齿感力度 (fn2 SetState). 只改 torque, mode/autoDisengage 用 0=不变;
+    /// MX Master 4 需带回当前 mode 才生效, 故取最近读到的 mode. 写后回读 fn1 校准 UI.
+    func scrollForceSetTorque(_ torque: UInt8) {
+        let mode = scrollForceStatus?.mode ?? 0
+        let params = Self.scrollForceSetTorqueParams(torque: torque, mode: mode)
+        withScrollForceFeature { [weak self] idx in
+            guard let self = self else { return }
+            self.sendRequest(featureIndex: idx, functionId: 2, params: params)
+            self.sendRequest(featureIndex: idx, functionId: 1)
+        }
+    }
+
+    /// fn0 GetCapabilities 响应: report[4] bit0 = 支持可调 torque
+    private static func parseScrollForceTunableTorque(_ report: UnsafeBufferPointer<UInt8>) -> Bool? {
+        guard report.count >= 5 else { return nil }
+        return report[4] & 0x01 != 0
+    }
+
+    /// fn1 GetStatus 响应: report[4] = wheelMode, report[6] = torque (byte[5] 为 autoDisengage 阈值, 跳过)
+    private static func parseScrollForceStatus(_ report: UnsafeBufferPointer<UInt8>) -> ScrollForceStatus? {
+        guard report.count >= 7 else { return nil }
+        return ScrollForceStatus(mode: report[4], torque: report[6])
+    }
+
+    /// fn2 SetState 参数编码: [mode, autoDisengage, torque]. mode/autoDisengage=0 表示不改变
+    /// (Solaar 约定 write_prefix_bytes=[0x00,0x00]); torque clamp 到 1-100.
+    private static func scrollForceSetTorqueParams(torque: UInt8, mode: UInt8) -> [UInt8] {
+        return [mode, 0x00, min(max(torque, 1), 100)]
+    }
+
+    /// rediscover / 切 slot 会清空 featureIndex, scroll force 的探测守卫与缓存状态必须一并复位,
+    /// 否则该行永久消失 (probe 不再发) 或跨设备读到脏 state.
+    private func resetScrollForceDiscoveryState() {
+        scrollForceTunableTorque = nil
+        scrollForceStatus = nil
+    }
+
+    private func withScrollForceFeature(_ body: @escaping (UInt8) -> Void) {
+        if let idx = featureIndex[Self.featureSmartShiftEnhanced] {
+            body(idx)
+        } else {
+            discoverFeature(featureId: Self.featureSmartShiftEnhanced) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    self?.showFeatureNotAvailable("Scroll Force")
+                    return
+                }
+                self.featureIndex[Self.featureSmartShiftEnhanced] = idx
+                Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+                body(idx)
+            }
+        }
+    }
+
+    // MARK: - Force Sensing Button (0x19C0)
+
+    /// Force sensing info / current 响应抵达或缓存更新时发出. object = 本 session.
+    static let forceSensingStateDidChangeNotification = Notification.Name("LogiForceSensingStateDidChange")
+    /// 无专属 context 的可选 feature 被发现时发出, 面板据此刷新 FEATURES 表. object = 本 session.
+    static let auxiliaryFeaturesDidChangeNotification = Notification.Name("LogiAuxiliaryFeaturesDidChange")
+
+    /// 只操作第 0 号压感按钮 (MX Master 4 仅一颗).
+    private static let forceSensingButtonNumber: UInt8 = 0
+
+    struct ForceSensingInfo: Equatable {
+        let changeable: Bool      // 固件是否允许改这颗按钮的力度
+        let minValue: UInt16
+        let maxValue: UInt16
+        let defaultValue: UInt16
+    }
+
+    /// fn1 GetButtonInfo 解析结果; 未查询过为 nil
+    private(set) var forceSensingInfo: ForceSensingInfo? = nil
+    /// fn2 GetButtonCurrent 当前力度; 未查询过为 nil
+    private(set) var forceSensingCurrent: UInt16? = nil
+
+    var debugForceSensingInfo: ForceSensingInfo? { forceSensingInfo }
+    var debugForceSensingCurrent: UInt16? { forceSensingCurrent }
+
+    /// 查询按钮能力 (fn1: changeable/min/max/default) + 当前力度 (fn2); 响应解析后发通知
+    func forceSensingRefreshInfo() {
+        withForceSensingFeature { [weak self] idx in
+            self?.sendRequest(featureIndex: idx, functionId: 1, params: [Self.forceSensingButtonNumber])
+            self?.sendRequest(featureIndex: idx, functionId: 2, params: [Self.forceSensingButtonNumber])
+        }
+    }
+
+    /// 设置按压激活阈值 (fn3 SetButtonConfig). clamp 到设备上报的 min/max, 写后回读 fn2 校准 UI.
+    func forceSensingSetCurrent(_ value: UInt16) {
+        let clamped = Self.forceSensingClamp(value, info: forceSensingInfo)
+        let params = Self.forceSensingSetCurrentParams(number: Self.forceSensingButtonNumber, current: clamped)
+        withForceSensingFeature { [weak self] idx in
+            guard let self = self else { return }
+            self.sendRequest(featureIndex: idx, functionId: 3, params: params)
+            self.sendRequest(featureIndex: idx, functionId: 2, params: [Self.forceSensingButtonNumber])
+        }
+    }
+
+    /// fn1 GetButtonInfo 响应: payload 为 4 个 BE UInt16 [changeable, default, max, min]
+    /// (对齐 Solaar struct "!HHHH"). changeable 取首个 UInt16 的 bit0.
+    private static func parseForceSensingInfo(_ report: UnsafeBufferPointer<UInt8>) -> ForceSensingInfo? {
+        guard report.count >= 12 else { return nil }
+        let changeable = (((UInt16(report[4]) << 8) | UInt16(report[5])) & 0x01) != 0
+        let defaultValue = (UInt16(report[6]) << 8) | UInt16(report[7])
+        let maxValue = (UInt16(report[8]) << 8) | UInt16(report[9])
+        let minValue = (UInt16(report[10]) << 8) | UInt16(report[11])
+        return ForceSensingInfo(changeable: changeable, minValue: minValue, maxValue: maxValue, defaultValue: defaultValue)
+    }
+
+    /// fn2 GetButtonCurrent 响应: payload[0:2] = 当前力度 (BE UInt16)
+    private static func parseForceSensingCurrent(_ report: UnsafeBufferPointer<UInt8>) -> UInt16? {
+        guard report.count >= 6 else { return nil }
+        return (UInt16(report[4]) << 8) | UInt16(report[5])
+    }
+
+    /// fn3 SetButtonConfig 参数: [buttonNumber, currentHi, currentLo] (对齐 Solaar struct "!BH")
+    private static func forceSensingSetCurrentParams(number: UInt8, current: UInt16) -> [UInt8] {
+        return [number, UInt8(current >> 8), UInt8(current & 0xFF)]
+    }
+
+    /// 将目标力度约束到设备上报的 [min, max]; info 未知时原样返回
+    private static func forceSensingClamp(_ value: UInt16, info: ForceSensingInfo?) -> UInt16 {
+        guard let info = info, info.maxValue >= info.minValue else { return value }
+        return min(max(value, info.minValue), info.maxValue)
+    }
+
+    private func resetForceSensingState() {
+        forceSensingInfo = nil
+        forceSensingCurrent = nil
+    }
+
+    private func withForceSensingFeature(_ body: @escaping (UInt8) -> Void) {
+        if let idx = featureIndex[Self.featureForceSensing] {
+            body(idx)
+        } else {
+            discoverFeature(featureId: Self.featureForceSensing) { [weak self] idx in
+                guard let self = self, let idx = idx else {
+                    self?.showFeatureNotAvailable("Force Sensing")
+                    return
+                }
+                self.featureIndex[Self.featureForceSensing] = idx
+                Self.saveCachedFeatureIndex(for: self.deviceInfo.productId, featureMap: self.featureIndex)
+                body(idx)
+            }
+        }
     }
 
     // MARK: - Report Parsing
@@ -2250,6 +3013,58 @@ class LogiDeviceSession {
         }
     }
 
+    internal static func parseHapticCapabilitiesMaskForTests(_ bytes: [UInt8]) -> UInt32? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseHapticCapabilitiesMask(report)
+        }
+    }
+
+    internal static func parseHapticStateForTests(_ bytes: [UInt8]) -> HapticState? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseHapticState(report)
+        }
+    }
+
+    internal static func hapticSetLevelParamsForTests(_ level: UInt8) -> [UInt8] {
+        return hapticSetLevelParams(level)
+    }
+
+    internal static func parseScrollForceTunableTorqueForTests(_ bytes: [UInt8]) -> Bool? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseScrollForceTunableTorque(report)
+        }
+    }
+
+    internal static func parseScrollForceStatusForTests(_ bytes: [UInt8]) -> ScrollForceStatus? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseScrollForceStatus(report)
+        }
+    }
+
+    internal static func scrollForceSetTorqueParamsForTests(torque: UInt8, mode: UInt8) -> [UInt8] {
+        return scrollForceSetTorqueParams(torque: torque, mode: mode)
+    }
+
+    internal static func parseForceSensingInfoForTests(_ bytes: [UInt8]) -> ForceSensingInfo? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseForceSensingInfo(report)
+        }
+    }
+
+    internal static func parseForceSensingCurrentForTests(_ bytes: [UInt8]) -> UInt16? {
+        return bytes.withUnsafeBufferPointer { report in
+            parseForceSensingCurrent(report)
+        }
+    }
+
+    internal static func forceSensingSetCurrentParamsForTests(number: UInt8, current: UInt16) -> [UInt8] {
+        return forceSensingSetCurrentParams(number: number, current: current)
+    }
+
+    internal static func forceSensingClampForTests(_ value: UInt16, info: ForceSensingInfo?) -> UInt16 {
+        return forceSensingClamp(value, info: info)
+    }
+
     #endif
 
     private func handleBLEUndivertGuardReportingResponseIfNeeded(
@@ -2333,6 +3148,12 @@ class LogiDeviceSession {
             LogiDebugPanel.log(device: deviceInfo.name, type: rxType, message: "RX: \(hex)", decoded: decodeReport(report))
         }
 
+        // 入站 peripheral 报文可能来自另一个已接管 slot(非当前路由游标). 若是, 临时把 deviceIndex
+        // scoped 到 report[1] 处理该 slot 的状态, 函数退出时 defer 还原. 报文处理是同步的, 中途无
+        // 定时器插入, 故 save/restore 安全. 详见 receiverReportRoute.
+        var scopedSlotRestore: UInt8? = nil
+        defer { if let saved = scopedSlotRestore { deviceIndex = saved } }
+
         // Receiver mode: route HID++ 1.0 responses first
         if connectionMode == .receiver {
             let devIdx = report[1]
@@ -2361,13 +3182,23 @@ class LogiDeviceSession {
                 return
             }
 
-            // Stale-peripheral filter: 用户 retarget 后, 旧 slot 仍可能有 in-flight 响应抵达.
-            // 按 deviceIndex 过滤掉"非当前 target"的 peripheral 响应, 防止污染新一轮
-            // REPROG discovery state (append 错误 control / advance 错误 index).
-            // 0xFF (receiver register) 和 pending ping 已在上面各自处理, 不会进入这里.
-            if devIdx >= 1 && devIdx <= 6 && devIdx != deviceIndex {
-                LogiDebugPanel.log("[\(deviceInfo.name)] Stale report from slot \(devIdx) (current target=\(deviceIndex)) dropped")
-                return
+            // Peripheral(设备)报文按 report[1] 路由. 0xFF(register)/pending ping 已在上面处理.
+            // 当前游标 slot 直接处理; 其它已接管 slot scoped 处理; 未知/未接管 slot drop.
+            if devIdx >= 1 && devIdx <= 6 {
+                switch Self.receiverReportRoute(
+                    incomingSlot: devIdx,
+                    currentSlot: deviceIndex,
+                    managedSlots: receiverManagedSlots
+                ) {
+                case .processCurrent:
+                    break
+                case .processScoped(let slot):
+                    scopedSlotRestore = deviceIndex
+                    deviceIndex = slot
+                case .drop:
+                    LogiDebugPanel.log("[\(deviceInfo.name)] Report from slot \(devIdx) (current target=\(deviceIndex)) dropped (unmanaged)")
+                    return
+                }
             }
         }
 
@@ -2470,6 +3301,79 @@ class LogiDeviceSession {
                     handleGetControlReportingResponse(report)
                 default: break  // ACK 等直接忽略, 不当作 button event
                 }
+            }
+            return
+        }
+
+        // DeviceNameType (0x0005) fn2 getDeviceType 响应: report[4] = 权威设备类型枚举.
+        // 纯显示用: 存到当前 slot 的 hidppDeviceType, 刷新 sidebar. (deviceIndex 此刻已 scoped 到该 slot.)
+        if let dntIdx = featureIndex[Self.featureDeviceNameType], featureIdx == dntIdx, functionId == 2 {
+            if report.count > 4,
+               let devIdx = receiverPairedDevices.firstIndex(where: { $0.slot == deviceIndex }) {
+                receiverPairedDevices[devIdx].hidppDeviceType = report[4]
+                LogiDebugPanel.log(device: deviceInfo.name, type: .info,
+                    message: "Slot \(deviceIndex) device type: \(receiverPairedDevices[devIdx].hidppDeviceTypeName ?? "--")")
+                NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+            }
+            return
+        }
+
+        // Haptic (0x19B0) responses: fn0=GetCapabilities, fn1=GetState; fn2/fn4 仅为 ACK
+        if let hapticIdx = featureIndex[Self.featureHaptic], featureIdx == hapticIdx {
+            switch functionId {
+            case 0:
+                guard let mask = Self.parseHapticCapabilitiesMask(report) else { break }
+                hapticWaveformMask = mask
+                let names = HIDPPInfo.hapticWaveforms
+                    .filter { (mask >> UInt32($0.id)) & 1 != 0 }
+                    .map { $0.name }
+                LogiDebugPanel.log("[\(deviceInfo.name)] HAPTIC capabilities: \(names.count) waveforms [\(names.joined(separator: ", "))]")
+                NotificationCenter.default.post(name: Self.hapticStateDidChangeNotification, object: self)
+            case 1:
+                guard let state = Self.parseHapticState(report) else { break }
+                hapticState = state
+                LogiDebugPanel.log("[\(deviceInfo.name)] HAPTIC state: \(state.enabled ? "on" : "off"), level=\(state.level)\(state.fourLevelsOnly ? " (4-level device)" : "")")
+                NotificationCenter.default.post(name: Self.hapticStateDidChangeNotification, object: self)
+            default:
+                break  // SetState / PlayWaveform 的 ACK
+            }
+            return
+        }
+
+        // Scroll Force (0x2111) responses: fn0=Capabilities, fn1=Status; fn2 仅为 ACK
+        if let scrollForceIdx = featureIndex[Self.featureSmartShiftEnhanced], featureIdx == scrollForceIdx {
+            switch functionId {
+            case 0:
+                guard let tunable = Self.parseScrollForceTunableTorque(report) else { break }
+                scrollForceTunableTorque = tunable
+                LogiDebugPanel.log("[\(deviceInfo.name)] ScrollForce capabilities: tunable torque \(tunable ? "supported" : "unsupported")")
+                NotificationCenter.default.post(name: Self.scrollForceStateDidChangeNotification, object: self)
+            case 1:
+                guard let status = Self.parseScrollForceStatus(report) else { break }
+                scrollForceStatus = status
+                LogiDebugPanel.log("[\(deviceInfo.name)] ScrollForce status: mode=\(status.mode), torque=\(status.torque)")
+                NotificationCenter.default.post(name: Self.scrollForceStateDidChangeNotification, object: self)
+            default:
+                break  // SetState 的 ACK
+            }
+            return
+        }
+
+        // Force Sensing (0x19C0) responses: fn1=ButtonInfo, fn2=Current; fn3 仅为 ACK
+        if let forceSensingIdx = featureIndex[Self.featureForceSensing], featureIdx == forceSensingIdx {
+            switch functionId {
+            case 1:
+                guard let info = Self.parseForceSensingInfo(report) else { break }
+                forceSensingInfo = info
+                LogiDebugPanel.log("[\(deviceInfo.name)] ForceSensing info: changeable=\(info.changeable), range=\(info.minValue)-\(info.maxValue), default=\(info.defaultValue)")
+                NotificationCenter.default.post(name: Self.forceSensingStateDidChangeNotification, object: self)
+            case 2:
+                guard let current = Self.parseForceSensingCurrent(report) else { break }
+                forceSensingCurrent = current
+                LogiDebugPanel.log("[\(deviceInfo.name)] ForceSensing current: \(current)")
+                NotificationCenter.default.post(name: Self.forceSensingStateDidChangeNotification, object: self)
+            default:
+                break  // ButtonCount / SetConfig 的 ACK
             }
             return
         }
@@ -2653,6 +3557,8 @@ class LogiDeviceSession {
             markHandshakeComplete()
             NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
             LogiSessionManager.shared.recomputeAndNotifyActivityState()
+            // 无可 divert 控件, 但仍需推进接管 sweep 到下一个 slot.
+            receiverSlotDiscoveryDidFinish(didDivert: false)
         }
     }
 
@@ -2904,6 +3810,16 @@ class LogiDeviceSession {
         #endif
         primeFromRegistry()
         LogiDebugPanel.log("[\(deviceInfo.name)] Init complete, listening for button events")
+        // 正常 init 终点直接赋值 handshakeComplete, 不经过 markHandshakeComplete.
+        // sweep 中: 由 receiverSlotDiscoveryDidFinish 决定推进下一个 slot 还是(巡检 slot)探测可选功能;
+        // 非 sweep(BLE / 手动 rediscover): 直接探测可选功能(probeOptionalFeatures 自带 once 守卫).
+        if receiverSweepActive {
+            receiverSlotDiscoveryDidFinish(didDivert: true)
+        } else {
+            probeOptionalFeatures()
+            // 非 sweep 发现(refresh / 手动 rediscover)完成: 排空热插拔期间入队的 slot.
+            pumpPendingDivertQueue()
+        }
     }
 
     private var queriedControlStates: [QueriedControlState] {
