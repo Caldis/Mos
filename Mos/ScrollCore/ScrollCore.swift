@@ -67,6 +67,12 @@ class ScrollCore: ScrollActionPort {
 #endif
             return Unmanaged.passUnretained(event)
         }
+        // 检查是否为自动滚动事件（带有 maskAlternate 标志）
+        // 如果是，直接放行，不做任何处理
+        if event.flags.contains(.maskAlternate) {
+            return Unmanaged.passUnretained(event)
+        }
+
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
         let hasVerticalDelta = scrollEvent.Y.valid && scrollEvent.Y.usableValue != 0.0

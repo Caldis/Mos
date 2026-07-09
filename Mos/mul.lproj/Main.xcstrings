@@ -1715,6 +1715,18 @@
         }
       }
     },
+    "ASC-VC-123.title" : {
+      "comment" : "Class = \"NSViewController\"; title = \"Auto-Scroll\"; ObjectID = \"ASC-VC-123\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Auto-Scroll"
+          }
+        }
+      }
+    },
     "Aur-fR-tik.title" : {
       "comment" : "Class = \"NSTextFieldCell\"; title = \"Current Version\"; ObjectID = \"Aur-fR-tik\";",
       "extractionState" : "extracted_with_value",
