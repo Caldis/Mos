@@ -64,6 +64,8 @@ codesign --force --options runtime \
 **若签不下来(能力勾不了/描述文件不含它):**
 说明 `com.apple.developer.hid.virtual.device` 对分发也需 Apple 单独授权。这不影响结论采集——**Phase 0(Karabiner)已能回答架构层面的 go/no-go**;CoreHID 具体实现的验证可等该 entitlement 到手后补。把这个卡点记进 log。
 
+> **2026-07-11 已实测确认签不下来,别再重试**:B 方案裸签 → AMFI 启动即 SIGKILL;A 方案 `-allowProvisioningUpdates` → 门户拒绝(能力不在 Xcode 门户能力列表中,自动签名无法注册)。完整证据链见 `../../docs/research/iphone-mirroring-scroll/03-experiment-log.md`。Phase 1 待 Apple 授权;或若 Phase 0 = go,可改用 DriverKit dext 原型(其 development 能力自助可用)。
+
 ### 3) 运行与观测
 
 ```bash

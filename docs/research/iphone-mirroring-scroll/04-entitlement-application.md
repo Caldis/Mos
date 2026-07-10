@@ -28,3 +28,6 @@
 
 ## 待办
 - CoreHID 路线用的是 `com.apple.developer.hid.virtual.device`,**与已提交的 DriverKit 申请不是同一个**。若 CoreHID 原型验证需要它而其分发授权也需单独申请,再评估是否补交。开发验证阶段:development 签名 + 该能力若可自助勾选则无需审批(见实验 README「签名」)。
+- **2026-07-11 更新:上一条的"若可自助勾选"已被实测否定**。该能力不在 Xcode 26 门户能力缓存中,`-allowProvisioningUpdates` 也无法生成含它的 profile,development 阶段即门控(完整证据链见 `03-experiment-log.md` Phase 1)。含义:
+  - CoreHID 路线连本机验证都需先向 Apple 要授权,**无公开申请表**——可行途径:DTS 工单 / Feedback Assistant / 回复跟进 DriverKit 申请(7CTL26535S)时一并询问。
+  - 对照:DriverKit HID 能力 development 是自助的(本 App ID 已启用)——CoreHID 卡死时,dext 原型可作为 Phase 1 替代路径。
