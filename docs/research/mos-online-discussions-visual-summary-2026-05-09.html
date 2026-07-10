@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mos Research Dashboard - Visual Summary</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fafafa;
+      --panel: #ffffff;
+      --panel-subtle: #f5f5f5;
+      --text: #111111;
+      --muted: #5f6368;
+      --muted-2: #8a8d91;
+      --line: #e5e5e5;
+      --line-strong: #c9c9c9;
+      --accent: #1f5eff;
+      --accent-soft: #eaf0ff;
+      --good: #137333;
+      --warn: #9a5b00;
+      --risk: #b3261e;
+      --teal: #087f8c;
+      --shadow: 0 1px 2px rgba(0,0,0,.04), 0 12px 32px rgba(0,0,0,.06);
+      --radius: 8px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      letter-spacing: 0;
+    }
+
+    a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 24px 0 56px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: 0 calc((100vw - min(1180px, calc(100vw - 32px))) / -2);
+      padding: 10px calc((100vw - min(1180px, calc(100vw - 32px))) / 2);
+      background: rgba(250,250,250,.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background:
+        linear-gradient(135deg, #111 0 48%, transparent 48%),
+        linear-gradient(315deg, var(--accent) 0 50%, #fff 50%);
+      border: 1px solid #111;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .nav a {
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .nav a:hover { background: var(--panel-subtle); color: var(--text); }
+
+    .hero {
+      padding: 54px 0 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(320px, .82fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .hero h1 {
+      margin: 0;
+      max-width: 800px;
+      font-size: clamp(42px, 6vw, 74px);
+      line-height: .96;
+      letter-spacing: -0.035em;
+    }
+
+    .lead {
+      margin: 20px 0 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.62;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      padding: 20px;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .score {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 12px;
+      min-height: 94px;
+      background: #fff;
+    }
+
+    .score b {
+      display: block;
+      color: var(--text);
+      font-size: 38px;
+      line-height: .95;
+      letter-spacing: -0.04em;
+    }
+
+    .score span {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+      font: 650 11px/1.25 var(--mono);
+      text-transform: uppercase;
+    }
+
+    .donut {
+      --high: 50%;
+      --medium: 40%;
+      display: grid;
+      grid-template-columns: 128px 1fr;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel-subtle);
+    }
+
+    .ring {
+      width: 128px;
+      height: 128px;
+      border-radius: 999px;
+      background: conic-gradient(var(--good) 0 50%, var(--teal) 50% 90%, var(--warn) 90% 100%);
+      display: grid;
+      place-items: center;
+    }
+
+    .ring::after {
+      content: "50";
+      width: 78px;
+      height: 78px;
+      border-radius: 999px;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      font-size: 34px;
+      font-weight: 760;
+      letter-spacing: -0.04em;
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .legend {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 7px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 99px;
+      display: inline-block;
+      margin-right: 8px;
+      background: var(--c);
+    }
+
+    .section {
+      margin-top: 18px;
+      padding: 22px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.16;
+      letter-spacing: -0.02em;
+    }
+
+    .hint {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .tile {
+      min-height: 150px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .tile h3 {
+      margin: 0 0 9px;
+      font-size: 17px;
+      letter-spacing: -0.01em;
+    }
+
+    .tile p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 2px 8px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      color: var(--muted);
+      background: #fff;
+      font: 650 12px/1 var(--mono);
+    }
+
+    .bars {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar {
+      display: grid;
+      grid-template-columns: minmax(180px, 280px) 1fr 44px;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .track {
+      height: 10px;
+      border-radius: 99px;
+      background: var(--panel-subtle);
+      box-shadow: inset 0 0 0 1px var(--line);
+      overflow: hidden;
+    }
+
+    .fill {
+      width: calc(var(--score) * 1%);
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+    }
+
+    .bar strong {
+      color: var(--text);
+      font: 700 12px/1 var(--mono);
+      text-align: right;
+    }
+
+    .answer-list {
+      display: grid;
+      gap: 12px;
+      counter-reset: answer;
+    }
+
+    .answer {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+    }
+
+    .answer::before {
+      counter-increment: answer;
+      content: counter(answer);
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 7px;
+      color: #fff;
+      background: var(--text);
+      font: 750 18px/1 var(--mono);
+    }
+
+    .answer h3 { margin: 0 0 6px; font-size: 18px; }
+    .answer p { margin: 0; color: var(--muted); line-height: 1.55; font-size: 14px; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .sort-button, .filter-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0 11px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      color: var(--text);
+      background: #fff;
+      font-size: 13px;
+      user-select: none;
+    }
+
+    .sort-button:hover, .filter-button:hover { background: var(--panel-subtle); }
+
+    .sort-button[data-active="true"],
+    .filter-button[data-active="true"] {
+      color: #fff;
+      border-color: var(--text);
+      background: var(--text);
+    }
+
+    .search {
+      flex: 1 1 240px;
+      min-height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      padding: 0 12px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 1040px;
+    }
+
+    th, td {
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--panel-subtle);
+      color: var(--muted);
+      font: 700 12px/1.2 var(--mono);
+      text-transform: uppercase;
+    }
+
+    tbody tr:hover td { background: #fcfcfc; }
+    tbody tr:last-child td { border-bottom: 0; }
+
+    .confidence {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font: 700 12px/1 var(--mono);
+      border: 1px solid currentColor;
+    }
+
+    .confidence[data-level="High"] { color: var(--good); background: #edf7ef; }
+    .confidence[data-level="Medium"] { color: var(--teal); background: #e8f7f8; }
+    .confidence[data-level="Low"] { color: var(--warn); background: #fff4df; }
+
+    .source-link {
+      font-weight: 650;
+      color: var(--text);
+      text-decoration-color: var(--line-strong);
+    }
+
+    .small { color: var(--muted); font-size: 13px; }
+
+    .footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 900px) {
+      .hero, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .hero { padding-top: 34px; }
+      .topbar-inner { align-items: flex-start; flex-direction: column; }
+      .score-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 580px) {
+      .shell { width: min(100vw - 20px, 1180px); }
+      .hero h1 { font-size: 40px; }
+      .donut { grid-template-columns: 1fr; }
+      .bar { grid-template-columns: 1fr 42px; }
+      .bar .track { grid-column: 1 / -1; grid-row: 2; }
+      .section { padding: 16px; }
+      .answer { grid-template-columns: 1fr; }
+      .answer::before { width: 38px; height: 38px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#top" aria-label="Mos research dashboard">
+        <span class="mark" aria-hidden="true"></span>
+        <span>Mos Research Dashboard</span>
+      </a>
+      <nav class="nav" aria-label="页面导航">
+        <a href="#answers">关键回答</a>
+        <a href="#signals">主题信号</a>
+        <a href="#sources">来源索引</a>
+        <a href="#ai">AI 友好化</a>
+      </nav>
+    </div>
+  </div>
+
+  <main id="top" class="shell">
+    <header class="hero">
+      <div>
+        <span class="badge">Base UI-inspired · static HTML · no framework</span>
+        <h1>把研究结果变成可排序的产品决策面板。</h1>
+        <p class="lead">
+          这份可视化基于 58 个已分析网站与 50 个有效来源。现在的核心判断更清楚：Mos 的增长空间不只在滚动曲线，而在设备适配、应用画像、信任解释、可诊断配置和 AI 可读上下文。
+        </p>
+      </div>
+      <aside class="panel hero-card" aria-label="来源概览">
+        <div class="score-grid">
+          <div class="score"><b>58</b><span>Analyzed</span></div>
+          <div class="score"><b>50</b><span>Effective</span></div>
+          <div class="score"><b>8</b><span>Not counted</span></div>
+        </div>
+        <div class="donut">
+          <div class="ring" aria-label="25 high, 20 medium, 5 low"></div>
+          <div class="legend">
+            <div class="legend-row"><span><i class="dot" style="--c:var(--good)"></i>High confidence</span><strong>25</strong></div>
+            <div class="legend-row"><span><i class="dot" style="--c:var(--teal)"></i>Medium confidence</span><strong>20</strong></div>
+            <div class="legend-row"><span><i class="dot" style="--c:var(--warn)"></i>Low confidence</span><strong>5</strong></div>
+          </div>
+        </div>
+      </aside>
+    </header>
+
+    <section id="answers" class="panel section">
+      <div class="section-header">
+        <div>
+          <h2>你的 5 个问题：当前回答</h2>
+          <p class="hint">已合并 2026-05-10 子代理补充调研：Logitech 按钮、100 来源扩展收益、AI 友好化方向。</p>
+        </div>
+      </div>
+      <div class="answer-list">
+        <div class="answer">
+          <div>
+            <h3>继续扩大到 100 个来源，边际收益中低。</h3>
+            <p>补充检索发现 24 个新增独立域名候选和 13 条同域补充来源，但独立候选约 70-80% 重复，同域线程约 80-90% 重复。建议不做泛化 100 来源，而是做 10-15 个高价值附录：Homebrew 安装量、MX Master 4、BTT 一站式需求、葡语/越南语长尾地区、Mos 4.x 分发信号。</p>
+          </div>
+        </div>
+        <div class="answer">
+          <div>
+            <h3>Logitech 按钮“新适配”的直接外部讨论暂未形成明显声量。</h3>
+            <p>子代理确认直接讨论数量为 0。外部只看到 newreleases.io / MacUpdate 这类发布同步，不是用户讨论。但相邻需求很强：side buttons、Back/Forward、thumb/gesture button、horizontal wheel、Logi Options+ 权限/证书/冲突。结论：这是需要主动教育市场的新卖点。</p>
+          </div>
+        </div>
+        <div class="answer">
+          <div>
+            <h3>网页已加入完整来源索引，并可按属性排序。</h3>
+            <p>下方来源表支持按序号、网站、置信度、来源类型、地区排序，也支持关键词搜索和置信度快速过滤。全部逻辑是原生 JavaScript，免服务器打开，不依赖 CDN 或框架。</p>
+          </div>
+        </div>
+        <div class="answer">
+          <div>
+            <h3>AI 友好化应从“可发现”升级为“可诊断、可改写、可执行”。</h3>
+            <p>仓库已经有 llms.txt、agent card、well-known 文件和静态 API 目录。下一步优先级：P0 诊断包/Issue Bundle 与 AI-readable docs map；P1 配置 schema 和结构化 changelog；P2 CLI/URL scheme/AppleScript；P3 Shortcuts/App Intents；P4 只读优先的本地 MCP。</p>
+          </div>
+        </div>
+        <div class="answer">
+          <div>
+            <h3>Base UI 风格不是引入组件库，而是借它的设计原则。</h3>
+            <p>Base UI 官方强调 unstyled、accessible、composable 和 data-attribute styling。此页用原生 HTML 控件、清晰 focus ring、低半径、状态属性和纯 CSS/JS 实现同样的气质。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="signals" class="panel section">
+      <div class="section-header">
+        <div>
+          <h2>主题信号强度</h2>
+          <p class="hint">人工编码的覆盖强度，代表来源中的重复程度和决策价值，不等同于评论总数。</p>
+        </div>
+      </div>
+      <div class="bars">
+        <div class="bar" style="--score:92"><span>第三方鼠标滚动割裂</span><div class="track"><div class="fill"></div></div><strong>92</strong></div>
+        <div class="bar" style="--score:80"><span>鼠标/触控板方向分离</span><div class="track"><div class="fill"></div></div><strong>80</strong></div>
+        <div class="bar" style="--score:76"><span>Logitech / Options+ 共存</span><div class="track"><div class="fill"></div></div><strong>76</strong></div>
+        <div class="bar" style="--score:72"><span>按应用例外与精度</span><div class="track"><div class="fill"></div></div><strong>72</strong></div>
+        <div class="bar" style="--score:66"><span>权限、签名、信任</span><div class="track"><div class="fill"></div></div><strong>66</strong></div>
+        <div class="bar" style="--score:58"><span>高级参数需要预设</span><div class="track"><div class="fill"></div></div><strong>58</strong></div>
+        <div class="bar" style="--score:46"><span>按钮绑定 / Logi HID++</span><div class="track"><div class="fill"></div></div><strong>46</strong></div>
+        <div class="bar" style="--score:40"><span>自动化 / Pro workflow</span><div class="track"><div class="fill"></div></div><strong>40</strong></div>
+      </div>
+    </section>
+
+    <section class="panel section">
+      <div class="section-header">
+        <div>
+          <h2>产品机会地图</h2>
+          <p class="hint">越靠前越应先做成清晰产品面，而不是只藏在高级设置里。</p>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="tile"><h3>P0 · Trust onboarding</h3><p>权限、Gatekeeper、notarization、输入处理边界。输入工具必须先让人放心。</p></div>
+        <div class="tile"><h3>P1 · Logitech guide</h3><p>MX Master / MX Ergo / M575 / Keychron / Razer 的设备指南和 Options+ 冲突诊断。</p></div>
+        <div class="tile"><h3>P2 · Presets</h3><p>Trackpad-like、Precise design、Fast documents、MX Master、Low inertia。</p></div>
+        <div class="tile"><h3>P3 · App profiles</h3><p>Photoshop、Acrobat、Figma、Excel、Preview、浏览器、DAW/CAD 的默认建议。</p></div>
+        <div class="tile"><h3>P4 · Button binding</h3><p>把 Logitech 按钮适配从“工程能力”包装成“替代臃肿驱动”的用户收益。</p></div>
+        <div class="tile"><h3>P5 · Automation</h3><p>CLI、URL scheme、AppleScript、Shortcuts，适合 Pro/Supporter 层。</p></div>
+      </div>
+    </section>
+
+    <section id="ai" class="panel section">
+      <div class="section-header">
+        <div>
+          <h2>AI 友好化路线</h2>
+          <p class="hint">仓库已经有 llms.txt 和 agent discovery；下一步重点是让 AI 能帮助用户排障、解释配置并生成安全草案。</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="tile"><h3>1. Mos Support Bundle</h3><p>导出 Markdown + JSON：版本、macOS、权限状态、输入监控状态、设备列表、Logi HID++ 能力、活跃 profile、异常 app。用户可直接贴给 AI 或 issue。</p></div>
+        <div class="tile"><h3>2. Machine-readable config schema</h3><p>为滚动 profile、按钮绑定、Logi CID、快捷动作、open-target payload 提供 JSON Schema，支持 AI 生成、解释和安全校验。</p></div>
+        <div class="tile"><h3>3. Agent-facing docs matrix</h3><p>把“Mos 适合/不适合什么”“常见冲突”“推荐设置”做成短、可引用、版本化 Markdown，并与 website llms.txt 同步。</p></div>
+        <div class="tile"><h3>4. Local automation surface</h3><p>CLI / URL scheme / AppleScript / Shortcuts：status、export、validate、open preferences。写操作先 dry-run 和 UI confirmation。</p></div>
+        <div class="tile"><h3>5. Structured changelog</h3><p>为 added/fixed/logi/accessibility/docs 等变更加 JSON/YAML sidecar，供 appcast、官网、AI 回答和回归筛选复用。</p></div>
+        <div class="tile"><h3>6. Read-only MCP last</h3><p>MCP 放最后：本地 stdio、默认不常驻、只读优先，不直接修改输入行为或运行用户脚本。</p></div>
+      </div>
+    </section>
+
+    <section id="sources" class="panel section">
+      <div class="section-header">
+        <div>
+          <h2>来源索引</h2>
+          <p class="hint">50 个有效网站。点击排序按钮可按不同属性排序；搜索会匹配网站、地区、类型和主题。</p>
+        </div>
+      </div>
+      <div class="toolbar" aria-label="来源排序和过滤">
+        <input id="sourceSearch" class="search" type="search" placeholder="搜索来源、地区、主题，例如 Logitech / Figma / JP" autocomplete="off">
+        <button class="sort-button" data-sort="rank" data-active="true">序号</button>
+        <button class="sort-button" data-sort="site">网站</button>
+        <button class="sort-button" data-sort="confidence">置信度</button>
+        <button class="sort-button" data-sort="type">类型</button>
+        <button class="sort-button" data-sort="region">地区</button>
+        <button class="filter-button" data-filter="all" data-active="true">全部</button>
+        <button class="filter-button" data-filter="High">High</button>
+        <button class="filter-button" data-filter="Medium">Medium</button>
+        <button class="filter-button" data-filter="Low">Low</button>
+      </div>
+      <p id="sourceCount" class="hint" aria-live="polite"></p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Website</th>
+              <th>Confidence</th>
+              <th>Type</th>
+              <th>Region</th>
+              <th>Main signals</th>
+            </tr>
+          </thead>
+          <tbody id="sourceBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      数据来自 <a href="./mos-online-discussions-2026-05-09.md">mos-online-discussions-2026-05-09.md</a> 与 <a href="./mos-followup-questions-2026-05-10.md">mos-followup-questions-2026-05-10.md</a>。
+      Base UI 参考：<a href="https://base-ui.com/react/overview/about">About Base UI</a>、<a href="https://base-ui.com/react/handbook/styling">Styling</a>、<a href="https://base-ui.com/llms.txt">llms.txt</a>。
+      本页为单文件静态 HTML，可通过 file:// 直接打开。
+    </footer>
+  </main>
+
+  <script>
+    const sources = [
+      {rank:1, site:"reddit.com", confidence:"High", type:"Forum/Social", region:"EN / global", url:"https://www.reddit.com/r/macapps/comments/1iacm88/mos_brings_macos_smooth_scrolling_to_any_mouse/", signals:"Logitech/MX recipes, Mos vs alternatives, glitches, trust, Apple Silicon, browser stutter."},
+      {rank:2, site:"producthunt.com", confidence:"Low", type:"Product listing", region:"EN / global", url:"https://www.producthunt.com/products/mos", signals:"Free/open-source positioning, praise vs Logitech scrolling, Scroll Reverser alternative."},
+      {rank:3, site:"news.ycombinator.com", confidence:"High", type:"Forum/Social", region:"EN / developer", url:"https://news.ycombinator.com/item?id=39701162", signals:"Missing wheel smoothness, separate direction, stability/restart, site clarity, older-machine performance."},
+      {rank:4, site:"forums.macrumors.com", confidence:"High", type:"Forum", region:"EN / Apple", url:"https://forums.macrumors.com/threads/how-to-set-natural-scrolling-for-mouse-and-trackpad-independently.2396187/", signals:"MX Master smoothness, independent direction, settings questions, Magic Mouse comparisons."},
+      {rank:5, site:"macupdate.com", confidence:"High", type:"Review/listing", region:"EN / Mac", url:"https://mos.macupdate.com/", signals:"Monterey compatibility, Accessibility friction, security fears, no-subscription signal."},
+      {rank:6, site:"discussions.apple.com", confidence:"High", type:"Support forum", region:"EN / Apple", url:"https://discussions.apple.com/thread/255899023", signals:"Choppy scrolling, Safari/YouTube, M1/M2 stutter, Mos/MMF/Smooze comparisons."},
+      {rank:7, site:"community.adobe.com", confidence:"High", type:"Support forum", region:"EN / Adobe", url:"https://community.adobe.com/t5/photoshop-ecosystem-discussions/slow-down-zoom-with-mouse-wheel-on-mac/td-p/13052403", signals:"Photoshop/Acrobat zoom sensitivity, app-specific disable guidance, line-jump issues."},
+      {rank:8, site:"superuser.com", confidence:"High", type:"Q&A", region:"EN / global", url:"https://superuser.com/questions/201645/mac-os-x-scrolling-is-jumpy", signals:"Jumpy wheel, MX Master MagSpeed, KVM/USB Overdrive conflicts, natural direction."},
+      {rank:9, site:"v2ex.com", confidence:"High", type:"Forum", region:"CN", url:"https://v2ex.com/t/337190", signals:"USB mouse support, CPU/login item, per-app disable, game wheel multiplication, macOS changes."},
+      {rank:10, site:"applech2.com", confidence:"Medium", type:"Article/comments", region:"JP", url:"https://applech2.com/archives/20181211-macos-mouse-scroll-utility-mos.html", signals:"iPad ask, conflicts with SmoothScroll/Logicool/SteerMouse, old-device support."},
+      {rank:11, site:"techpp.com", confidence:"Medium", type:"Guide", region:"EN / India", url:"https://techpp.com/2024/06/29/change-scrolling-directions-for-mac-mouse-and-trackpad-separately/", signals:"Separate direction explainer, Mos as advanced alternative, setup complexity."},
+      {rank:12, site:"tildes.net", confidence:"High", type:"Forum", region:"EN / tech", url:"https://tildes.net/~tech/1lkd/mos_brings_macos_smooth_scrolling_to_any_mouse", signals:"Kinetic terminology, non-Apple pain, MX Master/Safari low-FPS, settings discoverability."},
+      {rank:13, site:"xda-developers.com", confidence:"Medium", type:"Editorial", region:"EN / tech", url:"https://www.xda-developers.com/this-app-fixes-most-annoying-parts-using-mac/", signals:"Windows switcher framing, Magic Mouse question, Photoshop compatibility, LinearMouse/Smooze."},
+      {rank:14, site:"softpedia.com", confidence:"Low", type:"Download/review", region:"EN / download", url:"https://mac.softpedia.com/get/System-Utilities/Mos.shtml", signals:"Crashes, DisplayLink/Catalyst, Accessibility revoked, Logi/HID, exceptions, remote desktop."},
+      {rank:15, site:"addictivetips.com", confidence:"Medium", type:"Guide", region:"EN / tech", url:"https://www.addictivetips.com/mac-os/set-different-scroll-direction-for-mouse-and-trackpad-on-macos/", signals:"Separate direction, per-app exceptions, Step/Speed/Duration, launch at login."},
+      {rank:16, site:"apple.stackexchange.com", confidence:"High", type:"Q&A", region:"EN / Apple", url:"https://apple.stackexchange.com/questions/392936/shift-scroll-doesnt-horizontally-scroll-with-any-external-mouse", signals:"External mouse jumpiness, shift+wheel horizontal, discrete wheel semantics."},
+      {rank:17, site:"airscroll.net", confidence:"Low", type:"Competitor", region:"EN / product", url:"https://airscroll.net/best-smooth-scrolling-for-mac", signals:"Market benchmark, reliability/high-refresh/per-screen claims, $6.99/year pricing."},
+      {rank:18, site:"osxinfo.net", confidence:"High", type:"Forum", region:"TR / Hackintosh", url:"https://osxinfo.net/konu/mos-mouseunuza-akicilik-katin.9712/", signals:"Adobe exception, touchpad confusion, speed lower bound too high, SmoothScroll/Smooze."},
+      {rank:19, site:"mac.webmist.info", confidence:"Medium", type:"Guide", region:"JP", url:"https://mac.webmist.info/macos-mos/", signals:"Gatekeeper/Accessibility, Scroll Reverse sync, advanced controls, trackpad disable."},
+      {rank:20, site:"baty.net", confidence:"High", type:"First-hand blog", region:"EN / personal", url:"https://baty.net/posts/2025/03/fixing-the-terrible-scrolling-behavior-with-logitech-mx-master-on-mac-os/", signals:"MX Master setup, Logi Options + Mos, parameter recipes, xattr quarantine."},
+      {rank:21, site:"old.taikun-room.com", confidence:"Medium", type:"Guide", region:"JP", url:"https://old.taikun-room.com/2020/09/mac-software-mos.html", signals:"Trackpad-like scroll, Windows-like direction, Toggle Key, per-app reverse confusion."},
+      {rank:22, site:"hackintosh-forum.de", confidence:"High", type:"Forum", region:"DE / Hackintosh", url:"https://www.hackintosh-forum.de/forum/thread/37252-mos-app-smooth-scrolling-f%C3%BCr-nicht-apple-m%C3%A4use/", signals:"Smooth scrolling, third-party mouse compatibility, side buttons/back-forward, 4K performance."},
+      {rank:23, site:"stackoverflow.com", confidence:"High", type:"Q&A", region:"EN / developer", url:"https://stackoverflow.com/questions/70787984/change-mac-scroll-direction-in-mouse-and-not-touchpad", signals:"Direct Mos refs, horizontal scroll, NSScrollView behavior, wheel event semantics."},
+      {rank:24, site:"blog.kueiapp.com", confidence:"Medium", type:"Guide", region:"TW / EN", url:"https://blog.kueiapp.com/os-zh/mos-%e8%ae%93macbook%e8%a7%b8%e6%8e%a7%e6%9d%bf%e8%88%87%e6%bb%91%e9%bc%a0%e5%8f%af%e7%8d%a8%e7%ab%8b%e8%a8%ad%e5%ae%9a%e6%8d%b2%e5%8b%95%e6%96%b9%e5%90%91%e7%9a%84%e8%b6%85%e6%a3%92-macos-app/", signals:"Direction split, smoothness, Accessibility, menu background, Hammerspoon replacement."},
+      {rank:25, site:"saggiamente.com", confidence:"Medium", type:"Article", region:"IT", url:"https://saggiamente.com/2024/10/come-rendere-fluido-lo-scorrimento-della-rotellina-del-mouse-su-macos/", signals:"Logitech precision, Magic Mouse vs ergonomic mouse, horizontal panning, autoscroll demand."},
+      {rank:26, site:"technest-official.hatenablog.com", confidence:"Low", type:"SEO guide", region:"JP", url:"https://technest-official.hatenablog.com/entry/mac-win-mouse-scroll-lag-fix", signals:"Mac/Windows shared mouse, generic users, Bluetooth latency, LinearMouse vs Mos."},
+      {rank:27, site:"tek-next.jp", confidence:"Medium", type:"Guide", region:"JP", url:"https://tek-next.jp/pc/mac-mx-master-3/", signals:"Windows-to-Mac, MX Master, browser flags, Logi Options overlap."},
+      {rank:28, site:"talushan.com", confidence:"Medium", type:"Guide", region:"JP", url:"https://talushan.com/mac-mouse-windows-movement/", signals:"Windows-like Mac mouse, direction separation, eye strain, launch on login."},
+      {rank:29, site:"mlabo.org", confidence:"Medium", type:"Blog ecosystem", region:"JP", url:"https://mlabo.org/7847/", signals:"M575/MX ERGO/Kensington, trackball scroll, permission residue, app exceptions."},
+      {rank:30, site:"60d.jp", confidence:"Medium", type:"Guide", region:"JP", url:"https://60d.jp/blog/entry/app-mos", signals:"Step/Speed/Duration, slow wheel not moving, launch login, Dash/Block/Toggle."},
+      {rank:31, site:"rosedale.co.jp", confidence:"Medium", type:"Guide", region:"JP", url:"https://www.rosedale.co.jp/topics/261/", signals:"Inertial scroll, permissions, Step/Speed/Duration, Dash/Toggle/Block, overrun risk."},
+      {rank:32, site:"forums.overclockers.co.uk", confidence:"High", type:"Forum", region:"UK / EN", url:"https://forums.overclockers.co.uk/threads/new-to-macos-how-to-get-mouse-moving-smooth.18940884/", signals:"Mac migration blocked by mouse feel, Razer driver gap, acceleration, trackpad workaround."},
+      {rank:33, site:"mac-help.com", confidence:"High", type:"Forum", region:"EN / Apple", url:"https://www.mac-help.com/threads/horizontal-scroll-not-working.228407/", signals:"Big Sur horizontal scroll, Logic/ProTools, Mos command workaround, native preference desire."},
+      {rank:34, site:"forum.keyboardmaestro.com", confidence:"High", type:"Automation forum", region:"EN / power users", url:"https://forum.keyboardmaestro.com/t/invert-mouse-scroll/28123", signals:"Per-app reverse, modifier+wheel, simulated scroll reliability, enable/disable hooks."},
+      {rank:35, site:"computerbase.de", confidence:"High", type:"Forum", region:"DE", url:"https://www.computerbase.de/forum/threads/scroll-traegheit-nur-bei-langsamen-initialen-scrollen-erste-2-bis-3-mausrad-rasten.2147825/", signals:"Slow initial notches, multiple mice, Mos suggestion, ScrollReverser conflict."},
+      {rank:36, site:"mac-forums.com", confidence:"Medium", type:"Forum", region:"EN / Mac", url:"https://www.mac-forums.com/threads/non-apple-magic-mouse-users-what-app-are-you-using-smooth-scrolling.379754/", signals:"Keychron terrible scrolling, Mos fixes feel, Logitech report, iScroll/MMF alternatives."},
+      {rank:37, site:"prashant.me", confidence:"High", type:"First-hand blog", region:"EN / personal", url:"https://prashant.me/mac/2024/07/10/logitech-mx-master-configuration-in-macos.html", signals:"MX Master 3S recipe: Options+ speed 0%, smooth off, SmartShift off, Mos on."},
+      {rank:38, site:"notes.ghed.in / rmarotta", confidence:"High", type:"First-hand blog", region:"EN / personal", url:"https://rmarotta.business.blog/2025/01/26/mos-brings-macos-smooth-scrolling-to-any-mouse/", signals:"Catalyst/Electron freeze, exceptions, hide menu icon, update silence, subscription signals."},
+      {rank:39, site:"bgr.com", confidence:"Medium", type:"Editorial", region:"EN / mainstream", url:"https://www.bgr.com/2161438/free-open-source-apps-mac-users-need-try/", signals:"Natural scrolling mismatch, speed too slow, parameters, Excel exceptions, Dash Key."},
+      {rank:40, site:"linguax.app", confidence:"Low", type:"Competitor", region:"ZH / product", url:"https://linguax.app/zh-Hant/blog/macos-mouse-smooth-scroll-enhancement", signals:"Choppy Logitech/Razer, Options+ certificates, reverse direction, driver bloat."},
+      {rank:41, site:"ifun.de", confidence:"High", type:"Article/comments", region:"DE", url:"https://www.ifun.de/maus-mit-scrollrad-mos-optimiert-die-mac-performance-131113/", signals:"Natural Scrolling debate, MX Master + pro audio, Mos vs SmoothScroll, multi-user issues."},
+      {rank:42, site:"macmagazine.com.br", confidence:"High", type:"Article/forum", region:"BR / PT", url:"https://forum.macmagazine.com.br/topic/280469-rolagem-inercial-app-mos/", signals:"Logitech Pebble, safety question, GitHub/notarization concern, inertia demand."},
+      {rank:43, site:"megatenpa.com", confidence:"Medium", type:"Guide", region:"JP", url:"https://megatenpa.com/gadget/mouse/macos-non-genuine-mouse/", signals:"Non-genuine mouse speed, LogiOptions max insufficient, Dash Key, MX ERGO Toggle Key."},
+      {rank:44, site:"sspai.com", confidence:"High", type:"Editorial/community", region:"CN", url:"https://sspai.com/post/44107", signals:"Known issues, donation support, Keychron M6, button mapping, per-browser profiles."},
+      {rank:45, site:"tekbyte.net", confidence:"Medium", type:"First-hand guide", region:"EN / personal", url:"https://www.tekbyte.net/get-smooth-scrolling-in-safari-and-other-apps-with-mos/", signals:"Safari/Xcode smoothness, Edge-like preset, LinearMouse coexistence, Homebrew."},
+      {rank:46, site:"canion.blog", confidence:"Medium", type:"First-hand blog", region:"EN / personal", url:"https://canion.blog/2025/02/01/mos-for-smooth-mouse-scrolling.html", signals:"SteerMouse handles buttons but not smoothness; Mos fills kinetic scrolling gap."},
+      {rank:47, site:"community.folivora.ai", confidence:"High", type:"App community", region:"EN / BTT", url:"https://community.folivora.ai/t/smooth-scrolling-adjustments/46932", signals:"BTT cannot match Mos smoothness, duration settings, fewer background processes."},
+      {rank:48, site:"forum.figma.com", confidence:"High", type:"App forum", region:"EN / design", url:"https://forum.figma.com/suggest-a-feature-11/zoom-with-scroll-wheel-jumps-too-much-21455", signals:"Ctrl+wheel zoom jumps, M1 + Logitech choppy, Mos per-app settings."},
+      {rank:49, site:"note.com", confidence:"Medium", type:"Personal/company posts", region:"JP", url:"https://note.com/kohada721/n/na1d637994539", signals:"Desktop Mac mouse tools, Windows/Mac same direction, remote-work productivity."},
+      {rank:50, site:"helium7.me", confidence:"Medium", type:"Setup guide", region:"CN", url:"https://helium7.me/posts/mac-setup/", signals:"Gatekeeper/quarantine, macOS trackpad bias, no separate direction, open-source fix."}
+    ];
+
+    const confidenceWeight = { High: 3, Medium: 2, Low: 1 };
+    let state = { sort: "rank", direction: "asc", filter: "all", query: "" };
+
+    const body = document.getElementById("sourceBody");
+    const count = document.getElementById("sourceCount");
+    const search = document.getElementById("sourceSearch");
+
+    function compare(a, b) {
+      const key = state.sort;
+      let av = a[key];
+      let bv = b[key];
+      if (key === "confidence") {
+        av = confidenceWeight[a.confidence];
+        bv = confidenceWeight[b.confidence];
+      }
+      if (typeof av === "number" && typeof bv === "number") {
+        return state.direction === "asc" ? av - bv : bv - av;
+      }
+      return state.direction === "asc"
+        ? String(av).localeCompare(String(bv), "zh-Hans")
+        : String(bv).localeCompare(String(av), "zh-Hans");
+    }
+
+    function matches(item) {
+      const filterOK = state.filter === "all" || item.confidence === state.filter;
+      const q = state.query.trim().toLowerCase();
+      if (!q) return filterOK;
+      const text = [item.site, item.confidence, item.type, item.region, item.signals].join(" ").toLowerCase();
+      return filterOK && text.includes(q);
+    }
+
+    function render() {
+      const rows = sources.filter(matches).sort(compare);
+      body.innerHTML = rows.map((item) => `
+        <tr>
+          <td>${item.rank}</td>
+          <td><a class="source-link" href="${item.url}">${item.site}</a></td>
+          <td><span class="confidence" data-level="${item.confidence}">${item.confidence}</span></td>
+          <td>${item.type}</td>
+          <td>${item.region}</td>
+          <td>${item.signals}</td>
+        </tr>
+      `).join("");
+      count.textContent = `当前显示 ${rows.length} / ${sources.length} 个有效来源。排序：${state.sort} (${state.direction})。`;
+      document.querySelectorAll(".sort-button").forEach((button) => {
+        button.dataset.active = String(button.dataset.sort === state.sort);
+      });
+      document.querySelectorAll(".filter-button").forEach((button) => {
+        button.dataset.active = String(button.dataset.filter === state.filter);
+      });
+    }
+
+    document.querySelectorAll(".sort-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        const next = button.dataset.sort;
+        if (state.sort === next) {
+          state.direction = state.direction === "asc" ? "desc" : "asc";
+        } else {
+          state.sort = next;
+          state.direction = next === "confidence" ? "desc" : "asc";
+        }
+        render();
+      });
+    });
+
+    document.querySelectorAll(".filter-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.filter = button.dataset.filter;
+        render();
+      });
+    });
+
+    search.addEventListener("input", (event) => {
+      state.query = event.target.value;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
