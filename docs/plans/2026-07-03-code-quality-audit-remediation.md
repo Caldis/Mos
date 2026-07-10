@@ -119,7 +119,7 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P5-3 | ScrollCore.swift:53-195 拆分 | 结构 | 中 | 待处理 |
 | P5-4 | handleInputReport 拆分 | 结构 | 中 | 待处理 |
 | P5-5 | ButtonTableCellView 减负 | 结构 | 中 | 待处理 |
-| P5-6 | session↔manager↔center 循环耦合 | 结构 | 高 | 待处理 |
+| P5-6 | session↔manager↔center 循环耦合 | 结构 | 高 | ✅ 2026-07-11 (LogiSessionEnvironment 注入, session/manager 不再反向引用单例; 设计 docs/plans/2026-07-11-logi-session-environment-design.md; P5-1 前置已满足) |
 | P5-7 | Options/Constants 耦合环 | 结构 | 中 | 待处理 |
 | P5-8 | ScrollCore facade + WindowManager 耦合 | 结构 | 低 | 待处理 |
 
