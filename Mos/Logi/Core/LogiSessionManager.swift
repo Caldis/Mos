@@ -31,6 +31,10 @@ internal class LogiSessionManager {
     private(set) var isActive = false
     private let deliveryModes = LogiButtonDeliveryModeStore()
 
+    /// Session 上行能力 (P5-6), 由组合根 LogiCenter.init 注入.
+    /// 生产时序保证非 nil: session 只在 center.start() → manager.start() 后出现.
+    var sessionEnvironment: LogiSessionEnvironment?
+
     // MARK: - Lifecycle
 
     func start() {
@@ -126,7 +130,11 @@ internal class LogiSessionManager {
         }
 
         // 创建会话
-        let session = LogiDeviceSession(hidDevice: device)
+        guard let environment = sessionEnvironment else {
+            assertionFailure("sessionEnvironment 必须在 session 创建前由 LogiCenter 注入")
+            return
+        }
+        let session = LogiDeviceSession(hidDevice: device, environment: environment)
         sessions[device] = session
         session.setup()
         NotificationCenter.default.post(name: Self.sessionChangedNotification, object: nil)
@@ -372,7 +380,7 @@ internal class LogiSessionManager {
         }
         let controlName = LogiCIDDirectory.name(forCID: key.cid)
         let message = String(format: NSLocalizedString(messageKey, comment: ""), controlName)
-        LogiCenter.shared.externalBridge.showLogiToast(message, severity: .warning)
+        sessionEnvironment?.showToast(message, severity: .warning)
     }
 
     // MARK: - Divert Control

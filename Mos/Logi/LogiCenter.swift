@@ -21,6 +21,7 @@ final class LogiCenter {
             return mgr?.activeSessions ?? []
         })
         self.externalBridge = LogiNoOpBridge.shared
+        wireSessionEnvironment()
     }
 
     // MARK: - Test-injectable init (Tier 2 harness)
@@ -31,8 +32,19 @@ final class LogiCenter {
         self.manager = manager
         self.registry = registry
         self.externalBridge = bridge
+        wireSessionEnvironment()
     }
     #endif
+
+    /// P5-6: 组装 session 上行能力并注入 manager, session 由此不再反向引用单例.
+    /// bridge 走闭包读现值 (installBridge 可热替换), center 弱捕获避免持有环.
+    private func wireSessionEnvironment() {
+        manager.sessionEnvironment = LogiSessionEnvironmentAdapter(
+            manager: manager,
+            registry: registry,
+            bridgeProvider: { [weak self] in self?.externalBridge ?? LogiNoOpBridge.shared }
+        )
+    }
 
     // MARK: - Bridge installation (DEBUG: precondition main thread)
     func installBridge(_ bridge: LogiExternalBridge) {

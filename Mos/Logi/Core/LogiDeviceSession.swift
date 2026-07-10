@@ -415,7 +415,13 @@ class LogiDeviceSession {
 
     // MARK: - Init
 
-    init(hidDevice: IOHIDDevice) {
+    /// 上行能力注入 (P5-6): session 不反向引用 manager/center 单例.
+    /// adapter 由组合根 LogiCenter 持有并常驻, session 强持无环
+    /// (center → manager → session → adapter).
+    private let environment: LogiSessionEnvironment
+
+    init(hidDevice: IOHIDDevice, environment: LogiSessionEnvironment) {
+        self.environment = environment
         self.hidDevice = hidDevice
         self.usagePage = IOHIDDeviceGetProperty(hidDevice, kIOHIDPrimaryUsagePageKey as CFString) as? Int ?? 0
         self.usage = IOHIDDeviceGetProperty(hidDevice, kIOHIDPrimaryUsageKey as CFString) as? Int ?? 0
@@ -474,7 +480,7 @@ class LogiDeviceSession {
     }
 
     private func primeFromRegistry() {
-        LogiCenter.shared.registry.primeSession(self)
+        environment.primeBindings(for: self)
     }
 
     internal func applyUsage(_ aggregateMosCodes: Set<UInt16>) {
@@ -514,7 +520,7 @@ class LogiDeviceSession {
         let projection = aggregateMosCodes.sorted().map { code -> String in
             let cid = LogiCIDDirectory.toCID(code) ?? LogiCIDDirectory.cid(forNativeMouseButton: code)
             let cidLabel = cid.map { String(format: "0x%04X", $0) } ?? "nil"
-            let mode = cid.map { LogiSessionManager.shared.deliveryMode(for: self.ownershipKey(forCID: $0)).debugLabel } ?? "none"
+            let mode = cid.map { self.environment.deliveryMode(for: self.ownershipKey(forCID: $0)).debugLabel } ?? "none"
             let route = cid.map { policy.shouldUseHIDPPDelivery(transport: transport, cid: $0, phase: .normal) ? "hidpp" : "native" } ?? "none"
             let isDivertable = cid.map { divertable.contains($0) } ?? false
             return "\(code)->\(cidLabel) divertable=\(isDivertable) deliveryMode=\(mode) route=\(route)"
@@ -528,7 +534,7 @@ class LogiDeviceSession {
             phase: .normal,
             policy: policy
         ) { cid in
-            LogiSessionManager.shared.deliveryMode(for: self.ownershipKey(forCID: cid))
+            self.environment.deliveryMode(for: self.ownershipKey(forCID: cid))
         }
         let nativeFirstCIDs = Self.nativeFirstCIDsForUsage(
             aggregateMosCodes: aggregateMosCodes,
@@ -1150,7 +1156,7 @@ class LogiDeviceSession {
                 // Discovery 走到终点但未命中 REPROG, 仍算握手完成 (Mos 能做的已经做完).
                 self.markHandshakeComplete()
                 NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
-                LogiSessionManager.shared.recomputeAndNotifyActivityState()
+                environment.notifyActivityChanged()
                 // 该 slot 无 REPROG(不可 divert), 但仍需推进接管 sweep 到下一个 slot.
                 self.receiverSlotDiscoveryDidFinish(didDivert: false)
                 return
@@ -1178,7 +1184,7 @@ class LogiDeviceSession {
         guard discoveryInFlight != flag else { return }
         discoveryInFlight = flag
         NotificationCenter.default.post(name: LogiSessionManager.discoveryStateDidChangeNotification, object: nil)
-        LogiSessionManager.shared.recomputeAndNotifyActivityState()
+        environment.notifyActivityChanged()
     }
 
     /// 任一阶段 (discovery / reporting query) 正在进行; UI 据此驱动 activity spinner.
@@ -1804,7 +1810,7 @@ class LogiDeviceSession {
 
         // 接管集合: 已连接 + 鼠标 + 有绑定的 slot 各自 discovery+divert 常驻接管.
         // 绑定当前是全局的(UsageRegistry 单一 aggregate), 有任一绑定则所有鼠标进入接管集.
-        let bindingsExist = !LogiCenter.shared.registry.aggregatedCacheIsEmpty
+        let bindingsExist = environment.bindingsExist
         let divertSlots = Self.receiverDivertSlots(devices: receiverPairedDevices) { _ in bindingsExist }
 
         // 巡检 slot 始终发现(面板要显示其 features)且排最后, 让路由游标最终停靠它;
@@ -1986,7 +1992,7 @@ class LogiDeviceSession {
 
             // 多设备热插拔(Phase 4): 每个 slot 的 0x41 各自决策, 不再单目标抢占式 retarget.
             let dev = receiverPairedDevices.first(where: { $0.slot == devIdx })
-            let bindingsExist = !LogiCenter.shared.registry.aggregatedCacheIsEmpty
+            let bindingsExist = environment.bindingsExist
             let isDivertCandidate = connected
                 && !Self.receiverNonDivertDeviceTypes.contains(dev?.deviceType ?? 0)
                 && bindingsExist
@@ -2639,7 +2645,7 @@ class LogiDeviceSession {
         let message = String(format: NSLocalizedString("featureNotAvailable", comment: ""),
                             deviceInfo.name, featureName)
         LogiDebugPanel.log("[\(deviceInfo.name)] \(featureName): feature not available")
-        LogiCenter.shared.externalBridge.showLogiToast(message, severity: .warning)
+        environment.showToast(message, severity: .warning)
     }
 
     // MARK: - Scroll Force / Ratchet Torque (0x2111 SmartShift Enhanced)
@@ -3556,7 +3562,7 @@ class LogiDeviceSession {
             // 设备声明 0 个可编程控件: discovery 走到终点, 记为握手完成.
             markHandshakeComplete()
             NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
-            LogiSessionManager.shared.recomputeAndNotifyActivityState()
+            environment.notifyActivityChanged()
             // 无可 divert 控件, 但仍需推进接管 sweep 到下一个 slot.
             receiverSlotDiscoveryDidFinish(didDivert: false)
         }
@@ -3607,13 +3613,13 @@ class LogiDeviceSession {
             // 镜像 advanceReportingQuery 正常终态: 即使 controls 为空也必须 post,
             // 否则 Self-Test Wizard 的 "wait reportingDidComplete" 会无限挂起.
             NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
-            LogiSessionManager.shared.recomputeAndNotifyActivityState()
+            environment.notifyActivityChanged()
             return
         }
         LogiDebugPanel.log("[\(deviceInfo.name)] Querying reporting state for \(discoveredControls.count) controls...")
         sendGetControlReporting(featureIndex: idx, controlIndex: 0)
         // timer 刚被创建, 通知 Manager 汇总 activity 状态 (幂等, 无变化时不 post)
-        LogiSessionManager.shared.recomputeAndNotifyActivityState()
+        environment.notifyActivityChanged()
     }
 
     private func sendGetControlReporting(featureIndex: UInt8, controlIndex: Int) {
@@ -3648,7 +3654,7 @@ class LogiDeviceSession {
             // 观察者, 避免 main-queue observer 在状态翻转前就读到 stale 值.
             NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
             // reportingQueryTimer 此时已 nil, 若 discoveryInFlight 也为 false 则 activity 真正结束.
-            LogiSessionManager.shared.recomputeAndNotifyActivityState()
+            environment.notifyActivityChanged()
         }
     }
 
@@ -3744,7 +3750,7 @@ class LogiDeviceSession {
         lastApplied.remove(cid)
         divertedCIDs.remove(cid)
         releaseActiveButtonState(for: [cid], reason: "divert cleared externally")
-        let mode = LogiSessionManager.shared.recordExternalClear(for: ownershipKey(forCID: cid))
+        let mode = environment.recordExternalClear(for: ownershipKey(forCID: cid))
         guard Self.shouldReassertAfterExternalClear(mode: mode) else {
             LogiDebugPanel.log("[\(deviceInfo.name)] External \(reason) cleared divert for \(String(format: "0x%04X", cid)); reassert suspended (\(mode.debugLabel))")
             return
@@ -3788,9 +3794,9 @@ class LogiDeviceSession {
         }
 
         #if DEBUG
-        LogiTrace.log("[Session] reassertDesiredDiverts recording=\(LogiCenter.shared.isRecording)", device: deviceInfo.name)
+        LogiTrace.log("[Session] reassertDesiredDiverts recording=\(environment.isRecording)", device: deviceInfo.name)
         #endif
-        if LogiCenter.shared.isRecording {
+        if environment.isRecording {
             temporarilyDivertAll()
         } else {
             primeFromRegistry()
@@ -3844,7 +3850,7 @@ class LogiDeviceSession {
         lastApplied = result.lastApplied
         divertedCIDs = result.divertedCIDs
         for cid in result.lostCIDs.sorted() {
-            let mode = LogiSessionManager.shared.recordExternalClear(for: ownershipKey(forCID: cid))
+            let mode = environment.recordExternalClear(for: ownershipKey(forCID: cid))
             LogiDebugPanel.log(
                 "[\(deviceInfo.name)] Reconciled lost divert state for CID \(String(format: "0x%04X", cid)); delivery=\(mode.debugLabel)"
             )
@@ -4041,10 +4047,8 @@ class LogiDeviceSession {
                 "phase": isDown ? "down" : "up",
             ])
 
-        let bridge = LogiCenter.shared.externalBridge
-
-        if LogiCenter.shared.isRecording {
-            let result = bridge.dispatchLogiButtonEvent(event)
+        if environment.isRecording {
+            let result = environment.dispatchButtonEvent(event)
             #if DEBUG
             LogiDebugPanel.log(
                 device: deviceInfo.name,
@@ -4056,10 +4060,10 @@ class LogiDeviceSession {
         }
 
         // Side path: scroll hotkey fires regardless of binding outcome.
-        bridge.handleLogiScrollHotkey(code: event.code, phase: event.phase)
+        environment.handleScrollHotkey(code: event.code, phase: event.phase)
 
         // Main routing.
-        let result = bridge.dispatchLogiButtonEvent(event)
+        let result = environment.dispatchButtonEvent(event)
         #if DEBUG
         LogiDebugPanel.log(
             device: deviceInfo.name,
