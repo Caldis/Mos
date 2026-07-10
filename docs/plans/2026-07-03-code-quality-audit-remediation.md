@@ -114,8 +114,8 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 | P4-13 | PreferencesScrollingViewController.swift:226-228 | 坏味道 | 低 | ✅ 2026-07-04 (核实为旧数据一次性迁移兜底 — 写路径已有完整归一化, 删除会致旧数据显示/引擎不一致; 已注释固化语义) |
 | P4-14 | Interceptor.swift:48,77,113 | 并发 | 低 | ✅ 2026-07-04 (owningRunLoop 创建时捕获) |
 | P4-15 | 魔法数字 2 处 | 坏味道 | 低 | ✅ 2026-07-04 |
-| P5-1 | LogiDeviceSession 拆分 | 结构 | 高 | 待处理 |
-| P5-2 | LogiDebugPanel 拆分 | 结构 | 中 | 待处理 |
+| P5-1 | LogiDeviceSession 拆分 | 结构 | 高 | 待处理 (2026-07-10 随 master handoff 合入刷新方案: 4105 行, 新增性能红线约束与双鼠标验证场景) |
+| P5-2 | LogiDebugPanel 拆分 | 结构 | 中 | 待处理 (2026-07-10 刷新: 3047 行, 新增 3 个 feature context) |
 | P5-3 | ScrollCore.swift:53-195 拆分 | 结构 | 中 | 待处理 |
 | P5-4 | handleInputReport 拆分 | 结构 | 中 | 待处理 |
 | P5-5 | ButtonTableCellView 减负 | 结构 | 中 | 待处理 |
@@ -566,26 +566,29 @@ scripts/qa/lint-logi-boundary.sh   # 涉及 Mos/Logi 或 Mos/Integration 时
 
 ## P5 结构重构（每项先出 design doc 再动工）
 
-### P5-1 LogiDeviceSession（3191 行）拆分 ⚠️ 立项级
+### P5-1 LogiDeviceSession（4105 行）拆分 ⚠️ 立项级
 
-- **上下文**：全仓最大 god class：40+ 存储属性、10 类职责；3 个近义布尔（`reprogInitComplete`/`handshakeComplete`/`discoveryInFlight`）需 20+ 行注释互相区分（L127-137）；9 个 `pending*` 字段各自手工模拟请求-响应关联；约 300 行 `#if DEBUG *ForTests` 转发。**7 套手写超时/重试并存**（discoveryTimer 5s、controlInfoQueryTimer+retryCounts 1s、reportingQueryTimer 1s、SetControlReporting ACK TTL 2s、BLE guard TTL 2s、receiver 枚举 asyncAfter 5s、divertReassertion 0.05s）——是 P0-5 竞态的结构性根因。
+> **2026-07-10 更新**：master 合入接收器多设备 handoff（c48937f，设计文档 `docs/plans/2026-07-08-logi-receiver-multi-device-handoff.md`）后本节已按合并后现实刷新。原方案基于 3191 行单目标模型，已失效的部分见下方标注。
+
+- **上下文**：全仓最大 god class（合并后 4105 行）：状态模型已按 slot 拆进 `PerSlotState`（handoff Phase 1 完成，等于替本项做了状态聚合地基），但 session 仍聚合 10 类职责；`pending*` 引用 92 处；**timer/DispatchWorkItem 机制 15 处并存**（discoveryTimer 5s、controlInfoQueryTimer+retryCounts 1s、reportingQueryTimer 1s、SetControlReporting ACK TTL 2s、BLE guard TTL 2s、receiver 枚举 asyncAfter 5s、divertReassertion 0.05s、takeover debounce 等）——是 P0-5 竞态的结构性根因。新增横切义务：`pumpPendingDivertQueue` 必须在每个发现/上报查询终点调用（漏一处 = 热插拔 slot 被永久搁置，真机踩过坑）——这是被挂起的 P3-4"handshake 终点语义"的第 4 个变体，状态机化的又一论据。
+- **硬约束（handoff 文档 §2 性能红线，重构全程不可违反）**：不得新增任何周期性/重复 HID++ 活动（无 watchdog/pulse/keepalive/轮询）；每设备 discovery+divert 连接时 one-shot；所有 retarget/收敛动作加"已完成"守卫防振荡。判定标准：随时间反复发 HID++ 请求即踩线；仅在连接/断开/用户操作等离散事件上各做一次为安全。
 - **拆分方案**（按现有内聚边界，均保持 main-thread 约束不变，建议按序各自一个 PR）：
-  1. **HIDPPReportDecoder**（~L1697-1852）：纯 debug 字符串解码，零状态依赖，最容易先切。
-  2. **HIDPPTransport**（~L953-1000, 1453-1485）：报文编码 + `IOHIDDeviceSetReport` + 设备开关/回调注册，持有 buffer 与 device（P4-4 的注销逻辑归它）。
-  3. **HIDPPRequestPipeline**：统一 request-response 关联 + 超时/重试，吸收 7 套 timer/TTL 与 9 个 `pending*` 标志（P0-5 的串行队列演进为此组件）。
-  4. **ReceiverEnumerator**（~L1358-1695）：槽位 ping/枚举/连接通知/自动 retarget（已有独立状态 `receiverPairedDevices`/`receiverEnumPhase`）。
-  5. **ReprogDiscoveryStateMachine**（~L1084-1132, 2645-2781）：GetControlCount→ControlInfo→Reporting 三阶段链，产出 `discoveredControls`。
-  6. **DivertCoordinator**（~L317-618, 2833-3013）：applyUsage/recording plan/reassert/BLE guard；纯函数部分（`targetCIDsForUsage` 等 static）已具备抽离条件。
-  7. **FeatureActionExecutor**（~L1854-2059 + handleInputReport 对应分支）：依托 P3-1 的 `withFeature`。
+  1. **HIDPPReportDecoder**：纯 debug 字符串解码，零状态依赖，最容易先切。
+  2. **HIDPPTransport**：报文编码 + `IOHIDDeviceSetReport` + 设备开关/回调注册，持有 buffer 与 device（P4-4 的注销逻辑归它）；出站 `report[1]` 的 slot 归属（巡检游标 vs 接管 slot）在此层显式化。
+  3. **HIDPPRequestPipeline**：统一 request-response 关联 + 超时/重试，吸收全部 timer/TTL 与 `pending*` 标志（P0-5 的 `FeatureDiscoveryQueue` 演进为此组件；跨 slot 的发现串行约束——IRoot 响应不回显 featureId——是其核心不变量）。
+  4. **ReceiverEnumerator + TakeoverCoordinator**（原"ReceiverEnumerator 含自动 retarget"边界已失效——retarget 语义被 handoff 删除）：前者管槽位 ping/枚举/0xB5 设备信息；后者管接管集合（`receiverManagedSlots`/`pendingDivertSlots`/sweep/pump/takeover-debounce）与巡检游标（`deviceIndex`）的双概念模型。handoff 已有纯函数 `chooseReceiverTargetSlot`/`receiverDivertSlots`/`receiverConnectionNotificationAction`（带单测），迁移时保持纯函数形态。
+  5. **ReprogDiscoveryStateMachine**：GetControlCount→ControlInfo→Reporting 三阶段链，操作 `PerSlotState`（容器已就位），产出 per-slot `discoveredControls`；吸收 P3-4 的 4 处终点语义（含 pump 义务）为显式状态机出口。
+  6. **DivertCoordinator**：applyUsage/recording plan/reassert/BLE guard；纯函数部分（`targetCIDsForUsage` 等 static）已具备抽离条件。
+  7. **FeatureActionExecutor**：依托 P3-1 的 `withFeature`；haptic/scrollForce/forceSensing 三个巡检 context 按 handoff §4.3 保持单值（绑定巡检游标），不进多设备管线。
   8. `*ForTests` 转发随各自 static 纯函数迁走，用 `@testable` 消除。
-- **前置**：P0-5、P0-7、P3-1~4、P4-4、P4-7 全部落地；P5-6 至少完成接口化（否则拆出的组件仍被 `.shared` 反向引用缠住）。
-- **验证**：每步 Logi 全测试类 + lint-logi-boundary.sh + 真机全功能回归（divert、SmartShift、DPI、多主机切换、休眠唤醒），**需用户确认设备**。
+- **前置**：P0-5、P0-7、P3-1~3、P4-4、P4-7 已落地；P5-6 至少完成接口化（否则拆出的组件仍被 `.shared` 反向引用缠住）。**design doc 必须以 handoff 设计文档为输入。**
+- **验证**：每步 Logi 全测试类 + lint-logi-boundary.sh + 真机全功能回归（divert、SmartShift、DPI、多主机切换、休眠唤醒，**新增：双鼠标同接收器 handoff 场景**；BLE 直连 0xFF 与单设备 receiver 行为不得回归），**需用户确认设备**。
 
-### P5-2 LogiDebugPanel（2393 行）拆分
+### P5-2 LogiDebugPanel（3047 行）拆分
 
-- **上下文**：窗口/视图构建、HID++ 协议字典、日志缓冲与文件持久化、直接向硬件发包（`sendDebugPacket` 内 `IOHIDDeviceSetReport`，L1362）混在一个类。
-- **修复步骤**：拆为 `LogiDebugLogStore`（缓冲/过滤/导出，吸收 P1-1/1-3 的缓存）、`LogiDebugPacketService`（发包，走 P5-1 的 Transport 而非直接 SetReport）、`LogiDebugPanelWindow`（纯 UI）。P1-1~6 完成后此项工作量显著缩小。
-- **验证**：面板全功能手动清单（日志、过滤、导出、发包、自检入口、slot 切换）。
+- **上下文**（2026-07-10 刷新：handoff + HAPTIC/ForceSensing/ScrollForce 合入后 2392→3047 行）：窗口/视图构建、HID++ 协议字典、日志缓冲与文件持久化、直接向硬件发包（`sendDebugPacket` 内 `IOHIDDeviceSetReport`）混在一个类；新增 haptic/scrollForce/forceSensing 三个 bespoke context UI + 4 个 feature 观察者，context 区抽离价值上升。
+- **修复步骤**：拆为 `LogiDebugLogStore`（缓冲/过滤/导出，吸收 P1-1/1-3 的缓存）、`LogiDebugPacketService`（发包，走 P5-1 的 Transport 而非直接 SetReport）、`LogiDebugPanelWindow`（纯 UI）、feature context 区（haptic/scrollForce/forceSensing 滑杆与观察者）独立成可复用 section 构建器。P1-1~6 完成后此项工作量已显著缩小。
+- **验证**：面板全功能手动清单（日志、过滤、导出、发包、自检入口、slot 切换/轻量巡检、haptic/force 滑杆）。
 
 ### P5-3 ScrollCore.scrollEventCallBack（142 行闭包）拆分
 
