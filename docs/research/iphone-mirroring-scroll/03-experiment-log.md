@@ -1,28 +1,25 @@
 # 实验记录（在另一台设备上填写）
 
 > 逐项记录 Phase 0 / Phase 1 的观测。命题编号见 `02-experiment-plan.md`。
-> 环境: macOS 26.5.1 (25F80) + Xcode 26.0 (17A324) / iOS ___ / 设备 ___ / 鼠标 ___ / 日期 2026-07-11（Phase 1 签名部分）
+> 环境: macOS 26.5.1 (25F80) + Xcode 26.0 (17A324) / iOS 26 / MacBook (Apple Silicon) / Logitech MX Master 3S (蓝牙直连, Logi Options+ 未运行) / 日期 2026-07-11
 
-## Phase 0 — Karabiner 代理
+## Phase 0 — Karabiner 代理(2026-07-11 已完成)
 
-**操作清单(2026-07-11 备好,本机 Karabiner 尚未安装)**:
-1. `brew install --cask karabiner-elements`(要管理员密码);首启按引导批准:系统设置 → 隐私与安全性 → 允许其**驱动扩展**,并授予**输入监控**。
-2. **退出 Mos**(排除 CGEvent 层翻转的混淆变量),记下系统「自然滚动」当前值,测试中不改动。
-3. 基线:打开 iPhone 镜像(连 iPhone),前台用物理滚轮滚一个长列表,记住方向。
-4. Karabiner-Elements → **Devices** → 找到鼠标并启用 Modify events → **Open mouse settings** → 勾选 **Flip mouse vertical wheel**。
-5. 先在普通 App(如 TextEdit 长文档)确认方向已被翻转(证明输入确实走了 Karabiner 虚拟设备)。
-6. 回到镜像窗口滚动,对比第 3 步:方向变了 → **C2+C3 成立,go**;没变/滚不动 → no-go。
-7. 填下表,测完可 `brew uninstall --cask karabiner-elements` 清理。
+**实际执行方式**(与原清单略有出入,记录以便复现):
+- Karabiner-Elements 16.1.0(DriverKit VirtualHIDDevice 1.8.0),系统扩展 `activated enabled`,Core-Service 正常 grab 设备。
+- 翻转不走 GUI,直接写 `~/.config/karabiner/karabiner.json` 设备级 `mouse_flip_vertical_wheel`(v16.1 源码确认的键名),核心服务热加载即时生效,便于 A/B 切换。
+- **注意 GUI 会规范化重写 karabiner.json**(剔除等于默认值的键),做 A/B 时先退出设置窗口,并以 `core_service.log` 的 `Load ...karabiner.json` 行核对每轮生效时刻。
+- 观测手段:肉眼 + **前后截图对比**(客观记录镜像内页面内容位置),测试期间退出 Mos/Mos Debug 与 Logi Options+,系统自然滚动全程保持 =1 未动。
 
 | 观测 | 结果 | 备注 |
 |---|---|---|
-| Karabiner 安装并启用其虚拟 HID | ☐ 是 ☐ 否 | |
-| 配置 vertical_wheel flip | ☐ 是 ☐ 否 | |
-| 镜像内能正常滚动 | ☐ 是 ☐ 否 | |
-| 镜像内方向被 Karabiner 反转 (**C2+C3**) | ☐ 是 ☐ 否 | |
+| Karabiner 安装并启用其虚拟 HID | ☑ 是 | `hidutil list` 可见 VirtualHIDPointing 1.8.0 (vendor 0x16c0 / product 0x27da);MX Master 3S 被 grab(seize) |
+| 配置 vertical_wheel flip | ☑ 是 | 设备级 `mouse_flip_vertical_wheel`,热加载 |
+| 镜像内能正常滚动 | ☑ 是 | 鼠标被 seize 后**唯一**输入通路是虚拟设备,镜像仍可正常滚动(截图佐证)→ 单此一条即证 C2 |
+| 镜像内方向被 Karabiner 反转 (**C2+C3**) | ☑ 是 | A/B 对照:flip=off 时「滚轮朝自己」→ 视图向页顶;flip=on 同一手势 → 视图向页底(两轮均有截图)。期间系统自然滚动偏好未变,唯一变量是 flip 标志 |
 
-**Phase 0 结论**: ☐ go(虚拟 HID 能到达镜像,继续 Phase 1) ☐ no-go(停止路线 B) ☐ 未定
-说明: ______________________________________________
+**Phase 0 结论**: ☑ **go**(虚拟 HID 能到达镜像,方向可控;继续 Phase 1)
+说明: 镜像内与普通 App 方向随 flip 同步变化(「内外一致」),符合层级模型——HID 层翻转发生在所有消费者的上游,镜像与普通 App 看到同一份已翻转数据。另:测试首轮曾被两个混淆变量干扰(Karabiner 设置 GUI 重写配置文件、Mos Debug 中途被拉起),复现时务必先清场。
 
 ## Phase 1 — CoreHID 原型 (MirroringHIDProbe)
 
@@ -45,11 +42,17 @@
 
 **推论**:Phase 1(CoreHID 原型实跑)硬阻塞于 Apple 授权,按 plan §决策门"以 Phase 0 结论推进"。**注意**:DriverKit HID 能力(Karabiner 架构)development 阶段反而是自助的(已在 App ID `com.caldis.Mos.driver` 启用,见 `04`)——若 Phase 0 = go 而 CoreHID 授权迟迟不下,可直接用 development 签名做 DriverKit dext 原型替代 Phase 1,不必等待。
 
-## 总结论
+## 总结论(2026-07-11)
 
-☐ 路线 B 可行(API 能实现方向+平滑) —— 下一步: ______________________
-☐ 路线 B 需 seize 物理设备(接近 Karabiner 复杂度) —— 评估: ____________
-☐ 路线 B 不可行 —— 长期仅保留路线 A + 等 Apple 开放
+☑ **路线 B 架构成立**:虚拟 HID 注入的滚轮可到达镜像(C2)且方向可控(C3)——由 Karabiner 代理实测证实。
+☐ ~~路线 B 不可行~~(已排除)
+
+尚未闭环的部分:
+- **C4(平滑)**:Karabiner 的 flip 不改变事件频率/粒度,无法代测;需我们自己的注入器(CoreHID 或 dext)验证。
+- **C5(是否必须 seize)**:Karabiner 场景下 seize 是既成事实(且证明 seize + 重发可行、无双份输入);「不 seize 直接注入会不会双份」仍未测,待 CoreHID 授权或 dext 原型。
+- **Phase 1 路径选择**:CoreHID entitlement development 即门控(见上),两条路——① 向 Apple 争取 `hid.virtual.device`;② 直接做 DriverKit dext 原型(development 能力自助,App ID 已配好,架构同 Karabiner,Phase 0 已验证这条链路端到端可行)。
 
 残留风险确认(见 plan §"全部通过是否足以支撑结论"):
-- entitlement 分发授权: ______  多鼠标/热插拔/休眠: ______  CoreHID vs DriverKit: ______
+- entitlement 分发授权: **CoreHID development 即门控(实测);DriverKit 分发申请 7CTL26535S 等回复**
+- 多鼠标/热插拔/休眠: 未覆盖(原型阶段不测)
+- CoreHID vs DriverKit: **天平已向 DriverKit 倾斜**——CoreHID 连开发验证都受阻,而 dext 链路被 Phase 0 端到端证实且 development 自助
