@@ -83,9 +83,16 @@ IOHIDEventGetScrollMomentum / SetPhase
   - **DriverKit 虚拟 HID**(Karabiner 架构)— 需 dext + 系统扩展审批 + 重启,重一个数量级;需 `com.apple.developer.driverkit.*` + `family.hid.*`。
 - **未验证的关键假设**:没有任何来源(含本次逆向)实测过镜像会响应虚拟 HID 注入的滚动。架构上是对的层(真 IOHIDEvent,低于 tap),Logi Options+ 能工作是强旁证,但**必须实测**——见 `02-experiment-plan.md`。
 
-### ❌ 已排除
-- `CGEventPost` / CGEvent 内嵌 IOHIDEvent:仍进 WindowServer,在镜像订阅点下游,收不到。
-- 直接 `IOHIDEventSystemConnectionDispatchEvent` 注入:需 `com.apple.private.hid.client.event-dispatch`,私有不可申请。
+### ❌ 已排除(2026-07-11 补:全部由本机实测封口,非推断)
+- `CGEventPost` / CGEvent 内嵌 IOHIDEvent:仍进 WindowServer,在镜像订阅点(④)下游,收不到。
+- **SkyLight / `SLEventPostToPid`(cua.ai 文章那条路)**:属 ⑤ WindowServer 层的**按 PID 定向投递**,文章自述"bypasses IOHIDPostEvent entirely"——比 `CGEventPost` 离 ④ 更远。且镜像的滚动路径是纯 IOHIDEvent(ScreenContinuityUI 唯一的 CGEvent 调用是 `CGEventSetIntegerValueField` 设窗口坐标,无读滚动代码),按 PID 投到 WindowManager 的 CGEvent 队列它也不读。**关键差异**:cua.ai 成功是因为 ⑤ 层注入被 **TCC(辅助功能,用户可授)** 门控;而 ④/③ 层注入被 **entitlement** 门控——同是"私有定向通道",门禁等级不同。
+- **借用镜像自己的注入器 `UniversalHID.HIDVirtualService`**:逆向确认其注入侧(`HIDVirtualService`/`HIDConnection.dispatchEvent`/`sendReport(PointerReport)`)最终只汇聚到 IOKit 的 `IOHIDEventSystemConnectionDispatchEvent`,即需 `com.apple.private.hid.client.event-dispatch`(私有,Apple 专属);且三个相关二进制(UniversalHID/HID/ScreenSharingKit)**无任何 XPC/NSXPC 监听器**,注入器是进程内 Swift API,无对外 IPC 面可调。它只是 Apple 给私有注入原语套的封装,不是可借的侧门。
+- **④ 层直接派发 `IOHIDEventSystemClientDispatchEvent`(无 entitlement)**:实测——client 建得成、dispatch 不报错,但拿系统设置长列表行为对照,**完全无滚动(静默 no-op)**,事件到不了任何消费者。
+- **③ 层老 C API `IOHIDUserDeviceCreateWithProperties`(foohid 那代)**:实测——普通用户返回 NULL;**`sudo`(uid=0)仍返回 NULL**。`IOHIDServiceCheckEntitlements` 不看 uid,root 破不了。这正是 Karabiner 弃用 IOHIDUserDevice 转 DriverKit 的原因。
+- **③ 层 CoreHID `HIDVirtualDevice`**:需 `com.apple.developer.hid.virtual.device`,development 阶段即门控(见 `03` Phase 1:AMFI SIGKILL + 门户拒发)。
+
+> 探针源码留档:`experiments/` 外的一次性验证在 scratchpad(`probeA_userdevice.c` / `probeB_dispatch.c`),结论已录此处,可弃。
+> **唯一仍开着的门**:DriverKit dext(③ 层造设备,development 能力自助已配好,distribution 待 Apple 审 7CTL26535S)。事件以真硬件身份从 ③ 上浮到 ④,镜像照单全收——我们从楼下喂满同一条流水线,而非去撬 ④ 那把锁。Phase 0(Karabiner)已端到端验证这条链路可行。
 
 ## 5. 结论与建议
 1. **短期**:发布路线 A(默认禁用列表保留 iPhone 镜像 + 一个 per-app/全局开关,系统级翻转)。
