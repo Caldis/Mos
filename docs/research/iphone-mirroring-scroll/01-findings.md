@@ -111,7 +111,13 @@ IOHIDEventGetScrollMomentum / SetPhase
   - **probeD(硬证)**:在 `kCGHIDEventTap` **消费**物理滚动 → 镜像**收不到**(237 事件被吞,镜像纹丝不动,截图)。
   - **probeC(硬证)**:向 `kCGHIDEventTap` **投递**滚轮 → 镜像**滚动、方向可控**(上/下各测,3 轮截图)。
   - **probeE(支持性,非最强证明)**:二者合一(消费+翻转重投)→ 物理滚动镜像时观察到"内外一致"。按 case 分析,一致 ⇒ 镜像读取在本 tap 下游(= 翻转到达);但**最干净的 A/B(同手势、翻转开/关,看绝对方向是否反转)因 iPhone 反复被占用未跑完**。故:两个原子能力(投递到达 / 消费压制)是硬证,路线 C 由二者**逻辑推出**;"翻转把镜像方向真正掉过来"缺一个干净的当场演示,**待补**。
-- **⚠️ 未解机制(决定路线 C 的鲁棒性,必须查清)**:若逆向结论"镜像只走 IOHIDEventSystem、无读滚动的 CGEvent 代码"成立,为何 `CGEventPost(kCGHIDEventTap)` 能到镜像?二解未定:① 逆向不完整,镜像另有 CGEvent 滚动路径;② `kCGHIDEventTap` 投递被注入得足够低、真的喂进了 IOHIDEventSystem 层。行为结果确凿,机制未钉死——跨系统版本是否稳定取决于此。
+- **✅ 机制已查清(2026-07-11,probeF/probeF2 判别)**:结论是**假设①——镜像另有一条 CGEvent 滚动路径**。
+  - probeF2(纯监听):物理滚动 → IOHIDEventSystem 监听**抓得到** scroll IOHIDEvent(10 个,无 entitlement 即可)。证明监听可用、物理滚动确是 IOHIDEvent。
+  - probeF(监听 + 自投):`CGEventPost(kCGHIDEventTap)` 20 个 → 监听抓到 **0 个** scroll IOHIDEvent。→ **kCGHIDEventTap 投递的滚轮不是 IOHIDEvent**,却能滚镜像 ⇒ 镜像必有 CGEvent 路径。
+  - 佐证:WindowManager 本体 import `CGEventGetIntegerValueField`/`GetDoubleValueField`(读 CGEvent 字段),且链接 AppKit + SkyLight。
+  - **修正**:老 §2/§2.5"镜像只走 IOHIDEventSystem、CGEvent 层够不到"**不准确**。准确说法:镜像读滚动的位置**低且全局**(kCGHIDEventTap 区域),既接受 IOHIDEvent(物理),也接受该层的 CGEvent 投递;但**不**读 per-window NSEvent 队列(所以 `postToPid` 到不了它)。
+  - **一致解释全部现象**:物理滚动经 IOHID 上游到镜像 → Mos 在高层(session)改写看不到(#762);`postToPid` 投 per-window 队列 → 镜像不读(mirroir 证);`kCGHIDEventTap` 投递/消费 → 命中镜像的低层全局读取点 → 可控(probeC/D)。
+  - **鲁棒性判断**:路线 C 只用**公开稳定**的 `kCGHIDEventTap`(CGEvent API),mirroir 已在其上出货;比路线 A(私有 `PreferencePanesSupport` dlsym)、路线 B(私有 entitlement + dext)更不依赖私有面。
 - **为什么现有工具修不了(根因,已在 Mos 代码定位)**:
   - Mos 的滚动 tap 挂在 `.cgAnnotatedSessionEventTap`(session **最高层**,`ScrollCore.swift:409`),消费/改写发生在镜像 `kCGHIDEventTap` 底层读取点的**上游之后** → 镜像早已在底层读走原始 → 改写看不到。
   - Mos 重投用 `event.postToPid(targetPID)`(`ScrollDispatchContext.swift:131`)→ mirroir 项目已证 **postToPid 到不了 iPhone 镜像**。
