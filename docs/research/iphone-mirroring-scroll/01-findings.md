@@ -105,9 +105,24 @@ IOHIDEventGetScrollMomentum / SetPhase
 > 探针源码留档:`experiments/` 外的一次性验证在 scratchpad(`probeA_userdevice.c` / `probeB_dispatch.c`),结论已录此处,可弃。
 > **唯一仍开着的门**:DriverKit dext(③ 层造设备,development 能力自助已配好,distribution 待 Apple 审 7CTL26535S)。事件以真硬件身份从 ③ 上浮到 ④,镜像照单全收——我们从楼下喂满同一条流水线,而非去撬 ④ 那把锁。Phase 0(Karabiner)已端到端验证这条链路可行。
 
+### ⭐ 路线 C — kCGHIDEventTap 底层「消费 + 翻转重投」(2026-07-11 新发现,实测可行,推荐)
+- **机制**:在 `kCGHIDEventTap`(CGEvent 管线最底层)挂一个消费型 tap:吞掉原始物理滚轮(`return nil`),用取反 delta 的新事件从 `CGEventPost(kCGHIDEventTap, …)` 重投。镜像既收不到原始、又收到翻转后的 → 干净翻转。
+- **为什么成立(本机实测,非推断)**:
+  - probeD:在 `kCGHIDEventTap` **消费**物理滚动 → 镜像**收不到**(237 事件被吞,镜像纹丝不动)。
+  - probeC:向 `kCGHIDEventTap` **投递**滚轮 → 镜像**滚动、方向可控**(3 轮截图)。
+  - probeE:二者合一(消费+翻转重投)→ 物理滚动镜像时,镜像与普通 App **一致地**按翻转方向移动(probeE 全局翻转,若够不到镜像则应"内外相反",实测一致 = 翻转到达镜像)。
+- **为什么现有工具修不了(根因,已在 Mos 代码定位)**:
+  - Mos 的滚动 tap 挂在 `.cgAnnotatedSessionEventTap`(session **最高层**,`ScrollCore.swift:409`),消费/改写发生在镜像 `kCGHIDEventTap` 底层读取点的**上游之后** → 镜像早已在底层读走原始 → 改写看不到。
+  - Mos 重投用 `event.postToPid(targetPID)`(`ScrollDispatchContext.swift:131`)→ mirroir 项目已证 **postToPid 到不了 iPhone 镜像**。
+  - 两处都错在"层不对":要够到镜像必须下沉到 `kCGHIDEventTap`。
+- **代价**:仅需**辅助功能**权限(Mos 已持有)。**零 entitlement、零虚拟设备、零 dext、零系统扩展审批**。可 per-app(Mos 已能识别前台镜像)。
+- **仍需验证**:① 平滑(C4)——向 `kCGHIDEventTap` 投高频细粒度流镜像是否平滑渲染,待测;② 与现有 session-tap 管线的协同(建议:仅镜像前台时启用底层 tap,其余走原路径);③ 动量/惯性阶段、光标路由、多显示器等鲁棒性。
+- **源码**:scratchpad `probeC_cghid.c`(投递)、`probeD_consume.c`(消费)、`probeE_flip.c`(消费+翻转端到端)。
+
 ## 5. 结论与建议
-1. **短期**:发布路线 A(默认禁用列表保留 iPhone 镜像 + 一个 per-app/全局开关,系统级翻转)。
-2. **长期**:路线 B 是天花板,但先用 CoreHID 原型**验证"镜像认不认虚拟 HID"**再决定投入;分发需 Apple entitlement(已申请)。
+1. **首选(新)**:落地**路线 C**——镜像前台时下沉到 `kCGHIDEventTap` 消费+翻转重投。轻量、无审批、修方向确定可行,且有望一并解决平滑(待验)。远优于路线 A(改系统设置)与路线 B(dext)。
+2. **短期兜底**:路线 A(系统级翻转)已实现、可留作 `kCGHIDEventTap` 不可用时的降级。
+3. **长期天花板**:路线 B(dext)仍是完全体(seize + 任意重构),但仅在路线 C 平滑验证失败、或需完全接管输入时才值得那套审批成本。CoreHID 分支已因 entitlement 门控搁置。
 
 ## 6. 路线 A 实现状态(本分支已含,编译通过)
 - `Mos/ScrollCore/SwipeScrollDirection.swift` — dlsym 调 `PreferencePanesSupport` 的 `setSwipeScrollDirection`/`swipeScrollDirection`,符号缺失静默降级。

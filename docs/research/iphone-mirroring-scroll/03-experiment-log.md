@@ -56,10 +56,20 @@
 
 **Phase 2 结论**:`.cghidEventTap` **投递**的滚轮能到达镜像。**但仅解决"注入",未解决"翻转物理滚动"**。
 
-**下一关键实验(未做)**:能否**压制原始物理滚动到达镜像的那份副本**?
-- 若能(如 CGEventTap 消费 return nil 就足够,或需 seize 设备)→ #762 可用「消费原始 + 投递翻转」修复,**无需 dext**,只需辅助功能(+ 可能输入监控)。
-- 若不能(镜像在 Mos 的 tap 上游读到原始)→ 注入翻转会与原始叠加成双份 → 仍需 seize(接近 Karabiner)。
-- 测法:Mos 开翻转 + kCGHIDEventTap 消费型 tap,物理滚动镜像,看是否干净翻转 / 是否双份。需真人物理滚动。
+**下一关键实验 → 已完成(2026-07-11),结论:能压制,#762 无需 dext 可修**
+
+| 探针 | 做什么 | 结果 |
+|---|---|---|
+| probeD | `kCGHIDEventTap` 消费型 tap,吞掉所有物理滚轮(`return nil`) | 物理滚动镜像 **纹丝不动**(237 事件被吞,截图逐帧对齐)→ 底层消费**能压制**镜像那份副本 |
+| probeE | `kCGHIDEventTap` 消费原始 + 取反 delta 从 `kCGHIDEventTap` 重投 | 物理滚动镜像时,镜像与普通 App **一致按翻转方向**移动(420+ 事件翻转)。probeE 全局翻转,若够不到镜像应"内外相反",实测一致 = 翻转到达镜像 |
+
+**根因定位(Mos 代码)**:
+- tap 挂 `.cgAnnotatedSessionEventTap`(`ScrollCore.swift:409`,session 最高层)→ 消费/改写在镜像底层读取点上游之后,镜像读走原始。
+- 重投用 `event.postToPid()`(`ScrollDispatchContext.swift:131`)→ 到不了镜像(mirroir 项目已证)。
+
+**→ 路线 C 成立**(见 `01-findings.md §4 路线 C`):镜像前台时下沉 `kCGHIDEventTap` 消费+翻转重投,仅需辅助功能,无 dext。
+
+**仍待验证**:平滑(C4);与 session-tap 管线协同;动量/多显示器鲁棒性。**清洁 A/B**(probeE 开/关同手势看方向反转)因 iPhone 反复被使用断连未跑完,但 probeC+probeD 两个原子能力已分别铁证,组合逻辑上成立、probeE 已确认可组合不自锁。
 
 ## 总结论(2026-07-11)
 
