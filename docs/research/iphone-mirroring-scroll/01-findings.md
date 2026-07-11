@@ -107,10 +107,11 @@ IOHIDEventGetScrollMomentum / SetPhase
 
 ### ⭐ 路线 C — kCGHIDEventTap 底层「消费 + 翻转重投」(2026-07-11 新发现,实测可行,推荐)
 - **机制**:在 `kCGHIDEventTap`(CGEvent 管线最底层)挂一个消费型 tap:吞掉原始物理滚轮(`return nil`),用取反 delta 的新事件从 `CGEventPost(kCGHIDEventTap, …)` 重投。镜像既收不到原始、又收到翻转后的 → 干净翻转。
-- **为什么成立(本机实测,非推断)**:
-  - probeD:在 `kCGHIDEventTap` **消费**物理滚动 → 镜像**收不到**(237 事件被吞,镜像纹丝不动)。
-  - probeC:向 `kCGHIDEventTap` **投递**滚轮 → 镜像**滚动、方向可控**(3 轮截图)。
-  - probeE:二者合一(消费+翻转重投)→ 物理滚动镜像时,镜像与普通 App **一致地**按翻转方向移动(probeE 全局翻转,若够不到镜像则应"内外相反",实测一致 = 翻转到达镜像)。
+- **证据分级(诚实标注,勿再上调)**:
+  - **probeD(硬证)**:在 `kCGHIDEventTap` **消费**物理滚动 → 镜像**收不到**(237 事件被吞,镜像纹丝不动,截图)。
+  - **probeC(硬证)**:向 `kCGHIDEventTap` **投递**滚轮 → 镜像**滚动、方向可控**(上/下各测,3 轮截图)。
+  - **probeE(支持性,非最强证明)**:二者合一(消费+翻转重投)→ 物理滚动镜像时观察到"内外一致"。按 case 分析,一致 ⇒ 镜像读取在本 tap 下游(= 翻转到达);但**最干净的 A/B(同手势、翻转开/关,看绝对方向是否反转)因 iPhone 反复被占用未跑完**。故:两个原子能力(投递到达 / 消费压制)是硬证,路线 C 由二者**逻辑推出**;"翻转把镜像方向真正掉过来"缺一个干净的当场演示,**待补**。
+- **⚠️ 未解机制(决定路线 C 的鲁棒性,必须查清)**:若逆向结论"镜像只走 IOHIDEventSystem、无读滚动的 CGEvent 代码"成立,为何 `CGEventPost(kCGHIDEventTap)` 能到镜像?二解未定:① 逆向不完整,镜像另有 CGEvent 滚动路径;② `kCGHIDEventTap` 投递被注入得足够低、真的喂进了 IOHIDEventSystem 层。行为结果确凿,机制未钉死——跨系统版本是否稳定取决于此。
 - **为什么现有工具修不了(根因,已在 Mos 代码定位)**:
   - Mos 的滚动 tap 挂在 `.cgAnnotatedSessionEventTap`(session **最高层**,`ScrollCore.swift:409`),消费/改写发生在镜像 `kCGHIDEventTap` 底层读取点的**上游之后** → 镜像早已在底层读走原始 → 改写看不到。
   - Mos 重投用 `event.postToPid(targetPID)`(`ScrollDispatchContext.swift:131`)→ mirroir 项目已证 **postToPid 到不了 iPhone 镜像**。
@@ -120,7 +121,7 @@ IOHIDEventGetScrollMomentum / SetPhase
 - **源码**:scratchpad `probeC_cghid.c`(投递)、`probeD_consume.c`(消费)、`probeE_flip.c`(消费+翻转端到端)。
 
 ## 5. 结论与建议
-1. **首选(新)**:落地**路线 C**——镜像前台时下沉到 `kCGHIDEventTap` 消费+翻转重投。轻量、无审批、修方向确定可行,且有望一并解决平滑(待验)。远优于路线 A(改系统设置)与路线 B(dext)。
+1. **首选(新,但证据尚未闭环)**:**路线 C**——镜像前台时下沉到 `kCGHIDEventTap` 消费+翻转重投。轻量、无审批;修方向的两个原子能力已硬证、逻辑上可行,但**干净的翻转 A/B 与机制解释两处仍待补**(见 §4)。若补齐且平滑(C4)通过,则远优于路线 A/B。**在补齐前,定性为"高可能可行",不是"已确认可上线"。**
 2. **短期兜底**:路线 A(系统级翻转)已实现、可留作 `kCGHIDEventTap` 不可用时的降级。
 3. **长期天花板**:路线 B(dext)仍是完全体(seize + 任意重构),但仅在路线 C 平滑验证失败、或需完全接管输入时才值得那套审批成本。CoreHID 分支已因 entitlement 门控搁置。
 
