@@ -42,6 +42,25 @@
 
 **推论**:Phase 1(CoreHID 原型实跑)硬阻塞于 Apple 授权,按 plan §决策门"以 Phase 0 结论推进"。**注意**:DriverKit HID 能力(Karabiner 架构)development 阶段反而是自助的(已在 App ID `com.caldis.Mos.driver` 启用,见 `04`)——若 Phase 0 = go 而 CoreHID 授权迟迟不下,可直接用 development 签名做 DriverKit dext 原型替代 Phase 1,不必等待。
 
+## Phase 2 — cghidEventTap 注入(2026-07-11 新增,源自 cua.ai 文章方法论 + mirroir 项目)
+
+**背景**:全网检索发现在售项目 `jfarcand/mirroir-mcp` 用 `CGEvent.post(tap: .cghidEventTap)` 驱动镜像 swipe,与"镜像够不到"的结论冲突,实测裁决。
+
+| 观测 | 结果 | 备注 |
+|---|---|---|
+| 探针能滚普通 App(阳性对照) | ☑ 是 | 系统设置侧边栏从「辅助功能」滚回「陈标」,证明权限+机制有效 |
+| **投递滚轮到 iPhone 镜像生效** | ☑ **是** | 微信公众号信息流下滚:顶部「保时捷」→「中海云颂玖章」 |
+| **方向可控** | ☑ **是** | 反向上滚退回更早内容(「我给美团道的歉」「CLauto」栏头) |
+| 可重复 | ☑ 是 | 下/上/再滚三轮均生效 |
+| 权限成本 | 仅**辅助功能**;零 entitlement / 零虚拟设备 / 零 dext | 远轻于路线 B(dext) |
+
+**Phase 2 结论**:`.cghidEventTap` **投递**的滚轮能到达镜像。**但仅解决"注入",未解决"翻转物理滚动"**。
+
+**下一关键实验(未做)**:能否**压制原始物理滚动到达镜像的那份副本**?
+- 若能(如 CGEventTap 消费 return nil 就足够,或需 seize 设备)→ #762 可用「消费原始 + 投递翻转」修复,**无需 dext**,只需辅助功能(+ 可能输入监控)。
+- 若不能(镜像在 Mos 的 tap 上游读到原始)→ 注入翻转会与原始叠加成双份 → 仍需 seize(接近 Karabiner)。
+- 测法:Mos 开翻转 + kCGHIDEventTap 消费型 tap,物理滚动镜像,看是否干净翻转 / 是否双份。需真人物理滚动。
+
 ## 总结论(2026-07-11)
 
 ☑ **路线 B 架构成立**:虚拟 HID 注入的滚轮可到达镜像(C2)且方向可控(C3)——由 Karabiner 代理实测证实。

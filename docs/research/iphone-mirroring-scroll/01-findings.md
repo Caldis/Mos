@@ -58,6 +58,17 @@ IOHIDEventGetScrollMomentum / SetPhase
 ```
 关键:即使 Mos 用最底层的 `kCGHIDEventTap` 挂钩,仍在 IOHIDEventSystem 向 event-monitor 客户端分发**之后**,够不到镜像。
 
+> ### ⚠️ 2026-07-11 重大实测修正(区分「拦截」与「投递」)
+> 上面这句只对**拦截/改写既有事件**成立,对**投递全新事件****不成立**。实测(探针 C,`experiments` 外 scratchpad `probeC_cghid.c`):
+> - **`CGEvent.post(tap: .cghidEventTap)` 投递的全新滚轮事件,能到达并滚动 iPhone 镜像,方向可控,可重复,仅需辅助功能权限——零 entitlement、零虚拟设备、零 dext。**(镜像内微信公众号信息流上/下滚三轮均生效,截图佐证。普通 App 侧边栏为阳性对照。)
+> - 来源印证:在售项目 **`jfarcand/mirroir-mcp`** 的 `CGEventInput.swift` 正是这么驱动镜像 swipe 的,并注释「`postToPid` 对普通窗口有效,but NOT for iPhone Mirroring, which requires HID-level event posting」——它的「HID-level」即指投到 `.cghidEventTap`(CGEvent 管线最底部)。
+>
+> **为什么这不与「各家工具修不了 #762」矛盾**:两种操作根本不同——
+> - **拦截+改写**物理滚动(Mos/Scroll Reverser 现在做的):镜像在更上游读到原始事件,tap 的改写在下游,看不到 → #762 无解。**这条仍成立**。
+> - **投递全新**滚动(mirroir / 探针 C):从 `.cghidEventTap` 注入的新事件确实到达镜像。**这条今天证实**。
+>
+> **对 #762 意味着什么(务必别过度乐观)**:证明了「向镜像**注入**方向可控的滚动」无需 dext。但 #762 要的是**翻转用户的物理滚动**,而非凭空注入。要用这条路修 #762,必须能**压制原始物理滚动的那份镜像副本**,再投递翻转后的——「原始副本能否被压制」尚未验证(见 `03` 待办)。若压制不掉,注入翻转只会与原始**叠加**成双份,而非干净翻转。这是下一个关键实验。
+
 ## 3. 各家工具现状(同一堵墙)
 
 | 工具 | 结论 | 依据 |
