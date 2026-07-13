@@ -125,6 +125,7 @@
 		0BB750CD2E5F6D8C007C402A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Components/Glow/README.md,
 				Info.plist,
 			);
 			target = 22142D9F1E25344E00E4BFBF /* Mos */;
