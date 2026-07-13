@@ -309,6 +309,8 @@ class LogiDebugPanel: NSObject {
     // MARK: - Actions Panel
 
     private var contextActionsContainer: NSView!
+    // context 操作区可能溢出(如 DeviceReset 功能项过多), 用 scrollView 承载 documentView 使其可滚动
+    private weak var contextActionsScroll: NSScrollView?
     private var paramInputField: NSTextField?
     private var indexParamValue: Int = 0
     private var indexStepperLabel: NSTextField?
@@ -702,6 +704,35 @@ class LogiDebugPanel: NSObject {
         }
     }
 
+    // 单行输入框 cell: 垂直居中 + 水平内边距。
+    // 无 bezel 的 NSTextField 默认文本顶对齐且紧贴左边, 用它修正显示/编辑态的位置。
+    private final class PaddedTextFieldCell: NSTextFieldCell {
+        var horizontalPadding: CGFloat = 6
+
+        private func adjusted(_ rect: NSRect) -> NSRect {
+            let inset = rect.insetBy(dx: horizontalPadding, dy: 0)
+            let textH = cellSize(forBounds: inset).height
+            let y = inset.origin.y + (inset.height - textH) / 2
+            return NSRect(x: inset.origin.x, y: y, width: inset.width, height: textH)
+        }
+
+        override func titleRect(forBounds rect: NSRect) -> NSRect {
+            return adjusted(rect)
+        }
+        override func drawInterior(withFrame cellFrame: NSRect, in controlView: NSView) {
+            super.drawInterior(withFrame: adjusted(cellFrame), in: controlView)
+        }
+        override func edit(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText,
+                           delegate: Any?, event: NSEvent?) {
+            super.edit(withFrame: adjusted(rect), in: controlView, editor: textObj, delegate: delegate, event: event)
+        }
+        override func select(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText,
+                             delegate: Any?, start selStart: Int, length selLength: Int) {
+            super.select(withFrame: adjusted(rect), in: controlView, editor: textObj,
+                         delegate: delegate, start: selStart, length: selLength)
+        }
+    }
+
     // MARK: - Build Content (Auto Layout)
 
     private func buildContent(in container: NSView, topInset: CGFloat) {
@@ -727,7 +758,8 @@ class LogiDebugPanel: NSObject {
             split.leadingAnchor.constraint(equalTo: sidebar.trailingAnchor, constant: L.gap),
             split.topAnchor.constraint(equalTo: container.topAnchor, constant: topInset),
             split.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8),
-            split.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8),
+            // Log 区底部外边距 7pt (视觉上与左侧 Tools 区块的圆角底边对齐)
+            split.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -7),
         ])
 
         // NSSplitView subviews — managed by split, NOT by constraints
@@ -750,11 +782,45 @@ class LogiDebugPanel: NSObject {
         sidebarSplit.translatesAutoresizingMaskIntoConstraints = false
         sidebar.addSubview(sidebarSplit)
 
+        // 左下角独立区块: 外部 Web 工具入口 (Logi WebConnect)。固定高度, 贴 sidebar 底部,
+        // split 让出底部空间给它。子视图全用 Auto Layout, 避免 autoresizingMask 相对未布局
+        // 容器(0 宽)计算出错位的宽度而溢出。按钮在块内垂直居中。
+        let toolsBlockH: CGFloat = 40
+        let toolsContainer = NSView()
+        toolsContainer.translatesAutoresizingMaskIntoConstraints = false
+        sidebar.addSubview(toolsContainer)
+
+        let toolsBg = makeSectionBg()
+        toolsBg.translatesAutoresizingMaskIntoConstraints = false
+        toolsContainer.addSubview(toolsBg)
+
+        // teal 色与其它(蓝色)动作按钮区分, 提示这是外链跳转
+        let webConnectBtn = makeActionBtn(title: "Logi WebConnect", action: #selector(webConnectClicked),
+                                          color: NSColor(calibratedRed: 0.3, green: 0.8, blue: 0.7, alpha: 1.0))
+        webConnectBtn.translatesAutoresizingMaskIntoConstraints = false
+        webConnectBtn.toolTip = "打开 logiwebconnect.com — 连接 Logi Bolt / Unifying 优联及无线设备"
+        toolsContainer.addSubview(webConnectBtn)
+
         NSLayoutConstraint.activate([
             sidebarSplit.leadingAnchor.constraint(equalTo: sidebar.leadingAnchor),
             sidebarSplit.trailingAnchor.constraint(equalTo: sidebar.trailingAnchor),
             sidebarSplit.topAnchor.constraint(equalTo: sidebar.topAnchor),
-            sidebarSplit.bottomAnchor.constraint(equalTo: sidebar.bottomAnchor),
+            sidebarSplit.bottomAnchor.constraint(equalTo: toolsContainer.topAnchor, constant: -L.gap),
+
+            toolsContainer.leadingAnchor.constraint(equalTo: sidebar.leadingAnchor),
+            toolsContainer.trailingAnchor.constraint(equalTo: sidebar.trailingAnchor),
+            toolsContainer.bottomAnchor.constraint(equalTo: sidebar.bottomAnchor),
+            toolsContainer.heightAnchor.constraint(equalToConstant: toolsBlockH),
+
+            toolsBg.leadingAnchor.constraint(equalTo: toolsContainer.leadingAnchor),
+            toolsBg.trailingAnchor.constraint(equalTo: toolsContainer.trailingAnchor),
+            toolsBg.topAnchor.constraint(equalTo: toolsContainer.topAnchor),
+            toolsBg.bottomAnchor.constraint(equalTo: toolsContainer.bottomAnchor),
+
+            webConnectBtn.leadingAnchor.constraint(equalTo: toolsContainer.leadingAnchor, constant: L.pad),
+            webConnectBtn.trailingAnchor.constraint(equalTo: toolsContainer.trailingAnchor, constant: -L.pad),
+            webConnectBtn.centerYAnchor.constraint(equalTo: toolsContainer.centerYAnchor),
+            webConnectBtn.heightAnchor.constraint(equalToConstant: L.btnH),
         ])
 
         // Top section: device tree with header inside the rounded block
@@ -1000,21 +1066,18 @@ class LogiDebugPanel: NSObject {
         header.translatesAutoresizingMaskIntoConstraints = false
         parent.addSubview(header)
 
-        let ctxC = FlippedView()
-        ctxC.translatesAutoresizingMaskIntoConstraints = false
-        parent.addSubview(ctxC)
-        self.contextActionsContainer = ctxC
+        // context 操作区外套 scrollView: 功能项过多(如 DeviceReset)时内容溢出可滚动,
+        // 不再压到下方 sep / 全局按钮上。documentView 用 FlippedView 保持"y 向下增长"坐标系。
+        let ctxScroll = NSScrollView()
+        ctxScroll.translatesAutoresizingMaskIntoConstraints = false
+        configureDarkScroll(ctxScroll)
+        parent.addSubview(ctxScroll)
+        self.contextActionsScroll = ctxScroll
 
-        let placeholder = makeLabel(text: "Select a feature\nor control", fontSize: 10, color: .tertiaryLabelColor)
-        placeholder.translatesAutoresizingMaskIntoConstraints = false
-        placeholder.alignment = .center
-        placeholder.maximumNumberOfLines = 2
-        ctxC.addSubview(placeholder)
-        NSLayoutConstraint.activate([
-            placeholder.leadingAnchor.constraint(equalTo: ctxC.leadingAnchor, constant: L.pad),
-            placeholder.trailingAnchor.constraint(equalTo: ctxC.trailingAnchor, constant: -L.pad),
-            placeholder.topAnchor.constraint(equalTo: ctxC.topAnchor, constant: L.pad),
-        ])
+        let ctxC = FlippedView(frame: NSRect(x: 0, y: 0, width: L.actionsWidth, height: L.ctxMinH))
+        ctxC.autoresizingMask = [.width]
+        ctxScroll.documentView = ctxC
+        self.contextActionsContainer = ctxC
 
         let sep = makeSep()
         sep.translatesAutoresizingMaskIntoConstraints = false
@@ -1037,11 +1100,11 @@ class LogiDebugPanel: NSObject {
             header.topAnchor.constraint(equalTo: parent.topAnchor, constant: 4),
             header.heightAnchor.constraint(equalToConstant: 16),
 
-            ctxC.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
-            ctxC.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
-            ctxC.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 2),
-            ctxC.bottomAnchor.constraint(equalTo: sep.topAnchor),
-            ctxC.heightAnchor.constraint(greaterThanOrEqualToConstant: L.ctxMinH),
+            ctxScroll.leadingAnchor.constraint(equalTo: parent.leadingAnchor),
+            ctxScroll.trailingAnchor.constraint(equalTo: parent.trailingAnchor),
+            ctxScroll.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 2),
+            ctxScroll.bottomAnchor.constraint(equalTo: sep.topAnchor),
+            ctxScroll.heightAnchor.constraint(greaterThanOrEqualToConstant: L.ctxMinH),
 
             sep.leadingAnchor.constraint(equalTo: parent.leadingAnchor, constant: L.pad),
             sep.trailingAnchor.constraint(equalTo: parent.trailingAnchor, constant: -L.pad),
@@ -1205,6 +1268,11 @@ class LogiDebugPanel: NSObject {
         #endif
     }
 
+    @objc private func webConnectClicked() {
+        guard let url = URL(string: "https://logiwebconnect.com/") else { return }
+        NSWorkspace.shared.open(url)
+    }
+
     private func buildRawInputBar(in container: NSView) {
         let sep = makeSep()
         sep.translatesAutoresizingMaskIntoConstraints = false
@@ -1222,6 +1290,13 @@ class LogiDebugPanel: NSObject {
         self.reportTypeControl = segCtrl
 
         let inputField = NSTextField()
+        let inputCell = PaddedTextFieldCell(textCell: "")
+        inputCell.isEditable = true
+        inputCell.isSelectable = true
+        inputCell.isScrollable = true
+        inputCell.wraps = false
+        inputCell.usesSingleLineMode = true
+        inputField.cell = inputCell
         inputField.font = NSFont.monospacedDigitSystemFont(ofSize: 10, weight: .regular)
         inputField.placeholderString = "11 FF 00 01 1B 04 00 ..."
         inputField.translatesAutoresizingMaskIntoConstraints = false
@@ -1230,6 +1305,9 @@ class LogiDebugPanel: NSObject {
         inputField.textColor = .labelColor
         inputField.backgroundColor = NSColor(calibratedWhite: 1.0, alpha: 0.06)
         inputField.isBezeled = false
+        inputField.isBordered = false
+        inputField.drawsBackground = true
+        inputField.focusRingType = .none
         container.addSubview(inputField)
         self.rawInputField = inputField
 
@@ -1288,63 +1366,63 @@ class LogiDebugPanel: NSObject {
     private func updateContextActions() {
         guard let container = contextActionsContainer else { return }
         container.subviews.forEach { $0.removeFromSuperview() }
-        let w = container.bounds.width - L.pad * 2
+        // 先把 documentView 宽度对齐可视区(clip), 再据此算按钮宽度; 布局未就绪时回退到列宽
+        let clipW = contextActionsScroll?.contentView.bounds.width ?? 0
+        let availW = clipW > 1 ? clipW : L.actionsWidth
+        container.frame.size.width = availW
+        let w = availW - L.pad * 2
         var by: CGFloat = 0
 
         if let featureId = selectedFeatureId {
             if featureId == LogiDeviceSession.featureHaptic, let session = currentSession {
                 buildHapticContext(in: container, session: session, width: w)
-                return
-            }
-            if featureId == LogiDeviceSession.featureSmartShiftEnhanced, let session = currentSession {
+            } else if featureId == LogiDeviceSession.featureSmartShiftEnhanced, let session = currentSession {
                 buildScrollForceContext(in: container, session: session, width: w)
-                return
-            }
-            if featureId == LogiDeviceSession.featureForceSensing, let session = currentSession {
+            } else if featureId == LogiDeviceSession.featureForceSensing, let session = currentSession {
                 buildForceSensingContext(in: container, session: session, width: w)
-                return
-            }
-            let actions = HIDPPFeatureActions.actions(for: featureId)
-            for action in actions {
-                let btn = makeActionBtn(title: action.name, action: #selector(featureActionClicked(_:)))
-                btn.tag = Int(action.functionId)
-                btn.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
-                container.addSubview(btn)
+            } else {
+                let actions = HIDPPFeatureActions.actions(for: featureId)
+                for action in actions {
+                    let btn = makeActionBtn(title: action.name, action: #selector(featureActionClicked(_:)))
+                    btn.tag = Int(action.functionId)
+                    btn.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
+                    container.addSubview(btn)
+                    by += L.btnH + L.btnGap
+                }
+                by += 4
+                let pf = makeInputField(placeholder: "params (hex)")
+                pf.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
+                container.addSubview(pf)
+                self.paramInputField = pf
+                by += L.btnH + L.btnGap
+
+                // Reset index on each feature switch (matches prior behavior — stepper used to
+                // be re-created at 0 every rebuild).
+                indexParamValue = 0
+
+                let stepW: CGFloat = 22
+                let stepGap: CGFloat = 2
+                let indexRow = FlippedView(frame: NSRect(x: L.pad, y: by, width: w, height: L.btnH))
+                let labelW = w - (stepW * 2 + stepGap)
+
+                let sl = makeLabel(text: "Index: 0", fontSize: 11, color: .secondaryLabelColor)
+                sl.alignment = .left
+                sl.frame = NSRect(x: 0, y: 0, width: labelW, height: L.btnH)
+                sl.cell?.lineBreakMode = .byTruncatingTail
+                indexRow.addSubview(sl)
+                self.indexStepperLabel = sl
+
+                let minusBtn = makeStepBtn(title: "−", action: #selector(indexMinusClicked))
+                minusBtn.frame = NSRect(x: labelW, y: 1, width: stepW, height: stepW)
+                indexRow.addSubview(minusBtn)
+
+                let plusBtn = makeStepBtn(title: "+", action: #selector(indexPlusClicked))
+                plusBtn.frame = NSRect(x: labelW + stepW + stepGap, y: 1, width: stepW, height: stepW)
+                indexRow.addSubview(plusBtn)
+
+                container.addSubview(indexRow)
                 by += L.btnH + L.btnGap
             }
-            by += 4
-            let pf = makeInputField(placeholder: "params (hex)")
-            pf.frame = NSRect(x: L.pad, y: by, width: w, height: L.btnH)
-            container.addSubview(pf)
-            self.paramInputField = pf
-            by += L.btnH + L.btnGap
-
-            // Reset index on each feature switch (matches prior behavior — stepper used to
-            // be re-created at 0 every rebuild).
-            indexParamValue = 0
-
-            let stepW: CGFloat = 22
-            let stepGap: CGFloat = 2
-            let indexRow = FlippedView(frame: NSRect(x: L.pad, y: by, width: w, height: L.btnH))
-            let labelW = w - (stepW * 2 + stepGap)
-
-            let sl = makeLabel(text: "Index: 0", fontSize: 11, color: .secondaryLabelColor)
-            sl.alignment = .left
-            sl.frame = NSRect(x: 0, y: 0, width: labelW, height: L.btnH)
-            sl.cell?.lineBreakMode = .byTruncatingTail
-            indexRow.addSubview(sl)
-            self.indexStepperLabel = sl
-
-            let minusBtn = makeStepBtn(title: "−", action: #selector(indexMinusClicked))
-            minusBtn.frame = NSRect(x: labelW, y: 1, width: stepW, height: stepW)
-            indexRow.addSubview(minusBtn)
-
-            let plusBtn = makeStepBtn(title: "+", action: #selector(indexPlusClicked))
-            plusBtn.frame = NSRect(x: labelW + stepW + stepGap, y: 1, width: stepW, height: stepW)
-            indexRow.addSubview(plusBtn)
-
-            container.addSubview(indexRow)
-            by += L.btnH + L.btnGap
 
         } else if let cid = selectedControlCID {
             let isDiverted = currentSession?.debugDivertedCIDs.contains(cid) ?? false
@@ -1375,16 +1453,23 @@ class LogiDebugPanel: NSObject {
             }
         } else {
             let ph = makeLabel(text: "Select a feature\nor control", fontSize: 10, color: .tertiaryLabelColor)
-            ph.translatesAutoresizingMaskIntoConstraints = false
             ph.alignment = .center
             ph.maximumNumberOfLines = 2
+            ph.frame = NSRect(x: L.pad, y: L.pad, width: w, height: 32)
             container.addSubview(ph)
-            NSLayoutConstraint.activate([
-                ph.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: L.pad),
-                ph.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -L.pad),
-                ph.topAnchor.constraint(equalTo: container.topAnchor, constant: L.pad),
-            ])
         }
+
+        sizeContextContainerToContent()
+    }
+
+    /// 根据当前 context 内容撑开 documentView 高度: 内容超出可视区则可滚动, 否则填满可视区。
+    /// 各 build*Context / 分支都用手排 frame, 这里统一按子视图最大 maxY 计算内容高度。
+    private func sizeContextContainerToContent() {
+        guard let container = contextActionsContainer else { return }
+        let clipH = contextActionsScroll?.contentView.bounds.height ?? 0
+        let contentBottom = container.subviews.reduce(CGFloat(0)) { max($0, $1.frame.maxY) }
+        let h = max(contentBottom + L.pad, clipH)
+        container.frame = NSRect(x: 0, y: 0, width: container.frame.width, height: h)
     }
 
     // MARK: - Haptic Context UI
@@ -2461,11 +2546,19 @@ class LogiDebugPanel: NSObject {
 
     private func makeInputField(placeholder: String) -> NSTextField {
         let tf = NSTextField()
+        let cell = PaddedTextFieldCell(textCell: "")
+        cell.isEditable = true
+        cell.isSelectable = true
+        cell.isScrollable = true
+        cell.wraps = false
+        cell.usesSingleLineMode = true
+        tf.cell = cell
         tf.placeholderString = placeholder
         tf.font = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular)
         tf.textColor = .labelColor
         tf.backgroundColor = NSColor(calibratedWhite: 0.0, alpha: 0.18)
         tf.isBezeled = false
+        tf.isBordered = false
         tf.drawsBackground = true
         tf.focusRingType = .none
         tf.wantsLayer = true
