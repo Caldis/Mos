@@ -8,12 +8,24 @@
 import Cocoa
 import MetalKit
 
-// 与 GlowShader.metal 中的 GlowUniforms 保持内存布局一致
+// 与 shader 中的 Uniforms 保持内存布局一致 (16 个 float + 2 个 float2)
 private struct GlowUniforms {
     var time: Float = 0
     var intensity: Float = 0
     var margin: Float = 0
     var cornerRadius: Float = 0
+    var hueSpeed: Float = 0
+    var palettePhase: Float = 0
+    var saturation: Float = 0
+    var paletteBase: Float = 0
+    var bandCount: Float = 0
+    var bandSpeed: Float = 0
+    var bandContrast: Float = 0
+    var falloffScale: Float = 0
+    var rimStrength: Float = 0
+    var pad0: Float = 0
+    var pad1: Float = 0
+    var pad2: Float = 0
     var rectHalf = SIMD2<Float>(0, 0)
     var center = SIMD2<Float>(0, 0)
 }
@@ -32,6 +44,16 @@ class GlowMetalView: MTKView, MTKViewDelegate {
         float intensity;    // 整体亮度
         float margin;       // 光晕窗口相对宿主窗口的外扩距离 (设备像素)
         float cornerRadius; // 宿主窗口圆角 (设备像素)
+        float hueSpeed;     // 色相旋转速度 (圈/秒)
+        float palettePhase; // 色相全局偏移
+        float saturation;   // 调色板振幅
+        float paletteBase;  // 调色板基准
+        float bandCount;    // 亮度波瓣数量
+        float bandSpeed;    // 波瓣流动速度
+        float bandContrast; // 波瓣明暗对比
+        float falloffScale; // 衰减长度 (相对 margin)
+        float rimStrength;  // 贴边亮线强度
+        float pad0; float pad1; float pad2;
         float2 rectHalf;    // 宿主窗口半宽高 (设备像素)
         float2 center;      // 宿主窗口中心 (设备像素, 光晕窗口坐标系)
     };
@@ -42,11 +64,6 @@ class GlowMetalView: MTKView, MTKViewDelegate {
     static float sdRoundBox(float2 p, float2 b, float r) {
         float2 q = abs(p) - b + r;
         return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
-    }
-
-    // 余弦调色板 (via https://iquilezles.org/articles/palettes/)
-    static float3 palette(float t) {
-        return 0.52 + 0.46 * cos(TAU * (t + float3(0.0, 0.33, 0.67)));
     }
 
     vertex float4 glow_vertex(uint vid [[vertex_id]]) {
@@ -62,15 +79,16 @@ class GlowMetalView: MTKView, MTKViewDelegate {
         float dd = max(d, 0.0);
         float t = u.time;
 
-        // 极角驱动调色板缓慢旋转, 沿边缘叠加波动 —— Atlas 配方
+        // 极角驱动余弦调色板旋转 (via https://iquilezles.org/articles/palettes/), 沿边缘叠加波动 —— Atlas 配方
         float ang = atan2(p.y, p.x);
-        float3 col = palette(ang / TAU + t * 0.03);
-        float bands = 0.78 + 0.22 * sin(ang * 3.0 + t * 0.7);
+        float3 col = u.paletteBase + u.saturation
+            * cos(TAU * (ang / TAU + t * u.hueSpeed + u.palettePhase + float3(0.0, 0.33, 0.67)));
+        float bands = 1.0 - u.bandContrast + u.bandContrast * sin(ang * u.bandCount + t * u.bandSpeed);
 
         // 距离衰减, 并在到达光晕窗口边界前平滑归零, 避免出现方形截断
-        float falloff = exp(-dd / (u.margin * 0.28));
+        float falloff = exp(-dd / max(u.margin * u.falloffScale, 1.0));
         float edgeFade = 1.0 - smoothstep(u.margin * 0.7, u.margin * 0.98, dd);
-        float rim = smoothstep(2.5, 0.0, abs(d)) * 0.55;
+        float rim = smoothstep(2.5, 0.0, abs(d)) * u.rimStrength;
 
         float glow = falloff * bands * u.intensity;
         float3 c = (col * glow + col * rim) * edgeFade;
@@ -86,19 +104,14 @@ class GlowMetalView: MTKView, MTKViewDelegate {
     }
     """
 
-    // 外观参数
-    private let margin: CGFloat
-    private let cornerRadius: CGFloat
-    private let intensity: CGFloat
+    // 每帧绘制前回调, 供控制器校正光晕窗口与宿主窗口的相对位置 (快速拖拽补偿)
+    var frameSync: (() -> Void)?
     // 渲染资源
     private var commandQueue: MTLCommandQueue!
     private var pipelineState: MTLRenderPipelineState!
     private let startTime = CACurrentMediaTime()
 
-    init?(device: MTLDevice, margin: CGFloat, cornerRadius: CGFloat = 14, intensity: CGFloat = 1.15) {
-        self.margin = margin
-        self.cornerRadius = cornerRadius
-        self.intensity = intensity
+    init?(device: MTLDevice) {
         super.init(frame: .zero, device: device)
         // 编译渲染管线
         guard let queue = device.makeCommandQueue(),
@@ -127,21 +140,33 @@ class GlowMetalView: MTKView, MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 
     func draw(in view: MTKView) {
+        // 先校正窗口位置再绘制, 保证光晕任何时刻都贴合宿主
+        frameSync?()
         guard let drawable = currentDrawable,
               let renderPassDescriptor = currentRenderPassDescriptor,
               let commandBuffer = commandQueue.makeCommandBuffer(),
               let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else { return }
-        // 计算 uniforms: 宿主窗口矩形 = 视图 bounds 向内收缩 margin
-        let scale = window?.backingScaleFactor ?? 2
+        // 从参数中心组装 uniforms: 宿主窗口矩形 = 视图 bounds 向内收缩 margin
+        let params = GlowParams.shared
+        let scale = Float(window?.backingScaleFactor ?? 2)
         var uniforms = GlowUniforms()
         uniforms.time = Float(CACurrentMediaTime() - startTime)
-        uniforms.intensity = Float(intensity)
-        uniforms.margin = Float(margin * scale)
-        uniforms.cornerRadius = Float(cornerRadius * scale)
+        uniforms.intensity = params.intensity
+        uniforms.margin = params.margin * scale
+        uniforms.cornerRadius = params.cornerRadius * scale
+        uniforms.hueSpeed = params.hueSpeed
+        uniforms.palettePhase = params.palettePhase
+        uniforms.saturation = params.saturation
+        uniforms.paletteBase = params.paletteBase
+        uniforms.bandCount = params.bandCount.rounded()
+        uniforms.bandSpeed = params.bandSpeed
+        uniforms.bandContrast = params.bandContrast
+        uniforms.falloffScale = params.falloffScale
+        uniforms.rimStrength = params.rimStrength
         uniforms.center = SIMD2(Float(drawableSize.width / 2), Float(drawableSize.height / 2))
         uniforms.rectHalf = SIMD2(
-            Float(drawableSize.width / 2 - margin * scale),
-            Float(drawableSize.height / 2 - margin * scale)
+            Float(drawableSize.width / 2) - params.margin * scale,
+            Float(drawableSize.height / 2) - params.margin * scale
         )
         // 绘制全屏三角形
         encoder.setRenderPipelineState(pipelineState)

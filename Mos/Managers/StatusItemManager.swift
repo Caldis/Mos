@@ -83,6 +83,8 @@ extension StatusItemManager {
             Utils.addMenuItem(to: menu, title: "Debug: HID++", action: #selector(hidDebugClick))
             // Toast Debug
             Utils.addMenuItem(to: menu, title: "Debug: Toast", action: #selector(toastDebugClick))
+            // Glow Debug
+            Utils.addMenuItem(to: menu, title: "Debug: Glow", action: #selector(glowDebugClick))
             // Preferences
             Utils.addMenuItem(to: menu, title: NSLocalizedString("Preferences", comment: ""), icon: #imageLiteral(resourceName: "SF.gauge"), action: #selector(preferencesClick))
             // Quit
@@ -108,6 +110,9 @@ extension StatusItemManager {
     }
     @objc func toastDebugClick() {
         Toast.showTestPanel()
+    }
+    @objc func glowDebugClick() {
+        GlowDebugPanel.shared.show()
     }
     @objc func preferencesClick() {
         WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
