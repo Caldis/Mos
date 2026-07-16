@@ -1,7 +1,7 @@
 //
 //  GlowMetalView.swift
 //  Mos
-//  窗口背景光晕的 Metal 渲染视图: uber-shader 按 GlowParams.effectId 分发 22 种效果
+//  窗口背景光晕的 Metal 渲染视图: uber-shader 按 GlowParams.effectId 分发 20 种效果
 //  Created by Caldis on 2026/7/11. Copyright © 2026 Caldis. All rights reserved.
 //
 
@@ -34,7 +34,9 @@ private struct GlowUniforms {
 
 class GlowMetalView: MTKView, MTKViewDelegate {
 
-    // 光晕效果库 shader (配方源头: ChatGPT Atlas BackgroundShimmer 逆向 + 法术/粒子特效扩展)
+    // 光晕效果库 shader
+    // 0-13 灯光设计系 (桌面视为室内场景, 特效是柔和的"灯光"而非刺眼的激光)
+    // 14-19 法术系 (保留的高表现力效果)
     // 运行时编译, 避免构建依赖 Xcode 的 Metal Toolchain 组件
     private static let shaderSource = """
     #include <metal_stdlib>
@@ -91,6 +93,7 @@ class GlowMetalView: MTKView, MTKViewDelegate {
         float d = sdRoundBox(p, u.rectHalf, u.cornerRadius);
         float dd = max(d, 0.0);
         float ang = atan2(p.y, p.x);
+        float2 dir = float2(cos(ang), sin(ang));
         float t = u.time;
         float m = u.margin;
         float s0 = u.slotsA.x, s1 = u.slotsA.y, s2 = u.slotsA.z, s3 = u.slotsA.w;
@@ -99,156 +102,128 @@ class GlowMetalView: MTKView, MTKViewDelegate {
         float fall = exp(-dd / max(m * u.falloffScale, 1.0));
         float edgeFade = 1.0 - smoothstep(m * 0.7, m * 0.98, dd);
         float rim = smoothstep(2.5, 0.0, abs(d)) * u.rimStrength;
+        // 垂直位置 0(顶) - 1(底), 供带方向性的灯光效果使用
+        float vert = clamp(0.5 + 0.5 * p.y / (u.rectHalf.y + m), 0.0, 1.0);
 
         float3 c = float3(0.0);
         float extraA = 0.0; // 暗影类效果的额外遮罩 alpha
         int fx = int(u.effectId + 0.5);
 
         if (fx == 0) {
-            // 极光流转: 极角调色板旋转 + fbm 扭曲 + 波瓣起伏 (Atlas 原配方增强)
+            // 极光流转: 极角调色板旋转 + 波瓣起伏 (Atlas 原味配方, 扭曲默认为零)
             float warp = (fbm(p * 0.004 + float2(t * 0.055, -t * 0.04)) - 0.5) * s3;
             float bands = 1.0 - s2 + s2 * sin(ang * s0 + t * s1);
             c = pal(ang / TAU + t * s4 + warp * 0.4, u) * fall * bands;
         } else if (fx == 1) {
-            // 烛焰摇曳: 上升噪声流 + 暖光闪烁
-            float n = fbm(float2(p.x * 0.02, p.y * 0.02 + t * s0));
-            float flick = 1.0 - s2 + s2 * sin(t * s1 + n * 6.0);
-            c = pal(n * 0.35, u) * fall * flick * (0.55 + 0.6 * n);
+            // 暖廊灯带: 藏光灯带式的均匀暖光, 空间微不均 + 亮度极缓漂移
+            float n = fbm(dir * 1.8 + 3.7);
+            float drift = 1.0 - s1 + s1 * (0.5 + 0.5 * sin(t * s0 * TAU + n * 5.0));
+            c = pal(0.02 + n * s2, u) * fall * (0.72 + 0.28 * n) * drift;
         } else if (fx == 2) {
-            // 魔法余烬: 网格粒子上升 + 明暗闪烁
-            float2 gp = p * s0 + float2(0.0, t * s1);
+            // 月光浸润: 冷银色上方偏置, 近乎静止的微光
+            float biasTop = 1.0 - vert;
+            float bias = mix(1.0, 0.55 + 0.6 * biasTop, s2);
+            float shimmer = 1.0 - s0 + s0 * fbm(p * 0.006 + float2(t * s1 * 0.1, 0.0));
+            c = pal(0.6, u) * fall * bias * shimmer;
+        } else if (fx == 3) {
+            // 晨昏天光: 色温在冷暖间极缓往复, 底部带地平线暖意
+            float dayPhase = 0.5 + 0.5 * sin(t * s0 * TAU);
+            c = pal(dayPhase * s1 + vert * s2, u) * fall * (0.8 + 0.2 * dayPhase);
+        } else if (fx == 4) {
+            // 台灯侧光: 光汇聚于一个方位, 带极轻微呼吸
+            float a0 = s0 * TAU;
+            float da = abs(fract((ang - a0) / TAU + 0.5) - 0.5) * 2.0;
+            float pool = exp(-da * da * s1);
+            float breathe = 0.94 + 0.06 * sin(t * s2 * TAU);
+            c = pal(0.03, u) * fall * (0.18 + 1.1 * pool) * breathe;
+        } else if (fx == 5) {
+            // 壁炉余温: 底部偏置暖光, 时间噪声过滤出的平滑火光起伏
+            float flick = fbm(float2(t * s1, 7.7));
+            float bias = mix(1.0, 0.35 + 0.85 * vert, s2);
+            c = pal(0.04 + 0.06 * flick, u) * fall * bias * (0.78 + s0 * (flick - 0.5));
+        } else if (fx == 6) {
+            // 纱帘光影: 薄纱透光的纵向柔和明暗, 随风缓摆
+            float sway = sin(t * s1 * 0.5) * 2.0;
+            float bands = fbm(float2(p.x * s0 + sway, p.y * 0.0015 + t * 0.02));
+            c = pal(0.5 + bands * 0.06, u) * fall * (1.0 - s2 * 0.55 + s2 * bands);
+        } else if (fx == 7) {
+            // 百叶晨光: 斜向软条纹极缓漂移
+            float angBlind = s1 * 3.14159;
+            float axis = p.x * cos(angBlind) + p.y * sin(angBlind);
+            float stripes = smoothstep(0.2, 0.8, 0.5 + 0.5 * sin(axis * s0 + t * s2));
+            c = pal(0.06, u) * fall * (0.42 + 0.58 * mix(0.5, stripes, 0.65));
+        } else if (fx == 8) {
+            // 水面波光: 水面反射的焦散光带, 上方偏置
+            float w = fbm(float2(p.x * 0.008, t * 0.15));
+            float lines = pow(0.5 + 0.5 * sin(p.y * s0 + w * s1 * 6.0 + t * s2), 3.0);
+            c = pal(0.52 + w * 0.05, u) * fall * (0.32 + 0.85 * lines * mix(0.55, 1.0, 1.0 - vert));
+        } else if (fx == 9) {
+            // 雨窗漫光: 柔焦光斑缓缓下移
+            float blotch = fbm(p * s0 + float2(0.0, -t * s1));
+            float soft = smoothstep(0.25, 0.85, blotch);
+            c = pal(0.5 + blotch * 0.08, u) * fall * (0.35 + s2 * soft);
+        } else if (fx == 10) {
+            // 丝绸光泽: 各向异性宽高光极缓扫掠 + 对侧弱副高光
+            float k = fract(ang / TAU - t * s0);
+            float kd = min(k, 1.0 - k);
+            float k2 = fract(k + 0.5);
+            float kd2 = min(k2, 1.0 - k2);
+            float hl = exp(-pow(kd * s1, 2.0));
+            float hl2 = exp(-pow(kd2 * s1, 2.0)) * s2;
+            c = pal(0.02, u) * fall * (0.35 + hl + hl2);
+        } else if (fx == 11) {
+            // 珍珠虹彩: 母贝的位置性虹彩, 几乎不动
+            float ir = fbm(dir * 1.4 + p * 0.001 + t * s0 * 0.1);
+            c = pal(ir * s1, u) * fall * (0.78 + 0.22 * ir);
+        } else if (fx == 12) {
+            // 呼吸辉光: 睡眠指示灯式的单色亮度起伏
+            float ph = fract(t * s0);
+            float breath = pow(0.5 - 0.5 * cos(ph * TAU), s1);
+            c = pal(0.55, u) * fall * (0.32 + s2 * breath);
+        } else if (fx == 13) {
+            // 雪夜静谧: 冷色底光 + 稀疏柔焦光点极缓飘落
+            float2 gp = p * s0 + float2(0.0, -t * s1);
             float2 cell = floor(gp);
             float h = hash21(cell);
             float2 f = fract(gp) - 0.5;
-            float2 off = (float2(hash21(cell + 7.3), hash21(cell + 3.1)) - 0.5) * 0.7;
-            float spark = smoothstep(s2, 0.0, length(f - off)) * step(1.0 - s3, h);
-            float tw = 0.55 + 0.45 * sin(t * 3.0 + h * TAU);
-            c = pal(h * 0.25, u) * spark * tw * fall * 2.2 + pal(0.05, u) * fall * 0.22;
-        } else if (fx == 3) {
+            float2 off = (float2(hash21(cell + 7.3), hash21(cell + 3.1)) - 0.5) * 0.6;
+            float flake = smoothstep(s2, s2 * 0.2, length(f - off)) * smoothstep(0.72, 0.95, h);
+            c = pal(0.58, u) * fall * 0.55 + pal(0.62, u) * flake * fall * 0.9;
+        } else if (fx == 14) {
             // 符文脉冲: 两道错相扩散光环 + 底光
             float ph1 = fract(t * s0), ph2 = fract(t * s0 + 0.5);
             float ring1 = exp(-abs(dd - ph1 * m * 0.9) / max(m * s1, 1.0)) * (1.0 - ph1);
             float ring2 = exp(-abs(dd - ph2 * m * 0.9) / max(m * s1, 1.0)) * (1.0 - ph2);
             c = pal(0.75 + 0.06 * sin(ang * 2.0 + t * 0.4), u)
                 * ((ring1 + ring2) * 1.5 + s2 * fall * 0.5);
-        } else if (fx == 4) {
+        } else if (fx == 15) {
             // 奥术电弧: 沿边缘游走的折线电丝 + 高频闪烁
             float jag = fbm(float2(ang * s0 + 13.7, t * s1));
             float radius = m * (0.12 + 0.5 * jag);
             float line = exp(-abs(dd - radius) / max(s2 * 2.0, 1.0));
             float flick = 0.6 + 0.4 * sin(t * 17.0 + jag * 9.0);
             c = pal(0.6 + jag * 0.2, u) * (line * flick * 1.8 + s3 * fall * 0.6);
-        } else if (fx == 5) {
-            // 星尘环绕: N 颗彗星沿边缘轨道环绕, 拖出渐隐尾迹
-            float b = fract(ang / TAU * s0 - t * s1 * s0);
-            float trail = exp(-b * s3);
-            float radial = exp(-abs(dd - m * 0.18) / max(m * s2 * 0.5, 1.0));
-            float tw = 0.8 + 0.2 * sin(t * 7.0 + ang * 20.0);
-            c = pal(ang / TAU + t * 0.05, u) * trail * radial * tw * 1.8;
-        } else if (fx == 6) {
-            // 深海呼吸: 慢呼吸 + 焦散状嵌套噪声
-            float w = fbm(p * 0.01 + t * 0.05);
-            float caustic = fbm(p * 0.008 + w * 1.5);
-            float breath = 0.7 + 0.3 * sin(t * s0);
-            c = pal(0.5 + caustic * 0.2, u) * fall * breath * (0.5 + s1 * caustic);
-        } else if (fx == 7) {
-            // 冰晶辉光: 冷色微光 + 随机星点闪烁
-            float sp = step(1.0 - s0 * 0.01, hash21(floor(pos.xy / 3.0) + floor(t * s1)));
-            float shimmer = 1.0 - s2 + s2 * sin(t * 0.8 + fbm(p * 0.01) * 8.0);
-            c = pal(0.55, u) * fall * shimmer + float3(0.9, 0.95, 1.0) * sp * fall * 1.8;
-        } else if (fx == 8) {
+        } else if (fx == 16) {
             // 翡翠毒雾: 双层域扭曲涡旋雾
             float2 q = p * 0.006;
             float w1 = fbm(q + t * s1 * 0.2);
             float w2 = fbm(q + w1 * s0 + t * s1 * 0.1);
             c = pal(w2 * 0.5, u) * fall * (0.35 + 0.85 * w2);
-        } else if (fx == 9) {
+        } else if (fx == 17) {
             // 落日熔金: 底部偏置的熔融流动
             float field = fbm(float2(p.x * 0.008, p.y * 0.008 - t * s0 * 0.3));
-            float bias = 0.5 + 0.5 * clamp(p.y / (u.rectHalf.y + m), -1.0, 1.0);
             c = pal(0.08 + field * 0.3, u) * fall
-                * (0.25 + 0.9 * mix(1.0, bias, s1) * (0.4 + 0.6 * field));
-        } else if (fx == 10) {
-            // 虹彩涟漪: 自窗口边缘扩散的干涉波纹, 波峰驱动色散
-            float w = 0.5 + 0.5 * sin(dd * s0 - t * s1);
-            c = pal(w * s2, u) * fall * (0.35 + 0.65 * w);
-        } else if (fx == 11) {
+                * (0.25 + 0.9 * mix(1.0, vert, s1) * (0.4 + 0.6 * field));
+        } else if (fx == 18) {
             // 暗影吞噬: 深色卷须蠕动, 以 alpha 遮罩吞噬背景
             float w1 = fbm(p * 0.008 + float2(0.0, t * s2 * 0.3));
             float tend = fbm(p * 0.010 + w1 * s0 + float2(t * s2 * 0.2, 0.0));
             c = pal(0.85, u) * fall * tend * 0.35;
             extraA = tend * fall * s1;
-        } else if (fx == 12) {
+        } else if (fx == 19) {
             // 圣光守护: 缓慢摇曳的放射状光芒
             float rays = pow(max(0.0, 0.5 + 0.5 * sin(ang * s0 + sin(t * s1) * 1.5)), s2);
             c = pal(0.1 + rays * 0.05, u) * fall * (0.3 + 1.2 * rays);
-        } else if (fx == 13) {
-            // 血月光环: 深红呼吸 + 周期性涌动
-            float breath = 0.7 + 0.3 * sin(t * s0);
-            float surge = pow(0.5 + 0.5 * sin(t * s1), 6.0) * s2;
-            c = pal(0.02 + 0.05 * sin(t * 0.2), u) * fall * (breath + surge);
-        } else if (fx == 14) {
-            // 量子噪点: 数字块状故障闪烁
-            float2 cellpx = floor(pos.xy / float2(max(s0, 1.0), max(s1, 1.0)));
-            float rt = floor(t * s2);
-            float h = hash21(cellpx + rt * 0.618);
-            float mask = step(1.0 - s3, h);
-            float hue = step(0.5, hash21(cellpx * 1.7 + rt));
-            c = pal(0.15 + hue * 0.5, u) * mask * fall * 1.6;
-        } else if (fx == 15) {
-            // 凤凰尾焰: 单颗焰体环绕 + 长尾 + 火焰噪声
-            float b = fract(ang / TAU - t * s0);
-            float trail = exp(-b * s1);
-            float flame = 0.5 + 0.5 * fbm(float2(ang * 5.0, dd * 0.03 - t * 1.5));
-            float radial = exp(-abs(dd - m * 0.16) / max(m * s2 * 0.5, 1.0));
-            c = pal(b * 0.25, u) * trail * flame * radial * 2.4;
-        } else if (fx == 16) {
-            // 极地磁暴: 垂直光帘摆动起伏
-            float cur = fbm(float2(p.x * s0, t * 0.18));
-            float sway = sin(p.x * s0 * 3.0 + t * s1);
-            c = pal(cur * 0.5 + 0.35, u) * fall * (0.3 + s2 * cur * (0.65 + 0.35 * sway));
-        } else if (fx == 17) {
-            // 樱瓣飘落: 网格粒子下落 + 逐瓣摇曳
-            float2 gp = p * s0 + float2(0.0, -t * s1);
-            float2 cell = floor(gp);
-            float h = hash21(cell);
-            float2 f = fract(gp) - 0.5;
-            float sway = sin(t * 0.8 + h * TAU) * s3 * 0.3;
-            float2 off = float2((hash21(cell + 7.3) - 0.5) * 0.6 + sway, (hash21(cell + 3.1) - 0.5) * 0.6);
-            float petal = smoothstep(s2, 0.0, length(f - off)) * step(0.6, h);
-            c = pal(h * 0.15, u) * petal * fall * 1.8 + pal(0.05, u) * fall * 0.25;
-        } else if (fx == 18) {
-            // 雷云蓄能: 暗涌云层 + 随机闪电照亮
-            float cloud = fbm(p * 0.006 + float2(t * s1, 0.0));
-            float seed = floor(t * s0);
-            float ph = fract(t * s0);
-            float gate = step(0.72, hash11(seed));
-            float flash = gate * exp(-ph * 9.0) * s2;
-            c = pal(0.6 + cloud * 0.15, u) * fall * (0.22 + 0.35 * cloud)
-                + float3(1.0) * flash * fall * 0.8;
-        } else if (fx == 19) {
-            // 彩虹扫掠: 锐利高光沿边缘扫掠 (loading 指示环质感)
-            float k = fract(ang / TAU - t * s0);
-            float hl = exp(-k * s1);
-            c = pal(fract(ang / TAU + t * 0.05), u) * fall * (s2 + hl * 1.6);
-        } else if (fx == 20) {
-            // 心跳脉冲: lub-dub 双峰节律
-            float ph = fract(t * s0);
-            float beat = exp(-ph * s1) + 0.55 * exp(-max(ph - 0.18, 0.0) * s1) * step(0.18, ph);
-            c = pal(0.02, u) * fall * (0.25 + beat * s2);
-        } else if (fx == 21) {
-            // 烟花绽放: 随机方位周期性绽放的火花环
-            float seed = floor(t * s0);
-            float ph = fract(t * s0);
-            float a0 = hash11(seed) * TAU;
-            float2 q = u.center + float2(cos(a0), sin(a0)) * (u.rectHalf + m * 0.18);
-            float r = length(pos.xy - q);
-            float br = (0.15 + ph * 0.85) * m * s1;
-            float ring = exp(-abs(r - br) / max(m * 0.045, 1.0));
-            float sparkleAng = atan2(pos.y - q.y, pos.x - q.x);
-            float sp = 0.6 + 0.4 * sin(sparkleAng * s2 + hash11(seed) * 40.0);
-            c = pal(hash11(seed + 3.0), u) * ring * sp * pow(1.0 - ph, 1.6) * 2.2
-                + pal(0.5, u) * fall * s3;
         }
 
         // 通用合成: 亮度 → 贴边亮线 → 边界渐隐 → 窗内压暗 → tonemap → premultiplied alpha

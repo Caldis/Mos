@@ -2,22 +2,44 @@
 
 A procedural window-glow effect library, rendered with Metal.
 
-A self-contained component that attaches a transparent, click-through child window behind any `NSWindow` and renders animated, fully-procedural light effects around it — **22 effects** ranging from auroras to particles, pulses, lightning and fireworks, each with curated presets. Currently used by the Introduction (onboarding) window. The original visual recipe was reverse-engineered from ChatGPT Atlas's onboarding glow (`BackgroundShimmerWindowManager` / `BackgroundShimmerRenderer` / `BackgroundShimmer.metal` inside `Aura.framework`), then extended into an effect catalog inspired by game spell/particle VFX.
+A self-contained component that attaches a transparent, click-through child window behind any `NSWindow` and renders animated, fully-procedural light effects around it — **20 effects** with curated presets. Currently used by the Introduction (onboarding) window. The original visual recipe was reverse-engineered from ChatGPT Atlas's onboarding glow (`BackgroundShimmerWindowManager` / `BackgroundShimmerRenderer` / `BackgroundShimmer.metal` inside `Aura.framework`).
+
+**Design philosophy**: the desktop is an interior scene, and these effects are its
+*lighting design* — soft, continuous, low-contrast light (cove strips, lamp pools,
+skylight, material sheen), never dazzling lasers. Reference vocabulary comes from
+architectural lighting (cove/wash/graze), photography rim light, water caustics
+and Apple's breathing-indicator rhythm. A small set of high-expression "spell"
+effects is kept at the end of the catalog for occasions that want spectacle.
 
 ## Effect catalog
 
+灯光设计系 (0–13, soft interior lighting):
+
+| # | 效果 | 意象 | # | 效果 | 意象 |
+| --- | --- | --- | --- | --- | --- |
+| 0 | 极光流转 | Atlas 原味复刻 | 7 | 百叶晨光 | 晨光透过百叶窗 |
+| 1 | 暖廊灯带 | 藏光灯带 (cove) | 8 | 水面波光 | 水面焦散映上天花板 |
+| 2 | 月光浸润 | 冷银月光 | 9 | 雨窗漫光 | 街灯透过带雨玻璃 |
+| 3 | 晨昏天光 | 色温昼夜往复 | 10 | 丝绸光泽 | 各向异性材质高光 |
+| 4 | 台灯侧光 | 单侧灯池 | 11 | 珍珠虹彩 | 母贝虹彩 |
+| 5 | 壁炉余温 | 底部暖光缓flicker | 12 | 呼吸辉光 | 睡眠指示灯节律 |
+| 6 | 纱帘光影 | 薄纱透光缓摆 | 13 | 雪夜静谧 | 虚焦雪点飘落 |
+
+法术系 (14–19, expressive):
+
 | # | 效果 | # | 效果 | # | 效果 |
 | --- | --- | --- | --- | --- | --- |
-| 0 | 极光流转 | 8 | 翡翠毒雾 | 16 | 极地磁暴 |
-| 1 | 烛焰摇曳 | 9 | 落日熔金 | 17 | 樱瓣飘落 |
-| 2 | 魔法余烬 | 10 | 虹彩涟漪 | 18 | 雷云蓄能 |
-| 3 | 符文脉冲 | 11 | 暗影吞噬 | 19 | 彩虹扫掠 |
-| 4 | 奥术电弧 | 12 | 圣光守护 | 20 | 心跳脉冲 |
-| 5 | 星尘环绕 | 13 | 血月光环 | 21 | 烟花绽放 |
-| 6 | 深海呼吸 | 14 | 量子噪点 | | |
-| 7 | 冰晶辉光 | 15 | 凤凰尾焰 | | |
+| 14 | 符文脉冲 | 16 | 翡翠毒雾 | 18 | 暗影吞噬 |
+| 15 | 奥术电弧 | 17 | 落日熔金 | 19 | 圣光守护 |
 
-All effects are implemented in a single uber-shader (`GlowMetalView.shaderSource`) dispatched by `effectId`, sharing helpers (rounded-rect SDF, value noise/fbm, cosine palettes). `GlowEffectCatalog` defines each effect's display name, per-effect parameter metadata (name/range/integer-ness of up to 8 generic slots) and an aesthetic preset (palette, speed, intensity, falloff, slot values). Nine cosine palettes (虹彩/暖焰/寒霜/翡翠/血月/鎏金/紫夜/碧海/樱粉) are shared across effects.
+All effects are implemented in a single uber-shader (`GlowMetalView.shaderSource`)
+dispatched by `effectId`, sharing helpers (rounded-rect SDF, value noise/fbm,
+cosine palettes). `GlowEffectCatalog` defines each effect's display name,
+per-effect parameter metadata (name/range/integer-ness of up to 8 generic slots)
+and an aesthetic preset. Fourteen cosine palettes are shared across effects: nine
+saturated (虹彩/暖焰/寒霜/翡翠/血月/鎏金/紫夜/碧海/樱粉) plus five low-amplitude
+"interior light" tones (暖白/月银/晨雾/琥珀/珍珠) whose small `b` amplitudes keep
+hues close to real light-source color temperatures.
 
 ## Architecture
 
@@ -67,7 +89,7 @@ The shader source is embedded as a Swift string and compiled at runtime via `dev
 glowWindowController = GlowWindowController.attach(to: window)
 
 // Switch effect: apply a curated preset from the catalog
-GlowParams.shared = GlowEffectCatalog.all[15].preset   // 凤凰尾焰
+GlowParams.shared = GlowEffectCatalog.all[4].preset   // 台灯侧光
 
 // Or adjust any knob at runtime (read every frame)
 GlowParams.shared.margin = 200
