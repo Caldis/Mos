@@ -53,6 +53,12 @@
             "value" : "⌥ Option"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌥ Option"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -141,6 +147,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "macOS иногда не может обработать обновленные разрешения приложения.\nПопробуйте сначала удалить Mos из списка, затем повторно авторизовать, перетащив значок Mos выше в список универсального доступа."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "หลังอัปเดต บางครั้ง macOS อาจไม่สามารถอนุญาตสิทธิ์ได้อย่างถูกต้อง\nให้ลบ Mos ออกจากรายการก่อน แล้วเพิ่ม Mos กลับเข้าไปใหม่เพื่ออนุญาตสิทธิ์อีกครั้ง (หรือจะลากไอคอนด้านบนไปวางโดยตรงก็ได้)"
           }
         },
         "tr" : {
@@ -233,6 +245,12 @@
             "value" : "Mos"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mos"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -285,6 +303,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Disabled"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปิดใช้งาน"
           }
         }
       }
@@ -339,6 +363,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Настройте кнопки мыши для улучшения работы"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปรับแต่งปุ่มเมาส์เพื่อประสบการณ์การใช้งานที่ดียิ่งขึ้น"
           }
         },
         "tr" : {
@@ -426,6 +456,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Andrew Mclaren(@mclvren)"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Andrew Mclaren(@mclvren)"
@@ -521,6 +557,12 @@
             "value" : "Просто небольшая работа для вашей мыши."
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แค่งานเล็กๆ น้อยๆ เพื่อเมาส์ของคุณ"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -609,6 +651,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Корейский"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เกาหลี"
           }
         },
         "tr" : {
@@ -701,6 +749,12 @@
             "value" : "Настройка"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การเลื่อน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -774,6 +828,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌃ Control"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "⌃ Control"
@@ -868,6 +928,12 @@
             "value" : "Начало работы"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แนะนำ"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -953,6 +1019,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘ Command"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "⌘ Command"
@@ -1048,6 +1120,12 @@
             "value" : "Приложение"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แอปพลิเคชัน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1133,6 +1211,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "GitHub"
@@ -1228,6 +1312,12 @@
             "value" : "Авторы"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ผู้ร่วมพัฒนา"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -1316,6 +1406,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Название приложения"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ชื่อแอปพลิเคชัน"
           }
         },
         "tr" : {
@@ -1408,6 +1504,12 @@
             "value" : "Кнопка"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปุ่ม"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1498,6 +1600,12 @@
             "value" : "Значок в строке меню"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ไอคอนแถบสถานะ"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1585,6 +1693,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Покормить 🍥 кота"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลี้ยงข้าว 🍥 น้องแมว MEOW"
           }
         },
         "tr" : {
@@ -1677,6 +1791,12 @@
             "value" : "Донат PayPal"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บริจาคผ่าน PayPal"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1765,6 +1885,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Текущая версия"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เวอร์ชันปัจจุบัน"
           }
         },
         "tr" : {
@@ -1857,6 +1983,12 @@
             "value" : "Главное меню"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เมนูหลัก"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1945,6 +2077,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ускорение прокрутки"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กำหนดอัตราเร่งของการเลื่อน"
           }
         },
         "tr" : {
@@ -2037,6 +2175,12 @@
             "value" : "Шаг"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ขั้น"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2125,6 +2269,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Перезапустите Mos, чтобы иконка вновь появилась"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เปิด Mos อีกครั้งเพื่อแสดงไอคอนที่ซ่อนอยู่"
           }
         },
         "tr" : {
@@ -2217,6 +2367,12 @@
             "value" : "Исключения"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แอปพลิเคชัน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2305,6 +2461,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Продолжительность"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ระยะเวลา"
           }
         },
         "tr" : {
@@ -2397,6 +2559,12 @@
             "value" : "Кнопка смены направления"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปุ่มสลับ"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2485,6 +2653,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Плавная прокрутка"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เปิดใช้งานการเลื่อนแบบไร้รอยต่อ"
           }
         },
         "tr" : {
@@ -2577,6 +2751,12 @@
             "value" : "Кнопки"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปุ่ม"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2662,6 +2842,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘ Command"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "⌘ Command"
@@ -2757,6 +2943,12 @@
             "value" : "Турецкий"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตุรกี"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2845,6 +3037,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Перезапустите Mos для изменения конфигурации"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "คุณต้องเปิด Mos ใหม่เพื่อเปลี่ยนการตั้งค่านี้"
           }
         },
         "tr" : {
@@ -2937,6 +3135,12 @@
             "value" : "Не задана"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปิดใช้งาน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3027,6 +3231,12 @@
             "value" : "Настройки"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การตั้งค่า"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3114,6 +3324,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Насколько толстый этот кот?"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แมวตัวนี้อ้วนแค่ไหนแล้วนะ?"
           }
         },
         "tr" : {
@@ -3206,6 +3422,12 @@
             "value" : "Выбрать вручную из Finder"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกเองจาก Finder"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3291,6 +3513,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌃ Control"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "⌃ Control"
@@ -3386,6 +3614,12 @@
             "value" : "Создайте конфигурацию для определенных приложений"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "สร้างการตั้งค่าเฉพาะสำหรับแอปที่ต้องการ"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3474,6 +3708,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Продолжительность анимации прокрутки"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กำหนดระยะเวลาของแอนิเมชันการเลื่อน"
           }
         },
         "tr" : {
@@ -3566,6 +3806,12 @@
             "value" : "Разрешить доступ"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อนุญาตให้เข้าถึง"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3654,6 +3900,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Автозапуск"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เริ่มต้นระบบ"
           }
         },
         "tr" : {
@@ -3746,6 +3998,12 @@
             "value" : "Кнопка блокировки"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปุ่มบล็อก"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3836,6 +4094,12 @@
             "value" : "Нет действия"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ไม่มีการทำงาน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3923,6 +4187,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Инверсия горизонтальной прокрутки"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กลับทิศแนวนอน"
           }
         },
         "tr" : {
@@ -4015,6 +4285,12 @@
             "value" : "Обновления"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การอัปเดต"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4100,6 +4376,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1-10"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "1-10"
@@ -4195,6 +4477,12 @@
             "value" : "3.00"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3.00"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4283,6 +4571,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Окно приветствия"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "หน้าต่างต้อนรับ"
           }
         },
         "tr" : {
@@ -4375,6 +4669,12 @@
             "value" : "Назначьте кнопке определенное действие"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กำหนดปุ่มให้ทำงานที่ต้องการ"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4463,6 +4763,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Русский"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "รัสเซีย"
           }
         },
         "tr" : {
@@ -4555,6 +4861,12 @@
             "value" : "Скорость"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ความเร็ว"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4643,6 +4955,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Горячая клавиша"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปุ่มลัด"
           }
         },
         "tr" : {
@@ -4735,6 +5053,12 @@
             "value" : "Добавить приложение"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เพิ่มแอปพลิเคชัน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4822,6 +5146,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Плавная вертикальная прокрутка"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แนวตั้งราบรื่น"
           }
         },
         "tr" : {
@@ -4914,6 +5244,12 @@
             "value" : "Список разработчиков"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "รายชื่อผู้ร่วมพัฒนา"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5002,6 +5338,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Немецкий"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เยอรมัน"
           }
         },
         "tr" : {
@@ -5094,6 +5436,12 @@
             "value" : "Обратная прокрутка"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กลับทิศการเลื่อน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5182,6 +5530,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Спрятать иконку"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ซ่อนไอคอนแถบสถานะ"
           }
         },
         "tr" : {
@@ -5274,6 +5628,12 @@
             "value" : "Выберите действие"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกการทำงาน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5364,6 +5724,12 @@
             "value" : "Кнопка ускорения"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปุ่มเร่งความเร็ว"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5449,6 +5815,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌃ Control"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "⌃ Control"
@@ -5544,6 +5916,12 @@
             "value" : "Wang Yudong(@wyudong)"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wang Yudong(@wyudong)"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5634,6 +6012,12 @@
             "value" : "Временно блокирует плавную прокрутку"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปิดการเลื่อนราบรื่นชั่วคราว"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5719,6 +6103,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " jrthsr700tmax(@jrthsr700tmax), Crizant(@crizant)"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : " jrthsr700tmax(@jrthsr700tmax), Crizant(@crizant)"
@@ -5814,6 +6204,12 @@
             "value" : "Главные"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ทั่วไป"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5902,6 +6298,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Расширенные"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การเลื่อน"
           }
         },
         "tr" : {
@@ -5994,6 +6396,12 @@
             "value" : "Минимальное расстояние прокрутки"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กำหนดระยะการเลื่อนขั้นต่ำ"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6084,6 +6492,12 @@
             "value" : "Настройте параметры для каждого приложения"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปรับแต่งการตั้งค่าเฉพาะสำหรับแต่ละแอป"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6150,6 +6564,12 @@
             "value" : "設定"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การเลื่อน"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6208,6 +6628,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Традиционный китайский"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "จีนตัวเต็ม"
           }
         },
         "tr" : {
@@ -6300,6 +6726,12 @@
             "value" : "Изменяет вертикальную прокрутку на горизонтальную"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เปลี่ยนการเลื่อนแนวตั้งเป็นแนวนอน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6389,6 +6821,12 @@
             "value" : "Белый список"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "โหมดรายการอนุญาต"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6441,6 +6879,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Disabled"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปิดใช้งาน"
           }
         }
       }
@@ -6495,6 +6939,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Записать кнопку"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บันทึกปุ่ม"
           }
         },
         "tr" : {
@@ -6587,6 +7037,12 @@
             "value" : "Перевод"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การแปล"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6672,6 +7128,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "*"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "*"
@@ -6767,6 +7229,12 @@
             "value" : "© 2017-2026 Caldis. Все права защищены."
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "© 2017-2026 Caldis สงวนลิขสิทธิ์"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6828,6 +7296,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌥ Option"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "⌥ Option"
@@ -6923,6 +7397,12 @@
             "value" : "Seçkin Kükrer(@LeaveNhA)"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçkin Kükrer(@LeaveNhA)"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7013,6 +7493,12 @@
             "value" : "Плавная прокрутка"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การเลื่อนราบรื่น"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7098,6 +7584,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selim(@lima0)"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Selim(@lima0)"
@@ -7192,6 +7684,12 @@
             "value" : "Плавная горизонтальная прокрутка"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แนวนอนราบรื่น"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7282,6 +7780,12 @@
             "value" : "Симулировать трекпад (бета)"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "จำลองแทร็กแพด (เบต้า)"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7367,6 +7871,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇧ Shift"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "⇧ Shift"
@@ -7461,6 +7971,12 @@
             "value" : "Инверсия вертикальной прокрутки"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กลับทิศแนวตั้ง"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7507,6 +8023,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Export Log"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ส่งออกบันทึก"
           }
         }
       }
@@ -7558,6 +8080,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1-5"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "1-5"
@@ -7653,6 +8181,12 @@
             "value" : "3.90"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3.90"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7705,6 +8239,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Including beta version"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "รวมเวอร์ชันเบต้า"
           }
         }
       }
@@ -7759,6 +8299,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Запущенные приложения"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แอปที่กำลังทำงาน"
           }
         },
         "tr" : {
@@ -7851,6 +8397,12 @@
             "value" : "Инфо"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เกี่ยวกับ"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7938,6 +8490,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Временно отключить плавную прокрутку для повышения точности прокрутки"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปิดการเลื่อนราบรื่นชั่วคราวเพื่อเพิ่มความแม่นยำในการเลื่อน"
           }
         },
         "tr" : {
@@ -8030,6 +8588,12 @@
             "value" : "Действие"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การทำงาน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8115,6 +8679,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇧ Shift"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "⇧ Shift"
@@ -8210,6 +8780,12 @@
             "value" : "⇧ Shift"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇧ Shift"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8295,6 +8871,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joshua Park(@godly-devotion), OrcaXS(@OrcaXS) ..."
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Joshua Park(@godly-devotion), OrcaXS(@OrcaXS) ..."
@@ -8390,6 +8972,12 @@
             "value" : "Другое"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อื่นๆ"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8478,6 +9066,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Не работает?"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ใช้งานไม่ได้ผลใช่ไหม?"
           }
         },
         "tr" : {
@@ -8570,6 +9164,12 @@
             "value" : "Восстановить стандартные"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "รีเซ็ตเป็นค่าเริ่มต้น"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8658,6 +9258,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Проверить сейчас"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตรวจสอบตอนนี้"
           }
         },
         "tr" : {
@@ -8750,6 +9356,12 @@
             "value" : "Нет особых приложений"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ยังไม่มีแอปที่กำหนดพิเศษ"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8835,6 +9447,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woosuk Park(@readingsnail)"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Woosuk Park(@readingsnail)"
@@ -8930,6 +9548,12 @@
             "value" : "Визуализация этой диаграммы повлияет на производительность прокрутки. Закройте окно, когда оно не нужно."
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การแสดงผลกราฟนี้จะส่งผลต่อประสิทธิภาพการเลื่อน โปรดปิดหน้าต่างนี้เมื่อไม่ได้ใช้งาน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9018,6 +9642,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Кнопки еще не настроены"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ยังไม่มีการตั้งค่าปุ่มใดๆ"
           }
         },
         "tr" : {
@@ -9110,6 +9740,12 @@
             "value" : "Запущенные приложения"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แอปที่กำลังทำงาน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9168,6 +9804,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Payez-moi un café"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลี้ยงกาแฟสักแก้ว"
           }
         },
         "zh-Hans" : {
@@ -9243,6 +9885,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌥ Option"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "⌥ Option"
@@ -9337,6 +9985,12 @@
             "value" : "Режим белого списка заставит Mos применяться только к приложениям из списка исключений."
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "โหมดรายการอนุญาตจะทำให้ Mos ทำงานเฉพาะกับแอปที่อยู่ในรายการแอปเท่านั้น"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9427,6 +10081,12 @@
             "value" : "10-100"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0.1-100"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
@@ -9512,6 +10172,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "35.00"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "35.00"
@@ -9607,6 +10273,12 @@
             "value" : "Проверить наличие обновлений:"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตรวจสอบการอัปเดต:"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9695,6 +10367,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Не задана"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปิดใช้งาน"
           }
         },
         "tr" : {
@@ -9787,6 +10465,12 @@
             "value" : "Не задана"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปิดใช้งาน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9877,6 +10561,12 @@
             "value" : "Инверсия колеса"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กลับทิศทางล้อเลื่อน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9964,6 +10654,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Может повлиять на поведение прокрутки."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อาจส่งผลต่อพฤติกรรมการเลื่อน"
           }
         },
         "tr" : {
@@ -10056,6 +10752,12 @@
             "value" : "Наследовать глобальные настройки"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ใช้การตั้งค่าส่วนกลาง"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10144,6 +10846,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Английский"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อังกฤษ"
           }
         },
         "tr" : {
@@ -10236,6 +10944,12 @@
             "value" : " Приложение"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " แอปพลิเคชัน"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10324,6 +11038,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Название приложения"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ชื่อแอปพลิเคชัน"
           }
         },
         "tr" : {
@@ -10416,6 +11136,12 @@
             "value" : "Проблемы?"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "พบปัญหาในการใช้งาน?"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10506,6 +11232,12 @@
             "value" : "Ожидает вас"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "รอคุณอยู่"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10569,6 +11301,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Запустить при входе"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เปิดเมื่อเข้าสู่ระบบ"
           }
         },
         "tr" : {
@@ -10661,6 +11399,12 @@
             "value" : "Сайт"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "หน้าแรก"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10748,6 +11492,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ваша мышь готова к плавной прокрутке, но есть еще несколько важных моментов."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เมาส์ของคุณกำลังจะได้สัมผัสประสบการณ์การเลื่อนที่ราบรื่นขึ้น\nหยิบเมาส์ของคุณขึ้นมา มีบางอย่างที่คุณต้องตรวจสอบก่อน"
           }
         },
         "tr" : {
@@ -10840,6 +11590,12 @@
             "value" : "Mos"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mos"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10892,6 +11648,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Check on app start"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตรวจสอบเมื่อเปิดแอป"
           }
         }
       }
@@ -10946,6 +11708,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Увеличивает скорость прокрутки на длинных страницах"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เพิ่มความเร็วการเลื่อนบนหน้าที่ยาว"
           }
         },
         "tr" : {
@@ -11038,6 +11806,12 @@
             "value" : "Авторы"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ผู้ร่วมพัฒนา"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11126,6 +11900,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Упрощенный китайский"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "จีนตัวย่อ"
           }
         },
         "tr" : {
@@ -11218,6 +11998,12 @@
             "value" : "⌘ Command"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘ Command"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11270,6 +12056,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Disabled"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ปิดใช้งาน"
           }
         }
       }
