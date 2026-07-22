@@ -56,6 +56,12 @@ class ButtonCore {
         let result = InputProcessor.shared.process(mosEvent)
         switch result {
         case .consumed:
+            // FIX: Alterar o button number do evento consumido para evitar
+            // que o macOS o processe como back/forward em uma camada
+            // abaixo do CGEventTap (workaround para issue #907).
+            if type == .otherMouseDown || type == .otherMouseUp {
+                event.setIntegerValueField(.mouseEventButtonNumber, value: 99)
+            }
             return nil
         case .passthrough:
             // 注入虚拟修饰键 flags 到 passthrough 事件
