@@ -35,6 +35,10 @@ class ButtonCore {
         return otherDown | otherUp | keyDown | keyUp
     }
 
+    // 在系统处理 Mission Control 等原生鼠标按钮快捷键之前拦截。
+    // 未被 Mos 绑定的事件继续向下传递，由系统按原有语义消费。
+    let dispatchEventTapLocation = CGEventTapLocation.cgSessionEventTap
+
     var primaryObservationEventMask: CGEventMask {
         return leftDown | leftUp | rightDown | rightUp
     }
@@ -90,7 +94,7 @@ class ButtonCore {
                 dispatchInterceptor = try Interceptor(
                     event: dispatchEventMask,
                     handleBy: buttonEventCallBack,
-                    listenOn: .cgAnnotatedSessionEventTap,
+                    listenOn: dispatchEventTapLocation,
                     placeAt: .tailAppendEventTap,
                     for: .defaultTap
                 )
