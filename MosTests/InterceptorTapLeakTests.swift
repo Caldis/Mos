@@ -8,19 +8,23 @@ import XCTest
 /// 会累积成上千僵尸注册, 拖慢全系统输入 (#970)。
 final class InterceptorTapLeakTests: XCTestCase {
 
-    /// 当前进程在 WindowServer tap 表中持有的注册数
-    private func ownTapCount() -> Int {
+    /// 当前进程在 WindowServer tap 表中持有的注册数; CGGetEventTapList 调用失败时返回 nil
+    /// (由调用方决定跳过或失败), 避免把查询失败误读成 0 个注册。
+    private func ownTapCount() -> Int? {
         var count: UInt32 = 0
-        CGGetEventTapList(0, nil, &count)
+        guard CGGetEventTapList(0, nil, &count) == .success else { return nil }
         var taps = [CGEventTapInformation](repeating: CGEventTapInformation(), count: Int(count) + 16)
         var actual: UInt32 = 0
-        CGGetEventTapList(UInt32(taps.count), &taps, &actual)
+        guard CGGetEventTapList(UInt32(taps.count), &taps, &actual) == .success else { return nil }
         let pid = getpid()
         return taps.prefix(Int(actual)).filter { $0.tappingProcess == pid }.count
     }
 
     func testDeinitReleasesWindowServerRegistration() throws {
-        let baseline = ownTapCount()
+        // 查询本身失败 (受限环境) 时无法验证, 跳过; 之后的查询失败则按断言失败处理
+        guard let baseline = ownTapCount() else {
+            throw XCTSkip("CGGetEventTapList 调用失败")
+        }
 
         // init 在 start() 的辅助功能权限检查之前就已创建 tap, 所以即使 init 抛错
         // (无权限环境, 例如 CI), tap 也已在 WindowServer 注册过、并已随抛错时的 deinit
