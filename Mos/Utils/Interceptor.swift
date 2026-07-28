@@ -56,6 +56,11 @@ class Interceptor {
         // 清理 event tap
         if let tap = _eventTapRef {
             CGEvent.tapEnable(tap: tap, enable: false)
+            // CoreGraphics 内部持有该 CFMachPort 的引用, 仅释放引用不会销毁它; 不调用
+            // CFMachPortInvalidate 的话, WindowServer 会保留这个 (已禁用的) tap 注册直到
+            // 进程退出。ScrollCore/ButtonCore 每次休眠唤醒都重建 Interceptor, 累积的僵尸
+            // 注册会拖慢全系统输入 (#970)。
+            CFMachPortInvalidate(tap)
             _eventTapRef = nil
         }
         // 清理 run loop source
