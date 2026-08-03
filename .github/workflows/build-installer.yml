@@ -52,8 +52,14 @@ jobs:
         run: |
           APP_PATH="$RUNNER_TEMP/Mos.xcarchive/Products/Applications/Mos.app"
           test -d "$APP_PATH"
-          codesign --force --deep --sign - --options runtime "$APP_PATH"
+          codesign --force --deep --sign - "$APP_PATH"
           codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+          SIGNATURE_INFO=$(codesign -dvv "$APP_PATH" 2>&1)
+          echo "$SIGNATURE_INFO"
+          if [[ "$SIGNATURE_INFO" == *runtime* ]]; then
+            echo "Ad-hoc builds must not enable Hardened Runtime because embedded frameworks have no shared Team ID."
+            exit 1
+          fi
           lipo -archs "$APP_PATH/Contents/MacOS/Mos"
 
       - name: Read package metadata
@@ -85,8 +91,14 @@ jobs:
       - name: Verify installer
         run: |
           DMG_PATH="${{ steps.metadata.outputs.dmg_path }}"
+          MOUNT_PATH="$RUNNER_TEMP/dmg-mount"
           test -s "$DMG_PATH"
           hdiutil verify "$DMG_PATH"
+          mkdir -p "$MOUNT_PATH"
+          hdiutil attach "$DMG_PATH" -mountpoint "$MOUNT_PATH" -nobrowse -readonly
+          trap 'hdiutil detach "$MOUNT_PATH"' EXIT
+          codesign --verify --deep --strict --verbose=2 "$MOUNT_PATH/Mos.app"
+          lipo -archs "$MOUNT_PATH/Mos.app/Contents/MacOS/Mos"
           shasum -a 256 "$DMG_PATH"
 
       - name: Upload installer
