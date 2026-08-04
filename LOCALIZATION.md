@@ -25,7 +25,7 @@ The project still targets macOS 10.13, so always use `NSLocalizedString(_:commen
 
 Both catalogs expose the same set of locales:
 
-`cs`, `de`, `el`, `en`, `fr`, `ja`, `ko`, `ru`, `tr`, `uk`, `zh-Hans`, `zh-Hant`, `zh-Hant-HK`, `zh-Hant-TW`
+`cs`, `de`, `el`, `en`, `fr`, `ja`, `ko`, `ru`, `th`, `tr`, `uk`, `zh-Hans`, `zh-Hant`, `zh-Hant-HK`, `zh-Hant-TW`
 
 To verify coverage and catch untranslated rows:
 
