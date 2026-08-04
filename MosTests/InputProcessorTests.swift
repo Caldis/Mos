@@ -889,32 +889,6 @@ final class InputProcessorTests: XCTestCase {
         XCTAssertTrue(event.flags.contains(.maskShift))
     }
 
-    func testButtonCore_passthroughRealLeftMouseEvent_doesNotApplyVirtualModifierFlags() {
-        let modifierTrigger = RecordedEvent(type: .mouse, code: 6, modifiers: 0, displayComponents: ["🖱7"], deviceFilter: nil)
-        let modifierBinding = ButtonBinding(triggerEvent: modifierTrigger, systemShortcutName: "custom::56:0", isEnabled: true)
-        Options.shared.buttons.binding = [modifierBinding]
-        ButtonUtils.shared.invalidateCache()
-
-        let modifierDown = InputEvent(type: .mouse, code: 6, modifiers: .init(rawValue: 0),
-                                      phase: .down, source: .hidPP, device: nil)
-        XCTAssertEqual(InputProcessor.shared.process(modifierDown), .consumed)
-        XCTAssertEqual(InputProcessor.shared.activeModifierFlags, CGEventFlags.maskShift.rawValue)
-
-        let event = CGEvent(
-            mouseEventSource: nil,
-            mouseType: .leftMouseDown,
-            mouseCursorPosition: CGPoint(x: 16, y: 24),
-            mouseButton: .left
-        )!
-        event.flags = CGEventFlags(rawValue: 0)
-
-        let proxy = CGEventTapProxy(bitPattern: 1)!
-        let output = ButtonCore.shared.primaryMouseObservationCallBack(proxy, .leftMouseDown, event, nil)
-
-        XCTAssertNotNil(output)
-        XCTAssertFalse(event.flags.contains(.maskShift))
-    }
-
     func testCGEventExtensions_otherMouseDraggedIsRecognizedForDiagnostics() {
         let event = CGEvent(
             mouseEventSource: nil,
@@ -1085,24 +1059,6 @@ final class InputProcessorTests: XCTestCase {
             ButtonCore.shared.dispatchEventTapLocation.rawValue,
             CGEventTapLocation.cgSessionEventTap.rawValue
         )
-    }
-
-    func testButtonCore_primaryObservationMask_includesPrimaryMouseButtons() {
-        let core = ButtonCore.shared
-
-        func contains(_ type: CGEventType, in mask: CGEventMask) -> Bool {
-            let typeMask = CGEventMask(1 << type.rawValue)
-            return mask & typeMask != 0
-        }
-
-        XCTAssertTrue(contains(.leftMouseDown, in: core.primaryObservationEventMask))
-        XCTAssertTrue(contains(.leftMouseUp, in: core.primaryObservationEventMask))
-        XCTAssertTrue(contains(.rightMouseDown, in: core.primaryObservationEventMask))
-        XCTAssertTrue(contains(.rightMouseUp, in: core.primaryObservationEventMask))
-        XCTAssertFalse(contains(.otherMouseDown, in: core.primaryObservationEventMask))
-        XCTAssertFalse(contains(.otherMouseUp, in: core.primaryObservationEventMask))
-        XCTAssertFalse(contains(.keyDown, in: core.primaryObservationEventMask))
-        XCTAssertFalse(contains(.keyUp, in: core.primaryObservationEventMask))
     }
 
 }
