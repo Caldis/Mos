@@ -2,20 +2,24 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Only the latest release receives security fixes. Please update to the
+[latest release](https://github.com/Caldis/Mos/releases/latest) before
+reporting a vulnerability.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| Latest  | :white_check_mark: |
+| Older   | :x:                |
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+Please **do not** open a public issue for security vulnerabilities.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Report privately via
+[GitHub Security Advisories](https://github.com/Caldis/Mos/security/advisories/new)
+for this repository. Include affected version(s), macOS version, and
+reproduction steps.
+
+We'll acknowledge reports as soon as possible and follow up once the issue
+has been triaged. If accepted, a fix will be released and credited in the
+release notes unless you request otherwise; if declined, we'll explain why.
