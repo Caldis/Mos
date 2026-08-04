@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>arrow.up.arrow.down.circle</title>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g fill="#000000" fill-rule="nonzero">
+            <!-- Circle -->
+            <path d="M12,2 C17.523,2 22,6.477 22,12 C22,17.523 17.523,22 12,22 C6.477,22 2,17.523 2,12 C2,6.477 6.477,2 12,2 Z M12,3.5 C7.306,3.5 3.5,7.306 3.5,12 C3.5,16.694 7.306,20.5 12,20.5 C16.694,20.5 20.5,16.694 20.5,12 C20.5,7.306 16.694,3.5 12,3.5 Z"/>
+            <!-- Up Arrow -->
+            <path d="M8.5,11 L9.5,11 L9.5,15 L10.5,15 L10.5,11 L11.5,11 L10,8 L8.5,11 Z"/>
+            <!-- Down Arrow -->
+            <path d="M15.5,13 L14.5,13 L14.5,9 L13.5,9 L13.5,13 L12.5,13 L14,16 L15.5,13 Z"/>
+        </g>
+    </g>
+</svg>
