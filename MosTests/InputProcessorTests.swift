@@ -1080,6 +1080,13 @@ final class InputProcessorTests: XCTestCase {
         XCTAssertTrue(contains(.keyUp, in: core.dispatchEventMask))
     }
 
+    func testButtonCore_dispatchTapRunsBeforeNativeMouseButtonShortcuts() {
+        XCTAssertEqual(
+            ButtonCore.shared.dispatchEventTapLocation.rawValue,
+            CGEventTapLocation.cgSessionEventTap.rawValue
+        )
+    }
+
     func testButtonCore_primaryObservationMask_includesPrimaryMouseButtons() {
         let core = ButtonCore.shared
 
