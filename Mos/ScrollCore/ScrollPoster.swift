@@ -9,6 +9,23 @@
 import Cocoa
 import os
 
+enum ScrollAxisInputDecision: Equatable {
+    case noInput
+    case acceptedContinuation
+    case acceptedReversal
+    case ignoredOppositePulse
+}
+
+struct ScrollReverseCandidateState: Equatable {
+    var sign = 0.0
+    var count = 0
+
+    mutating func clear() {
+        sign = 0.0
+        count = 0
+    }
+}
+
 class ScrollPoster {
 
     // 单例
@@ -23,6 +40,8 @@ class ScrollPoster {
     private var current = (y: 0.0, x: 0.0)  // 当前滚动距离
     private var delta = (y: 0.0, x: 0.0)  // 滚动方向记录
     private var buffer = (y: 0.0, x: 0.0)  // 滚动缓冲距离
+    private var reverseCandidateY = ScrollReverseCandidateState()
+    private var reverseCandidateX = ScrollReverseCandidateState()
     // 滚动配置
     private var shifting = false
     private var duration = Options.shared.scroll.durationTransition
@@ -38,6 +57,7 @@ class ScrollPoster {
     private let manualSeparationThreshold: CFTimeInterval = 0.45
     private let trackingEndAdvance: CFTimeInterval = 0.04
     private let momentumEndDelay: CFTimeInterval = 0.13
+    private let reverseConfirmationCount = 2
     // 状态锁和投递上下文
     private var stateLock = os_unfair_lock_s()
     private let dispatchContext = ScrollDispatchContext.shared
@@ -58,6 +78,53 @@ class ScrollPoster {
 
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
+    @discardableResult
+    func resolveAxisInput(
+        input: Double,
+        speed: Double,
+        amplification: Double,
+        deadZone: Double,
+        current: inout Double,
+        buffer: inout Double,
+        delta: inout Double,
+        reverseCandidate: inout ScrollReverseCandidateState
+    ) -> ScrollAxisInputDecision {
+        guard input != 0.0 else {
+            reverseCandidate.clear()
+            return .noInput
+        }
+
+        let sign = input.sign == .minus ? -1.0 : 1.0
+        let acceptedSign = delta == 0.0 ? 0.0 : (delta.sign == .minus ? -1.0 : 1.0)
+        let isDirectionFlip = acceptedSign != 0.0 && sign != acceptedSign
+        let activeResidual = max((buffer - current).magnitude, current.magnitude) > deadZone
+
+        if isDirectionFlip && activeResidual {
+            if reverseCandidate.sign == sign {
+                reverseCandidate.count += 1
+            } else {
+                reverseCandidate.sign = sign
+                reverseCandidate.count = 1
+            }
+            if reverseCandidate.count < reverseConfirmationCount {
+                return .ignoredOppositePulse
+            }
+        }
+
+        reverseCandidate.clear()
+
+        if input * delta > 0 {
+            buffer += input * speed * amplification
+            delta = input
+            return .acceptedContinuation
+        } else {
+            buffer = input * speed * amplification
+            current = 0.0
+            delta = input
+            return isDirectionFlip ? .acceptedReversal : .acceptedContinuation
+        }
+    }
+
     func update(event: CGEvent, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
         guard dispatchContext.capture(event: event) else {
             return self
@@ -68,21 +135,45 @@ extension ScrollPoster {
         captureConfigSnapshotLocked()
         // 更新滚动配置
         self.duration = duration
+        let deadZone = Options.shared.scroll.deadZone
         // 更新滚动数据
-        if y*delta.y > 0 {
-            buffer.y += y * speed * amplification
-        } else {
-            buffer.y = y * speed * amplification
-            current.y = 0.0
+        let yDecision = resolveAxisInput(
+            input: y,
+            speed: speed,
+            amplification: amplification,
+            deadZone: deadZone,
+            current: &current.y,
+            buffer: &buffer.y,
+            delta: &delta.y,
+            reverseCandidate: &reverseCandidateY
+        )
+        let xDecision = resolveAxisInput(
+            input: x,
+            speed: speed,
+            amplification: amplification,
+            deadZone: deadZone,
+            current: &current.x,
+            buffer: &buffer.x,
+            delta: &delta.x,
+            reverseCandidate: &reverseCandidateX
+        )
+
+        if yDecision == .acceptedReversal || xDecision == .acceptedReversal {
+            // Prevent stale opposite-direction tail from leaking into the new run.
+            filter.reset()
         }
-        if x*delta.x > 0 {
-            buffer.x += x * speed * amplification
-        } else {
-            buffer.x = x * speed * amplification
-            current.x = 0.0
-        }
-        delta = (y: y, x: x)
+
         let now = CFAbsoluteTimeGetCurrent()
+        let acceptedAny = yDecision == .acceptedContinuation || yDecision == .acceptedReversal
+            || xDecision == .acceptedContinuation || xDecision == .acceptedReversal
+        if !acceptedAny {
+            if !manualInputEnded {
+                lastManualEventTime = now
+                trackingEndScheduledTime = nil
+            }
+            return self
+        }
+
         let interval = lastManualEventTime > 0.0 ? now - lastManualEventTime : nil
         let separatedByTime = interval == nil ? true : interval! >= manualSeparationThreshold
         let phase = ScrollPhase.shared.phase
@@ -159,6 +250,8 @@ extension ScrollPoster {
         current = ( y: 0.0, x: 0.0 )
         delta = ( y: 0.0, x: 0.0 )
         buffer = ( y: 0.0, x: 0.0 )
+        reverseCandidateY.clear()
+        reverseCandidateX.clear()
         // 重置插值器
         filter.reset()
         ScrollPhase.shared.reset()
