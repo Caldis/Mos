@@ -1,0 +1,111 @@
+name: Build macOS installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/todesk-remote-scroll
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-installer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-installer:
+    name: Build unsigned DMG
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Show build environment
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Resolve Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project Mos.xcodeproj \
+            -scheme Debug
+
+      - name: Build release archive
+        run: |
+          xcodebuild archive \
+            -project Mos.xcodeproj \
+            -scheme Debug \
+            -configuration Release \
+            -destination "generic/platform=macOS" \
+            -archivePath "$RUNNER_TEMP/Mos.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            ARCHS="arm64 x86_64" \
+            ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Apply ad-hoc signature
+        run: |
+          APP_PATH="$RUNNER_TEMP/Mos.xcarchive/Products/Applications/Mos.app"
+          test -d "$APP_PATH"
+          codesign --force --deep --sign - "$APP_PATH"
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+          SIGNATURE_INFO=$(codesign -dvv "$APP_PATH" 2>&1)
+          echo "$SIGNATURE_INFO"
+          if [[ "$SIGNATURE_INFO" == *runtime* ]]; then
+            echo "Ad-hoc builds must not enable Hardened Runtime because embedded frameworks have no shared Team ID."
+            exit 1
+          fi
+          lipo -archs "$APP_PATH/Contents/MacOS/Mos"
+
+      - name: Read package metadata
+        id: metadata
+        run: |
+          APP_PATH="$RUNNER_TEMP/Mos.xcarchive/Products/Applications/Mos.app"
+          INFO_PLIST="$APP_PATH/Contents/Info.plist"
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INFO_PLIST")
+          BUILD=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$INFO_PLIST")
+          DMG_NAME="Mos.${VERSION}-${BUILD}-unsigned.dmg"
+          echo "dmg_name=$DMG_NAME" >> "$GITHUB_OUTPUT"
+          echo "dmg_path=$RUNNER_TEMP/$DMG_NAME" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=Mos-${VERSION}-${BUILD}-unsigned" >> "$GITHUB_OUTPUT"
+
+      - name: Create installer DMG
+        run: |
+          APP_PATH="$RUNNER_TEMP/Mos.xcarchive/Products/Applications/Mos.app"
+          DMG_ROOT="$RUNNER_TEMP/dmg-root"
+          mkdir -p "$DMG_ROOT"
+          ditto --norsrc --noextattr "$APP_PATH" "$DMG_ROOT/Mos.app"
+          ln -s /Applications "$DMG_ROOT/Applications"
+          hdiutil create \
+            -volname Mos \
+            -srcfolder "$DMG_ROOT" \
+            -format UDZO \
+            -ov \
+            "${{ steps.metadata.outputs.dmg_path }}"
+
+      - name: Verify installer
+        run: |
+          DMG_PATH="${{ steps.metadata.outputs.dmg_path }}"
+          MOUNT_PATH="$RUNNER_TEMP/dmg-mount"
+          test -s "$DMG_PATH"
+          hdiutil verify "$DMG_PATH"
+          mkdir -p "$MOUNT_PATH"
+          hdiutil attach "$DMG_PATH" -mountpoint "$MOUNT_PATH" -nobrowse -readonly
+          trap 'hdiutil detach "$MOUNT_PATH"' EXIT
+          codesign --verify --deep --strict --verbose=2 "$MOUNT_PATH/Mos.app"
+          lipo -archs "$MOUNT_PATH/Mos.app/Contents/MacOS/Mos"
+          shasum -a 256 "$DMG_PATH"
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ steps.metadata.outputs.artifact_name }}
+          path: ${{ steps.metadata.outputs.dmg_path }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
