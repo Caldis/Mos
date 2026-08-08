@@ -22,6 +22,7 @@
 		C3D4E5F6A7B8C9D0E1F30200 /* MosTests/InputProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F30201 /* MosTests/InputProcessorTests.swift */; };
 		C4E5F6A7B8C9D0E1F3020200 /* MosTests/ButtonCapturePresentationStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E5F6A7B8C9D0E1F3020201 /* MosTests/ButtonCapturePresentationStatusTests.swift */; };
 		C7A1B2C3D4E5F60718293A4B /* MosTests/OptionsChangePropagationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A1B2C3D4E5F60718293A4C /* MosTests/OptionsChangePropagationTests.swift */; };
+		F1A5C3D400000000000000B0 /* MosTests/OptionsScrollDefaultsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A5C3D400000000000000B1 /* MosTests/OptionsScrollDefaultsTests.swift */; };
 		D1A2B3C4E5F6A7B8C9D01000 /* MosTests/LogiDivertPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6A7B8C9D01001 /* MosTests/LogiDivertPlannerTests.swift */; };
 		D1A2B3C4E5F6A7B8C9D01100 /* MosTests/LogiConflictDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6A7B8C9D01101 /* MosTests/LogiConflictDetectorTests.swift */; };
 		D1A2B3C4E5F6A7B8C9D01200 /* MosTests/LogiReportingDidCompleteEmptyPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6A7B8C9D01201 /* MosTests/LogiReportingDidCompleteEmptyPathTests.swift */; };
@@ -84,6 +85,7 @@
 		C3D4E5F6A7B8C9D0E1F30201 /* MosTests/InputProcessorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/InputProcessorTests.swift; sourceTree = SOURCE_ROOT; };
 		C4E5F6A7B8C9D0E1F3020201 /* MosTests/ButtonCapturePresentationStatusTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ButtonCapturePresentationStatusTests.swift; sourceTree = SOURCE_ROOT; };
 		C7A1B2C3D4E5F60718293A4C /* MosTests/OptionsChangePropagationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/OptionsChangePropagationTests.swift; sourceTree = SOURCE_ROOT; };
+		F1A5C3D400000000000000B1 /* MosTests/OptionsScrollDefaultsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/OptionsScrollDefaultsTests.swift; sourceTree = SOURCE_ROOT; };
 		D1A2B3C4E5F6A7B8C9D01001 /* MosTests/LogiDivertPlannerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/LogiDivertPlannerTests.swift; sourceTree = SOURCE_ROOT; };
 		D1A2B3C4E5F6A7B8C9D01101 /* MosTests/LogiConflictDetectorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/LogiConflictDetectorTests.swift; sourceTree = SOURCE_ROOT; };
 		D1A2B3C4E5F6A7B8C9D01201 /* MosTests/LogiReportingDidCompleteEmptyPathTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/LogiReportingDidCompleteEmptyPathTests.swift; sourceTree = SOURCE_ROOT; };
@@ -204,6 +206,7 @@
 				D3A1B2C3D4E5F60718293A51 /* MosTests/ScrollActionPortTests.swift */,
 				D3A1B2C3D4E5F60718293A61 /* MosTests/ScrollPosterConfigSnapshotTests.swift */,
 				C7A1B2C3D4E5F60718293A4C /* MosTests/OptionsChangePropagationTests.swift */,
+				F1A5C3D400000000000000B1 /* MosTests/OptionsScrollDefaultsTests.swift */,
 				E1B8B50E951D72C6195DBA3A /* MosTests/ScrollEventTests.swift */,
 				31AFD832EF49533E8168BAA0 /* MosTests/ScrollFilterTests.swift */,
 				E7D69BB23DED610DCD5A0103 /* MosTests/ScrollHotkeyTests.swift */,
@@ -420,6 +423,7 @@
 				D3A1B2C3D4E5F60718293A50 /* MosTests/ScrollActionPortTests.swift in Sources */,
 				D3A1B2C3D4E5F60718293A60 /* MosTests/ScrollPosterConfigSnapshotTests.swift in Sources */,
 				C7A1B2C3D4E5F60718293A4B /* MosTests/OptionsChangePropagationTests.swift in Sources */,
+				F1A5C3D400000000000000B0 /* MosTests/OptionsScrollDefaultsTests.swift in Sources */,
 				296126EA068FF77D423ACAA9 /* MosTests/ScrollEventTests.swift in Sources */,
 				BF0CC4D63CC0E5FE8FCF6E01 /* MosTests/ScrollFilterTests.swift in Sources */,
 				568F976CF65380A55E73E588 /* MosTests/ScrollHotkeyTests.swift in Sources */,

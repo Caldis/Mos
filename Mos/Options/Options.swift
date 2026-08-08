@@ -194,9 +194,21 @@ extension Options {
         scroll.dash = loadScrollHotkey(forKey: OptionItem.Scroll.Dash, default: OPTIONS_SCROLL_DEFAULT().dash)
         scroll.toggle = loadScrollHotkey(forKey: OptionItem.Scroll.Toggle, default: OPTIONS_SCROLL_DEFAULT().toggle)
         scroll.block = loadScrollHotkey(forKey: OptionItem.Scroll.Block, default: OPTIONS_SCROLL_DEFAULT().block)
-        scroll.step = UserDefaults.standard.double(forKey: OptionItem.Scroll.Step)
-        scroll.speed = UserDefaults.standard.double(forKey: OptionItem.Scroll.Speed)
-        scroll.duration = UserDefaults.standard.double(forKey: OptionItem.Scroll.Duration)
+        if let storedStep = UserDefaults.standard.object(forKey: OptionItem.Scroll.Step) as? Double {
+            scroll.step = storedStep
+        } else {
+            scroll.step = OPTIONS_SCROLL_DEFAULT().step
+        }
+        if let storedSpeed = UserDefaults.standard.object(forKey: OptionItem.Scroll.Speed) as? Double {
+            scroll.speed = storedSpeed
+        } else {
+            scroll.speed = OPTIONS_SCROLL_DEFAULT().speed
+        }
+        if let storedDuration = UserDefaults.standard.object(forKey: OptionItem.Scroll.Duration) as? Double {
+            scroll.duration = storedDuration
+        } else {
+            scroll.duration = OPTIONS_SCROLL_DEFAULT().duration
+        }
         if let storedDeadZone = UserDefaults.standard.object(forKey: OptionItem.Scroll.DeadZone) as? Double {
             scroll.deadZone = storedDeadZone
         } else {
