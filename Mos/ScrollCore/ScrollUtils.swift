@@ -129,8 +129,8 @@ class ScrollUtils {
         return lastSourceIsRemoteControl
     }
 
-    /// ToDesk 等远程控制应用对 Mos 合成的连续滚轮事件兼容性差，需禁用平滑但保留方向翻转等原始事件处理。
-    func shouldDisableSmoothForRemoteControl(_ event: CGEvent, targetRunningApplication: NSRunningApplication?) -> Bool {
+    /// ToDesk 等远程控制应用对 Mos 处理后的滚轮事件兼容性差，需关闭平滑和方向翻转。
+    func shouldUseRawScrollForRemoteControl(_ event: CGEvent, targetRunningApplication: NSRunningApplication?) -> Bool {
         if needsRawScrollPassthrough(from: targetRunningApplication) {
             return true
         }

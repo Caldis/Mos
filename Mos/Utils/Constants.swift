@@ -89,7 +89,7 @@ struct REMOTE_CONTROL_APPLICATION {
     static let bundleIdentifierKeywords = [
         "todesk",
     ]
-    // 这些远程控制应用无法稳定处理 Mos 合成的连续滚轮事件，需直接使用原始滚轮。
+    // 这些远程控制应用无法稳定处理 Mos 修改后的滚轮事件，需关闭平滑和方向翻转。
     static let rawScrollPassthroughExecutableKeywords = [
         "ToDesk",
         "todesk",
