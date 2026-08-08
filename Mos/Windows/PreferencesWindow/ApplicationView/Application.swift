@@ -90,27 +90,23 @@ extension Application {
     }
     func isReverseVertical() -> Bool {
         if !Options.shared.scroll.reverse { return false }
-        if !Options.shared.scroll.reverseVertical { return false }
         let target = resolvedScrollOptions()
         return target.reverse && target.reverseVertical
     }
     func isReverseHorizontal() -> Bool {
         if !Options.shared.scroll.reverse { return false }
-        if !Options.shared.scroll.reverseHorizontal { return false }
         let target = resolvedScrollOptions()
         return target.reverse && target.reverseHorizontal
     }
     func isSmoothVertical(_ block: Bool) -> Bool {
         if block { return false }
         if !Options.shared.scroll.smooth { return false }
-        if !Options.shared.scroll.smoothVertical { return false }
         let target = resolvedScrollOptions()
         return target.smooth && target.smoothVertical
     }
     func isSmoothHorizontal(_ block: Bool) -> Bool {
         if block { return false }
         if !Options.shared.scroll.smooth { return false }
-        if !Options.shared.scroll.smoothHorizontal { return false }
         let target = resolvedScrollOptions()
         return target.smooth && target.smoothHorizontal
     }
