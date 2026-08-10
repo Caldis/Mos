@@ -60,11 +60,11 @@ class PreferencesScrollingWithApplicationViewController: NSViewController {
     }
     
     // 继承
+    // Logi divert 用量同步由 LogiUsageBootstrap 的 Options 订阅自动完成 (inherit didSet → .application)
     @IBAction func inheritGlobalSettingClick(_ sender: NSButton) {
         if let vaildContentViewController = currentContentViewController, let validTargetApplication = currentTargetApplication {
             validTargetApplication.inherit = sender.state.rawValue==0 ? false : true
             vaildContentViewController.syncViewWithOptions()
-            LogitechHIDManager.shared.syncDivertWithBindings()
         }
     }
 }

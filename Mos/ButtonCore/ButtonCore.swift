@@ -18,7 +18,8 @@ class ButtonCore {
     var isActive = false
     
     // 拦截层
-    var eventInterceptor: Interceptor?
+    var dispatchInterceptor: Interceptor?
+    var primaryObservationInterceptor: Interceptor?
 
     // 组合的按钮事件掩码
     let leftDown = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
@@ -30,8 +31,16 @@ class ButtonCore {
     let flagsChanged = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
     let otherUp = CGEventMask(1 << CGEventType.otherMouseUp.rawValue)
     let keyUp = CGEventMask(1 << CGEventType.keyUp.rawValue)
-    var eventMask: CGEventMask {
-        return leftDown | leftUp | rightDown | rightUp | otherDown | otherUp | keyDown | keyUp
+    var dispatchEventMask: CGEventMask {
+        return otherDown | otherUp | keyDown | keyUp
+    }
+
+    // 在系统处理 Mission Control 等原生鼠标按钮快捷键之前拦截。
+    // 未被 Mos 绑定的事件继续向下传递，由系统按原有语义消费。
+    let dispatchEventTapLocation = CGEventTapLocation.cgSessionEventTap
+
+    var primaryObservationEventMask: CGEventMask {
+        return leftDown | leftUp | rightDown | rightUp
     }
 
     // MARK: - 按钮事件处理
@@ -65,18 +74,22 @@ class ButtonCore {
             let activeFlags = InputProcessor.shared.activeModifierFlags
             let supportsVirtualModifiers =
                 type == .keyDown ||
-                type == .keyUp ||
-                type == .leftMouseDown ||
-                type == .leftMouseUp ||
-                type == .rightMouseDown ||
-                type == .rightMouseUp ||
-                type == .otherMouseDown ||
-                type == .otherMouseUp
+                type == .keyUp
             if activeFlags != 0 && supportsVirtualModifiers {
                 event.flags = CGEventFlags(rawValue: event.flags.rawValue | activeFlags)
             }
             return Unmanaged.passUnretained(event)
         }
+    }
+
+    let primaryMouseObservationCallBack: CGEventTapCallBack = { (_, type, event, _) in
+        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+            return Unmanaged.passUnretained(event)
+        }
+        if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
+            return Unmanaged.passUnretained(event)
+        }
+        return Unmanaged.passUnretained(event)
     }
     
     // MARK: - 启用和禁用
@@ -85,18 +98,29 @@ class ButtonCore {
     func enable() {
         if !isActive {
             do {
-                eventInterceptor = try Interceptor(
-                    event: eventMask,
+                dispatchInterceptor = try Interceptor(
+                    event: dispatchEventMask,
                     handleBy: buttonEventCallBack,
-                    listenOn: .cgAnnotatedSessionEventTap,
+                    listenOn: dispatchEventTapLocation,
                     placeAt: .tailAppendEventTap,
                     for: .defaultTap
                 )
-                eventInterceptor?.onRestart = {
+                dispatchInterceptor?.onRestart = {
                     InputProcessor.shared.clearActiveBindings()
                 }
+                primaryObservationInterceptor = try Interceptor(
+                    event: primaryObservationEventMask,
+                    handleBy: primaryMouseObservationCallBack,
+                    listenOn: .cgAnnotatedSessionEventTap,
+                    placeAt: .tailAppendEventTap,
+                    for: .listenOnly
+                )
                 isActive = true
             } catch {
+                dispatchInterceptor?.stop()
+                primaryObservationInterceptor?.stop()
+                dispatchInterceptor = nil
+                primaryObservationInterceptor = nil
                 NSLog("ButtonCore: Failed to create interceptor: \(error)")
             }
         }
@@ -106,8 +130,10 @@ class ButtonCore {
     func disable() {
         if isActive {
             NSLog("ButtonCore disabled")
-            eventInterceptor?.stop()
-            eventInterceptor = nil
+            dispatchInterceptor?.stop()
+            primaryObservationInterceptor?.stop()
+            dispatchInterceptor = nil
+            primaryObservationInterceptor = nil
             InputProcessor.shared.clearActiveBindings()
             GestureProcessor.shared.clearState()
             isActive = false

@@ -669,7 +669,7 @@ git commit -m "refactor: remove Logi entries from KeyCode.mouseMap (now in Logit
 ### 不涉及的文件 (Spec 明确标注)
 
 - `CGEvent+Extensions.swift`: mouseCode 范围 0~31, 不涉及 Logi 码, 无需修改
-- `tools/hidpp-full-test.swift`: 独立脚本, 不属于 app target, 无法引用 app 源码, 保留本地副本
+- `tools/hidpp/full-test.swift`: 独立脚本, 不属于 app target, 无法引用 app 源码, 保留本地副本
 - `MosInputProcessor.swift`: 无 LogitechCIDMap/HIDPPInfo.cidNames 引用
 
 ---

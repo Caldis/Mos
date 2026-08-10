@@ -7,7 +7,7 @@
 //
 
 import Cocoa
-import Charts
+import DGCharts
 
 let scrollEventName = NSNotification.Name(rawValue: "ScrollEvent")
 let buttonEventName = NSNotification.Name(rawValue: "ButtonEvent")

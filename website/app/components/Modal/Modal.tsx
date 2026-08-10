@@ -2,6 +2,9 @@
 
 import { ReactNode, useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
+
+import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
 
 function getFocusableElements(root: HTMLElement | null): HTMLElement[] {
   if (!root) return [];
@@ -48,6 +51,7 @@ export function Modal({
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const lastActiveElementRef = useRef<HTMLElement | null>(null);
+  const reduce = useHydratedReducedMotion();
 
   const label = useMemo(() => ({ titleId }), [titleId]);
 
@@ -61,8 +65,10 @@ export function Modal({
     lastActiveElementRef.current =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    // Lock scroll on the scrolling element (html) so `scrollbar-gutter: stable`
+    // engages and the reserved scrollbar space prevents a layout-width jump.
+    const prevOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
 
     const raf = window.requestAnimationFrame(() => {
       const focusables = getFocusableElements(dialogRef.current);
@@ -109,7 +115,7 @@ export function Modal({
 
     return () => {
       window.cancelAnimationFrame(raf);
-      document.body.style.overflow = prevOverflow;
+      document.documentElement.style.overflow = prevOverflow;
       document.removeEventListener("keydown", onKeyDown);
 
       try {
@@ -123,50 +129,56 @@ export function Modal({
   }, [isOpen, onClose]);
 
   if (!portalRoot) return null;
-  if (!isOpen) return null;
+
+  const dur = reduce ? 0 : 0.22;
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-[80] grid place-items-center px-4 py-6 bg-black/70 supports-[backdrop-filter:blur(0)]:bg-black/45 supports-[-webkit-backdrop-filter:blur(0)]:bg-black/45 backdrop-blur-xl"
-      role="presentation"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={label.titleId}
-        tabIndex={-1}
-        className={`w-full ${width} max-h-[calc(100vh-3rem)] max-h-[calc(100svh-3rem)] overflow-auto rounded-[22px] border border-white/10
-                 bg-[rgba(10,11,16,0.72)] shadow-elevated backdrop-blur-xl
-                 motion-safe:animate-[modal-appear_0.5s_var(--ease-out)]`}
-      >
-        <div className="flex justify-between items-center px-5 sm:px-6 pt-5 sm:pt-6">
-          <h3 id={label.titleId} className="font-display text-lg sm:text-xl text-white">
-            {title}
-          </h3>
-          <button
-            ref={closeButtonRef}
-            type="button"
-            onClick={onClose}
-            className="rounded-xl p-2 text-white/55 hover:text-white/85 hover:bg-white/5 transition-colors"
-            aria-label={closeLabel}
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 z-[80] grid place-items-center px-4 py-6 bg-black/70 supports-[backdrop-filter:blur(0)]:bg-black/45 supports-[-webkit-backdrop-filter:blur(0)]:bg-black/45 backdrop-blur-xl"
+          role="presentation"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) onClose();
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: dur }}
+        >
+          <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={label.titleId}
+            tabIndex={-1}
+            className={`w-full ${width} max-h-[calc(100vh-3rem)] max-h-[calc(100svh-3rem)] overflow-auto rounded-[22px] border border-white/10 bg-[rgba(10,11,16,0.72)] shadow-elevated backdrop-blur-xl`}
+            initial={{ opacity: 0, scale: 0.95, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.94, y: 12 }}
+            transition={{ duration: dur, ease: [0.16, 1, 0.3, 1] }}
           >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-        <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-4">{children}</div>
-      </div>
-    </div>,
+            <div className="flex justify-between items-center px-5 sm:px-6 pt-5 sm:pt-6">
+              <h3 id={label.titleId} className="font-display text-lg sm:text-xl text-white">
+                {title}
+              </h3>
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={onClose}
+                className="rounded-xl p-2 text-white/55 hover:text-white/85 hover:bg-white/5 transition-colors"
+                aria-label={closeLabel}
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-4">{children}</div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
     portalRoot
   );
 }

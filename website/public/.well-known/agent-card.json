@@ -1,0 +1,72 @@
+{
+  "name": "Mos Documentation Agent Card",
+  "description": "A2A-style discovery card for Mos product documentation, release metadata, and AI-readable static resources.",
+  "url": "https://mos.caldis.me/agent/",
+  "provider": {
+    "organization": "Caldis",
+    "url": "https://github.com/Caldis"
+  },
+  "version": "1.0.0",
+  "documentationUrl": "https://mos.caldis.me/developers/",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "authentication": {
+    "schemes": [
+      "none"
+    ]
+  },
+  "defaultInputModes": [
+    "text/plain",
+    "text/markdown",
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "text/plain",
+    "text/markdown",
+    "application/json"
+  ],
+  "skills": [
+    {
+      "id": "mos_product_context",
+      "name": "Mos product context",
+      "description": "Answer questions about Mos features, platform support, install paths, and official project links.",
+      "tags": [
+        "macOS",
+        "mouse",
+        "scrolling",
+        "open-source"
+      ],
+      "examples": [
+        "What does Mos do?",
+        "How do I install Mos?",
+        "Where are Mos release notes and downloads?"
+      ]
+    },
+    {
+      "id": "mos_developer_resources",
+      "name": "Mos developer resources",
+      "description": "Find llms.txt, llms-full.txt, OpenAPI, schema feeds, agent discovery, and repository guidance.",
+      "tags": [
+        "llms.txt",
+        "OpenAPI",
+        "agent discovery",
+        "schema.org"
+      ],
+      "examples": [
+        "Find Mos API docs.",
+        "Find the Mos MCP discovery status.",
+        "Find the Mos A2A agent card."
+      ]
+    }
+  ],
+  "links": {
+    "homepage": "https://mos.caldis.me/",
+    "llms": "https://mos.caldis.me/llms.txt",
+    "llmsFull": "https://mos.caldis.me/llms-full.txt",
+    "openapi": "https://mos.caldis.me/api/openapi.json",
+    "repository": "https://github.com/Caldis/Mos"
+  }
+}

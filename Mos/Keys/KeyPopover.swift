@@ -9,17 +9,33 @@
 import Cocoa
 
 class KeyPopover: NSObject {
+    private enum RecordingHint {
+        case escape
+        case duplicate
+
+        var localizedText: String {
+            switch self {
+            case .escape:
+                return NSLocalizedString("Press ESC to cancel recording", comment: "ESC hint in key recording popover")
+            case .duplicate:
+                return NSLocalizedString("button-recording-duplicate-hint", comment: "Duplicate key hint in key recording popover")
+            }
+        }
+    }
 
     // MARK: - Properties
     private var popover: NSPopover?
     var keyPreview: KeyPreview!
-    private var escHintLabel: NSTextField?
-    private var escHintHeightConstraint: NSLayoutConstraint?
+    private var hintLabel: NSTextField?
+    private var hintHeightConstraint: NSLayoutConstraint?
+    private var hintBottomConstraint: NSLayoutConstraint?
     private var contentView: NSView?
 
     // MARK: - Constants
     private let baseHeight: CGFloat = 45
     private let hintHeight: CGFloat = 18
+    private let hiddenHintBottomPadding: CGFloat = 10
+    private let visibleHintBottomPadding: CGFloat = 5
 
     // MARK: - Visibility
     /// 显示录制 popover
@@ -38,9 +54,28 @@ class KeyPopover: NSObject {
     // MARK: - Public Methods
     /// 显示 ESC 退出提示
     func showEscHint() {
-        guard let label = escHintLabel,
-              let heightConstraint = escHintHeightConstraint,
-              heightConstraint.constant == 0 else { return }
+        showHint(.escape)
+    }
+
+    /// 显示重复录制提示
+    func showDuplicateHint() {
+        showHint(.duplicate)
+    }
+
+    private func showHint(_ hint: RecordingHint) {
+        guard let label = hintLabel,
+              let heightConstraint = hintHeightConstraint else { return }
+
+        label.stringValue = hint.localizedText
+        hintBottomConstraint?.constant = -visibleHintBottomPadding
+        guard heightConstraint.constant == 0 else { return }
+
+        guard popover?.isShown == true else {
+            label.alphaValue = 1
+            heightConstraint.constant = hintHeight
+            updatePopoverContentSize()
+            return
+        }
 
         // 动画展开提示
         NSAnimationContext.runAnimationGroup({ context in
@@ -49,16 +84,41 @@ class KeyPopover: NSObject {
             label.animator().alphaValue = 1
             heightConstraint.animator().constant = hintHeight
         }, completionHandler: { [weak self] in
-            guard let self = self else { return }
-            // 更新 popover 尺寸
-            self.contentView?.layout()
-            if let size = self.contentView?.fittingSize {
-                self.popover?.contentSize = size
-            }
+            self?.updatePopoverContentSize()
         })
     }
 
+#if DEBUG
+    func testingPrepareContent() {
+        hide()
+        setupPopover()
+    }
+
+    var testingHintText: String? {
+        hintLabel?.stringValue
+    }
+
+    var testingHintFontPointSize: CGFloat? {
+        hintLabel?.font?.pointSize
+    }
+
+    var testingHintAlignment: NSTextAlignment? {
+        hintLabel?.alignment
+    }
+
+    var testingHintBottomPadding: CGFloat? {
+        hintBottomConstraint.map { abs($0.constant) }
+    }
+#endif
+
     // MARK: - Private Methods
+    private func updatePopoverContentSize() {
+        contentView?.layout()
+        if let size = contentView?.fittingSize {
+            popover?.contentSize = size
+        }
+    }
+
     private func getContentView() -> NSView {
         let view = NSView()
         view.wantsLayer = true
@@ -67,20 +127,24 @@ class KeyPopover: NSObject {
         // 创建按键显示组件
         keyPreview = KeyPreview()
         keyPreview.translatesAutoresizingMaskIntoConstraints = false
-
-        // 创建 ESC 提示标签
-        let hintLabel = NSTextField(labelWithString: NSLocalizedString("Press ESC to cancel recording", comment: "ESC hint in key recording popover"))
+        // 创建录制提示标签
+        let hintLabel = NSTextField(labelWithString: RecordingHint.escape.localizedText)
         hintLabel.font = NSFont.systemFont(ofSize: 10)
         hintLabel.textColor = NSColor.secondaryLabelColor
         hintLabel.alignment = .center
         hintLabel.translatesAutoresizingMaskIntoConstraints = false
         hintLabel.alphaValue = 0
         hintLabel.setContentHuggingPriority(.required, for: .vertical)
-        escHintLabel = hintLabel
+        self.hintLabel = hintLabel
 
         // 创建高度约束（初始为 0）
         let heightConstraint = hintLabel.heightAnchor.constraint(equalToConstant: 0)
-        escHintHeightConstraint = heightConstraint
+        hintHeightConstraint = heightConstraint
+        let bottomConstraint = hintLabel.bottomAnchor.constraint(
+            equalTo: view.bottomAnchor,
+            constant: -hiddenHintBottomPadding
+        )
+        hintBottomConstraint = bottomConstraint
 
         // 添加到内容视图
         view.addSubview(keyPreview)
@@ -92,10 +156,10 @@ class KeyPopover: NSObject {
             keyPreview.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             keyPreview.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
 
-            // ESC 提示约束
+            // 录制提示约束
             hintLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             hintLabel.topAnchor.constraint(equalTo: keyPreview.bottomAnchor, constant: 4),
-            hintLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
+            bottomConstraint,
             heightConstraint,
 
             // 内容视图宽度约束

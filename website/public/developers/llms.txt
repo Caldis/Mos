@@ -1,0 +1,38 @@
+# Mos developer context
+
+Mos developer resources live at https://mos.caldis.me/developers/.
+
+Important resources:
+
+- GitHub repository: https://github.com/Caldis/Mos
+- Product agent instructions: https://mos.caldis.me/agent-instructions/
+- Repository agent instructions: https://github.com/Caldis/Mos/blob/master/AGENTS.md
+- Wiki: https://github.com/Caldis/Mos/wiki
+- Releases: https://github.com/Caldis/Mos/releases
+- Issues: https://github.com/Caldis/Mos/issues
+- Discussions: https://github.com/Caldis/Mos/discussions
+- API docs: https://mos.caldis.me/api-docs/
+- API docs markdown: https://mos.caldis.me/api-docs.md
+- Auth docs: https://mos.caldis.me/auth/
+- Auth docs markdown: https://mos.caldis.me/auth.md
+- Webhooks status: https://mos.caldis.me/webhooks/
+- Webhooks markdown: https://mos.caldis.me/webhooks.md
+- MCP status: https://mos.caldis.me/mcp/
+- MCP markdown: https://mos.caldis.me/mcp.md
+- Rate limits: https://mos.caldis.me/rate-limits/
+- Rate limits markdown: https://mos.caldis.me/rate-limits.md
+- Error responses: https://mos.caldis.me/errors/
+- Error responses markdown: https://mos.caldis.me/errors.md
+- Public AGENTS.md: https://mos.caldis.me/AGENTS.md
+- Well-known agent instructions: https://mos.caldis.me/.well-known/agent-instructions.md
+- OpenAPI: https://mos.caldis.me/api/openapi.json
+- API catalog: https://mos.caldis.me/.well-known/api-catalog
+- OAuth protected resource metadata: https://mos.caldis.me/.well-known/oauth-protected-resource
+- Agent skills index: https://mos.caldis.me/.well-known/agent-skills/index.json
+- Full LLM context: https://mos.caldis.me/llms-full.txt
+
+Mos is a Swift 5, AppKit, Xcode, and Swift Package Manager project. The app supports macOS 10.13 or later.
+
+Public docs and discovery endpoints require no authentication.
+
+No public OAuth, webhooks, or hosted MCP tool server are currently provided.

@@ -41,6 +41,12 @@ class ScrollPoster {
     // 状态锁和投递上下文
     private var stateLock = os_unfair_lock_s()
     private let dispatchContext = ScrollDispatchContext.shared
+    // 滚动配置快照: 主线程在 update 时捕获, CVDisplayLink 线程只读, 避免热路径跨线程读 Options/ScrollCore
+    private struct ConfigSnapshot {
+        var simTrackpadEnabled: Bool
+        var deadZone: Double
+    }
+    private var config = ConfigSnapshot(simTrackpadEnabled: false, deadZone: 1.0)
     // CVDisplayLink 恢复机制
     private var keeper: Timer?
     private var lastCallbackTime: CFTimeInterval = 0.0
@@ -58,6 +64,8 @@ extension ScrollPoster {
         }
         os_unfair_lock_lock(&stateLock)
         defer { os_unfair_lock_unlock(&stateLock) }
+        // 捕获本次手势的配置快照 (主线程读 Options/ScrollCore, CVDisplayLink 线程只读)
+        captureConfigSnapshotLocked()
         // 更新滚动配置
         self.duration = duration
         // 更新滚动数据
@@ -125,6 +133,17 @@ extension ScrollPoster {
     }
 
 #if DEBUG
+    func captureConfigSnapshotForTests() {
+        os_unfair_lock_lock(&stateLock)
+        captureConfigSnapshotLocked()
+        os_unfair_lock_unlock(&stateLock)
+    }
+    var configSnapshotForTests: (simTrackpadEnabled: Bool, deadZone: Double) {
+        os_unfair_lock_lock(&stateLock)
+        defer { os_unfair_lock_unlock(&stateLock) }
+        return (config.simTrackpadEnabled, config.deadZone)
+    }
+
     func recordSkippedSyntheticEvent() {
         dispatchContext.recordSkippedSyntheticEvent()
     }
@@ -207,13 +226,8 @@ extension ScrollPoster {
         dispatchContext.advanceGeneration()
         os_unfair_lock_lock(&stateLock)
 
-        // 判断是否启用触控板模拟
-        var enableSimTrackpad = Options.shared.scroll.smoothSimTrackpad
-        if let application = ScrollCore.shared.application {
-            enableSimTrackpad = application.inherit
-                ? Options.shared.scroll.smoothSimTrackpad
-                : application.scroll.smoothSimTrackpad
-        }
+        // 判断是否启用触控板模拟 (读 update 时主线程捕获的快照, 避免跨线程读)
+        let enableSimTrackpad = config.simTrackpadEnabled
         let plan: ScrollPhase.TransitionPlan
         if requestedPhase == Phase.MomentumEnd {
             plan = ScrollPhase.shared.onMomentumFinish()
@@ -361,7 +375,7 @@ private extension ScrollPoster {
         let residualY = buffer.y - current.y
         let residualX = buffer.x - current.x
         let residualMagnitude = max(residualY.magnitude, residualX.magnitude)
-        let deadZone = Options.shared.scroll.deadZone
+        let deadZone = config.deadZone
         if manualInputEnded && residualMagnitude > deadZone {
             if !momentumActive {
                 perform(ScrollPhase.shared.onMomentumStart(), emitTargetImmediately: false)
@@ -411,11 +425,22 @@ private extension ScrollPoster {
         }
     }
 
-    func resolveSimTrackpadEnabled() -> Bool {
+    /// 主线程读取当前 (全局 / 例外应用) 配置存入快照。调用方须持有 stateLock。
+    func captureConfigSnapshotLocked() {
+        let simTrackpad: Bool
         if let application = ScrollCore.shared.application, !application.inherit {
-            return application.scroll.smoothSimTrackpad
+            simTrackpad = application.scroll.smoothSimTrackpad
+        } else {
+            simTrackpad = Options.shared.scroll.smoothSimTrackpad
         }
-        return Options.shared.scroll.smoothSimTrackpad
+        config = ConfigSnapshot(
+            simTrackpadEnabled: simTrackpad,
+            deadZone: Options.shared.scroll.deadZone
+        )
+    }
+
+    func resolveSimTrackpadEnabled() -> Bool {
+        return config.simTrackpadEnabled
     }
 
     func phaseValues(for phase: Phase) -> (scroll: Double, momentum: Double)? {

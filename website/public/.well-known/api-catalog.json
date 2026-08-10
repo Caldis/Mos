@@ -1,0 +1,107 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://mos.caldis.me/",
+      "item": [
+        {
+          "href": "https://mos.caldis.me/api/openapi.json",
+          "type": "application/openapi+json",
+          "title": "Mos Static Discovery API"
+        },
+        {
+          "href": "https://mos.caldis.me/developers/",
+          "type": "text/html",
+          "title": "Mos developer resources"
+        },
+        {
+          "href": "https://mos.caldis.me/api-docs/",
+          "type": "text/html",
+          "title": "Mos API docs"
+        },
+        {
+          "href": "https://mos.caldis.me/auth/",
+          "type": "text/html",
+          "title": "Mos auth docs"
+        },
+        {
+          "href": "https://mos.caldis.me/webhooks/",
+          "type": "text/html",
+          "title": "Mos webhooks status"
+        },
+        {
+          "href": "https://mos.caldis.me/mcp/",
+          "type": "text/html",
+          "title": "Mos MCP status"
+        },
+        {
+          "href": "https://mos.caldis.me/rate-limits/",
+          "type": "text/html",
+          "title": "Mos rate limits"
+        },
+        {
+          "href": "https://mos.caldis.me/errors/",
+          "type": "text/html",
+          "title": "Mos error responses"
+        },
+        {
+          "href": "https://mos.caldis.me/AGENTS.md",
+          "type": "text/markdown",
+          "title": "Mos public AGENTS.md"
+        },
+        {
+          "href": "https://mos.caldis.me/.well-known/agent-instructions.md",
+          "type": "text/markdown",
+          "title": "Mos well-known agent instructions"
+        },
+        {
+          "href": "https://mos.caldis.me/agent-instructions/",
+          "type": "text/html",
+          "title": "Mos agent instructions"
+        },
+        {
+          "href": "https://mos.caldis.me/compare/",
+          "type": "text/html",
+          "title": "Compare Mos with macOS scrolling alternatives"
+        }
+      ],
+      "api-catalog": [
+        {
+          "href": "https://mos.caldis.me/api/openapi.json",
+          "type": "application/openapi+json",
+          "title": "Mos Static Discovery API",
+          "describedby": [
+            {
+              "href": "https://mos.caldis.me/developers/",
+              "type": "text/html",
+              "title": "Mos developer resources"
+            }
+          ]
+        }
+      ],
+      "service-desc": [
+        {
+          "href": "https://mos.caldis.me/api/openapi.json",
+          "type": "application/openapi+json",
+          "title": "OpenAPI description for Mos public discovery files"
+        }
+      ],
+      "alternate": [
+        {
+          "href": "https://mos.caldis.me/index.md",
+          "type": "text/markdown",
+          "title": "Mos markdown homepage"
+        },
+        {
+          "href": "https://mos.caldis.me/llms.txt",
+          "type": "text/plain",
+          "title": "Mos LLM resource manifest"
+        },
+        {
+          "href": "https://mos.caldis.me/llms-full.txt",
+          "type": "text/plain",
+          "title": "Mos full LLM context"
+        }
+      ]
+    }
+  ]
+}

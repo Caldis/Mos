@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Mos",
+  "name_for_model": "mos",
+  "description_for_human": "Find Mos documentation, install links, releases, and AI-readable discovery resources.",
+  "description_for_model": "Use Mos to discover public static documentation for the Mos macOS smooth scrolling utility. The OpenAPI document describes static discovery endpoints only. Mos does not provide user-account OAuth, webhooks, or remote control over a local Mos app.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://mos.caldis.me/api/openapi.json",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://mos.caldis.me/og.svg",
+  "contact_email": "mail@caldis.me",
+  "legal_info_url": "https://github.com/Caldis/Mos/blob/master/LICENSE"
+}

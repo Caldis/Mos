@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOS · 系统架构总图 — MOS-ARCH-2026-06</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:    #0E1E36;          /* 蓝图纸面 */
+    --paper-2:  #0A1730;
+    --grid-min: rgba(126, 178, 232, 0.055);
+    --grid-maj: rgba(126, 178, 232, 0.11);
+    --ink:      #D9E7F6;          /* 白墨线 */
+    --ink-dim:  #8FA9C8;
+    --ink-faint:#5F7896;
+    --cyan:     #6FD3E7;          /* 强调青 */
+    --mint:     #7BD8A8;          /* 优势绿 */
+    --amber:    #F0BC72;          /* 注意琥珀 */
+    --coral:    #F2766B;          /* 风险红 */
+    --line:     rgba(168, 204, 240, 0.55);
+    --line-dim: rgba(168, 204, 240, 0.28);
+    --node:     rgba(214, 232, 250, 0.035);
+    --node-hi:  rgba(111, 211, 231, 0.10);
+    --serif: "Noto Serif SC", "Songti SC", "STSong", serif;
+    --mono:  "IBM Plex Mono", "SF Mono", Menlo, monospace;
+    --body:  -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      repeating-linear-gradient(0deg,  transparent, transparent 23px, var(--grid-min) 23px, var(--grid-min) 24px),
+      repeating-linear-gradient(90deg, transparent, transparent 23px, var(--grid-min) 23px, var(--grid-min) 24px),
+      repeating-linear-gradient(0deg,  transparent, transparent 119px, var(--grid-maj) 119px, var(--grid-maj) 120px),
+      repeating-linear-gradient(90deg, transparent, transparent 119px, var(--grid-maj) 119px, var(--grid-maj) 120px),
+      radial-gradient(ellipse 120% 80% at 50% -10%, #14294A 0%, var(--paper) 55%, var(--paper-2) 100%);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.75;
+    padding: 48px 24px 90px;
+  }
+  /* 噪点颗粒 */
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 999;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.035; mix-blend-mode: overlay;
+  }
+  .sheet-wrap { max-width: 1280px; margin: 0 auto; }
+
+  /* ============ 图框 ============ */
+  .frame {
+    border: 1.5px solid var(--line);
+    outline: 1px solid var(--line-dim);
+    outline-offset: 6px;
+    background: rgba(8, 18, 38, 0.45);
+    backdrop-filter: blur(2px);
+    position: relative;
+  }
+  .frame + .frame { margin-top: 64px; }
+
+  /* 角标记号 */
+  .frame::before, .frame::after {
+    content: "+"; position: absolute; color: var(--ink-faint);
+    font: 400 14px var(--mono); z-index: 2;
+  }
+  .frame::before { top: -28px; left: -16px; }
+  .frame::after  { bottom: -30px; right: -16px; }
+
+  /* ============ 封面标题块 ============ */
+  .cover { padding: 60px 56px 0; overflow: hidden; }
+  .cover-stamp {
+    float: right; margin: 4px 0 24px 36px;
+    border: 2px solid var(--amber); color: var(--amber);
+    font: 600 12px/1.5 var(--mono); letter-spacing: 0.18em;
+    padding: 10px 16px; transform: rotate(4deg);
+    text-align: center; opacity: 0.85;
+    box-shadow: 0 0 0 1px rgba(240,188,114,0.25) inset;
+  }
+  .cover-kicker {
+    font: 500 13px var(--mono); letter-spacing: 0.45em;
+    color: var(--cyan); text-transform: uppercase;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 900;
+    font-size: clamp(40px, 6vw, 72px); line-height: 1.15;
+    letter-spacing: 0.06em; margin: 18px 0 10px; color: #F4F9FF;
+    text-shadow: 0 0 40px rgba(111, 211, 231, 0.18);
+  }
+  .cover-sub { color: var(--ink-dim); max-width: 720px; font-size: 15.5px; }
+  .cover-sub b { color: var(--ink); font-weight: 600; }
+
+  /* 标题栏(title block) */
+  .titleblock {
+    margin: 44px -1px -1px; border-top: 1.5px solid var(--line);
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    font-family: var(--mono);
+  }
+  .tb-cell {
+    border-right: 1px solid var(--line-dim); padding: 10px 16px 12px;
+    min-width: 0;
+  }
+  .tb-cell:last-child { border-right: none; }
+  .tb-label { font-size: 10px; letter-spacing: 0.22em; color: var(--ink-faint); display: block; }
+  .tb-value { font-size: 13.5px; color: var(--ink); font-weight: 500; margin-top: 3px; display: block; }
+  .tb-value.accent { color: var(--cyan); }
+
+  /* ============ 目录 ============ */
+  .index-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    border-top: 1px solid var(--line-dim);
+  }
+  .index-item {
+    padding: 16px 18px 18px; border-right: 1px solid var(--line-dim);
+    text-decoration: none; color: var(--ink-dim); transition: all .25s;
+    font-family: var(--mono);
+  }
+  .index-item:last-child { border-right: none; }
+  .index-item:hover { background: var(--node-hi); color: var(--ink); }
+  .index-no { font-size: 11px; letter-spacing: 0.2em; color: var(--cyan); display: block; }
+  .index-name { font-size: 13.5px; margin-top: 4px; display: block; font-family: var(--body); font-weight: 500; }
+
+  /* ============ 图纸节 ============ */
+  .sheet-head {
+    display: flex; align-items: baseline; gap: 20px;
+    padding: 22px 32px 20px; border-bottom: 1px solid var(--line-dim);
+    flex-wrap: wrap;
+  }
+  .sheet-no {
+    font: 600 12px var(--mono); letter-spacing: 0.25em;
+    color: var(--paper); background: var(--cyan); padding: 3px 10px;
+  }
+  .sheet-title { font-family: var(--serif); font-weight: 700; font-size: 26px; color: #F0F6FE; letter-spacing: 0.04em; }
+  .sheet-desc { color: var(--ink-faint); font-size: 13px; font-family: var(--mono); }
+  .sheet-body { padding: 28px 32px 36px; }
+  .sheet-note {
+    margin-top: 18px; padding: 14px 18px; border-left: 2px solid var(--cyan);
+    background: rgba(111, 211, 231, 0.05); color: var(--ink-dim); font-size: 13.5px;
+  }
+  .sheet-note b { color: var(--ink); }
+  .sheet-note .marker { color: var(--cyan); font-family: var(--mono); }
+  .sheet-note .risk { color: var(--coral); font-family: var(--mono); }
+
+  /* SVG 通用 */
+  svg { display: block; width: 100%; height: auto; }
+  svg text { font-family: var(--body); fill: var(--ink); }
+  svg .mono  { font-family: var(--mono); }
+  .nd { fill: var(--node); stroke: var(--line); stroke-width: 1; }
+  .nd-dim { fill: transparent; stroke: var(--line-dim); stroke-width: 1; stroke-dasharray: 5 4; }
+  .zone { fill: rgba(111,211,231,0.025); stroke: var(--line-dim); stroke-width: 1; }
+  .t-title { font-size: 13px; font-weight: 600; fill: #EDF4FC; }
+  .t-sub   { font-size: 10.5px; fill: var(--ink-dim); }
+  .t-tiny  { font-size: 9.5px;  fill: var(--ink-faint); }
+  .t-zone  { font-size: 11px; font-weight: 600; fill: var(--cyan); letter-spacing: 0.2em; }
+  .t-band  { font-size: 10px; fill: var(--ink-faint); letter-spacing: 0.35em; }
+  .edge      { stroke: var(--line); stroke-width: 1.1; fill: none; }
+  .edge-dash { stroke: var(--line-dim); stroke-width: 1.1; fill: none; stroke-dasharray: 5 4; }
+  .edge-risk { stroke: var(--coral); stroke-width: 1.2; fill: none; stroke-dasharray: 7 4; }
+  .edge-mint { stroke: var(--mint); stroke-width: 1.1; fill: none; }
+  .chip { fill: rgba(111,211,231,0.08); stroke: rgba(111,211,231,0.45); stroke-width: 0.8; }
+  .t-chip { font-size: 10px; fill: var(--cyan); font-weight: 500; }
+  .badge-risk { fill: rgba(242,118,107,0.12); stroke: var(--coral); stroke-width: 0.8; }
+  .t-risk { font-size: 9.5px; fill: var(--coral); font-weight: 600; }
+  .badge-amber { fill: rgba(240,188,114,0.10); stroke: var(--amber); stroke-width: 0.8; }
+  .t-amber { font-size: 9.5px; fill: var(--amber); font-weight: 600; }
+  g.hov { transition: opacity .2s; cursor: default; }
+  svg:has(g.hov:hover) g.hov:not(:hover) { opacity: 0.38; }
+
+  /* 图例 */
+  .legend {
+    display: flex; gap: 26px; flex-wrap: wrap; margin-top: 16px;
+    font: 400 11.5px var(--mono); color: var(--ink-faint);
+    border-top: 1px dashed var(--line-dim); padding-top: 14px;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .lg { display: inline-block; width: 34px; height: 0; border-top: 1.5px solid var(--line); }
+  .lg.dash { border-top-style: dashed; border-top-color: var(--line-dim); }
+  .lg.risk { border-top-style: dashed; border-top-color: var(--coral); }
+  .lg.mint { border-top-color: var(--mint); }
+  .lg-box { display: inline-block; width: 14px; height: 14px; border: 1px solid var(--line); background: var(--node); }
+  .lg-box.dash { border-style: dashed; background: transparent; }
+
+  /* ============ 流程条(SHEET 03) ============ */
+  .flow-strip { margin-bottom: 34px; }
+  .flow-name {
+    font: 600 12px var(--mono); letter-spacing: 0.25em; color: var(--cyan);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 14px;
+  }
+  .flow-name::after { content: ""; flex: 1; border-top: 1px dashed var(--line-dim); }
+  .flow {
+    display: flex; flex-wrap: wrap; gap: 0; align-items: stretch;
+  }
+  .step {
+    position: relative; border: 1px solid var(--line-dim); background: var(--node);
+    padding: 10px 14px 12px; min-width: 118px; max-width: 175px; flex: 1;
+    margin-right: 26px; margin-bottom: 14px;
+  }
+  .step:last-child { margin-right: 0; }
+  .step::after {
+    content: "→"; position: absolute; right: -22px; top: 50%;
+    transform: translateY(-50%); color: var(--cyan); font-family: var(--mono); font-size: 13px;
+  }
+  .step:last-child::after { display: none; }
+  .step-no { font: 600 9.5px var(--mono); color: var(--cyan); letter-spacing: 0.15em; }
+  .step-t { font-size: 12.5px; font-weight: 600; color: #EDF4FC; margin-top: 2px; }
+  .step-d { font-size: 10.5px; color: var(--ink-dim); margin-top: 3px; line-height: 1.5; }
+  .step.io { border-color: rgba(123,216,168,0.4); }
+  .step.io .step-no { color: var(--mint); }
+  .step.hot { border-color: rgba(240,188,114,0.45); }
+  .step.hot .step-no { color: var(--amber); }
+
+  /* ============ 评估卡片(SHEET 06) ============ */
+  .verdict-cols { display: grid; grid-template-columns: 1fr; gap: 40px; }
+  .v-section-t {
+    font-family: var(--serif); font-weight: 700; font-size: 20px; color: #F0F6FE;
+    display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
+  }
+  .v-section-t .tag { font: 600 10.5px var(--mono); letter-spacing: 0.2em; padding: 3px 10px; }
+  .tag.good { color: var(--paper); background: var(--mint); }
+  .tag.bad  { color: var(--paper); background: var(--coral); }
+  .tag.plan { color: var(--paper); background: var(--amber); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 14px; }
+  .card {
+    border: 1px solid var(--line-dim); background: var(--node);
+    padding: 18px 20px 20px; position: relative; transition: border-color .25s, background .25s;
+  }
+  .card:hover { border-color: var(--line); background: var(--node-hi); }
+  .card-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+  .sev {
+    font: 600 10px var(--mono); letter-spacing: 0.12em; padding: 2px 8px;
+    flex-shrink: 0; transform: translateY(-1px);
+  }
+  .sev.p1 { color: var(--coral); border: 1px solid var(--coral); }
+  .sev.p2 { color: var(--amber); border: 1px solid var(--amber); }
+  .sev.p3 { color: var(--ink-faint); border: 1px solid var(--ink-faint); }
+  .sev.s  { color: var(--mint); border: 1px solid var(--mint); }
+  .sev.fixed { color: var(--mint); border: 1px solid var(--mint); opacity: 0.7; }
+  .card.done { opacity: 0.82; }
+  .card.done::after { content: ""; position: absolute; inset: 0; border-left: 2px solid var(--mint); pointer-events: none; }
+  .fixed-chip { margin-left: auto; align-self: center; font: 600 9.5px var(--mono); letter-spacing: 0.1em; color: var(--mint); border: 1px solid var(--mint); padding: 1px 7px; white-space: nowrap; }
+  .card-t { font-size: 15.5px; font-weight: 700; color: #EFF5FD; line-height: 1.45; }
+  .card-b { font-size: 13px; color: var(--ink-dim); }
+  .card-b b { color: var(--ink); font-weight: 600; }
+  .ev {
+    font: 400 11px var(--mono); color: var(--ink-faint);
+    border-left: 2px solid var(--line-dim); padding: 2px 0 2px 10px; margin: 10px 0;
+    overflow-wrap: anywhere;
+  }
+  .fix { font-size: 12.5px; color: var(--ink-dim); margin-top: 8px; }
+  .fix::before { content: "建议 ▸ "; color: var(--cyan); font: 600 11px var(--mono); letter-spacing: 0.1em; }
+  .fix b { color: var(--ink); }
+
+  /* 路线图 */
+  .road { counter-reset: rd; margin-top: 6px; }
+  .road-item {
+    display: flex; gap: 18px; padding: 16px 4px; border-bottom: 1px dashed var(--line-dim);
+    align-items: baseline;
+  }
+  .road-item:last-child { border-bottom: none; }
+  .road-no {
+    counter-increment: rd; flex-shrink: 0;
+    font: 600 13px var(--mono); color: var(--cyan);
+  }
+  .road-no::before { content: "STEP " counter(rd, decimal-leading-zero); letter-spacing: 0.15em; }
+  .road-t { font-weight: 700; color: #EFF5FD; font-size: 14.5px; min-width: 200px; }
+  .road-d { color: var(--ink-dim); font-size: 13px; flex: 1; min-width: 260px; }
+  .road-risk { font: 500 10.5px var(--mono); flex-shrink: 0; letter-spacing: 0.1em; }
+  .rr-low { color: var(--mint); } .rr-mid { color: var(--amber); } .rr-high { color: var(--coral); }
+  .road-item.done { opacity: 0.7; }
+  .road-risk.done { color: var(--mint); font-weight: 600; }
+
+  /* ============ 审图记录 ============ */
+  .rev-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
+  .rev-table th, .rev-table td { border: 1px solid var(--line-dim); padding: 8px 14px; text-align: left; }
+  .rev-table th { color: var(--ink-faint); font-weight: 500; letter-spacing: 0.18em; font-size: 10px; }
+  .rev-table td { color: var(--ink-dim); }
+  .rev-table td:first-child { color: var(--cyan); }
+
+  footer { margin-top: 56px; text-align: center; color: var(--ink-faint); font: 400 11px var(--mono); letter-spacing: 0.2em; }
+
+  /* 滚动浮现 */
+  .frame { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .frame.on { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .frame { opacity: 1; transform: none; transition: none; } }
+</style>
+</head>
+<body>
+<div class="sheet-wrap">
+
+<!-- ════════════════ 封面 / 标题块 ════════════════ -->
+<section class="frame on" id="cover">
+  <div class="cover">
+    <div class="cover-stamp">FOR REVIEW<br>仅供评审</div>
+    <div class="cover-kicker">ENGINEERING DRAWING · 工程图纸</div>
+    <h1>Mos 系统架构总图</h1>
+    <p class="cover-sub">
+      本图纸基于 <b>2026-06-10</b> 的 <b>master</b> 分支（<span style="font-family:var(--mono)">5baa7c7</span>）实地勘察绘制，
+      覆盖 macOS 客户端、官网前端、Cloudflare 边缘后端与发布分发管线四个域。
+      共 6 张分图：总览、应用分层、事件数据流、云端拓扑、发布管线、架构评估。
+      所有结论附 <b>文件:行号</b> 证据，比例尺不适用（NTS）。
+    </p>
+  </div>
+  <div class="titleblock">
+    <div class="tb-cell"><span class="tb-label">项目 PROJECT</span><span class="tb-value">Mos · 平滑滚动工具</span></div>
+    <div class="tb-cell"><span class="tb-label">版本 VERSION</span><span class="tb-value accent">v4.2.1 (20260531.1)</span></div>
+    <div class="tb-cell"><span class="tb-label">规模 SCALE</span><span class="tb-value">Swift 23.7k 行 · TS 10.3k 行</span></div>
+    <div class="tb-cell"><span class="tb-label">测试 TESTS</span><span class="tb-value">39 文件 + Worker 单测</span></div>
+    <div class="tb-cell"><span class="tb-label">绘制 DRAWN BY</span><span class="tb-value">Claude (Fable 5)</span></div>
+    <div class="tb-cell"><span class="tb-label">图号 DWG NO.</span><span class="tb-value accent">MOS-ARCH-2026-06</span></div>
+  </div>
+  <nav class="index-strip">
+    <a class="index-item" href="#s1"><span class="index-no">SHEET 01</span><span class="index-name">系统总览</span></a>
+    <a class="index-item" href="#s2"><span class="index-no">SHEET 02</span><span class="index-name">macOS 应用分层</span></a>
+    <a class="index-item" href="#s3"><span class="index-no">SHEET 03</span><span class="index-name">事件数据流</span></a>
+    <a class="index-item" href="#s4"><span class="index-no">SHEET 04</span><span class="index-name">Web 与云端</span></a>
+    <a class="index-item" href="#s5"><span class="index-no">SHEET 05</span><span class="index-name">发布与分发</span></a>
+    <a class="index-item" href="#s6"><span class="index-no">SHEET 06</span><span class="index-name">架构评估</span></a>
+  </nav>
+</section>
+
+<!-- ════════════════ SHEET 01 系统总览 ════════════════ -->
+<section class="frame" id="s1">
+  <div class="sheet-head">
+    <span class="sheet-no">SHEET 01</span>
+    <span class="sheet-title">系统总览</span>
+    <span class="sheet-desc">四个域 · 唯一跨域连线是更新检查</span>
+  </div>
+  <div class="sheet-body">
+    <svg viewBox="0 0 1180 540" role="img" aria-label="系统总览拓扑图">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#A8CCF0"/>
+        </marker>
+        <marker id="arr-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#6FD3E7"/>
+        </marker>
+        <marker id="arr-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#7BD8A8"/>
+        </marker>
+        <marker id="arr-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#F2766B"/>
+        </marker>
+      </defs>
+
+      <!-- 用户 -->
+      <g class="hov">
+        <rect x="80" y="30" width="200" height="52" class="nd-dim" rx="26"/>
+        <text x="180" y="52" text-anchor="middle" class="t-title">桌面用户</text>
+        <text x="180" y="68" text-anchor="middle" class="t-sub">鼠标 · 滚轮 · 侧键</text>
+      </g>
+      <g class="hov">
+        <rect x="760" y="30" width="200" height="52" class="nd-dim" rx="26"/>
+        <text x="860" y="52" text-anchor="middle" class="t-title">网页访客</text>
+        <text x="860" y="68" text-anchor="middle" class="t-sub">浏览器 · 留言墙</text>
+      </g>
+      <path class="edge" d="M180 82 L180 130" marker-end="url(#arr)"/>
+      <path class="edge" d="M820 82 L700 130" marker-end="url(#arr)"/>
+      <path class="edge" d="M900 82 L968 130" marker-end="url(#arr)"/>
+
+      <!-- 域 A: macOS 客户端 -->
+      <g class="hov">
+        <rect x="40" y="130" width="380" height="290" class="zone"/>
+        <text x="60" y="158" class="t-zone">A · macOS 客户端域</text>
+        <text x="60" y="178" class="t-tiny mono">Swift 5 / AppKit / 最低 macOS 10.13</text>
+        <rect x="60" y="196" width="160" height="46" class="nd"/>
+        <text x="140" y="215" text-anchor="middle" class="t-title">Mos.app</text>
+        <text x="140" y="231" text-anchor="middle" class="t-sub">菜单栏应用</text>
+        <rect x="240" y="196" width="160" height="46" class="nd"/>
+        <text x="320" y="215" text-anchor="middle" class="t-title">事件引擎</text>
+        <text x="320" y="231" text-anchor="middle" class="t-sub">ScrollCore / ButtonCore</text>
+        <rect x="60" y="256" width="160" height="46" class="nd"/>
+        <text x="140" y="275" text-anchor="middle" class="t-title">Logi 子系统</text>
+        <text x="140" y="291" text-anchor="middle" class="t-sub">HID++ 2.0 · 7.5k 行</text>
+        <rect x="240" y="256" width="160" height="46" class="nd"/>
+        <text x="320" y="275" text-anchor="middle" class="t-title">壳层 + UI</text>
+        <text x="320" y="291" text-anchor="middle" class="t-sub">偏好设置 · 托盘 · Toast</text>
+        <rect x="60" y="316" width="340" height="40" class="nd-dim"/>
+        <text x="230" y="340" text-anchor="middle" class="t-sub">Options → UserDefaults（本地持久化，无任何遥测）</text>
+        <text x="60" y="394" class="t-tiny mono">依赖: Sparkle 2.8.1 · LoginServiceKit 2.4 · Charts 4.1</text>
+        <text x="60" y="410" class="t-tiny mono">23,684 行 Swift · 39 个测试文件</text>
+      </g>
+
+      <!-- 域 B: Web 前端 -->
+      <g class="hov">
+        <rect x="500" y="130" width="320" height="290" class="zone"/>
+        <text x="520" y="158" class="t-zone">B · WEB 前端域</text>
+        <text x="520" y="178" class="t-tiny mono">mos.caldis.me · GitHub Pages</text>
+        <rect x="520" y="196" width="280" height="50" class="nd"/>
+        <text x="660" y="216" text-anchor="middle" class="t-title">Next.js 16 静态导出</text>
+        <text x="660" y="233" text-anchor="middle" class="t-sub">App Router · output:'export' · React 19</text>
+        <rect x="520" y="258" width="135" height="46" class="nd"/>
+        <text x="587" y="277" text-anchor="middle" class="t-title">官网页面</text>
+        <text x="587" y="293" text-anchor="middle" class="t-sub">下载 / 对比 / 文档</text>
+        <rect x="665" y="258" width="135" height="46" class="nd"/>
+        <text x="732" y="277" text-anchor="middle" class="t-title">/wall 留言墙</text>
+        <text x="732" y="293" text-anchor="middle" class="t-sub">便签 · SWR · Turnstile</text>
+        <rect x="520" y="316" width="280" height="40" class="nd-dim"/>
+        <text x="660" y="340" text-anchor="middle" class="t-sub">托管 appcast.xml + AI 友好文档（llms 风格）</text>
+        <text x="520" y="394" class="t-tiny mono">9,403 行 TS/TSX · Tailwind · framer-motion</text>
+      </g>
+
+      <!-- 域 C: 边缘后端 -->
+      <g class="hov">
+        <rect x="880" y="130" width="260" height="290" class="zone"/>
+        <text x="900" y="158" class="t-zone">C · 边缘后端域</text>
+        <text x="900" y="178" class="t-tiny mono">mos-api.caldis.me · Cloudflare</text>
+        <rect x="900" y="196" width="220" height="50" class="nd"/>
+        <text x="1010" y="216" text-anchor="middle" class="t-title">Worker · wall API</text>
+        <text x="1010" y="233" text-anchor="middle" class="t-sub">869 行 TS · 9 个路由</text>
+        <rect x="900" y="258" width="105" height="46" class="nd"/>
+        <text x="952" y="277" text-anchor="middle" class="t-title">D1</text>
+        <text x="952" y="293" text-anchor="middle" class="t-sub">wall_notes</text>
+        <rect x="1015" y="258" width="105" height="46" class="nd"/>
+        <text x="1067" y="277" text-anchor="middle" class="t-title">Workers AI</text>
+        <text x="1067" y="293" text-anchor="middle" class="t-sub">Llama 3.2 3B</text>
+        <rect x="900" y="316" width="220" height="40" class="nd-dim"/>
+        <text x="1010" y="340" text-anchor="middle" class="t-sub">Cron 每小时反垃圾巡查</text>
+        <text x="900" y="394" class="t-tiny mono">Turnstile · 双层限流 · 软删除</text>
+      </g>
+
+      <!-- 域 D: 发布管线 -->
+      <g class="hov">
+        <rect x="40" y="450" width="1100" height="60" class="zone"/>
+        <text x="60" y="475" class="t-zone">D · 发布与分发域</text>
+        <text x="60" y="494" class="t-tiny mono">GitHub Releases (zip) · GitHub Actions → Pages · Sparkle appcast (EdDSA 签名)</text>
+        <text x="1120" y="486" text-anchor="end" class="t-sub">详见 SHEET 05 →</text>
+      </g>
+
+      <!-- 跨域连线 -->
+      <path class="edge-dash" d="M420 219 C 460 219, 460 219, 500 219" marker-end="url(#arr)"/>
+      <text x="460" y="208" text-anchor="middle" class="t-tiny">更新检查</text>
+      <text x="460" y="240" text-anchor="middle" class="t-tiny mono">appcast.xml</text>
+      <path class="edge" d="M820 281 C 850 281, 850 281, 880 281" marker-end="url(#arr)"/>
+      <text x="850" y="270" text-anchor="middle" class="t-tiny">REST</text>
+      <path class="edge-dash" d="M230 420 L230 450" marker-end="url(#arr)"/>
+      <text x="242" y="442" class="t-tiny">下载 zip</text>
+      <path class="edge-dash" d="M660 420 L660 450" marker-end="url(#arr)"/>
+      <text x="672" y="442" class="t-tiny">CI 部署</text>
+
+      <!-- 隔离标注 -->
+      <g>
+        <rect x="448" y="370" width="378" height="30" class="badge-amber"/>
+        <text x="637" y="389" text-anchor="middle" class="t-amber">注: App 不调用 wall API — 客户端与留言墙后端完全隔离</text>
+      </g>
+    </svg>
+    <div class="legend">
+      <span><span class="lg"></span>同步调用 / 请求</span>
+      <span><span class="lg dash"></span>异步 / 周期性</span>
+      <span><span class="lg-box"></span>模块</span>
+      <span><span class="lg-box dash"></span>边界 / 说明</span>
+    </div>
+    <p class="sheet-note">
+      整个系统刻意保持<b>低耦合的三岛结构</b>：客户端唯一的外联是 Sparkle 向
+      <span class="marker">mos.caldis.me/appcast.xml</span> 的更新检查与 GitHub Releases 的 zip 下载；
+      留言墙是纯网页功能，后端故障不影响 App 任何能力。这是一个值得保持的架构属性。
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════ SHEET 02 macOS 应用分层 ════════════════ -->
+<section class="frame" id="s2">
+  <div class="sheet-head">
+    <span class="sheet-no">SHEET 02</span>
+    <span class="sheet-title">macOS 应用分层</span>
+    <span class="sheet-desc">Mos.app 内部模块与依赖 · 23,684 行 Swift</span>
+  </div>
+  <div class="sheet-body">
+    <svg viewBox="0 0 1180 1010" role="img" aria-label="macOS 应用分层架构图">
+      <!-- ── 系统层 ── -->
+      <text x="40" y="34" class="t-band">系统边界 · MACOS</text>
+      <g class="hov">
+        <rect x="40" y="46" width="250" height="54" class="nd-dim"/>
+        <text x="165" y="68" text-anchor="middle" class="t-title">CGEvent HID 事件流</text>
+        <text x="165" y="86" text-anchor="middle" class="t-sub">滚轮 / 键盘 / 鼠标按键</text>
+      </g>
+      <g class="hov">
+        <rect x="310" y="46" width="230" height="54" class="nd-dim"/>
+        <text x="425" y="68" text-anchor="middle" class="t-title">CVDisplayLink</text>
+        <text x="425" y="86" text-anchor="middle" class="t-sub">逐帧渲染时钟（独立线程）</text>
+      </g>
+      <g class="hov">
+        <rect x="560" y="46" width="230" height="54" class="nd-dim"/>
+        <text x="675" y="68" text-anchor="middle" class="t-title">Accessibility 权限</text>
+        <text x="675" y="86" text-anchor="middle" class="t-sub">tap 创建前置条件 · 可被撤销</text>
+      </g>
+      <g class="hov">
+        <rect x="810" y="46" width="330" height="54" class="nd-dim"/>
+        <text x="975" y="68" text-anchor="middle" class="t-title">IOKit HID（Logitech 设备）</text>
+        <text x="975" y="86" text-anchor="middle" class="t-sub">HID++ 2.0 · USB 接收器 / BLE 直连</text>
+      </g>
+
+      <!-- App 大边框 -->
+      <rect x="28" y="130" width="1124" height="846" fill="none" stroke="rgba(168,204,240,0.4)" stroke-width="1.4"/>
+      <text x="44" y="154" class="t-zone">MOS.APP</text>
+      <text x="140" y="154" class="t-tiny mono">注1: 所有事件回调均在主线程 RunLoop · 唯一并行线程为 CVDisplayLink</text>
+
+      <!-- ── 捕获层 ── -->
+      <text x="44" y="186" class="t-band">捕获层</text>
+      <g class="hov">
+        <rect x="44" y="198" width="430" height="58" class="nd"/>
+        <text x="60" y="221" class="t-title">Interceptor × 5 常驻</text>
+        <text x="60" y="239" class="t-sub">CGEventTap 封装 · keeper 每 5s 自检复活 · 权限丢失上报</text>
+        <rect x="356" y="206" width="106" height="20" class="chip"/>
+        <text x="409" y="220" text-anchor="middle" class="t-chip">主 RunLoop</text>
+      </g>
+      <path class="edge" d="M165 100 L165 198" marker-end="url(#arr)"/>
+      <path class="edge-dash" d="M675 100 L675 138 L460 138 L460 198" marker-end="url(#arr)"/>
+      <text x="480" y="132" class="t-tiny">权限撤销 → 全体停摆 + 轮询恢复</text>
+
+      <!-- ── ScrollCore ── -->
+      <text x="44" y="292" class="t-band">滚动域 · SCROLLCORE（热路径）</text>
+      <g class="hov">
+        <rect x="44" y="304" width="200" height="64" class="nd"/>
+        <text x="144" y="326" text-anchor="middle" class="t-title">ScrollCore</text>
+        <text x="144" y="342" text-anchor="middle" class="t-sub">3 个 tap · 热键状态</text>
+        <text x="144" y="356" text-anchor="middle" class="t-tiny mono">452 行 · 单例</text>
+      </g>
+      <g class="hov">
+        <rect x="264" y="304" width="170" height="64" class="nd"/>
+        <text x="349" y="326" text-anchor="middle" class="t-title">ScrollEvent</text>
+        <text x="349" y="342" text-anchor="middle" class="t-sub">轴数据解析 / 翻转</text>
+        <text x="349" y="356" text-anchor="middle" class="t-tiny mono">归一化</text>
+      </g>
+      <g class="hov">
+        <rect x="454" y="304" width="170" height="64" class="nd"/>
+        <text x="539" y="326" text-anchor="middle" class="t-title">ScrollPhase</text>
+        <text x="539" y="342" text-anchor="middle" class="t-sub">Tracking / Momentum</text>
+        <text x="539" y="356" text-anchor="middle" class="t-tiny mono">相位状态机</text>
+      </g>
+      <g class="hov">
+        <rect x="644" y="290" width="250" height="92" class="nd"/>
+        <text x="769" y="314" text-anchor="middle" class="t-title">ScrollPoster</text>
+        <text x="769" y="331" text-anchor="middle" class="t-sub">CVDisplayLink 帧循环 · 动量物理</text>
+        <text x="769" y="347" text-anchor="middle" class="t-sub">内嵌 Interpolator + ScrollFilter</text>
+        <rect x="668" y="356" width="94" height="18" class="chip"/>
+        <text x="715" y="369" text-anchor="middle" class="t-chip">os_unfair_lock</text>
+        <rect x="772" y="356" width="98" height="18" class="badge-amber"/>
+        <text x="821" y="369" text-anchor="middle" class="t-amber">465 行 · 多职责</text>
+      </g>
+      <g class="hov">
+        <rect x="914" y="304" width="226" height="64" class="nd"/>
+        <text x="1027" y="326" text-anchor="middle" class="t-title">ScrollDispatchContext</text>
+        <text x="1027" y="342" text-anchor="middle" class="t-sub">事件模板快照 · 定向 PID 注入</text>
+        <text x="1027" y="356" text-anchor="middle" class="t-tiny mono">generation + TTL 防陈旧</text>
+      </g>
+      <path class="edge" d="M244 336 L264 336" marker-end="url(#arr)"/>
+      <path class="edge" d="M434 336 L454 336" marker-end="url(#arr)"/>
+      <path class="edge" d="M624 336 L644 336" marker-end="url(#arr)"/>
+      <path class="edge" d="M894 336 L914 336" marker-end="url(#arr)"/>
+      <path class="edge" d="M165 256 L165 280 L144 280 L144 304" marker-end="url(#arr)"/>
+      <path class="edge-dash" d="M425 100 L425 270 L700 270 L700 290" marker-end="url(#arr)"/>
+      <text x="712" y="276" class="t-tiny">每帧回调（独立线程）</text>
+      <path class="edge-mint" d="M1027 304 L1027 240 L1140 240" marker-end="url(#arr-m)"/>
+      <text x="1052" y="258" class="t-tiny" fill="#7BD8A8">合成滚动事件 CGEventPostToPid ↑ 注2</text>
+
+      <!-- ── ButtonCore ── -->
+      <text x="44" y="420" class="t-band">按键域 · BUTTONCORE → INPUTEVENT → SHORTCUT</text>
+      <g class="hov">
+        <rect x="44" y="432" width="200" height="64" class="nd"/>
+        <text x="144" y="454" text-anchor="middle" class="t-title">ButtonCore</text>
+        <text x="144" y="470" text-anchor="middle" class="t-sub">2 个 tap · 虚拟修饰键注入</text>
+        <text x="144" y="484" text-anchor="middle" class="t-tiny mono">135 行</text>
+      </g>
+      <g class="hov">
+        <rect x="264" y="432" width="170" height="64" class="nd"/>
+        <text x="349" y="450" text-anchor="middle" class="t-title">InputEvent</text>
+        <text x="349" y="466" text-anchor="middle" class="t-sub">统一输入模型</text>
+        <rect x="289" y="472" width="120" height="17" class="chip"/>
+        <text x="349" y="484" text-anchor="middle" class="t-chip">模块间边界类型</text>
+      </g>
+      <g class="hov">
+        <rect x="454" y="432" width="190" height="64" class="nd"/>
+        <text x="549" y="450" text-anchor="middle" class="t-title">InputProcessor</text>
+        <text x="549" y="466" text-anchor="middle" class="t-sub">绑定匹配 · activeBindings</text>
+        <text x="549" y="482" text-anchor="middle" class="t-sub">虚拟修饰键状态</text>
+      </g>
+      <g class="hov">
+        <rect x="664" y="418" width="230" height="92" class="nd"/>
+        <text x="779" y="440" text-anchor="middle" class="t-title">ShortcutExecutor</text>
+        <text x="779" y="456" text-anchor="middle" class="t-sub">7 类动作解析 fallback 链</text>
+        <text x="779" y="471" text-anchor="middle" class="t-sub">合成键鼠 / 系统快捷键 / openTarget</text>
+        <rect x="688" y="480" width="86" height="18" class="badge-amber"/>
+        <text x="731" y="493" text-anchor="middle" class="t-amber">753 行</text>
+        <rect x="784" y="480" width="86" height="18" class="chip"/>
+        <text x="827" y="493" text-anchor="middle" class="t-chip">单例</text>
+      </g>
+      <g class="hov">
+        <rect x="914" y="432" width="226" height="64" class="nd"/>
+        <text x="1027" y="450" text-anchor="middle" class="t-title">SystemShortcut / Payload</text>
+        <text x="1027" y="466" text-anchor="middle" class="t-sub">70+ 系统快捷键目录</text>
+        <text x="1027" y="482" text-anchor="middle" class="t-tiny mono">symbolichotkeys 实时解析</text>
+      </g>
+      <path class="edge" d="M165 256 L165 410 L144 410 L144 432" marker-end="url(#arr)"/>
+      <path class="edge" d="M244 464 L264 464" marker-end="url(#arr)"/>
+      <path class="edge" d="M434 464 L454 464" marker-end="url(#arr)"/>
+      <path class="edge" d="M644 464 L664 464" marker-end="url(#arr)"/>
+      <path class="edge" d="M894 464 L914 464" marker-end="url(#arr)"/>
+
+      <!-- 循环依赖标记 -->
+      <path class="edge-risk" d="M730 418 C 700 386, 360 380, 240 368" marker-end="url(#arr-r)"/>
+      <path class="edge-risk" d="M144 368 C 160 400, 380 416, 470 432" marker-end="url(#arr-r)"/>
+      <g>
+        <rect x="300" y="384" width="208" height="22" class="badge-risk"/>
+        <text x="404" y="399" text-anchor="middle" class="t-risk">△ 循环依赖: 三单例互调 · 注3</text>
+      </g>
+
+      <!-- ── Keys 录制 ── -->
+      <g class="hov">
+        <rect x="44" y="530" width="290" height="56" class="nd"/>
+        <text x="60" y="552" class="t-title">KeyRecorder（Keys 域）</text>
+        <text x="60" y="570" class="t-sub">3 种录制模式 · 临时 tap · 录制时 Logi 全量 divert</text>
+      </g>
+      <path class="edge-dash" d="M334 558 L560 558 L560 510" marker-end="url(#arr)"/>
+      <text x="370" y="550" class="t-tiny">录制结果 → 绑定持久化</text>
+
+      <!-- ── Logi 子系统 ── -->
+      <g class="hov">
+        <rect x="376" y="606" width="764" height="190" class="zone" stroke-dasharray="7 5" stroke="rgba(111,211,231,0.5)"/>
+        <text x="396" y="632" class="t-zone">LOGI 子系统 · 7,547 行 / 19 文件</text>
+        <text x="700" y="632" class="t-tiny mono">边界由 lint-logi-boundary.sh 强制 · Zone A 白名单 11 类型 · 注4</text>
+
+        <rect x="396" y="648" width="170" height="58" class="nd"/>
+        <text x="481" y="668" text-anchor="middle" class="t-title">LogiCenter</text>
+        <text x="481" y="684" text-anchor="middle" class="t-sub">Facade · 唯一公开入口</text>
+        <text x="481" y="698" text-anchor="middle" class="t-tiny mono">147 行纯委托</text>
+
+        <rect x="586" y="648" width="170" height="58" class="nd"/>
+        <text x="671" y="668" text-anchor="middle" class="t-title">LogiSessionManager</text>
+        <text x="671" y="684" text-anchor="middle" class="t-sub">IOHIDManager 生命周期</text>
+        <text x="671" y="698" text-anchor="middle" class="t-tiny mono">调度于主 RunLoop</text>
+
+        <rect x="776" y="640" width="190" height="74" class="nd"/>
+        <text x="871" y="660" text-anchor="middle" class="t-title">LogiDeviceSession</text>
+        <text x="871" y="676" text-anchor="middle" class="t-sub">HID++ 协议引擎 · 4 个状态机</text>
+        <text x="871" y="690" text-anchor="middle" class="t-sub">发现/上报/divert/接收器枚举</text>
+        <rect x="800" y="696" width="142" height="14" class="badge-risk"/>
+        <text x="871" y="707" text-anchor="middle" class="t-risk">3,191 行 — 单文件占模块 42%</text>
+
+        <rect x="986" y="648" width="138" height="58" class="nd"/>
+        <text x="1055" y="668" text-anchor="middle" class="t-title">CIDDirectory</text>
+        <text x="1055" y="684" text-anchor="middle" class="t-sub">100+ CID 映射</text>
+        <text x="1055" y="698" text-anchor="middle" class="t-tiny mono">源自 Solaar</text>
+
+        <rect x="396" y="722" width="170" height="58" class="nd"/>
+        <text x="481" y="742" text-anchor="middle" class="t-title">UsageRegistry</text>
+        <text x="481" y="758" text-anchor="middle" class="t-sub">用量聚合 · 主线程断言</text>
+        <text x="481" y="772" text-anchor="middle" class="t-tiny mono">coalesce 后 applyUsage</text>
+
+        <rect x="586" y="722" width="170" height="58" class="nd"/>
+        <text x="671" y="742" text-anchor="middle" class="t-title">DivertPlanner</text>
+        <text x="671" y="758" text-anchor="middle" class="t-sub">纯函数规划 toDivert/Undivert</text>
+        <text x="671" y="772" text-anchor="middle" class="t-tiny mono">不碰第三方 divert</text>
+
+        <rect x="776" y="722" width="190" height="58" class="nd"/>
+        <text x="871" y="742" text-anchor="middle" class="t-title">DeliveryPolicy / ModeStore</text>
+        <text x="871" y="758" text-anchor="middle" class="t-sub">hidpp / contended 仲裁</text>
+        <text x="871" y="772" text-anchor="middle" class="t-tiny mono">30s 窗口外部清除检测</text>
+
+        <rect x="986" y="722" width="138" height="58" class="nd"/>
+        <text x="1055" y="742" text-anchor="middle" class="t-title">ConflictDetector</text>
+        <text x="1055" y="758" text-anchor="middle" class="t-sub">归属判定纯函数</text>
+        <text x="1055" y="772" text-anchor="middle" class="t-tiny mono">+ Debug 面板 2.4k 行</text>
+      </g>
+      <path class="edge" d="M975 100 L975 606"/>
+      <path class="edge" d="M975 606 L905 640" marker-end="url(#arr)"/>
+
+      <!-- Integration 桥 -->
+      <g class="hov">
+        <rect x="44" y="640" width="290 " height="120" class="nd"/>
+        <text x="60" y="664" class="t-title">Integration 中介带</text>
+        <text x="60" y="684" class="t-sub">LogiIntegrationBridge（双事件通道）</text>
+        <text x="60" y="701" class="t-tiny mono">rawButtonEvent → 调试/向导</text>
+        <text x="60" y="716" class="t-tiny mono">dispatchLogiButtonEvent → 生产路由</text>
+        <text x="60" y="736" class="t-sub">LogiUsageBootstrap（启动期用量扫描）</text>
+        <rect x="218" y="650" width="104" height="18" class="chip"/>
+        <text x="270" y="663" text-anchor="middle" class="t-chip">Zone B 缓冲区</text>
+      </g>
+      <path class="edge" d="M396 690 L334 690" marker-end="url(#arr)"/>
+      <path class="edge-dash" d="M144 640 L144 586" marker-end="url(#arr)"/>
+      <text x="152" y="616" class="t-tiny">录制通道 → KeyRecorder</text>
+      <path class="edge" d="M190 640 L190 600 L520 600 L520 510" marker-end="url(#arr)"/>
+      <text x="240" y="594" class="t-tiny">通用按键 → InputProcessor · Logi 动作 → 执行器</text>
+      <path class="edge-dash" d="M779 510 L779 540 L481 540 L481 648" marker-end="url(#arr)"/>
+      <text x="600" y="534" class="t-tiny">DPI / SmartShift 控制（经 Facade）</text>
+
+      <!-- ── 壳层 ── -->
+      <text x="44" y="836" class="t-band">壳层与界面 · APPKIT</text>
+      <g class="hov">
+        <rect x="44" y="848" width="186" height="58" class="nd"/>
+        <text x="137" y="868" text-anchor="middle" class="t-title">AppDelegate</text>
+        <text x="137" y="884" text-anchor="middle" class="t-sub">生命周期 · 权限轮询</text>
+        <text x="137" y="898" text-anchor="middle" class="t-tiny mono">休眠/切换用户处置</text>
+      </g>
+      <g class="hov">
+        <rect x="250" y="848" width="186" height="58" class="nd"/>
+        <text x="343" y="868" text-anchor="middle" class="t-title">Managers</text>
+        <text x="343" y="884" text-anchor="middle" class="t-sub">StatusItem / Window</text>
+        <text x="343" y="898" text-anchor="middle" class="t-tiny mono">Update (Sparkle 2.8.1)</text>
+      </g>
+      <g class="hov">
+        <rect x="456" y="848" width="250" height="58" class="nd"/>
+        <text x="581" y="868" text-anchor="middle" class="t-title">Windows</text>
+        <text x="581" y="884" text-anchor="middle" class="t-sub">偏好设置 ×6 tab · Monitor · 引导 ×2</text>
+        <text x="581" y="898" text-anchor="middle" class="t-tiny mono">Main.storyboard 323KB 单体</text>
+      </g>
+      <g class="hov">
+        <rect x="726" y="848" width="186" height="58" class="nd"/>
+        <text x="819" y="868" text-anchor="middle" class="t-title">Components</text>
+        <text x="819" y="884" text-anchor="middle" class="t-sub">Toast 体系（8 文件）</text>
+        <text x="819" y="898" text-anchor="middle" class="t-tiny mono">Popover / 控件</text>
+      </g>
+      <g class="hov">
+        <rect x="932" y="848" width="208" height="58" class="nd"/>
+        <text x="1036" y="868" text-anchor="middle" class="t-title">Options（单例）</text>
+        <text x="1036" y="884" text-anchor="middle" class="t-sub">didSet → 全量写回</text>
+        <rect x="962" y="888" width="148" height="14" class="badge-amber"/>
+        <text x="1036" y="899" text-anchor="middle" class="t-amber">无订阅机制 · 手动 sync · 注5</text>
+      </g>
+      <g class="hov">
+        <rect x="44" y="926" width="1096" height="36" class="nd-dim"/>
+        <text x="592" y="949" text-anchor="middle" class="t-sub">UserDefaults — 50+ 配置键 · 绑定 JSON（前向兼容：保留未来版本未知字段） · Logi feature cache · ScrollHotkey 旧格式迁移</text>
+      </g>
+      <path class="edge" d="M1036 906 L1036 926" marker-end="url(#arr)"/>
+      <path class="edge-dash" d="M581 906 L581 916 L932 916 L932 890" marker-end="url(#arr)"/>
+      <text x="640" y="922" class="t-tiny">偏好面板直接读写 Options · 各 VC 手动 syncViewWithOptions</text>
+    </svg>
+    <div class="legend">
+      <span><span class="lg"></span>直接调用（多为单例访问）</span>
+      <span><span class="lg dash"></span>通知 / 回调 / 异步</span>
+      <span><span class="lg risk"></span>循环依赖</span>
+      <span><span class="lg mint"></span>合成事件输出</span>
+      <span><span class="lg-box dash"></span>系统 / 持久化边界</span>
+    </div>
+    <p class="sheet-note">
+      <span class="marker">注1</span> CGEventTap 与 IOHIDManager 都调度在主 RunLoop，全应用实际只有两条执行流：主线程 + CVDisplayLink 帧回调线程（以 os_unfair_lock 交接）。<br>
+      <span class="marker">注2</span> 合成事件带 MosEventMarker 标记，捕获层据此跳过自产事件，防止无限回环。<br>
+      <span class="risk">注3</span> ScrollCore → InputProcessor → ShortcutExecutor → ScrollCore 构成单例三角循环（证据见 SHEET 06 / P1-2）。<br>
+      <span class="marker">注4</span> Zone A（普通应用层）只允许引用 11 个白名单类型；Zone B（Integration）额外开放 4 个桥接类型；HID++ 细节被锁死在 Logi 域内。<br>
+      <span class="marker">注5</span> Options 任一属性变更即触发全部配置键同步重写 UserDefaults，变更传播依赖各处手动同步。
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════ SHEET 03 事件数据流 ════════════════ -->
+<section class="frame" id="s3">
+  <div class="sheet-head">
+    <span class="sheet-no">SHEET 03</span>
+    <span class="sheet-title">事件数据流</span>
+    <span class="sheet-desc">三条关键路径的逐步走线</span>
+  </div>
+  <div class="sheet-body">
+
+    <div class="flow-strip">
+      <div class="flow-name">FLOW A · 滚动平滑（热路径，每个滚轮事件）</div>
+      <div class="flow">
+        <div class="step io"><span class="step-no">A1 输入</span><div class="step-t">滚轮事件</div><div class="step-d">scrollWheel tap（defaultTap，消费原事件）</div></div>
+        <div class="step"><span class="step-no">A2</span><div class="step-t">回环防护</div><div class="step-d">带 MosEventMarker 的合成事件直接放行</div></div>
+        <div class="step"><span class="step-no">A3</span><div class="step-t">解析 + 定位</div><div class="step-d">ScrollEvent 解析轴数据；解析目标进程 PID</div></div>
+        <div class="step"><span class="step-no">A4</span><div class="step-t">配置合成</div><div class="step-d">全局 Options + 目标 App 例外规则（翻转/平滑/步进）</div></div>
+        <div class="step"><span class="step-no">A5</span><div class="step-t">变换</div><div class="step-d">翻转、微小增量归一化、热键修饰（dash/toggle/block）</div></div>
+        <div class="step"><span class="step-no">A6</span><div class="step-t">相位机</div><div class="step-d">ScrollPhase 推演 Tracking→Momentum 序列</div></div>
+        <div class="step hot"><span class="step-no">A7 跨线程</span><div class="step-t">缓冲入队</div><div class="step-d">ScrollPoster 加锁写入 buffer，唤起帧循环</div></div>
+        <div class="step hot"><span class="step-no">A8 每帧</span><div class="step-t">插值平滑</div><div class="step-d">lerp → 4 采样滤波 → 残量 vs deadZone 判停</div></div>
+        <div class="step io"><span class="step-no">A9 输出</span><div class="step-t">定向注入</div><div class="step-d">DispatchContext 按模板合成事件 CGEventPostToPid</div></div>
+      </div>
+    </div>
+
+    <div class="flow-strip">
+      <div class="flow-name">FLOW B · 按键映射（侧键 / 快捷键绑定）</div>
+      <div class="flow">
+        <div class="step io"><span class="step-no">B1 输入</span><div class="step-t">物理按键</div><div class="step-d">otherMouse / key tap（defaultTap）</div></div>
+        <div class="step"><span class="step-no">B2</span><div class="step-t">统一建模</div><div class="step-d">CGEvent → InputEvent（类型/键码/修饰键/设备）</div></div>
+        <div class="step"><span class="step-no">B3</span><div class="step-t">绑定匹配</div><div class="step-d">ButtonUtils 缓存查找，修饰键计分 + 设备过滤</div></div>
+        <div class="step"><span class="step-no">B4</span><div class="step-t">动作解析</div><div class="step-d">openTarget → 自定义键 → 修饰键 → 鼠标键 → mos 滚动 → Logi → 系统快捷键</div></div>
+        <div class="step"><span class="step-no">B5</span><div class="step-t">执行 ↓</div><div class="step-d">合成键鼠 / NSWorkspace 启动 / 脚本 / LogiCenter 设备控制</div></div>
+        <div class="step"><span class="step-no">B6</span><div class="step-t">状态跟踪</div><div class="step-d">activeBindings 持有 down 态；虚拟修饰键注入后续键盘流</div></div>
+        <div class="step io"><span class="step-no">B7 释放</span><div class="step-t">up 阶段</div><div class="step-d">配对释放 / 鼠标会话回放判定</div></div>
+      </div>
+    </div>
+
+    <div class="flow-strip">
+      <div class="flow-name">FLOW C · Logi HID++ 双通道（设备按键 → 应用动作）</div>
+      <div class="flow">
+        <div class="step io"><span class="step-no">C1 输入</span><div class="step-t">HID 报文</div><div class="step-d">IOHIDDevice InputReport 回调（主线程）</div></div>
+        <div class="step"><span class="step-no">C2</span><div class="step-t">协议解析</div><div class="step-d">DeviceSession 解析 diverted 按键增量（按下/释放 CID）</div></div>
+        <div class="step"><span class="step-no">C3</span><div class="step-t">通道 ①</div><div class="step-d">rawButtonEvent 通知 — 调试面板 / 自检向导永远可见</div></div>
+        <div class="step"><span class="step-no">C4</span><div class="step-t">通道 ②</div><div class="step-d">Bridge.dispatchLogiButtonEvent（类型边界，InputEvent 出域）</div></div>
+        <div class="step"><span class="step-no">C5</span><div class="step-t">三路分发</div><div class="step-d">录制中→KeyRecorder；logi* 绑定→执行器；通用→InputProcessor</div></div>
+        <div class="step io"><span class="step-no">C6 闭环</span><div class="step-t">divert 调和</div><div class="step-d">绑定变更 → UsageRegistry 聚合 → Planner 计算 → 设备写入</div></div>
+      </div>
+    </div>
+
+    <p class="sheet-note">
+      <b>FLOW A 是性能敏感热路径</b>：A1–A7 运行在主 RunLoop tap 回调内，A8–A9 运行在 CVDisplayLink 线程，
+      二者仅通过 <span class="marker">os_unfair_lock</span> 保护的缓冲区交接。代码地图明确要求此路径
+      禁止多余分配、同步 I/O、日志与跨模块调用。FLOW C 的"双通道"设计让调试观测（C3）与生产路由（C4）解耦，
+      录制模式可整体接管而不影响观测。
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════ SHEET 04 Web 与云端 ════════════════ -->
+<section class="frame" id="s4">
+  <div class="sheet-head">
+    <span class="sheet-no">SHEET 04</span>
+    <span class="sheet-title">Web 与云端</span>
+    <span class="sheet-desc">留言墙全链路 · 防御纵深</span>
+  </div>
+  <div class="sheet-body">
+    <svg viewBox="0 0 1180 700" role="img" aria-label="Web 与云端架构图">
+      <!-- 浏览器侧 -->
+      <g class="hov">
+        <rect x="40" y="40" width="320" height="270" class="zone"/>
+        <text x="60" y="68" class="t-zone">浏览器 · MOS.CALDIS.ME</text>
+        <text x="60" y="88" class="t-tiny mono">Next.js 16 静态导出 · GitHub Pages 托管</text>
+        <rect x="60" y="104" width="280" height="52" class="nd"/>
+        <text x="200" y="125" text-anchor="middle" class="t-title">/wall 便签墙客户端</text>
+        <text x="200" y="141" text-anchor="middle" class="t-sub">SWR 拉取 · localStorage 快照 5min TTL</text>
+        <rect x="60" y="168" width="135" height="52" class="nd"/>
+        <text x="127" y="189" text-anchor="middle" class="t-title">owner 令牌</text>
+        <text x="127" y="205" text-anchor="middle" class="t-sub">UUID · localStorage</text>
+        <rect x="205" y="168" width="135" height="52" class="nd"/>
+        <text x="272" y="189" text-anchor="middle" class="t-title">Turnstile 组件</text>
+        <text x="272" y="205" text-anchor="middle" class="t-sub">发帖前人机验证</text>
+        <rect x="60" y="232" width="280" height="52" class="nd"/>
+        <text x="200" y="253" text-anchor="middle" class="t-title">审核台（admin 模式）</text>
+        <text x="200" y="269" text-anchor="middle" class="t-sub">x-wall-admin · sessionStorage（关标签即清）</text>
+      </g>
+
+      <!-- Worker -->
+      <g class="hov">
+        <rect x="430" y="40" width="380" height="450" class="zone"/>
+        <text x="450" y="68" class="t-zone">CLOUDFLARE WORKER · MOS-API.CALDIS.ME</text>
+        <text x="450" y="88" class="t-tiny mono">869 行 TS · 自定义域 · 无 workers.dev 回退</text>
+
+        <text x="450" y="116" class="t-band">请求防线（自上而下）</text>
+        <rect x="450" y="126" width="340" height="34" class="nd"/>
+        <text x="470" y="148" class="t-sub"><tspan class="t-title" font-size="12">① CORS</tspan>　仅 https://mos.caldis.me</text>
+        <rect x="450" y="166" width="340" height="34" class="nd"/>
+        <text x="470" y="188" class="t-sub"><tspan class="t-title" font-size="12">② CF 限流绑定</tspan>　读 120/60s · 管理 10/60s（按 IP）</text>
+        <rect x="450" y="206" width="340" height="34" class="nd"/>
+        <text x="470" y="228" class="t-sub"><tspan class="t-title" font-size="12">③ Turnstile 校验</tspan>　POST 必须携带有效 token</text>
+        <rect x="450" y="246" width="340" height="34" class="nd"/>
+        <text x="470" y="268" class="t-sub"><tspan class="t-title" font-size="12">④ 内容规则过滤</tspan>　链接拦截 + ~50 组广告关键词</text>
+        <rect x="450" y="286" width="340" height="34" class="nd"/>
+        <text x="470" y="308" class="t-sub"><tspan class="t-title" font-size="12">⑤ ip_hash 发帖限流</tspan>　可见帖 1/2min · 总帖 8/h</text>
+        <rect x="450" y="326" width="340" height="34" class="nd"/>
+        <text x="470" y="348" class="t-sub"><tspan class="t-title" font-size="12">⑥ admin 常时比较鉴权</tspan>　timingSafeEqual · 失败即 401</text>
+
+        <text x="450" y="392" class="t-band">端点 ENDPOINTS（9 路由 = 下列 7 业务 + 健康检查 + CORS 预检）</text>
+        <text x="450" y="414" class="t-tiny mono">GET  /wall/messages          列表（≤800 · 最新优先）</text>
+        <text x="450" y="430" class="t-tiny mono">POST /wall/messages          发帖（180 字 · 6 色 · 归一坐标）</text>
+        <text x="450" y="446" class="t-tiny mono">DEL  /wall/messages/:id      软删（本人 或 admin）</text>
+        <text x="450" y="462" class="t-tiny mono">GET  /wall/admin[/notes]     验证 / 全量审核账本</text>
+        <text x="450" y="478" class="t-tiny mono">POST /wall/admin/…restore|flagged/hide   恢复 / 批量隐藏</text>
+      </g>
+
+      <!-- 存储与 AI -->
+      <g class="hov">
+        <rect x="880" y="40" width="260" height="450" class="zone"/>
+        <text x="900" y="68" class="t-zone">存储与智能</text>
+        <rect x="900" y="84" width="220" height="96" class="nd"/>
+        <text x="1010" y="106" text-anchor="middle" class="t-title">D1 · wall_notes</text>
+        <text x="1010" y="124" text-anchor="middle" class="t-sub">软删 hidden + hide_reason 枚举</text>
+        <text x="1010" y="140" text-anchor="middle" class="t-sub">ip_hash（加盐 SHA-256 不可逆）</text>
+        <text x="1010" y="156" text-anchor="middle" class="t-sub">country（边缘地理，仅聚合）</text>
+        <text x="1010" y="172" text-anchor="middle" class="t-tiny mono">3 索引 · 5 次迁移演进</text>
+        <rect x="900" y="192" width="220" height="72" class="nd"/>
+        <text x="1010" y="214" text-anchor="middle" class="t-title">Workers AI</text>
+        <text x="1010" y="231" text-anchor="middle" class="t-sub">Llama 3.2 3B · 仅标记不删帖</text>
+        <text x="1010" y="247" text-anchor="middle" class="t-sub">≤25/次 · ≤150/天（ai_budget 表）</text>
+        <rect x="900" y="276" width="220" height="56" class="nd"/>
+        <text x="1010" y="298" text-anchor="middle" class="t-title">Cron 每小时巡查</text>
+        <text x="1010" y="314" text-anchor="middle" class="t-sub">规则复扫近 800 条 + AI 标记低质</text>
+        <rect x="900" y="344" width="220" height="56" class="nd-dim"/>
+        <text x="1010" y="366" text-anchor="middle" class="t-sub">Secrets × 3</text>
+        <text x="1010" y="382" text-anchor="middle" class="t-tiny mono">TURNSTILE_SECRET · IP_SALT · ADMIN_TOKEN</text>
+        <rect x="900" y="412" width="220" height="42" class="badge-amber"/>
+        <text x="1010" y="430" text-anchor="middle" class="t-amber">单一共享 admin token</text>
+        <text x="1010" y="445" text-anchor="middle" class="t-tiny">已知取舍 · 见 SHEET 06 / P3-9</text>
+      </g>
+
+      <!-- 连线 -->
+      <path class="edge" d="M360 130 L430 143" marker-end="url(#arr)"/>
+      <text x="368" y="122" class="t-tiny">GET / POST / DELETE</text>
+      <path class="edge" d="M360 258 L430 280" marker-end="url(#arr)"/>
+      <text x="368" y="250" class="t-tiny">x-wall-admin</text>
+      <path class="edge" d="M810 240 L880 240" marker-end="url(#arr)"/>
+      <text x="845" y="230" text-anchor="middle" class="t-tiny">SQL</text>
+      <path class="edge-dash" d="M1010 332 L1010 264"/>
+      <path class="edge-dash" d="M1010 276 L1010 264" marker-end="url(#arr)"/>
+      <path class="edge-dash" d="M900 304 L820 304 L820 360"/>
+      <path class="edge-dash" d="M820 360 L810 360" marker-end="url(#arr)"/>
+
+      <!-- 审核流程注释 -->
+      <g>
+        <rect x="40" y="540" width="1100" height="120" class="nd-dim"/>
+        <text x="64" y="570" class="t-zone" style="letter-spacing:0.2em">审核流水线（人机协同）</text>
+        <text x="64" y="598" class="t-sub">发帖时：规则过滤当场拒绝（链接 / 广告词，零误杀优先）　→　每小时：规则复扫追溯隐藏（reason=spam）+ AI 仅打标 ai-low-quality（fail-open：模型出错不动帖）</text>
+        <text x="64" y="622" class="t-sub">→　人工：审核台按 hide_reason 筛选，复核 AI 标记后一键批量隐藏 / 单条恢复。删除一律软删，账本可回溯。</text>
+        <text x="64" y="646" class="t-tiny mono">设计原则: 机器只做高置信拦截与低置信标记, 最终裁决权留给人。</text>
+      </g>
+    </svg>
+    <div class="legend">
+      <span><span class="lg"></span>HTTPS 请求</span>
+      <span><span class="lg dash"></span>定时任务 / 内部调用</span>
+      <span><span class="lg-box"></span>组件</span>
+      <span><span class="lg-box dash"></span>说明 / 边界</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SHEET 05 发布与分发 ════════════════ -->
+<section class="frame" id="s5">
+  <div class="sheet-head">
+    <span class="sheet-no">SHEET 05</span>
+    <span class="sheet-title">发布与分发管线</span>
+    <span class="sheet-desc">本地构建签名 · CI 仅部署静态资产</span>
+  </div>
+  <div class="sheet-body">
+    <svg viewBox="0 0 1180 470" role="img" aria-label="发布管线图">
+      <!-- 本地发布线 -->
+      <text x="40" y="36" class="t-band">本地发布线（release-preparation skill 驱动 · 高危步骤需人工确认）</text>
+      <g class="hov">
+        <rect x="40" y="50" width="158" height="64" class="nd"/>
+        <text x="119" y="74" text-anchor="middle" class="t-title">xcodebuild</text>
+        <text x="119" y="92" text-anchor="middle" class="t-sub">archive · Release</text>
+      </g>
+      <g class="hov">
+        <rect x="238" y="50" width="158" height="64" class="nd"/>
+        <text x="317" y="74" text-anchor="middle" class="t-title">Developer ID 签名</text>
+        <text x="317" y="92" text-anchor="middle" class="t-sub">+ notarization</text>
+      </g>
+      <g class="hov">
+        <rect x="436" y="50" width="158" height="64" class="nd"/>
+        <text x="515" y="74" text-anchor="middle" class="t-title">prepare_zip.sh</text>
+        <text x="515" y="92" text-anchor="middle" class="t-sub">发布 zip 打包</text>
+      </g>
+      <g class="hov">
+        <rect x="634" y="50" width="178" height="64" class="nd"/>
+        <text x="723" y="74" text-anchor="middle" class="t-title">update_appcast.sh</text>
+        <text x="723" y="88" text-anchor="middle" class="t-sub">EdDSA 签名（Keychain 取键）</text>
+        <text x="723" y="102" text-anchor="middle" class="t-tiny mono">去重 + 前插 + 渠道检测</text>
+      </g>
+      <g class="hov">
+        <rect x="852" y="50" width="158" height="64" class="nd"/>
+        <text x="931" y="74" text-anchor="middle" class="t-title">create_gh_draft.sh</text>
+        <text x="931" y="92" text-anchor="middle" class="t-sub">Release 草稿</text>
+      </g>
+      <g class="hov">
+        <rect x="1050" y="50" width="90" height="64" class="badge-amber"/>
+        <text x="1095" y="78" text-anchor="middle" class="t-amber">人工确认</text>
+        <text x="1095" y="94" text-anchor="middle" class="t-tiny">发布 / 推送</text>
+      </g>
+      <path class="edge" d="M198 82 L238 82" marker-end="url(#arr)"/>
+      <path class="edge" d="M396 82 L436 82" marker-end="url(#arr)"/>
+      <path class="edge" d="M594 82 L634 82" marker-end="url(#arr)"/>
+      <path class="edge" d="M812 82 L852 82" marker-end="url(#arr)"/>
+      <path class="edge" d="M1010 82 L1050 82" marker-end="url(#arr)"/>
+
+      <!-- 产物 -->
+      <g class="hov">
+        <rect x="238" y="180" width="280" height="58" class="nd"/>
+        <text x="378" y="202" text-anchor="middle" class="t-title">release/appcast.xml（仓库内）</text>
+        <text x="378" y="220" text-anchor="middle" class="t-sub">RSS + Sparkle 扩展 · 内联发行说明 · beta 渠道</text>
+      </g>
+      <g class="hov">
+        <rect x="634" y="180" width="280" height="58" class="nd"/>
+        <text x="774" y="202" text-anchor="middle" class="t-title">GitHub Releases</text>
+        <text x="774" y="220" text-anchor="middle" class="t-sub">zip 资产 · 用户实际下载源</text>
+      </g>
+      <path class="edge" d="M723 114 L723 152 L500 152 L500 180" marker-end="url(#arr)"/>
+      <path class="edge" d="M931 114 L931 152 L800 152 L800 180" marker-end="url(#arr)"/>
+
+      <!-- CI 线 -->
+      <text x="40" y="296" class="t-band">CI 线（GitHub Actions · pages.yml · 推送 master 触发）</text>
+      <g class="hov">
+        <rect x="40" y="310" width="240" height="58" class="nd"/>
+        <text x="160" y="332" text-anchor="middle" class="t-title">website/ 构建</text>
+        <text x="160" y="350" text-anchor="middle" class="t-sub">npm ci · next build → out/</text>
+      </g>
+      <g class="hov">
+        <rect x="320" y="310" width="240" height="58" class="nd"/>
+        <text x="440" y="332" text-anchor="middle" class="t-title">合并 release/ 资产</text>
+        <text x="440" y="350" text-anchor="middle" class="t-sub">appcast.xml 注入站点产物</text>
+      </g>
+      <g class="hov">
+        <rect x="600" y="310" width="240" height="58" class="nd"/>
+        <text x="720" y="332" text-anchor="middle" class="t-title">GitHub Pages 部署</text>
+        <text x="720" y="350" text-anchor="middle" class="t-sub">mos.caldis.me 上线</text>
+      </g>
+      <path class="edge" d="M280 339 L320 339" marker-end="url(#arr)"/>
+      <path class="edge" d="M560 339 L600 339" marker-end="url(#arr)"/>
+      <path class="edge-dash" d="M378 238 L378 282 L440 282 L440 310" marker-end="url(#arr)"/>
+
+      <!-- 客户端闭环 -->
+      <g class="hov">
+        <rect x="900" y="310" width="240" height="58" class="nd"/>
+        <text x="1020" y="332" text-anchor="middle" class="t-title">Mos 客户端 · Sparkle</text>
+        <text x="1020" y="350" text-anchor="middle" class="t-sub">启动后 2s 后台检查 · beta 渠道可选</text>
+      </g>
+      <path class="edge-dash" d="M900 339 L840 339" marker-end="url(#arr)"/>
+      <path class="edge-dash" d="M1020 310 L1020 264 L914 238" marker-end="url(#arr)"/>
+      <text x="1032" y="280" class="t-tiny">EdKey 验签后下载 zip</text>
+
+      <g>
+        <rect x="40" y="408" width="1100" height="40" class="nd-dim"/>
+        <text x="64" y="433" class="t-sub">闭环：本地签名构建 → appcast 入仓 → CI 把 appcast 随官网部署 → 客户端 Sparkle 拉取 appcast → EdDSA 验签 → 从 GitHub Releases 下载更新。私钥不出 Keychain，CI 无签名权限。</text>
+      </g>
+    </svg>
+    <div class="legend">
+      <span><span class="lg"></span>构建步骤</span>
+      <span><span class="lg dash"></span>分发 / 拉取</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SHEET 06 架构评估 ════════════════ -->
+<section class="frame" id="s6">
+  <div class="sheet-head">
+    <span class="sheet-no">SHEET 06</span>
+    <span class="sheet-title">架构评估</span>
+    <span class="sheet-desc">实证结论 · 全部附 文件:行号 证据</span>
+  </div>
+  <div class="sheet-body">
+    <div class="verdict-cols">
+
+      <!-- 优势 -->
+      <div>
+        <div class="v-section-t"><span class="tag good">STRENGTHS</span>做得好的地方</div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-head"><span class="sev s">S-1</span><span class="card-t">Logi 边界治理是教科书级的</span></div>
+            <div class="card-b">双区白名单（Zone A 11 类型 / Zone B +4）由 lint 脚本强制执行，<b>LogiCenter 仅 147 行纯委托</b>作为唯一门面，HID++ 细节零泄漏。配套协议接缝 + 测试替身，7.5k 行的复杂子系统对外只是一扇窄门。</div>
+            <div class="ev">scripts/qa/lint-logi-boundary.sh · Mos/Logi/LogiCenter.swift · MosTests/LogiTestDoubles/</div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="sev s">S-2</span><span class="card-t">热路径有完整的自愈与防回环设计</span></div>
+            <div class="card-b">5 个 tap 由 keeper 每 5s 体检复活；CVDisplayLink 僵死可检测重建；合成事件打 MosEventMarker 防止自吞回环；DispatchContext 用 generation + 5s TTL 丢弃陈旧帧。失效模式被系统性地考虑过。</div>
+            <div class="ev">Mos/Utils/Interceptor.swift:83-95 · ScrollCore/ScrollPoster.swift · ScrollDispatchContext.swift</div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="sev s">S-3</span><span class="card-t">关键决策逻辑下沉为纯函数，测试覆盖关键面</span></div>
+            <div class="card-b">DivertPlanner（51 行）、ConflictDetector（44 行）、Interpolator 都是无副作用纯逻辑，39 个测试文件覆盖规划/冲突/相位/持久化兼容（canary 测试守护旧用户数据）。</div>
+            <div class="ev">Mos/Logi/Divert/DivertPlanner.swift · MosTests/LogiPersistenceCanaryTests.swift 等 39 文件</div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="sev s">S-4</span><span class="card-t">IOKit 单线程化规避了整类死锁</span></div>
+            <div class="card-b">IOHIDManager 调度在主 RunLoop，全部设备回调天然串行，配合 <b>precondition(Thread.isMainThread)</b> 断言固化约定——不靠锁而靠拓扑消灭并发问题。</div>
+            <div class="ev">Mos/Logi/Core/LogiSessionManager.swift（CFRunLoopGetMain 调度 + 多处断言）</div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="sev s">S-5</span><span class="card-t">配置持久化对升降级是双向安全的</span></div>
+            <div class="card-b">解析不了的绑定字段被保留原始 JSON、保存时合回（preservedUnknownBindings），用户"升级再降级"不丢新版数据；ScrollHotkey 有旧格式迁移路径。</div>
+            <div class="ev">Mos/Options/Options.swift:80-82, 202-240, 259-300</div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="sev s">S-6</span><span class="card-t">云端防御纵深 + 客户端零攻击面</span></div>
+            <div class="card-b">六层防线（CORS→CF 限流→Turnstile→规则→ip_hash→常时比较鉴权），AI 只标记不删帖，删除全软删可回溯。App 本体不接触留言墙后端，唯一外联是 EdDSA 验签的更新检查。</div>
+            <div class="ev">website/server/src/features/wall.ts · lib/admin.ts · lib/moderation.ts · lib/aiJudge.ts</div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="sev s">S-7</span><span class="card-t">工程过程本身被当作架构资产维护</span></div>
+            <div class="card-b">.agents/ 提供任务路由、代码地图、测试矩阵、质量门槛与 evals；发布流程固化为 skill；边界规则固化为 lint。"如何改这个仓库"的知识不依赖任何人的记忆。</div>
+            <div class="ev">.agents/INDEX.md · .agents/docs/code-map.md · .agents/evals/</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 问题 -->
+      <div>
+        <div class="v-section-t"><span class="tag bad">ISSUES</span>问题与改进点</div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-head"><span class="sev p1">P1-1</span><span class="card-t">LogiDeviceSession 巨石：单文件 3,191 行，占子系统 42%</span></div>
+            <div class="card-b">HID++ 协议引擎、<b>4 个隐式状态机</b>（特征发现 5s 超时 / REPROG 顺序查询 / 上报查询超时链 / 接收器枚举 phase 0-2）、定时器簇、特征缓存、合成释放全部纠缠在一个类里。改动风险高度集中，而该区域回归依赖昂贵的真实设备测试。</div>
+            <div class="ev">Mos/Logi/Core/LogiDeviceSession.swift（3,191 行）· 接收器枚举 phase 标志 :101-104, 764-795</div>
+            <div class="fix">按职责拆出 DiscoveryEngine / ReportingQueryEngine / DivertController / ReceiverEnumerator，Session 只保留连接与报文路由。<b>FakeLogiDeviceSession 已证明接缝可行</b>，可逐个状态机搬迁、每步跑 Logi 单测矩阵。</div>
+          </div>
+          <div class="card done">
+            <div class="card-head"><span class="sev fixed">P1-2</span><span class="card-t">核心三角循环依赖：ScrollCore ⇄ InputProcessor ⇄ ShortcutExecutor</span><span class="fixed-chip">✓ 已修复 · STEP 03</span></div>
+            <div class="card-b">三个单例互相直呼：滚动核心调输入处理器标记会话，输入处理器调执行器，执行器又回调滚动核心。<b>无法独立实例化测试任何一角</b>，初始化顺序是隐式的，新动作类型会继续加深耦合。</div>
+            <div class="ev">ScrollCore.swift:76-77 → InputProcessor · InputProcessor.swift → ShortcutExecutor · ShortcutExecutor.swift:206 → ScrollCore.handleMosScrollAction</div>
+            <div class="fix"><b>已落地（2026-06-17）</b>：引入 <b>ScrollActionPort</b> + <b>ModifierFlagsProviding</b> 两个端口协议，executor 改依赖协议而非 ScrollCore/InputProcessor 具体类型，启动期注入。executor 现完全无环、可用 fake 端口独立测试。</div>
+          </div>
+          <div class="card done">
+            <div class="card-head"><span class="sev fixed">P1-3</span><span class="card-t">Options 变更传播缺失 + 全量写放大</span><span class="fixed-chip">✓ 已修复 · STEP 02/03</span></div>
+            <div class="card-b">任一属性 didSet 都触发<b>全部配置键同步重写</b>（含绑定/应用列表的 JSON 编码）——拖动滑杆期间高频全量落盘；无订阅机制，消费方靠手动 sync 与 isDirty 缓存失效；"readingOptionsLock"实为布尔重入标志而非锁，CVDisplayLink 线程读取配置无同步保证。</div>
+            <div class="ev">Options.swift:68-78（didSet 全保存）· :148-200（全量写）· :58（布尔"锁"）· ScrollPoster.swift:414-418（帧线程读取）</div>
+            <div class="fix"><b>已落地</b>：① STEP 02 OptionsGroup 变更订阅 + 脏组合并写入（只写变更组的键）；② ButtonUtils/LogiUsageBootstrap 改订阅驱动，替换手动 sync；③ STEP 03 ScrollPoster 在 update() 主线程捕获 {simTrackpadEnabled, deadZone} 快照，CVDisplayLink 线程在既有锁内只读，不再跨线程直读 Options/ScrollCore。</div>
+          </div>
+          <div class="card done">
+            <div class="card-head"><span class="sev fixed">P2-1</span><span class="card-t">线程约定的执行力度两极分化</span><span class="fixed-chip">✓ 已修复 · STEP 03</span></div>
+            <div class="card-b">Logi 域用 precondition 把"主线程 only"焊死，而核心域（InputProcessor.activeBindings、ScrollCore 热键布尔、ButtonUtils 缓存）<b>零断言零锁</b>。当前拓扑下确实安全（都在主 RunLoop），但这是隐式约定——未来任何人把回调挪到队列上就会悄无声息地引入竞态。</div>
+            <div class="ev">对照: UsageRegistry.swift（有断言）vs InputProcessor.swift（无断言、无锁的字典变更）</div>
+            <div class="fix"><b>已落地</b>：新增 DEBUG-only <b>assertMainThread</b> 辅助，撒到 InputProcessor.process/clearActiveBindings、ScrollCore.handleScrollHotkey/handleMosScrollAction、ButtonUtils.invalidateCache 五个核心域入口（Release 零开销）。</div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="sev p2">P2-2</span><span class="card-t">UI 巨石群：323KB 单体 storyboard + 800 行级视图类</span></div>
+            <div class="card-b">所有窗口挤在一个 Main.storyboard（323KB，合并冲突高发、object id 还是持久化兼容面）；OpenTargetConfigPopover 888 行、ButtonTableCellView 861 行、LogiDebugPanel 2,392 行——视图、状态、业务在同一文件里。</div>
+            <div class="ev">Mos/Base.lproj/Main.storyboard（323KB）· ButtonsView/OpenTargetConfigPopover.swift · ButtonTableCellView.swift</div>
+            <div class="fix">不必大迁移：约定<b>新窗口/新视图一律代码构建</b>（Toast 体系已证明可行），存量仅在大改时顺手拆分。</div>
+          </div>
+          <div class="card done">
+            <div class="card-head"><span class="sev fixed">P2-3</span><span class="card-t">死代码与弃维护依赖</span><span class="fixed-chip">✓ 已修复 · STEP 01 / 收尾</span></div>
+            <div class="card-b">ButtonFilter.swift 全仓库<b>零引用</b>（留言墙式占位实现）；Charts 4.1.0 仅 Monitor 调试窗口使用，上游已更名 DGCharts 且 v4 停止维护，却随 release 包分发给全部用户。</div>
+            <div class="ev">Mos/ButtonCore/ButtonFilter.swift（grep 零引用）· Package.resolved（Charts 4.1.0 + 2 个传递依赖）</div>
+            <div class="fix"><b>已落地</b>：STEP 01 删除 ButtonFilter；收尾阶段 Charts 4.1.0 → <b>DGCharts 5.1.0</b>（图表功能按用户要求保留，用于收集反馈），DGCharts 5.x 零依赖，移除传递依赖 swift-algorithms + swift-numerics（依赖包 5→3）；最低系统 macOS 10.12 仍兼容 10.13。</div>
+          </div>
+          <div class="card done">
+            <div class="card-head"><span class="sev fixed">P3-1</span><span class="card-t">权限轮询定时器引用管理松散</span><span class="fixed-chip">✓ 已修复 · STEP 01</span></div>
+            <div class="card-b">启动路径创建的 10s 轮询 Timer 未存引用，sessionDidResign 只能取消 2s 恢复 Timer；反复睡眠/切换用户的极端序列下可能叠加多个轮询器。幂等守卫（isActive 检查）兜住了正确性，但属于侥幸而非设计。</div>
+            <div class="ev">AppDelegate.swift:174-180（未持有引用）vs :190-191（仅取消 permissionRecoveryTimer）</div>
+            <div class="fix"><b>已落地</b>：10s 轮询 Timer 统一收编进 permissionRecoveryTimer 属性，创建前先 invalidate。</div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="sev p3">P3-2</span><span class="card-t">云端的三项"已知取舍"，保持观察即可</span></div>
+            <div class="card-b">① 单一共享 admin token（泄漏=全部审核权，已用常时比较+10/min 限流+sessionStorage 缓解）；② 列表固定 800 条无分页（当前规模合理）；③ AI 审核 fail-open（模型故障时垃圾漏过，但只影响标记不影响拦截）。均为文档化的有意取舍，不构成当前债务。</div>
+            <div class="ev">website/server/src/lib/admin.ts · features/wall.ts（FETCH_LIMIT=800）· lib/aiJudge.ts</div>
+            <div class="fix">规模或威胁模型变化时再升级：token 轮换机制 / cursor 分页 / AI 预算告警。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 路线图 -->
+      <div>
+        <div class="v-section-t"><span class="tag plan">ROADMAP</span>建议的改进顺序</div>
+        <div class="road">
+          <div class="road-item done">
+            <span class="road-no"></span>
+            <span class="road-t">无风险清理</span>
+            <span class="road-d">删除 ButtonFilter 死代码；收编权限轮询 Timer。半天工作量，先把地扫干净。</span>
+            <span class="road-risk done">✓ STEP 01 · 06-11</span>
+          </div>
+          <div class="road-item done">
+            <span class="road-no"></span>
+            <span class="road-t">Options 订阅 + 脏键写入</span>
+            <span class="road-d">先加订阅 API 并迁移各 VC 的手动 sync，再做脏键 + debounce 落盘。每步可独立验证，回归面是偏好面板。</span>
+            <span class="road-risk done">✓ STEP 02 · 06-11</span>
+          </div>
+          <div class="road-item done">
+            <span class="road-no"></span>
+            <span class="road-t">ScrollActionPort 断环</span>
+            <span class="road-d">引入端口协议解开三角循环，顺手为核心域补 assertMainThread。收尾再加 ModifierFlagsProviding 端口切断 executor↔InputProcessor 残留边（executor 彻底无环）+ Charts→DGCharts 5.1.0 卸两个传递依赖。</span>
+            <span class="road-risk done">✓ STEP 03 · 06-17</span>
+          </div>
+          <div class="road-item">
+            <span class="road-no"></span>
+            <span class="road-t">LogiDeviceSession 分解</span>
+            <span class="road-d">四个状态机逐个搬出（先纯逻辑的 Discovery，后涉硬件时序的 Reporting/Divert）。每步全量跑 Logi 单测 + lint，合并前真实设备测试矩阵。</span>
+            <span class="road-risk rr-high">风险 HIGH · 需设备回归</span>
+          </div>
+          <div class="road-item">
+            <span class="road-no"></span>
+            <span class="road-t">UI 渐进代码化</span>
+            <span class="road-d">仅对新视图生效的约定，不动存量。长期自然稀释 storyboard 单体与巨型 VC。</span>
+            <span class="road-risk rr-low">风险 LOW · 长期</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ 审图记录 ════════════════ -->
+<section class="frame" id="rev">
+  <div class="sheet-head">
+    <span class="sheet-no">REV</span>
+    <span class="sheet-title">审图记录</span>
+  </div>
+  <div class="sheet-body">
+    <table class="rev-table">
+      <thead><tr><th>版次</th><th>日期</th><th>事项</th><th>执行</th></tr></thead>
+      <tbody>
+        <tr><td>R0</td><td>2026-06-10</td><td>4 路并行勘察（事件管线 / Logi / 壳层 UI / Web 云端），关键论断逐条溯源核验后成图</td><td>Claude (Fable 5) + 4× Explore</td></tr>
+        <tr><td>R1</td><td>2026-06-11</td><td>对抗性核查 17 项论断：15 确认；修正 2 处（Worker 路由 8→9；Toast 文件 13→8）</td><td>独立核查 Agent</td></tr>
+        <tr><td>R2</td><td>2026-06-17</td><td>ROADMAP STEP 01/02/03 + 收尾全部落地（见各卡片 ✓ 标记），文档同步刷新。剩余 STEP 04（需设备）/ 05（长期）。</td><td>Claude (Fable 5)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>MOS-ARCH-2026-06 · DRAWN WITH CARE · NOT TO SCALE</footer>
+</div>
+
+<script>
+  const io = new IntersectionObserver((es) => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.frame:not(.on)').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

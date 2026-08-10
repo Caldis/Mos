@@ -1,0 +1,34 @@
+{
+  "configurations" : [
+    {
+      "id" : "6DFA4537-ACA0-4290-A212-267527F4B214",
+      "name" : "DebugWithDevice",
+      "options" : {
+        "environmentVariableEntries" : [
+          {
+            "key" : "LOGI_REAL_DEVICE",
+            "value" : "1"
+          }
+        ]
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Mos.xcodeproj",
+      "identifier" : "22142D9F1E25344E00E4BFBF",
+      "name" : "Mos"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Mos.xcodeproj",
+        "identifier" : "62CD1674CBD9855CE2042C81",
+        "name" : "MosTests"
+      }
+    }
+  ],
+  "version" : 1
+}
