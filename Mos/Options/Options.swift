@@ -46,11 +46,15 @@ struct OptionItem {
         static let Allowlist = "allowlist"
         static let Applications = "applications"
     }
+
+    struct Gesture {
+        static let Bindings = "gestureBindings"
+    }
 }
 
 /// 配置分组: 变更通知与脏组写入的粒度
 enum OptionsGroup: CaseIterable {
-    case general, update, scroll, buttons, application
+    case general, update, scroll, buttons, gestures, application
 }
 
 class Options {
@@ -80,6 +84,10 @@ class Options {
     // 按钮绑定
     var buttons = OPTIONS_BUTTONS_DEFAULT() {
         didSet { markChanged(.buttons) }
+    }
+    // 手势绑定
+    var gestures = OPTIONS_GESTURES_DEFAULT() {
+        didSet { markChanged(.gestures) }
     }
     // 应用
     var application = OPTIONS_APPLICATION_DEFAULT() {
@@ -216,6 +224,8 @@ extension Options {
         // 按钮绑定
         buttons.binding = loadButtonsData()
         ButtonUtils.shared.invalidateCache()
+        // 手势绑定
+        gestures.binding = loadGestureBindingsData()
         // 应用
         application.allowlist = UserDefaults.standard.bool(forKey: OptionItem.Application.Allowlist)
         application.applications = loadApplicationsData()
@@ -259,6 +269,8 @@ extension Options {
             UserDefaults.standard.set(scroll.smoothHorizontal, forKey: OptionItem.Scroll.SmoothHorizontal)
         case .buttons:
             saveButtonBindingsData()
+        case .gestures:
+            saveGestureBindingsData()
         case .application:
             UserDefaults.standard.set(application.allowlist, forKey: OptionItem.Application.Allowlist)
             if let applicationsData = application.applications.json() {
@@ -339,6 +351,36 @@ extension Options {
             UserDefaults.standard.set(mergedData, forKey: OptionItem.Button.Bindings)
         } catch {
             NSLog("Failed to encode button bindings data: \(error), skipping save")
+        }
+    }
+
+    // 安全加载手势绑定数据
+    private func loadGestureBindingsData() -> [GestureBinding] {
+        let rawValue = UserDefaults.standard.object(forKey: OptionItem.Gesture.Bindings)
+        guard let data = rawValue as? Data else {
+            if rawValue != nil {
+                NSLog("Gesture bindings data has wrong type: \(type(of: rawValue)), clearing corrupted data")
+                UserDefaults.standard.removeObject(forKey: OptionItem.Gesture.Bindings)
+            }
+            return []
+        }
+
+        do {
+            return try decoder.decode([GestureBinding].self, from: data)
+        } catch {
+            NSLog("Failed to decode gesture bindings data: \(error), resetting to defaults")
+            UserDefaults.standard.removeObject(forKey: OptionItem.Gesture.Bindings)
+            return []
+        }
+    }
+
+    // 保存手势绑定数据
+    private func saveGestureBindingsData() {
+        do {
+            let data = try encoder.encode(gestures.binding)
+            UserDefaults.standard.set(data, forKey: OptionItem.Gesture.Bindings)
+        } catch {
+            NSLog("Failed to encode gesture bindings data: \(error), skipping save")
         }
     }
 
