@@ -180,7 +180,11 @@ public class Utils {
     class func removingRegexMatches(target: String = "", pattern: String, replaceWith: String = "") -> String {
         do {
             let regex = try NSRegularExpression(pattern: pattern, options: .caseInsensitive)
-            let range = NSRange(location: 0, length: target.count)
+            // NSRegularExpression operates on the UTF-16 view, so the range length must be the
+            // UTF-16 unit count, not String.count (grapheme clusters). For strings containing
+            // astral-plane characters (e.g. emoji in an app display name) the two differ and
+            // grapheme-cluster length clips the trailing units, so the suffix fails to match.
+            let range = NSRange(location: 0, length: target.utf16.count)
             return regex.stringByReplacingMatches(in: target, options: [], range: range, withTemplate: replaceWith)
         } catch {
             return target

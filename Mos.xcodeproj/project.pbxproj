@@ -20,6 +20,7 @@
 		B3D4E5F6A7B8C9D0E1F40100 /* MosTests/MouseInteractionSessionControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D4E5F6A7B8C9D0E1F40101 /* MosTests/MouseInteractionSessionControllerTests.swift */; };
 		BF0CC4D63CC0E5FE8FCF6E01 /* MosTests/ScrollFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31AFD832EF49533E8168BAA0 /* MosTests/ScrollFilterTests.swift */; };
 		F1A2B3C4D5E6F7081920A1B1 /* MosTests/ExtractRegexPatternArgTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F7081920A1B2 /* MosTests/ExtractRegexPatternArgTests.swift */; };
+		F2B3C4D5E6F7081920A1B2C3 /* MosTests/RemovingRegexUTF16RangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B3C4D5E6F7081920A1B2C4 /* MosTests/RemovingRegexUTF16RangeTests.swift */; };
 		C3D4E5F6A7B8C9D0E1F30200 /* MosTests/InputProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F30201 /* MosTests/InputProcessorTests.swift */; };
 		C4E5F6A7B8C9D0E1F3020200 /* MosTests/ButtonCapturePresentationStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E5F6A7B8C9D0E1F3020201 /* MosTests/ButtonCapturePresentationStatusTests.swift */; };
 		C7A1B2C3D4E5F60718293A4B /* MosTests/OptionsChangePropagationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A1B2C3D4E5F60718293A4C /* MosTests/OptionsChangePropagationTests.swift */; };
@@ -78,6 +79,7 @@
 		2F59E07FB2E69806EAED5405 /* MosTests/ScrollPhaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollPhaseTests.swift; sourceTree = SOURCE_ROOT; };
 		31AFD832EF49533E8168BAA0 /* MosTests/ScrollFilterTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollFilterTests.swift; sourceTree = SOURCE_ROOT; };
 		F1A2B3C4D5E6F7081920A1B2 /* MosTests/ExtractRegexPatternArgTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ExtractRegexPatternArgTests.swift; sourceTree = SOURCE_ROOT; };
+		F2B3C4D5E6F7081920A1B2C4 /* MosTests/RemovingRegexUTF16RangeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/RemovingRegexUTF16RangeTests.swift; sourceTree = SOURCE_ROOT; };
 		9CCA64306C761E8CA5D0759A /* MosTests/ScrollPosterStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollPosterStateTests.swift; sourceTree = SOURCE_ROOT; };
 		9D4A7F821E5626C63C45D698 /* MosTests/InterpolatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/InterpolatorTests.swift; sourceTree = SOURCE_ROOT; };
 		A1B2C3D4E5F6A7B8C9D0E1F3 /* MosTests/ButtonBindingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ButtonBindingTests.swift; sourceTree = SOURCE_ROOT; };
@@ -209,6 +211,7 @@
 				E1B8B50E951D72C6195DBA3A /* MosTests/ScrollEventTests.swift */,
 				31AFD832EF49533E8168BAA0 /* MosTests/ScrollFilterTests.swift */,
 				F1A2B3C4D5E6F7081920A1B2 /* MosTests/ExtractRegexPatternArgTests.swift */,
+				F2B3C4D5E6F7081920A1B2C4 /* MosTests/RemovingRegexUTF16RangeTests.swift */,
 				E7D69BB23DED610DCD5A0103 /* MosTests/ScrollHotkeyTests.swift */,
 				2F59E07FB2E69806EAED5405 /* MosTests/ScrollPhaseTests.swift */,
 				9CCA64306C761E8CA5D0759A /* MosTests/ScrollPosterStateTests.swift */,
@@ -426,6 +429,7 @@
 				296126EA068FF77D423ACAA9 /* MosTests/ScrollEventTests.swift in Sources */,
 				BF0CC4D63CC0E5FE8FCF6E01 /* MosTests/ScrollFilterTests.swift in Sources */,
 				F1A2B3C4D5E6F7081920A1B1 /* MosTests/ExtractRegexPatternArgTests.swift in Sources */,
+				F2B3C4D5E6F7081920A1B2C3 /* MosTests/RemovingRegexUTF16RangeTests.swift in Sources */,
 				568F976CF65380A55E73E588 /* MosTests/ScrollHotkeyTests.swift in Sources */,
 				9ACEB06D964AE340A82C0792 /* MosTests/ScrollPhaseTests.swift in Sources */,
 				754D86BF951F4E0C56F76E8D /* MosTests/ScrollPosterStateTests.swift in Sources */,
