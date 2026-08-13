@@ -118,6 +118,14 @@ class LogiDeviceSession {
     private var pendingDeviceInfoSlots: Set<UInt8> = []
     private static let initialTargetSelectionTimeout: TimeInterval = 1.5
 
+    // Some peripherals lose temporary divert while asleep without sending the
+    // receiver's 0x41 disconnect/reconnect notification. The first report after
+    // a quiet period is the only reliable wake signal observed from those devices.
+    private static let receiverIdleWakeThreshold: TimeInterval = 60
+    private static let receiverWakeRestoreDelays: [TimeInterval] = [1.0, 2.0]
+    private var lastReceiverReportTime: [UInt8: TimeInterval] = [:]
+    private var receiverWakeRestoreWorkItems: [UInt8: [DispatchWorkItem]] = [:]
+
     // MARK: - Report Buffer
     private var reportBufferPtr: UnsafeMutablePointer<UInt8>?
     private static let reportBufferSize = 64
@@ -905,6 +913,14 @@ class LogiDeviceSession {
         return .drop
     }
 
+    static func receiverReportIndicatesWake(
+        previousTime: TimeInterval?,
+        currentTime: TimeInterval
+    ) -> Bool {
+        guard let previousTime = previousTime else { return false }
+        return currentTime - previousTime >= receiverIdleWakeThreshold
+    }
+
     /// 多设备热插拔(§Phase 4): 某 slot 的 0x41 连接/断开通知该做什么(纯决策).
     /// - 断开: 若该 slot 正被接管 -> release(释放其按键状态 + 标记未 init); 否则 ignore
     /// - 连接: 若已接管 -> ignore(防振荡, "已 init 且在线则忽略"); 否则若是 divert 候选 -> takeover
@@ -1021,6 +1037,9 @@ class LogiDeviceSession {
         receiverOptionalProbedSlots.removeAll()
         receiverTakeoverDebounce.values.forEach { $0.cancel() }
         receiverTakeoverDebounce.removeAll()
+        receiverWakeRestoreWorkItems.values.flatMap { $0 }.forEach { $0.cancel() }
+        receiverWakeRestoreWorkItems.removeAll()
+        lastReceiverReportTime.removeAll()
         discoveryTimer?.invalidate()
         discoveryTimer = nil
         controlInfoQueryTimer?.invalidate()
@@ -1436,6 +1455,40 @@ class LogiDeviceSession {
         lastApplied.removeAll()
         primeFromRegistry()
         LogiDebugPanel.log("[\(deviceInfo.name)] Re-synced divert with bindings")
+    }
+
+    private func noteReceiverPeripheralReport(slot: UInt8) {
+        let now = Date.timeIntervalSinceReferenceDate
+        let wokeFromIdle = Self.receiverReportIndicatesWake(
+            previousTime: lastReceiverReportTime[slot],
+            currentTime: now
+        )
+        lastReceiverReportTime[slot] = now
+
+        guard wokeFromIdle,
+              receiverManagedSlots.contains(slot),
+              slotStates[slot]?.reprogInitComplete == true,
+              !(slotStates[slot]?.lastApplied.isEmpty ?? true) else { return }
+
+        receiverWakeRestoreWorkItems[slot]?.forEach { $0.cancel() }
+        LogiDebugPanel.log("[\(deviceInfo.name)] Slot \(slot) resumed after idle; scheduling divert restore")
+        receiverWakeRestoreWorkItems[slot] = Self.receiverWakeRestoreDelays.map { delay in
+            let item = DispatchWorkItem { [weak self] in
+                guard let self = self,
+                      self.receiverManagedSlots.contains(slot),
+                      self.slotStates[slot]?.reprogInitComplete == true else { return }
+                let savedDeviceIndex = self.deviceIndex
+                self.deviceIndex = slot
+                self.redivertAllControls()
+                self.deviceIndex = savedDeviceIndex
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: item)
+            return item
+        }
+    }
+
+    private func cancelReceiverWakeRestore(slot: UInt8) {
+        receiverWakeRestoreWorkItems.removeValue(forKey: slot)?.forEach { $0.cancel() }
     }
 
     func undivertAllControls() {
@@ -3204,6 +3257,7 @@ class LogiDeviceSession {
                     LogiDebugPanel.log("[\(deviceInfo.name)] Report from slot \(devIdx) (current target=\(deviceIndex)) dropped (unmanaged)")
                     return
                 }
+                noteReceiverPeripheralReport(slot: devIdx)
             }
         }
 
@@ -3930,6 +3984,9 @@ class LogiDeviceSession {
     }
 
     private func handleDivertedButtonEvent(_ report: UnsafeBufferPointer<UInt8>) {
+        if connectionMode == .receiver {
+            cancelReceiverWakeRestore(slot: deviceIndex)
+        }
         var activeCIDs: Set<UInt16> = []
         var offset = 4
         while offset + 1 < report.count {
