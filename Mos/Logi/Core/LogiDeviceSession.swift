@@ -925,6 +925,22 @@ class LogiDeviceSession {
         return .takeover(slot)
     }
 
+    /// 部分接收器不会在休眠设备恢复时发送 0x41; 离线 slot 的真实报文可作为连接证据.
+    static func receiverPeripheralActivityAction(
+        slot: UInt8,
+        wasConnected: Bool,
+        isDivertCandidate: Bool,
+        alreadyManaged: Bool
+    ) -> ReceiverSlotConnectionAction {
+        guard !wasConnected else { return .ignore }
+        return receiverSlotConnectionAction(
+            slot: slot,
+            connected: true,
+            isDivertCandidate: isDivertCandidate,
+            alreadyManaged: alreadyManaged
+        )
+    }
+
     #if DEBUG
     internal static func receiverTargetIsConnectedForTests(
         connectionMode: ConnectionMode,
@@ -1963,6 +1979,40 @@ class LogiDeviceSession {
             }
             NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
         }
+    }
+
+    /// 初始枚举时设备可能仍在休眠且之后不补发 0x41. 第一条真实 peripheral 报文将 slot
+    /// 标记为在线并直接复用现有 takeover 队列; 已在线 slot 的后续报文不会重复触发.
+    private func handleReceiverPeripheralActivity(slot: UInt8) -> Bool {
+        guard slot >= 1 && slot <= 6, handshakeComplete, receiverEnumPhase != 1 else { return false }
+
+        guard let idx = receiverPairedDevices.firstIndex(where: { $0.slot == slot }) else { return false }
+        let wasConnected = receiverPairedDevices[idx].isConnected
+        receiverPairedDevices[idx].isConnected = true
+        receiverPairedDevices[idx].lastError = nil
+
+        guard !wasConnected else { return false }
+
+        let device = receiverPairedDevices.first(where: { $0.slot == slot })
+        let bindingsExist = !LogiCenter.shared.registry.aggregatedCacheIsEmpty
+        let isDivertCandidate = !Self.receiverNonDivertDeviceTypes.contains(device?.deviceType ?? 0)
+            && bindingsExist
+        let action = Self.receiverPeripheralActivityAction(
+            slot: slot,
+            wasConnected: wasConnected,
+            isDivertCandidate: isDivertCandidate,
+            alreadyManaged: receiverManagedSlots.contains(slot)
+        )
+        LogiDebugPanel.log(
+            "[\(deviceInfo.name)] Inferred slot \(slot) connection from peripheral activity; candidate=\(isDivertCandidate) -> \(action)"
+        )
+        NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
+
+        if case .takeover(let takeoverSlot) = action {
+            handleReceiverSlotTakeover(slot: takeoverSlot)
+            return true
+        }
+        return false
     }
 
     /// 去抖调度 takeover: 每次 0x41 连接重置定时器, 该 slot 稳定在线 debounce 窗口后才真正接管.
@@ -3184,6 +3234,12 @@ class LogiDeviceSession {
             // Ping response from device behind receiver (IRoot function 1)
             if devIdx >= 1 && devIdx <= 6 && featureIdx == 0x00 && functionId == 1 && pendingSlotPings.contains(devIdx) {
                 handleSlotPingResponse(devIdx: devIdx, report: report)
+                return
+            }
+
+            // 部分接收器不会为初始扫描时休眠的设备补发 0x41. 第一条真实报文足以证明 slot 在线;
+            // takeover 启动后丢弃该条尚无可靠 feature 映射的报文, 后续报文走正常路由.
+            if handleReceiverPeripheralActivity(slot: devIdx) {
                 return
             }
 
