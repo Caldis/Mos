@@ -1988,10 +1988,10 @@ class LogiDeviceSession {
 
         guard let idx = receiverPairedDevices.firstIndex(where: { $0.slot == slot }) else { return false }
         let wasConnected = receiverPairedDevices[idx].isConnected
+        guard !wasConnected else { return false }
+
         receiverPairedDevices[idx].isConnected = true
         receiverPairedDevices[idx].lastError = nil
-
-        guard !wasConnected else { return false }
 
         let device = receiverPairedDevices.first(where: { $0.slot == slot })
         let bindingsExist = !LogiCenter.shared.registry.aggregatedCacheIsEmpty
@@ -2009,7 +2009,7 @@ class LogiDeviceSession {
         NotificationCenter.default.post(name: LogiSessionManager.sessionChangedNotification, object: nil)
 
         if case .takeover(let takeoverSlot) = action {
-            handleReceiverSlotTakeover(slot: takeoverSlot)
+            scheduleReceiverSlotTakeover(slot: takeoverSlot)
             return true
         }
         return false
