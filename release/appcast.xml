@@ -9,6 +9,82 @@
     <language>en</language>
 
     <item>
+      <title>Mos 4.3.0</title>
+
+      <sparkle:channel>beta</sparkle:channel>
+      <description><![CDATA[<p>⚠️ 行为变更: 「目标应用程序」列表中未勾选「继承全局设定」的应用, 其平滑滚动与翻转方向设置现在独立生效, 不再受全局开关限制。如有需要, 请在升级后检查相关配置。</p>
+
+<h2>新功能</h2>
+<ul>
+<li>同一个接收器连接的多只罗技鼠标, 现在可以同时使用按键功能, 换手即用, 无需手动切换</li>
+<li>新增泰语界面, 感谢 @atomsbaza</li>
+</ul>
+
+<h2>优化</h2>
+<ul>
+<li>精简按键绑定面板的文案, 界面更紧凑</li>
+<li>大量内部优化, 运行更稳定</li>
+</ul>
+
+<h2>修复</h2>
+<ul>
+<li>修复休眠后的罗技鼠标唤醒时, 按键功能不生效的问题, 感谢 @LJAYi</li>
+<li>修复在 After Effects 等应用中左键可能卡住的问题, 感谢 @denizercealagoz</li>
+<li>修复「目标应用程序」的独立设置在全局开关关闭时不生效的问题, 感谢 @YuriNachos</li>
+<li>修复外接显示器唤醒或重新连接后, 滚动变卡的问题, 感谢 @wiskiiii</li>
+<li>修复特定情况下配置丢失导致滚动完全失效的问题, 感谢 @YuriNachos</li>
+<li>修复名称中带有 emoji 的应用在列表中显示异常的问题, 感谢 @YuriNachos</li>
+<li>修复侧键与系统原生快捷键 (如调度中心) 被同时触发的问题, 感谢 @Luizz14</li>
+<li>修复罗技键盘无法进入休眠的问题, 感谢 @MohammedAlmajhali</li>
+<li>修复长时间运行时的若干稳定性问题, 感谢 @MrMage</li>
+</ul>
+
+<p>注: 本次为修复侧键与系统快捷键的冲突, 调整了按键监听的层级。如果你在与 BetterTouchTool 等按键映射工具同时使用时遇到按键冲突, 欢迎通过 issue 反馈。</p>
+
+<hr/>
+
+<p>⚠️ Behavior change: applications in the target-application list with "Inherit global settings" unchecked now apply their smooth-scrolling and reverse settings independently, no longer limited by the global switches. Please review your configuration after upgrading if needed.</p>
+
+<h2>New Features</h2>
+<ul>
+<li>Multiple Logitech mice on the same receiver can now use button features at the same time — switch hands freely, no manual switching needed</li>
+<li>Added Thai localization, thanks @atomsbaza</li>
+</ul>
+
+<h2>Improvements</h2>
+<ul>
+<li>Trimmed the button-binding panel wording for a more compact layout</li>
+<li>Lots of internal refinements for smoother, more stable operation</li>
+</ul>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fix button features not working after a Logitech mouse wakes from sleep, thanks @LJAYi</li>
+<li>Fix the left mouse button occasionally getting stuck in apps like After Effects, thanks @denizercealagoz</li>
+<li>Fix per-application settings not taking effect while the global switch is off, thanks @YuriNachos</li>
+<li>Fix scrolling becoming laggy after an external display wakes or reconnects, thanks @wiskiiii</li>
+<li>Fix scrolling breaking entirely when preferences go missing in rare cases, thanks @YuriNachos</li>
+<li>Fix apps with emoji in their names displaying incorrectly in the list, thanks @YuriNachos</li>
+<li>Fix side buttons triggering both their binding and native system shortcuts (e.g. Mission Control) at the same time, thanks @Luizz14</li>
+<li>Fix Logitech keyboards being kept awake and unable to sleep, thanks @MohammedAlmajhali</li>
+<li>Fix several stability issues during long-running sessions, thanks @MrMage</li>
+</ul>
+
+<p>Note: to fix the side-button/system-shortcut conflict, this release adjusts the level at which button events are monitored. If you use Mos alongside tools like BetterTouchTool and run into button conflicts, please let us know via an issue.</p>]]></description>
+      <pubDate>Thu, 20 Aug 2026 15:51:02 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.3.0-beta-20260820.1/Mos.Versions.4.3.0-beta-20260820.1.zip"
+        length="11727082"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.3.0"
+        sparkle:version="20260820.1"
+        sparkle:edSignature="UvplbzZCXoLRL9EUXRIQhvWGQ9YxtD3sAFplXttSz1iQIPh/pZyeZeZolpwjS/PavMCC2T4SuG9XJ1YnFwZtBw=="
+        sparkle:channel="beta"
+      />
+    </item>
+
+    <item>
       <title>Mos 4.2.1</title>
 
       <description><![CDATA[<h2>修复</h2>
