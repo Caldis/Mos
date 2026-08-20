@@ -131,6 +131,14 @@ class ScrollCore {
             enableReverseVertical = false
             enableReverseHorizontal = false
         }
+        let electronAdjustedReverse = ScrollUtils.shared.adjustReverseForElectronTarget(
+            vertical: enableReverseVertical,
+            horizontal: enableReverseHorizontal,
+            bundlePath: targetRunningApplication?.bundleURL?.path,
+            bundleIdentifier: targetRunningApplication?.bundleIdentifier
+        )
+        enableReverseVertical = electronAdjustedReverse.vertical
+        enableReverseHorizontal = electronAdjustedReverse.horizontal
         // Launchpad 激活则强制屏蔽平滑
         if ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication) {
             enableSmooth = false

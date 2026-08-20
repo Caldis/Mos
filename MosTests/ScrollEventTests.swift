@@ -124,6 +124,45 @@ final class ScrollEventTests: XCTestCase {
         ))
     }
 
+    func testIsElectronFamily_detectsCursorButNotChrome() {
+        XCTAssertTrue(ScrollUtils.shared.isElectronFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+        XCTAssertTrue(ScrollUtils.shared.isElectronFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.microsoft.VSCode"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.isElectronFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.google.Chrome"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.isElectronFamilyApplication(
+            bundlePath: "/Applications/Safari.app",
+            bundleIdentifier: "com.apple.Safari"
+        ))
+    }
+
+    func testAdjustReverseForElectron_xorsCursorAndLeavesSafari() {
+        let cursor = ScrollUtils.shared.adjustReverseForElectronTarget(
+            vertical: true,
+            horizontal: true,
+            bundlePath: nil,
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        )
+        XCTAssertFalse(cursor.vertical)
+        XCTAssertFalse(cursor.horizontal)
+
+        let safari = ScrollUtils.shared.adjustReverseForElectronTarget(
+            vertical: true,
+            horizontal: false,
+            bundlePath: nil,
+            bundleIdentifier: "com.apple.Safari"
+        )
+        XCTAssertTrue(safari.vertical)
+        XCTAssertFalse(safari.horizontal)
+    }
+
     // MARK: - initEvent: 优先级 (scrollPt > scrollFixPt > scrollFix)
 
     func testInitEvent_prefersPtOverFixPt() throws {

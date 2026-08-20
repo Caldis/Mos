@@ -123,6 +123,41 @@ class ScrollUtils {
         let loweredPath = bundlePath.lowercased()
         return loweredPath.contains("electron framework") || loweredPath.contains("helper (renderer).app")
     }
+
+    /// Cursor / VS Code 等 Electron 应用会把 isContinuous 像素事件当触控板再翻转一次
+    func isElectronFamilyApplication(bundlePath: String?, bundleIdentifier: String?) -> Bool {
+        if let bundleIdentifier = bundleIdentifier?.lowercased() {
+            let prefixes = [
+                "com.microsoft.vscode",
+                "com.todesktop.",
+                "com.anysphere.",
+                "com.github.electron"
+            ]
+            if prefixes.contains(where: { bundleIdentifier == $0 || bundleIdentifier.hasPrefix($0) }) {
+                return true
+            }
+        }
+        guard let bundlePath = bundlePath else { return false }
+        let frameworks = (bundlePath as NSString).appendingPathComponent("Contents/Frameworks")
+        let electronFramework = (frameworks as NSString).appendingPathComponent("Electron Framework.framework")
+        if FileManager.default.fileExists(atPath: electronFramework) {
+            return true
+        }
+        let loweredPath = bundlePath.lowercased()
+        return loweredPath.contains("electron framework") || loweredPath.contains("helper (renderer).app")
+    }
+
+    func adjustReverseForElectronTarget(
+        vertical: Bool,
+        horizontal: Bool,
+        bundlePath: String?,
+        bundleIdentifier: String?
+    ) -> (vertical: Bool, horizontal: Bool) {
+        guard isElectronFamilyApplication(bundlePath: bundlePath, bundleIdentifier: bundleIdentifier) else {
+            return (vertical, horizontal)
+        }
+        return (!vertical, !horizontal)
+    }
     
     // 判断 LaunchPad 是否激活
     var launchpadActiveCache = false
