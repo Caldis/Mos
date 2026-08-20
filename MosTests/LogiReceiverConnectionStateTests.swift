@@ -306,4 +306,17 @@ final class LogiReceiverConnectionStateTests: XCTestCase {
             .ignore
         )
     }
+
+    func testPeripheralActivityTakesOverPreviouslyOfflineSlotOnce() {
+        XCTAssertEqual(
+            LogiDeviceSession.receiverPeripheralActivityAction(
+                slot: 1, wasConnected: false, isDivertCandidate: true, alreadyManaged: false),
+            .takeover(1)
+        )
+        XCTAssertEqual(
+            LogiDeviceSession.receiverPeripheralActivityAction(
+                slot: 1, wasConnected: true, isDivertCandidate: true, alreadyManaged: false),
+            .ignore
+        )
+    }
 }
