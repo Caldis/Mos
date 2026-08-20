@@ -56,6 +56,7 @@ scripts/qa/lint-logi-boundary.sh
 - Xcode 工程、target membership 或跨模块改动跑 Debug build。
 - Logi/HID 改动跑相关单测，并在涉及边界时跑 `scripts/qa/lint-logi-boundary.sh`。
 - 准备发布、更新 appcast、签名/notarization 或创建 GitHub release draft 时，必须使用 `release-preparation` skill，不要自行拼接发布流程。
+- 处理社区 PR（评估/审查/合并/关闭/批量扫描）与发版后回访 issue 时，必须使用 `community-pr-loop` skill（`.agents/skills/community-pr-loop/SKILL.md`），不要自行拼接处理流程。
 
 最终汇报只列出已执行的相关验证、与本次改动直接相关但无法执行的验证，以及真实剩余风险。
 
