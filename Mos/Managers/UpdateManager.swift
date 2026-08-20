@@ -10,6 +10,8 @@ import Sparkle
 final class UpdateManager: NSObject {
 
     static let shared = UpdateManager()
+    /// 本 fork 独立更新源，不走原项目 mos.caldis.me
+    static let forkAppcastURL = "https://github.com/ZHOUSJ6/Mos/releases/download/sparkle-feed/appcast.xml"
 
     private lazy var updaterController = SPUStandardUpdaterController(
         startingUpdater: true,
@@ -43,6 +45,10 @@ extension UpdateManager {
 }
 
 extension UpdateManager: SPUUpdaterDelegate {
+
+    func feedURLString(for updater: SPUUpdater) -> String? {
+        return UpdateManager.forkAppcastURL
+    }
 
     func allowedChannels(for updater: SPUUpdater) -> Set<String> {
         Options.shared.update.includingBetaVersion ? ["beta"] : []
