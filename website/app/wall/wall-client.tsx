@@ -9,7 +9,7 @@ import {
   useTransform,
   useVelocity,
 } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StickyNote } from "@/app/components/Wall/StickyNote";
 import { Magnetic } from "@/app/components/Magnetic/Magnetic";
 import { Minimap } from "@/app/components/Wall/Minimap";
@@ -427,6 +427,13 @@ export function WallClient() {
     );
   }, [adminNotes, mutate, mutateAdmin]);
 
+  // Sorted once per dataset, not on every render — with hundreds of notes the
+  // per-render copy+sort (plus the child diff it caused) was measurable.
+  const sortedNotes = useMemo(
+    () => [...(notes ?? [])].sort((a, b) => a.createdAt - b.createdAt),
+    [notes],
+  );
+
   const hasNotes = (notes?.length ?? 0) > 0;
   // While dragging a sticky out of the tray or composing one, tuck the bottom
   // controls away (in step with the dock) so they don't crowd the placement.
@@ -451,26 +458,29 @@ export function WallClient() {
             size; it is purely a pan/zoom transform holder. */}
         <motion.div
           className="absolute left-0 top-0 origin-top-left"
-          style={{ x: vp.tx, y: vp.ty, scale: vp.scale }}
+          // willChange flips to "transform" only while the zoom scale is changing
+          // (see useViewport.worldWillChange): 60fps zooming without giving up any
+          // resolution at rest — the layer re-rasterises as soon as the zoom settles.
+          style={{ x: vp.tx, y: vp.ty, scale: vp.scale, willChange: vp.worldWillChange }}
         >
-          <AnimatePresence>
-            {[...(notes ?? [])]
-              .sort((a, b) => a.createdAt - b.createdAt)
-              .map((n, i, arr) => (
-                <StickyNote
-                  key={n.id}
-                  note={n}
-                  index={i}
-                  count={arr.length}
-                  mine={n.mine}
-                  admin={admin}
-                  size={WORLD_NOTE_SIZE}
-                  canvasW={WORLD_W}
-                  canvasH={WORLD_H}
-                  onDelete={liveDebug ? undefined : removeNote}
-                />
-              ))}
-          </AnimatePresence>
+          {/* No AnimatePresence here on purpose: placed notes define no exit
+              animation (removal is instant either way), so wrapping hundreds of
+              children only paid presence-diffing on every render. The entrance
+              spring lives on each note's own initial/animate. */}
+          {sortedNotes.map((n, i) => (
+            <StickyNote
+              key={n.id}
+              note={n}
+              index={i}
+              count={sortedNotes.length}
+              mine={n.mine}
+              admin={admin}
+              size={WORLD_NOTE_SIZE}
+              canvasW={WORLD_W}
+              canvasH={WORLD_H}
+              onDelete={liveDebug ? undefined : removeNote}
+            />
+          ))}
 
           <AnimatePresence>
             {draft && (
@@ -651,7 +661,14 @@ function computeScaleBar(s: number): { w: number; label: string } {
 // the star-catalogue attribution beneath it.
 function ScaleBar({ vp }: { vp: UseViewport }) {
   const [bar, setBar] = useState(() => computeScaleBar(vp.scale.get()));
-  useMotionValueEvent(vp.scale, "change", (s) => setBar(computeScaleBar(s)));
+  // Returning the previous object when nothing changed lets React bail out of the
+  // update entirely — otherwise every zoom frame re-rendered this component.
+  useMotionValueEvent(vp.scale, "change", (s) =>
+    setBar((prev) => {
+      const next = computeScaleBar(s);
+      return next.w === prev.w && next.label === prev.label ? prev : next;
+    }),
+  );
 
   return (
     <div className="pointer-events-none select-none pb-1">

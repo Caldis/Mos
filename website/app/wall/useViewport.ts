@@ -57,6 +57,14 @@ export interface UseViewport {
   /** 1 while a programmatic ease (fit / focus / cancel-return / zoom buttons) runs —
    *  lets the backdrop drop to 30fps during eases without affecting interactive feel. */
   animating: MotionValue<number>;
+  /** "transform" while the zoom scale is actively changing, "auto" otherwise. Bound to
+   *  the world layer's will-change: during a zoom Chrome then scales the existing layer
+   *  texture on the GPU instead of blocking the main thread to re-rasterise hundreds of
+   *  notes at every intermediate scale (measured ~117ms stalls per zoom step). Cleared
+   *  right after the scale settles, so the layer re-rasterises at the final scale — the
+   *  resting image stays full-resolution, only the in-flight gesture shows the scaled
+   *  texture (the standard maps/canvas-tool trade). */
+  worldWillChange: MotionValue<"auto" | "transform">;
   /** Container-local screen px → world px. */
   screenToWorld: (sx: number, sy: number) => { x: number; y: number };
   /** World px → container-local screen px. */
@@ -103,6 +111,24 @@ export function useViewport(opts?: {
   // user is watching the notes fly, not the backdrop. Interactive pan/zoom leaves this
   // at 0 and keeps the sky at 60fps for parallax that tracks the hand.
   const animating = useMotionValue(0);
+
+  // Zoom-in-flight hint for the world layer (see the interface doc). Keyed off ANY
+  // scale change — interactive pinch/wheel, the wheel smoother, zoom buttons and
+  // programmatic eases (intro fit, draft focus) all re-raster the same way — with a
+  // trailing reset once the scale has been still for a beat.
+  const worldWillChange = useMotionValue<"auto" | "transform">("auto");
+  useEffect(() => {
+    let timer = 0;
+    const unsub = scale.on("change", () => {
+      if (worldWillChange.get() !== "transform") worldWillChange.set("transform");
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => worldWillChange.set("auto"), 180);
+    });
+    return () => {
+      window.clearTimeout(timer);
+      unsub();
+    };
+  }, [scale, worldWillChange]);
   // Zoom the backdrop about (cx,cy) by an attenuated factor, keeping the star under
   // the cursor fixed — identical zoom-about-a-point math as the notes layer.
   const applyStarZoom = useCallback((cx: number, cy: number, f: number) => {
@@ -504,6 +530,7 @@ export function useViewport(opts?: {
       starOffX,
       starOffY,
       animating,
+      worldWillChange,
       screenToWorld,
       worldToScreen,
       visibleWorldRect,
@@ -513,7 +540,7 @@ export function useViewport(opts?: {
       zoomBy,
       get,
     }),
-    [tx, ty, scale, panning, starScale, starOffX, starOffY, animating, screenToWorld, worldToScreen, visibleWorldRect, setViewport, animateTo, fitToBounds, zoomBy, get],
+    [tx, ty, scale, panning, starScale, starOffX, starOffY, animating, worldWillChange, screenToWorld, worldToScreen, visibleWorldRect, setViewport, animateTo, fitToBounds, zoomBy, get],
   );
 }
 

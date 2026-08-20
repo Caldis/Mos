@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useTransform } from "framer-motion";
-import { useCallback, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { NOTE_COLORS, WORLD_H, WORLD_W, type WallNote } from "@/app/services/wall";
 import type { UseViewport } from "@/app/wall/useViewport";
 
@@ -55,6 +55,30 @@ export function Minimap({
     [vp, viewportSize.w, viewportSize.h, onInteract],
   );
 
+  // Hundreds of dots that only depend on the note set — build them once per
+  // dataset instead of on every show/hide or viewport-size re-render.
+  const dots = useMemo(
+    () =>
+      notes.map((n) => (
+        <span
+          key={n.id}
+          aria-hidden
+          className="absolute rounded-full"
+          style={{
+            left: n.x * MM_W,
+            top: n.y * MM_H,
+            width: 5,
+            height: 5,
+            marginLeft: -2.5,
+            marginTop: -2.5,
+            background: NOTE_COLORS[n.color].bg,
+            boxShadow: "0 0 0 0.5px rgba(0,0,0,0.25)",
+          }}
+        />
+      )),
+    [notes],
+  );
+
   const dragging = useRef(false);
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
@@ -102,23 +126,7 @@ export function Minimap({
             touchAction: "none",
           }}
         >
-          {notes.map((n) => (
-            <span
-              key={n.id}
-              aria-hidden
-              className="absolute rounded-full"
-              style={{
-                left: n.x * MM_W,
-                top: n.y * MM_H,
-                width: 5,
-                height: 5,
-                marginLeft: -2.5,
-                marginTop: -2.5,
-                background: NOTE_COLORS[n.color].bg,
-                boxShadow: "0 0 0 0.5px rgba(0,0,0,0.25)",
-              }}
-            />
-          ))}
+          {dots}
 
           {/* Current viewport frame */}
           <motion.div
