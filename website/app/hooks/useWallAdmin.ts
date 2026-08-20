@@ -8,7 +8,7 @@ import {
   verifyAdmin,
 } from "@/app/services/wall";
 
-// Shared admin (panel moderation) state for the wall. sessionStorage is the source
+// Shared admin (panel moderation) state for the wall. localStorage is the source
 // of truth (written in services/wall.ts); this hook mirrors it into React and
 // keeps the sibling WallHeader (which unlocks) and WallClient (which shows the
 // delete affordances) in sync via a window event. Lighter than a Context
@@ -16,7 +16,7 @@ import {
 // static `metadata` required by the static export.
 export function useWallAdmin() {
   // Start false on both server and first client render to avoid an SSR/hydration
-  // mismatch; the real value is read from sessionStorage after mount.
+  // mismatch; the real value is read from localStorage after mount.
   const [admin, setAdmin] = useState(false);
 
   useEffect(() => {
