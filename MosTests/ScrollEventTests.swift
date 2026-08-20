@@ -63,6 +63,67 @@ final class ScrollEventTests: XCTestCase {
         ))
     }
 
+    // MARK: - Electron / Cursor 宿主匹配
+
+    func testOutermostAppBundlePath_resolvesCursorHelperToHostApp() {
+        let helper = "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app"
+        XCTAssertEqual(
+            ScrollUtils.outermostAppBundlePath(from: helper),
+            "/Applications/Cursor.app"
+        )
+        XCTAssertEqual(
+            ScrollUtils.outermostAppBundlePath(from: "/Applications/Cursor.app/Contents/MacOS/Cursor"),
+            "/Applications/Cursor.app"
+        )
+        XCTAssertEqual(
+            ScrollUtils.outermostAppBundlePath(from: "/Applications/Cursor.app"),
+            "/Applications/Cursor.app"
+        )
+    }
+
+    func testMatchApplication_matchesCursorHelperToHostException() {
+        let applications = EnhanceArray<Application>(matchKey: "path")
+        applications.append(Application(path: "/Applications/Cursor.app/Contents/MacOS/Cursor"))
+
+        let matched = ScrollUtils.matchApplication(
+            bundlePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app",
+            executablePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app/Contents/MacOS/Cursor Helper (Renderer)",
+            in: applications
+        )
+        XCTAssertEqual(matched?.path, "/Applications/Cursor.app/Contents/MacOS/Cursor")
+    }
+
+    func testMatchApplication_matchesHostBundlePathException() {
+        let applications = EnhanceArray<Application>(matchKey: "path")
+        applications.append(Application(path: "/Applications/Cursor.app"))
+
+        let matched = ScrollUtils.matchApplication(
+            bundlePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper.app",
+            executablePath: nil,
+            in: applications
+        )
+        XCTAssertEqual(matched?.path, "/Applications/Cursor.app")
+    }
+
+    func testIsChromiumFamily_detectsCursorAndVSCode() {
+        XCTAssertTrue(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+        XCTAssertTrue(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.microsoft.VSCode"
+        ))
+        XCTAssertTrue(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app",
+            bundleIdentifier: nil
+        ))
+        XCTAssertFalse(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: "/Applications/Safari.app",
+            bundleIdentifier: "com.apple.Safari"
+        ))
+    }
+
     // MARK: - initEvent: 优先级 (scrollPt > scrollFixPt > scrollFix)
 
     func testInitEvent_prefersPtOverFixPt() throws {

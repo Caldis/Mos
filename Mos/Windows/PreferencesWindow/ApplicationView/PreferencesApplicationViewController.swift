@@ -259,7 +259,7 @@ extension PreferencesApplicationViewController: NSMenuDelegate {
     }
     @objc func appendApplicationWithRunningApplication(_ sender: NSMenuItem!) {
         guard let runningApplication = sender.representedObject as? NSRunningApplication else { return }
-        guard let executablePath = runningApplication.executableURL?.path else { return }
-        appendApplicationWith(path: executablePath)
+        guard let path = runningApplication.bundleURL?.path ?? runningApplication.executableURL?.path else { return }
+        appendApplicationWith(path: path)
     }
 }
