@@ -29,6 +29,152 @@ final class ScrollEventTests: XCTestCase {
         return event
     }
 
+    // MARK: - 远程控制应用识别
+
+    func testRemoteControlApplicationDetectsToDeskExecutableKeyword() {
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: "/Applications/ToDesk.app/Contents/MacOS/ToDesk",
+            bundleIdentifier: nil
+        ))
+    }
+
+    func testRemoteControlApplicationDetectsToDeskBundleIdentifierKeyword() {
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: nil,
+            bundleIdentifier: "com.youqu.todesk"
+        ))
+    }
+
+    func testRemoteControlApplicationRequiresRawPassthroughForToDesk() {
+        XCTAssertTrue(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: "/Library/Application Support/ToDesk/ToDesk_Service",
+            bundleIdentifier: nil
+        ))
+    }
+
+    func testRemoteControlApplicationDoesNotRequireRawPassthroughForOtherRemoteApps() {
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: nil,
+            bundleIdentifier: "com.teamviewer.TeamViewer"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: nil,
+            bundleIdentifier: "com.teamviewer.TeamViewer"
+        ))
+    }
+
+    // MARK: - Electron / Cursor 宿主匹配
+
+    func testOutermostAppBundlePath_resolvesCursorHelperToHostApp() {
+        let helper = "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app"
+        XCTAssertEqual(
+            ScrollUtils.outermostAppBundlePath(from: helper),
+            "/Applications/Cursor.app"
+        )
+        XCTAssertEqual(
+            ScrollUtils.outermostAppBundlePath(from: "/Applications/Cursor.app/Contents/MacOS/Cursor"),
+            "/Applications/Cursor.app"
+        )
+        XCTAssertEqual(
+            ScrollUtils.outermostAppBundlePath(from: "/Applications/Cursor.app"),
+            "/Applications/Cursor.app"
+        )
+    }
+
+    func testMatchApplication_matchesCursorHelperToHostException() {
+        let applications = EnhanceArray<Application>(matchKey: "path")
+        applications.append(Application(path: "/Applications/Cursor.app/Contents/MacOS/Cursor"))
+
+        let matched = ScrollUtils.matchApplication(
+            bundlePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app",
+            executablePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app/Contents/MacOS/Cursor Helper (Renderer)",
+            in: applications
+        )
+        XCTAssertEqual(matched?.path, "/Applications/Cursor.app/Contents/MacOS/Cursor")
+    }
+
+    func testMatchApplication_matchesHostBundlePathException() {
+        let applications = EnhanceArray<Application>(matchKey: "path")
+        applications.append(Application(path: "/Applications/Cursor.app"))
+
+        let matched = ScrollUtils.matchApplication(
+            bundlePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper.app",
+            executablePath: nil,
+            in: applications
+        )
+        XCTAssertEqual(matched?.path, "/Applications/Cursor.app")
+    }
+
+    func testIsChromiumFamily_detectsCursorAndVSCode() {
+        XCTAssertTrue(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+        XCTAssertTrue(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.microsoft.VSCode"
+        ))
+        XCTAssertTrue(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app",
+            bundleIdentifier: nil
+        ))
+        XCTAssertFalse(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: "/Applications/Safari.app",
+            bundleIdentifier: "com.apple.Safari"
+        ))
+    }
+
+    func testIsElectronFamily_detectsCursorButNotChrome() {
+        XCTAssertTrue(ScrollUtils.shared.isElectronFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+        XCTAssertTrue(ScrollUtils.shared.isElectronFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.microsoft.VSCode"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.isElectronFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.google.Chrome"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.isElectronFamilyApplication(
+            bundlePath: "/Applications/Safari.app",
+            bundleIdentifier: "com.apple.Safari"
+        ))
+    }
+
+    func testAdjustReverseForElectron_xorsCursorAndLeavesSafari() {
+        let cursor = ScrollUtils.shared.adjustReverseForElectronTarget(
+            vertical: true,
+            horizontal: true,
+            bundlePath: nil,
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        )
+        XCTAssertFalse(cursor.vertical)
+        XCTAssertFalse(cursor.horizontal)
+
+        let safari = ScrollUtils.shared.adjustReverseForElectronTarget(
+            vertical: true,
+            horizontal: false,
+            bundlePath: nil,
+            bundleIdentifier: "com.apple.Safari"
+        )
+        XCTAssertTrue(safari.vertical)
+        XCTAssertFalse(safari.horizontal)
+    }
+
+    func testAdjustReverseForElectron_preservesRawDirectionDuringToDesk() {
+        let cursor = ScrollUtils.shared.adjustReverseForElectronTarget(
+            vertical: false,
+            horizontal: false,
+            bundlePath: nil,
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92",
+            preserveRawDirection: true
+        )
+        XCTAssertFalse(cursor.vertical)
+        XCTAssertFalse(cursor.horizontal)
+    }
+
     // MARK: - initEvent: 优先级 (scrollPt > scrollFixPt > scrollFix)
 
     func testInitEvent_prefersPtOverFixPt() throws {
