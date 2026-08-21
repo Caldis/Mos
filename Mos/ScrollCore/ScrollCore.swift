@@ -135,7 +135,8 @@ class ScrollCore {
             vertical: enableReverseVertical,
             horizontal: enableReverseHorizontal,
             bundlePath: targetRunningApplication?.bundleURL?.path,
-            bundleIdentifier: targetRunningApplication?.bundleIdentifier
+            bundleIdentifier: targetRunningApplication?.bundleIdentifier,
+            preserveRawDirection: useRawScrollForRemoteControl
         )
         enableReverseVertical = electronAdjustedReverse.vertical
         enableReverseHorizontal = electronAdjustedReverse.horizontal

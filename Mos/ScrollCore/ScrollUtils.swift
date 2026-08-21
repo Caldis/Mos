@@ -151,8 +151,13 @@ class ScrollUtils {
         vertical: Bool,
         horizontal: Bool,
         bundlePath: String?,
-        bundleIdentifier: String?
+        bundleIdentifier: String?,
+        preserveRawDirection: Bool = false
     ) -> (vertical: Bool, horizontal: Bool) {
+        // ToDesk 等远程链路已经要求保持原始方向, 不能再对 Cursor 做一次抵消翻转
+        if preserveRawDirection {
+            return (vertical, horizontal)
+        }
         guard isElectronFamilyApplication(bundlePath: bundlePath, bundleIdentifier: bundleIdentifier) else {
             return (vertical, horizontal)
         }

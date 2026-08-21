@@ -163,6 +163,18 @@ final class ScrollEventTests: XCTestCase {
         XCTAssertFalse(safari.horizontal)
     }
 
+    func testAdjustReverseForElectron_preservesRawDirectionDuringToDesk() {
+        let cursor = ScrollUtils.shared.adjustReverseForElectronTarget(
+            vertical: false,
+            horizontal: false,
+            bundlePath: nil,
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92",
+            preserveRawDirection: true
+        )
+        XCTAssertFalse(cursor.vertical)
+        XCTAssertFalse(cursor.horizontal)
+    }
+
     // MARK: - initEvent: 优先级 (scrollPt > scrollFixPt > scrollFix)
 
     func testInitEvent_prefersPtOverFixPt() throws {
