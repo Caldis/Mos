@@ -248,6 +248,29 @@ final class LogiReceiverConnectionStateTests: XCTestCase {
         )
     }
 
+    // MARK: - receiver idle wake detection
+
+    func testFirstReceiverReportDoesNotCountAsWake() {
+        XCTAssertFalse(LogiDeviceSession.receiverReportIndicatesWake(
+            previousTime: nil,
+            currentTime: 100
+        ))
+    }
+
+    func testReceiverReportAfterLongSilenceCountsAsWake() {
+        XCTAssertTrue(LogiDeviceSession.receiverReportIndicatesWake(
+            previousTime: 100,
+            currentTime: 160
+        ))
+    }
+
+    func testReceiverReportDuringNormalActivityDoesNotCountAsWake() {
+        XCTAssertFalse(LogiDeviceSession.receiverReportIndicatesWake(
+            previousTime: 100,
+            currentTime: 159.9
+        ))
+    }
+
     // MARK: - receiverSlotConnectionAction (Phase 4 热插拔)
 
     func testSlotConnectionDisconnectedManagedReleases() {
