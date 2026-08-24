@@ -61,7 +61,8 @@ final class ScrollDispatchContext {
 #endif
             return false
         }
-        let pid = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
+        let rawPID = pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
+        let pid = ScrollUtils.shared.resolveScrollTargetPID(rawPID)
         os_unfair_lock_lock(&lock)
         state.eventTemplate = template
         state.targetPID = pid
