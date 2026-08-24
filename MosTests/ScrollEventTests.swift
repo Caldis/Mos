@@ -105,6 +105,30 @@ final class ScrollEventTests: XCTestCase {
         XCTAssertEqual(matched?.path, "/Applications/Cursor.app")
     }
 
+    // MARK: - 内核级宿主进程解析 (不依赖 LaunchServices)
+
+    func testProcessExecutablePath_currentProcess() {
+        let pid = pid_t(ProcessInfo.processInfo.processIdentifier)
+        let path = ScrollUtils.processExecutablePath(pid)
+        XCTAssertNotNil(path)
+        XCTAssertTrue(path?.hasPrefix("/") == true)
+    }
+
+    func testParentProcessID_currentProcess() {
+        let pid = pid_t(ProcessInfo.processInfo.processIdentifier)
+        XCTAssertGreaterThanOrEqual(ScrollUtils.parentProcessID(pid), 1)
+    }
+
+    func testResolveHostProcessID_guardsSystemPIDs() {
+        XCTAssertEqual(ScrollUtils.resolveHostProcessID(for: 0), 0)
+        XCTAssertEqual(ScrollUtils.resolveHostProcessID(for: 1), 1)
+    }
+
+    func testResolveHostProcessID_currentProcess_returnsValidPID() {
+        let pid = pid_t(ProcessInfo.processInfo.processIdentifier)
+        XCTAssertGreaterThan(ScrollUtils.resolveHostProcessID(for: pid), 1)
+    }
+
     func testIsChromiumFamily_detectsCursorAndVSCode() {
         XCTAssertTrue(ScrollUtils.shared.isChromiumFamilyApplication(
             bundlePath: nil,

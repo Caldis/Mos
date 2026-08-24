@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Darwin
 
 class ScrollUtils {
     
@@ -46,36 +47,77 @@ class ScrollUtils {
         lastEventTargetPID = currEventTargetPID
         // 更新当前 PID
         currEventTargetPID = pid
-        // 使用 PID 获取应用; Electron Helper 等嵌套进程回退到宿主 .app
+        // 使用 PID 获取应用
+        // Cursor 等 Electron 的 Renderer 子进程可能不注册 LaunchServices (NSRunningApplication 返回 nil),
+        // 因此先用内核信息把嵌套 Helper 解析为宿主主进程后再查询
         if lastEventTargetPID != currEventTargetPID {
-            let immediate = NSRunningApplication(processIdentifier: pid)
-            cachedRunningApplication = resolveHostApplication(immediate) ?? immediate
+            let hostPID = ScrollUtils.resolveHostProcessID(for: pid)
+            cachedRunningApplication = NSRunningApplication(processIdentifier: hostPID)
+                ?? NSRunningApplication(processIdentifier: pid)
         }
         return cachedRunningApplication
     }
 
-    /// 将 Electron Helper / XPC 等嵌套进程解析为宿主应用, 供例外匹配和 CGEventPostToPid 使用
-    func resolveHostApplication(_ application: NSRunningApplication?) -> NSRunningApplication? {
-        guard let application = application else { return nil }
-        guard let hostPath = ScrollUtils.outermostAppBundlePath(from: application.bundleURL?.path)
-                ?? ScrollUtils.outermostAppBundlePath(from: application.executableURL?.path) else {
-            return application.activationPolicy == .regular ? application : nil
-        }
-        if application.bundleURL?.path == hostPath {
-            return application
-        }
-        if let host = NSWorkspace.shared.runningApplications.first(where: {
-            $0.activationPolicy == .regular && $0.bundleURL?.path == hostPath
-        }) {
-            return host
-        }
-        return application.activationPolicy == .regular ? application : nil
-    }
-
+    // 滚动事件投递目标 (CGEventPostToPid) 的解析缓存
+    // 该路径每个滚动事件都会调用, 必须避免任何 IPC
+    private var cachedScrollTargetRawPID: pid_t = 0
+    private var cachedScrollTargetResolvedPID: pid_t = 0
     func resolveScrollTargetPID(_ pid: pid_t) -> pid_t {
         guard pid > 1 else { return pid }
-        guard let application = NSRunningApplication(processIdentifier: pid) else { return pid }
-        return resolveHostApplication(application)?.processIdentifier ?? pid
+        if pid == cachedScrollTargetRawPID { return cachedScrollTargetResolvedPID }
+        let resolved = ScrollUtils.resolveHostProcessID(for: pid)
+        cachedScrollTargetRawPID = pid
+        cachedScrollTargetResolvedPID = resolved
+        return resolved
+    }
+
+    /// 通过内核信息 (proc_pidpath + 父进程链) 将 Electron Helper 等嵌套进程解析为宿主主进程 PID
+    /// 不走 LaunchServices: Renderer 子进程可能未注册 (查不到), 且 LS 查询可能阻塞事件回调 (卡顿)
+    static func resolveHostProcessID(for pid: pid_t) -> pid_t {
+        guard pid > 1 else { return pid }
+        guard let executablePath = processExecutablePath(pid),
+              let hostBundlePath = outermostAppBundlePath(from: executablePath) else {
+            return pid
+        }
+        let hostExecutableDirectory = hostBundlePath + "/Contents/MacOS/"
+        // 可执行文件位于最外层 .app 的主目录下, 自身即宿主主进程
+        if executablePath.hasPrefix(hostExecutableDirectory) {
+            return pid
+        }
+        // 沿父进程链查找宿主主进程 (Electron Helper 均为宿主主进程的子进程)
+        var current = pid
+        for _ in 0..<16 {
+            let parent = parentProcessID(current)
+            guard parent > 1, parent != current else { break }
+            guard let parentPath = processExecutablePath(parent) else { break }
+            if parentPath.hasPrefix(hostExecutableDirectory) {
+                return parent
+            }
+            // 父进程已离开宿主 bundle, 停止查找
+            guard parentPath.hasPrefix(hostBundlePath + "/") else { break }
+            current = parent
+        }
+        return pid
+    }
+
+    /// proc_pidpath 获取进程可执行文件路径 (纯内核调用, 微秒级)
+    static func processExecutablePath(_ pid: pid_t) -> String? {
+        var buffer = [CChar](repeating: 0, count: 4096)
+        let length = proc_pidpath(pid, &buffer, UInt32(buffer.count))
+        guard length > 0 else { return nil }
+        return buffer.withUnsafeBufferPointer { (pointer) -> String? in
+            guard let baseAddress = pointer.baseAddress else { return nil }
+            return String(cString: baseAddress)
+        }
+    }
+
+    /// sysctl 获取父进程 PID (纯内核调用)
+    static func parentProcessID(_ pid: pid_t) -> pid_t {
+        var info = kinfo_proc()
+        var size = MemoryLayout<kinfo_proc>.stride
+        var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
+        guard sysctl(&mib, UInt32(mib.count), &info, &size, nil, 0) == 0, size > 0 else { return 0 }
+        return info.kp_eproc.e_ppid
     }
     
     // 判断目标是否为 Chromium / Electron 家族 (Chrome 收尾帧对 Cursor / VS Code / Edge 同样必要)
