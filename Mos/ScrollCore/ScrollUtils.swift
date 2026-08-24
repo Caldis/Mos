@@ -329,6 +329,13 @@ class ScrollUtils {
         return isContinuous == 1.0  // 1.0 表示主控端已平滑
     }
 
+    /// ToDesktop 是 Electron 应用打包平台 (Cursor 等), 其 bundleID 前缀 com.todesktop.
+    /// 恰好包含 "todesk" 关键字, 与 ToDesk 远程控制应用无关, 关键字匹配前必须排除
+    func isToDesktopPlatformApplication(bundleIdentifier: String?) -> Bool {
+        guard let bundleIdentifier = bundleIdentifier?.lowercased() else { return false }
+        return bundleIdentifier.hasPrefix("com.todesktop.")
+    }
+
     func isKnownRemoteControlApplication(executablePath: String?, bundleIdentifier: String?) -> Bool {
         if containsAnyKeyword(in: executablePath, keywords: REMOTE_CONTROL_APPLICATION.executableKeywords) {
             return true
@@ -337,6 +344,9 @@ class ScrollUtils {
            REMOTE_CONTROL_APPLICATION.bundleIdentifiers.contains(bundleIdentifier) {
             return true
         }
+        if isToDesktopPlatformApplication(bundleIdentifier: bundleIdentifier) {
+            return false
+        }
         return containsAnyKeyword(
             in: bundleIdentifier,
             keywords: REMOTE_CONTROL_APPLICATION.bundleIdentifierKeywords
@@ -344,10 +354,16 @@ class ScrollUtils {
     }
 
     func needsRawScrollPassthrough(executablePath: String?, bundleIdentifier: String?) -> Bool {
-        return containsAnyKeyword(
+        if containsAnyKeyword(
             in: executablePath,
             keywords: REMOTE_CONTROL_APPLICATION.rawScrollPassthroughExecutableKeywords
-        ) || containsAnyKeyword(
+        ) {
+            return true
+        }
+        if isToDesktopPlatformApplication(bundleIdentifier: bundleIdentifier) {
+            return false
+        }
+        return containsAnyKeyword(
             in: bundleIdentifier,
             keywords: REMOTE_CONTROL_APPLICATION.rawScrollPassthroughBundleIdentifierKeywords
         )

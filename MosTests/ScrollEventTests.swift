@@ -52,6 +52,33 @@ final class ScrollEventTests: XCTestCase {
         ))
     }
 
+    func testRemoteControl_doesNotMisclassifyToDesktopPackagedApps() {
+        // Cursor 由 ToDesktop 平台打包, bundleID 前缀 com.todesktop. 恰好包含 "todesk" 关键字
+        XCTAssertFalse(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: "/Applications/Cursor.app/Contents/MacOS/Cursor",
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: "/Applications/Cursor.app/Contents/MacOS/Cursor",
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: "/Applications/Cursor.app",
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+    }
+
+    func testRemoteControl_stillDetectsRealToDeskBundleIdentifier() {
+        XCTAssertTrue(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: nil,
+            bundleIdentifier: "com.youqu.todesk"
+        ))
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: nil,
+            bundleIdentifier: "com.youqu.todesk"
+        ))
+    }
+
     func testRemoteControlApplicationDoesNotRequireRawPassthroughForOtherRemoteApps() {
         XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
             executablePath: nil,
