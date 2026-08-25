@@ -67,6 +67,10 @@ class ScrollCore: ScrollActionPort {
 #endif
             return Unmanaged.passUnretained(event)
         }
+        // 手势滚轮模式: 如果有 pending 的滚轮手势, 消费此滚轮事件并识别方向
+        if GestureProcessor.shared.handleScrollEvent(event) {
+            return nil
+        }
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
         let hasVerticalDelta = scrollEvent.Y.valid && scrollEvent.Y.usableValue != 0.0

@@ -125,6 +125,13 @@ class OPTIONS_BUTTONS_DEFAULT: Codable {
     }
 }
 
+// 手势
+class OPTIONS_GESTURES_DEFAULT: Codable {
+    var binding: [GestureBinding] = [] {
+        didSet { Options.shared.saveOptions() }
+    }
+}
+
 // 滚动
 // 容器被全局配置与 per-app (Application.scroll) 复用, didSet 经 Options 按引用身份路由归属组
 class OPTIONS_SCROLL_DEFAULT: Codable {
