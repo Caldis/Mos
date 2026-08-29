@@ -138,6 +138,7 @@ struct SystemShortcut {
                 case "mouseMiddleClick": return "computermouse"
                 case "mouseBackClick": return "chevron.backward"
                 case "mouseForwardClick": return "chevron.forward"
+                case "mouseGestureNavigation": return "arrow.up.and.down.and.arrow.left.and.right"
                 // Mos 鼠标滚动
                 case "mosScrollDash": return "speedometer"
                 case "mosScrollToggle": return "arrow.left.arrow.right"
@@ -328,7 +329,7 @@ struct SystemShortcut {
         // 鼠标按键
         "mouseLeftClick": mouseLeftClick, "mouseRightClick": mouseRightClick,
         "mouseMiddleClick": mouseMiddleClick, "mouseBackClick": mouseBackClick,
-        "mouseForwardClick": mouseForwardClick,
+        "mouseForwardClick": mouseForwardClick, "mouseGestureNavigation": mouseGestureNavigation,
         // Mos 鼠标滚动
         "mosScrollDash": mosScrollDash,
         "mosScrollToggle": mosScrollToggle,
@@ -376,7 +377,7 @@ struct SystemShortcut {
     static let shortcutsByCategory: [(category: String, shortcuts: [Shortcut])] = [
         ("categoryFunctionKeys", [
             missionControl, appExpose, spotlightSys, dictation, doNotDisturb, showDesktop, escapeKey,
-            moveSpaceLeft, moveSpaceRight
+            moveSpaceLeft, moveSpaceRight, mouseGestureNavigation
         ]),
         ("categoryAppsAndWindows", [
             switchApp, switchAppReverse,
@@ -412,6 +413,12 @@ struct SystemShortcut {
     static let mouseMiddleClick = Shortcut("mouseMiddleClick", 0xFFFF, NSEvent.ModifierFlags(rawValue: 2), executionMode: .stateful)
     static let mouseBackClick = Shortcut("mouseBackClick", 0xFFFF, NSEvent.ModifierFlags(rawValue: 3), executionMode: .stateful)
     static let mouseForwardClick = Shortcut("mouseForwardClick", 0xFFFF, NSEvent.ModifierFlags(rawValue: 4), executionMode: .stateful)
+    static let mouseGestureNavigation = Shortcut(
+        "mouseGestureNavigation",
+        0xFFFB,
+        NSEvent.ModifierFlags(rawValue: 0),
+        executionMode: .stateful
+    )
 
     // MARK: - Mos Scroll Actions
     // Mos 鼠标滚动动作 (由 ShortcutExecutor 转发给 ScrollCore, 保留旧的单热键配置不迁移)

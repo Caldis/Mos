@@ -10,6 +10,7 @@ final class InputProcessorTests: XCTestCase {
         MouseInteractionSessionController.shared.setTestingMotionTapHooks()
         MouseInteractionSessionController.shared.clearAllSessions()
         ShortcutExecutor.shared.setTestingMouseEventObserver()
+        ShortcutExecutor.shared.setTestingKeyboardShortcutObserver()
         InputProcessor.shared.clearActiveBindings()
         ScrollCore.shared.dashScroll = false
         ScrollCore.shared.dashAmplification = 1.0
@@ -34,9 +35,326 @@ final class InputProcessorTests: XCTestCase {
         MouseInteractionSessionController.shared.clearAllSessions()
         MouseInteractionSessionController.shared.clearTestingMotionTapHooks()
         ShortcutExecutor.shared.clearTestingMouseEventObserver()
+        ShortcutExecutor.shared.clearTestingKeyboardShortcutObserver()
         Options.shared.buttons.binding = []
         ButtonUtils.shared.invalidateCache()
         super.tearDown()
+    }
+
+    func testMouseGestureRecognizerRecognizesCardinalDirections() {
+        let cases: [(CGFloat, CGFloat, MouseGestureDirection, String)] = [
+            (-45, 0, .left, SystemShortcut.moveSpaceRight.identifier),
+            (45, 0, .right, SystemShortcut.moveSpaceLeft.identifier),
+            (0, -45, .up, SystemShortcut.missionControl.identifier),
+            (0, 45, .down, SystemShortcut.appExpose.identifier),
+        ]
+
+        for (deltaX, deltaY, expectedDirection, expectedShortcut) in cases {
+            var recognizer = MouseGestureRecognizer()
+            let direction = recognizer.append(deltaX: deltaX, deltaY: deltaY)
+            XCTAssertEqual(direction, expectedDirection)
+            XCTAssertEqual(direction?.shortcutIdentifier, expectedShortcut)
+        }
+    }
+
+    func testMouseGestureRecognizerKeepsVerticalGesturesOneShot() {
+        var up = MouseGestureRecognizer()
+        XCTAssertEqual(up.append(deltaX: 0, deltaY: -45), .up)
+        XCTAssertNil(up.append(deltaX: 0, deltaY: -100))
+
+        var down = MouseGestureRecognizer()
+        XCTAssertEqual(down.append(deltaX: 0, deltaY: 45), .down)
+        XCTAssertNil(down.append(deltaX: 0, deltaY: 100))
+    }
+
+    func testMouseGestureRecognizerRequiresPauseBeforeRepeatingButAllowsReversal() {
+        var recognizer = MouseGestureRecognizer()
+
+        XCTAssertEqual(recognizer.append(deltaX: 45, deltaY: 0, timestamp: 10), .right)
+        XCTAssertNil(recognizer.append(deltaX: 200, deltaY: 0, timestamp: 10.01))
+        XCTAssertEqual(recognizer.append(deltaX: -40, deltaY: 0, timestamp: 10.02), .left)
+        XCTAssertNil(recognizer.append(deltaX: -200, deltaY: 0, timestamp: 10.03))
+        XCTAssertNil(recognizer.append(deltaX: -20, deltaY: 0, timestamp: 10.25))
+        XCTAssertEqual(recognizer.append(deltaX: -20, deltaY: 0, timestamp: 10.26), .left)
+        XCTAssertEqual(recognizer.recognizedDirection, .left)
+        XCTAssertFalse(recognizer.shouldReplayClick)
+    }
+
+    func testMouseGestureRecognizerThresholds() {
+        var diagonal = MouseGestureRecognizer()
+        XCTAssertNil(diagonal.append(deltaX: 35, deltaY: 35))
+        XCTAssertEqual(diagonal.append(deltaX: 20, deltaY: 0), .right)
+
+        var click = MouseGestureRecognizer()
+        _ = click.append(deltaX: 4, deltaY: 3)
+        XCTAssertTrue(click.shouldReplayClick)
+
+        var ambiguous = MouseGestureRecognizer()
+        _ = ambiguous.append(deltaX: 20, deltaY: 20)
+        XCTAssertFalse(ambiguous.shouldReplayClick)
+
+        var reversed = MouseGestureRecognizer()
+        _ = reversed.append(deltaX: 20, deltaY: 0)
+        _ = reversed.append(deltaX: -20, deltaY: 0)
+        XCTAssertFalse(reversed.shouldReplayClick)
+    }
+
+    func testGestureNavigationTapRunsMissionControlForNativeMouseButton() {
+        configureGestureBinding()
+        var replayCount = 0
+        var executedShortcuts: [(CGKeyCode, UInt64)] = []
+        ShortcutExecutor.shared.setTestingMouseEventObserver { _ in replayCount += 1 }
+        ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { code, flags, _ in
+            executedShortcuts.append((code, flags))
+        }
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(fromCGEvent: makeOtherMouseEvent(.otherMouseDown))),
+            .consumed
+        )
+        XCTAssertTrue(InputProcessor.shared.hasActiveMouseGestureSessions)
+        XCTAssertTrue(MouseInteractionSessionController.shared.isMotionTapRunning)
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(fromCGEvent: makeOtherMouseEvent(.otherMouseUp))),
+            .consumed
+        )
+        waitForMainQueue()
+
+        let expected = resolvedShortcut(SystemShortcut.missionControl)
+        XCTAssertEqual(executedShortcuts.count, 1)
+        XCTAssertEqual(executedShortcuts.first?.0, expected.code)
+        XCTAssertEqual(executedShortcuts.first?.1, expected.flags)
+        XCTAssertEqual(replayCount, 0)
+        XCTAssertFalse(InputProcessor.shared.hasActiveMouseGestureSessions)
+        XCTAssertFalse(MouseInteractionSessionController.shared.isMotionTapRunning)
+    }
+
+    func testGestureNavigationTapRunsMissionControlForHighNumberedNativeMouseButton() {
+        configureGestureBinding(code: 21)
+        var replayCount = 0
+        var executedShortcuts: [(CGKeyCode, UInt64)] = []
+        ShortcutExecutor.shared.setTestingMouseEventObserver { _ in replayCount += 1 }
+        ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { code, flags, _ in
+            executedShortcuts.append((code, flags))
+        }
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(fromCGEvent: makeOtherMouseEvent(.otherMouseDown, buttonNumber: 21))),
+            .consumed
+        )
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(fromCGEvent: makeOtherMouseEvent(.otherMouseUp, buttonNumber: 21))),
+            .consumed
+        )
+        waitForMainQueue()
+
+        let expected = resolvedShortcut(SystemShortcut.missionControl)
+        XCTAssertEqual(executedShortcuts.count, 1)
+        XCTAssertEqual(executedShortcuts.first?.0, expected.code)
+        XCTAssertEqual(executedShortcuts.first?.1, expected.flags)
+        XCTAssertEqual(replayCount, 0)
+    }
+
+    func testGestureNavigationRecognizedMovementSuppressesClickAndSurvivesDuplicateDown() {
+        configureGestureBinding()
+        var replayCount = 0
+        var executedShortcuts: [(CGKeyCode, UInt64)] = []
+        ShortcutExecutor.shared.setTestingMouseEventObserver { _ in replayCount += 1 }
+        ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { code, flags, _ in
+            executedShortcuts.append((code, flags))
+        }
+        let down = gestureInputEvent(phase: .down)
+
+        XCTAssertEqual(InputProcessor.shared.process(down), .consumed)
+        InputProcessor.shared.handleMouseGestureMovement(deltaX: 35, deltaY: 0)
+        XCTAssertEqual(InputProcessor.shared.process(down), .consumed)
+        InputProcessor.shared.handleMouseGestureMovement(deltaX: 10, deltaY: 0)
+        XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .up)), .consumed)
+        waitForMainQueue()
+
+        let expected = resolvedShortcut(SystemShortcut.moveSpaceLeft)
+        XCTAssertEqual(executedShortcuts.count, 1)
+        XCTAssertEqual(executedShortcuts.first?.0, expected.code)
+        XCTAssertEqual(executedShortcuts.first?.1, expected.flags)
+        XCTAssertEqual(replayCount, 0)
+        XCTAssertFalse(InputProcessor.shared.hasActiveMouseGestureSessions)
+        XCTAssertFalse(MouseInteractionSessionController.shared.isMotionTapRunning)
+    }
+
+    func testGestureNavigationReceivesNativeMouseDeltaThroughMotionController() {
+        configureGestureBinding()
+        var executedShortcuts: [(CGKeyCode, UInt64)] = []
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(fromCGEvent: makeOtherMouseEvent(.otherMouseDown))),
+            .consumed
+        )
+
+        let motion = makeMouseMoveEvent(deltaX: -45, deltaY: 0)
+        var returnedFromMotionCallback = false
+        ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { code, flags, _ in
+            XCTAssertTrue(returnedFromMotionCallback)
+            executedShortcuts.append((code, flags))
+        }
+        MouseInteractionSessionController.shared.handleMotionTapEventForTests(motion)
+        XCTAssertTrue(executedShortcuts.isEmpty)
+        returnedFromMotionCallback = true
+
+        XCTAssertEqual(
+            InputProcessor.shared.process(InputEvent(fromCGEvent: makeOtherMouseEvent(.otherMouseUp))),
+            .consumed
+        )
+        waitForMainQueue()
+
+        let expected = resolvedShortcut(SystemShortcut.moveSpaceRight)
+        XCTAssertEqual(executedShortcuts.count, 1)
+        XCTAssertEqual(executedShortcuts.first?.0, expected.code)
+        XCTAssertEqual(executedShortcuts.first?.1, expected.flags)
+    }
+
+    func testGestureNavigationContinuousHorizontalMovementOnlySwitchesOnce() {
+        configureGestureBinding()
+        var executedShortcuts: [(CGKeyCode, UInt64)] = []
+        let firstAction = expectation(description: "initial horizontal gesture")
+        let unexpectedRepeat = expectation(description: "continuous swipe must not repeat")
+        unexpectedRepeat.isInverted = true
+        ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { code, flags, _ in
+            executedShortcuts.append((code, flags))
+            if executedShortcuts.count == 1 {
+                firstAction.fulfill()
+            } else {
+                unexpectedRepeat.fulfill()
+            }
+        }
+
+        XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .down)), .consumed)
+        InputProcessor.shared.handleMouseGestureMovement(deltaX: 45, deltaY: 0, timestamp: 10)
+        InputProcessor.shared.handleMouseGestureMovement(deltaX: 200, deltaY: 0, timestamp: 10.01)
+
+        wait(for: [firstAction], timeout: 1)
+        wait(for: [unexpectedRepeat], timeout: 0.25)
+        XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .up)), .consumed)
+        waitForMainQueue()
+
+        let expected = resolvedShortcut(SystemShortcut.moveSpaceLeft)
+        XCTAssertEqual(executedShortcuts.count, 1)
+        XCTAssertEqual(executedShortcuts[0].0, expected.code)
+        XCTAssertEqual(executedShortcuts[0].1, expected.flags)
+    }
+
+    func testGestureNavigationRepeatsHorizontalMovementAfterPauseWithoutReleasingButton() {
+        configureGestureBinding()
+        var executedShortcuts: [(CGKeyCode, UInt64)] = []
+        let repeatedActions = expectation(description: "horizontal gesture repeats")
+        repeatedActions.expectedFulfillmentCount = 2
+        ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { code, flags, _ in
+            executedShortcuts.append((code, flags))
+            repeatedActions.fulfill()
+        }
+
+        XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .down)), .consumed)
+        InputProcessor.shared.handleMouseGestureMovement(deltaX: 45, deltaY: 0, timestamp: 10)
+        InputProcessor.shared.handleMouseGestureMovement(deltaX: 40, deltaY: 0, timestamp: 10.20)
+
+        wait(for: [repeatedActions], timeout: 1)
+        XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .up)), .consumed)
+        waitForMainQueue()
+
+        let expected = resolvedShortcut(SystemShortcut.moveSpaceLeft)
+        XCTAssertEqual(executedShortcuts.count, 2)
+        XCTAssertEqual(executedShortcuts[0].0, expected.code)
+        XCTAssertEqual(executedShortcuts[0].1, expected.flags)
+        XCTAssertEqual(executedShortcuts[1].0, expected.code)
+        XCTAssertEqual(executedShortcuts[1].1, expected.flags)
+    }
+
+    func testGestureNavigationRedirectsPendingHorizontalMovement() {
+        configureGestureBinding()
+        var executedShortcuts: [(CGKeyCode, UInt64)] = []
+        let firstAction = expectation(description: "initial horizontal gesture")
+        let redirectedAction = expectation(description: "redirected horizontal gesture")
+        ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { code, flags, _ in
+            executedShortcuts.append((code, flags))
+            if executedShortcuts.count == 1 {
+                firstAction.fulfill()
+            } else if executedShortcuts.count == 2 {
+                redirectedAction.fulfill()
+            }
+        }
+
+        XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .down)), .consumed)
+        InputProcessor.shared.handleMouseGestureMovement(deltaX: 45, deltaY: 0, timestamp: 10)
+        wait(for: [firstAction], timeout: 1)
+
+        // Queue a deliberate second rightward swipe, then reverse before its dispatch interval.
+        InputProcessor.shared.handleMouseGestureMovement(deltaX: 40, deltaY: 0, timestamp: 10.20)
+        InputProcessor.shared.handleMouseGestureMovement(deltaX: -40, deltaY: 0, timestamp: 10.21)
+        wait(for: [redirectedAction], timeout: 1)
+
+        XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .up)), .consumed)
+        waitForMainQueue()
+
+        let initial = resolvedShortcut(SystemShortcut.moveSpaceLeft)
+        let redirected = resolvedShortcut(SystemShortcut.moveSpaceRight)
+        XCTAssertEqual(executedShortcuts.count, 2)
+        XCTAssertEqual(executedShortcuts[0].0, initial.code)
+        XCTAssertEqual(executedShortcuts[0].1, initial.flags)
+        XCTAssertEqual(executedShortcuts[1].0, redirected.code)
+        XCTAssertEqual(executedShortcuts[1].1, redirected.flags)
+    }
+
+    func testGestureNavigationLogiGestureButtonTapRunsMissionControl() {
+        configureGestureBinding(code: 1000)
+        var executedShortcuts: [(CGKeyCode, UInt64)] = []
+        ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { code, flags, _ in
+            executedShortcuts.append((code, flags))
+        }
+
+        XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .down, code: 1000)), .consumed)
+        XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .up, code: 1000)), .consumed)
+        waitForMainQueue()
+
+        let expected = resolvedShortcut(SystemShortcut.missionControl)
+        XCTAssertEqual(executedShortcuts.count, 1)
+        XCTAssertEqual(executedShortcuts.first?.0, expected.code)
+        XCTAssertEqual(executedShortcuts.first?.1, expected.flags)
+    }
+
+    func testGestureNavigationDoesNotExecutePlaceholderAsKeyboardShortcut() {
+        XCTAssertNil(
+            ShortcutExecutor.shared.resolveAction(
+                named: SystemShortcut.mouseGestureNavigation.identifier
+            )
+        )
+        configureGestureBinding(type: .keyboard, code: 6)
+        let down = InputEvent(
+            type: .keyboard,
+            code: 6,
+            modifiers: [],
+            phase: .down,
+            source: .hidPP,
+            device: nil
+        )
+
+        XCTAssertEqual(InputProcessor.shared.process(down), .passthrough)
+        XCTAssertFalse(InputProcessor.shared.hasActiveMouseGestureSessions)
+        XCTAssertFalse(MouseInteractionSessionController.shared.isMotionTapRunning)
+    }
+
+    func testGestureNavigationCancellationDoesNotReplayClick() {
+        configureGestureBinding()
+        var replayCount = 0
+        var shortcutCount = 0
+        ShortcutExecutor.shared.setTestingMouseEventObserver { _ in replayCount += 1 }
+        ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { _, _, _ in shortcutCount += 1 }
+
+        XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .down)), .consumed)
+        InputProcessor.shared.clearActiveBindings()
+        waitForMainQueue()
+
+        XCTAssertFalse(InputProcessor.shared.hasActiveMouseGestureSessions)
+        XCTAssertEqual(replayCount, 0)
+        XCTAssertEqual(shortcutCount, 0)
     }
 
     func testProcess_downEvent_consumedWhenBindingMatches() {
@@ -1059,6 +1377,71 @@ final class InputProcessorTests: XCTestCase {
             ButtonCore.shared.dispatchEventTapLocation.rawValue,
             CGEventTapLocation.cgSessionEventTap.rawValue
         )
+    }
+
+    private func configureGestureBinding(type: EventType = .mouse, code: UInt16 = 3) {
+        let trigger = RecordedEvent(
+            type: type,
+            code: code,
+            modifiers: 0,
+            displayComponents: [type == .mouse ? "🖱4" : "Z"],
+            deviceFilter: nil
+        )
+        Options.shared.buttons.binding = [
+            ButtonBinding(
+                triggerEvent: trigger,
+                systemShortcutName: SystemShortcut.mouseGestureNavigation.identifier,
+                isEnabled: true
+            )
+        ]
+        ButtonUtils.shared.invalidateCache()
+    }
+
+    private func gestureInputEvent(phase: InputPhase, code: UInt16 = 3) -> InputEvent {
+        return InputEvent(
+            type: .mouse,
+            code: code,
+            modifiers: [],
+            phase: phase,
+            source: .hidPP,
+            device: nil
+        )
+    }
+
+    private func resolvedShortcut(_ shortcut: SystemShortcut.Shortcut) -> (code: CGKeyCode, flags: UInt64) {
+        return SystemShortcut.resolveSystemShortcut(shortcut.identifier)
+            ?? (shortcut.code, UInt64(shortcut.modifiers.rawValue))
+    }
+
+    private func makeOtherMouseEvent(_ type: CGEventType, buttonNumber: Int64 = 3) -> CGEvent {
+        let event = CGEvent(
+            mouseEventSource: nil,
+            mouseType: type,
+            mouseCursorPosition: CGPoint(x: 40, y: 40),
+            mouseButton: .center
+        )!
+        event.setIntegerValueField(.mouseEventButtonNumber, value: buttonNumber)
+        return event
+    }
+
+    private func makeMouseMoveEvent(deltaX: Double, deltaY: Double) -> CGEvent {
+        let event = CGEvent(
+            mouseEventSource: nil,
+            mouseType: .mouseMoved,
+            mouseCursorPosition: CGPoint(x: 40, y: 40),
+            mouseButton: .center
+        )!
+        event.setDoubleValueField(.mouseEventDeltaX, value: deltaX)
+        event.setDoubleValueField(.mouseEventDeltaY, value: deltaY)
+        return event
+    }
+
+    private func waitForMainQueue() {
+        let queuedWorkFinished = expectation(description: "main queue work finished")
+        DispatchQueue.main.async {
+            queuedWorkFinished.fulfill()
+        }
+        wait(for: [queuedWorkFinished], timeout: 1)
     }
 
 }
