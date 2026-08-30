@@ -67,16 +67,15 @@ final class InputProcessorTests: XCTestCase {
         XCTAssertNil(down.append(deltaX: 0, deltaY: 100))
     }
 
-    func testMouseGestureRecognizerRequiresPauseBeforeRepeatingButAllowsReversal() {
+    func testMouseGestureRecognizerOnlyRecognizesOneDirectionPerHold() {
         var recognizer = MouseGestureRecognizer()
 
         XCTAssertEqual(recognizer.append(deltaX: 45, deltaY: 0, timestamp: 10), .right)
         XCTAssertNil(recognizer.append(deltaX: 200, deltaY: 0, timestamp: 10.01))
-        XCTAssertEqual(recognizer.append(deltaX: -40, deltaY: 0, timestamp: 10.02), .left)
+        XCTAssertNil(recognizer.append(deltaX: -400, deltaY: 0, timestamp: 10.02))
         XCTAssertNil(recognizer.append(deltaX: -200, deltaY: 0, timestamp: 10.03))
-        XCTAssertNil(recognizer.append(deltaX: -20, deltaY: 0, timestamp: 10.25))
-        XCTAssertEqual(recognizer.append(deltaX: -20, deltaY: 0, timestamp: 10.26), .left)
-        XCTAssertEqual(recognizer.recognizedDirection, .left)
+        XCTAssertNil(recognizer.append(deltaX: -40, deltaY: 0, timestamp: 10.26))
+        XCTAssertEqual(recognizer.recognizedDirection, .right)
         XCTAssertFalse(recognizer.shouldReplayClick)
     }
 
@@ -242,43 +241,48 @@ final class InputProcessorTests: XCTestCase {
         XCTAssertEqual(executedShortcuts[0].1, expected.flags)
     }
 
-    func testGestureNavigationRepeatsHorizontalMovementAfterPauseWithoutReleasingButton() {
+    func testGestureNavigationDoesNotRepeatAfterPauseWithoutReleasingButton() {
         configureGestureBinding()
         var executedShortcuts: [(CGKeyCode, UInt64)] = []
-        let repeatedActions = expectation(description: "horizontal gesture repeats")
-        repeatedActions.expectedFulfillmentCount = 2
+        let firstAction = expectation(description: "initial horizontal gesture")
+        let unexpectedRepeat = expectation(description: "same hold must not repeat after a pause")
+        unexpectedRepeat.isInverted = true
         ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { code, flags, _ in
             executedShortcuts.append((code, flags))
-            repeatedActions.fulfill()
+            if executedShortcuts.count == 1 {
+                firstAction.fulfill()
+            } else {
+                unexpectedRepeat.fulfill()
+            }
         }
 
         XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .down)), .consumed)
         InputProcessor.shared.handleMouseGestureMovement(deltaX: 45, deltaY: 0, timestamp: 10)
         InputProcessor.shared.handleMouseGestureMovement(deltaX: 40, deltaY: 0, timestamp: 10.20)
 
-        wait(for: [repeatedActions], timeout: 1)
+        wait(for: [firstAction], timeout: 1)
+        wait(for: [unexpectedRepeat], timeout: 0.25)
         XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .up)), .consumed)
         waitForMainQueue()
 
         let expected = resolvedShortcut(SystemShortcut.moveSpaceLeft)
-        XCTAssertEqual(executedShortcuts.count, 2)
+        XCTAssertEqual(executedShortcuts.count, 1)
         XCTAssertEqual(executedShortcuts[0].0, expected.code)
         XCTAssertEqual(executedShortcuts[0].1, expected.flags)
-        XCTAssertEqual(executedShortcuts[1].0, expected.code)
-        XCTAssertEqual(executedShortcuts[1].1, expected.flags)
     }
 
-    func testGestureNavigationRedirectsPendingHorizontalMovement() {
+    func testGestureNavigationDoesNotReverseAfterGestureCommitsUntilRelease() {
         configureGestureBinding()
         var executedShortcuts: [(CGKeyCode, UInt64)] = []
         let firstAction = expectation(description: "initial horizontal gesture")
-        let redirectedAction = expectation(description: "redirected horizontal gesture")
+        let unexpectedReversal = expectation(description: "same hold must not reverse")
+        unexpectedReversal.isInverted = true
         ShortcutExecutor.shared.setTestingKeyboardShortcutObserver { code, flags, _ in
             executedShortcuts.append((code, flags))
             if executedShortcuts.count == 1 {
                 firstAction.fulfill()
-            } else if executedShortcuts.count == 2 {
-                redirectedAction.fulfill()
+            } else {
+                unexpectedReversal.fulfill()
             }
         }
 
@@ -286,21 +290,16 @@ final class InputProcessorTests: XCTestCase {
         InputProcessor.shared.handleMouseGestureMovement(deltaX: 45, deltaY: 0, timestamp: 10)
         wait(for: [firstAction], timeout: 1)
 
-        // Queue a deliberate second rightward swipe, then reverse before its dispatch interval.
-        InputProcessor.shared.handleMouseGestureMovement(deltaX: 40, deltaY: 0, timestamp: 10.20)
-        InputProcessor.shared.handleMouseGestureMovement(deltaX: -40, deltaY: 0, timestamp: 10.21)
-        wait(for: [redirectedAction], timeout: 1)
+        InputProcessor.shared.handleMouseGestureMovement(deltaX: -200, deltaY: 0, timestamp: 10.20)
+        wait(for: [unexpectedReversal], timeout: 0.25)
 
         XCTAssertEqual(InputProcessor.shared.process(gestureInputEvent(phase: .up)), .consumed)
         waitForMainQueue()
 
         let initial = resolvedShortcut(SystemShortcut.moveSpaceLeft)
-        let redirected = resolvedShortcut(SystemShortcut.moveSpaceRight)
-        XCTAssertEqual(executedShortcuts.count, 2)
+        XCTAssertEqual(executedShortcuts.count, 1)
         XCTAssertEqual(executedShortcuts[0].0, initial.code)
         XCTAssertEqual(executedShortcuts[0].1, initial.flags)
-        XCTAssertEqual(executedShortcuts[1].0, redirected.code)
-        XCTAssertEqual(executedShortcuts[1].1, redirected.flags)
     }
 
     func testGestureNavigationLogiGestureButtonTapRunsMissionControl() {

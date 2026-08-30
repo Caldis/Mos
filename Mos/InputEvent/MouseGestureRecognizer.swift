@@ -78,6 +78,10 @@ struct MouseGestureRecognizer {
             hypot(displacement.x, displacement.y)
         )
 
+        // Treat each button hold as one gesture transaction. Once a direction
+        // commits, later movement is ignored until mouseUp creates a new session.
+        guard recognizedDirection == nil else { return nil }
+
         switch lockedAxis {
         case .horizontal:
             return appendHorizontalMovement(deltaX, movementGap: movementGap)
