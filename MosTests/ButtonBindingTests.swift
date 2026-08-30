@@ -870,6 +870,14 @@ final class ButtonBindingTests: XCTestCase {
             modifierItems,
             ["modifierShift", "modifierOption", "modifierControl", "modifierCommand", "modifierFn"]
         )
+
+        let mouseItems = menu.items[mouseIndex].submenu?.items.compactMap {
+            ($0.representedObject as? SystemShortcut.Shortcut)?.identifier
+        }
+        XCTAssertEqual(
+            mouseItems,
+            ["mouseLeftClick", "mouseRightClick", "mouseMiddleClick", "mouseBackClick", "mouseForwardClick"]
+        )
     }
 
     func testBuildShortcutMenu_placesMosMouseScrollBelowMouseButtons() {
@@ -1024,7 +1032,7 @@ final class ButtonBindingTests: XCTestCase {
         XCTAssertEqual(cell.actionPopUpButton.menu?.items.first?.title, SystemShortcut.copy.localizedName)
     }
 
-    func testBuildShortcutMenu_includesEscapeInFunctionKeysCategory() {
+    func testBuildShortcutMenu_includesEscapeAndGestureNavigationInFunctionKeysCategory() {
         let menu = NSMenu()
         let target = ShortcutMenuTestTarget()
 
@@ -1044,6 +1052,7 @@ final class ButtonBindingTests: XCTestCase {
         } ?? []
 
         XCTAssertTrue(functionItems.contains("escapeKey"))
+        XCTAssertTrue(functionItems.contains("mouseGestureNavigation"))
     }
 
     func testPredefinedModifierShortcut_localizedNamesAreSemanticLabels() {
