@@ -10,6 +10,7 @@ final class InputProcessorTests: XCTestCase {
         MouseInteractionSessionController.shared.setTestingMotionTapHooks()
         MouseInteractionSessionController.shared.clearAllSessions()
         ShortcutExecutor.shared.setTestingMouseEventObserver()
+        ShortcutExecutor.shared.clearTestingEventObserver()
         InputProcessor.shared.clearActiveBindings()
         ScrollCore.shared.dashScroll = false
         ScrollCore.shared.dashAmplification = 1.0
@@ -34,6 +35,7 @@ final class InputProcessorTests: XCTestCase {
         MouseInteractionSessionController.shared.clearAllSessions()
         MouseInteractionSessionController.shared.clearTestingMotionTapHooks()
         ShortcutExecutor.shared.clearTestingMouseEventObserver()
+        ShortcutExecutor.shared.clearTestingEventObserver()
         Options.shared.buttons.binding = []
         ButtonUtils.shared.invalidateCache()
         super.tearDown()
@@ -281,6 +283,83 @@ final class InputProcessorTests: XCTestCase {
 
             XCTAssertEqual(action.executionMode, .stateful)
         }
+    }
+
+    func testSystemShortcut_smartZoomDefinitionAndCategory() {
+        guard let shortcut = SystemShortcut.getShortcut(named: "smartZoom") else {
+            return XCTFail("Expected smartZoom to exist in SystemShortcut.allShortcuts")
+        }
+
+        XCTAssertEqual(shortcut.identifier, "smartZoom")
+        XCTAssertEqual(shortcut.code, 0xFFFB)
+        XCTAssertEqual(shortcut.modifiers, NSEvent.ModifierFlags(rawValue: 0))
+        XCTAssertEqual(shortcut.executionMode, .trigger)
+        XCTAssertEqual(shortcut.symbolName, "plus.magnifyingglass")
+        XCTAssertFalse(shortcut.localizedName.isEmpty)
+
+        // Verify smartZoom is present in categoryNavigation
+        let navCategory = SystemShortcut.shortcutsByCategory.first { $0.category == "categoryNavigation" }
+        XCTAssertNotNil(navCategory, "categoryNavigation should exist in shortcutsByCategory")
+        XCTAssertTrue(navCategory?.shortcuts.contains(where: { $0.identifier == "smartZoom" }) == true,
+                      "smartZoom should be included in categoryNavigation")
+    }
+
+    func testResolveAction_smartZoom_resolvesToSystemShortcutTriggerMode() {
+        guard let action = ShortcutExecutor.shared.resolveAction(named: "smartZoom") else {
+            return XCTFail("Expected smartZoom action to resolve")
+        }
+
+        switch action {
+        case .systemShortcut(let identifier):
+            XCTAssertEqual(identifier, "smartZoom")
+            XCTAssertEqual(action.executionMode, .trigger)
+        default:
+            XCTFail("Expected smartZoom to resolve to .systemShortcut")
+        }
+    }
+
+    func testExecuteSmartZoom_postsGestureEventWithExpectedFields() {
+        var observedEvent: CGEvent?
+        ShortcutExecutor.shared.setTestingEventObserver { event in
+            observedEvent = event
+        }
+
+        ShortcutExecutor.shared.executeSmartZoom()
+
+        guard let event = observedEvent else {
+            return XCTFail("Expected executeSmartZoom to produce an event")
+        }
+
+        let field55 = event.getIntegerValueField(CGEventField(rawValue: 55)!)
+        let field110 = event.getIntegerValueField(CGEventField(rawValue: 110)!)
+        let userData = event.getIntegerValueField(.eventSourceUserData)
+
+        XCTAssertEqual(field55, 29, "Field 55 should be NSEventTypeGesture (29)")
+        XCTAssertEqual(field110, 22, "Field 110 should be kIOHIDEventTypeZoomToggle (22)")
+        XCTAssertEqual(userData, MosEventMarker.syntheticCustom, "Event should carry syntheticCustom marker")
+    }
+
+    func testProcess_smartZoomBinding_executesOnDownAndConsumesEvent() {
+        var eventFired = false
+        ShortcutExecutor.shared.setTestingEventObserver { _ in
+            eventFired = true
+        }
+
+        let trigger = RecordedEvent(type: .mouse, code: 3, modifiers: 0, displayComponents: ["🖱4"], deviceFilter: nil)
+        let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "smartZoom", isEnabled: true)
+        Options.shared.buttons.binding = [binding]
+        ButtonUtils.shared.invalidateCache()
+
+        let downEvent = InputEvent(type: .mouse, code: 3, modifiers: .init(rawValue: 0),
+                                   phase: .down, source: .hidPP, device: nil)
+        XCTAssertEqual(InputProcessor.shared.process(downEvent), .consumed)
+        XCTAssertTrue(eventFired, "Expected smartZoom event to fire on button down")
+
+        eventFired = false
+        let upEvent = InputEvent(type: .mouse, code: 3, modifiers: .init(rawValue: 0),
+                                 phase: .up, source: .hidPP, device: nil)
+        XCTAssertEqual(InputProcessor.shared.process(upEvent), .passthrough, "Trigger action should not hold active binding on up")
+        XCTAssertFalse(eventFired, "Expected smartZoom not to fire again on button up")
     }
 
     func testProcess_mosScrollDash_downAndUpControlsDashState() {

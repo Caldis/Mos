@@ -128,6 +128,7 @@ struct SystemShortcut {
                 case "previousTab": return "rectangle.fill.on.rectangle.fill"
                 case "switchTabRight": return "arrow.right.circle"
                 case "switchTabLeft": return "arrow.left.circle"
+                case "smartZoom": return "plus.magnifyingglass"
                 // 辅助功能
                 case "invertColors": return "circle.lefthalf.filled.inverse"
                 case "zoomIn": return "plus.magnifyingglass"
@@ -286,6 +287,7 @@ struct SystemShortcut {
     static let previousTab = Shortcut("previousTab", 123, [.command, .shift])  // Command-Shift-LeftArrow
     static let switchTabRight = Shortcut("switchTabRight", 124, [.command, .option])  // Command-Option-Right
     static let switchTabLeft = Shortcut("switchTabLeft", 123, [.command, .option])  // Command-Option-Left
+    static let smartZoom = Shortcut("smartZoom", 0xFFFB, NSEvent.ModifierFlags(rawValue: 0), executionMode: .trigger)
 
     // 辅助功能
     static let invertColors = Shortcut("invertColors", 28, [.command, .option, .control])  // Command-Option-Control-8
@@ -323,6 +325,7 @@ struct SystemShortcut {
         "navigateBack": navigateBack, "navigateForward": navigateForward,
         "nextTab": nextTab, "previousTab": previousTab,
         "switchTabLeft": switchTabLeft, "switchTabRight": switchTabRight,
+        "smartZoom": smartZoom,
         // 辅助功能
         "invertColors": invertColors, "zoomIn": zoomIn, "zoomOut": zoomOut,
         // 鼠标按键
@@ -396,7 +399,7 @@ struct SystemShortcut {
             screenshot, screenshotSelection, screenshotAndRecording
         ]),
         ("categoryNavigation", [
-            navigateBack, navigateForward, previousTab, nextTab, switchTabLeft, switchTabRight
+            navigateBack, navigateForward, previousTab, nextTab, switchTabLeft, switchTabRight, smartZoom
         ]),
         // ("categoryAccessibility", [  // 暂时不提供, 有问题
         //     invertColors, zoomIn, zoomOut
@@ -574,7 +577,7 @@ struct SystemShortcut {
         let matchingShortcuts = allShortcuts.values.filter { shortcut in
             shortcut.code == payload.code &&
             shortcut.modifiers.rawValue == payload.modifiers &&
-            shortcut.code < 0xFFFC  // 0xFFFC... are pseudo actions, not recordable key equivalents
+            shortcut.code < 0xFFFB  // 0xFFFB... are pseudo actions, not recordable key equivalents
         }
 
         guard matchingShortcuts.count == 1 else {

@@ -266,6 +266,11 @@ class ShortcutExecutor {
     }
 
     private func executeResolvedSystemShortcut(named shortcutName: String) {
+        if shortcutName == "smartZoom" {
+            executeSmartZoom()
+            return
+        }
+
         // 优先使用系统实际配置 (对于Mission Control相关快捷键)
         if let resolved = SystemShortcut.resolveSystemShortcut(shortcutName) {
             execute(code: resolved.code, flags: resolved.modifiers)
@@ -530,6 +535,35 @@ class ShortcutExecutor {
         let location = NSEvent.mouseLocation
         let screenHeight = NSScreen.main?.frame.height ?? 0
         return CGPoint(x: location.x, y: screenHeight - location.y)
+    }
+
+    // MARK: - Smart Zoom Action
+
+    private var testingEventObserver: ((CGEvent) -> Void)?
+
+    func setTestingEventObserver(_ observer: @escaping (CGEvent) -> Void = { _ in }) {
+        testingEventObserver = observer
+    }
+
+    func clearTestingEventObserver() {
+        testingEventObserver = nil
+    }
+
+    /// 执行智能缩放 (模拟 macOS 原生手势双击触发智能缩放)
+    func executeSmartZoom() {
+        guard let event = CGEvent(source: nil) else { return }
+        if let fieldType = CGEventField(rawValue: 55) {
+            event.setIntegerValueField(fieldType, value: 29)  // NSEventTypeGesture (29)
+        }
+        if let fieldGestureType = CGEventField(rawValue: 110) {
+            event.setIntegerValueField(fieldGestureType, value: 22)  // kIOHIDEventTypeZoomToggle (22)
+        }
+        event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
+        if let testingEventObserver {
+            testingEventObserver(event)
+            return
+        }
+        event.post(tap: .cghidEventTap)
     }
 
     // MARK: - Logi HID++ Actions
