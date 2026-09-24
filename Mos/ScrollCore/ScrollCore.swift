@@ -62,6 +62,9 @@ class ScrollCore: ScrollActionPort {
         }
         // 跳过 Mos 自己合成的平滑事件，避免重复进入平滑管线
         if ScrollUtils.shared.isSyntheticSmoothEvent(event) {
+            if ScrollUtils.shared.shouldDropSyntheticDockEvent(event) {
+                return nil
+            }
 #if DEBUG
             ScrollPoster.shared.recordSkippedSyntheticEvent()
 #endif
@@ -169,7 +172,8 @@ class ScrollCore: ScrollActionPort {
                 y: smoothedY,
                 x: smoothedX,
                 speed: speed,
-                amplification: ScrollCore.shared.dashAmplification
+                amplification: ScrollCore.shared.dashAmplification,
+                targetIsDock: targetRunningApplication?.bundleIdentifier == "com.apple.dock"
             ).tryStart()
         }
 
