@@ -18,6 +18,7 @@ final class ScrollPosterStateTests: XCTestCase {
     }
 
     override func tearDown() {
+        sut?.stopKeeper()
         sut = nil
         super.tearDown()
     }
@@ -129,5 +130,103 @@ final class ScrollPosterStateTests: XCTestCase {
         let result = sut.shift(with: input)
         XCTAssertEqual(result.y, 0.0, accuracy: 1e-10)
         XCTAssertEqual(result.x, 10000.0, accuracy: 1e-10)
+    }
+
+    // MARK: - Display-link refresh-rate recovery
+
+    func testRateVerification_displayTransitionSurvivesRecreateAndRestartsCleanly() {
+        sut.startDisplayTransitionRateVerification()
+        let initial = sut.rateVerificationStateForTests
+        XCTAssertTrue(initial.isTransition)
+        XCTAssertEqual(initial.remainingChecks, 4)
+        guard let initialTimer = initial.timer else {
+            XCTFail("Display transition should arm a verification timer")
+            return
+        }
+        XCTAssertTrue(initialTimer.isValid)
+
+        // A screen-change rebuild must not replace the transition check sequence.
+        sut.scheduleRateVerificationAfterCreate()
+        let afterRecreate = sut.rateVerificationStateForTests
+        XCTAssertTrue(afterRecreate.isTransition)
+        XCTAssertEqual(afterRecreate.remainingChecks, 4)
+        XCTAssertTrue(afterRecreate.timer === initialTimer)
+        XCTAssertTrue(initialTimer.isValid)
+
+        // A new transition should cancel the old sequence and start a fresh one.
+        sut.startDisplayTransitionRateVerification()
+        let restarted = sut.rateVerificationStateForTests
+        XCTAssertTrue(restarted.isTransition)
+        XCTAssertEqual(restarted.remainingChecks, 4)
+        XCTAssertFalse(initialTimer.isValid)
+        guard let restartedTimer = restarted.timer else {
+            XCTFail("Restarted transition should arm a new verification timer")
+            return
+        }
+        XCTAssertFalse(restartedTimer === initialTimer)
+        XCTAssertTrue(restartedTimer.isValid)
+
+        sut.stopKeeper()
+        let stopped = sut.rateVerificationStateForTests
+        XCTAssertFalse(stopped.isTransition)
+        XCTAssertEqual(stopped.remainingChecks, 0)
+        XCTAssertNil(stopped.timer)
+        XCTAssertFalse(restartedTimer.isValid)
+    }
+
+    func testRateVerification_displayWakeOrReconnectKeepsCheckingUntilRatesDiverge() {
+        // Both APIs can temporarily report 60 Hz while a 120 Hz display returns.
+        let transitional = ScrollPoster.rateVerificationDecision(
+            linkHz: 60, displayHz: 60, ratio: 0.7, isTransition: true, remainingChecks: 2
+        )
+        XCTAssertFalse(transitional.rebuild)
+        XCTAssertTrue(transitional.continueChecking)
+
+        let settledDisplay = ScrollPoster.rateVerificationDecision(
+            linkHz: 60, displayHz: 120, ratio: 0.7, isTransition: true, remainingChecks: 1
+        )
+        XCTAssertTrue(settledDisplay.rebuild)
+        XCTAssertTrue(settledDisplay.continueChecking)
+    }
+
+    func testRateVerification_afterWakeStopsWhenChecksAreExhausted() {
+        let decision = ScrollPoster.rateVerificationDecision(
+            linkHz: 60, displayHz: 60, ratio: 0.7, isTransition: true, remainingChecks: 0
+        )
+        XCTAssertFalse(decision.rebuild)
+        XCTAssertFalse(decision.continueChecking)
+    }
+
+    func testRateVerification_normalMatchingRatesStopImmediately() {
+        let decision = ScrollPoster.rateVerificationDecision(
+            linkHz: 120, displayHz: 120, ratio: 0.7, isTransition: false, remainingChecks: 2
+        )
+        XCTAssertFalse(decision.rebuild)
+        XCTAssertFalse(decision.continueChecking)
+
+        let temporaryNormal = ScrollPoster.rateVerificationDecision(
+            linkHz: 60, displayHz: 60, ratio: 0.7, isTransition: false, remainingChecks: 2
+        )
+        let temporaryTransition = ScrollPoster.rateVerificationDecision(
+            linkHz: 60, displayHz: 60, ratio: 0.7, isTransition: true, remainingChecks: 2
+        )
+        XCTAssertFalse(temporaryNormal.continueChecking)
+        XCTAssertTrue(temporaryTransition.continueChecking)
+    }
+
+    func testRateVerification_invalidRateRetriesDuringTransitionWindow() {
+        let decision = ScrollPoster.rateVerificationDecision(
+            linkHz: -1, displayHz: 120, ratio: 0.7, isTransition: true, remainingChecks: 1
+        )
+        XCTAssertFalse(decision.rebuild)
+        XCTAssertTrue(decision.continueChecking)
+    }
+
+    func testRateVerification_mismatchOnLastCheckRebuildsWithoutAnotherRetry() {
+        let decision = ScrollPoster.rateVerificationDecision(
+            linkHz: 60, displayHz: 120, ratio: 0.7, isTransition: true, remainingChecks: 0
+        )
+        XCTAssertTrue(decision.rebuild)
+        XCTAssertFalse(decision.continueChecking)
     }
 }

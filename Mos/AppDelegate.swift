@@ -110,6 +110,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self?.screenChangeTimer?.invalidate()
             self?.screenChangeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
                 ScrollPoster.shared.recreateDisplayLink()
+                if ScrollCore.shared.isActive {
+                    ScrollPoster.shared.startDisplayTransitionRateVerification()
+                }
             }
         }
         // 监听辅助功能权限在运行时被撤销
@@ -192,6 +195,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // 在切换用户时停止滚动处理
     @objc func sessionDidActive(notification: NSNotification){
         startWithAccessibilityPermissionsChecker(nil)
+        if notification.name == NSWorkspace.didWakeNotification && ScrollCore.shared.isActive {
+            ScrollPoster.shared.startDisplayTransitionRateVerification()
+        }
     }
     @objc func sessionDidResign(notification: NSNotification){
         permissionRecoveryTimer?.invalidate()

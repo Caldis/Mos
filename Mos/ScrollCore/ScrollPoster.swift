@@ -59,7 +59,10 @@ class ScrollPoster {
     private var rateVerifyTimer: Timer?
     private var rateVerifyAttemptsLeft = 0
     private var isVerifying = false
+    private var isDisplayTransitionRateVerification = false
     private let rateVerifyDelays: [TimeInterval] = [2.0, 4.0, 8.0]
+    // Relative delays: checks at 1, 3, 6 and 12 seconds after a display transition.
+    private let transitionRateVerifyDelays: [TimeInterval] = [1.0, 2.0, 3.0, 6.0]
     private let rateVerifyRatio = 0.7
     // 主线程访问, 无需锁
     var isAvailable: Bool { return poster != nil }
@@ -199,8 +202,7 @@ extension ScrollPoster {
                 return kCVReturnSuccess
             }, nil)
             poster = validPoster
-            // 建立成功后安排刷新率复查; 复查内部触发的重建 (isVerifying) 不重置复查序列
-            if !isVerifying { scheduleRateVerify() }
+            scheduleRateVerificationAfterCreate()
         } else {
             poster = nil
             NSLog("ScrollPoster: CVDisplayLink creation failed (%d)", result)
@@ -304,9 +306,7 @@ extension ScrollPoster {
     func stopKeeper() {
         keeper?.invalidate()
         keeper = nil
-        rateVerifyTimer?.invalidate()
-        rateVerifyTimer = nil
-        rateVerifyAttemptsLeft = 0
+        finishRateVerify()
     }
     private func healthCheck() {
         guard let validPoster = poster else {
@@ -326,15 +326,52 @@ extension ScrollPoster {
     }
 
     // MARK: 刷新率自纠 (见属性处说明)
+    // A waking or reconnecting display can initially report 60 Hz on both sides.
+    func startDisplayTransitionRateVerification() {
+        isDisplayTransitionRateVerification = true
+        scheduleRateVerify()
+    }
+
+    // Keep an active transition timer when a screen-change notification recreates the link.
+    func scheduleRateVerificationAfterCreate() {
+        if !isVerifying && (!isDisplayTransitionRateVerification || rateVerifyTimer == nil) {
+            scheduleRateVerify()
+        }
+    }
+
+#if DEBUG
+    var rateVerificationStateForTests: (isTransition: Bool, remainingChecks: Int, timer: Timer?) {
+        (isDisplayTransitionRateVerification, rateVerifyAttemptsLeft, rateVerifyTimer)
+    }
+#endif
+
+    static func rateVerificationDecision(
+        linkHz: Double,
+        displayHz: Double,
+        ratio: Double,
+        isTransition: Bool,
+        remainingChecks: Int
+    ) -> (rebuild: Bool, continueChecking: Bool) {
+        let rebuild = linkHz > 1 && displayHz > 1 && linkHz < displayHz * ratio
+        return (rebuild: rebuild, continueChecking: remainingChecks > 0 && (isTransition || rebuild))
+    }
+
     // 建立 link 后调用: 重置复查序列并安排第一次复查
     private func scheduleRateVerify() {
-        rateVerifyAttemptsLeft = rateVerifyDelays.count
+        rateVerifyAttemptsLeft = (isDisplayTransitionRateVerification ? transitionRateVerifyDelays : rateVerifyDelays).count
         armNextRateVerify()
+    }
+    private func finishRateVerify() {
+        rateVerifyTimer?.invalidate()
+        rateVerifyTimer = nil
+        rateVerifyAttemptsLeft = 0
+        isDisplayTransitionRateVerification = false
     }
     private func armNextRateVerify() {
         rateVerifyTimer?.invalidate()
-        guard rateVerifyAttemptsLeft > 0 else { rateVerifyTimer = nil; return }
-        let delay = rateVerifyDelays[rateVerifyDelays.count - rateVerifyAttemptsLeft]
+        guard rateVerifyAttemptsLeft > 0 else { finishRateVerify(); return }
+        let delays = isDisplayTransitionRateVerification ? transitionRateVerifyDelays : rateVerifyDelays
+        let delay = delays[delays.count - rateVerifyAttemptsLeft]
         rateVerifyTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
             self?.verifyRateAndFixIfNeeded()
         }
@@ -342,13 +379,19 @@ extension ScrollPoster {
     // 复查: link 标称率明显低于显示器实际率 -> 重建追平 (幂等, 不受 recreateCooldown 限制)
     private func verifyRateAndFixIfNeeded() {
         rateVerifyAttemptsLeft -= 1
-        guard let current = poster else { rateVerifyTimer = nil; return }
-        let nominal = linkNominalHz(current)
+        let current = poster
+        let nominal = current.map { linkNominalHz($0) } ?? -1
         let maxHz = maxActiveDisplayHz()
-        guard nominal > 1, maxHz > 1, nominal < maxHz * rateVerifyRatio else {
-            // 已追平显示器刷新率, 结束复查
-            rateVerifyTimer = nil
-            rateVerifyAttemptsLeft = 0
+        let decision = Self.rateVerificationDecision(
+            linkHz: nominal,
+            displayHz: maxHz,
+            ratio: rateVerifyRatio,
+            isTransition: isDisplayTransitionRateVerification,
+            remainingChecks: rateVerifyAttemptsLeft
+        )
+        guard decision.rebuild, let current = current else {
+            if decision.continueChecking { armNextRateVerify() }
+            else { finishRateVerify() }
             return
         }
         NSLog("ScrollPoster: display link rate %.0fHz below display %.0fHz, recreating", nominal, maxHz)
@@ -362,8 +405,9 @@ extension ScrollPoster {
         }
         // 自纠说明显示器仍在过渡: 清除冷却, 让后续 screenChange 能及时用最终配置重建
         lastRecreateAttempt = 0
-        // 这次重建可能仍落在过渡态, 继续后续复查直到追平或用尽次数
-        armNextRateVerify()
+        // A rebuild can still land in the transition; keep checking until the bound.
+        if decision.continueChecking { armNextRateVerify() }
+        else { finishRateVerify() }
     }
 }
 
