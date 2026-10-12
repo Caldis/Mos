@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-10",
+  "files": {
+    "environment-and-worktree.txt": {
+      "bytes": 4379,
+      "sha256": "1516811f1d6ddb29ddc769db862f8c854066947221ec983e8aaba0e327087b7d"
+    },
+    "field-selftest.txt": {
+      "bytes": 2833,
+      "sha256": "292f41347901d2f10f497d16ca0a1119ec7edf93334faf811b3644e27dd7e278"
+    },
+    "hid-services.json": {
+      "bytes": 791881,
+      "sha256": "042e655a2c31bf1654d97a1c78b07fcefd8d956b74f500f14b4bfb28e0af4193"
+    }
+  },
+  "timezone": "Asia/Shanghai"
+}

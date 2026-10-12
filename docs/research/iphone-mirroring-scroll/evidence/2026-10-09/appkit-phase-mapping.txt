@@ -1,0 +1,135 @@
+AppKit CGEvent 与 NSEvent phase 映射, 本机 macOS26.7.1 (25G241), arm64e
+UUID3C90C255-D239-3B5C-9213-9C5D383BEF9C, __TEXT基址0x1849BC000
+来源: dyld_info -disassemble /System/Library/Frameworks/AppKit.framework/Versions/C/AppKit
+这是静态二进制代码, 未采集真实设备事件.
+
+原始输出行 483012-483108:
+483012: -[NSEvent phase]:
+483013: 0x184B8DE88   pacibsp                       
+483014: 0x184B8DE8C   sub      sp, sp, #0x40        
+483015: 0x184B8DE90   stp      x22, x21, [sp, #0x10] 
+483016: 0x184B8DE94   stp      x20, x19, [sp, #0x20] 
+483017: 0x184B8DE98   stp      x29, x30, [sp, #0x30] 
+483018: 0x184B8DE9C   add      x29, sp, #0x30       
+483019: 0x184B8DEA0   mov      x19, x0              
+483020: 0x184B8DEA4   ldr      x8, [x0, #0x70]      
+483021: 0x184B8DEA8   mov      w9, #0x1             
+483022: 0x184B8DEAC   lsl      x8, x9, x8           
+483023: 0x184B8DEB0   mov      x9, #0xe05c0000      
+483024: 0x184B8DEB4   movk     x9, #0xf5, lsl #32   
+483025: 0x184B8DEB8   tst      x8, x9               
+483026: 0x184B8DEBC   b.eq     0x184b8dfb4          
+483027: 0x184B8DEC0   mov      x0, x19              
+483028: 0x184B8DEC4   bl       _objc_msgSend$type   
+483029: 0x184B8DEC8   mov      x21, x0              
+483030: 0x184B8DECC   mov      x0, x19              
+483031: 0x184B8DED0   bl       _objc_msgSend$CGEvent 
+483032: 0x184B8DED4   cbz      x0, 0x184b8df84      
+483033: 0x184B8DED8   mov      x20, x0              
+483034: 0x184B8DEDC   cmp      x21, #0x27           
+483035: 0x184B8DEE0   b.eq     0x184b8def8          
+483036: 0x184B8DEE4   mov      x0, x20              
+483037: 0x184B8DEE8   cmp      x21, #0x16           
+483038: 0x184B8DEEC   b.ne     0x184b8df34          
+483039: 0x184B8DEF0   mov      w1, #0x63            
+483040: 0x184B8DEF4   b        0x184b8df38          
+483041: 0x184B8DEF8   mov      x0, x20              
+483042: 0x184B8DEFC   mov      w1, #0x84            
+483043: 0x184B8DF00   bl       _CGEventGetIntegerValueField 
+483044: 0x184B8DF04   mov      x19, x0              
+483045: 0x184B8DF08   tst      x0, #0xff            
+483046: 0x184B8DF0C   b.ne     0x184b8df40          
+483047: 0x184B8DF10   mov      x0, x20              
+483048: 0x184B8DF14   bl       _CGEventCopyIOHIDEvent 
+483049: 0x184B8DF18   cbz      x0, 0x184b8df40      
+483050: 0x184B8DF1C   mov      x20, x0              
+483051: 0x184B8DF20   bl       _IOHIDEventGetPhase  
+483052: 0x184B8DF24   mov      x19, x0              
+483053: 0x184B8DF28   mov      x0, x20              
+483054: 0x184B8DF2C   bl       _CFRelease           
+483055: 0x184B8DF30   b        0x184b8df40          
+483056: 0x184B8DF34   mov      w1, #0x84            
+483057: 0x184B8DF38   bl       _CGEventGetIntegerValueField 
+483058: 0x184B8DF3C   mov      x19, x0              
+483059: 0x184B8DF40   and      w8, w19, #0xff       
+483060: 0x184B8DF44   cmp      w8, #0x3             
+483061: 0x184B8DF48   b.le     0x184b8df6c          
+483062: 0x184B8DF4C   cmp      w8, #0x4             
+483063: 0x184B8DF50   b.eq     0x184b8df9c          
+483064: 0x184B8DF54   cmp      w8, #0x8             
+483065: 0x184B8DF58   b.eq     0x184b8dfa4          
+483066: 0x184B8DF5C   cmp      w8, #0x80            
+483067: 0x184B8DF60   b.ne     0x184b8df84          
+483068: 0x184B8DF64   mov      w0, #0x20            
+483069: 0x184B8DF68   b        0x184b8df88          
+483070: 0x184B8DF6C   cmp      w8, #0x1             
+483071: 0x184B8DF70   b.eq     0x184b8dfac          
+483072: 0x184B8DF74   cmp      w8, #0x2             
+483073: 0x184B8DF78   b.ne     0x184b8df84          
+483074: 0x184B8DF7C   mov      w0, #0x4             
+483075: 0x184B8DF80   b        0x184b8df88          
+483076: 0x184B8DF84   mov      x0, #0x0             
+483077: 0x184B8DF88   ldp      x29, x30, [sp, #0x30] 
+483078: 0x184B8DF8C   ldp      x20, x19, [sp, #0x20] 
+483079: 0x184B8DF90   ldp      x22, x21, [sp, #0x10] 
+483080: 0x184B8DF94   add      sp, sp, #0x40        
+483081: 0x184B8DF98   retab                         
+483082: 0x184B8DF9C   mov      w0, #0x8             
+483083: 0x184B8DFA0   b        0x184b8df88          
+483084: 0x184B8DFA4   mov      w0, #0x10            
+483085: 0x184B8DFA8   b        0x184b8df88          
+483086: 0x184B8DFAC   and      x0, x19, #0xff       
+483087: 0x184B8DFB0   b        0x184b8df88          
+483088: 0x184B8DFB4   mov      x20, x1              
+483089: 0x184B8DFB8   adrp     x8, 398800           ; 0x1e615d000
+483090: 0x184B8DFBC   ldr      x0, [x8, #0x928]     
+483091: 0x184B8DFC0   bl       _objc_msgSend$currentHandler 
+483092: 0x184B8DFC4   mov      x21, x0              
+483093: 0x184B8DFC8   mov      x0, x19              
+483094: 0x184B8DFCC   bl       _objc_msgSend$description 
+483095: 0x184B8DFD0   str      x0, [sp]             
+483096: 0x184B8DFD4   adrp     x4, 433787           ; 0x1eea08000
+483097: 0x184B8DFD8   add      x4, x4, #0x380       
+483098: 0x184B8DFDC   adrp     x6, 433787           ; 0x1eea08000
+483099: 0x184B8DFE0   add      x6, x6, #0x680       
+483100: 0x184B8DFE4   mov      x0, x21              
+483101: 0x184B8DFE8   mov      x2, x20              
+483102: 0x184B8DFEC   mov      x3, x19              
+483103: 0x184B8DFF0   mov      w5, #0xefb           
+483104: 0x184B8DFF4   bl       "_objc_msgSend$handleFailureInMethod:object:file:lineNumber:description:" 
+483105: 0x184B8DFF8   b        0x184b8dec0          
+483106: -[NSWindow(NSEventRouting) _latchViewForPressureEvent:]:
+483107: 0x184B8DFFC   pacibsp                       
+483108: 0x184B8E000   stp      x22, x21, [sp, #-0x30]! 
+
+原始输出行 644190-644215:
+644190: -[NSEvent momentumPhase]:
+644191: 0x184C282B0   pacibsp                       
+644192: 0x184C282B4   stp      x29, x30, [sp, #-0x10]! 
+644193: 0x184C282B8   mov      x29, sp              
+644194: 0x184C282BC   bl       _objc_msgSend$CGEvent 
+644195: 0x184C282C0   cbz      x0, 0x184c282ec      
+644196: 0x184C282C4   mov      w1, #0x7b            
+644197: 0x184C282C8   bl       _CGEventGetIntegerValueField 
+644198: 0x184C282CC   sub      x8, x0, #0x1         
+644199: 0x184C282D0   cmp      x8, #0x2             
+644200: 0x184C282D4   b.hi     0x184c282e8          
+644201: 0x184C282D8   adrp     x9, 3988             ; 0x185bbc000
+644202: 0x184C282DC   add      x9, x9, #0xb90       
+644203: 0x184C282E0   ldr      x0, [x9, x8, lsl #3] 
+644204: 0x184C282E4   b        0x184c282ec          
+644205: 0x184C282E8   mov      x0, #0x0             
+644206: 0x184C282EC   ldp      x29, x30, [sp], #0x10 
+644207: 0x184C282F0   retab                         
+644208: -[NSEvent scrollingDeltaX]:
+644209: 0x184C282F4   pacibsp                       
+644210: 0x184C282F8   sub      sp, sp, #0x50        
+644211: 0x184C282FC   stp      d9, d8, [sp, #0x10]  
+644212: 0x184C28300   stp      x22, x21, [sp, #0x20] 
+644213: 0x184C28304   stp      x20, x19, [sp, #0x30] 
+644214: 0x184C28308   stp      x29, x30, [sp, #0x40] 
+644215: 0x184C2830C   add      x29, sp, #0x40       
+
+momentum lookup表 0x185BBCB90: [1,4,8], 由取证 agent 读取本机 dyld cache 原始数据确认; 本文件上面的汇编包含访问该表的路径.
+CG scrollPhase99:1/2/4/8/128 → NSEvent.phase:1/4/8/16/32; 其他值在该分支为0.
+CG momentumPhase123:1/2/3 → NSEvent.momentumPhase:1/4/8.

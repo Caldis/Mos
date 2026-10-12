@@ -1,0 +1,211 @@
+ScreenContinuityUI 上层已确认片段, 本机macOS26.7.1 (25G241), arm64e
+iPhone Mirroring1.6(98.5), SCUI UUID00F1C3F0-3014-3A0C-8408-41A7C60439CD
+地址为image offset. 完整门控、HIDMessage布局、设备属性更新条件和网络发送调度未完整还原.
+来源: dyld_info -arch arm64e -disassemble + fixups/imports. 文本中部分symbol由GOT绑定解析, 原行号保留.
+
+通用入口, +0x33338→匿名HIDCaptureViewModel处理段 [0x33338..0x333a8]
+51501: 0x000033338   pacibsp                       
+51502: 0x00003333C   stp      x22, x21, [sp, #-0x30]! 
+51503: 0x000033340   stp      x20, x19, [sp, #0x10] 
+51504: 0x000033344   stp      x29, x30, [sp, #0x20] 
+51505: 0x000033348   add      x29, sp, #0x20       
+51506: 0x00003334C   mov      x19, x0              
+51507: 0x000033350   adrp     x8, 232              ; 0x11b000
+51508: 0x000033354   ldr      x8, [x8, #0x718]     
+51509: 0x000033358   ldr      x20, [x0, x8]        
+51510: 0x00003335C   mov      x0, x2               
+51511: 0x000033360   bl       _objc_retain         
+51512: 0x000033364   mov      x21, x0              
+51513: 0x000033368   mov      x0, x19              
+51514: 0x00003336C   bl       _objc_retain         
+51515: 0x000033370   mov      x19, x0              
+51516: 0x000033374   mov      x0, x21              
+51517: 0x000033378   mov      w1, #0x1             
+51518: 0x00003337C   bl       "<anon-0001ECBC>"    
+51519: 0x000033380   mov      x0, x19              
+51520: 0x000033384   bl       _objc_release        
+51521: 0x000033388   mov      x0, x21              
+51522: 0x00003338C   ldp      x29, x30, [sp, #0x20] 
+51523: 0x000033390   ldp      x20, x19, [sp, #0x10] 
+51524: 0x000033394   ldp      x22, x21, [sp], #0x30 
+51525: 0x000033398   autibsp                       
+51526: 0x00003339C   eor      x16, x30, x30, lsl #1 
+51527: 0x0000333A0   tbz      x16, #0x3e, 0x333a8  
+51528: 0x0000333A4   brk      #0xc471              
+51529: 0x0000333A8   b        _objc_release        
+
+匿名处理函数起始, 上层完整门控尚未还原 [0x1ecbc..0x1ece8]
+30281: 0x00001ECBC   pacibsp                       
+30282: 0x00001ECC0   stp      x28, x27, [sp, #-0x60]! 
+30283: 0x00001ECC4   stp      x26, x25, [sp, #0x10] 
+30284: 0x00001ECC8   stp      x24, x23, [sp, #0x20] 
+30285: 0x00001ECCC   stp      x22, x21, [sp, #0x30] 
+30286: 0x00001ECD0   stp      x20, x19, [sp, #0x40] 
+30287: 0x00001ECD4   stp      x29, x30, [sp, #0x50] 
+30288: 0x00001ECD8   add      x29, sp, #0x50       
+30289: 0x00001ECDC   sub      sp, sp, #0x240       
+30290: 0x00001ECE0   mov      x28, x20             
+30291: 0x00001ECE4   mov      x20, x1              
+30292: 0x00001ECE8   mov      x25, x0              
+
+processEvent调用与空数组退出 [0x1f4a4..0x1f4f0]
+30787: 0x00001F4A4   adrp     x8, 252              ; 0x11b000
+30788: 0x00001F4A8   ldr      x8, [x8, #0x150]     
+30789: 0x00001F4AC   add      x8, x28, x8          
+30790: 0x00001F4B0   ldp      x20, x21, [x8]       
+30791: 0x00001F4B4   mov      x0, x20              
+30792: 0x00001F4B8   bl       _swift_getObjectType 
+30793: 0x00001F4BC   mov      x22, x0              
+30794: 0x00001F4C0   mov      x0, x20              
+30795: 0x00001F4C4   bl       _swift_unknownObjectRetain 
+30796: 0x00001F4C8   mov      x0, x25              
+30797: 0x00001F4CC   mov      x1, x22              
+30798: 0x00001F4D0   mov      x2, x21              
+30799: 0x00001F4D4   bl       0xd29c4 ; ScreenSharingKit/_$s16ScreenSharingKit26HIDEventObserverPrimitivesP12processEventySay12UniversalHID9HIDReportV6report_s6UInt64V8senderIDtGSo7NSEventCFTj (div=0x0000 ad=1 key=IA)
+30800: 0x00001F4D8   mov      x25, x0              
+30801: 0x00001F4DC   mov      x0, x20              
+30802: 0x00001F4E0   bl       _swift_unknownObjectRelease 
+30803: 0x00001F4E4   ldr      x8, [x25, #0x10]     
+30804: 0x00001F4E8   sub      x9, x29, #0x88       
+30805: 0x00001F4EC   stur     x8, [x9, #-0x100]    
+30806: 0x00001F4F0   cbz      x8, 0x204ec          
+
+读取report sender并检查零值 [0x1f85c..0x1f880]
+31025: 0x00001F85C   ldr      x19, [x10]           
+31026: 0x00001F860   mov      x0, x25              
+31027: 0x00001F864   mov      x1, x23              
+31028: 0x00001F868   bl       "<anon-0000F43C>"    
+31029: 0x00001F86C   mov      x0, x19              
+31030: 0x00001F870   sub      x8, x29, #0x40       
+31031: 0x00001F874   ldur     x20, [x8, #-0x100]   
+31032: 0x00001F878   bl       0xd23a4 ; ScreenSharingKit/_$s16ScreenSharingKit12HIDDebugInfoC29receivedHIDReportForServiceIDyys6UInt64VFTj (div=0x0000 ad=1 key=IA)
+31033: 0x00001F87C   cbnz     x19, 0x1f9b0         
+31034: 0x00001F880   lsr      x8, x23, #62         
+
+归一后的sender回到共同路径 [0x1f9a8..0x1f9b0]
+31108: 0x00001F9A8   bl       0xd26d4 ; ScreenSharingKit/_$s16ScreenSharingKit20HIDServicePrimitivesP22basicKeyboardServiceIDs6UInt64VvgTj (div=0x0000 ad=1 key=IA)
+31109: 0x00001F9AC   mov      x19, x0              
+31110: 0x00001F9B0   adrp     x0, 185              ; 0xd8000
+
+pointer/scroll report零sender→basicMouseServiceID [0x20484..0x204e8]
+31803: 0x000020484   bl       0xd1fa4 ; UniversalHID/_$s12UniversalHID8ReportIDV15absolutePointerACvgZ (div=0x0000 ad=1 key=IA)
+31804: 0x000020488   and      w8, w0, #0xff        
+31805: 0x00002048C   cmp      w8, w19, uxtb        
+31806: 0x000020490   b.eq     0x204b4              
+31807: 0x000020494   bl       0xd1fe4 ; UniversalHID/_$s12UniversalHID8ReportIDV7pointerACvgZ (div=0x0000 ad=1 key=IA)
+31808: 0x000020498   and      w8, w0, #0xff        
+31809: 0x00002049C   cmp      w8, w19, uxtb        
+31810: 0x0000204A0   b.eq     0x204b4              
+31811: 0x0000204A4   bl       0xd1fd4 ; UniversalHID/_$s12UniversalHID8ReportIDV6scrollACvgZ (div=0x0000 ad=1 key=IA)
+31812: 0x0000204A8   and      w8, w0, #0xff        
+31813: 0x0000204AC   cmp      w8, w19, uxtb        
+31814: 0x0000204B0   b.ne     0x204e4              
+31815: 0x0000204B4   sub      x8, x29, #0xf0       
+31816: 0x0000204B8   ldur     x0, [x8, #-0x100]    
+31817: 0x0000204BC   ldp      x21, x22, [x0, #0x18] 
+31818: 0x0000204C0   mov      x1, x21              
+31819: 0x0000204C4   bl       ___swift_project_boxed_opaque_existential_0 
+31820: 0x0000204C8   mov      x20, x0              
+31821: 0x0000204CC   mov      x0, x21              
+31822: 0x0000204D0   mov      x1, x22              
+31823: 0x0000204D4   sub      x8, x29, #0x58       
+31824: 0x0000204D8   ldur     x22, [x8, #-0x100]   
+31825: 0x0000204DC   bl       0xd26c4 ; ScreenSharingKit/_$s16ScreenSharingKit20HIDServicePrimitivesP19basicMouseServiceIDs6UInt64VvgTj (div=0x0000 ad=1 key=IA)
+31826: 0x0000204E0   b        0x1f9ac              
+31827: 0x0000204E4   mov      x19, #0x0            
+31828: 0x0000204E8   b        0x1f9b0              
+
+lookUpServiceInfo与nil分支 [0x1fe80..0x1ff00]
+31418: 0x00001FE80   sub      x8, x29, #0x128      
+31419: 0x00001FE84   ldur     x8, [x8, #-0x100]    
+31420: 0x00001FE88   mov      x0, x25              
+31421: 0x00001FE8C   mov      x1, x23              
+31422: 0x00001FE90   mov      x2, x28              
+31423: 0x00001FE94   mov      x3, x19              
+31424: 0x00001FE98   mov      x4, x21              
+31425: 0x00001FE9C   mov      x21, x8              
+31426: 0x00001FEA0   bl       0xd26a4 ; ScreenSharingKit/_$s16ScreenSharingKit20HIDServicePrimitivesP17lookUpServiceInfo3for8senderIDs6UInt64V07serviceL0_AA23SSKHIDServicePropertiesV10propertiestSg12UniversalHID9HIDReportV_AHtFTj (div=0x0000 ad=1 key=IA)
+31427: 0x00001FEA4   adrp     x0, 252              ; 0x11b000
+31428: 0x00001FEA8   add      x0, x0, #0x570       
+31429: 0x00001FEAC   adrp     x1, 185              ; 0xd8000
+31430: 0x00001FEB0   add      x1, x1, #0xdd0       
+31431: 0x00001FEB4   bl       ___swift_instantiateConcreteTypeFromMangledNameV2 
+31432: 0x00001FEB8   mov      x20, x0              
+31433: 0x00001FEBC   mov      x8, x0               
+31434: 0x00001FEC0   ldr      x16, [x8, #-0x8]!    
+31435: 0x00001FEC4   mov      x17, x8              
+31436: 0x00001FEC8   movk     x17, #0x2e3f, lsl #48 
+31437: 0x00001FECC   autda    x16, x17             
+31438: 0x00001FED0   ldr      x8, [x16, #0x30]!    
+31439: 0x00001FED4   mov      x0, x21              
+31440: 0x00001FED8   mov      w1, #0x1             
+31441: 0x00001FEDC   mov      x2, x20              
+31442: 0x00001FEE0   movk     x16, #0x60f0, lsl #48 
+31443: 0x00001FEE4   blraa    x8, x16              
+31444: 0x00001FEE8   cmp      w0, #0x1             
+31445: 0x00001FEEC   mov      x28, x27             
+31446: 0x00001FEF0   b.ne     0x1ffa0              
+31447: 0x00001FEF4   mov      x0, x21              
+31448: 0x00001FEF8   adrp     x1, 252              ; 0x11b000
+31449: 0x00001FEFC   add      x1, x1, #0x558       
+31450: 0x00001FF00   adrp     x2, 185              ; 0xd8000
+
+lookup失败分支结束, 跳下一报告 [0x202cc..0x20318]
+31693: 0x0000202CC   mov      x0, x25              
+31694: 0x0000202D0   mov      x1, x23              
+31695: 0x0000202D4   bl       "<anon-0000F548>"    
+31696: 0x0000202D8   mov      x0, x20              
+31697: 0x0000202DC   bl       _objc_release        
+31698: 0x0000202E0   mov      x0, x22              
+31699: 0x0000202E4   sub      x8, x29, #0xe0       
+31700: 0x0000202E8   ldur     x1, [x8, #-0x100]    
+31701: 0x0000202EC   sub      x8, x29, #0xe8       
+31702: 0x0000202F0   ldur     x8, [x8, #-0x100]    
+31703: 0x0000202F4   sub      x9, x29, #0xf8       
+31704: 0x0000202F8   ldur     x9, [x9, #-0x100]    
+31705: 0x0000202FC   mov      x17, x8              
+31706: 0x000020300   movk     x17, #0x4f8, lsl #48 
+31707: 0x000020304   blraa    x9, x17              
+31708: 0x000020308   sub      x8, x29, #0x58       
+31709: 0x00002030C   ldur     x22, [x8, #-0x100]   
+31710: 0x000020310   sub      x8, x29, #0x98       
+31711: 0x000020314   ldur     x25, [x8, #-0x100]   
+31712: 0x000020318   b        0x1f814              
+
+AsyncStream.Continuation.yield调用之一, 消息case未知 [0x1f7a0..0x1f7b0]
+30978: 0x00001F7A0   ldur     x19, [x8, #-0x100]   
+30979: 0x00001F7A4   mov      x8, x19              
+30980: 0x00001F7A8   mov      x0, x27              
+30981: 0x00001F7AC   bl       0xd4784 ; libswift_Concurrency/_$sScS12ContinuationV5yieldyAB11YieldResultOyx__GxnF (div=0x0000 ad=1 key=IA)
+30982: 0x00001F7B0   mov      x0, x26              
+
+updatedHIDInputDevices统计, 不证明网络已发 [0x20360..0x20374]
+31730: 0x000020360   mov      x0, x19              
+31731: 0x000020364   sub      x8, x29, #0x40       
+31732: 0x000020368   ldur     x20, [x8, #-0x100]   
+31733: 0x00002036C   bl       0xd2394 ; ScreenSharingKit/_$s16ScreenSharingKit12HIDDebugInfoC22updatedHIDInputDevicesyySays6UInt64VGFTj (div=0x0000 ad=1 key=IA)
+31734: 0x000020370   mov      x0, x19              
+31735: 0x000020374   bl       _swift_release       
+
+AsyncStream.Continuation.yield调用之二, 消息case未知 [0x20418..0x2042c]
+31776: 0x000020418   sub      x8, x29, #0x80       
+31777: 0x00002041C   ldur     x19, [x8, #-0x100]   
+31778: 0x000020420   mov      x8, x19              
+31779: 0x000020424   mov      x0, x27              
+31780: 0x000020428   bl       0xd4784 ; libswift_Concurrency/_$sScS12ContinuationV5yieldyAB11YieldResultOyx__GxnF (div=0x0000 ad=1 key=IA)
+31781: 0x00002042C   sub      x8, x29, #0xa8       
+
+Objective-C入口符号:
+          0x00033DF0  -[_TtC18ScreenContinuityUI21CaptureViewController scrollWheel:]
+
+sendHIDReport/sendHIDInputDevices 的 async函数指针绑定:
+        __DATA_CONST    __got            0x0010DCD8           bind  ScreenSharingKit/_$s16ScreenSharingKit0aB7SessionC13sendHIDReport6sender10reportData7eventIDy12UniversalHID017EventReportSenderK0V_10Foundation0I0Vs6UInt64VSgtYaFTjTu
+        __DATA_CONST    __got            0x0010DCE8           bind  ScreenSharingKit/_$s16ScreenSharingKit0aB7SessionC19sendHIDInputDevices8deviceID05inputG0y10Foundation4UUIDV_SayAA23SSKHIDServicePropertiesVGtYaFTjTu
+
+相关进口原型:
+      0x0026  dispatch thunk of ScreenSharingKit.HIDDebugInfo.updatedHIDInputDevices([Swift.UInt64]) -> ()  (from ScreenSharingKit)
+      0x0057  dispatch thunk of ScreenSharingKit.HIDServicePrimitives.lookUpServiceInfo(for: UniversalHID.HIDReport, senderID: Swift.UInt64) -> (serviceID: Swift.UInt64, properties: ScreenSharingKit.SSKHIDServiceProperties)?  (from ScreenSharingKit)
+      0x0059  dispatch thunk of ScreenSharingKit.HIDServicePrimitives.basicMouseServiceID.getter : Swift.UInt64  (from ScreenSharingKit)
+      0x0089  dispatch thunk of ScreenSharingKit.HIDEventObserverPrimitives.processEvent(__C.NSEvent) -> [(report: UniversalHID.HIDReport, senderID: Swift.UInt64)]  (from ScreenSharingKit)
+      0x039A  async function pointer to dispatch thunk of ScreenSharingKit.ScreenSharingSession.sendHIDReport(sender: UniversalHID.EventReportSenderID, reportData: Foundation.Data, eventID: Swift.UInt64?) async -> ()  (from ScreenSharingKit)
+      0x039C  async function pointer to dispatch thunk of ScreenSharingKit.ScreenSharingSession.sendHIDInputDevices(deviceID: Foundation.UUID, inputDevices: [ScreenSharingKit.SSKHIDServiceProperties]) async -> ()  (from ScreenSharingKit)

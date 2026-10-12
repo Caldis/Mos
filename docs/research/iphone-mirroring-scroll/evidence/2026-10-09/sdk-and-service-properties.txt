@@ -1,0 +1,53 @@
+2026-10-09 当前 SDK 字段与 UniversalHID 设备属性符号
+运行系统为 macOS 26.7.1; 当前 Xcode SDK 为 macOS 27.0. SDK 定义不代表最低可用版本或所有旧系统行为.
+SDK: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreGraphics.framework/Headers/CGEventTypes.h
+
+384:   /* Momentum Scroll Optional Phase */
+385:   kCGScrollWheelEventMomentumOptionPhase = 173,
+386: 
+387:   /* Raw and accelerated scroll wheel deltas*/
+388:   kCGScrollWheelEventAcceleratedDeltaAxis1 = 176,
+389:   kCGScrollWheelEventAcceleratedDeltaAxis2 = 175,
+390:   kCGScrollWheelEventRawDeltaAxis1 = 178,
+391:   kCGScrollWheelEventRawDeltaAxis2 = 177
+
+UniversalHID dylib UUID: 53EA1A77-186D-34D6-8DC9-8338354EBB7B
+来源: dyld_info -exports /System/Library/PrivateFrameworks/UniversalHID.framework/Versions/A/UniversalHID
+属性存在已确认; iPhone 端依据这些属性的分类算法未分析.
+        0x0007E284  _$s12UniversalHID20HIDServicePropertiesV14deviceTypeHintSSSgvM
+        0x0007C04C  _$s12UniversalHID20HIDServicePropertiesV14deviceTypeHintSSSgvg
+        0x1977C5CC  _$s12UniversalHID20HIDServicePropertiesV14deviceTypeHintSSSgvpMV
+        0x0007E26C  _$s12UniversalHID20HIDServicePropertiesV14deviceTypeHintSSSgvs
+        0x000803E0  _$s12UniversalHID20HIDServicePropertiesV16reportDescriptor10Foundation4DataVSgvM
+        0x0008033C  _$s12UniversalHID20HIDServicePropertiesV16reportDescriptor10Foundation4DataVSgvg
+        0x1977C78C  _$s12UniversalHID20HIDServicePropertiesV16reportDescriptor10Foundation4DataVSgvpMV
+        0x000803C8  _$s12UniversalHID20HIDServicePropertiesV16reportDescriptor10Foundation4DataVSgvs
+        0x00080A84  _$s12UniversalHID20HIDServicePropertiesV16scrollReportRateSiSgvM
+        0x000809F0  _$s12UniversalHID20HIDServicePropertiesV16scrollReportRateSiSgvg
+        0x1977C7CC  _$s12UniversalHID20HIDServicePropertiesV16scrollReportRateSiSgvpMV
+        0x00080A6C  _$s12UniversalHID20HIDServicePropertiesV16scrollReportRateSiSgvs
+        0x00080B9C  _$s12UniversalHID20HIDServicePropertiesV16scrollResolutionSiSgvM
+        0x00080B08  _$s12UniversalHID20HIDServicePropertiesV16scrollResolutionSiSgvg
+        0x1977C7DC  _$s12UniversalHID20HIDServicePropertiesV16scrollResolutionSiSgvpMV
+        0x00080B84  _$s12UniversalHID20HIDServicePropertiesV16scrollResolutionSiSgvs
+        0x0007E8B8  _$s12UniversalHID20HIDServicePropertiesV20dispatchScrollEventsSbSgvM
+        0x0007B598  _$s12UniversalHID20HIDServicePropertiesV20dispatchScrollEventsSbSgvg
+        0x1977C5FC  _$s12UniversalHID20HIDServicePropertiesV20dispatchScrollEventsSbSgvpMV
+        0x0007E8A0  _$s12UniversalHID20HIDServicePropertiesV20dispatchScrollEventsSbSgvs
+        0x00081450  _$s12UniversalHID20HIDServicePropertiesV21useRemoteAccelerationSbSgvM
+        0x0007B4C0  _$s12UniversalHID20HIDServicePropertiesV21useRemoteAccelerationSbSgvg
+        0x1977C85C  _$s12UniversalHID20HIDServicePropertiesV21useRemoteAccelerationSbSgvpMV
+        0x0007B9E4  _$s12UniversalHID20HIDServicePropertiesV21useRemoteAccelerationSbSgvs
+        0x0007F61C  _$s12UniversalHID20HIDServicePropertiesV23mouseScrollAccelerationSiSgvM
+        0x0007B8A4  _$s12UniversalHID20HIDServicePropertiesV23mouseScrollAccelerationSiSgvg
+        0x1977C6CC  _$s12UniversalHID20HIDServicePropertiesV23mouseScrollAccelerationSiSgvpMV
+        0x0007F604  _$s12UniversalHID20HIDServicePropertiesV23mouseScrollAccelerationSiSgvs
+        0x00080C84  _$s12UniversalHID20HIDServicePropertiesV24supportsGestureScrollingSbSgvM
+        0x00080C20  _$s12UniversalHID20HIDServicePropertiesV24supportsGestureScrollingSbSgvg
+        0x1977C7EC  _$s12UniversalHID20HIDServicePropertiesV24supportsGestureScrollingSbSgvpMV
+        0x00080C6C  _$s12UniversalHID20HIDServicePropertiesV24supportsGestureScrollingSbSgvs
+        0x00080E90  _$s12UniversalHID20HIDServicePropertiesV26trackpadScrollAccelerationSiSgvM
+        0x0007B8DC  _$s12UniversalHID20HIDServicePropertiesV26trackpadScrollAccelerationSiSgvg
+        0x1977C80C  _$s12UniversalHID20HIDServicePropertiesV26trackpadScrollAccelerationSiSgvpMV
+        0x00080E78  _$s12UniversalHID20HIDServicePropertiesV26trackpadScrollAccelerationSiSgvs
+        0x00039F68  _$s12UniversalHID21HIDVirtualServicePoolC18updateInputDevices05inputH03for21useRemoteAccelerationySayAA20HIDServicePropertiesVG_10Foundation4UUIDVSbtF

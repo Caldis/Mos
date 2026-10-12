@@ -13,6 +13,12 @@
 - 时间: 常见 2–4 周,也可能更久/无回音。
 - 催办(带 Request ID 7CTL26535S): [developer.apple.com/contact](https://developer.apple.com/contact/) → Membership & Account;或开 DTS 工单(最有效);或回复 Apple 邮件。
 
+## 审批结果 (2026-09)
+- DriverKit 申请 7CTL26535S 被拒 (Transport HID, HID EventService, Family HID Device, UserClient Access, DriverKit), dext 路线只能用于本机开发
+- HID Virtual Device (com.apple.developer.hid.virtual.device) 于 2026-09-15 下发到开发者账号, 分发类型含 Development 与 Developer ID
+- 启用方式: Xcode 目标的 Signing & Capabilities 中添加 HID Virtual Device, 或在开发者网站 Identifiers 的 Capabilities 页勾选; 命令行构建不会自动启用
+- 已启用的 App ID: com.mos.vhidprobe (验证原型), com.caldis.Mos (2026-09-30 在 Xcode 中试加过, 本地 entitlements 已撤回)
+
 ## 标识符(App ID)配置
 为过申请表的 bundle id 校验,注册了 explicit App ID **`com.caldis.Mos.driver`**,并在其能力页启用 DriverKit **(development)** 系列。dext 需要的完整集合(对齐 Karabiner):
 - `DriverKit` + `Family HID Device` + `Family HID EventService` + `Transport HID` + `Allow Any UserClient`

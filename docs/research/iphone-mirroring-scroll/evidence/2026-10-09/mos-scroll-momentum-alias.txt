@@ -1,0 +1,5 @@
+base-highflags: scroll99=0 momentum123=2 option173=50 a175=0.0 a176=0.0 r177=0.0 r178=0.0
+set-momentum123: scroll99=0 momentum123=1 option173=1 a175=0.0 a176=0.0 r177=0.0 r178=0.0
+set-scroll99: scroll99=2 momentum123=1 option173=1 a175=0.0 a176=0.0 r177=0.0 r178=0.0
+set-continuous0: scroll99=2 momentum123=1 option173=1 a175=0.0 a176=0.0 r177=0.0 r178=0.0
+copy-timestamp 123456789

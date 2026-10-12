@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-09",
+  "timezone": "Asia/Shanghai",
+  "files": {
+    "appkit-phase-mapping.txt": {
+      "bytes": 7289,
+      "sha256": "c5828034ffb89baa49217f93daad5fd61510b09b401f5efb83b42d3058d70d09"
+    },
+    "environment-and-worktree.txt": {
+      "bytes": 1704,
+      "sha256": "0171d418fd7aa4070106c17c10b446d609c77d7c0d46530c082f51d2c5ab418b"
+    },
+    "mos-iphone-scroll-core.txt": {
+      "bytes": 45164,
+      "sha256": "6bed2117dfd521bdd5b876e72f0266b55bbfe84ecc717344be7e6a76dce1cca1"
+    },
+    "mos-scroll-field-isolation.swift": {
+      "bytes": 1852,
+      "sha256": "daadf596cb6ed4c6cc29d136c0c76f83ded8decb064df1e935d0178dc3fbb579"
+    },
+    "mos-scroll-field-isolation.txt": {
+      "bytes": 5132,
+      "sha256": "bb909726dca48f99d528a4c01c2baaaf37c354d0fa88c54271548bad97127bf3"
+    },
+    "mos-scroll-field-probe.swift": {
+      "bytes": 2020,
+      "sha256": "75a62248da4b7bde0c226c4b4d468b5952c5e843714be063e2103584ffc21f26"
+    },
+    "mos-scroll-field-probe.txt": {
+      "bytes": 3988,
+      "sha256": "07781e72a967f9cf16ed14f31cf0f93655815e8aa56debfc718ab0ae896ae438"
+    },
+    "mos-scroll-momentum-alias.swift": {
+      "bytes": 878,
+      "sha256": "dbd952b42cd41f2550933115f43f60152c7f9e73481c275c16bc0ad9ad5cca5a"
+    },
+    "mos-scroll-momentum-alias.txt": {
+      "bytes": 382,
+      "sha256": "f2f3fb18fa735e48390b62a287532b2fa05b3a175bf6be78e821060388948b07"
+    },
+    "screencontinuity-ui-segments.txt": {
+      "bytes": 13158,
+      "sha256": "ac8f832a23a637963f781003656f7787c9180b5dc6dec7a601750dbd3e2dc3aa"
+    },
+    "sdk-and-service-properties.txt": {
+      "bytes": 4410,
+      "sha256": "7d4bd18c9803c96c9d0d62d3c22b6d78f823ba070b5004e73e6739a89f57e1f8"
+    }
+  }
+}

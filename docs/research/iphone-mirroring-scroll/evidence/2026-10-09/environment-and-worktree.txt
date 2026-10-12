@@ -1,0 +1,32 @@
+生成日期: 2026-10-09 Asia/Shanghai
+本次只读逆向与离线 CGEvent/NSEvent 字段实验, 没有向系统投递输入事件或进行真实设备测试.
+运行系统: macOS 26.7.1, Build25G241, arm64e
+iPhone Mirroring: 1.6, CFBundleVersion98.5, com.apple.ScreenContinuity
+
+目录: /Users/caldis/Desktop/Code/Mos
+branch: master
+HEAD: 8a2fd112e2af444c37ca5f65f42e9bd19c08a5c2
+本次开始时 git status --short 为空
+
+目录: /Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring
+branch: research/iphone-mirroring-scroll
+HEAD: 752730c2a156fbff45c8745eb4fadf188d8b9fd6
+本次开始时已有用户改动 (研究报告创建前):
+ M docs/research/iphone-mirroring-scroll/00-README.md
+ M docs/research/iphone-mirroring-scroll/03-experiment-log.md
+ M docs/research/iphone-mirroring-scroll/04-entitlement-application.md
+ M experiments/MirroringHIDProbe/Sources/MirroringHIDProbe/MirroringHIDProbe.swift
+?? experiments/MirroringHIDProbe/Sources/MirroringHIDProbe/MagicTrackpadProbe.swift
+?? experiments/MirroringHIDProbe/Sources/MirroringHIDProbe/TouchpadProbe.swift
+?? experiments/MirroringHIDProbe/project.yml
+?? experiments/MirroringHIDProbe/tools/
+?? experiments/MirroringScrollLab/
+
+配置仅为当前磁盘 plist 的只读快照, 未验证运行中 Mos 内存:
+com.caldis.Mos: smooth=true, smoothSimTrackpad=false; iM例外inherit=true (保存的smooth=false不生效)
+com.caldis.Mos.debug: smooth=true, smoothSimTrackpad=false, applications=[]
+
+来源及局限:
+历史03-experiment-log记录的真实设备测试不是本轮重测.
+Point/Raw/Accelerated的实际单位与设备倍率尚未标定.
+静态路径不能证明每个实际iM事件均经过该路径; 缺接收端事件样本.

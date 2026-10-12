@@ -1,0 +1,751 @@
+iPhone Mirroring scroll 核心判断取证（本机静态反汇编；2026-10-09）
+macOS 26.7.1 (25G241), arm64e。
+没有启动App、没有hook/listener、没有投递输入事件、没有修改仓库。离线CGEvent构造与字段探针由同组agent进行。
+说明：Apple没有公开这些私有framework的源码，下列为本机二进制证据与语义还原。
+本文件VA为unslid dyld cache地址；括号为VA减该image __TEXT基址所得offset。
+dyld_info对优化cache的一些BL误显示___swift_noop_void_return；相关BL经原始ARM64指令与cache GOT实际指针校正，再用dyld_info -lookup_va确定真实符号。
+
+Image UUID / __TEXT base:
+UniversalHIDKit: 93AB3EAF-89F4-331D-AD12-59BCB13AAB85 / 0x278283000
+UniversalHID: 53EA1A77-186D-34D6-8DC9-8338354EBB7B / 0x2781CB000
+ScreenSharingKit: 3C1B2921-2E17-382C-A2C9-7C62B92D7386 / 0x267346000
+AppKit: 3C90C255-D239-3B5C-9213-9C5D383BEF9C / 0x1849BC000
+ScreenContinuityUI(app内framework,arm64e): 00F1C3F0-3014-3A0C-8408-41A7C60439CD / 本文件摘段使用image offset
+
+核心还原伪代码（不声称是Apple源代码）：
+translateScroll(ns):
+    if ns.type != scrollWheel(22): return []
+    senderID = ns.cgEvent?.getInteger(87) ?? 0
+    if ns.cgEvent != nil && senderID != 0:
+        interrupted = (cg.getInteger(173) & 0x10) != 0
+        raw = (cg.getDouble(177), cg.getDouble(178))
+        accel = (cg.getDouble(175), cg.getDouble(176))
+        if cg.getInteger(137) == 1: raw = -raw; accel = -accel
+        parent = IOHIDEventCreateScrollEvent(ns.timestamp*1e9, raw.x, raw.y, 0, flags=0)
+        child = IOHIDEventCreateScrollEvent(ns.timestamp*1e9, accel.x, accel.y, 0, flags=.accelerated)
+        IOHIDEventAppendEvent(parent, child, 0)
+    else:
+        interrupted = false
+        parent = IOHIDEventCreateScrollEvent(ns.timestamp*1e9, ns.scrollingDeltaX, ns.scrollingDeltaY, 0, flags=0)
+    parent.senderID = senderID
+    parent.phase = map(ns.phase)
+    parent.momentum = map(ns.momentumPhase) | (interrupted ? 0x10 : 0)
+    return [parent]
+map phase: began(1)->began, stationary(2)/changed(4)->changed, ended(8)->ended, cancelled(16)->canceled, mayBegin(32)->mayBegin.
+map momentum: began(1)/mayBegin(32)->start(2), changed(4)->continue(1), ended(8)/cancelled(16)->end(4), 其余->0。
+173/175..178名称来自当前SDK CGEventTypes.h:384-391；87来自显式senderID getter，137来自AppKit显式isDirectionInvertedFromDevice实现。
+此translator没有读取CG field88/96/97，也没有调用hasPreciseScrollingDeltas；只有senderID=0或无cgEvent时才间接调用NSEvent.scrollingDelta。
+
+EventObserver每次处理独立NSEvent，遍历translator和filter，把生成reports与该HIDEvent.senderID组合。所检查完整Observer/ScrollFilter路径没有delta、eventID或旧timestamp去重。
+ScrollReport由ScrollCollection编码raw(两轴Int8，round并clamp[-128,127])与accelerated(两轴HIDFixed)。senderID=0的fallback没有accelerated child，其accelXY为0。
+ScrollFilter读取time后写入报告，未与旧time比较；eventID不进入该Translator/Observer/ScrollFilter路径。
+ScreenSharingKit lookUpServiceInfo要求senderID非零且匹配现有HID服务；senderID=0或未知senderID返回nil。上层ScreenContinuityUI在调用lookup前会把零senderID的scroll报告映射为basicMouseServiceID，故不能从lookup的nil分支推断零senderID必然丢弃。
+但fallback仍以Int8 raw编码delta，无accelerated child；这与硬件精准滚动路径有结构差异，尚不能视为已验证的修复。
+这些是Mac端静态代码；iPhone端实际处理与运行时事件值未在本任务进行设备验证。
+
+=== UniversalHIDKit :: ScrollEventTranslator.translateEvent 原始事件类型与设备来源分支 ===
+0x2782884DC (+0x54DC)  mov      x8, x21              
+0x2782884E0 (+0x54E0)  ldr      x9, [x8, #0x18]!     
+0x2782884E4 (+0x54E4)  bl _OUTLINED_FUNCTION_0
+0x2782884E8 (+0x54E8)  mov      x17, x8              
+0x2782884EC (+0x54EC)  movk     x17, #0xdcd3, lsl #48 
+0x2782884F0 (+0x54F0)  blraa    x9, x17              
+0x2782884F4 (+0x54F4)  cmp      x0, #0x16            
+0x2782884F8 (+0x54F8)  b.ne     0x2782886a0          
+0x2782884FC (+0x54FC)  bl _OUTLINED_FUNCTION_1
+0x278288500 (+0x5500)  mov      x20, x19             
+0x278288504 (+0x5504)  bl _$s15UniversalHIDKit15NSEventProtocolPAAE8senderIDs6UInt64Vvg
+0x278288508 (+0x5508)  mov      x27, x0              
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x278288510 (+0x5510)  ldr      x10, [x9, #0x78]!    
+0x278288514 (+0x5514)  mov      x8, x26              
+0x278288518 (+0x5518)  bl _OUTLINED_FUNCTION_1
+0x27828851C (+0x551C)  mov      x17, x9              
+0x278288520 (+0x5520)  movk     x17, #0xe3da, lsl #48 
+0x278288524 (+0x5524)  blraa    x10, x17             
+0x278288528 (+0x5528)  mov      x0, x26              
+0x27828852C (+0x552C)  mov      w1, #0x1             
+0x278288530 (+0x5530)  mov      x2, x23              
+0x278288534 (+0x5534)  bl ___swift_getEnumTagSinglePayload
+0x278288538 (+0x5538)  cmp      w0, #0x1             
+0x27828853C (+0x553C)  b.eq     0x2782886c4          
+0x278288540 (+0x5540)  mov      x8, x24              
+0x278288544 (+0x5544)  ldr      x9, [x8, #0x20]!     
+0x278288548 (+0x5548)  mov      x0, x25              
+0x27828854C (+0x554C)  mov      x1, x26              
+0x278288550 (+0x5550)  mov      x2, x23              
+0x278288554 (+0x5554)  mov      x17, x8              
+0x278288558 (+0x5558)  movk     x17, #0x48d8, lsl #48 
+0x27828855C (+0x555C)  blraa    x9, x17              
+0x278288560 (+0x5560)  cbz      x27, 0x2782886ac     
+0x278288564 (+0x5564)  adrp     x3, 4                ; 0x27828c000
+0x278288568 (+0x5568)  add      x3, x3, #0xdf0       ; _$s15UniversalHIDKit15NSEventProtocolTL
+0x27828856C (+0x556C)  adrp     x4, 4                ; 0x27828c000
+0x278288570 (+0x5570)  add      x4, x4, #0xdf8       ; _$s15UniversalHIDKit15NSEventProtocolP11CGEventTypeAC_AA0eD0Tn
+0x278288574 (+0x5574)  mov      x0, x21              
+0x278288578 (+0x5578)  mov      x1, x22              
+0x27828857C (+0x557C)  mov      x2, x23              
+0x278288580 (+0x5580)  bl 0x27828bf40 ; resolved 0x193c60d84
+0x278288584 (+0x5584)  mov      x27, x0              
+0x278288588 (+0x5588)  mov      x28, x0              
+0x27828858C (+0x558C)  ldr      x26, [x28, #0x8]!    
+0x278288590 (+0x5590)  mov      w0, #0xad            
+0x278288594 (+0x5594)  mov      x20, x25             
+0x278288598 (+0x5598)  bl _OUTLINED_FUNCTION_3
+0x27828859C (+0x559C)  mov      x17, x28             
+0x2782885A0 (+0x55A0)  movk     x17, #0xacb1, lsl #48 
+0x2782885A4 (+0x55A4)  blraa    x26, x17             
+0x2782885A8 (+0x55A8)  tbnz     x0, #0x3f, 0x2782889c4 
+0x2782885AC (+0x55AC)  mov      x20, x0              
+0x2782885B0 (+0x55B0)  stp      x26, x24, [x29, #-0x98] 
+0x2782885B4 (+0x55B4)  cmp      x0, #0xff            
+0x2782885B8 (+0x55B8)  b.hi     0x2782889c8          
+0x2782885BC (+0x55BC)  movk     x28, #0xacb1, lsl #48 
+0x2782885C0 (+0x55C0)  bl _$s12UniversalHID17HIDScrollMomentumV11interruptedACvgZ ; stub 0x27828bae0 -> 0x2781e3d6c
+0x2782885C4 (+0x55C4)  bic      w8, w0, w20          
+0x2782885C8 (+0x55C8)  tst      w8, #0xff            
+0x2782885CC (+0x55CC)  cset     w8, eq               
+0x2782885D0 (+0x55D0)  stur     w8, [x29, #-0x9c]    
+
+=== UniversalHIDKit :: raw / accelerated CG字段、自然滚动方向，以及senderID为0/cgEvent缺失的fallback ===
+0x2782885D4 (+0x55D4)  mov      x26, x27             
+0x2782885D8 (+0x55D8)  ldr      x24, [x26, #0x10]!   
+0x2782885DC (+0x55DC)  mov      w0, #0xb1            
+0x2782885E0 (+0x55E0)  mov      x20, x25             
+0x2782885E4 (+0x55E4)  bl _OUTLINED_FUNCTION_3
+0x2782885E8 (+0x55E8)  mov      x17, x26             
+0x2782885EC (+0x55EC)  movk     x17, #0x4030, lsl #48 
+0x2782885F0 (+0x55F0)  blraa    x24, x17             
+0x2782885F4 (+0x55F4)  mov.16b  v10, v0              
+0x2782885F8 (+0x55F8)  mov      w0, #0xb2            
+0x2782885FC (+0x55FC)  bl _OUTLINED_FUNCTION_3
+0x278288600 (+0x5600)  mov      x17, x26             
+0x278288604 (+0x5604)  movk     x17, #0x4030, lsl #48 
+0x278288608 (+0x5608)  blraa    x24, x17             
+0x27828860C (+0x560C)  mov.16b  v11, v0              
+0x278288610 (+0x5610)  mov      w0, #0xaf            
+0x278288614 (+0x5614)  bl _OUTLINED_FUNCTION_3
+0x278288618 (+0x5618)  mov      x17, x26             
+0x27828861C (+0x561C)  movk     x17, #0x4030, lsl #48 
+0x278288620 (+0x5620)  blraa    x24, x17             
+0x278288624 (+0x5624)  mov.16b  v8, v0               
+0x278288628 (+0x5628)  mov      w0, #0xb0            
+0x27828862C (+0x562C)  bl _OUTLINED_FUNCTION_3
+0x278288630 (+0x5630)  mov      x17, x26             
+0x278288634 (+0x5634)  movk     x17, #0x4030, lsl #48 
+0x278288638 (+0x5638)  blraa    x24, x17             
+0x27828863C (+0x563C)  mov.16b  v9, v0               
+0x278288640 (+0x5640)  mov      w0, #0x89            
+0x278288644 (+0x5644)  bl _OUTLINED_FUNCTION_3
+0x278288648 (+0x5648)  ldur     x8, [x29, #-0x98]    
+0x27828864C (+0x564C)  blraa    x8, x28              
+0x278288650 (+0x5650)  ldur     w28, [x29, #-0x9c]   
+0x278288654 (+0x5654)  mov      x20, x0              
+0x278288658 (+0x5658)  ldur     x9, [x29, #-0x90]    
+0x27828865C (+0x565C)  ldr      x8, [x9, #0x8]!      
+0x278288660 (+0x5660)  mov      x0, x25              
+0x278288664 (+0x5664)  mov      x1, x23              
+0x278288668 (+0x5668)  mov      x17, x9              
+0x27828866C (+0x566C)  movk     x17, #0x4f8, lsl #48 
+0x278288670 (+0x5670)  blraa    x8, x17              
+0x278288674 (+0x5674)  cmp      x20, #0x1            
+0x278288678 (+0x5678)  fneg     d0, d10              
+0x27828867C (+0x567C)  fneg     d1, d11              
+0x278288680 (+0x5680)  fneg     d2, d8               
+0x278288684 (+0x5684)  fneg     d3, d9               
+0x278288688 (+0x5688)  fcsel    d8, d8, d2, ne       
+0x27828868C (+0x568C)  fcsel    d9, d9, d3, ne       
+0x278288690 (+0x5690)  mov      w24, wzr             
+0x278288694 (+0x5694)  fcsel    d10, d10, d0, ne     
+0x278288698 (+0x5698)  fcsel    d11, d11, d1, ne     
+0x27828869C (+0x569C)  b        0x27828870c          
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x2782886AC (+0x56AC)  ldr      x8, [x24, #0x8]!     
+0x2782886B0 (+0x56B0)  mov      x0, x25              
+0x2782886B4 (+0x56B4)  mov      x1, x23              
+0x2782886B8 (+0x56B8)  mov      x17, x24             
+0x2782886BC (+0x56BC)  movk     x17, #0x4f8, lsl #48 
+0x2782886C0 (+0x56C0)  blraa    x8, x17              
+0x2782886C4 (+0x56C4)  mov      x8, x21              
+0x2782886C8 (+0x56C8)  ldr      x9, [x8, #0x50]!     
+0x2782886CC (+0x56CC)  bl _OUTLINED_FUNCTION_0
+0x2782886D0 (+0x56D0)  mov      x17, x8              
+0x2782886D4 (+0x56D4)  movk     x17, #0x601b, lsl #48 
+0x2782886D8 (+0x56D8)  blraa    x9, x17              
+0x2782886DC (+0x56DC)  mov.16b  v10, v0              
+0x2782886E0 (+0x56E0)  mov      x8, x21              
+0x2782886E4 (+0x56E4)  ldr      x9, [x8, #0x58]!     
+0x2782886E8 (+0x56E8)  bl _OUTLINED_FUNCTION_1
+0x2782886EC (+0x56EC)  mov      x17, x8              
+0x2782886F0 (+0x56F0)  movk     x17, #0x17cc, lsl #48 
+0x2782886F4 (+0x56F4)  blraa    x9, x17              
+0x2782886F8 (+0x56F8)  mov.16b  v11, v0              
+0x2782886FC (+0x56FC)  mov      w28, #0x0            
+0x278288700 (+0x5700)  mov      w24, #0x1            
+0x278288704 (+0x5704)  movi.2d  v8, #0000000000000000 
+0x278288708 (+0x5708)  movi.2d  v9, #0000000000000000 
+
+=== UniversalHIDKit :: 构造父raw scroll与accelerated子scroll（BL已从原始指令+dyld cache GOT校正） ===
+0x27828870C (+0x570C)  mov      x25, x21             
+0x278288710 (+0x5710)  ldr      x26, [x25, #0x28]!   
+0x278288714 (+0x5714)  bl _OUTLINED_FUNCTION_0
+0x278288718 (+0x5718)  mov      x17, x25             
+0x27828871C (+0x571C)  movk     x17, #0x7f5, lsl #48 
+0x278288720 (+0x5720)  blraa    x26, x17             
+0x278288724 (+0x5724)  adrp     x8, 4                ; 0x27828c000
+0x278288728 (+0x5728)  ldr      d12, [x8, #0x128]    
+0x27828872C (+0x572C)  fmul     d0, d0, d12          
+0x278288730 (+0x5730)  bl _$s12UniversalHID7HIDTimeV11nanosecondsACSd_tcfC ; stub 0x27828bb90 -> 0x2782589ec
+0x278288734 (+0x5734)  mov      x1, x0               
+0x278288738 (+0x5738)  movi.2d  v2, #0000000000000000 
+0x27828873C (+0x573C)  mov      x0, #0x0             
+0x278288740 (+0x5740)  mov.16b  v0, v10              
+0x278288744 (+0x5744)  mov.16b  v1, v11              
+0x278288748 (+0x5748)  mov      w2, #0x0             
+0x27828874C (+0x574C)  bl _IOHIDEventCreateScrollEvent ; stub 0x27828bd80 -> 0x18490e00c
+0x278288750 (+0x5750)  mov      x20, x0              
+0x278288754 (+0x5754)  bl _$sSo13IOHIDEventRefa12UniversalHIDE14__bridgedValueSo8HIDEventCvg ; stub 0x27828bc00 -> 0x27822474c
+0x278288758 (+0x5758)  mov      x23, x0              
+0x27828875C (+0x575C)  mov      x0, x20              
+0x278288760 (+0x5760)  bl 0x27828be50 ; resolved 0x180094004
+0x278288764 (+0x5764)  tbnz     w24, #0x0, 0x2782887f8 
+0x278288768 (+0x5768)  movk     x25, #0x7f5, lsl #48 
+0x27828876C (+0x576C)  bl _OUTLINED_FUNCTION_0
+0x278288770 (+0x5770)  blraa    x26, x25             
+0x278288774 (+0x5774)  fmul     d0, d0, d12          
+0x278288778 (+0x5778)  bl _$s12UniversalHID7HIDTimeV11nanosecondsACSd_tcfC ; stub 0x27828bb90 -> 0x2782589ec
+0x27828877C (+0x577C)  mov      x20, x0              
+0x278288780 (+0x5780)  bl _$s12UniversalHID13HIDEventFlagsV11acceleratedACvgZ ; stub 0x27828b9d0 -> 0x278217908
+0x278288784 (+0x5784)  mov      x2, x0               
+0x278288788 (+0x5788)  movi.2d  v2, #0000000000000000 
+0x27828878C (+0x578C)  mov      x0, #0x0             
+0x278288790 (+0x5790)  mov      x1, x20              
+0x278288794 (+0x5794)  mov.16b  v0, v8               
+0x278288798 (+0x5798)  mov.16b  v1, v9               
+0x27828879C (+0x579C)  bl _IOHIDEventCreateScrollEvent ; stub 0x27828bd80 -> 0x18490e00c
+0x2782887A0 (+0x57A0)  mov      x20, x0              
+0x2782887A4 (+0x57A4)  bl _$sSo13IOHIDEventRefa12UniversalHIDE14__bridgedValueSo8HIDEventCvg ; stub 0x27828bc00 -> 0x27822474c
+0x2782887A8 (+0x57A8)  mov      x24, x0              
+0x2782887AC (+0x57AC)  mov      x0, x20              
+0x2782887B0 (+0x57B0)  bl 0x27828be50 ; resolved 0x180094004
+0x2782887B4 (+0x57B4)  bl _OUTLINED_FUNCTION_2
+0x2782887B8 (+0x57B8)  mov      x27, x0              
+0x2782887BC (+0x57BC)  stur     x24, [x29, #-0x88]   
+0x2782887C0 (+0x57C0)  mov      x0, x25              
+0x2782887C4 (+0x57C4)  mov      x1, x26              
+0x2782887C8 (+0x57C8)  bl _$s12UniversalHID16HIDEventProtocolPAAE14__bridgedValueSo13IOHIDEventRefavg ; stub 0x27828bad0 -> 0x278222544
+0x2782887CC (+0x57CC)  mov      x20, x0              
+0x2782887D0 (+0x57D0)  mov      x0, x27              
+0x2782887D4 (+0x57D4)  mov      x1, x20              
+0x2782887D8 (+0x57D8)  mov      w2, #0x0             
+0x2782887DC (+0x57DC)  bl _IOHIDEventAppendEvent ; stub 0x27828bd10 -> 0x184874e0c
+0x2782887E0 (+0x57E0)  mov      x0, x24              
+0x2782887E4 (+0x57E4)  bl 0x27828be50 ; resolved 0x180094004
+0x2782887E8 (+0x57E8)  mov      x0, x27              
+0x2782887EC (+0x57EC)  bl 0x27828be50 ; resolved 0x180094004
+0x2782887F0 (+0x57F0)  mov      x0, x20              
+0x2782887F4 (+0x57F4)  bl 0x27828be50 ; resolved 0x180094004
+0x2782887F8 (+0x57F8)  bl _OUTLINED_FUNCTION_1
+0x2782887FC (+0x57FC)  mov      x20, x19             
+0x278288800 (+0x5800)  bl _$s15UniversalHIDKit15NSEventProtocolPAAE8senderIDs6UInt64Vvg
+0x278288804 (+0x5804)  mov      x24, x0              
+0x278288808 (+0x5808)  bl _OUTLINED_FUNCTION_2
+0x27828880C (+0x580C)  mov      x20, x0              
+0x278288810 (+0x5810)  mov      x1, x24              
+0x278288814 (+0x5814)  bl _IOHIDEventSetSenderID ; stub 0x27828bde0 -> 0x1848ae784
+0x278288818 (+0x5818)  mov      x0, x20              
+0x27828881C (+0x581C)  bl 0x27828be50 ; resolved 0x180094004
+
+=== UniversalHIDKit :: phase与momentum转换、interrupted标记 ===
+0x278288820 (+0x5820)  mov      x8, x21              
+0x278288824 (+0x5824)  ldr      x9, [x8, #0x90]!     
+0x278288828 (+0x5828)  bl _OUTLINED_FUNCTION_0
+0x27828882C (+0x582C)  mov      x17, x8              
+0x278288830 (+0x5830)  movk     x17, #0x3152, lsl #48 
+0x278288834 (+0x5834)  blraa    x9, x17              
+0x278288838 (+0x5838)  bl 0x27828b8b0
+0x27828883C (+0x583C)  mov      x24, x0              
+0x278288840 (+0x5840)  stur     x23, [x29, #-0x88]   
+0x278288844 (+0x5844)  sub      x20, x29, #0x88      
+0x278288848 (+0x5848)  mov      x0, x25              
+0x27828884C (+0x584C)  mov      x1, x26              
+0x278288850 (+0x5850)  bl _$s12UniversalHID16HIDEventProtocolPAAE14__bridgedValueSo13IOHIDEventRefavg ; stub 0x27828bad0 -> 0x278222544
+0x278288854 (+0x5854)  mov      x20, x0              
+0x278288858 (+0x5858)  and      w1, w24, #0xff       
+0x27828885C (+0x585C)  bl _IOHIDEventSetPhase ; stub 0x27828bdc0 -> 0x1848ae6e4
+0x278288860 (+0x5860)  mov      x0, x20              
+0x278288864 (+0x5864)  bl 0x27828be50 ; resolved 0x180094004
+0x278288868 (+0x5868)  mov      x8, x21              
+0x27828886C (+0x586C)  ldr      x9, [x8, #0x60]!     
+0x278288870 (+0x5870)  bl _OUTLINED_FUNCTION_0
+0x278288874 (+0x5874)  mov      x17, x8              
+0x278288878 (+0x5878)  movk     x17, #0xbd08, lsl #48 
+0x27828887C (+0x587C)  blraa    x9, x17              
+0x278288880 (+0x5880)  cmp      x0, #0x20            
+0x278288884 (+0x5884)  b.eq     0x2782888a8          
+0x278288888 (+0x5888)  cmp      x0, #0x4             
+0x27828888C (+0x588C)  b.eq     0x2782888b8          
+0x278288890 (+0x5890)  cmp      x0, #0x8             
+0x278288894 (+0x5894)  b.eq     0x2782888b0          
+0x278288898 (+0x5898)  cmp      x0, #0x10            
+0x27828889C (+0x589C)  b.eq     0x2782888b0          
+0x2782888A0 (+0x58A0)  cmp      x0, #0x1             
+0x2782888A4 (+0x58A4)  b.ne     0x2782889bc          
+0x2782888A8 (+0x58A8)  bl _$s12UniversalHID17HIDScrollMomentumV5startACvgZ ; stub 0x27828bb00 -> 0x2781e3d54
+0x2782888AC (+0x58AC)  b        0x2782888bc          
+0x2782888B0 (+0x58B0)  bl _$s12UniversalHID17HIDScrollMomentumV3endACvgZ ; stub 0x27828baf0 -> 0x2781e3d64
+0x2782888B4 (+0x58B4)  b        0x2782888bc          
+0x2782888B8 (+0x58B8)  bl _$s12UniversalHID17HIDScrollMomentumV8continueACvgZ ; stub 0x27828bb10 -> 0x2781e3d5c
+0x2782888BC (+0x58BC)  mov      x19, x0              
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x2782888D4 (+0x58D4)  sub      x20, x29, #0x88      
+0x2782888D8 (+0x58D8)  bl _$s12UniversalHID16HIDEventProtocolPAAE14__bridgedValueSo13IOHIDEventRefavg ; stub 0x27828bad0 -> 0x278222544
+0x2782888DC (+0x58DC)  mov      x20, x0              
+0x2782888E0 (+0x58E0)  and      w1, w19, #0xff       
+0x2782888E4 (+0x58E4)  bl _IOHIDEventSetScrollMomentum ; stub 0x27828bdd0 -> 0x1848ae708
+0x2782888E8 (+0x58E8)  mov      x0, x20              
+0x2782888EC (+0x58EC)  bl 0x27828be50 ; resolved 0x180094004
+0x2782888F0 (+0x58F0)  tbz      w28, #0x0, 0x278288960 
+0x2782888F4 (+0x58F4)  bl _$s12UniversalHID17HIDScrollMomentumV11interruptedACvgZ ; stub 0x27828bae0 -> 0x2781e3d6c
+0x2782888F8 (+0x58F8)  mov      x19, x0              
+0x2782888FC (+0x58FC)  stur     x23, [x29, #-0x88]   
+0x278288900 (+0x5900)  adrp     x21, 97965           ; 0x290135000
+0x278288904 (+0x5904)  ldr      x21, [x21, #0x28]    
+0x278288908 (+0x5908)  adrp     x22, 97965           ; 0x290135000
+0x27828890C (+0x590C)  ldr      x22, [x22, #0x20]    
+0x278288910 (+0x5910)  sub      x20, x29, #0x88      
+0x278288914 (+0x5914)  mov      x0, x21              
+0x278288918 (+0x5918)  mov      x1, x22              
+0x27828891C (+0x591C)  bl _$s12UniversalHID16HIDEventProtocolPAAE14__bridgedValueSo13IOHIDEventRefavg ; stub 0x27828bad0 -> 0x278222544
+0x278288920 (+0x5920)  mov      x20, x0              
+0x278288924 (+0x5924)  bl _IOHIDEventGetScrollMomentum ; stub 0x27828bda0 -> 0x1848ae6f0
+0x278288928 (+0x5928)  mov      x24, x0              
+0x27828892C (+0x592C)  mov      x0, x20              
+0x278288930 (+0x5930)  bl 0x27828be50 ; resolved 0x180094004
+0x278288934 (+0x5934)  orr      w24, w24, w19        
+0x278288938 (+0x5938)  stur     x23, [x29, #-0x88]   
+0x27828893C (+0x593C)  sub      x20, x29, #0x88      
+0x278288940 (+0x5940)  mov      x0, x21              
+0x278288944 (+0x5944)  mov      x1, x22              
+0x278288948 (+0x5948)  bl _$s12UniversalHID16HIDEventProtocolPAAE14__bridgedValueSo13IOHIDEventRefavg ; stub 0x27828bad0 -> 0x278222544
+0x27828894C (+0x594C)  mov      x19, x0              
+0x278288950 (+0x5950)  and      w1, w24, #0xff       
+0x278288954 (+0x5954)  bl _IOHIDEventSetScrollMomentum ; stub 0x27828bdd0 -> 0x1848ae708
+0x278288958 (+0x5958)  mov      x0, x19              
+0x27828895C (+0x595C)  bl 0x27828be50 ; resolved 0x180094004
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x2782889BC (+0x59BC)  mov      w19, #0x0            
+0x2782889C0 (+0x59C0)  b        0x2782888c0          
+
+=== UniversalHIDKit :: NSEventProtocol.senderID getter（调用CGEvent整数字段87） ===
+0x278288BC0 (+0x5BC0)  ldr      x10, [x9, #0x78]!    
+0x278288BC4 (+0x5BC4)  mov      x8, x28              
+0x278288BC8 (+0x5BC8)  mov      x0, x21              
+0x278288BCC (+0x5BCC)  mov      x1, x22              
+0x278288BD0 (+0x5BD0)  mov      x17, x9              
+0x278288BD4 (+0x5BD4)  movk     x17, #0xe3da, lsl #48 
+0x278288BD8 (+0x5BD8)  blraa    x10, x17             
+0x278288BDC (+0x5BDC)  mov      x0, x28              
+0x278288BE0 (+0x5BE0)  mov      w1, #0x1             
+0x278288BE4 (+0x5BE4)  mov      x2, x19              
+0x278288BE8 (+0x5BE8)  bl ___swift_getEnumTagSinglePayload
+0x278288BEC (+0x5BEC)  cmp      w0, #0x1             
+0x278288BF0 (+0x5BF0)  b.ne     0x278288c14          
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x278288C4C (+0x5C4C)  mov      x2, x0               
+0x278288C50 (+0x5C50)  mov      x8, x0               
+0x278288C54 (+0x5C54)  ldr      x9, [x8, #0x8]!      
+0x278288C58 (+0x5C58)  mov      w0, #0x57            
+0x278288C5C (+0x5C5C)  mov      x20, x26             
+0x278288C60 (+0x5C60)  mov      x1, x19              
+0x278288C64 (+0x5C64)  mov      x17, x8              
+0x278288C68 (+0x5C68)  movk     x17, #0xacb1, lsl #48 
+0x278288C6C (+0x5C6C)  blraa    x9, x17              
+0x278288C70 (+0x5C70)  mov      x20, x0              
+
+=== UniversalHIDKit :: NSEvent.phase到HID.phase映射 ===
+0x27828B8B0 (+0x88B0)  pacibsp                       
+0x27828B8B4 (+0x88B4)  stp      x20, x19, [sp, #-0x20]! 
+0x27828B8B8 (+0x88B8)  stp      x29, x30, [sp, #0x10] 
+0x27828B8BC (+0x88BC)  add      x29, sp, #0x10       
+0x27828B8C0 (+0x88C0)  mov      x19, x0              
+0x27828B8C4 (+0x88C4)  tbnz     w19, #0x0, 0x27828b8ec 
+0x27828B8C8 (+0x88C8)  mov      w20, #0x0            
+0x27828B8CC (+0x88CC)  tbz      w19, #0x2, 0x27828b8f8 
+0x27828B8D0 (+0x88D0)  bl _$s12UniversalHID13HIDEventPhaseV7changedACvgZ ; stub 0x27828ba10 -> 0x278258648
+0x27828B8D4 (+0x88D4)  orr      w20, w0, w20         
+0x27828B8D8 (+0x88D8)  tbz      w19, #0x1, 0x27828b8fc 
+0x27828B8DC (+0x88DC)  bl _$s12UniversalHID13HIDEventPhaseV7changedACvgZ ; stub 0x27828ba10 -> 0x278258648
+0x27828B8E0 (+0x88E0)  orr      w20, w0, w20         
+0x27828B8E4 (+0x88E4)  tbnz     w19, #0x3, 0x27828b900 
+0x27828B8E8 (+0x88E8)  b        0x27828b908          
+0x27828B8EC (+0x88EC)  bl _$s12UniversalHID13HIDEventPhaseV5beganACvgZ ; stub 0x27828b9f0 -> 0x278258640
+0x27828B8F0 (+0x88F0)  mov      x20, x0              
+0x27828B8F4 (+0x88F4)  tbnz     w19, #0x2, 0x27828b8d0 
+0x27828B8F8 (+0x88F8)  tbnz     w19, #0x1, 0x27828b8dc 
+0x27828B8FC (+0x88FC)  tbz      w19, #0x3, 0x27828b908 
+0x27828B900 (+0x8900)  bl _$s12UniversalHID13HIDEventPhaseV5endedACvgZ ; stub 0x27828ba00 -> 0x278258650
+0x27828B904 (+0x8904)  orr      w20, w0, w20         
+0x27828B908 (+0x8908)  tbz      w19, #0x4, 0x27828b914 
+0x27828B90C (+0x890C)  bl _$s12UniversalHID13HIDEventPhaseV8canceledACvgZ ; stub 0x27828ba20 -> 0x278258658
+0x27828B910 (+0x8910)  orr      w20, w0, w20         
+0x27828B914 (+0x8914)  tbz      w19, #0x5, 0x27828b920 
+0x27828B918 (+0x8918)  bl _$s12UniversalHID13HIDEventPhaseV8mayBeginACvgZ ; stub 0x27828ba30 -> 0x278258660
+0x27828B91C (+0x891C)  orr      w20, w0, w20         
+0x27828B920 (+0x8920)  mov      x0, x20              
+0x27828B924 (+0x8924)  ldp      x29, x30, [sp, #0x10] 
+0x27828B928 (+0x8928)  ldp      x20, x19, [sp], #0x20 
+0x27828B92C (+0x892C)  retab                         
+
+=== UniversalHID :: HIDScrollMomentum数值 ===
+0x2781E3D54 (+0x18D54)  mov      w0, #0x2             
+0x2781E3D58 (+0x18D58)  ret                           
+0x2781E3D5C (+0x18D5C)  mov      w0, #0x1             
+0x2781E3D60 (+0x18D60)  ret                           
+0x2781E3D64 (+0x18D64)  mov      w0, #0x4             
+0x2781E3D68 (+0x18D68)  ret                           
+0x2781E3D6C (+0x18D6C)  mov      w0, #0x10            
+0x2781E3D70 (+0x18D70)  ret                           
+
+=== AppKit :: field137语义的一手证据：-[NSEvent isDirectionInvertedFromDevice]的scrollWheel分支 ===
+0x184CDBC30 (+0x31FC30)  mov      x0, x19              
+0x184CDBC34 (+0x31FC34)  bl 0x1860d62a0
+0x184CDBC38 (+0x31FC38)  cmp      x0, #0x1f            
+0x184CDBC3C (+0x31FC3C)  b.eq     0x184cdbc68          
+0x184CDBC40 (+0x31FC40)  cmp      x0, #0x16            
+0x184CDBC44 (+0x31FC44)  b.ne     0x184cdbc80          
+0x184CDBC48 (+0x31FC48)  mov      x0, x19              
+0x184CDBC4C (+0x31FC4C)  bl 0x185fd3420
+0x184CDBC50 (+0x31FC50)  cbz      x0, 0x184cdbc84      
+0x184CDBC54 (+0x31FC54)  mov      w1, #0x89            
+0x184CDBC58 (+0x31FC58)  bl 0x185ab1df0 ; resolved 0x186df0a0c
+0x184CDBC5C (+0x31FC5C)  cmp      x0, #0x0             
+0x184CDBC60 (+0x31FC60)  cset     w0, ne               
+0x184CDBC64 (+0x31FC64)  b        0x184cdbc84          
+
+=== UniversalHIDKit :: EventObserver.processEvent→翻译器→遍历HID events→取senderID→EventFilterProtocol.filterEvent→报告数组添加原senderID ===
+0x2782899AC (+0x69AC)  ldp      x21, x22, [x20, #0x28] 
+0x2782899B0 (+0x69B0)  add      x0, x20, #0x10       
+0x2782899B4 (+0x69B4)  mov      x1, x21              
+0x2782899B8 (+0x69B8)  bl ___swift_project_boxed_opaque_existential_1
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x278289A98 (+0x6A98)  mov      x8, x22              
+0x278289A9C (+0x6A9C)  ldr      x9, [x8, #0x18]!     
+0x278289AA0 (+0x6AA0)  mov      x0, x19              
+0x278289AA4 (+0x6AA4)  mov      x2, x22              
+0x278289AA8 (+0x6AA8)  mov      x17, x8              
+0x278289AAC (+0x6AAC)  movk     x17, #0xb36f, lsl #48 
+0x278289AB0 (+0x6AB0)  blraa    x9, x17              
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x278289B40 (+0x6B40)  ldr      x0, [x8, x20, lsl #3] 
+0x278289B44 (+0x6B44)  bl 0x27828be60 ; resolved 0x18009390c
+0x278289B48 (+0x6B48)  stur     x0, [x29, #-0x48]    
+0x278289B4C (+0x6B4C)  adds     x20, x20, #0x1       
+0x278289B50 (+0x6B50)  b.vs     0x278289f0c          
+0x278289B54 (+0x6B54)  sub      x8, x29, #0x30       
+0x278289B58 (+0x6B58)  stur     x20, [x8, #-0x100]   
+0x278289B5C (+0x6B5C)  ldur     x0, [x29, #-0x48]    
+0x278289B60 (+0x6B60)  bl _objc_msgSend$senderID
+0x278289B64 (+0x6B64)  mov      x24, x0              
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x278289CE8 (+0x6CE8)  sub      x0, x29, #0xf8       
+0x278289CEC (+0x6CEC)  sub      x1, x29, #0x120      
+0x278289CF0 (+0x6CF0)  mov      x2, x19              
+0x278289CF4 (+0x6CF4)  mov      x3, x22              
+0x278289CF8 (+0x6CF8)  bl _$s12UniversalHID19EventFilterProtocolP06filterC0yAA08HIDEventE0_pSg5event_Sb6notifySayAA9HIDReportVG7reportstAaE_pFTj ; stub 0x27828bb20 -> 0x278253e84
+0x278289CFC (+0x6CFC)  mov      x25, x1              
+0x278289D00 (+0x6D00)  sub      x0, x29, #0xf8       
+0x278289D04 (+0x6D04)  bl 0x27828a694
+0x278289D08 (+0x6D08)  sub      x0, x29, #0x120      
+0x278289D0C (+0x6D0C)  bl ___swift_destroy_boxed_opaque_existential_1
+0x278289D10 (+0x6D10)  ldr      x22, [x25, #0x10]    
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x278289D40 (+0x6D40)  ldp      x26, x28, [x27, #-0x8] 
+0x278289D44 (+0x6D44)  mov      x0, x26              
+0x278289D48 (+0x6D48)  mov      x1, x28              
+0x278289D4C (+0x6D4C)  bl 0x27828a5a8
+0x278289D50 (+0x6D50)  stur     x20, [x29, #-0xf8]   
+0x278289D54 (+0x6D54)  ldp      x23, x8, [x20, #0x10] 
+0x278289D58 (+0x6D58)  add      x19, x23, #0x1       
+0x278289D5C (+0x6D5C)  cmp      x23, x8, lsr #1      
+0x278289D60 (+0x6D60)  b.lo     0x278289d80          
+0x278289D64 (+0x6D64)  cmp      x8, #0x1             
+0x278289D68 (+0x6D68)  cset     w0, hi               
+0x278289D6C (+0x6D6C)  sub      x20, x29, #0xf8      
+0x278289D70 (+0x6D70)  mov      x1, x19              
+0x278289D74 (+0x6D74)  mov      w2, #0x1             
+0x278289D78 (+0x6D78)  bl 0x2782852c0
+0x278289D7C (+0x6D7C)  ldur     x20, [x29, #-0xf8]   
+0x278289D80 (+0x6D80)  add      x27, x27, #0x10      
+0x278289D84 (+0x6D84)  str      x19, [x20, #0x10]    
+0x278289D88 (+0x6D88)  mov      w8, #0x18            
+0x278289D8C (+0x6D8C)  madd     x8, x23, x8, x20     
+0x278289D90 (+0x6D90)  stp      x26, x28, [x8, #0x20] 
+0x278289D94 (+0x6D94)  str      x24, [x8, #0x30]     
+
+=== UniversalHID :: ScrollFilter：匹配类型后取first ScrollEvent，生成ScrollReport；time读取仅用于序列化 ===
+0x278224370 (+0x59370)  add      x2, x1, #0x148       
+0x278224374 (+0x59374)  ldr      x3, [x1, #0x148]     
+0x278224378 (+0x59378)  mov      x16, x2              
+0x27822437C (+0x5937C)  movk     x16, #0xff84, lsl #48 
+0x278224380 (+0x59380)  braa     x3, x16              
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x27822D5DC (+0x625DC)  blraa    x9, x17              
+0x27822D5E0 (+0x625E0)  bl _$s12UniversalHID12HIDEventTypeV9maskValueSuvg
+0x27822D5E4 (+0x625E4)  tst      x0, x25              
+0x27822D5E8 (+0x625E8)  b.eq     0x27822d6a8          
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x27822D600 (+0x62600)  adrp     x0, 159014           ; 0x29ef53000
+0x27822D604 (+0x62604)  add      x0, x0, #0xba8       ; _$s12UniversalHID11ScrollEventVN
+0x27822D608 (+0x62608)  adrp     x4, 159014           ; 0x29ef53000
+0x27822D60C (+0x6260C)  add      x4, x4, #0x9e8       ; _$s12UniversalHID11ScrollEventVAA13_HIDEventImplAAWP
+0x27822D610 (+0x62610)  mov      x8, sp               
+0x27822D614 (+0x62614)  mov      x1, x20              
+0x27822D618 (+0x62618)  mov      x2, x0               
+0x27822D61C (+0x6261C)  mov      x3, x23              
+0x27822D620 (+0x62620)  mov      x20, x5              
+0x27822D624 (+0x62624)  bl _$s12UniversalHID16HIDEventProtocolPAAE5firstyqd__Sgqd__mAA01_C4ImplRd__lF
+0x27822D628 (+0x62628)  ldr      x0, [sp]             
+0x27822D62C (+0x6262C)  cbz      x0, 0x27822d6a8      
+0x27822D630 (+0x62630)  bl 0x278267788 ; resolved 0x18009390c
+0x27822D634 (+0x62634)  mov      x23, x0              
+0x27822D638 (+0x62638)  bl _$s12UniversalHID12ScrollReportV11scrollEventAcA0cF0V_tcfC
+0x27822D63C (+0x6263C)  mov      x25, x0              
+0x27822D640 (+0x62640)  mov      x26, x1              
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x27822D658 (+0x62658)  add      x8, x27, #0x148      
+0x27822D65C (+0x6265C)  ldr      x9, [x27, #0x148]    
+0x27822D660 (+0x62660)  mov      x20, x0              
+0x27822D664 (+0x62664)  mov      x0, x24              
+0x27822D668 (+0x62668)  mov      x1, x27              
+0x27822D66C (+0x6266C)  mov      x17, x8              
+0x27822D670 (+0x62670)  movk     x17, #0xff84, lsl #48 
+0x27822D674 (+0x62674)  blraa    x9, x17              
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x27822D758 (+0x62758)  adds     x9, x9, x25          
+0x27822D75C (+0x6275C)  b.vs     0x27822d858          
+0x27822D760 (+0x62760)  asr      x1, x9, #3           
+0x27822D764 (+0x62764)  lsr      x0, x24, x8          
+0x27822D768 (+0x62768)  mov      x20, sp              
+0x27822D76C (+0x6276C)  bl 0x278266558 ; resolved 0x18216962c
+0x27822D770 (+0x62770)  sub      x8, x25, #0x60       
+0x27822D774 (+0x62774)  sub      x25, x25, #0x8       
+0x27822D778 (+0x62778)  cmp      x8, #0x8             
+0x27822D77C (+0x6277C)  b.hi     0x27822d728          
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x27822D7D0 (+0x627D0)  mov      x0, x23              
+0x27822D7D4 (+0x627D4)  bl _IOHIDEventGetPhase ; stub 0x278267458 -> 0x1848ae6d8
+0x27822D7D8 (+0x627D8)  mov      w20, #0x8f           
+0x27822D7DC (+0x627DC)  tst      w0, w20              
+0x27822D7E0 (+0x627E0)  b.eq     0x27822d7fc          
+0x27822D7E4 (+0x627E4)  mov      x0, x23              
+0x27822D7E8 (+0x627E8)  bl _IOHIDEventGetPhase ; stub 0x278267458 -> 0x1848ae6d8
+0x27822D7EC (+0x627EC)  and      w8, w0, w20          
+0x27822D7F0 (+0x627F0)  cmp      w8, #0x1             
+0x27822D7F4 (+0x627F4)  cset     w20, eq              
+0x27822D7F8 (+0x627F8)  b        0x27822d800          
+0x27822D7FC (+0x627FC)  mov      w20, #0x1            
+0x27822D800 (+0x62800)  ldr      x19, [x19, #0x20]    
+0x27822D804 (+0x62804)  mov      x0, x23              
+0x27822D808 (+0x62808)  bl 0x278267778 ; resolved 0x180094004
+0x27822D80C (+0x6280C)  tbnz     w19, #0x6, 0x27822d81c 
+0x27822D810 (+0x62810)  ldp      x0, x1, [sp]         
+0x27822D814 (+0x62814)  bl 0x2781d4e5c
+0x27822D818 (+0x62818)  b        0x27822d6b8          
+
+=== UniversalHID :: ScrollCollection：parent raw到delta，accelerated child独立编码HIDFixed；无child时accel为零 ===
+0x27821975C (+0x4E75C)  mov      x0, x19              
+0x278219760 (+0x4E760)  mov      w1, #0x60000         
+0x278219764 (+0x4E764)  bl _IOHIDEventGetFloatValue ; stub 0x278267428 -> 0x18487a0ac
+0x278219768 (+0x4E768)  mov.16b  v8, v0               
+0x27821976C (+0x4E76C)  mov      x0, x19              
+0x278219770 (+0x4E770)  mov      w1, #0x1             
+0x278219774 (+0x4E774)  movk     w1, #0x6, lsl #16    
+0x278219778 (+0x4E778)  bl _IOHIDEventGetFloatValue ; stub 0x278267428 -> 0x18487a0ac
+0x27821977C (+0x4E77C)  mov.16b  v9, v0               
+0x278219780 (+0x4E780)  add      w1, w22, #0x1        
+0x278219784 (+0x4E784)  mov      x0, x19              
+0x278219788 (+0x4E788)  bl _IOHIDEventGetFloatValue ; stub 0x278267428 -> 0x18487a0ac
+0x27821978C (+0x4E78C)  mov      x20, sp              
+0x278219790 (+0x4E790)  mov.16b  v0, v8               
+0x278219794 (+0x4E794)  mov.16b  v1, v9               
+0x278219798 (+0x4E798)  bl _$s12UniversalHID16ScrollCollectionV5deltaAA8HIDPointVvs
+0x27821979C (+0x4E79C)  mov      x0, x19              
+0x2782197A0 (+0x4E7A0)  bl 0x2782214ac
+0x2782197A4 (+0x4E7A4)  cbz      x0, 0x2782198a0      
+0x2782197A8 (+0x4E7A8)  mov      x21, x0              
+0x2782197AC (+0x4E7AC)  mov      w1, #0x60000         
+0x2782197B0 (+0x4E7B0)  bl _IOHIDEventGetFloatValue ; stub 0x278267428 -> 0x18487a0ac
+0x2782197B4 (+0x4E7B4)  mov.16b  v9, v0               
+0x2782197B8 (+0x4E7B8)  mov      x0, x21              
+0x2782197BC (+0x4E7BC)  mov      w1, #0x1             
+0x2782197C0 (+0x4E7C0)  movk     w1, #0x6, lsl #16    
+0x2782197C4 (+0x4E7C4)  bl _IOHIDEventGetFloatValue ; stub 0x278267428 -> 0x18487a0ac
+0x2782197C8 (+0x4E7C8)  mov.16b  v8, v0               
+0x2782197CC (+0x4E7CC)  add      w1, w22, #0x1        
+0x2782197D0 (+0x4E7D0)  mov      x0, x21              
+0x2782197D4 (+0x4E7D4)  bl _IOHIDEventGetFloatValue ; stub 0x278267428 -> 0x18487a0ac
+0x2782197D8 (+0x4E7D8)  mov.16b  v0, v9               
+0x2782197DC (+0x4E7DC)  bl _$s12UniversalHID8HIDFixedV11doubleValueACSgSd_tcfC
+0x2782197E0 (+0x4E7E0)  bl _OUTLINED_FUNCTION_1
+0x2782197E4 (+0x4E7E4)  csel     w22, wzr, w0, eq     
+0x2782197E8 (+0x4E7E8)  mov      w23, #0x38           
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x2782198A0 (+0x4E8A0)  movi.2d  v0, #0000000000000000 
+0x2782198A4 (+0x4E8A4)  bl _$s12UniversalHID8HIDFixedV11doubleValueACSgSd_tcfC
+0x2782198A8 (+0x4E8A8)  bl _OUTLINED_FUNCTION_1
+0x2782198AC (+0x4E8AC)  csel     w21, wzr, w0, eq     
+0x2782198B0 (+0x4E8B0)  mov      w22, #0x38           
+0x2782198B4 (+0x4E8B4)  mov      x23, #-0x1000000000000000 
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x278219930 (+0x4E930)  mov.16b  v0, v8               
+0x278219934 (+0x4E934)  bl _$s12UniversalHID8HIDFixedV11doubleValueACSgSd_tcfC
+0x278219938 (+0x4E938)  bl _OUTLINED_FUNCTION_1
+0x27821993C (+0x4E93C)  csel     w22, wzr, w0, eq     
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x2782199C0 (+0x4E9C0)  movi.2d  v0, #0000000000000000 
+0x2782199C4 (+0x4E9C4)  bl _$s12UniversalHID8HIDFixedV11doubleValueACSgSd_tcfC
+0x2782199C8 (+0x4E9C8)  bl _OUTLINED_FUNCTION_1
+0x2782199CC (+0x4E9CC)  csel     w21, wzr, w0, eq     
+0x2782199D0 (+0x4E9D0)  mov      w22, #0x58           
+0x2782199D4 (+0x4E9D4)  mov      x23, #-0x1000000000000000 
+
+=== UniversalHID :: ScrollCollection.rawXY: round(ties away)→clamp[-128,127]→Int8；不是像素浮点值 ===
+0x278219AAC (+0x4EAAC)  frinta   d0, d0               
+0x278219AB0 (+0x4EAB0)  bl _OUTLINED_FUNCTION_25
+0x278219AB4 (+0x4EAB4)  b.gt     0x278219b48          
+0x278219AB8 (+0x4EAB8)  adrp     x8, 84               ; 0x27826d000
+0x278219ABC (+0x4EABC)  ldr      d9, [x8, #0xc0]      
+0x278219AC0 (+0x4EAC0)  fcmp     d0, d9               
+0x278219AC4 (+0x4EAC4)  b.le     0x278219b4c          
+0x278219AC8 (+0x4EAC8)  mov.16b  v8, v1               
+0x278219ACC (+0x4EACC)  mov      x8, #0x43e0000000000000 
+0x278219AD0 (+0x4EAD0)  fmov     d1, x8               
+0x278219AD4 (+0x4EAD4)  fcmp     d0, d1               
+0x278219AD8 (+0x4EAD8)  b.pl     0x278219b50          
+0x278219ADC (+0x4EADC)  fcvtzs   x8, d0               
+0x278219AE0 (+0x4EAE0)  bl _OUTLINED_FUNCTION_25
+0x278219AE4 (+0x4EAE4)  csel     x8, x8, x9, gt       
+0x278219AE8 (+0x4EAE8)  bl _OUTLINED_FUNCTION_11
+0x278219AEC (+0x4EAEC)  mov      w1, #0x10            
+0x278219AF0 (+0x4EAF0)  bl 0x2781da7c4
+0x278219AF4 (+0x4EAF4)  frinta   d0, d8               
+0x278219AF8 (+0x4EAF8)  bl _OUTLINED_FUNCTION_25
+0x278219AFC (+0x4EAFC)  b.gt     0x278219b54          
+0x278219B00 (+0x4EB00)  fcmp     d0, d9               
+0x278219B04 (+0x4EB04)  b.le     0x278219b58          
+0x278219B08 (+0x4EB08)  mov      x8, #0x43e0000000000000 
+0x278219B0C (+0x4EB0C)  fmov     d1, x8               
+0x278219B10 (+0x4EB10)  fcmp     d0, d1               
+0x278219B14 (+0x4EB14)  b.pl     0x278219b5c          
+0x278219B18 (+0x4EB18)  fcvtzs   x8, d0               
+0x278219B1C (+0x4EB1C)  bl _OUTLINED_FUNCTION_25
+0x278219B20 (+0x4EB20)  csel     x8, x8, x9, gt       
+0x278219B24 (+0x4EB24)  bl _OUTLINED_FUNCTION_11
+0x278219B28 (+0x4EB28)  mov      w1, #0x18            
+0x278219B2C (+0x4EB2C)  ldp      x29, x30, [sp, #0x10] 
+0x278219B30 (+0x4EB30)  ldp      d9, d8, [sp], #0x20  
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x27821A300 (+0x4F300)  mov      w0, #0x10            
+0x27821A304 (+0x4F304)  bl _OUTLINED_FUNCTION_19
+0x27821A308 (+0x4F308)  bl 0x2781da6e4
+0x27821A30C (+0x4F30C)  sxtb     w8, w0               
+0x27821A310 (+0x4F310)  scvtf    d8, w8               
+0x27821A314 (+0x4F314)  mov      w0, #0x18            
+0x27821A318 (+0x4F318)  bl _OUTLINED_FUNCTION_19
+0x27821A31C (+0x4F31C)  bl 0x2781da6e4
+0x27821A320 (+0x4F320)  sxtb     w8, w0               
+0x27821A324 (+0x4F324)  scvtf    d1, w8               
+0x27821A328 (+0x4F328)  movi.2d  v2, #0000000000000000 
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x27821AB30 (+0x4FB30)  mov      w9, #0x7f            
+0x27821AB34 (+0x4FB34)  cmp      x8, #0x7f            
+0x27821AB38 (+0x4FB38)  csel     x0, x8, x9, lt       
+0x27821AB3C (+0x4FB3C)  ret                           
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x27821ABDC (+0x4FBDC)  cmn      x8, #0x80            
+0x27821ABE0 (+0x4FBE0)  mov      x9, #-0x80           
+0x27821ABE4 (+0x4FBE4)  ret                           
+
+=== ScreenSharingKit :: lookUpServiceInfo(senderID==0→nil；非零必须匹配当前HID服务的serviceID) ===
+0x2673CE368 (+0x88368)  cbz      x24, 0x2673ce444     
+0x2673CE36C (+0x8836C)  stp      x23, x22, [x29, #-0x88] 
+0x2673CE370 (+0x88370)  adrp     x8, 198246           ; 0x297a34000
+0x2673CE374 (+0x88374)  ldr      x8, [x8, #0xea0]     
+0x2673CE378 (+0x88378)  ldr      x0, [x20, x8]        
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x2673CE404 (+0x88404)  adds     x22, x27, #0x1       
+0x2673CE408 (+0x88408)  b.vs     0x2673ce6bc          
+0x2673CE40C (+0x8840C)  mov      x0, x20              
+0x2673CE410 (+0x88410)  bl _objc_msgSend$serviceID
+0x2673CE414 (+0x88414)  cmp      x0, x24              
+0x2673CE418 (+0x88418)  b.eq     0x2673ce504          
+0x2673CE41C (+0x8841C)  mov      x0, x20              
+0x2673CE420 (+0x88420)  bl 0x267498ac4 ; resolved 0x180094004
+0x2673CE424 (+0x88424)  add      x27, x27, #0x1       
+0x2673CE428 (+0x88428)  cmp      x22, x26             
+0x2673CE42C (+0x8842C)  b.ne     0x2673ce3e4          
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x2673CE444 (+0x88444)  adrp     x8, 198247           ; 0x297a35000
+0x2673CE448 (+0x88448)  ldr      x8, [x8, #0x998]     
+0x2673CE44C (+0x8844C)  cmn      x8, #0x1             
+0x2673CE450 (+0x88450)  b.ne     0x2673ce878          
+0x2673CE454 (+0x88454)  adrp     x1, 198247           ; 0x297a35000
+0x2673CE458 (+0x88458)  add      x1, x1, #0x9a0       
+0x2673CE45C (+0x8845C)  mov      x0, x22              
+0x2673CE460 (+0x88460)  bl ___swift_project_value_buffer
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x2673CE4F0 (+0x884F0)  mov      x0, x20              
+0x2673CE4F4 (+0x884F4)  bl 0x267498ac4 ; resolved 0x180094004
+0x2673CE4F8 (+0x884F8)  ldr      x8, [x23, #0x8]!     
+0x2673CE4FC (+0x884FC)  mov      x0, x21              
+0x2673CE500 (+0x88500)  b        0x2673ce820          
+  ...（省略无关设置/泛型内存处理；分支目标仍保留）
+0x2673CE810 (+0x88810)  mov      x0, x21              
+0x2673CE814 (+0x88814)  bl 0x267498ac4 ; resolved 0x180094004
+0x2673CE818 (+0x88818)  ldr      x8, [x23, #0x8]!     
+0x2673CE81C (+0x8881C)  mov      x0, x28              
+0x2673CE820 (+0x88820)  mov      x1, x22              
+0x2673CE824 (+0x88824)  mov      x17, x23             
+0x2673CE828 (+0x88828)  movk     x17, #0x4f8, lsl #48 
+0x2673CE82C (+0x8882C)  blraa    x8, x17              
+0x2673CE830 (+0x88830)  stp      xzr, xzr, [x19]      
+0x2673CE834 (+0x88834)  str      xzr, [x19, #0x10]    
+
+=== ScreenContinuityUI :: 上层零senderID scroll→basicMouseServiceID回退（主agent提供且本agent复读；这里地址即image offset） ===
+0x00001F868   bl       "<anon-0000F43C>"    
+0x00001F86C   mov      x0, x19              
+0x00001F870   sub      x8, x29, #0x40       
+0x00001F874   ldur     x20, [x8, #-0x100]   
+0x00001F878   bl       0xd23a4 ; ScreenSharingKit/_$s16ScreenSharingKit12HIDDebugInfoC29receivedHIDReportForServiceIDyys6UInt64VFTj (div=0x0000 ad=1 key=IA)
+0x00001F87C   cbnz     x19, 0x1f9b0         
+0x00001F880   lsr      x8, x23, #62         
+  ...
+0x00001F9A8   bl       0xd26d4 ; ScreenSharingKit/_$s16ScreenSharingKit20HIDServicePrimitivesP22basicKeyboardServiceIDs6UInt64VvgTj (div=0x0000 ad=1 key=IA)
+0x00001F9AC   mov      x19, x0              
+0x00001F9B0   adrp     x0, 185              ; 0xd8000
+  ...
+0x000020484   bl       0xd1fa4 ; UniversalHID/_$s12UniversalHID8ReportIDV15absolutePointerACvgZ (div=0x0000 ad=1 key=IA)
+0x000020488   and      w8, w0, #0xff        
+0x00002048C   cmp      w8, w19, uxtb        
+0x000020490   b.eq     0x204b4              
+0x000020494   bl       0xd1fe4 ; UniversalHID/_$s12UniversalHID8ReportIDV7pointerACvgZ (div=0x0000 ad=1 key=IA)
+0x000020498   and      w8, w0, #0xff        
+0x00002049C   cmp      w8, w19, uxtb        
+0x0000204A0   b.eq     0x204b4              
+0x0000204A4   bl       0xd1fd4 ; UniversalHID/_$s12UniversalHID8ReportIDV6scrollACvgZ (div=0x0000 ad=1 key=IA)
+0x0000204A8   and      w8, w0, #0xff        
+0x0000204AC   cmp      w8, w19, uxtb        
+0x0000204B0   b.ne     0x204e4              
+0x0000204B4   sub      x8, x29, #0xf0       
+0x0000204B8   ldur     x0, [x8, #-0x100]    
+0x0000204BC   ldp      x21, x22, [x0, #0x18] 
+0x0000204C0   mov      x1, x21              
+0x0000204C4   bl       ___swift_project_boxed_opaque_existential_0 
+0x0000204C8   mov      x20, x0              
+0x0000204CC   mov      x0, x21              
+0x0000204D0   mov      x1, x22              
+0x0000204D4   sub      x8, x29, #0x58       
+0x0000204D8   ldur     x22, [x8, #-0x100]   
+0x0000204DC   bl       0xd26c4 ; ScreenSharingKit/_$s16ScreenSharingKit20HIDServicePrimitivesP19basicMouseServiceIDs6UInt64VvgTj (div=0x0000 ad=1 key=IA)
+0x0000204E0   b        0x1f9ac              

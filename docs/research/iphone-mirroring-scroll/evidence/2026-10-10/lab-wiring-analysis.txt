@@ -1,0 +1,24 @@
+
+===== 114658-selftest-5E139EFD =====
+模式 phasedScroll  捕获层 hid  范围 mirroringWindow  投递 hid  sender 策略 zero  吞掉原始 True  补齐 175-178 False
+记录行 5  明细 {'round_start': 1, 'captured': 1, 'emitted': 2, 'round_end': 1}
+捕获决定 {'repost': 1}
+设备映射 (注册表 ID -> 设备): {'4294970034': 'Apple Internal Keyboard / Trackpad', '4295337605': 'Magic Trackpad 2', '4294970032': 'Apple Internal Keyboard / Trackpad', '4295337742': 'Mirroring Scroll Lab Mouse', '4295359297': 'MX Master 4 - BLE - 3', '4295360120': 'NuPhy Kick75 IO Dongle', '4295360191': 'USB Receiver', '4294970021': 'Apple Internal Keyboard / Trackpad', '4295315811': 'Apple Internal Keyboard / Trackpad', '4295337609': 'Magic Trackpad 2'}
+sender 记录: {'learned_trackpad_sender': 0, 'learned_mouse_sender': 0, 'own_senders': [], 'virtual_magic_trackpad_senders': [], 'multitouch_sender': 4295315811}
+
+-- 捕获侧标定 (按 sender) --
+  sender 91: 1 个, 连续=1
+    line_y 中位 1  point_y 中位 12 (最大 12)  accel_y 中位 0  raw_y 中位 -48
+    raw 非零率 1.0  accel 非零率 0.0
+    raw/point 中位 -4.0 (同号率 0.0)  accel/point 中位 0.0 (同号率 0.0)
+    NSEvent 与 point 同号率 1.0  ns_scroll_y 中位 12
+    phase {0: 1}  momentum {0: 1}  inverted {0: 1}  横轴非零率 1.0
+
+-- 输出侧 --
+  post_phased: 2 个, 投递 {'hid': 2}, 结果 {'posted': 2}, sender {91: 2}
+    raw 补齐率 1.0  accel 补齐率 0.0  零位移帧比例 0.0
+    point_y 合计 8  raw_y 合计 -32  单帧最大 4
+    phase {0: 2}  momentum {0: 2}
+    帧龄 中位 0.0s 最大 1e-06s
+
+-- 帧节奏 --

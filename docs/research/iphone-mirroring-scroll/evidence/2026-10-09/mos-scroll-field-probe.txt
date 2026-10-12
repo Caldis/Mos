@@ -1,0 +1,28 @@
+line-original 11=2.0 12=3.0 87=0.0 88=0.0 93=2.0 94=3.0 96=20.0 97=30.0 99=0.0 123=0.0 137=0.0 173=0.0 175=0.0 176=0.0 177=0.0 178=0.0
+  NSEvent precise=false deltaX=3.0 deltaY=2.0 scrollingDeltaX=3.0 scrollingDeltaY=2.0 phase=0 momentum=0
+public-point-only 11=2.0 12=3.0 87=0.0 88=0.0 93=2.0 94=3.0 96=7.0 97=-8.0 99=0.0 123=0.0 137=0.0 173=0.0 175=0.0 176=0.0 177=0.0 178=0.0
+  NSEvent precise=false deltaX=3.0 deltaY=2.0 scrollingDeltaX=3.0 scrollingDeltaY=2.0 phase=0 momentum=0
+public-continuous 11=2.0 12=3.0 87=0.0 88=1.0 93=2.0 94=3.0 96=7.0 97=-8.0 99=0.0 123=0.0 137=0.0 173=0.0 175=0.0 176=0.0 177=0.0 178=0.0
+  NSEvent precise=true deltaX=3.0 deltaY=2.0 scrollingDeltaX=-8.0 scrollingDeltaY=7.0 phase=0 momentum=0
+public-phases 11=2.0 12=3.0 87=0.0 88=1.0 93=2.0 94=3.0 96=7.0 97=-8.0 99=2.0 123=1.0 137=0.0 173=1.0 175=0.0 176=0.0 177=0.0 178=0.0
+  NSEvent precise=true deltaX=3.0 deltaY=2.0 scrollingDeltaX=-8.0 scrollingDeltaY=7.0 phase=4 momentum=1
+public-after-copy 11=2.0 12=3.0 87=0.0 88=1.0 93=2.0 94=3.0 96=7.0 97=-8.0 99=2.0 123=1.0 137=0.0 173=1.0 175=0.0 176=0.0 177=0.0 178=0.0
+  NSEvent precise=true deltaX=3.0 deltaY=2.0 scrollingDeltaX=-8.0 scrollingDeltaY=7.0 phase=4 momentum=1
+pixel-original 11=1.0 12=1.0 87=0.0 88=1.0 93=0.1999969482421875 94=0.29998779296875 96=2.0 97=3.0 99=0.0 123=0.0 137=0.0 173=0.0 175=0.0 176=0.0 177=0.0 178=0.0
+  NSEvent precise=true deltaX=0.29998779296875 deltaY=0.1999969482421875 scrollingDeltaX=3.0 scrollingDeltaY=2.0 phase=0 momentum=0
+private-sentinels 11=1.0 12=1.0 87=91.0 88=1.0 93=0.1999969482421875 94=0.29998779296875 96=2.0 97=3.0 99=0.0 123=1.0 137=1.0 173=1.0 175=101.25 176=-102.75 177=201.5 178=-202.875
+  NSEvent precise=true deltaX=0.29998779296875 deltaY=0.1999969482421875 scrollingDeltaX=3.0 scrollingDeltaY=2.0 phase=0 momentum=1
+private-sentinels-copy 11=1.0 12=1.0 87=91.0 88=1.0 93=0.1999969482421875 94=0.29998779296875 96=2.0 97=3.0 99=0.0 123=1.0 137=1.0 173=1.0 175=101.25 176=-102.75 177=201.5 178=-202.875
+  NSEvent precise=true deltaX=0.29998779296875 deltaY=0.1999969482421875 scrollingDeltaX=3.0 scrollingDeltaY=2.0 phase=0 momentum=1
+private-plus-mos-public 11=1.0 12=1.0 87=91.0 88=1.0 93=0.1999969482421875 94=0.29998779296875 96=9.0 97=-10.0 99=4.0 123=2.0 137=1.0 173=2.0 175=101.25 176=-102.75 177=201.5 178=-202.875
+  NSEvent precise=true deltaX=0.29998779296875 deltaY=0.1999969482421875 scrollingDeltaX=-10.0 scrollingDeltaY=9.0 phase=8 momentum=4
+private-plus-mos-public-copy 11=1.0 12=1.0 87=91.0 88=1.0 93=0.1999969482421875 94=0.29998779296875 96=9.0 97=-10.0 99=4.0 123=2.0 137=1.0 173=2.0 175=101.25 176=-102.75 177=201.5 178=-202.875
+  NSEvent precise=true deltaX=0.29998779296875 deltaY=0.1999969482421875 scrollingDeltaX=-10.0 scrollingDeltaY=9.0 phase=8 momentum=4
+isolated-private-175 11=1.0 12=1.0 87=0.0 88=1.0 93=0.1999969482421875 94=0.29998779296875 96=2.0 97=3.0 99=0.0 123=0.0 137=0.0 173=0.0 175=37.25 176=0.0 177=0.0 178=0.0
+  NSEvent precise=true deltaX=0.29998779296875 deltaY=0.1999969482421875 scrollingDeltaX=3.0 scrollingDeltaY=2.0 phase=0 momentum=0
+isolated-private-176 11=1.0 12=1.0 87=0.0 88=1.0 93=0.1999969482421875 94=0.29998779296875 96=2.0 97=3.0 99=0.0 123=0.0 137=0.0 173=0.0 175=0.0 176=37.25 177=0.0 178=0.0
+  NSEvent precise=true deltaX=0.29998779296875 deltaY=0.1999969482421875 scrollingDeltaX=3.0 scrollingDeltaY=2.0 phase=0 momentum=0
+isolated-private-177 11=1.0 12=1.0 87=0.0 88=1.0 93=0.1999969482421875 94=0.29998779296875 96=2.0 97=3.0 99=0.0 123=0.0 137=0.0 173=0.0 175=0.0 176=0.0 177=37.25 178=0.0
+  NSEvent precise=true deltaX=0.29998779296875 deltaY=0.1999969482421875 scrollingDeltaX=3.0 scrollingDeltaY=2.0 phase=0 momentum=0
+isolated-private-178 11=1.0 12=1.0 87=0.0 88=1.0 93=0.1999969482421875 94=0.29998779296875 96=2.0 97=3.0 99=0.0 123=0.0 137=0.0 173=0.0 175=0.0 176=0.0 177=0.0 178=37.25
+  NSEvent precise=true deltaX=0.29998779296875 deltaY=0.1999969482421875 scrollingDeltaX=3.0 scrollingDeltaY=2.0 phase=0 momentum=0

@@ -1,0 +1,51 @@
+only173=0 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=0/0.0 173=0/0.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only173=1 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=1/1.0 137=0/0.0 173=1/1.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=1 inverted=false
+only173=2 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=2/2.0 137=0/0.0 173=2/2.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=4 inverted=false
+only173=3 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=3/3.0 137=0/0.0 173=3/3.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=8 inverted=false
+only173=4 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=4/4.0 137=0/0.0 173=4/4.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only173=8 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=8/8.0 137=0/0.0 173=8/8.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only173=16 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=0/0.0 173=16/16.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only173=32 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=0/0.0 173=32/32.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only173=64 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=0/0.0 173=64/64.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only173=128 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=0/0.0 173=128/128.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only173=255 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=15/15.0 137=0/0.0 173=255/255.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only123=0 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=0/0.0 173=0/0.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only123=1 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=1/1.0 137=0/0.0 173=1/1.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=1 inverted=false
+only123=2 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=2/2.0 137=0/0.0 173=2/2.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=4 inverted=false
+only123=3 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=3/3.0 137=0/0.0 173=3/3.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=8 inverted=false
+only123=4 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=4/4.0 137=0/0.0 173=4/4.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only123=8 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=8/8.0 137=0/0.0 173=8/8.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only137=0 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=0/0.0 173=0/0.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=false
+only137=1 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=1/1.0 173=0/0.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=true
+only137=2 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=1/1.0 173=0/0.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=true
+only137=4 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=1/1.0 173=0/0.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=true
+only137=8 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=1/1.0 173=0/0.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=true
+only137=13 87=0/0.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=0/0.0 137=1/1.0 173=0/0.0 175=0/0.0 176=0/0.0 177=0/0.0 178=0/0.0
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=true
+sender-tracking-template 87=4886718345/4886718345.0 88=1/1.0 96=2/2.0 97=3/3.0 99=0/0.0 123=4/4.0 137=1/1.0 173=4/4.0 175=0/3.25 176=0/2.75 177=0/8.5 178=0/7.625
+  NS precise=true scrollingDelta=3.0,2.0 phase=0 momentum=0 inverted=true
+sender-tracking-mos 87=4886718345/4886718345.0 88=1/1.0 96=44/44.0 97=-55/-55.0 99=0/0.0 123=4/4.0 137=1/1.0 173=4/4.0 175=0/3.25 176=0/2.75 177=0/8.5 178=0/7.625
+  NS precise=true scrollingDelta=-55.0,44.0 phase=0 momentum=0 inverted=true
+timestamp retained true old=0 copy=0

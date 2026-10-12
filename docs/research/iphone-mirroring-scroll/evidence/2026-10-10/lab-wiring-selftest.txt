@@ -1,0 +1,98 @@
+
+== 1. 字段读写与别名 ==
+  ok   point_y 读回 = 7
+  ok   point_x 读回 = -8
+  ok   fixed_y 读回 (double) = 7.5
+  ok   phase 读回 = 2
+  ok   momentum 读回 = 1
+  ok   sender 87 = 91
+  ok   accel_y 176 = -102.75
+  ok   raw_y 178 = -202.875
+  ok   accel_x 175 = 101.25
+  ok   raw_x 177 = 201.5
+  ok   inverted 137 = 1
+  ok   复制后 raw_y 178 = -202.875
+  ok   复制后 sender 87 = 91
+  ok   option 173 写入 50 = 50
+  ok   写 123 后 173 被覆盖 = 1
+  说明: 每帧先写 123 再写 173, 顺序颠倒会丢掉惯性打断位 0x10
+  ok   改 point 后 raw_y 不变 = 8.5
+  ok   改 point 后 accel_y 不变 = 3.25
+  说明: 补齐 175-178 必须显式写入, Point 96/97 不会带动它们
+
+== 2. NSEvent 侧读数 ==
+  ok   行滚动 deltaY = 2.0
+  ok   行滚动 precise = false
+  ok   连续滚动 precise = true
+  ok   连续滚动 scrollingDeltaY = 7.0
+  ok   连续滚动 scrollingDeltaX = -8.0
+  ok   CG phase 2 到 NSEvent = 4
+  ok   CG momentum 3 到 NSEvent = 8
+
+== 3. 记录器链路 ==
+  ok   JSONL 行数 (start + 输入 + 2 输出 + end) = 5
+  ok   输入记录 sender
+  ok   输入记录 is_continuous
+  ok   输入记录 line_y
+  ok   输入记录 line_x
+  ok   输入记录 fixed_y
+  ok   输入记录 fixed_x
+  ok   输入记录 point_y
+  ok   输入记录 point_x
+  ok   输入记录 phase
+  ok   输入记录 momentum
+  ok   输入记录 inverted
+  ok   输入记录 option
+  ok   输入记录 accel_y
+  ok   输入记录 accel_x
+  ok   输入记录 raw_y
+  ok   输入记录 raw_x
+  ok   输入记录 user_data
+  ok   输入记录 cg_ts
+  ok   输入记录 loc
+  ok   输入记录 ratio
+  ok   输入记录 t
+  ok   输入记录 in_seq
+  ok   输入记录 in_session
+  ok   输入记录 decision
+  ok   输入记录 scope
+  ok   输入记录 mode
+  ok   输出记录 sender
+  ok   输出记录 is_continuous
+  ok   输出记录 point_y
+  ok   输出记录 accel_y
+  ok   输出记录 raw_y
+  ok   输出记录 raw_x
+  ok   输出记录 phase
+  ok   输出记录 momentum
+  ok   输出记录 inverted
+  ok   输出记录 option
+  ok   输出记录 t
+  ok   输出记录 event
+  ok   输出记录 target
+  ok   输出记录 gesture
+  ok   输出记录 frame
+  ok   输出记录 outcome
+  ok   输出记录 mode
+  ok   无帧上下文时不写帧龄
+  ok   帧内记录的会话号 = Optional(7)
+  ok   帧内记录的帧号 = Optional(12)
+  ok   帧内记录的 in_frame = Optional(true)
+  ok   帧内记录的 tick_t
+  ok   输入记录 sender = Optional(91)
+  ok   输出记录 target = Optional("hid")
+  ok   输入记录 raw/point 比值 = Optional(-4.0)
+  ok   轮次文件 round.json
+  ok   轮次文件 config.json
+  ok   轮次文件 services.json
+  ok   轮次文件 notes.txt
+  ok   服务快照包含 188 个服务
+  ok   服务快照带 git 版本 752730c
+  保留轮次目录: /var/folders/v0/318dq8q959z29k7vx374rw400000gn/T/mirroring-lab-selftest-C4DACB98-5DDD-457E-B2E3-C995EF3B625A/2026-10-10/lab/114658-selftest-5E139EFD
+  ok   并发记录保留全部行 = 22
+  ok   同名轮次使用独立目录 = true
+  ok   后续轮次不覆盖已有记录 = Optional(13441 bytes)
+  ok   停止后不追加事件 = 4
+
+== 结果 ==
+全部通过

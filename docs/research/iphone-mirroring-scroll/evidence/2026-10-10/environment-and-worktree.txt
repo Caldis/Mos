@@ -1,0 +1,74 @@
+生成日期: 2026-10-10 Asia/Shanghai
+本轮内容: 为 MirroringScrollLab 实现 P0 字段记录与服务映射, 并做离线字段核对。
+本轮没有创建 event tap, 没有投递输入事件, 没有真实设备实验, 没有 commit 与 push。
+
+运行系统: macOS 26.7.1, Build 25G241, arm64e
+当前 SDK (app 的 DTSDKName): macosx27.0, DTSDKBuild 26A425, Xcode 2700 (27A266a)
+正式 Mos: /Applications/Mos.app 4.3.0
+iPhone Mirroring: 1.6 (98.5), com.apple.ScreenContinuity
+显示自然滚动: com.apple.swipescrolldirection = 1
+
+目录: /Users/caldis/Desktop/Code/Mos
+branch: master
+HEAD: 8a2fd112e2af444c37ca5f65f42e9bd19c08a5c2
+本轮 git status --short 为空
+
+目录: /Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring
+branch: research/iphone-mirroring-scroll
+HEAD: 752730c2a156fbff45c8745eb4fadf188d8b9fd6
+
+未提交改动归属 (本轮提交前状态):
+研究报告, 由 2026-10-09 的报告整理工作写入, 本次未改
+ M docs/research/iphone-mirroring-scroll/00-README.md
+ M docs/research/iphone-mirroring-scroll/03-experiment-log.md
+ M docs/research/iphone-mirroring-scroll/04-entitlement-application.md
+?? docs/research/iphone-mirroring-scroll/06-2026-10-09-core-mechanism-and-experiment-handoff.md
+?? docs/research/iphone-mirroring-scroll/06-scroll-pipeline.pseudo.swift
+
+探针与 Lab, 由 2026-07-11 至 2026-10-09 的历次实验写入, 本次只改 Lab 源码
+ M experiments/MirroringHIDProbe/Sources/MirroringHIDProbe/MirroringHIDProbe.swift
+?? experiments/MirroringHIDProbe/Sources/MirroringHIDProbe/MagicTrackpadProbe.swift
+?? experiments/MirroringHIDProbe/Sources/MirroringHIDProbe/TouchpadProbe.swift
+?? experiments/MirroringHIDProbe/project.yml
+?? experiments/MirroringHIDProbe/tools/
+?? experiments/MirroringScrollLab/ (整目录未跟踪)
+
+本轮在 MirroringScrollLab 内新增:
+ Sources/Recorder.swift, Sources/ServiceMap.swift, Sources/SelfTest.swift, tools/analyze-round.py
+本轮修改:
+ Sources/Config.swift (轮次标签, 证据目录, NSEvent 记录开关)
+ Sources/TapController.swift (捕获事件的记录点与决定标记)
+ Sources/Trace.swift (暴露当前会话编号)
+ Sources/ScrollEngine.swift (帧上下文, 输出事件记录, post 增加 kind 与 cfg)
+ Sources/App.swift (--selftest / --services 入口, 配置变更与退出时的记录收尾)
+ Sources/ContentView.swift (字段记录区)
+
+本轮证据:
+ field-selftest.txt: 离线自检输出 (字段读写与别名, NSEvent 侧读数, 记录链路与文件结构)
+ hid-services.json: 本机 HID 服务与属性快照, 由 --services 打印, 内容与每轮 services.json 相同
+ manifest.json: 本目录文件的 sha256
+
+本机输入设备 (来自 hid-services.json, registry_id 为 87 号字段可命中的值):
+ 4294970034 Apple Internal Keyboard / Trackpad (SPI, usage 1/2)
+ 4294970032 Apple Internal Keyboard / Trackpad (SPI, usage 1/6)
+ 4294970021 Apple Internal Keyboard / Trackpad (SPI, usage 65280/11)
+ 4295315811 Apple Internal Keyboard / Trackpad (AppleMultitouchDevice)
+ 4295359297 MX Master 4 - BLE - 3 (Bluetooth Low Energy, usage 1/2)
+ 4295360120 NuPhy Kick75 IO Dongle (USB, usage 1/2)
+ 4295360191 USB Receiver (USB, usage 1/2)
+ 4295337605 Magic Trackpad 2 (Virtual, usage 1/2) 与 4295337609 (AppleMultitouchDevice)
+ 4295337742 Mirroring Scroll Lab Mouse (Virtual, usage 1/2)
+
+值得记录的一点: 虚拟妙控板暴露的滚动属性与内置触控板一致 (HIDScrollResolution 26214400,
+HIDScrollAccelerationType HIDTrackpadScrollAcceleration, SupportsGestureScrolling, TrackpadMomentumScroll),
+而鼠标类设备是 HIDScrollResolution 589824 与 HIDMouseScrollAcceleration。这是设备属性的快照,
+不能据此推断裂钉因果关系; 但它给出了 P1 中 M1 与 V 两组之间可直接对照的差异项。
+
+Mos 磁盘偏好快照 (只读 plist, 未验证运行进程内存):
+ com.caldis.Mos: smooth=1, smoothVertical=1, smoothHorizontal=1, smoothSimTrackpad=0, applications 例外表存在 (903 字节)
+ com.caldis.Mos.debug: smooth=1, smoothVertical=1, smoothHorizontal=1, smoothSimTrackpad=0
+
+局限:
+ 离线自检只验证构造事件的字段行为, 真实设备事件值仍未知。
+ NSEvent 侧读数在 tap 回调内构造 NSEvent, 开销未测量; 若记录期间 Tap 被禁用计数上升, 应先关闭该项。
+ Point / Raw / Accelerated 的单位与倍率仍未标定, 需要真实鼠标与触控板样本。
