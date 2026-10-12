@@ -48,7 +48,7 @@ protocol ScrollAdapter: AnyObject {
     func activate(_ application: NSRunningApplication)
     /// 目标应用退出, 或 Mos 停用滚动
     func deactivate()
-    /// 激活期间的低频刷新 (见 ScrollAdapterCenter.refreshInterval), 用于更新窗口矩形等缓存
+    /// 激活期间的低频刷新 (目标应用在前台时每 0.25 秒, 否则每 1 秒), 用于更新窗口矩形等缓存
     func refresh()
     /// 位于捕获热路径: 只读缓存或做有缓存的廉价查询, 返回 nil 表示放行该位置的事件
     func route(at location: CGPoint) -> ScrollAdapterRoute?

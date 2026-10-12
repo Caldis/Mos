@@ -41,7 +41,7 @@ Mos/ScrollCore/Adapters/
 | 成员 | 调用线程 | 约束 |
 |---|---|---|
 | activate / deactivate | 主线程 | 目标应用启动或退出时调用; 共享资源 (如 VirtualTrackpadIdentity) 在此 retain / release |
-| refresh | 主线程 | 激活期间每 0.25 秒调用; 只做廉价查询, 结果写入缓存。目标应用不在前台或查不到目标时自行降频 |
+| refresh | 主线程 | 激活期间由 ScrollAdapterCenter 定时调用: 目标应用在前台时每 0.25 秒, 否则每 1 秒; 显示器参数变化时适配器可自行补一次。只做廉价查询, 查不到目标时自行降低全量扫描频率 |
 | route(at:) | 主线程, 滚动热路径 | 先用缓存粗筛; 必须的跨进程查询只在粗筛命中后执行且结果有缓存; 不分配对象, 不写日志; 返回 nil 表示放行 |
 | ScrollOutputSink.frame / end | 投递队列 | 串行调用; end 在没有进行中手势时为空操作 |
 | ScrollOutputSink.preparePassthrough | tap 回调线程 | 同步目标应用额外读取的字段, 默认空实现 |
@@ -57,6 +57,7 @@ Mos/ScrollCore/Adapters/
 - 目标应用未运行: 标准路径每个滚动事件只多读一个布尔值 (ScrollAdapterCenter.isArmed)
 - 目标应用运行: 共享 session 层 tap 已创建但处于禁用状态; 只有光标进入目标窗口且该位置最上层窗口属于目标应用, 或目标应用切到前台时才启用。光标离开后, 下一次刷新或窗口外的第一个滚动事件禁用 tap; 系统禁用 tap 时同步关闭闸门, 由标准路径接手
 - 全部适配器共用一个 session 层 tap, 新增适配器不新增 tap
+- Debug 构建以环境变量 MOS_DISABLE_SCROLL_ADAPTERS=1 启动时不启用任何适配器, 用于同一二进制的开销对照 (open --env MOS_DISABLE_SCROLL_ADAPTERS=1 <app>)
 - 不在 route(at:) 与 sink 中调用 CGWindowList, AX, IOKit; 窗口列表类查询放在 refresh 中。NSWindow.windowNumber(at:) 只能在主线程调用, 只在粗筛命中后执行并缓存结果
 
 ## 已知陷阱

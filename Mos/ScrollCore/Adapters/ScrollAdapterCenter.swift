@@ -21,8 +21,9 @@ final class ScrollAdapterCenter {
 
     static let shared = ScrollAdapterCenter()
 
-    /// 激活期间刷新窗口缓存与检测光标位置的间隔
-    let refreshInterval: TimeInterval = 0.25
+    /// 激活期间刷新窗口缓存与检测光标位置的间隔: 目标应用在前台时用较短间隔, 否则用较长间隔
+    let foregroundRefreshInterval: TimeInterval = 0.25
+    let backgroundRefreshInterval: TimeInterval = 1.0
 
     private var registrations: [ScrollAdapterRegistration] = []
     /// 已创建的适配器, 以 descriptor.identifier 为键, 目标应用退出后保留实例以便复用
@@ -52,6 +53,10 @@ final class ScrollAdapterCenter {
 
     func start(registrations all: [ScrollAdapterRegistration] = ScrollAdapterCatalog.registrations) {
         guard !isStarted else { return }
+        #if DEBUG
+        // 用于同一二进制的开销对照
+        if ProcessInfo.processInfo.environment["MOS_DISABLE_SCROLL_ADAPTERS"] != nil { return }
+        #endif
         let version = ProcessInfo.processInfo.operatingSystemVersion
         registrations = all.filter { $0.isSupported(on: version) }
         guard !registrations.isEmpty else { return }
@@ -116,8 +121,24 @@ final class ScrollAdapterCenter {
     }
 
     private func applicationActivated(_ app: NSRunningApplication) {
-        guard isArmed, registration(for: app) != nil else { return }
-        refreshAndProbeCursor()
+        guard isArmed else { return }
+        scheduleRefreshTimer()
+        if registration(for: app) != nil {
+            refreshAndProbeCursor()
+        }
+    }
+
+    /// 按前台应用选择刷新间隔; 间隔不变时保留现有定时器
+    private func scheduleRefreshTimer() {
+        let frontmostIsTarget = NSWorkspace.shared.frontmostApplication.map { registration(for: $0) != nil } ?? false
+        let interval = frontmostIsTarget ? foregroundRefreshInterval : backgroundRefreshInterval
+        if let timer = refreshTimer, timer.isValid, timer.timeInterval == interval { return }
+        refreshTimer?.invalidate()
+        let timer = Timer(timeInterval: interval, repeats: true) { [weak self] _ in self?.refreshAndProbeCursor() }
+        // 允许系统合并唤醒
+        timer.tolerance = interval * 0.2
+        RunLoop.main.add(timer, forMode: .common)
+        refreshTimer = timer
     }
 
     /// 根据激活的适配器创建或释放共享 tap 与刷新定时器
@@ -126,9 +147,7 @@ final class ScrollAdapterCenter {
         guard armed != isArmed else { return }
         isArmed = armed
         if armed {
-            let timer = Timer(timeInterval: refreshInterval, repeats: true) { [weak self] _ in self?.refreshAndProbeCursor() }
-            RunLoop.main.add(timer, forMode: .common)
-            refreshTimer = timer
+            scheduleRefreshTimer()
             createInterceptor()
             refreshAndProbeCursor()
         } else {

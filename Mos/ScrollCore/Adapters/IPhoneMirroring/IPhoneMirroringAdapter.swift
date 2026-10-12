@@ -49,15 +49,22 @@ final class IPhoneMirroringAdapter: ScrollAdapter {
     /// 最近一次最上层窗口判断; 同一位置在有效期内复用, 连续滚动时只有第一个事件需要查询
     private var hitCache: (location: CGPoint, time: CFTimeInterval, isTopmost: Bool)?
     private let hitCacheLifetime: CFTimeInterval = 0.05
-    private var refreshCount = 0
-    /// 镜像不在前台时每隔若干次刷新才查询一次窗口; 找不到窗口时同样降频全量扫描
-    private let backgroundStride = 4
-    private let fullScanStride = 8
+    private var screenObserver: NSObjectProtocol?
+    /// 找不到镜像窗口 (未打开或已关闭) 时, 每隔若干次刷新才做一次全量窗口扫描
+    private var missedScans = 0
+    private let fullScanStride = 4
 
     func activate(_ application: NSRunningApplication) {
         self.application = application
-        refreshCount = 0
+        missedScans = 0
         identity.retain()
+        updatePrimaryScreenHeight()
+        screenObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            self?.updatePrimaryScreenHeight()
+            self?.refresh()
+        }
         refresh()
     }
 
@@ -65,23 +72,36 @@ final class IPhoneMirroringAdapter: ScrollAdapter {
         application = nil
         windowID = nil
         windowFrame = nil
+        if let observer = screenObserver {
+            NotificationCenter.default.removeObserver(observer)
+            screenObserver = nil
+        }
         identity.release()
+    }
+
+    private func updatePrimaryScreenHeight() {
+        primaryScreenHeight = NSScreen.screens.first?.frame.height ?? 0
     }
 
     func refresh() {
         guard let application = application else { return }
-        defer { refreshCount += 1 }
-        primaryScreenHeight = NSScreen.screens.first?.frame.height ?? 0
         if let id = windowID {
-            guard application.isActive || refreshCount % backgroundStride == 0 else { return }
-            if let frame = Self.frame(of: id) {
+            switch Self.state(of: id) {
+            case .onscreen(let frame):
                 windowFrame = frame
                 return
+            case .offscreen:
+                // 最小化, 收进台前调度或位于其他桌面: 保留窗口编号, 继续只查询该窗口
+                windowFrame = nil
+                return
+            case .gone:
+                windowID = nil
+                windowFrame = nil
+                missedScans = 0
             }
-            windowID = nil
-            windowFrame = nil
         }
-        guard refreshCount % fullScanStride == 0,
+        defer { missedScans += 1 }
+        guard missedScans % fullScanStride == 0,
               let found = Self.mainWindow(pid: application.processIdentifier) else { return }
         windowID = found.id
         windowFrame = found.frame
@@ -115,32 +135,44 @@ final class IPhoneMirroringAdapter: ScrollAdapter {
 
     // MARK: - 窗口查询
 
-    /// 只查询已知窗口 (约 0.2 ms), 窗口关闭或离屏时返回 nil
-    private static func frame(of windowID: CGWindowID) -> CGRect? {
-        guard let info = (CGWindowListCopyWindowInfo(.optionIncludingWindow, windowID) as? [[String: Any]])?.first,
-              (info[kCGWindowIsOnscreen as String] as? Bool) == true,
-              let bounds = info[kCGWindowBounds as String] as? NSDictionary else {
-            return nil
-        }
-        return CGRect(dictionaryRepresentation: bounds)
+    enum WindowState: Equatable {
+        case onscreen(CGRect)
+        case offscreen
+        case gone
     }
 
-    /// 镜像进程在普通窗口层的第一个可见窗口
+    /// 只查询已知窗口 (约 0.2 ms)
+    private static func state(of windowID: CGWindowID) -> WindowState {
+        guard let info = (CGWindowListCopyWindowInfo(.optionIncludingWindow, windowID) as? [[String: Any]])?.first else {
+            return .gone
+        }
+        guard (info[kCGWindowIsOnscreen as String] as? Bool) == true,
+              let bounds = info[kCGWindowBounds as String] as? NSDictionary,
+              let frame = CGRect(dictionaryRepresentation: bounds) else {
+            return .offscreen
+        }
+        return .onscreen(frame)
+    }
+
+    /// 镜像进程在普通窗口层面积最大的屏上窗口。不按尺寸过滤: 收进台前调度时主窗口缩成约 25 x 82 的缩略图,
+    /// 仍需识别出它的窗口编号, 之后只按编号查询; 缩略图位置的最上层窗口属于 WindowManager, route 会放行
     private static func mainWindow(pid: pid_t) -> (id: CGWindowID, frame: CGRect)? {
         guard let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] else {
             return nil
         }
+        var best: (id: CGWindowID, frame: CGRect)?
         for window in windows {
             guard (window[kCGWindowOwnerPID as String] as? pid_t) == pid,
                   (window[kCGWindowLayer as String] as? Int) == 0,
                   let id = window[kCGWindowNumber as String] as? CGWindowID,
                   let bounds = window[kCGWindowBounds as String] as? NSDictionary,
-                  let rect = CGRect(dictionaryRepresentation: bounds),
-                  rect.width > 100 else {
+                  let rect = CGRect(dictionaryRepresentation: bounds) else {
                 continue
             }
-            return (id, rect)
+            if best.map({ rect.width * rect.height > $0.frame.width * $0.frame.height }) ?? true {
+                best = (id, rect)
+            }
         }
-        return nil
+        return best
     }
 }

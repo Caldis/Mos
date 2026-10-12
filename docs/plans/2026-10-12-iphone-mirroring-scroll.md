@@ -94,6 +94,19 @@ flowchart LR
 | Debug (默认) | Mos/MosDebug.entitlements, 为空 | 由 Config/MosDebug.xcconfig 指定, 任何开发者账号都能完成签名 |
 | Debug (维护者) | Mos/MosDebugVirtualHID.entitlements, bundle id 改为 com.caldis.Mos.dev | 复制 Config/MosDebug.local.xcconfig.example 为 Config/MosDebug.local.xcconfig (已加入 .gitignore)。com.caldis.Mos.debug 无法注册到团队 N7Z52F27XK (2026-10-12 自动签名报 not available), 因此改用独立 bundle id; 该 App ID 需要在开发者后台启用 HID Virtual Device |
 
+### 生命周期与边界情况
+
+| 情况 | 行为 |
+|---|---|
+| 系统休眠与唤醒, 合盖 | AppDelegate 在休眠时调用 ScrollCore.disable, ScrollAdapterCenter 随之停止: 禁用并释放 tap, 停止定时器, 销毁虚拟设备。唤醒后重新扫描运行中的应用; 虚拟设备握手约 1 秒, 期间窗口内的滚动走标准路径 |
+| 快速切换用户 | 会话失去活跃时同样调用 ScrollCore.disable, 后台会话不保留 tap, 定时器与虚拟设备; 回到前台后重新扫描 |
+| 注销, 重启, Mos 退出 | 进程结束时 CoreHID 虚拟设备随之移除; 下次启动时若镜像已运行则立即激活 |
+| 外接屏插拔, 分辨率或排列变化 | 适配器在显示器参数变化时刷新主屏高度与窗口矩形; 最上层窗口判断以 WindowServer 为准, 矩形短暂过期只会导致放行 |
+| 镜像窗口最小化, 收进台前调度或位于其他桌面 | 保留窗口编号, 每次刷新只查询该窗口; 窗口回到屏幕后恢复 |
+| 镜像窗口关闭但进程仍在 | 每 4 次刷新做一次全量窗口扫描, 找到新窗口后恢复 |
+| 镜像退出或重启 | 退出时停用适配器并释放虚拟设备; 重启后按启动通知重新激活 |
+| 系统禁用 tap 或辅助功能权限被撤销 | 闸门关闭, 窗口内的滚动走标准路径; 权限恢复后下一次进入窗口时重新启用 |
+
 ## 设计决策
 
 | 决策 | 理由 | 放弃的方案 |
