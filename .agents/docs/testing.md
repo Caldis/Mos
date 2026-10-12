@@ -45,3 +45,7 @@ bugfix 优先补回归测试。合适的测试应验证用户可见行为或稳�
 - 为什么不能自动化。
 - 做过哪些手动或静态验证。
 - 哪些风险仍需要用户确认。
+
+## 已知陷阱
+
+- 仓库位于 ~/Desktop 等受保护目录, 且以 CODE_SIGNING_ALLOWED=NO 运行测试时, 测试宿主是 adhoc 签名的 Mos Debug, 没有该目录的访问授权。LogiBoundaryEnforcementTests 启动的 bash 在 getcwd 时会等待 "访问桌面文件夹" 授权弹窗, 测试表现为无限挂起, 同时在用户桌面弹出授权窗口 (2026-10-12)。需要跑完整测试时先与用户确认; 否则用 -skip-testing:MosTests/LogiBoundaryEnforcementTests 并单独执行 scripts/qa/lint-logi-boundary.sh
