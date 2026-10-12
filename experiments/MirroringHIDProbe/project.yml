@@ -1,0 +1,24 @@
+# XcodeGen spec: wraps the probe in a minimal .app so it can embed the provisioning
+# profile that backs com.apple.developer.hid.virtual.device.
+# Generate + build: xcodegen generate && xcodebuild -scheme MirroringHIDProbe -allowProvisioningUpdates build
+name: MirroringHIDProbe
+options:
+  deploymentTarget:
+    macOS: "15.0"
+targets:
+  MirroringHIDProbe:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/MirroringHIDProbe
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mos.vhidprobe
+        DEVELOPMENT_TEAM: N7Z52F27XK
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: Apple Development
+        CODE_SIGN_ENTITLEMENTS: MirroringHIDProbe.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_LSUIElement: YES
+        SWIFT_VERSION: "5.0"

@@ -1,0 +1,25 @@
+# XcodeGen spec. Reuses the App ID com.mos.vhidprobe, which already carries the HID Virtual Device capability.
+# Build: ./build.sh  (or: xcodegen generate && open MirroringScrollLab.xcodeproj)
+name: MirroringScrollLab
+options:
+  deploymentTarget:
+    macOS: "15.0"
+targets:
+  MirroringScrollLab:
+    type: application
+    platform: macOS
+    sources:
+      - Sources
+    settings:
+      base:
+        PRODUCT_NAME: MirroringScrollLab
+        PRODUCT_BUNDLE_IDENTIFIER: com.mos.vhidprobe
+        DEVELOPMENT_TEAM: N7Z52F27XK
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: Apple Development
+        CODE_SIGN_ENTITLEMENTS: MirroringScrollLab.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Mirroring Scroll Lab
+        INFOPLIST_KEY_NSPrincipalClass: NSApplication
+        SWIFT_VERSION: "5.0"
