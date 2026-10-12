@@ -9,6 +9,7 @@
 | 任意代码改动 | `.agents/docs/code-map.md`, `.agents/docs/testing.md`, `.agents/docs/quality-gates.md` | 相关源码、相关 `MosTests/*` |
 | bugfix | `.agents/docs/testing.md`, `.agents/docs/quality-gates.md` | 历史 issue/plan、相关回归测试 |
 | UI / 文案 / 本地化 | `LOCALIZATION.md`, `.agents/docs/quality-gates.md` | `Mos/mul.lproj/Main.xcstrings`, `Mos/Localizable.xcstrings` |
+| 应用滚动适配器 (个别应用的替代滚动输出) | `.agents/docs/scroll-adapters.md`, `.agents/docs/quality-gates.md` | `Mos/ScrollCore/Adapters/*`, `docs/plans/2026-10-12-iphone-mirroring-scroll.md` |
 | Logi / HID / 真实设备 | `.agents/docs/code-map.md`, `.agents/docs/testing.md`, `.agents/docs/quality-gates.md` | `Mos/Logi/*`, `Mos/Integration/*`, `scripts/qa/lint-logi-boundary.sh` |
 | 准备发布 / 更新 appcast / notarization | `.agents/skills/release-preparation/SKILL.md` | `release/appcast.xml`, `CHANGELOG.md`, `Mos.xcodeproj/project.pbxproj` |
 | 处理社区 PR / 发版后回访 issue | `.agents/skills/community-pr-loop/SKILL.md` | 相关 PR diff、`docs/plans/2026-05-03-logi-ble-hidpp-divert-postmortem.md` |

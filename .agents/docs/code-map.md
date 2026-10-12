@@ -5,6 +5,7 @@
 ## 主要模块
 
 - `Mos/ScrollCore/`：滚动事件捕获、过滤、插值和平滑派发。属于热路径，改动时关注分配、日志、通知和线程语义。
+- `Mos/ScrollCore/Adapters/`：个别应用的替代滚动输出（应用滚动适配器），共用一个按需启用的 HID tap。接入规范见 `.agents/docs/scroll-adapters.md`。
 - `Mos/ButtonCore/`：鼠标按键事件处理、动作映射和输入处理。
 - `Mos/InputEvent/`：统一输入事件模型，是 ButtonCore、Shortcut、KeyRecorder 等模块之间的边界类型。
 - `Mos/Shortcut/`：系统快捷键定义和动作执行。
