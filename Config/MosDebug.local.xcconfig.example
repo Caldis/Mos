@@ -1,0 +1,6 @@
+// 复制为 MosDebug.local.xcconfig 后生效 (该文件不进入 git)
+// com.caldis.Mos.debug 无法注册到当前开发团队, 带 HID Virtual Device 的本地构建改用独立的 bundle id;
+// 该 bundle id 的辅助功能授权与偏好设置与默认 Debug 构建互相独立
+
+PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos.dev
+CODE_SIGN_ENTITLEMENTS = Mos/MosDebugVirtualHID.entitlements
