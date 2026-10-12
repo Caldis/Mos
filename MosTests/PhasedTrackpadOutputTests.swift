@@ -60,16 +60,12 @@ final class PhasedTrackpadOutputTests: XCTestCase {
         XCTAssertEqual(gesture.advance(y: 1, x: 0), [.interrupt, .mayBegin, .began(y: 1, x: 0)])
     }
 
-    // MARK: - 可见区域
+    // MARK: - 坐标换算
 
-    func testVisibilityExcludesOccludedArea() {
-        let visibility = WindowVisibility(frame: CGRect(x: 0, y: 0, width: 300, height: 600),
-                                          occluders: [CGRect(x: 200, y: 0, width: 400, height: 300)])
-        XCTAssertTrue(visibility.contains(CGPoint(x: 100, y: 100)))
-        XCTAssertFalse(visibility.contains(CGPoint(x: 250, y: 100)))
-        XCTAssertTrue(visibility.contains(CGPoint(x: 250, y: 400)))
-        XCTAssertFalse(visibility.contains(CGPoint(x: 400, y: 400)))
-        XCTAssertFalse(WindowVisibility().contains(.zero))
+    func testGlobalPointConvertsToAppKitScreenPoint() {
+        // 主屏高 1117: 全局坐标 (左上原点) y=100 对应 AppKit 屏幕坐标 (左下原点) y=1017; 主屏上方的外接屏 y 为负
+        XCTAssertEqual(IPhoneMirroringAdapter.screenPoint(fromGlobal: CGPoint(x: 50, y: 100), primaryScreenHeight: 1117), NSPoint(x: 50, y: 1017))
+        XCTAssertEqual(IPhoneMirroringAdapter.screenPoint(fromGlobal: CGPoint(x: 2700, y: -233), primaryScreenHeight: 1117), NSPoint(x: 2700, y: 1350))
     }
 
     // MARK: - 标准路径跳过

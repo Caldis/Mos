@@ -1,12 +1,14 @@
 //
 //  ScrollAdapterCenter.swift
 //  Mos
-//  应用滚动适配器的注册、生命周期与 HID 层捕获闸门
+//  应用滚动适配器的注册、生命周期与 session 层捕获闸门
 //
 
 import Cocoa
 
-/// 管理全部滚动适配器, 并持有它们共用的一个 HID 层 tap。
+/// 管理全部滚动适配器, 并持有它们共用的一个 session 层 tap。
+/// session 层位于 HID 层改键工具之后、Annotated Session 层之前; 镜像在 Annotated Session 层之前接收滚动,
+/// 该层的事件尚未标注目标 pid (目标 pid 字段为前台应用), 目标窗口由适配器自行判断。
 ///
 /// 开销控制:
 /// - 没有适配器满足系统版本时不注册任何监听
@@ -30,9 +32,9 @@ final class ScrollAdapterCenter {
     private var observers: [NSObjectProtocol] = []
     private var interceptor: Interceptor?
     private var refreshTimer: Timer?
-    /// HID tap 已启用且未被系统禁用
+    /// 适配器 tap 已启用且未被系统禁用
     private(set) var isGateOpen = false
-    /// HID tap 最近一次处理并放行的事件时间戳; 标准路径据此跳过同一事件, 避免翻转执行两次
+    /// 适配器 tap 最近一次处理并放行的事件时间戳; 标准路径据此跳过同一事件, 避免翻转执行两次
     private var lastPassthroughTimestamp: CGEventTimestamp = 0
     private(set) var isStarted = false
 
@@ -145,7 +147,7 @@ final class ScrollAdapterCenter {
             let tap = try Interceptor(
                 event: ScrollCore.shared.scrollEventMask,
                 handleBy: ScrollAdapterCenter.callback,
-                listenOn: .cghidEventTap,
+                listenOn: .cgSessionEventTap,
                 placeAt: .headInsertEventTap,
                 for: .defaultTap
             )
@@ -157,7 +159,7 @@ final class ScrollAdapterCenter {
             tap.pause()
             interceptor = tap
         } catch {
-            NSLog("ScrollAdapterCenter: create HID interceptor failure: \(error)")
+            NSLog("ScrollAdapterCenter: create adapter interceptor failure: \(error)")
         }
     }
 
@@ -167,7 +169,7 @@ final class ScrollAdapterCenter {
             try interceptor.start()
             isGateOpen = true
         } catch {
-            NSLog("ScrollAdapterCenter: enable HID interceptor failure: \(error)")
+            NSLog("ScrollAdapterCenter: enable adapter interceptor failure: \(error)")
         }
     }
 
@@ -200,8 +202,8 @@ final class ScrollAdapterCenter {
     // MARK: - 热路径
 
     /// 标准路径 (Annotated Session tap) 的钩子, 返回 true 表示跳过该事件。
-    /// - 该事件已由 HID tap 处理并放行 (按事件时间戳识别): 跳过, 避免翻转执行两次
-    /// - 闸门关闭且滚动落在目标窗口内: 打开闸门, 本事件仍走标准路径, 后续事件改由 HID 层接管
+    /// - 该事件已由适配器 tap 处理并放行 (按事件时间戳识别): 跳过, 避免翻转执行两次
+    /// - 闸门关闭且滚动落在目标窗口内: 打开闸门, 本事件仍走标准路径, 后续事件改由适配器 tap 接管
     /// 用时间戳而非事件标记: eventSourceUserData 一经写入非零值便无法覆盖, 来源进程写过的事件无法再标记
     /// 未激活任何适配器时只读取一个布尔值
     func screenStandardScroll(_ event: CGEvent) -> Bool {

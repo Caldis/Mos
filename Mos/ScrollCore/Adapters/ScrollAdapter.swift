@@ -3,7 +3,7 @@
 //  Mos
 //  应用滚动适配器的接入协议
 //
-//  适配器为个别应用提供替代的滚动输出: 光标位于目标窗口内时, 原始滚轮事件在 HID 层被接管,
+//  适配器为个别应用提供替代的滚动输出: 光标位于目标窗口内时, 原始滚轮事件在 session 层被接管,
 //  经 ScrollCore 的翻转与平滑决策后, 由适配器的输出端按目标应用能识别的形式投递。
 //  接入规范见 .agents/docs/scroll-adapters.md
 //
@@ -34,7 +34,7 @@ extension ScrollOutputSink {
     func preparePassthrough(_ event: CGEvent, reversedY: Bool, reversedX: Bool, clearedY: Bool, clearedX: Bool) {}
 }
 
-/// 一次 HID 层接管的路由信息
+/// 一次 session 层接管的路由信息
 struct ScrollAdapterRoute {
     /// 用于查找例外应用设置的目标应用
     let application: NSRunningApplication
@@ -50,7 +50,7 @@ protocol ScrollAdapter: AnyObject {
     func deactivate()
     /// 激活期间的低频刷新 (见 ScrollAdapterCenter.refreshInterval), 用于更新窗口矩形等缓存
     func refresh()
-    /// 位于 HID 捕获热路径: 只读缓存, 返回 nil 表示放行该位置的事件
+    /// 位于捕获热路径: 只读缓存或做有缓存的廉价查询, 返回 nil 表示放行该位置的事件
     func route(at location: CGPoint) -> ScrollAdapterRoute?
 }
 

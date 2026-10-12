@@ -78,7 +78,7 @@ final class ScrollDispatchContext {
 #endif
             return false
         }
-        // HID 层事件不带目标 pid, 适配器路由由调用方传入
+        // session 层事件的目标 pid 为前台应用, 适配器路由由调用方传入
         let pid = targetPID ?? pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
         os_unfair_lock_lock(&lock)
         state.eventTemplate = template

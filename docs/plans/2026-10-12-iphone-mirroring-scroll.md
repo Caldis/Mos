@@ -15,8 +15,8 @@ iPhone 镜像以应用滚动适配器的形式接入, 框架与接入规范见 .
 
 | 组件 | 位置 | 职责 |
 |---|---|---|
-| ScrollAdapterCenter | Mos/ScrollCore/Adapters/ScrollAdapterCenter.swift | 按系统版本注册适配器, 监听目标应用启动与退出, 持有共享 HID tap 与捕获闸门 |
-| IPhoneMirroringAdapter | Mos/ScrollCore/Adapters/IPhoneMirroring/IPhoneMirroringAdapter.swift | 声明 macOS 15 门槛, 缓存镜像窗口矩形, 给出路由 |
+| ScrollAdapterCenter | Mos/ScrollCore/Adapters/ScrollAdapterCenter.swift | 按系统版本注册适配器, 监听目标应用启动与退出, 持有共享 session 层 tap 与捕获闸门 |
+| IPhoneMirroringAdapter | Mos/ScrollCore/Adapters/IPhoneMirroring/IPhoneMirroringAdapter.swift | 声明 macOS 15 门槛, 缓存镜像窗口矩形, 判断最上层窗口后给出路由 |
 | PhasedTrackpadSink | Mos/ScrollCore/Adapters/Shared/PhasedTrackpadOutput.swift | 手势状态机与 phased 事件构造, 在投递队列上从 HID 层投递 |
 | VirtualTrackpadIdentity | Mos/ScrollCore/Adapters/Shared/VirtualTrackpadIdentity.swift | 共享的虚拟 Magic Trackpad 2, 只提供 sender 身份, 按引用计数创建与销毁 |
 
@@ -24,7 +24,7 @@ iPhone 镜像以应用滚动适配器的形式接入, 框架与接入规范见 .
 
 ```mermaid
 flowchart LR
-  W[Wheel event] --> H[HID tap gate]
+  W[Wheel event] --> H[Session tap gate]
   H --> C1[Gate closed or outside window]
   C1 --> A[Annotated session tap and existing path]
   H --> C2[Gate open and inside window]
@@ -34,11 +34,11 @@ flowchart LR
   O --> E[Phased events posted at HID tap]
 ```
 
-- 镜像未运行时不创建 HID tap; 镜像运行时 tap 默认禁用
-- 光标进入镜像窗口的可见区域 (由刷新或标准路径检测到) 或镜像切到前台时启用 tap; 刷新发现光标离开, 或 HID tap 遇到窗口外的事件时禁用。可见区域为窗口矩形减去上方其他应用的窗口; 镜像在前台时每 0.25 秒刷新, 在后台时每 1 秒刷新
-- 窗口内的鼠标滚轮事件由 HID tap 消费, 按镜像应用的例外设置决定平滑与翻转, 然后进入 ScrollPoster 的插值
+- 镜像未运行时不创建适配器 tap; 镜像运行时 tap 默认禁用。捕获位于 session 层, 投递位于 HID 层
+- 光标进入镜像窗口且该位置最上层窗口为镜像 (由刷新或标准路径检测到), 或镜像切到前台时启用 tap; 刷新发现光标离开, 或 tap 遇到不属于镜像的位置时禁用。窗口矩形在镜像前台时每 0.25 秒刷新, 后台时每 1 秒刷新; 最上层窗口用 NSWindow.windowNumber(at:belowWindowWithWindowNumber:) 判断, 只在光标位于矩形内时查询, 结果按位置缓存 50 ms
+- 窗口内的鼠标滚轮事件由 session 层 tap 消费, 按镜像应用的例外设置决定平滑与翻转, 然后进入 ScrollPoster 的插值
 - ScrollPoster 在适配器路由下把每帧位移交给 PhasedTrackpadSink, 会话结束时请求结束手势; 适配器路由不使用 ScrollPhase 的阶段与惯性
-- 触控板事件, 远程桌面平滑事件和 Mos 自身合成的事件在 HID tap 中放行
+- 触控板事件, 远程桌面平滑事件和 Mos 自身合成的事件在适配器 tap 中放行
 
 ### 手势状态机
 
@@ -66,7 +66,7 @@ flowchart LR
 
 每个 phased 事件伴随一个 type 29 手势事件, 与实验基线保持一致。
 
-事件不写入 location, 保留创建时的光标位置: HID 层投递会把光标移到事件的 location, 写入会话开始时的位置会把光标锁在原地 (2026-10-12 实机反馈)。HID 层事件投递给光标下的窗口, 因此每帧检查光标是否仍在镜像窗口的可见区域内; 离开时放弃手势并丢弃剩余插值, 不发送 Ended (它会被送往光标下的其他应用), 镜像侧由下一次手势开头的打断信号复位。
+事件不写入 location, 保留创建时的光标位置: HID 层投递会把光标移到事件的 location, 写入会话开始时的位置会把光标锁在原地 (2026-10-12 实机反馈)。HID 层事件投递给光标下的窗口, 因此每帧检查光标是否仍在镜像窗口矩形内 (投递队列上只做矩形判断); 离开时放弃手势并丢弃剩余插值, 不发送 Ended (它会被送往光标下的其他应用), 镜像侧由下一次手势开头的打断信号复位。
 
 ### 虚拟设备
 
@@ -77,7 +77,7 @@ flowchart LR
 
 ### 降级
 
-以下任一条件不满足时, HID tap 放行全部事件, 行为与改动前一致:
+以下任一条件不满足时, 适配器 tap 放行全部事件, 行为与改动前一致:
 
 - macOS 15 或更高版本
 - 签名包含 com.apple.developer.hid.virtual.device
@@ -98,12 +98,13 @@ flowchart LR
 
 | 决策 | 理由 | 放弃的方案 |
 |---|---|---|
-| 共用一个按需启用的 HID tap, 保留 Annotated Session tap | 2020 年的提交 29aaf40 把滚动 tap 移到 Annotated Session 层, 目的是读取事件的目标 pid 以支持按应用例外; HID 层事件不带目标 pid。实验中 Annotated Session 层的处理对镜像无效 | 整体迁到 HID 层: 需要另行解决目标应用识别, 影响全部应用 |
+| 共用一个按需启用的 session 层 tap, 保留 Annotated Session tap | 2020 年的提交 29aaf40 把滚动 tap 移到 Annotated Session 层, 目的是读取事件的目标 pid 以支持按应用例外。实测在 Annotated Session 层吞掉事件无法阻止镜像收到原始滚轮; session 层捕获可用, 且位于 HID 层改键工具之后 | 整体迁到 HID 层: 需要另行解决目标应用识别, 影响全部应用; 适配器在 HID 层捕获: 位于改键工具之前 |
+| 用 NSWindow.windowNumber(at:) 判断最上层窗口 | session 层的目标 pid 是前台应用, 字段 91 / 92 在滚动事件中为 0 (2026-10-12 实测, 分别覆盖无遮挡与被遮挡两种情况); 该接口在两种情况下都返回正确的窗口, 社区的 Mac Mouse Fix 采用同一做法 | 每秒查询镜像上方的窗口计算可见区域: 镜像在后台时持续产生开销; 只用窗口矩形: 被遮挡时接管上层应用的滚动 |
 | sender 固定使用虚拟 Magic Trackpad 2 | 实验 E2 中 sender 为 0 或物理鼠标均不可用, 只有触控板类设备可用; E3 盲测中虚拟设备与内置触控板没有稳定差异。固定身份省去设备检测, 避免同一会话内切换 sender (E3-Y 首轮在切换后无反应) | 优先借用内置或外接触控板: 需要设备检测与插拔处理, 没有触控板的 Mac 仍需虚拟设备 |
 | 镜像路由不发送惯性 | 实验 E1 中镜像的滑行距离与 Mac 侧惯性衰减无关, Mac 侧惯性只带来首帧和交接处的卡顿 | 沿用 Mos 模拟触控板的插值尾段 Momentum 标记 |
 | 未平滑的轴原样放行, 翻转时同步取反 175-178 | 用户关闭平滑时保持关闭; 镜像读取 175-178, 只改公开位移时翻转不生效 | 未平滑时也转换为 phased 事件: 需要额外的结束计时 |
 | 放行事件在标准路径按位置跳过 | eventSourceUserData 一经写入非零值便无法覆盖 (2026-10-12 实测), 来源进程写过的事件无法再标记 | 用 eventSourceUserData 标记放行事件 |
-| HID tap 由闸门按需启用 | 镜像运行期间, 窗口外的滚动只经过标准路径, 不增加 tap 往返 | 镜像运行期间常驻启用 |
+| 适配器 tap 由闸门按需启用 | 镜像运行期间, 窗口外的滚动只经过标准路径, 不增加 tap 往返 | 镜像运行期间常驻启用 |
 
 ## 验证
 

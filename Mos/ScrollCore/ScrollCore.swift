@@ -12,7 +12,7 @@ import Cocoa
 enum ScrollRoute {
     /// Annotated Session tap 捕获, 平滑帧 CGEventPostToPid 投递到事件目标进程
     case standard
-    /// 应用适配器在 HID 层捕获, 平滑帧交给适配器的输出端
+    /// 应用适配器在 session 层捕获, 平滑帧交给适配器的输出端
     case adapter(ScrollAdapterRoute)
 }
 
@@ -75,7 +75,7 @@ class ScrollCore: ScrollActionPort {
 #endif
             return Unmanaged.passUnretained(event)
         }
-        // 适配器已在 HID 层处理过该事件 (放行的未平滑轴); 未激活适配器时只读取一个布尔值
+        // 适配器已在 session 层处理过该事件 (放行的未平滑轴); 未激活适配器时只读取一个布尔值
         if ScrollAdapterCenter.shared.screenStandardScroll(event) {
             return Unmanaged.passUnretained(event)
         }
@@ -104,7 +104,7 @@ class ScrollCore: ScrollActionPort {
             return Unmanaged.passUnretained(event)
         }
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
-        // 获取事件目标: HID 层事件不带目标 pid, 适配器路由直接使用适配器给出的应用
+        // 获取事件目标: session 层事件的目标 pid 为前台应用, 适配器路由直接使用适配器给出的应用
         let targetRunningApplication: NSRunningApplication?
         let adapterSink: ScrollOutputSink?
         switch route {
@@ -463,7 +463,7 @@ class ScrollCore: ScrollActionPort {
             // 初始化滚动事件发送器
             ScrollPoster.shared.create()
             ScrollPoster.shared.startKeeper()
-            // 应用滚动适配器: 只在目标应用运行时创建 HID 层 tap
+            // 应用滚动适配器: 只在目标应用运行时创建 session 层 tap
             ScrollAdapterCenter.shared.start()
         } catch {
             print("[ScrollCore] Create Interceptor failure: \(error)")
