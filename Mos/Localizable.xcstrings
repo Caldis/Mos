@@ -62,6 +62,12 @@
             "value": "Launchpad"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Launchpad"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -156,6 +162,12 @@
             "value": "Auth"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مجوز"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -248,6 +260,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Authorized"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دارای مجوز"
           }
         },
         "fr": {
@@ -345,6 +363,12 @@
             "value": "Bold"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضخیم"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -435,6 +459,12 @@
           }
         },
         "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility"
+          }
+        },
+        "fa": {
           "stringUnit": {
             "state": "translated",
             "value": "Accessibility"
@@ -535,6 +565,12 @@
             "value": "Apps & Windows"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برنامه‌ها و پنجره‌ها"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -628,6 +664,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "App Switching"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جابه‌جایی برنامه‌ها"
           }
         },
         "fr": {
@@ -725,6 +767,12 @@
             "value": "Document Editing"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ویرایش سند"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -818,6 +866,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Finder Actions"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عملیات Finder"
           }
         },
         "fr": {
@@ -915,6 +969,12 @@
             "value": "Function Keys"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کلیدهای تابع"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -1008,6 +1068,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Logi Actions"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عملیات Logi"
           }
         },
         "fr": {
@@ -1105,6 +1171,12 @@
             "value": "Modifier Keys"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کلیدهای تبدیل"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -1198,6 +1270,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mouse Buttons"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دکمه‌های ماوس"
           }
         },
         "fr": {
@@ -1295,6 +1373,12 @@
             "value": "Mouse Scroll"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پیمایش ماوس"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -1388,6 +1472,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Navigation"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ناوبری"
           }
         },
         "fr": {
@@ -1485,6 +1575,12 @@
             "value": "Screenshot"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسکرین‌شات"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -1578,6 +1674,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "System"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سیستم"
           }
         },
         "fr": {
@@ -1675,6 +1777,12 @@
             "value": "System Functions"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عملکردهای سیستم"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -1770,6 +1878,12 @@
             "value": "Window Management"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مدیریت پنجره‌ها"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -1863,6 +1977,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Emoji & Symbols"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ایموجی و نمادها"
           }
         },
         "fr": {
@@ -1963,6 +2083,12 @@
             "value": "Close All Windows"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بستن همه پنجره‌ها"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -2056,6 +2182,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Close Window"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بستن پنجره"
           }
         },
         "fr": {
@@ -2159,6 +2291,12 @@
             "value": "Copy"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کپی"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -2247,6 +2385,12 @@
             "value": "Τρέχουσα Έκδοση"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسخه فعلی"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -2327,6 +2471,12 @@
             "value": "Custom…"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سفارشی…"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -2367,6 +2517,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Press a key…"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "یک کلید را فشار دهید…"
           }
         },
         "fr": {
@@ -2462,6 +2618,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cut"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برش"
           }
         },
         "fr": {
@@ -2565,6 +2727,12 @@
             "value": "Dictation"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دیکته"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -2659,6 +2827,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Disabled"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "غیرفعال"
           }
         },
         "fr": {
@@ -2756,6 +2930,12 @@
             "value": "Do Not Disturb"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مزاحم نشوید"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -2851,6 +3031,12 @@
             "value": "Duplicate"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تکثیر"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -2941,6 +3127,12 @@
           }
         },
         "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escape"
+          }
+        },
+        "fa": {
           "stringUnit": {
             "state": "translated",
             "value": "Escape"
@@ -3044,6 +3236,12 @@
             "value": "Empty Trash"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خالی کردن سطل زباله"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -3145,6 +3343,12 @@
             "value": " Event Monitor"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " پایشگر رویداد"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -3224,6 +3428,12 @@
             "value": "%@ does not support %@"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ از %@ پشتیبانی نمی‌کند"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -3266,6 +3476,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Find"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "یافتن"
           }
         },
         "fr": {
@@ -3363,6 +3579,12 @@
             "value": "Force Quit"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خروج اجباری"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -3458,6 +3680,12 @@
             "value": "Get Info"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دریافت اطلاعات"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -3551,6 +3779,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Go to Folder"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رفتن به پوشه"
           }
         },
         "fr": {
@@ -3651,6 +3885,12 @@
             "value": "Hide Application"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پنهان کردن برنامه"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -3744,6 +3984,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hide Others"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پنهان کردن دیگران"
           }
         },
         "fr": {
@@ -3847,6 +4093,12 @@
             "value": "Invert Colors"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "معکوس کردن رنگ‌ها"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -3940,6 +4192,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Italic"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مورب"
           }
         },
         "fr": {
@@ -4037,6 +4295,12 @@
             "value": "Lock Screen"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قفل کردن صفحه"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -4130,6 +4394,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "DPI Cycle Down"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "چرخه کاهش DPI"
           }
         },
         "fr": {
@@ -4227,6 +4497,12 @@
             "value": "Decrease DPI sensitivity level"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کاهش سطح حساسیت DPI"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -4320,6 +4596,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "DPI Cycle Up"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "چرخه افزایش DPI"
           }
         },
         "fr": {
@@ -4417,6 +4699,12 @@
             "value": "Increase DPI sensitivity level"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "افزایش سطح حساسیت DPI"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -4510,6 +4798,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hi-Res Scroll Toggle"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغییر وضعیت پیمایش با وضوح بالا"
           }
         },
         "fr": {
@@ -4607,6 +4901,12 @@
             "value": "Toggle hi-resolution scroll mode"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغییر حالت پیمایش با وضوح بالا"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -4700,6 +5000,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Host 1"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "میزبان ۱"
           }
         },
         "fr": {
@@ -4797,6 +5103,12 @@
             "value": "Host 2"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "میزبان ۲"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -4890,6 +5202,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Host 3"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "میزبان ۳"
           }
         },
         "fr": {
@@ -4987,6 +5305,12 @@
             "value": "Switch to the specified host device"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جابه‌جایی به دستگاه میزبان مشخص‌شده"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -5080,6 +5404,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pointer Speed Cycle"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "چرخه سرعت نشانگر"
           }
         },
         "fr": {
@@ -5177,6 +5507,12 @@
             "value": "Cycle through pointer speed presets"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "چرخش بین تنظیمات پیش‌فرض سرعت نشانگر"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -5270,6 +5606,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Scroll Invert Toggle"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغییر وضعیت معکوس‌سازی پیمایش"
           }
         },
         "fr": {
@@ -5367,6 +5709,12 @@
             "value": "Toggle scroll direction inversion"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغییر وضعیت معکوس بودن جهت پیمایش"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -5460,6 +5808,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "SmartShift Toggle"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغییر وضعیت SmartShift"
           }
         },
         "fr": {
@@ -5557,6 +5911,12 @@
             "value": "Toggle between free-spin and ratchet scroll mode"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جابه‌جایی بین حالت پیمایش چرخش آزاد و پله‌ای"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -5650,6 +6010,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Thumb Wheel Toggle"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغییر وضعیت چرخ شست"
           }
         },
         "fr": {
@@ -5747,6 +6113,12 @@
             "value": "Toggle thumb wheel functionality"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغییر وضعیت عملکرد چرخ شست"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -5840,6 +6212,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Log Out"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خروج از حساب کاربری"
           }
         },
         "fr": {
@@ -5940,6 +6318,12 @@
             "value": "Minimize Window"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کوچک کردن پنجره"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -6030,6 +6414,12 @@
           }
         },
         "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mission Control"
+          }
+        },
+        "fa": {
           "stringUnit": {
             "state": "translated",
             "value": "Mission Control"
@@ -6130,6 +6520,12 @@
             "value": "Back"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عقب"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -6225,6 +6621,12 @@
             "value": "Forward"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جلو"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -6315,6 +6717,12 @@
           }
         },
         "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Command"
+          }
+        },
+        "fa": {
           "stringUnit": {
             "state": "translated",
             "value": "Command"
@@ -6415,6 +6823,12 @@
             "value": "Control"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Control"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -6505,6 +6919,12 @@
           }
         },
         "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Function"
+          }
+        },
+        "fa": {
           "stringUnit": {
             "state": "translated",
             "value": "Function"
@@ -6605,6 +7025,12 @@
             "value": "Option"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Option"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -6695,6 +7121,12 @@
           }
         },
         "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shift"
+          }
+        },
+        "fa": {
           "stringUnit": {
             "state": "translated",
             "value": "Shift"
@@ -6795,6 +7227,12 @@
             "value": "Left Button"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دکمه چپ"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -6888,6 +7326,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Middle Button"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دکمه وسط"
           }
         },
         "fr": {
@@ -6985,6 +7429,12 @@
             "value": "Right Button"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دکمه راست"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -7078,6 +7528,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Disable Key"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کلید غیرفعال‌سازی"
           }
         },
         "fr": {
@@ -7175,6 +7631,12 @@
             "value": "Acceleration Key"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کلید شتاب"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -7268,6 +7730,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Conversion Key"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کلید تبدیل"
           }
         },
         "fr": {
@@ -7365,6 +7833,12 @@
             "value": "Move Space Left"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حرکت به فضای سمت چپ"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -7458,6 +7932,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Move Space Right"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حرکت به فضای سمت راست"
           }
         },
         "fr": {
@@ -7555,6 +8035,12 @@
             "value": "Move to Trash"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انتقال به سطل زباله"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -7648,6 +8134,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Back"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بازگشت"
           }
         },
         "fr": {
@@ -7745,6 +8237,12 @@
             "value": "Forward"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "به جلو"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -7831,6 +8329,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Χρειάζεται πρόσβαση στον Έλεγχο Προσβασιμότητας"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نیاز به دسترسی به کنترل‌های Accessibility دارد"
           }
         },
         "fr": {
@@ -7928,6 +8432,12 @@
             "value": "New Finder Window"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پنجره جدید Finder"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -8021,6 +8531,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "New Folder"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پوشه جدید"
           }
         },
         "fr": {
@@ -8118,6 +8634,12 @@
             "value": "Next Tab"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برگه بعدی"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -8213,6 +8735,12 @@
             "value": "Next Window"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پنجره بعدی"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -8290,6 +8818,12 @@
             "value": "Overflow %1$d of %2$d"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سرریز %1$d از %2$d"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -8305,6 +8839,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Failed to launch \"%@\""
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راه‌اندازی \"%@\" ناموفق بود"
           }
         },
         "th": {
@@ -8390,6 +8930,12 @@
             "value": "Application \"%@\" not found — it may have been moved or deleted"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برنامه \"%@\" یافت نشد — ممکن است جابه‌جا یا حذف شده باشد"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -8471,6 +9017,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Script \"%@\" failed to start"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شروع اسکریپت \"%@\" ناموفق بود"
           }
         },
         "th": {
@@ -8556,6 +9108,12 @@
             "value": "Script \"%@\" is not executable — run chmod +x"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسکریپت \"%@\" قابل اجرا نیست — chmod +x را اجرا کنید"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -8637,6 +9195,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Script \"%@\" not found"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسکریپت \"%@\" یافت نشد"
           }
         },
         "th": {
@@ -8722,6 +9286,12 @@
             "value": "Open…"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "باز کردن…"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -8803,6 +9373,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "(unavailable)"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(در دسترس نیست)"
           }
         },
         "th": {
@@ -8888,6 +9464,12 @@
             "value": "Arguments"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آرگومان‌ها"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -8969,6 +9551,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "(optional)"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(اختیاری)"
           }
         },
         "th": {
@@ -9054,6 +9642,12 @@
             "value": "Space-separated; quote arguments containing spaces"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جداشده با فاصله؛ آرگومان‌های دارای فاصله را داخل گیومه قرار دهید"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -9135,6 +9729,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cancel"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لغو"
           }
         },
         "th": {
@@ -9220,6 +9820,12 @@
             "value": "Done"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انجام شد"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -9301,6 +9907,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choose an app or script"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "یک برنامه یا اسکریپت انتخاب کنید"
           }
         },
         "th": {
@@ -9386,6 +9998,12 @@
             "value": "or drop a file here"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "یا فایلی را اینجا رها کنید"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -9467,6 +10085,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Click to choose a file, or drag a .app/script here"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برای انتخاب فایل کلیک کنید، یا یک فایل .app/اسکریپت را اینجا بکشید"
           }
         },
         "th": {
@@ -9552,6 +10176,12 @@
             "value": "Click to choose a different one"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برای انتخاب موردی دیگر کلیک کنید"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -9633,6 +10263,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Clear"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پاک کردن"
           }
         },
         "th": {
@@ -9718,6 +10354,12 @@
             "value": "Choose an app, script, or any file to open"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "یک برنامه، اسکریپت یا هر فایلی را برای باز کردن انتخاب کنید"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -9799,6 +10441,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "File \"%@\" not found"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فایل \"%@\" یافت نشد"
           }
         },
         "th": {
@@ -9884,6 +10532,12 @@
             "value": "Failed to open \"%@\""
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "باز کردن \"%@\" ناموفق بود"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -9967,6 +10621,12 @@
             "value": "Choose"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انتخاب"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -10048,6 +10708,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "The previously chosen app can no longer be found"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برنامه‌ای که قبلاً انتخاب شده بود دیگر یافت نمی‌شود"
           }
         },
         "th": {
@@ -10151,6 +10817,12 @@
             "value": "Paste"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "چسباندن"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -10248,6 +10920,12 @@
             "value": " Preferences"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " تنظیمات"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -10341,6 +11019,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Press ESC to cancel"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برای لغو ESC را فشار دهید"
           }
         },
         "fr": {
@@ -10439,6 +11123,12 @@
             "value": "Duplicate key"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کلید تکراری"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -10532,6 +11222,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Previous Tab"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برگه قبلی"
           }
         },
         "fr": {
@@ -10628,6 +11324,12 @@
             "value": " Quit"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " خروج"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -10721,6 +11423,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quit Application"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خروج از برنامه"
           }
         },
         "fr": {
@@ -10822,6 +11530,12 @@
             "value": "Record Custom Key..."
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضبط کلید سفارشی..."
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -10915,6 +11629,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Redo"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انجام مجدد"
           }
         },
         "fr": {
@@ -11024,6 +11744,12 @@
             "value": "Screenshot"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسکرین‌شات"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -11117,6 +11843,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Screenshot and Recording Options"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "گزینه‌های اسکرین‌شات و ضبط"
           }
         },
         "fr": {
@@ -11214,6 +11946,12 @@
             "value": "Screenshot Selection"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسکرین‌شات از بخش انتخابی"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -11307,6 +12045,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Simulate Trackpad locks duration"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شبیه‌سازی ترک‌پد مدت را قفل می‌کند"
           }
         },
         "fr": {
@@ -11404,6 +12148,12 @@
             "value": "Select All"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انتخاب همه"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -11497,6 +12247,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Select an action"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "یک عملیات را انتخاب کنید"
           }
         },
         "fr": {
@@ -11603,6 +12359,12 @@
             "value": "Show Desktop"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نمایش دسکتاپ"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -11698,6 +12460,12 @@
             "value": "Shutdown Dialog"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پنجره خاموش کردن"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -11788,6 +12556,12 @@
           }
         },
         "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spotlight"
+          }
+        },
+        "fa": {
           "stringUnit": {
             "state": "translated",
             "value": "Spotlight"
@@ -11886,6 +12660,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Spotlight (System)"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spotlight (سیستم)"
           }
         },
         "fr": {
@@ -11989,6 +12769,12 @@
             "value": "Switch Application"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جابه‌جایی برنامه"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -12082,6 +12868,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Switch Application (Reverse)"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جابه‌جایی برنامه (معکوس)"
           }
         },
         "fr": {
@@ -12179,6 +12971,12 @@
             "value": "Switch Tab Left"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جابه‌جایی به برگه سمت چپ"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -12274,6 +13072,12 @@
             "value": "Switch Tab Right"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جابه‌جایی به برگه سمت راست"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -12357,6 +13161,12 @@
             "value": "Toast %1$d of %2$d"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "توست %1$d از %2$d"
+          }
+        },
         "th": {
           "stringUnit": {
             "state": "translated",
@@ -12372,6 +13182,12 @@
           "stringUnit": {
             "state": "translated",
             "value": " Toast"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " توست"
           }
         },
         "th": {
@@ -12407,6 +13223,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Unbind"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لغو انتساب"
           }
         },
         "fr": {
@@ -12504,6 +13326,12 @@
             "value": "Unbound"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بدون انتساب"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -12597,6 +13425,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Underline"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زیرخط"
           }
         },
         "fr": {
@@ -12694,6 +13528,12 @@
             "value": "Undo"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "واگرد"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -12787,6 +13627,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "View as Columns"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نمایش ستونی"
           }
         },
         "fr": {
@@ -12884,6 +13730,12 @@
             "value": "View as Gallery"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نمایش گالری"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -12979,6 +13831,12 @@
             "value": "View as Icons"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نمایش آیکونی"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -13072,6 +13930,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "View as List"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نمایش فهرستی"
           }
         },
         "fr": {
@@ -13178,6 +14042,12 @@
             "value": "Zoom In"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بزرگ‌نمایی"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -13273,6 +14143,12 @@
             "value": "Zoom Out"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کوچک‌نمایی"
+          }
+        },
         "fr": {
           "stringUnit": {
             "state": "translated",
@@ -13350,6 +14226,12 @@
             "value": "Button may be managed by another app"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ممکن است دکمه توسط برنامه دیگری مدیریت شود"
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
@@ -13401,6 +14283,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "This button appears to be managed by another app. Capturing it in multiple apps at the same time may cause abnormal behavior. Release this button in the other app, or disable that app. For more stable capture, connect the device through a Bolt/Unifying receiver when possible."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "به نظر می‌رسد این دکمه توسط برنامه دیگری مدیریت می‌شود. دریافت هم‌زمان آن در چند برنامه ممکن است باعث رفتار غیرعادی شود. این دکمه را در برنامه دیگر آزاد کنید یا آن برنامه را غیرفعال نمایید. برای دریافت پایدارتر، در صورت امکان دستگاه را از طریق گیرنده Bolt/Unifying متصل کنید."
           }
         },
         "ja": {
@@ -13456,6 +14344,12 @@
             "value": "Button ownership is contested"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مالکیت دکمه مورد مناقشه است"
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
@@ -13507,6 +14401,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Another app keeps clearing Mos's HID++ ownership. Over BLE this is commonly caused by Logi Options+, and this control has no safe standard mouse-button alternative. Quit the conflicting app, or connect through a Bolt or Unifying receiver for better stability."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برنامه دیگری مرتباً مالکیت HID++ برنامه Mos را لغو می‌کند. در اتصال BLE این مشکل معمولاً ناشی از Logi Options+ است و این کنترل هیچ جایگزین استاندارد و ایمنی برای دکمه ماوس ندارد. از برنامه ناسازگار خارج شوید، یا برای پایداری بهتر از طریق یک گیرنده Bolt یا Unifying متصل شوید."
           }
         },
         "ja": {
@@ -13562,6 +14462,12 @@
             "value": "Use system mouse button"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "استفاده از دکمه ماوس سیستم"
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
@@ -13613,6 +14519,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "System mouse button available"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دکمه ماوس سیستم در دسترس است"
           }
         },
         "ja": {
@@ -13668,6 +14580,12 @@
             "value": "This Logitech HID++ button has the same meaning as a standard macOS mouse button. Switch this binding to the system mouse-button event to avoid BLE HID++ ownership issues. For better stability, connect through a Bolt or Unifying receiver when possible."
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "این دکمه HID++ شرکت Logitech همان عملکرد دکمه ماوس استاندارد macOS را دارد. برای جلوگیری از مشکلات مالکیت BLE HID++، این پیوند را به رویداد دکمه ماوس سیستم تغییر دهید. برای پایداری بهتر، در صورت امکان از طریق یک گیرنده Bolt یا Unifying متصل شوید."
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
@@ -13719,6 +14637,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "This button may be recognized unreliably"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ممکن است شناسایی این دکمه ناپایدار باشد"
           }
         },
         "ja": {
@@ -13774,6 +14698,12 @@
             "value": "This Logi button has no standard macOS mouse-button fallback. Over a Bluetooth connection, the data stream may be taken over or interrupted by Logitech Options. For stable triggering, try connecting through a Bolt/Unifying receiver, or try disabling Logitech Options."
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "این دکمه Logi فاقد جایگزین استاندارد دکمه ماوس در macOS است. در اتصال بلوتوث، ممکن است جریان داده توسط Logitech Options تصاحب شده یا قطع شود. برای راه‌اندازی پایدار، اتصال از طریق گیرنده Bolt/Unifying را امتحان کنید یا Logitech Options را غیرفعال کنید."
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
@@ -13825,6 +14755,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ uses BLE HID++ notifications, which may be interrupted by Logi Options+. Bolt/Unifying is usually more reliable."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ از اعلان‌های BLE HID++ استفاده می‌کند که ممکن است توسط Logi Options+ مختل شوند. Bolt/Unifying معمولاً قابل‌اعتمادتر است."
           }
         },
         "ja": {
@@ -13880,6 +14816,12 @@
             "value": "%@ BLE HID++ capture is being cleared by another app. Mos can switch this binding to the system mouse button. Bolt/Unifying is usually more stable."
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دریافت BLE HID++ برای %@ توسط برنامه دیگری در حال پاک شدن است. Mos می‌تواند این پیوند را به دکمه ماوس سیستم تغییر دهد. Bolt/Unifying معمولاً پایدارتر است."
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
@@ -13931,6 +14873,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ HID++ capture is being cleared by another app. Release it there, or use Bolt/Unifying for better stability."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دریافت HID++ برای %@ توسط برنامه دیگری در حال پاک شدن است. آن را در آن برنامه آزاد کنید، یا برای پایداری بهتر از Bolt/Unifying استفاده کنید."
           }
         },
         "ja": {
@@ -13986,6 +14934,12 @@
             "value": "Initializing device"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آماده‌سازی دستگاه"
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
@@ -14039,6 +14993,12 @@
             "value": "Refreshing button state"
           }
         },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تازه‌سازی وضعیت دکمه"
+          }
+        },
         "ja": {
           "stringUnit": {
             "state": "translated",
@@ -14090,6 +15050,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Finishing up…"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "در حال اتمام…"
           }
         },
         "ja": {

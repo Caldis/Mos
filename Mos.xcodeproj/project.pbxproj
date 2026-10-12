@@ -344,6 +344,7 @@
 				fr,
 				cs,
 				th,
+				fa,
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			packageReferences = (
