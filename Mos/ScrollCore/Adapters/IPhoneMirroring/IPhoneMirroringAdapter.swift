@@ -66,8 +66,9 @@ final class IPhoneMirroringAdapter: ScrollAdapter {
         guard let application = application else { return }
         defer { refreshCount += 1 }
         if let id = windowID {
-            guard application.isActive || refreshCount % backgroundStride == 0 else { return }
-            if let found = Self.visibility(of: id, owner: application.processIdentifier) {
+            let isFrontmost = application.isActive
+            guard isFrontmost || refreshCount % backgroundStride == 0 else { return }
+            if let found = Self.visibility(of: id, owner: application.processIdentifier, frontmost: isFrontmost) {
                 visibility = found
                 return
             }
@@ -77,7 +78,7 @@ final class IPhoneMirroringAdapter: ScrollAdapter {
         guard refreshCount % fullScanStride == 0,
               let id = Self.mainWindowID(pid: application.processIdentifier) else { return }
         windowID = id
-        visibility = Self.visibility(of: id, owner: application.processIdentifier) ?? WindowVisibility()
+        visibility = Self.visibility(of: id, owner: application.processIdentifier, frontmost: application.isActive) ?? WindowVisibility()
     }
 
     func route(at location: CGPoint) -> ScrollAdapterRoute? {
@@ -89,9 +90,12 @@ final class IPhoneMirroringAdapter: ScrollAdapter {
 
     // MARK: - 窗口查询
 
-    /// 一次查询取得镜像窗口及其上方的窗口 (自前向后); 窗口关闭或离屏时返回 nil
-    static func visibility(of windowID: CGWindowID, owner pid: pid_t) -> WindowVisibility? {
-        guard let windows = CGWindowListCopyWindowInfo([.optionOnScreenAboveWindow, .optionIncludingWindow], windowID) as? [[String: Any]] else {
+    /// 取得镜像窗口的可见区域; 窗口关闭或离屏时返回 nil。
+    /// 镜像在前台时其他应用的普通窗口不会位于其上方, 只查询窗口本身 (约 0.2 ms);
+    /// 在后台时一并查询上方窗口 (约 0.7 ms, 本机 70 个窗口), 刷新频率同时降为 1 秒
+    static func visibility(of windowID: CGWindowID, owner pid: pid_t, frontmost: Bool) -> WindowVisibility? {
+        let options: CGWindowListOption = frontmost ? .optionIncludingWindow : [.optionOnScreenAboveWindow, .optionIncludingWindow]
+        guard let windows = CGWindowListCopyWindowInfo(options, windowID) as? [[String: Any]] else {
             return nil
         }
         var occluders: [CGRect] = []
