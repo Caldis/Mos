@@ -8,6 +8,14 @@
 
 import Cocoa
 
+/// 滚动事件的来源层级与平滑帧的投递方式
+enum ScrollRoute {
+    /// Annotated Session tap 捕获, 平滑帧 CGEventPostToPid 投递到事件目标进程
+    case standard
+    /// 应用适配器在 HID 层捕获, 平滑帧交给适配器的输出端
+    case adapter(ScrollAdapterRoute)
+}
+
 class ScrollCore: ScrollActionPort {
 
     // 单例
@@ -67,6 +75,15 @@ class ScrollCore: ScrollActionPort {
 #endif
             return Unmanaged.passUnretained(event)
         }
+        // 适配器已在 HID 层处理过该事件 (放行的未平滑轴); 未激活适配器时只读取一个布尔值
+        if ScrollAdapterCenter.shared.screenStandardScroll(event) {
+            return Unmanaged.passUnretained(event)
+        }
+        return ScrollCore.shared.handleScroll(event, route: .standard)
+    }
+
+    /// 鼠标滚轮的翻转与平滑决策。返回 nil 表示原始事件已被平滑管线接管
+    func handleScroll(_ event: CGEvent, route: ScrollRoute) -> Unmanaged<CGEvent>? {
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
         let hasVerticalDelta = scrollEvent.Y.valid && scrollEvent.Y.usableValue != 0.0
@@ -87,8 +104,17 @@ class ScrollCore: ScrollActionPort {
             return Unmanaged.passUnretained(event)
         }
         // 当鼠标输入, 根据需要执行翻转方向/平滑滚动
-        // 获取事件目标
-        let targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
+        // 获取事件目标: HID 层事件不带目标 pid, 适配器路由直接使用适配器给出的应用
+        let targetRunningApplication: NSRunningApplication?
+        let adapterSink: ScrollOutputSink?
+        switch route {
+        case .standard:
+            targetRunningApplication = ScrollUtils.shared.getRunningApplication(from: event)
+            adapterSink = nil
+        case .adapter(let adapterRoute):
+            targetRunningApplication = adapterRoute.application
+            adapterSink = adapterRoute.sink
+        }
         // 获取列表中应用程序的列外设置信息
         ScrollCore.shared.application = ScrollUtils.shared.getTargetApplication(from: targetRunningApplication)
         // 平滑/翻转
@@ -125,10 +151,12 @@ class ScrollCore: ScrollActionPort {
         }
         let willShiftVerticalToHorizontal = ScrollCore.shared.toggleScroll && hasVerticalDelta && !hasHorizontalDelta
         let verticalReversePreference = willShiftVerticalToHorizontal ? enableReverseHorizontal : enableReverseVertical
-        if hasVerticalDelta && verticalReversePreference {
+        let reversedVertical = hasVerticalDelta && verticalReversePreference
+        let reversedHorizontal = hasHorizontalDelta && enableReverseHorizontal
+        if reversedVertical {
             ScrollEvent.reverseY(scrollEvent)
         }
-        if hasHorizontalDelta && enableReverseHorizontal {
+        if reversedHorizontal {
             ScrollEvent.reverseX(scrollEvent)
         }
 
@@ -169,7 +197,9 @@ class ScrollCore: ScrollActionPort {
                 y: smoothedY,
                 x: smoothedX,
                 speed: speed,
-                amplification: ScrollCore.shared.dashAmplification
+                amplification: ScrollCore.shared.dashAmplification,
+                route: adapterSink.map { .adapter($0) } ?? .process,
+                targetPID: targetRunningApplication?.processIdentifier
             ).tryStart()
         }
 
@@ -180,18 +210,21 @@ class ScrollCore: ScrollActionPort {
             if shouldSmoothHorizontal {
                 ScrollEvent.clearX(scrollEvent)
             }
+            if let sink = adapterSink {
+                sink.preparePassthrough(event, reversedY: reversedVertical, reversedX: reversedHorizontal,
+                                        clearedY: shouldSmoothVertical, clearedX: shouldSmoothHorizontal)
+            }
             return Unmanaged.passUnretained(event)
         }
 
-        if shouldSmoothAny {
-            if ScrollPoster.shared.isAvailable {
-                return nil
-            } else {
-                return Unmanaged.passUnretained(event)
-            }
-        } else {
-            return Unmanaged.passUnretained(event)
+        if shouldSmoothAny && ScrollPoster.shared.isAvailable {
+            return nil
         }
+        if let sink = adapterSink {
+            sink.preparePassthrough(event, reversedY: reversedVertical, reversedX: reversedHorizontal,
+                                    clearedY: false, clearedX: false)
+        }
+        return Unmanaged.passUnretained(event)
     }
     
     // MARK: - HID++ 滚动热键处理
@@ -430,6 +463,8 @@ class ScrollCore: ScrollActionPort {
             // 初始化滚动事件发送器
             ScrollPoster.shared.create()
             ScrollPoster.shared.startKeeper()
+            // 应用滚动适配器: 只在目标应用运行时创建 HID 层 tap
+            ScrollAdapterCenter.shared.start()
         } catch {
             print("[ScrollCore] Create Interceptor failure: \(error)")
         }
@@ -443,6 +478,7 @@ class ScrollCore: ScrollActionPort {
         ScrollPoster.shared.stop()
         ScrollPoster.shared.stopKeeper()
         // 停止截取事件
+        ScrollAdapterCenter.shared.stop()
         scrollEventInterceptor?.stop()
         hotkeyEventInterceptor?.stop()
         mouseEventInterceptor?.stop()
