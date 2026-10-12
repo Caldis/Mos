@@ -1,0 +1,10 @@
+// Mos target 的 Debug 签名配置
+//
+// 默认 entitlements 为空, 任何开发者账号都能完成 Debug 签名; 依赖受限能力的功能 (如应用滚动适配器
+// 使用的 HID Virtual Device) 在此配置下自动降级。拥有该能力的维护者在同目录创建
+// MosDebug.local.xcconfig (不进入 git, 模板见 MosDebug.local.xcconfig.example) 覆盖下面的值
+
+PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos.debug
+CODE_SIGN_ENTITLEMENTS = Mos/MosDebug.entitlements
+
+#include? "MosDebug.local.xcconfig"
