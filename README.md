@@ -1,4 +1,5 @@
 <p align="center">
+[![Featured on AppWK](https://appwk.cn/badges/featured-dark.svg)](https://appwk.cn/apps/mos)
   <a href="https://mos.caldis.me/">
     <img width="160" src="assets/readme/app-icon.png" alt="Mos app icon">
   </a>
