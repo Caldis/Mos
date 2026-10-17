@@ -1,6 +1,159 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Scroll Source Exclusions…": {
+      "comment": "Scroll source exclusion settings",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scroll Source Exclusions…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "滚动来源排除…"
+          }
+        }
+      }
+    },
+    "Scroll Source Exclusions": {
+      "comment": "Scroll source exclusion settings",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scroll Source Exclusions"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "滚动来源排除"
+          }
+        }
+      }
+    },
+    "Choose the app that sends scroll events, such as your device's driver app. Its scrolling will pass through unchanged in every app.": {
+      "comment": "Scroll source exclusion settings",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose the app that sends scroll events, such as your device's driver app. Its scrolling will pass through unchanged in every app."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请选择发送滚动事件的程序，例如设备的驱动程序。该程序的滚动将在所有应用中原样通过。"
+          }
+        }
+      }
+    },
+    "Source Application": {
+      "comment": "Scroll source exclusion settings",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source Application"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "来源程序"
+          }
+        }
+      }
+    },
+    "Add…": {
+      "comment": "Scroll source exclusion settings",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添加…"
+          }
+        }
+      }
+    },
+    "Remove": {
+      "comment": "Scroll source exclusion settings",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除"
+          }
+        }
+      }
+    },
+    "Done": {
+      "comment": "Scroll source exclusion settings",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成"
+          }
+        }
+      }
+    },
+    "Unable to Add Source": {
+      "comment": "Scroll source exclusion settings",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unable to Add Source"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法添加来源"
+          }
+        }
+      }
+    },
+    "Choose an application with a bundle identifier.": {
+      "comment": "Scroll source exclusion settings",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose an application with a bundle identifier."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请选择具有 Bundle Identifier 的应用程序。"
+          }
+        }
+      }
+    },
     "⚠️ Warning": {
       "comment": "Toast debug style button"
     },

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3EB5D53851EC4EA58A116B77 /* MosTests/ScrollSourceFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E976C967F729461BB0147AB3 /* MosTests/ScrollSourceFilterTests.swift */; };
 		0BE5A292253A1168006D61C0 /* LoginServiceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A291253A1168006D61C0 /* LoginServiceKit */; };
 		0BE5A296253A119C006D61C0 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A295253A119C006D61C0 /* DGCharts */; };
 		0BE5A29A2F7A1C5B006D61C0 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 0BE5A29B2F7A1C5B006D61C0 /* Sparkle */; };
@@ -74,6 +75,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E976C967F729461BB0147AB3 /* MosTests/ScrollSourceFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollSourceFilterTests.swift; sourceTree = SOURCE_ROOT; };
 		0B2C591D2F7ADB79003D88C9 /* Debug.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Debug.xctestplan; sourceTree = "<group>"; };
 		22142DA01E25344E00E4BFBF /* Mos Debug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mos Debug.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25DD10CB06A5D177E3BD0845 /* MosTests/ScrollDispatchContextTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ScrollDispatchContextTests.swift; sourceTree = SOURCE_ROOT; };
@@ -215,6 +217,7 @@
 				C7A1B2C3D4E5F60718293A4C /* MosTests/OptionsChangePropagationTests.swift */,
 				F1A5C3D400000000000000B1 /* MosTests/OptionsScrollDefaultsTests.swift */,
 				E1B8B50E951D72C6195DBA3A /* MosTests/ScrollEventTests.swift */,
+				E976C967F729461BB0147AB3 /* MosTests/ScrollSourceFilterTests.swift */,
 				31AFD832EF49533E8168BAA0 /* MosTests/ScrollFilterTests.swift */,
 				F1A2B3C4D5E6F7081920A1B2 /* MosTests/ExtractRegexPatternArgTests.swift */,
 				F2B3C4D5E6F7081920A1B2C4 /* MosTests/RemovingRegexUTF16RangeTests.swift */,
@@ -435,6 +438,7 @@
 				C7A1B2C3D4E5F60718293A4B /* MosTests/OptionsChangePropagationTests.swift in Sources */,
 				F1A5C3D400000000000000B0 /* MosTests/OptionsScrollDefaultsTests.swift in Sources */,
 				296126EA068FF77D423ACAA9 /* MosTests/ScrollEventTests.swift in Sources */,
+				3EB5D53851EC4EA58A116B77 /* MosTests/ScrollSourceFilterTests.swift in Sources */,
 				BF0CC4D63CC0E5FE8FCF6E01 /* MosTests/ScrollFilterTests.swift in Sources */,
 				F1A2B3C4D5E6F7081920A1B1 /* MosTests/ExtractRegexPatternArgTests.swift in Sources */,
 				F2B3C4D5E6F7081920A1B2C3 /* MosTests/RemovingRegexUTF16RangeTests.swift in Sources */,
