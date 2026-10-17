@@ -36,6 +36,7 @@ struct OptionItem {
         static let SmoothSimTrackpad = "smoothSimTrackpad"
         static let SmoothVertical = "smoothVertical"
         static let SmoothHorizontal = "smoothHorizontal"
+        static let ExcludedSourceBundleIdentifiers = "excludedScrollSourceBundleIdentifiers"
     }
 
     struct Button {
@@ -51,6 +52,22 @@ struct OptionItem {
 /// 配置分组: 变更通知与脏组写入的粒度
 enum OptionsGroup: CaseIterable {
     case general, update, scroll, buttons, application
+}
+
+/// Global source exclusions are separate from per-target application preferences.
+enum ScrollSourceExclusionStore {
+    static func normalized(_ identifiers: [String]) -> [String] {
+        var seen = Set<String>()
+        return identifiers.filter { !$0.isEmpty && seen.insert($0).inserted }
+    }
+
+    static func load(from defaults: UserDefaults) -> [String] {
+        return normalized(defaults.stringArray(forKey: OptionItem.Scroll.ExcludedSourceBundleIdentifiers) ?? [])
+    }
+
+    static func save(_ identifiers: [String], to defaults: UserDefaults) {
+        defaults.set(normalized(identifiers), forKey: OptionItem.Scroll.ExcludedSourceBundleIdentifiers)
+    }
 }
 
 class Options {
@@ -76,6 +93,13 @@ class Options {
     // 滚动
     var scroll = OPTIONS_SCROLL_DEFAULT() {
         didSet { markChanged(.scroll) }
+    }
+    /// Source application identities, independent of target application profiles.
+    var excludedScrollSourceBundleIdentifiers: [String] = [] {
+        didSet {
+            excludedScrollSourceBundleIdentifiers = ScrollSourceExclusionStore.normalized(excludedScrollSourceBundleIdentifiers)
+            markChanged(.scroll)
+        }
     }
     // 按钮绑定
     var buttons = OPTIONS_BUTTONS_DEFAULT() {
@@ -225,6 +249,7 @@ extension Options {
         } else {
             scroll.smoothHorizontal = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothHorizontal)
         }
+        excludedScrollSourceBundleIdentifiers = ScrollSourceExclusionStore.load(from: UserDefaults.standard)
         // 按钮绑定
         buttons.binding = loadButtonsData()
         ButtonUtils.shared.invalidateCache()
@@ -233,6 +258,10 @@ extension Options {
         application.applications = loadApplicationsData()
         // 解锁
         readingOptionsLock = false
+        // Isolated Options instances (including tests) must not change the live filter.
+        if self === Options.shared {
+            ScrollSourceFilter.shared.setExcludedBundleIdentifiers(excludedScrollSourceBundleIdentifiers)
+        }
     }
     
     // 同步写入全部配置 (首启播种与遗留路径; 常规变更走 markChanged 的脏组合并写入)
@@ -255,6 +284,7 @@ extension Options {
             UserDefaults.standard.set(update.checkOnAppStart, forKey: OptionItem.Update.CheckOnAppStart)
             UserDefaults.standard.set(update.includingBetaVersion, forKey: OptionItem.Update.IncludingBetaVersion)
         case .scroll:
+            ScrollSourceExclusionStore.save(excludedScrollSourceBundleIdentifiers, to: UserDefaults.standard)
             UserDefaults.standard.set(scroll.smooth, forKey: OptionItem.Scroll.Smooth)
             UserDefaults.standard.set(scroll.reverse, forKey: OptionItem.Scroll.Reverse)
             UserDefaults.standard.set(scroll.reverseVertical, forKey: OptionItem.Scroll.ReverseVertical)

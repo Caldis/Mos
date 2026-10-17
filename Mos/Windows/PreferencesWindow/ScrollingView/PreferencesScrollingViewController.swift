@@ -56,8 +56,40 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
         scrollDurationDescriptionDefaultText = scrollDurationDescriptionLabel?.stringValue
         // 设置 KeyRecorder 代理
         keyRecorder.delegate = self
+        installSourceExclusionsButton()
         // 读取设置
         syncViewWithOptions()
+    }
+
+    /// Only the global panel owns source exclusions. Leave per-target panels unchanged.
+    private func installSourceExclusionsButton() {
+        guard currentTargetApplication == nil,
+              let topConstraint = view.constraints.first(where: {
+                  ($0.firstItem as? NSView) === resetToDefaultsButton && $0.firstAttribute == .top
+              }) else { return }
+        let button = NSButton(
+            title: NSLocalizedString("Scroll Source Exclusions…", comment: "Open global source exclusions"),
+            target: self, action: #selector(showSourceExclusions))
+        button.bezelStyle = .rounded
+        button.controlSize = .small
+        button.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(button)
+        topConstraint.isActive = false
+        NSLayoutConstraint.activate([
+            NSLayoutConstraint(item: button, attribute: .top, relatedBy: .equal,
+                               toItem: topConstraint.secondItem, attribute: topConstraint.secondAttribute,
+                               multiplier: topConstraint.multiplier, constant: topConstraint.constant),
+            button.leadingAnchor.constraint(equalTo: resetToDefaultsButton.leadingAnchor),
+            button.trailingAnchor.constraint(equalTo: resetToDefaultsButton.trailingAnchor),
+            button.heightAnchor.constraint(equalToConstant: 24),
+            resetToDefaultsButton.topAnchor.constraint(equalTo: button.bottomAnchor, constant: 8)
+        ])
+        view.setFrameSize(NSSize(width: view.frame.width, height: view.frame.height + 32))
+    }
+
+    @objc private func showSourceExclusions() {
+        presentAsSheet(ScrollSourceExclusionsViewController())
     }
 
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {

@@ -9,3 +9,8 @@ deployment is handled by `.github/workflows/pages.yml`.
 
 Sparkle public release sources live in `release/` and are copied into the
 GitHub Pages artifact during the website build.
+
+## Features
+
+- [Scroll source exclusions](scroll-source-exclusions.md): configuration, source
+  identification, compatibility and regression verification.
