@@ -1036,6 +1036,46 @@ final class InputProcessorTests: XCTestCase {
         )
     }
 
+    func testButtonCore_enableWithoutBindingsDoesNotInstallTap() {
+        let core = ButtonCore()
+        defer { core.disable() }
+
+        core.enable()
+
+        XCTAssertTrue(core.isActive)
+        XCTAssertNil(core.dispatchInterceptor)
+    }
+
+    func testButtonCore_enableWithOnlyDisabledBindingsDoesNotInstallTap() {
+        let trigger = RecordedEvent(type: .mouse, code: 3, modifiers: 0,
+                                    displayComponents: [], deviceFilter: nil)
+        Options.shared.buttons.binding = [
+            ButtonBinding(triggerEvent: trigger, systemShortcutName: "copy", isEnabled: false)
+        ]
+        let core = ButtonCore()
+        defer { core.disable() }
+
+        core.enable()
+
+        XCTAssertTrue(core.isActive)
+        XCTAssertNil(core.dispatchInterceptor)
+    }
+
+    func testButtonCore_bindingChangesWhileDisabledDoNotInstallTap() {
+        let core = ButtonCore()
+        core.enable()
+        core.disable()
+        let trigger = RecordedEvent(type: .mouse, code: 3, modifiers: 0,
+                                    displayComponents: [], deviceFilter: nil)
+
+        Options.shared.buttons.binding = [
+            ButtonBinding(triggerEvent: trigger, systemShortcutName: "copy", isEnabled: true)
+        ]
+
+        XCTAssertFalse(core.isActive)
+        XCTAssertNil(core.dispatchInterceptor)
+    }
+
     func testButtonCore_dispatchEventMask_excludesPrimaryMouseButtons() {
         let core = ButtonCore.shared
 

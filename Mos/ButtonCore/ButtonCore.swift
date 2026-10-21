@@ -12,7 +12,13 @@ class ButtonCore {
     
     // 单例
     static let shared = ButtonCore()
-    init() { NSLog("Module initialized: ButtonCore") }
+    init() {
+        NSLog("Module initialized: ButtonCore")
+        Options.shared.observe([.buttons]) { [weak self] _ in
+            guard let self = self, self.isActive else { return }
+            self.updateInterceptor()
+        }
+    }
     
     // 执行状态
     var isActive = false
@@ -72,24 +78,38 @@ class ButtonCore {
     
     // 启用按钮监控
     func enable() {
-        if !isActive {
-            do {
-                dispatchInterceptor = try Interceptor(
-                    event: dispatchEventMask,
-                    handleBy: buttonEventCallBack,
-                    listenOn: dispatchEventTapLocation,
-                    placeAt: .tailAppendEventTap,
-                    for: .defaultTap
-                )
-                dispatchInterceptor?.onRestart = {
-                    InputProcessor.shared.clearActiveBindings()
-                }
-                isActive = true
-            } catch {
-                dispatchInterceptor?.stop()
-                dispatchInterceptor = nil
-                NSLog("ButtonCore: Failed to create interceptor: \(error)")
+        guard !isActive else { return }
+        isActive = true
+        updateInterceptor()
+    }
+
+    private func updateInterceptor() {
+        // 仅使用滚动功能时不安装 active tap, 避免普通键盘输入经过无用的拦截层。
+        // isActive 保留模块启用状态, 后续添加绑定时可以立即开始监听。
+        guard Options.shared.buttons.binding.contains(where: { $0.isEnabled }) else {
+            dispatchInterceptor?.stop()
+            dispatchInterceptor = nil
+            InputProcessor.shared.clearActiveBindings()
+            return
+        }
+        guard dispatchInterceptor == nil else { return }
+
+        do {
+            dispatchInterceptor = try Interceptor(
+                event: dispatchEventMask,
+                handleBy: buttonEventCallBack,
+                listenOn: dispatchEventTapLocation,
+                placeAt: .tailAppendEventTap,
+                for: .defaultTap
+            )
+            dispatchInterceptor?.onRestart = {
+                InputProcessor.shared.clearActiveBindings()
             }
+        } catch {
+            dispatchInterceptor?.stop()
+            dispatchInterceptor = nil
+            isActive = false
+            NSLog("ButtonCore: Failed to create interceptor: \(error)")
         }
     }
     
