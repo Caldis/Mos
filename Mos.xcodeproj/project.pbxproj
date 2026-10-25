@@ -61,6 +61,11 @@
 		F00A00000000000000000005 /* MosTests/ShortcutExecutorOpenTargetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00A00000000000000000006 /* MosTests/ShortcutExecutorOpenTargetTests.swift */; };
 		FE05F3803FB8885AAC70ADC5 /* MosTests/ScrollCoreHotkeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CF5441214A14BB8FFEDA5 /* MosTests/ScrollCoreHotkeyTests.swift */; };
 		FECC8D1CC04A0A99B1E1A8EB /* MosTests/InterpolatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4A7F821E5626C63C45D698 /* MosTests/InterpolatorTests.swift */; };
+		AACC00000000000000000001 /* InputPermissionGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC00000000000000000002 /* InputPermissionGateTests.swift */; };
+		AADD00000000000000000004 /* OnboardingExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = AADD00000000000000000003 /* OnboardingExtras.swift */; };
+		AADD0000000000000000000C /* PermissionFlow in Frameworks */ = {isa = PBXBuildFile; productRef = AADD0000000000000000000B /* PermissionFlow */; };
+		AADD0000000000000000000F /* Vortex in Frameworks */ = {isa = PBXBuildFile; productRef = AADD0000000000000000000E /* Vortex */; };
+		AADD00000000000000000011 /* MosOnboardingExtras.bundle in PlugIns */ = {isa = PBXBuildFile; fileRef = AADD00000000000000000002 /* MosOnboardingExtras.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,7 +76,12 @@
 			remoteGlobalIDString = 22142D9F1E25344E00E4BFBF;
 			remoteInfo = Mos;
 		};
+		AADD00000000000000000012 /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = 22142D981E25344E00E4BFBF; proxyType = 1; remoteGlobalIDString = AADD00000000000000000001 /* MosOnboardingExtras */; remoteInfo = MosOnboardingExtras; };
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AADD00000000000000000010 /* Embed Onboarding Extras */ = {isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 13; files = (AADD00000000000000000011 /* MosOnboardingExtras.bundle in PlugIns */, ); name = "Embed Onboarding Extras"; runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0B2C591D2F7ADB79003D88C9 /* Debug.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Debug.xctestplan; sourceTree = "<group>"; };
@@ -129,6 +139,9 @@
 		F00A00000000000000000002 /* MosTests/OpenTargetPayloadTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/OpenTargetPayloadTests.swift; sourceTree = SOURCE_ROOT; };
 		F00A00000000000000000004 /* MosTests/OptionsButtonsLoaderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/OptionsButtonsLoaderTests.swift; sourceTree = SOURCE_ROOT; };
 		F00A00000000000000000006 /* MosTests/ShortcutExecutorOpenTargetTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MosTests/ShortcutExecutorOpenTargetTests.swift; sourceTree = SOURCE_ROOT; };
+		AACC00000000000000000002 /* InputPermissionGateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosTests/InputPermissionGateTests.swift; sourceTree = SOURCE_ROOT; };
+		AADD00000000000000000003 /* OnboardingExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosOnboardingExtras/OnboardingExtras.swift; sourceTree = SOURCE_ROOT; };
+		AADD00000000000000000002 /* MosOnboardingExtras.bundle */ = {isa = PBXFileReference; explicitFileType = "wrapper.cfbundle"; path = MosOnboardingExtras.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -163,12 +176,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AADD00000000000000000005 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (AADD0000000000000000000C /* PermissionFlow in Frameworks */, AADD0000000000000000000F /* Vortex in Frameworks */, ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		09EADA3FFF0D79CC3B1FA601 /* MosTests */ = {
 			isa = PBXGroup;
 			children = (
+				AACC00000000000000000002 /* InputPermissionGateTests.swift */,
 				0B2C591D2F7ADB79003D88C9 /* Debug.xctestplan */,
 				D1A2B3C4E5F6A7B8C9D01214 /* DebugWithDevice.xctestplan */,
 				F00A00000000000000000002 /* MosTests/OpenTargetPayloadTests.swift */,
@@ -230,6 +245,7 @@
 			children = (
 				0BB750952E5F6D8C007C402A /* Mos */,
 				22142DA11E25344E00E4BFBF /* Products */,
+				AADD00000000000000000003 /* OnboardingExtras.swift */,
 				09EADA3FFF0D79CC3B1FA601 /* MosTests */,
 			);
 			sourceTree = "<group>";
@@ -238,6 +254,7 @@
 			isa = PBXGroup;
 			children = (
 				22142DA01E25344E00E4BFBF /* Mos Debug.app */,
+				AADD00000000000000000002 /* MosOnboardingExtras.bundle */,
 				D3A7FDB8A6001907C9F156D6 /* MosTests.xctest */,
 			);
 			name = Products;
@@ -262,10 +279,12 @@
 				22142D9C1E25344E00E4BFBF /* Sources */,
 				22142D9D1E25344E00E4BFBF /* Frameworks */,
 				22142D9E1E25344E00E4BFBF /* Resources */,
+				AADD00000000000000000010 /* Embed Onboarding Extras */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				AADD00000000000000000013 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				0BB750952E5F6D8C007C402A /* Mos */,
@@ -298,6 +317,7 @@
 			productReference = D3A7FDB8A6001907C9F156D6 /* MosTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		AADD00000000000000000001 /* MosOnboardingExtras */ = {isa = PBXNativeTarget; buildConfigurationList = AADD00000000000000000007 /* Build configuration list for MosOnboardingExtras */; buildPhases = (AADD00000000000000000006 /* Sources */, AADD00000000000000000005 /* Frameworks */, ); buildRules = (); dependencies = (); name = MosOnboardingExtras; productName = MosOnboardingExtras; productReference = AADD00000000000000000002 /* MosOnboardingExtras.bundle */; productType = "com.apple.product-type.bundle"; packageProductDependencies = (AADD0000000000000000000B /* PermissionFlow */, AADD0000000000000000000E /* Vortex */, ); };
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -347,6 +367,7 @@
 			);
 			mainGroup = 22142D971E25344E00E4BFBF;
 			packageReferences = (
+				AADD0000000000000000000A /* PermissionFlow */, AADD0000000000000000000D /* Vortex */,
 				0BE5A290253A1168006D61C0 /* XCRemoteSwiftPackageReference "LoginServiceKit" */,
 				0BE5A294253A119C006D61C0 /* XCRemoteSwiftPackageReference "Charts" */,
 				0BE5A29C2F7A1C5B006D61C0 /* XCRemoteSwiftPackageReference "Sparkle" */,
@@ -355,6 +376,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				AADD00000000000000000001 /* MosOnboardingExtras */,
 				22142D9F1E25344E00E4BFBF /* Mos */,
 				62CD1674CBD9855CE2042C81 /* MosTests */,
 			);
@@ -390,6 +412,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AACC00000000000000000001 /* InputPermissionGateTests.swift in Sources */,
 				F00A00000000000000000001 /* MosTests/OpenTargetPayloadTests.swift in Sources */,
 				AA1011FB00000000000000B2 /* MosTests/ScrollTargetApplicationRulesTests.swift in Sources */,
 				F00A00000000000000000003 /* MosTests/OptionsButtonsLoaderTests.swift in Sources */,
@@ -444,6 +467,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AADD00000000000000000006 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (AADD00000000000000000004 /* OnboardingExtras.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -453,6 +477,7 @@
 			target = 22142D9F1E25344E00E4BFBF /* Mos */;
 			targetProxy = 139F7EAD4CCB4B703A34600E /* PBXContainerItemProxy */;
 		};
+		AADD00000000000000000013 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = AADD00000000000000000001 /* MosOnboardingExtras */; targetProxy = AADD00000000000000000012 /* PBXContainerItemProxy */; };
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -713,6 +738,8 @@
 			};
 			name = Debug;
 		};
+		AADD00000000000000000008 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; MACOSX_DEPLOYMENT_TARGET = 13.0; PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos.OnboardingExtras; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; SKIP_INSTALL = YES; }; name = Debug; };
+		AADD00000000000000000009 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; GENERATE_INFOPLIST_FILE = YES; MACOSX_DEPLOYMENT_TARGET = 13.0; PRODUCT_BUNDLE_IDENTIFIER = com.caldis.Mos.OnboardingExtras; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; SKIP_INSTALL = YES; }; name = Release; };
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -743,6 +770,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		AADD00000000000000000007 /* Build configuration list for MosOnboardingExtras */ = {isa = XCConfigurationList; buildConfigurations = (AADD00000000000000000008 /* Debug */, AADD00000000000000000009 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -770,6 +798,8 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		AADD0000000000000000000A /* PermissionFlow */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/jaywcjlove/PermissionFlow"; requirement = {kind = exactVersion; version = 2.11.4; }; };
+		AADD0000000000000000000D /* Vortex */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/twostraws/Vortex"; requirement = {kind = exactVersion; version = 1.0.4; }; };
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -788,6 +818,8 @@
 			package = 0BE5A29C2F7A1C5B006D61C0 /* XCRemoteSwiftPackageReference "Sparkle" */;
 			productName = Sparkle;
 		};
+		AADD0000000000000000000B /* PermissionFlow */ = {isa = XCSwiftPackageProductDependency; package = AADD0000000000000000000A /* PermissionFlow */; productName = PermissionFlow; };
+		AADD0000000000000000000E /* Vortex */ = {isa = XCSwiftPackageProductDependency; package = AADD0000000000000000000D /* Vortex */; productName = Vortex; };
 /* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 22142D981E25344E00E4BFBF /* Project object */;

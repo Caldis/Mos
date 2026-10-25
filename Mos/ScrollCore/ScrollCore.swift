@@ -431,11 +431,25 @@ class ScrollCore: ScrollActionPort {
             ScrollPoster.shared.create()
             ScrollPoster.shared.startKeeper()
         } catch {
+            disable()
             print("[ScrollCore] Create Interceptor failure: \(error)")
         }
     }
     // 停止
     func disable() {
+        dashKeyHeld = false
+        toggleKeyHeld = false
+        blockKeyHeld = false
+        hidDashHeldCode = nil
+        hidToggleHeldCode = nil
+        hidBlockHeldCode = nil
+        mosDashActionCount = 0
+        mosToggleActionCount = 0
+        mosBlockActionCount = 0
+        currentApplication = nil
+        refreshDashState()
+        refreshToggleState()
+        refreshBlockState()
         // Guard
         if !isActive {return}
         isActive = false

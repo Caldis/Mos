@@ -1,5 +1,5 @@
 {
-  "originHash" : "cbdd3e98dceb33f1d8c60bd4f8b77a6dce7375a680fa9378f22fc5212378a305",
+  "originHash" : "af73c27b4be5d9d7fad62ad5b30a4d2dd3cd0404fc359a2993fea7d523571790",
   "pins" : [
     {
       "identity" : "charts",
@@ -20,12 +20,30 @@
       }
     },
     {
+      "identity" : "permissionflow",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jaywcjlove/PermissionFlow",
+      "state" : {
+        "revision" : "65434c9ae04dba97cf52c1dffbe3e4e62b547c82",
+        "version" : "2.11.4"
+      }
+    },
+    {
       "identity" : "sparkle",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
         "revision" : "5581748cef2bae787496fe6d61139aebe0a451f6",
         "version" : "2.8.1"
+      }
+    },
+    {
+      "identity" : "vortex",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/twostraws/Vortex",
+      "state" : {
+        "revision" : "9d9d9016ceace579455f01f8e0bd59facae7d252",
+        "version" : "1.0.4"
       }
     }
   ],

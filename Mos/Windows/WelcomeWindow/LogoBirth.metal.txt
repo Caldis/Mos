@@ -1,0 +1,49 @@
+#include <metal_stdlib>
+using namespace metal;
+
+struct LogoVertex { float4 position [[position]]; float2 uv; };
+vertex LogoVertex logoVertex(uint id [[vertex_id]]) {
+    float2 p = float2((id << 1) & 2, id & 2);
+    return { float4(p * 2.0 - 1.0, 0, 1), float2(p.x, 1.0 - p.y) };
+}
+
+float lightness(float3 c) { return dot(c, float3(0.2126, 0.7152, 0.0722)); }
+
+fragment float4 logoFragment(LogoVertex input [[stage_in]], texture2d<float> logo [[texture(0)]],
+                             constant float4 &uniforms [[buffer(0)]]) {
+    constexpr sampler linearSampler(filter::linear, address::clamp_to_zero);
+    float2 p = (input.uv - 0.5) * float2(uniforms.x / uniforms.y, 1.0);
+    float2 uv = p / 0.88 + 0.5;
+    float t = uniforms.z;
+    float4 material = logo.sample(linearSampler, uv);
+    float2 pixel = 1.6 / float2(logo.get_width(), logo.get_height());
+    float gx = lightness(logo.sample(linearSampler, uv + float2(pixel.x, 0)).rgb)
+             - lightness(logo.sample(linearSampler, uv - float2(pixel.x, 0)).rgb);
+    float gy = lightness(logo.sample(linearSampler, uv + float2(0, pixel.y)).rgb)
+             - lightness(logo.sample(linearSampler, uv - float2(0, pixel.y)).rgb);
+    float edge = smoothstep(0.018, 0.24, length(float2(gx, gy)));
+
+    // A diagonal drawing front illuminates the icon's existing glass contours.
+    float travel = uv.x * 0.54 + (1.0 - uv.y) * 0.46;
+    float front = clamp((t - 0.2) / 2.15, 0.0, 1.6);
+    float traced = smoothstep(travel - 0.04, travel + 0.04, front);
+    float head = exp(-pow((travel - front) * 20.0, 2.0));
+    float settled = smoothstep(2.15, 3.7, t);
+    float filled = smoothstep(travel + 0.1, travel + 0.56, front) * smoothstep(0.5, 2.7, t);
+    float3 cyan = float3(0.29, 0.84, 1.0);
+    float3 coral = float3(1.0, 0.45, 0.59);
+    float3 iridescence = mix(cyan, coral, smoothstep(0.1, 0.9, uv.x + uv.y * 0.2));
+    float3 color = material.rgb * mix(filled * 0.85, 1.0, settled);
+    float opacity = material.a * mix(max(filled, edge * traced), 1.0, settled);
+    float radiance = edge * (head * 3.0 + traced * 0.45) * (1.0 - settled);
+    color += iridescence * radiance;
+    opacity = max(opacity, min(1.0, radiance));
+
+    // The final specular sweep ends with the intro; the settled icon is static.
+    float sweep = exp(-pow((uv.x + uv.y * 0.48 - (t - 2.3) * 1.1) * 19.0, 2.0));
+    color += material.a * sweep * 0.24 * smoothstep(2.3, 2.6, t) * (1.0 - smoothstep(3.5, 4.1, t));
+    float glow = exp(-dot(p, p) * 16.0) * sin(clamp(t / 4.2, 0.0, 1.0) * M_PI_F) * 0.06;
+    color += mix(cyan, coral, input.uv.x) * glow;
+    opacity = max(opacity, glow);
+    return float4(min(color, float3(opacity)), opacity);
+}
