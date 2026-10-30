@@ -1044,6 +1044,8 @@ final class ButtonBindingTests: XCTestCase {
         } ?? []
 
         XCTAssertTrue(functionItems.contains("escapeKey"))
+        XCTAssertTrue(functionItems.contains("volumeUp"))
+        XCTAssertTrue(functionItems.contains("volumeDown"))
     }
 
     func testPredefinedModifierShortcut_localizedNamesAreSemanticLabels() {
@@ -1504,4 +1506,5 @@ final class ButtonBindingTests: XCTestCase {
         XCTAssertEqual(binding.systemShortcutName, "copy")
         XCTAssertNil(binding.openTarget)
     }
+
 }
