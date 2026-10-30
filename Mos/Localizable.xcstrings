@@ -1,6 +1,46 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "volumeDown": {
+      "comment": "Action menu item to decrease output volume",
+      "localizations": {
+        "cs": { "stringUnit": { "state": "translated", "value": "Snížit hlasitost" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Lautstärke verringern" } },
+        "el": { "stringUnit": { "state": "translated", "value": "Μείωση έντασης" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Volume Down" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Baisser le volume" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "音量を下げる" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "볼륨 낮추기" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Уменьшить громкость" } },
+        "th": { "stringUnit": { "state": "translated", "value": "ลดระดับเสียง" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sesi Azalt" } },
+        "uk": { "stringUnit": { "state": "translated", "value": "Зменшити гучність" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "降低音量" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "降低音量" } },
+        "zh-Hant-HK": { "stringUnit": { "state": "translated", "value": "降低音量" } },
+        "zh-Hant-TW": { "stringUnit": { "state": "translated", "value": "降低音量" } }
+      }
+    },
+    "volumeUp": {
+      "comment": "Action menu item to increase output volume",
+      "localizations": {
+        "cs": { "stringUnit": { "state": "translated", "value": "Zvýšit hlasitost" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Lautstärke erhöhen" } },
+        "el": { "stringUnit": { "state": "translated", "value": "Αύξηση έντασης" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Volume Up" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Augmenter le volume" } },
+        "ja": { "stringUnit": { "state": "translated", "value": "音量を上げる" } },
+        "ko": { "stringUnit": { "state": "translated", "value": "볼륨 높이기" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Увеличить громкость" } },
+        "th": { "stringUnit": { "state": "translated", "value": "เพิ่มระดับเสียง" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Sesi Artır" } },
+        "uk": { "stringUnit": { "state": "translated", "value": "Збільшити гучність" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "提高音量" } },
+        "zh-Hant": { "stringUnit": { "state": "translated", "value": "提高音量" } },
+        "zh-Hant-HK": { "stringUnit": { "state": "translated", "value": "提高音量" } },
+        "zh-Hant-TW": { "stringUnit": { "state": "translated", "value": "提高音量" } }
+      }
+    },
     "⚠️ Warning": {
       "comment": "Toast debug style button"
     },

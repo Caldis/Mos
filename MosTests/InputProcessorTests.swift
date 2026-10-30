@@ -3,6 +3,8 @@ import XCTest
 
 final class InputProcessorTests: XCTestCase {
 
+    private var postedVolumeKeys: [Bool] = []
+
     override func setUp() {
         super.setUp()
         Options.shared.buttons.binding = []
@@ -20,6 +22,10 @@ final class InputProcessorTests: XCTestCase {
         ScrollCore.shared.blockKeyHeld = false
         ShortcutExecutor.shared.scrollActionPort = ScrollCore.shared
         ShortcutExecutor.shared.modifierFlagsProvider = InputProcessor.shared
+        postedVolumeKeys = []
+        ShortcutExecutor.shared.setTestingVolumeKeyObserver { [weak self] up in
+            self?.postedVolumeKeys.append(up)
+        }
     }
 
     override func tearDown() {
@@ -34,6 +40,7 @@ final class InputProcessorTests: XCTestCase {
         MouseInteractionSessionController.shared.clearAllSessions()
         MouseInteractionSessionController.shared.clearTestingMotionTapHooks()
         ShortcutExecutor.shared.clearTestingMouseEventObserver()
+        ShortcutExecutor.shared.setTestingVolumeKeyObserver()
         Options.shared.buttons.binding = []
         ButtonUtils.shared.invalidateCache()
         super.tearDown()
@@ -1059,6 +1066,20 @@ final class InputProcessorTests: XCTestCase {
             ButtonCore.shared.dispatchEventTapLocation.rawValue,
             CGEventTapLocation.cgSessionEventTap.rawValue
         )
+    }
+
+    // MARK: - Volume
+
+    func testVolumeShortcut_resolvesToOneShotVolumeAction() {
+        guard case .volume(up: true)? = ShortcutExecutor.shared.resolveAction(named: "volumeUp"),
+              case .volume(up: false)? = ShortcutExecutor.shared.resolveAction(named: "volumeDown") else {
+            return XCTFail("Expected volume identifiers to resolve to volume actions")
+        }
+        XCTAssertEqual(ResolvedAction.volume(up: true).executionMode, .trigger)
+
+        ShortcutExecutor.shared.execute(named: "volumeUp")
+        ShortcutExecutor.shared.execute(SystemShortcut.volumeDown)
+        XCTAssertEqual(postedVolumeKeys, [true, false])
     }
 
 }
