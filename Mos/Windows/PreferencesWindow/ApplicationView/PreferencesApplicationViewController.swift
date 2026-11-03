@@ -48,6 +48,11 @@ class PreferencesApplicationViewController: NSViewController {
         // 设置添加按钮回调
         setupAddButtonCallback()
     }
+    override func viewDidLayout() {
+        super.viewDidLayout()
+        // 重新计算表格尺寸
+        tableView.tile()
+    }
     
     // 主添加按钮
     private func setupAddButtonCallback() {
