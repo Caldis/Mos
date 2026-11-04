@@ -272,16 +272,24 @@ class KeyRecorder: NSObject {
     }
     // MARK: - Adaptive Mode
 
+    /// 比较前后两次 flagsChanged 的修饰键位 (含左右设备位), 得到本次新按下和松开的修饰键
+    static func modifierTransition(from previous: CGEventFlags, to current: CGEventFlags) -> (pressed: CGEventFlags, released: CGEventFlags) {
+        let previousBits = previous.rawValue & modifierFlagsMask
+        let currentBits = current.rawValue & modifierFlagsMask
+        return (
+            pressed: CGEventFlags(rawValue: currentBits & ~previousBits),
+            released: CGEventFlags(rawValue: previousBits & ~currentBits)
+        )
+    }
+
     private func handleAdaptiveFlagsChanged(_ event: CGEvent) {
         let hasActiveModifiers = event.hasModifiers
 
         // 检测本次释放了哪些修饰键 (previous & ~current)
-        let currentBits = event.flags.rawValue & Self.modifierFlagsMask
-        let previousBits = previousAdaptiveFlags.rawValue & Self.modifierFlagsMask
-        let releasedBits = previousBits & ~currentBits
-        if releasedBits != 0 {
+        let transition = Self.modifierTransition(from: previousAdaptiveFlags, to: event.flags)
+        if transition.released.rawValue != 0 {
             modifierReleaseTimestamps.append((
-                flags: CGEventFlags(rawValue: releasedBits),
+                flags: transition.released,
                 time: CACurrentMediaTime()
             ))
         }
@@ -302,7 +310,7 @@ class KeyRecorder: NSObject {
             adaptiveState = .modifierHeld(modifiers: event.flags)
             NSLog("[EventRecorder] Adaptive: modifier held, flags=\(event.flags.rawValue)")
 
-            let isAdding = (currentBits & ~previousBits) != 0
+            let isAdding = transition.pressed.rawValue != 0
             if isAdding {
                 // 新增修饰键: 取消 debounce, 清空释放历史 (用户改变了意图), 立即更新显示
                 cancelDisplayDebounceTimer()

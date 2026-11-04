@@ -427,6 +427,22 @@ final class ButtonBindingTests: XCTestCase {
         XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: leftCommandRightOption), KeyCode.commandL)
     }
 
+    func testRecorderModifierTransition_keepsRightOptionSideFromPressToRelease() {
+        // 实体键盘按下右 Option 时的 flags: ⌥ + NX_DEVICERALTKEYMASK, 另带与侧别无关的 0x100 (NX_NONCOALSESCEDMASK)
+        let idle = CGEventFlags(rawValue: 0x100)
+        let rightOptionDown = flags(.maskAlternate, device: Self.deviceRightOption | 0x100)
+
+        let press = KeyRecorder.modifierTransition(from: idle, to: rightOptionDown)
+        XCTAssertEqual(press.pressed, flags(.maskAlternate, device: Self.deviceRightOption))
+        XCTAssertEqual(press.released, [])
+
+        // 松开时记下的释放位必须保留右侧设备位, 录制结果才是右 Option (61) 而不是左 Option (58)
+        let release = KeyRecorder.modifierTransition(from: rightOptionDown, to: idle)
+        XCTAssertEqual(release.pressed, [])
+        XCTAssertEqual(release.released, flags(.maskAlternate, device: Self.deviceRightOption))
+        XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: release.released), KeyCode.optionR)
+    }
+
     func testNormalizedCustomBindingName_recordedRightOptionKeepsItsOwnKeyCode() {
         // 录制右 Option 后, 动作应保存为 custom::61:0, 而不是折叠成只代表左 Option 的预设动作
         let recorded = InputEvent(
