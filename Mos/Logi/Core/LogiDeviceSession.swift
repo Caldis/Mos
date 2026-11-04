@@ -48,6 +48,7 @@ class LogiDeviceSession {
     let deviceInfo: InputDevice
     let usagePage: Int
     let usage: Int
+    let hasMouseCollection: Bool
     let transport: String
 
     // MARK: - Connection Mode
@@ -380,6 +381,9 @@ class LogiDeviceSession {
         self.hidDevice = hidDevice
         self.usagePage = IOHIDDeviceGetProperty(hidDevice, kIOHIDPrimaryUsagePageKey as CFString) as? Int ?? 0
         self.usage = IOHIDDeviceGetProperty(hidDevice, kIOHIDPrimaryUsageKey as CFString) as? Int ?? 0
+        self.hasMouseCollection = LogiSessionManager.hasMouseCollection(
+            IOHIDDeviceGetProperty(hidDevice, kIOHIDDeviceUsagePairsKey as CFString)
+        )
         self.transport = IOHIDDeviceGetProperty(hidDevice, kIOHIDTransportKey as CFString) as? String ?? ""
         self.deviceInfo = InputDevice(
             vendorId: UInt16(IOHIDDeviceGetProperty(hidDevice, kIOHIDVendorIDKey as CFString) as? Int ?? 0),
@@ -395,12 +399,20 @@ class LogiDeviceSession {
 
     /// 是否为 HID++ 候选接口
     var isHIDPPCandidate: Bool {
+        return Self.isHIDPPCandidate(
+            isBLE: isBLE, usagePage: usagePage, usage: usage, hasMouseCollection: hasMouseCollection
+        )
+    }
+
+    static func isHIDPPCandidate(isBLE: Bool, usagePage: Int, usage: Int, hasMouseCollection: Bool) -> Bool {
         // USB: 只有 vendor-specific usage page 支持 HID++
         if !isBLE {
             return usagePage == 0xFF00 || usagePage == 0xFF43 || usagePage == 0xFFC0
         }
-        // BLE: HID++ 复用标准 mouse interface
-        return usagePage == 0x0001 && usage == 0x0002
+        // BLE: HID++ 复用标准 mouse interface. M720 等设备 PrimaryUsage 是 Keyboard,
+        // 但同一接口的 DeviceUsagePairs 含 Mouse collection.
+        if usagePage == 0x0001 && usage == 0x0002 { return true }
+        return usagePage == 0x0001 && usage == 0x0006 && hasMouseCollection
     }
 
     /// CID set last passed to setControlReporting. Diffed against next applyUsage's

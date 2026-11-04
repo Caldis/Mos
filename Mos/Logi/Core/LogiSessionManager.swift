@@ -120,7 +120,15 @@ internal class LogiSessionManager {
         // 键盘接口跳过: Mos 对键盘没有 HID++ 用途, 一旦创建会话会在接口上注册
         // input-report 回调, 使键盘无法进入休眠, 导致背光常亮 (issue #948)。
         // 不创建 LogiDeviceSession 即可完全不触碰该 HID 接口。
-        guard Self.shouldAttachSession(usagePage: usagePage, usage: usage) else {
+        let transport = IOHIDDeviceGetProperty(device, kIOHIDTransportKey as CFString) as? String ?? ""
+        guard Self.shouldAttachSession(
+            usagePage: usagePage,
+            usage: usage,
+            isBLE: transport.lowercased().contains("bluetooth"),
+            hasMouseCollection: Self.hasMouseCollection(
+                IOHIDDeviceGetProperty(device, kIOHIDDeviceUsagePairsKey as CFString)
+            )
+        ) else {
             LogiDebugPanel.log("[LogitechHID] Skipping keyboard interface (keeps device awake): \(productName)")
             return
         }
@@ -139,10 +147,28 @@ internal class LogiSessionManager {
     /// input-report 回调。该回调对键盘毫无用处 (`handleInputReport` 只处理
     /// HID++ 报文 `0x10/0x11`, 键盘不发), 却会让键盘 HID 端点保持活跃, 使其
     /// 无法休眠、背光常亮。因此对键盘接口整条跳过, 不创建会话。见 issue #948。
-    static func shouldAttachSession(usagePage: Int, usage: Int) -> Bool {
+    ///
+    /// 例外: 部分 BLE 鼠标 (如 M720 Triathlon) 的 PrimaryUsage 是 Keyboard, 但同一
+    /// 接口的 `DeviceUsagePairs` 还含 Mouse collection 与 HID++ 通道, 它们是真正的
+    /// HID++ 目标, 必须挂会话。纯键盘 (无 Mouse collection) 仍然跳过。
+    static func shouldAttachSession(
+        usagePage: Int,
+        usage: Int,
+        isBLE: Bool = false,
+        hasMouseCollection: Bool = false
+    ) -> Bool {
         // Generic Desktop (0x0001) Keyboard (0x0006)
-        if usagePage == 0x0001 && usage == 0x0006 { return false }
+        if usagePage == 0x0001 && usage == 0x0006 { return isBLE && hasMouseCollection }
         return true
+    }
+
+    /// `DeviceUsagePairs` 是否含 Generic Desktop (0x0001) Mouse (0x0002) collection.
+    static func hasMouseCollection(_ deviceUsagePairs: Any?) -> Bool {
+        guard let pairs = deviceUsagePairs as? [[String: Any]] else { return false }
+        return pairs.contains { pair in
+            (pair[kIOHIDDeviceUsagePageKey as String] as? Int) == 0x0001
+                && (pair[kIOHIDDeviceUsageKey as String] as? Int) == 0x0002
+        }
     }
 
     private func deviceDisconnected(_ device: IOHIDDevice) {

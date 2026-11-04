@@ -43,4 +43,60 @@ final class LogiTeardownTests: XCTestCase {
         XCTAssertTrue(LogiSessionManager.shouldAttachSession(usagePage: 0x0001, usage: 0x0001),
                       "Pointer (Generic Desktop) must still attach")
     }
+
+    // MARK: - BLE mice whose PrimaryUsage is Keyboard (M720 Triathlon, 0x046D:0xB015)
+
+    /// Raw `DeviceUsagePairs` captured from an M720 over BLE: Keyboard, Mouse, Pointer, HID++ (0xFF43/0x0202).
+    private let m720UsagePairs: [[String: Any]] = [
+        ["DeviceUsagePage": 1, "DeviceUsage": 6],
+        ["DeviceUsagePage": 1, "DeviceUsage": 2],
+        ["DeviceUsagePage": 1, "DeviceUsage": 1],
+        ["DeviceUsagePage": 0xFF43, "DeviceUsage": 0x0202],
+    ]
+
+    /// MX Mechanical-style keyboard: no Mouse collection.
+    private let keyboardUsagePairs: [[String: Any]] = [
+        ["DeviceUsagePage": 1, "DeviceUsage": 6],
+        ["DeviceUsagePage": 12, "DeviceUsage": 1],
+        ["DeviceUsagePage": 0xFF43, "DeviceUsage": 0x0202],
+    ]
+
+    func test_hasMouseCollection_readsDeviceUsagePairs() {
+        XCTAssertTrue(LogiSessionManager.hasMouseCollection(m720UsagePairs))
+        XCTAssertFalse(LogiSessionManager.hasMouseCollection(keyboardUsagePairs))
+        XCTAssertFalse(LogiSessionManager.hasMouseCollection(nil))
+        XCTAssertFalse(LogiSessionManager.hasMouseCollection("not an array"))
+    }
+
+    func test_shouldAttachSession_attachesBLEMouseWithKeyboardPrimaryUsage() {
+        XCTAssertTrue(LogiSessionManager.shouldAttachSession(
+            usagePage: 0x0001, usage: 0x0006, isBLE: true,
+            hasMouseCollection: LogiSessionManager.hasMouseCollection(m720UsagePairs)
+        ))
+    }
+
+    func test_shouldAttachSession_stillSkipsKeyboardsWithoutMouseCollection() {
+        // #948: pure keyboards (BLE or not) keep being skipped.
+        XCTAssertFalse(LogiSessionManager.shouldAttachSession(
+            usagePage: 0x0001, usage: 0x0006, isBLE: true,
+            hasMouseCollection: LogiSessionManager.hasMouseCollection(keyboardUsagePairs)
+        ))
+        XCTAssertFalse(LogiSessionManager.shouldAttachSession(
+            usagePage: 0x0001, usage: 0x0006, isBLE: false, hasMouseCollection: true
+        ))
+    }
+
+    func test_isHIDPPCandidate_acceptsBLEMouseWithKeyboardPrimaryUsage() {
+        XCTAssertTrue(LogiDeviceSession.isHIDPPCandidate(
+            isBLE: true, usagePage: 0x0001, usage: 0x0006, hasMouseCollection: true))
+        XCTAssertFalse(LogiDeviceSession.isHIDPPCandidate(
+            isBLE: true, usagePage: 0x0001, usage: 0x0006, hasMouseCollection: false))
+        // Unchanged behavior.
+        XCTAssertTrue(LogiDeviceSession.isHIDPPCandidate(
+            isBLE: true, usagePage: 0x0001, usage: 0x0002, hasMouseCollection: false))
+        XCTAssertFalse(LogiDeviceSession.isHIDPPCandidate(
+            isBLE: false, usagePage: 0x0001, usage: 0x0006, hasMouseCollection: true))
+        XCTAssertTrue(LogiDeviceSession.isHIDPPCandidate(
+            isBLE: false, usagePage: 0xFF00, usage: 0x0001, hasMouseCollection: false))
+    }
 }
