@@ -84,12 +84,14 @@ class KeyRecorder: NSObject {
     private static let ADAPTIVE_CONFIRM_DELAY: TimeInterval = 0.3
     private static let HOLD_CONFIRM_DELAY: TimeInterval = 9.5
     private static let SIMULTANEOUS_RELEASE_WINDOW: TimeInterval = 0.05  // 50ms 内视为同时释放
+    // 同时保留左右设备位, 释放检测才能记住按下的是哪一侧的修饰键 (如右 Option)
     private static let modifierFlagsMask: UInt64 =
         CGEventFlags.maskShift.rawValue |
         CGEventFlags.maskControl.rawValue |
         CGEventFlags.maskAlternate.rawValue |
         CGEventFlags.maskCommand.rawValue |
-        CGEventFlags.maskSecondaryFn.rawValue
+        CGEventFlags.maskSecondaryFn.rawValue |
+        KeyCode.deviceModifiersMask
 
     static func recordingFeedbackDelay(isDuplicate: Bool) -> TimeInterval {
         return isDuplicate ? duplicateFeedbackDelay : recordedFeedbackDelay
@@ -360,7 +362,7 @@ class KeyRecorder: NSObject {
         // 构造 InputEvent 并通过 FINISH 通知完成录制
         let mosEvent = InputEvent(
             type: .keyboard,
-            code: extractPrimaryModifierCode(from: modifiers),
+            code: KeyCode.primaryModifierKeyCode(from: modifiers),
             modifiers: modifiers,
             phase: .down,
             source: .hidPP,
@@ -370,16 +372,6 @@ class KeyRecorder: NSObject {
             name: KeyRecorder.FINISH_NOTI_NAME,
             object: mosEvent
         )
-    }
-
-    /// 从 flags 中提取主要修饰键的 keyCode
-    private func extractPrimaryModifierCode(from flags: CGEventFlags) -> UInt16 {
-        if flags.rawValue & CGEventFlags.maskCommand.rawValue != 0 { return KeyCode.commandL }
-        if flags.rawValue & CGEventFlags.maskShift.rawValue != 0 { return KeyCode.shiftL }
-        if flags.rawValue & CGEventFlags.maskAlternate.rawValue != 0 { return KeyCode.optionL }
-        if flags.rawValue & CGEventFlags.maskControl.rawValue != 0 { return KeyCode.controlL }
-        if flags.rawValue & CGEventFlags.maskSecondaryFn.rawValue != 0 { return KeyCode.fnL }
-        return KeyCode.commandL
     }
 
     // MARK: - Adaptive Timers

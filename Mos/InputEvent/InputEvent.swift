@@ -93,13 +93,19 @@ struct InputEvent {
         // 纯修饰键组合: 合并所有 flags 后按固定顺序构建单字符串,
         // 与录制过程中 modifierString 的顺序一致 (⇧ Fn ⌃ ⌥ ⌘), 避免视觉跳跃
         if type == .keyboard && KeyCode.modifierKeys.contains(code) {
-            let allFlags = modifiers.rawValue | KeyCode.getKeyMask(code).rawValue
+            let selfMask = KeyCode.getKeyMask(code)
+            let allFlags = modifiers.rawValue | selfMask.rawValue
+            // 右侧修饰键在自身符号后标注 (R), 与 KeyCode.keyMap 中右侧键名一致; 左侧显示不变
+            let isRightSide = KeyCode.rightModifierKeys.contains(code)
+            func symbol(_ base: String, _ mask: CGEventFlags) -> String {
+                return isRightSide && selfMask == mask ? "\(base) (R)" : base
+            }
             var symbols: [String] = []
-            if allFlags & CGEventFlags.maskShift.rawValue != 0 { symbols.append("⇧") }
+            if allFlags & CGEventFlags.maskShift.rawValue != 0 { symbols.append(symbol("⇧", .maskShift)) }
             if allFlags & CGEventFlags.maskSecondaryFn.rawValue != 0 { symbols.append("Fn") }
-            if allFlags & CGEventFlags.maskControl.rawValue != 0 { symbols.append("⌃") }
-            if allFlags & CGEventFlags.maskAlternate.rawValue != 0 { symbols.append("⌥") }
-            if allFlags & CGEventFlags.maskCommand.rawValue != 0 { symbols.append("⌘") }
+            if allFlags & CGEventFlags.maskControl.rawValue != 0 { symbols.append(symbol("⌃", .maskControl)) }
+            if allFlags & CGEventFlags.maskAlternate.rawValue != 0 { symbols.append(symbol("⌥", .maskAlternate)) }
+            if allFlags & CGEventFlags.maskCommand.rawValue != 0 { symbols.append(symbol("⌘", .maskCommand)) }
             return [symbols.joined(separator: " ")]
         }
 

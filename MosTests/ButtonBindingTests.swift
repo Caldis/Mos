@@ -388,6 +388,83 @@ final class ButtonBindingTests: XCTestCase {
         XCTAssertNil(SystemShortcut.predefinedModifierShortcut(matchingCustomBinding: "custom::58:131072"))
     }
 
+    // MARK: - Right-side modifier keys
+
+    // 期望值直接写 IOKit 的 NX_DEVICE*KEYMASK 字面值, 独立于 KeyCode 中的常量表
+    private static let deviceLeftOption: UInt64 = 0x20    // NX_DEVICELALTKEYMASK
+    private static let deviceRightOption: UInt64 = 0x40   // NX_DEVICERALTKEYMASK
+    private static let deviceLeftCommand: UInt64 = 0x08   // NX_DEVICELCMDKEYMASK
+    private static let deviceRightCommand: UInt64 = 0x10  // NX_DEVICERCMDKEYMASK
+    private static let deviceRightShift: UInt64 = 0x04    // NX_DEVICERSHIFTKEYMASK
+    private static let deviceRightControl: UInt64 = 0x2000 // NX_DEVICERCTLKEYMASK
+
+    private func flags(_ masks: CGEventFlags, device: UInt64 = 0) -> CGEventFlags {
+        CGEventFlags(rawValue: masks.rawValue | device)
+    }
+
+    func testPrimaryModifierKeyCode_picksSideFromDeviceFlags() {
+        XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: flags(.maskAlternate, device: Self.deviceRightOption)), 61)
+        XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: flags(.maskAlternate, device: Self.deviceLeftOption)), 58)
+        XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: flags(.maskCommand, device: Self.deviceRightCommand)), 54)
+        XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: flags(.maskShift, device: Self.deviceRightShift)), 60)
+        XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: flags(.maskControl, device: Self.deviceRightControl)), 62)
+    }
+
+    func testPrimaryModifierKeyCode_fallsBackToLeftWhenSideIsUnknownOrAmbiguous() {
+        // 不带设备位的合成事件, 以及左右同时按下: 保持旧行为 (左侧 keyCode)
+        XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: .maskAlternate), KeyCode.optionL)
+        XCTAssertEqual(
+            KeyCode.primaryModifierKeyCode(from: flags(.maskAlternate, device: Self.deviceLeftOption | Self.deviceRightOption)),
+            KeyCode.optionL
+        )
+        XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: .maskSecondaryFn), KeyCode.fnL)
+        XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: []), KeyCode.commandL)
+    }
+
+    func testPrimaryModifierKeyCode_keepsModifierPriorityAndUsesPrimaryKeySide() {
+        // ⌘ 优先于 ⌥; 侧别只看主修饰键 (⌘) 自己的设备位
+        let leftCommandRightOption = flags([.maskCommand, .maskAlternate], device: Self.deviceLeftCommand | Self.deviceRightOption)
+        XCTAssertEqual(KeyCode.primaryModifierKeyCode(from: leftCommandRightOption), KeyCode.commandL)
+    }
+
+    func testNormalizedCustomBindingName_recordedRightOptionKeepsItsOwnKeyCode() {
+        // 录制右 Option 后, 动作应保存为 custom::61:0, 而不是折叠成只代表左 Option 的预设动作
+        let recorded = InputEvent(
+            type: .keyboard,
+            code: KeyCode.primaryModifierKeyCode(from: flags(.maskAlternate, device: Self.deviceRightOption)),
+            modifiers: flags(.maskAlternate, device: Self.deviceRightOption),
+            phase: .down,
+            source: .hidPP,
+            device: nil
+        )
+        let name = ButtonBinding.normalizedCustomBindingName(from: recorded)
+        XCTAssertEqual(name, "custom::61:0")
+        XCTAssertNil(SystemShortcut.displayShortcut(matchingBindingName: name))
+        // 左 Option 仍升级为预设 modifierOption (旧行为不变)
+        XCTAssertEqual(SystemShortcut.displayShortcut(matchingBindingName: "custom::58:0")?.identifier, "modifierOption")
+    }
+
+    func testInputEventDisplayComponents_marksOnlyRightSideModifierKeys() {
+        func components(_ code: UInt16, _ modifiers: CGEventFlags = []) -> [String] {
+            InputEvent(type: .keyboard, code: code, modifiers: modifiers, phase: .down, source: .hidPP, device: nil)
+                .displayComponents
+        }
+        XCTAssertEqual(components(KeyCode.optionL), ["⌥"])
+        XCTAssertEqual(components(KeyCode.shiftL, .maskCommand), ["⇧ ⌘"])
+        XCTAssertEqual(components(KeyCode.optionR), ["⌥ (R)"])
+        XCTAssertEqual(components(KeyCode.commandR), ["⌘ (R)"])
+        XCTAssertEqual(components(KeyCode.shiftR), ["⇧ (R)"])
+        XCTAssertEqual(components(KeyCode.controlR), ["⌃ (R)"])
+        XCTAssertEqual(components(KeyCode.optionR, .maskShift), ["⇧ ⌥ (R)"])
+    }
+
+    func testActionDisplayResolver_rendersRightOptionCustomBindingWithSideMarker() {
+        let presentation = makeResolvedPresentation(customBindingName: "custom::61:0")
+
+        XCTAssertEqual(presentation.kind, .keyCombo)
+        XCTAssertEqual(presentation.badgeComponents, ["⌥ (R)"])
+    }
+
     func testDisplayShortcut_matchesUniqueCustomBindingEquivalent() {
         let modifiers = UInt64(NSEvent.ModifierFlags.command.union(.shift).rawValue)
         XCTAssertEqual(

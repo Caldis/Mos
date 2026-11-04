@@ -282,6 +282,19 @@ class ShortcutExecutor {
 
     // MARK: - Custom Binding Execution
 
+    /// 修饰键 flagsChanged 事件的 flags
+    /// - 按下: 设置所有修饰键 flags (自身 + 附加修饰键); 右侧修饰键额外带上自身设备位,
+    ///   让按设备位区分左右的应用能识别出右侧键. 左侧修饰键的 flags 保持原样.
+    /// - 松开: 清除所有 flags (释放全部修饰键)
+    static func modifierKeyEventFlags(code: UInt16, modifiers: UInt64, phase: InputPhase) -> CGEventFlags {
+        guard phase == .down else { return CGEventFlags(rawValue: 0) }
+        var flags = modifiers | KeyCode.getKeyMask(code).rawValue
+        if KeyCode.rightModifierKeys.contains(code) {
+            flags |= KeyCode.getDeviceMask(code)
+        }
+        return CGEventFlags(rawValue: flags)
+    }
+
     /// 执行自定义绑定 (1:1 down/up 映射)
     private func executeCustom(code: UInt16, modifiers: UInt64, phase: InputPhase) {
         guard let source = CGEventSource(stateID: .hidSystemState) else { return }
@@ -292,14 +305,7 @@ class ShortcutExecutor {
             guard let event = CGEvent(source: source) else { return }
             event.type = .flagsChanged
             event.setIntegerValueField(.keyboardEventKeycode, value: Int64(code))
-            if phase == .down {
-                // 按下: 设置所有修饰键 flags (自身 + 附加修饰键)
-                let keyMask = KeyCode.getKeyMask(code)
-                event.flags = CGEventFlags(rawValue: modifiers | keyMask.rawValue)
-            } else {
-                // 松开: 清除所有 flags (释放全部修饰键)
-                event.flags = CGEventFlags(rawValue: 0)
-            }
+            event.flags = Self.modifierKeyEventFlags(code: code, modifiers: modifiers, phase: phase)
             // 标记为 Mos 合成事件, 避免被 ScrollCore/ButtonCore/KeyRecorder 误处理
             event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
             event.post(tap: .cghidEventTap)

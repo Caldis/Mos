@@ -260,6 +260,52 @@ final class InputProcessorTests: XCTestCase {
         }
     }
 
+    func testResolveAction_rightOptionCustomBinding_keepsRightKeyCodeAndStatefulMode() {
+        var binding = ButtonBinding(
+            triggerEvent: RecordedEvent(type: .mouse, code: 2, modifiers: 0, displayComponents: ["🖱M"], deviceFilter: nil),
+            systemShortcutName: "custom::61:0",
+            isEnabled: true
+        )
+        binding.prepareCustomCache()
+
+        guard let action = ShortcutExecutor.shared.resolveAction(named: binding.systemShortcutName, binding: binding) else {
+            return XCTFail("Expected right option custom binding to resolve")
+        }
+        switch action {
+        case .customKey(let code, let modifiers):
+            XCTAssertEqual(code, 61)
+            XCTAssertEqual(modifiers, 0)
+        default:
+            XCTFail("Expected right option custom binding to use custom modifier execution")
+        }
+        XCTAssertEqual(action.executionMode, .stateful)
+    }
+
+    func testModifierKeyEventFlags_rightSideKeysCarryTheirDeviceFlag() {
+        // 期望值为 IOKit NX_DEVICER*KEYMASK 字面值
+        let option = CGEventFlags.maskAlternate.rawValue
+        XCTAssertEqual(ShortcutExecutor.modifierKeyEventFlags(code: 61, modifiers: 0, phase: .down).rawValue, option | 0x40)
+        XCTAssertEqual(ShortcutExecutor.modifierKeyEventFlags(code: 54, modifiers: 0, phase: .down).rawValue,
+                       CGEventFlags.maskCommand.rawValue | 0x10)
+        XCTAssertEqual(ShortcutExecutor.modifierKeyEventFlags(code: 60, modifiers: 0, phase: .down).rawValue,
+                       CGEventFlags.maskShift.rawValue | 0x04)
+        XCTAssertEqual(ShortcutExecutor.modifierKeyEventFlags(code: 62, modifiers: 0, phase: .down).rawValue,
+                       CGEventFlags.maskControl.rawValue | 0x2000)
+        XCTAssertEqual(ShortcutExecutor.modifierKeyEventFlags(code: 61, modifiers: 0, phase: .up).rawValue, 0)
+    }
+
+    func testModifierKeyEventFlags_leftSideAndFnKeysAreUnchanged() {
+        // 左侧修饰键与 Fn 不附加设备位, 已有绑定发出的事件保持原样
+        let command = CGEventFlags.maskCommand.rawValue
+        XCTAssertEqual(ShortcutExecutor.modifierKeyEventFlags(code: 58, modifiers: 0, phase: .down).rawValue,
+                       CGEventFlags.maskAlternate.rawValue)
+        XCTAssertEqual(ShortcutExecutor.modifierKeyEventFlags(code: 56, modifiers: command, phase: .down).rawValue,
+                       CGEventFlags.maskShift.rawValue | command)
+        XCTAssertEqual(ShortcutExecutor.modifierKeyEventFlags(code: 63, modifiers: 0, phase: .down).rawValue,
+                       CGEventFlags.maskSecondaryFn.rawValue)
+        XCTAssertEqual(ShortcutExecutor.modifierKeyEventFlags(code: 58, modifiers: 0, phase: .up).rawValue, 0)
+    }
+
     func testResolveAction_escapeShortcut_mapsToSystemShortcut() {
         guard let action = ShortcutExecutor.shared.resolveAction(named: "escapeKey") else {
             return XCTFail("Expected escape shortcut to resolve")
