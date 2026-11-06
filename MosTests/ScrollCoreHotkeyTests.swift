@@ -211,4 +211,97 @@ final class ScrollCoreHotkeyTests: XCTestCase {
         XCTAssertFalse(ScrollCore.shared.toggleScroll)
         XCTAssertFalse(ScrollCore.shared.blockSmooth)
     }
+
+    // MARK: - CGEventTap 修饰键热键: 左右两侧均可触发 (#840)
+
+    /// 设备相关的左右修饰键位 (IOKit NX_DEVICE*KEYMASK), 真实 flagsChanged 事件会携带
+    private static let deviceRightShiftMask: UInt64 = 0x04
+    private static let deviceLeftShiftMask: UInt64 = 0x02
+    private static let deviceRightCommandMask: UInt64 = 0x10
+    private static let deviceRightAlternateMask: UInt64 = 0x40
+
+    private func sendFlagsChanged(keyCode: UInt16, flags: UInt64) throws {
+        guard let event = CGEvent(keyboardEventSource: nil, virtualKey: keyCode, keyDown: true) else {
+            throw XCTSkip("CGEvent construction failed on this environment")
+        }
+        event.type = .flagsChanged
+        event.flags = CGEventFlags(rawValue: flags)
+        _ = ScrollCore.shared.hotkeyEventCallBack(CGEventTapProxy(bitPattern: 1)!, .flagsChanged, event, nil)
+    }
+
+    /// 使用左侧修饰键作为 dash/toggle/block 热键 (与默认配置一致), 并清空按钮绑定避免 defer 分支
+    private func withLeftModifierHotkeys(_ body: () throws -> Void) rethrows {
+        let originalDash = Options.shared.scroll.dash
+        let originalToggle = Options.shared.scroll.toggle
+        let originalBlock = Options.shared.scroll.block
+        let originalBindings = Options.shared.buttons.binding
+        let originalApplication = ScrollCore.shared.application
+        let originalCurrentApplication = ScrollCore.shared.currentApplication
+        Options.shared.scroll.dash = ScrollHotkey(type: .keyboard, code: KeyCode.optionL)
+        Options.shared.scroll.toggle = ScrollHotkey(type: .keyboard, code: KeyCode.shiftL)
+        Options.shared.scroll.block = ScrollHotkey(type: .keyboard, code: KeyCode.commandL)
+        Options.shared.buttons.binding = []
+        ButtonUtils.shared.invalidateCache()
+        ScrollCore.shared.application = nil
+        ScrollCore.shared.currentApplication = nil
+        defer {
+            Options.shared.scroll.dash = originalDash
+            Options.shared.scroll.toggle = originalToggle
+            Options.shared.scroll.block = originalBlock
+            Options.shared.buttons.binding = originalBindings
+            ButtonUtils.shared.invalidateCache()
+            ScrollCore.shared.application = originalApplication
+            ScrollCore.shared.currentApplication = originalCurrentApplication
+        }
+        try body()
+    }
+
+    func testEventTap_rightShift_triggersLeftShiftToggleHotkey() throws {
+        try withLeftModifierHotkeys {
+            try sendFlagsChanged(keyCode: KeyCode.shiftR, flags: CGEventFlags.maskShift.rawValue | Self.deviceRightShiftMask)
+            XCTAssertTrue(ScrollCore.shared.toggleScroll, "right Shift down should activate toggle")
+
+            try sendFlagsChanged(keyCode: KeyCode.shiftR, flags: 0)
+            XCTAssertFalse(ScrollCore.shared.toggleScroll, "right Shift up should release toggle")
+        }
+    }
+
+    func testEventTap_rightCommand_triggersLeftCommandBlockHotkey() throws {
+        try withLeftModifierHotkeys {
+            try sendFlagsChanged(keyCode: KeyCode.commandR, flags: CGEventFlags.maskCommand.rawValue | Self.deviceRightCommandMask)
+            XCTAssertTrue(ScrollCore.shared.blockSmooth, "right Command down should activate block")
+            XCTAssertFalse(ScrollCore.shared.toggleScroll, "right Command must not activate the Shift toggle")
+
+            try sendFlagsChanged(keyCode: KeyCode.commandR, flags: 0)
+            XCTAssertFalse(ScrollCore.shared.blockSmooth)
+        }
+    }
+
+    func testEventTap_rightOption_triggersLeftOptionDashHotkey() throws {
+        try withLeftModifierHotkeys {
+            try sendFlagsChanged(keyCode: KeyCode.optionR, flags: CGEventFlags.maskAlternate.rawValue | Self.deviceRightAlternateMask)
+            XCTAssertTrue(ScrollCore.shared.dashScroll, "right Option down should activate dash")
+            XCTAssertEqual(ScrollCore.shared.dashAmplification, 5.0)
+
+            try sendFlagsChanged(keyCode: KeyCode.optionR, flags: 0)
+            XCTAssertFalse(ScrollCore.shared.dashScroll)
+            XCTAssertEqual(ScrollCore.shared.dashAmplification, 1.0)
+        }
+    }
+
+    func testEventTap_releasingOneShiftWhileOtherHeld_keepsToggleActive() throws {
+        try withLeftModifierHotkeys {
+            let shift = CGEventFlags.maskShift.rawValue
+            try sendFlagsChanged(keyCode: KeyCode.shiftL, flags: shift | Self.deviceLeftShiftMask)
+            try sendFlagsChanged(keyCode: KeyCode.shiftR, flags: shift | Self.deviceLeftShiftMask | Self.deviceRightShiftMask)
+            XCTAssertTrue(ScrollCore.shared.toggleScroll)
+
+            // 松开右 Shift, 左 Shift 仍按住
+            try sendFlagsChanged(keyCode: KeyCode.shiftR, flags: shift | Self.deviceLeftShiftMask)
+            XCTAssertTrue(ScrollCore.shared.toggleScroll, "toggle should stay active while left Shift is still held")
+
+            try sendFlagsChanged(keyCode: KeyCode.shiftL, flags: 0)
+            XCTAssertFalse(ScrollCore.shared.toggleScroll)
+        }
+    }
 }
