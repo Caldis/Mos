@@ -219,6 +219,7 @@ final class ScrollCoreHotkeyTests: XCTestCase {
     private static let deviceLeftShiftMask: UInt64 = 0x02
     private static let deviceRightCommandMask: UInt64 = 0x10
     private static let deviceRightAlternateMask: UInt64 = 0x40
+    private static let deviceRightControlMask: UInt64 = 0x2000
 
     private func sendFlagsChanged(keyCode: UInt16, flags: UInt64) throws {
         guard let event = CGEvent(keyboardEventSource: nil, virtualKey: keyCode, keyDown: true) else {
@@ -286,6 +287,24 @@ final class ScrollCoreHotkeyTests: XCTestCase {
             try sendFlagsChanged(keyCode: KeyCode.optionR, flags: 0)
             XCTAssertFalse(ScrollCore.shared.dashScroll)
             XCTAssertEqual(ScrollCore.shared.dashAmplification, 1.0)
+        }
+    }
+
+    func testEventTap_rightControlAndFn_triggerLeftSideToggleHotkey() throws {
+        let cases: [(name: String, left: UInt16, right: UInt16, flags: UInt64)] = [
+            ("Control", KeyCode.controlL, KeyCode.controlR, CGEventFlags.maskControl.rawValue | Self.deviceRightControlMask),
+            ("Fn", KeyCode.fnL, KeyCode.fnR, CGEventFlags.maskSecondaryFn.rawValue),
+        ]
+        try withLeftModifierHotkeys {
+            for c in cases {
+                Options.shared.scroll.toggle = ScrollHotkey(type: .keyboard, code: c.left)
+
+                try sendFlagsChanged(keyCode: c.right, flags: c.flags)
+                XCTAssertTrue(ScrollCore.shared.toggleScroll, "right \(c.name) down should activate a left \(c.name) toggle")
+
+                try sendFlagsChanged(keyCode: c.right, flags: 0)
+                XCTAssertFalse(ScrollCore.shared.toggleScroll, "right \(c.name) up should release toggle")
+            }
         }
     }
 

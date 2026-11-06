@@ -143,7 +143,8 @@ final class InputProcessorTests: XCTestCase {
     }
 
     /// 按钮绑定的修饰键按通用 flag 匹配, 右侧修饰键 (带设备相关位) 也能触发 (#840 回归保护)
-    func testProcess_modifierMouseBinding_matchesRightSideModifier() {
+    /// 只做匹配查询, 不经过 InputProcessor.process, 避免执行动作向系统投递真实按键事件
+    func testBestMatchingBinding_modifierMouseBinding_matchesRightSideModifier() {
         let trigger = RecordedEvent(type: .mouse, code: 3, modifiers: UInt(CGEventFlags.maskShift.rawValue),
                                     displayComponents: ["⇧", "🖱4"], deviceFilter: nil)
         let binding = ButtonBinding(triggerEvent: trigger, systemShortcutName: "custom::56:0", isEnabled: true)
@@ -154,7 +155,7 @@ final class InputProcessorTests: XCTestCase {
         let rightShift = CGEventFlags(rawValue: CGEventFlags.maskShift.rawValue | 0x04)
         let downEvent = InputEvent(type: .mouse, code: 3, modifiers: rightShift,
                                    phase: .down, source: .hidPP, device: nil)
-        XCTAssertEqual(InputProcessor.shared.process(downEvent), .consumed)
+        XCTAssertEqual(ButtonUtils.shared.getBestMatchingBinding(for: downEvent)?.triggerEvent, trigger)
     }
 
     func testSystemShortcutExecutionModes_mouseActionsStateful_nonMouseTrigger() {
