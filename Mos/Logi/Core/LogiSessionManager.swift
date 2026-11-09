@@ -6,6 +6,7 @@
 //  Copyright © 2026 Caldis. All rights reserved.
 //
 
+import CoreGraphics
 import Foundation
 import IOKit
 import IOKit.hid
@@ -24,17 +25,35 @@ internal class LogiSessionManager {
     // MARK: - Constants
     static let logitechVendorId: Int = 0x046D
     static let buttonEventNotification = NSNotification.Name("LogiButtonEvent")
+    private static let screenIsLockedNotification = Notification.Name("com.apple.screenIsLocked")
+    private static let screenIsUnlockedNotification = Notification.Name("com.apple.screenIsUnlocked")
+    private static let unlockRecoveryDelay: TimeInterval = 0.35
+    private static let maxUnlockSettlePolls = 4
+    private static let permissionRetryDelays: [TimeInterval] = [0.5, 1.5, 3.0]
+    private static let lazyActivityRecoveryCooldown: TimeInterval = 3.0
+    private static let maxLazyActivityRecoveryAttempts = 2
 
     // MARK: - State
     private var hidManager: IOHIDManager?
     private var sessions: [IOHIDDevice: LogiDeviceSession] = [:]
     private(set) var isActive = false
     private let deliveryModes = LogiButtonDeliveryModeStore()
+    private var systemObserversInstalled = false
+    private var screenLockObserved = false
+    private var unlockRecoveryWorkItem: DispatchWorkItem?
+    private var unlockSettlePollCount = 0
+    private var permissionRetryWorkItem: DispatchWorkItem?
+    private var permissionRetryCount = 0
+    private var lazyActivityRecoveryCount = 0
+    private var lastLazyActivityRecoveryTime: TimeInterval = 0
+    private var isRestartingForRecovery = false
 
     // MARK: - Lifecycle
 
     func start() {
         guard !isActive else { return }
+        installSystemObserversIfNeeded()
+        screenLockObserved = Self.queryScreenLocked()
         LogiDebugPanel.log("[LogitechHID] Starting")
 
         hidManager = IOHIDManagerCreate(kCFAllocatorDefault, IOOptionBits(kIOHIDOptionsTypeNone))
@@ -57,19 +76,34 @@ internal class LogiSessionManager {
         // Schedule 到 main RunLoop (HID++ 事件低频, 避免线程同步)
         IOHIDManagerScheduleWithRunLoop(manager, CFRunLoopGetMain(), CFRunLoopMode.commonModes.rawValue)
 
+        isActive = true
         let result = IOHIDManagerOpen(manager, IOOptionBits(kIOHIDOptionsTypeNone))
         if result != kIOReturnSuccess {
+            isActive = false
+            IOHIDManagerUnscheduleFromRunLoop(manager, CFRunLoopGetMain(), CFRunLoopMode.commonModes.rawValue)
+            hidManager = nil
             LogiDebugPanel.log("[LogitechHID] Failed to open IOHIDManager: \(String(format: "0x%08x", result))")
             return
         }
 
-        isActive = true
         LogiDebugPanel.log("[LogitechHID] Started")
     }
 
     func stop() {
         guard isActive else { return }
         LogiDebugPanel.log("[LogitechHID] Stopping")
+
+        if !isRestartingForRecovery {
+            unlockRecoveryWorkItem?.cancel()
+            unlockRecoveryWorkItem = nil
+            unlockSettlePollCount = 0
+            permissionRetryWorkItem?.cancel()
+            permissionRetryWorkItem = nil
+            permissionRetryCount = 0
+            lazyActivityRecoveryCount = 0
+            lastLazyActivityRecoveryTime = 0
+            deliveryModes.resetAll()
+        }
 
         // 清理所有设备会话
         for (_, session) in sessions {
@@ -83,9 +117,209 @@ internal class LogiSessionManager {
         }
         hidManager = nil
         isActive = false
+        if !isRestartingForRecovery {
+            isRecording = false
+        }
         // sessions 被清空后重算一次, 把 lastKnownBusy 归位并让 UI 同步关闭 spinner.
         recomputeAndNotifyActivityState()
         LogiDebugPanel.log("[LogitechHID] Stopped")
+    }
+
+    // MARK: - Screen Lock & Permission-Denied Session Recovery
+
+    /// `didWakeNotification` fires while macOS is still on the Lock Screen. If a
+    /// Keyboard-primary composite BLE mouse (e.g. M720) wakes on the Lock Screen,
+    /// `IOHIDFamily` opens its `IOHIDLibUserClient` without keyboard access and rejects
+    /// `IOHIDDeviceSetReport` with `kIOReturnNotPermitted` (`0xe00002e2`). Closing and
+    /// reopening `IOHIDManager` once the screen unlocks obtains a fresh client handle.
+    static func queryScreenLocked() -> Bool {
+        guard let dict = CGSessionCopyCurrentDictionary() as? [String: Any] else {
+            return false
+        }
+        return (dict["CGSSessionScreenIsLocked"] as? Bool) ?? false
+    }
+
+    var isScreenLocked: Bool {
+        return screenLockObserved || Self.queryScreenLocked()
+    }
+
+    static func shouldReopenSessionsOnUnlock(
+        isActive: Bool,
+        anySessionNeedsReopen: Bool,
+        anyCandidateIncomplete: Bool
+    ) -> Bool {
+        guard isActive else { return false }
+        return anySessionNeedsReopen || anyCandidateIncomplete
+    }
+
+    static func nextPermissionRetryDelay(completedAttempts: Int) -> TimeInterval? {
+        guard completedAttempts >= 0, completedAttempts < permissionRetryDelays.count else {
+            return nil
+        }
+        return permissionRetryDelays[completedAttempts]
+    }
+
+    static func canAttemptLazyActivityRecovery(
+        isScreenLocked: Bool,
+        completedAttempts: Int,
+        now: TimeInterval,
+        lastAttemptTime: TimeInterval
+    ) -> Bool {
+        guard !isScreenLocked else { return false }
+        guard completedAttempts < maxLazyActivityRecoveryAttempts else { return false }
+        if lastAttemptTime > 0, now - lastAttemptTime < lazyActivityRecoveryCooldown {
+            return false
+        }
+        return true
+    }
+
+    private func installSystemObserversIfNeeded() {
+        guard !systemObserversInstalled else { return }
+        systemObserversInstalled = true
+        let dnc = DistributedNotificationCenter.default()
+        dnc.addObserver(
+            forName: Self.screenIsLockedNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.handleScreenLocked()
+        }
+        dnc.addObserver(
+            forName: Self.screenIsUnlockedNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.handleScreenUnlocked()
+        }
+    }
+
+    private func handleScreenLocked() {
+        screenLockObserved = true
+        unlockRecoveryWorkItem?.cancel()
+        unlockRecoveryWorkItem = nil
+        unlockSettlePollCount = 0
+        permissionRetryWorkItem?.cancel()
+        permissionRetryWorkItem = nil
+        LogiDebugPanel.log("[LogitechHID] Screen locked")
+    }
+
+    private func handleScreenUnlocked() {
+        screenLockObserved = false
+        unlockSettlePollCount = 0
+        permissionRetryWorkItem?.cancel()
+        permissionRetryWorkItem = nil
+        guard isActive else { return }
+        scheduleUnlockRecoveryEvaluation(delay: Self.unlockRecoveryDelay)
+    }
+
+    private func scheduleUnlockRecoveryEvaluation(delay: TimeInterval) {
+        unlockRecoveryWorkItem?.cancel()
+        let item = DispatchWorkItem { [weak self] in
+            self?.evaluateUnlockRecovery()
+        }
+        unlockRecoveryWorkItem = item
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: item)
+    }
+
+    private func evaluateUnlockRecovery() {
+        unlockRecoveryWorkItem = nil
+        guard isActive else { return }
+
+        if Self.queryScreenLocked() {
+            guard unlockSettlePollCount < Self.maxUnlockSettlePolls else {
+                unlockSettlePollCount = 0
+                return
+            }
+            unlockSettlePollCount += 1
+            scheduleUnlockRecoveryEvaluation(delay: Self.unlockRecoveryDelay)
+            return
+        }
+
+        unlockSettlePollCount = 0
+        permissionRetryCount = 0
+        lazyActivityRecoveryCount = 0
+        lastLazyActivityRecoveryTime = 0
+
+        let candidates = sessions.values.filter { $0.isHIDPPCandidate }
+        let anyNeedsReopen = candidates.contains { $0.needsSessionReopen }
+        let anyIncomplete = candidates.contains { $0.needsPostSleepHandshakeRecovery }
+        if Self.shouldReopenSessionsOnUnlock(
+            isActive: isActive,
+            anySessionNeedsReopen: anyNeedsReopen,
+            anyCandidateIncomplete: anyIncomplete
+        ) {
+            restartManagerForRecovery(reason: "screen unlocked with blocked or incomplete HID++ session")
+        }
+    }
+
+    func noteSessionPermissionDenied(_ session: LogiDeviceSession, ioreturn: IOReturn) {
+        guard isActive else { return }
+        if isScreenLocked {
+            LogiDebugPanel.log(
+                "[LogitechHID] \(session.deviceInfo.name) setReport denied (\(String(format: "0x%08x", ioreturn))) while screen locked; waiting for unlock"
+            )
+            return
+        }
+        guard permissionRetryWorkItem == nil,
+              let delay = Self.nextPermissionRetryDelay(completedAttempts: permissionRetryCount) else {
+            return
+        }
+        permissionRetryCount += 1
+        let attempt = permissionRetryCount
+        LogiDebugPanel.log(
+            "[LogitechHID] \(session.deviceInfo.name) setReport denied (\(String(format: "0x%08x", ioreturn))); scheduling session reopen #\(attempt) in \(String(format: "%.1fs", delay))"
+        )
+        let item = DispatchWorkItem { [weak self] in
+            guard let self = self else { return }
+            self.permissionRetryWorkItem = nil
+            guard self.isActive, !self.isScreenLocked else { return }
+            guard self.sessions.values.contains(where: { $0.needsSessionReopen }) else { return }
+            self.restartManagerForRecovery(reason: "HID setReport permission retry #\(attempt)")
+        }
+        permissionRetryWorkItem = item
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: item)
+    }
+
+    func noteSessionActivityWhileBlocked(_ session: LogiDeviceSession, at now: TimeInterval) {
+        guard isActive,
+              unlockRecoveryWorkItem == nil,
+              permissionRetryWorkItem == nil,
+              Self.canAttemptLazyActivityRecovery(
+                  isScreenLocked: isScreenLocked,
+                  completedAttempts: lazyActivityRecoveryCount,
+                  now: now,
+                  lastAttemptTime: lastLazyActivityRecoveryTime
+              ) else {
+            return
+        }
+        lazyActivityRecoveryCount += 1
+        lastLazyActivityRecoveryTime = now
+        let attempt = lazyActivityRecoveryCount
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, self.isActive, !self.isScreenLocked else { return }
+            guard self.sessions.values.contains(where: { $0.needsSessionReopen }) else { return }
+            self.restartManagerForRecovery(reason: "post-denial input activity #\(attempt)")
+        }
+    }
+
+    func noteSessionSendSucceeded() {
+        guard !sessions.values.contains(where: { $0.needsSessionReopen }) else { return }
+        permissionRetryCount = 0
+        lazyActivityRecoveryCount = 0
+        lastLazyActivityRecoveryTime = 0
+    }
+
+    private func restartManagerForRecovery(reason: String) {
+        guard isActive else { return }
+        let preserveRecording = isRecording
+        LogiDebugPanel.log("[LogitechHID] Restarting IOHIDManager (\(reason))")
+        isRestartingForRecovery = true
+        defer { isRestartingForRecovery = false }
+        stop()
+        start()
+        if preserveRecording {
+            temporarilyDivertAll()
+        }
     }
 
     // MARK: - Device Callbacks (C function pointers)
@@ -120,7 +354,15 @@ internal class LogiSessionManager {
         // 键盘接口跳过: Mos 对键盘没有 HID++ 用途, 一旦创建会话会在接口上注册
         // input-report 回调, 使键盘无法进入休眠, 导致背光常亮 (issue #948)。
         // 不创建 LogiDeviceSession 即可完全不触碰该 HID 接口。
-        guard Self.shouldAttachSession(usagePage: usagePage, usage: usage) else {
+        let transport = IOHIDDeviceGetProperty(device, kIOHIDTransportKey as CFString) as? String ?? ""
+        guard Self.shouldAttachSession(
+            usagePage: usagePage,
+            usage: usage,
+            isBLE: transport.lowercased().contains("bluetooth"),
+            hasMouseCollection: Self.hasMouseCollection(
+                IOHIDDeviceGetProperty(device, kIOHIDDeviceUsagePairsKey as CFString)
+            )
+        ) else {
             LogiDebugPanel.log("[LogitechHID] Skipping keyboard interface (keeps device awake): \(productName)")
             return
         }
@@ -139,10 +381,28 @@ internal class LogiSessionManager {
     /// input-report 回调。该回调对键盘毫无用处 (`handleInputReport` 只处理
     /// HID++ 报文 `0x10/0x11`, 键盘不发), 却会让键盘 HID 端点保持活跃, 使其
     /// 无法休眠、背光常亮。因此对键盘接口整条跳过, 不创建会话。见 issue #948。
-    static func shouldAttachSession(usagePage: Int, usage: Int) -> Bool {
+    ///
+    /// 例外: 部分 BLE 鼠标 (如 M720 Triathlon) 的 PrimaryUsage 是 Keyboard, 但同一
+    /// 接口的 `DeviceUsagePairs` 还含 Mouse collection 与 HID++ 通道, 它们是真正的
+    /// HID++ 目标, 必须挂会话。纯键盘 (无 Mouse collection) 仍然跳过。
+    static func shouldAttachSession(
+        usagePage: Int,
+        usage: Int,
+        isBLE: Bool = false,
+        hasMouseCollection: Bool = false
+    ) -> Bool {
         // Generic Desktop (0x0001) Keyboard (0x0006)
-        if usagePage == 0x0001 && usage == 0x0006 { return false }
+        if usagePage == 0x0001 && usage == 0x0006 { return isBLE && hasMouseCollection }
         return true
+    }
+
+    /// `DeviceUsagePairs` 是否含 Generic Desktop (0x0001) Mouse (0x0002) collection.
+    static func hasMouseCollection(_ deviceUsagePairs: Any?) -> Bool {
+        guard let pairs = deviceUsagePairs as? [[String: Any]] else { return false }
+        return pairs.contains { pair in
+            (pair[kIOHIDDeviceUsagePageKey as String] as? Int) == 0x0001
+                && (pair[kIOHIDDeviceUsageKey as String] as? Int) == 0x0002
+        }
     }
 
     private func deviceDisconnected(_ device: IOHIDDevice) {
