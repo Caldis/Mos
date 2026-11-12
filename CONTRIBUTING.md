@@ -1,49 +1,78 @@
-# How to contribute
+# Contributing to Mos
 
-Bug-fixes and features often come from users of the Mos, and improving it greatly. We want to keep it as easy as possible to contribute changes that improve the experience for users all around the world. There are a few guidelines that we
-need contributors to follow so that we can have a chance of keeping on
-top of things.
+Thanks for wanting to improve Mos. Bug fixes, UI/UX polish, security hardening, documentation, localization, and focused tests are all welcome.
 
-## Simple issues and bug reports
+Mos is a small macOS utility that touches system input, Accessibility permission, Logi/HID devices, and persisted user configuration. That makes maintenance cost and regression risk very real, so we strongly prefer small, focused contributions.
 
-If you are reporting a bug which can be observed visually, please add to your issue either:
+## What We Welcome
 
-* Screenshots, if the bug is easily explainable
-* A working sample project that we can compile, run, and immediately observe the issue
+- Small bug fixes with clear reproduction steps or validation notes.
+- UI/UX refinements such as layout, copy, readability, and onboarding polish.
+- Small security hardening, such as safer permission-state handling, input protection, and boundary checks.
+- Localization, documentation, and test improvements.
+- Single-topic PRs with limited line changes and a clear review surface.
 
-## Getting Started with Contributions
+## What We Will Not Merge For Now
 
-* Make sure you have a [GitHub account](https://github.com/signup/free)
-* Submit a ticket for your issue, assuming one does not already exist.
-  * Clearly describe the issue including steps to reproduce when it is a bug.
-  * Make sure you fill in the earliest version (or commit number) that you know has the issue.
-* Fork the repository on GitHub
+- Large new features, modules, or architectural rewrites that have not been discussed first.
+- Bulk AI-generated rewrites, formatting sweeps, migrations, or opportunistic cleanups.
+- Behavior changes that affect input-event handling, permission prompts, app updates, legacy user data, or persisted configuration formats without prior discussion.
+- Full machine-generated translation sets, especially when they cannot be reviewed by native speakers.
 
-## Making Changes
+If you are excited about a larger feature, please start with [Discussions](https://github.com/Caldis/Mos/discussions). Big ideas are welcome, but they need shared context around user value, maintenance cost, and safety boundaries before code review.
 
-* Create a topic branch from where you want to base your work. This is usually the master branch.
-* Make commits of logical units.
-* Make sure your code conforms to the code style around it. It's easy, just look around!
-* If you have made changes back and forth, or have made merges, your commit history might look messy and hard to understand. A single issue or change should still be in one commit. So please squash those commits together and rebase them however you need to - to make our lives easier when reading it later.
-* Check for unnecessary whitespace with `git diff --check` before committing.
-* Make sure your commit messages are in the proper format.
+## AI-Assisted Contributions
 
-````
-    First line must be up to 50 chars (Fixes #1234)
+AI-assisted coding is welcome, but the submitter is responsible for the final diff.
 
-    The first line should be a short statement as to what have changed, and should also include an issue number, prefixed with a hash.
-    The body of the message comes after an empty new line, and describes the changes
-    more thoroughly, especially if there was a special case handled there,
-    or maybe some trickery that only code wizards can understand.
-````
+Before opening a PR, make sure you understand what every changed line does, remove generated noise, and verify the behavior yourself. Please do not submit AI output as-is.
 
-* Make sure you have tested your changes well.
-* If your changes could theoretically affect some other component or case, which you do not necessarily use, you still have to test it.
-* Create a Pull Request from your topic branch to the relevant branch in the main repo. If you go to the main repo of the framework, you'll see a big green button which pretty much prepares the PR for you. You just have to hit it.
+## Reporting Bugs
 
-## Making Trivial Changes
+Before opening a new issue, search existing [issues](https://github.com/Caldis/Mos/issues) and [Discussions](https://github.com/Caldis/Mos/discussions).
 
-For changes of a trivial nature to comments and documentation, it is not
-always necessary to create a new ticket. In this case, it is
-appropriate to start the first line of a commit with '(doc)' instead of
-a ticket number. Even the default commit message the GitHub generates is fine with us.
+When reporting a bug, include:
+
+- Mos version.
+- macOS version.
+- Mouse or trackpad model.
+- Affected app, or whether it affects the whole system.
+- Other mouse, keyboard, or window-management tools installed.
+- Accessibility permission state for Mos.
+- Reproduction steps and expected behavior.
+- Screenshots, screen recordings, logs, or a sample app when they help explain the problem.
+
+## Opening a Pull Request
+
+Please keep PRs small and focused. A good PR usually does one thing, explains why it matters, and includes enough validation for reviewers to trust the change.
+
+In the PR description, include:
+
+- Motivation for the change.
+- Summary of what changed.
+- Test or validation steps.
+- Possible behavior changes or compatibility risks.
+- Related issue or discussion, if any.
+
+Avoid unrelated formatting changes, broad refactors, and mixed-purpose commits.
+
+## Higher-Risk Areas
+
+Please discuss these areas before opening a large PR:
+
+- Logi/HID and real-device behavior.
+- Accessibility permission flow.
+- Input-event interception, dispatching, and safety guards.
+- Signing, notarization, Sparkle updates, and release packaging.
+- Legacy user data, defaults, or persisted configuration formats.
+- macOS-version compatibility and availability fallbacks.
+
+## Local Changes and Verification
+
+Mos is built with Swift 5, AppKit, Xcode, and Swift Package Manager. Match the style of the surrounding code, keep compatibility with macOS 10.13, and avoid new APIs without availability gates or fallbacks.
+
+For code changes, run the relevant build or tests before opening a PR. For documentation-only changes, at least check links, image paths, and Markdown formatting.
+
+## License
+
+By contributing, you agree that your contribution will be licensed under Mos's project license.

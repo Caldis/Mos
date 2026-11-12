@@ -41,11 +41,26 @@ class ScrollPoster {
     // 状态锁和投递上下文
     private var stateLock = os_unfair_lock_s()
     private let dispatchContext = ScrollDispatchContext.shared
+    // 滚动配置快照: 主线程在 update 时捕获, CVDisplayLink 线程只读, 避免热路径跨线程读 Options/ScrollCore
+    private struct ConfigSnapshot {
+        var simTrackpadEnabled: Bool
+        var deadZone: Double
+    }
+    private var config = ConfigSnapshot(simTrackpadEnabled: false, deadZone: 1.0)
     // CVDisplayLink 恢复机制
     private var keeper: Timer?
     private var lastCallbackTime: CFTimeInterval = 0.0
     private var lastRecreateAttempt: CFTimeInterval = 0.0
     private let recreateCooldown: CFTimeInterval = 3.0
+    // CVDisplayLink 刷新率自纠 (issue #958):
+    // 显示器唤醒/重连时会先短暂报告过渡刷新率 (如先 60Hz 再升 144Hz), 若重建正好落在这个窗口,
+    // 就会把 link 绑到偏低的刷新率, 使平滑滚动只按低帧率绘制 (卡顿), 而现有恢复机制识别不了.
+    // 对策: 每次建立 link 后延迟复查若干次, 发现 link 标称率明显低于显示器实际率就重建追平.
+    private var rateVerifyTimer: Timer?
+    private var rateVerifyAttemptsLeft = 0
+    private var isVerifying = false
+    private let rateVerifyDelays: [TimeInterval] = [2.0, 4.0, 8.0]
+    private let rateVerifyRatio = 0.7
     // 主线程访问, 无需锁
     var isAvailable: Bool { return poster != nil }
 }
@@ -58,6 +73,8 @@ extension ScrollPoster {
         }
         os_unfair_lock_lock(&stateLock)
         defer { os_unfair_lock_unlock(&stateLock) }
+        // 捕获本次手势的配置快照 (主线程读 Options/ScrollCore, CVDisplayLink 线程只读)
+        captureConfigSnapshotLocked()
         // 更新滚动配置
         self.duration = duration
         // 更新滚动数据
@@ -125,6 +142,17 @@ extension ScrollPoster {
     }
 
 #if DEBUG
+    func captureConfigSnapshotForTests() {
+        os_unfair_lock_lock(&stateLock)
+        captureConfigSnapshotLocked()
+        os_unfair_lock_unlock(&stateLock)
+    }
+    var configSnapshotForTests: (simTrackpadEnabled: Bool, deadZone: Double) {
+        os_unfair_lock_lock(&stateLock)
+        defer { os_unfair_lock_unlock(&stateLock) }
+        return (config.simTrackpadEnabled, config.deadZone)
+    }
+
     func recordSkippedSyntheticEvent() {
         dispatchContext.recordSkippedSyntheticEvent()
     }
@@ -171,6 +199,8 @@ extension ScrollPoster {
                 return kCVReturnSuccess
             }, nil)
             poster = validPoster
+            // 建立成功后安排刷新率复查; 复查内部触发的重建 (isVerifying) 不重置复查序列
+            if !isVerifying { scheduleRateVerify() }
         } else {
             poster = nil
             NSLog("ScrollPoster: CVDisplayLink creation failed (%d)", result)
@@ -207,13 +237,8 @@ extension ScrollPoster {
         dispatchContext.advanceGeneration()
         os_unfair_lock_lock(&stateLock)
 
-        // 判断是否启用触控板模拟
-        var enableSimTrackpad = Options.shared.scroll.smoothSimTrackpad
-        if let application = ScrollCore.shared.application {
-            enableSimTrackpad = application.inherit
-                ? Options.shared.scroll.smoothSimTrackpad
-                : application.scroll.smoothSimTrackpad
-        }
+        // 判断是否启用触控板模拟 (读 update 时主线程捕获的快照, 避免跨线程读)
+        let enableSimTrackpad = config.simTrackpadEnabled
         let plan: ScrollPhase.TransitionPlan
         if requestedPhase == Phase.MomentumEnd {
             plan = ScrollPhase.shared.onMomentumFinish()
@@ -279,6 +304,9 @@ extension ScrollPoster {
     func stopKeeper() {
         keeper?.invalidate()
         keeper = nil
+        rateVerifyTimer?.invalidate()
+        rateVerifyTimer = nil
+        rateVerifyAttemptsLeft = 0
     }
     private func healthCheck() {
         guard let validPoster = poster else {
@@ -295,6 +323,47 @@ extension ScrollPoster {
                 recreateDisplayLink()
             }
         }
+    }
+
+    // MARK: 刷新率自纠 (见属性处说明)
+    // 建立 link 后调用: 重置复查序列并安排第一次复查
+    private func scheduleRateVerify() {
+        rateVerifyAttemptsLeft = rateVerifyDelays.count
+        armNextRateVerify()
+    }
+    private func armNextRateVerify() {
+        rateVerifyTimer?.invalidate()
+        guard rateVerifyAttemptsLeft > 0 else { rateVerifyTimer = nil; return }
+        let delay = rateVerifyDelays[rateVerifyDelays.count - rateVerifyAttemptsLeft]
+        rateVerifyTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
+            self?.verifyRateAndFixIfNeeded()
+        }
+    }
+    // 复查: link 标称率明显低于显示器实际率 -> 重建追平 (幂等, 不受 recreateCooldown 限制)
+    private func verifyRateAndFixIfNeeded() {
+        rateVerifyAttemptsLeft -= 1
+        guard let current = poster else { rateVerifyTimer = nil; return }
+        let nominal = linkNominalHz(current)
+        let maxHz = maxActiveDisplayHz()
+        guard nominal > 1, maxHz > 1, nominal < maxHz * rateVerifyRatio else {
+            // 已追平显示器刷新率, 结束复查
+            rateVerifyTimer = nil
+            rateVerifyAttemptsLeft = 0
+            return
+        }
+        NSLog("ScrollPoster: display link rate %.0fHz below display %.0fHz, recreating", nominal, maxHz)
+        // 保持原运行状态: 若正在滚动 (running) 则重建后重新启动
+        let wasRunning = CVDisplayLinkIsRunning(current)
+        isVerifying = true
+        create()
+        isVerifying = false
+        if wasRunning, let refreshed = poster {
+            CVDisplayLinkStart(refreshed)
+        }
+        // 自纠说明显示器仍在过渡: 清除冷却, 让后续 screenChange 能及时用最终配置重建
+        lastRecreateAttempt = 0
+        // 这次重建可能仍落在过渡态, 继续后续复查直到追平或用尽次数
+        armNextRateVerify()
     }
 }
 
@@ -361,7 +430,7 @@ private extension ScrollPoster {
         let residualY = buffer.y - current.y
         let residualX = buffer.x - current.x
         let residualMagnitude = max(residualY.magnitude, residualX.magnitude)
-        let deadZone = Options.shared.scroll.deadZone
+        let deadZone = config.deadZone
         if manualInputEnded && residualMagnitude > deadZone {
             if !momentumActive {
                 perform(ScrollPhase.shared.onMomentumStart(), emitTargetImmediately: false)
@@ -411,11 +480,22 @@ private extension ScrollPoster {
         }
     }
 
-    func resolveSimTrackpadEnabled() -> Bool {
+    /// 主线程读取当前 (全局 / 例外应用) 配置存入快照。调用方须持有 stateLock。
+    func captureConfigSnapshotLocked() {
+        let simTrackpad: Bool
         if let application = ScrollCore.shared.application, !application.inherit {
-            return application.scroll.smoothSimTrackpad
+            simTrackpad = application.scroll.smoothSimTrackpad
+        } else {
+            simTrackpad = Options.shared.scroll.smoothSimTrackpad
         }
-        return Options.shared.scroll.smoothSimTrackpad
+        config = ConfigSnapshot(
+            simTrackpadEnabled: simTrackpad,
+            deadZone: Options.shared.scroll.deadZone
+        )
+    }
+
+    func resolveSimTrackpadEnabled() -> Bool {
+        return config.simTrackpadEnabled
     }
 
     func phaseValues(for phase: Phase) -> (scroll: Double, momentum: Double)? {
@@ -461,5 +541,29 @@ private extension ScrollPoster {
             phaseOverride: phaseOverride,
             fallbackToCurrentPhase: fallbackToCurrentPhase
         )
+    }
+}
+
+// MARK: - 显示器刷新率查询 (刷新率自纠使用)
+private extension ScrollPoster {
+    /// CVDisplayLink 当前绑定显示器的标称刷新率 (Hz); 无效返回 -1
+    func linkNominalHz(_ link: CVDisplayLink) -> Double {
+        let period = CVDisplayLinkGetNominalOutputVideoRefreshPeriod(link)
+        // 无效/indefinite 周期时 timeValue 或 timeScale 为 0
+        guard period.timeValue != 0, period.timeScale != 0 else { return -1 }
+        let seconds = Double(period.timeValue) / Double(period.timeScale)
+        return seconds > 0 ? 1.0 / seconds : -1
+    }
+    /// 当前活跃显示器里最高刷新率 (Hz); 取不到返回 -1
+    func maxActiveDisplayHz() -> Double {
+        var count: UInt32 = 0
+        guard CGGetActiveDisplayList(0, nil, &count) == .success, count > 0 else { return -1 }
+        var ids = [CGDirectDisplayID](repeating: 0, count: Int(count))
+        guard CGGetActiveDisplayList(count, &ids, &count) == .success else { return -1 }
+        var mx = -1.0
+        for id in ids.prefix(Int(count)) {
+            if let hz = CGDisplayCopyDisplayMode(id)?.refreshRate, hz > mx { mx = hz }
+        }
+        return mx
     }
 }

@@ -155,6 +155,10 @@ class KeyPreview: NSStackView {
     private func createKeyViewWithBrandTag(for text: String, brand: BrandTagConfig) -> NSView {
         let container = KeyComponentContainer(keyStatus: status, isWaiting: false)
 
+        // 品牌 tag (使用 BrandTag 统一创建)
+        let tagView = BrandTag.createTagView(brand: brand)
+        container.addSubview(tagView)
+
         // 按键名标签
         let label = NSTextField(labelWithString: text)
         label.font = NSFont.systemFont(ofSize: KeyPreview.FONT_SIZE, weight: .medium)
@@ -163,16 +167,12 @@ class KeyPreview: NSStackView {
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
 
-        // 品牌 tag (使用 BrandTag 统一创建)
-        let tagView = BrandTag.createTagView(brand: brand)
-        container.addSubview(tagView)
-
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 6),
-            label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            tagView.leadingAnchor.constraint(equalTo: label.trailingAnchor, constant: 4),
+            tagView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 6),
             tagView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            tagView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -4),
+            label.leadingAnchor.constraint(equalTo: tagView.trailingAnchor, constant: 4),
+            label.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            label.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -6.5),
             container.heightAnchor.constraint(equalToConstant: KeyPreview.VIEW_SIZE),
         ])
 
@@ -288,4 +288,3 @@ private final class KeyComponentContainer: NSView {
         }
     }
 }
-

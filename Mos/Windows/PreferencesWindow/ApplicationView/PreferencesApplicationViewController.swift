@@ -83,10 +83,8 @@ class PreferencesApplicationViewController: NSViewController {
     @IBAction func removeItemClick(_ sender: NSButton) {
         // 确保选择了行
         guard tableView.selectedRow != -1 else { return }
-        // 删除
+        // 删除 (appScroll 用量清理由 LogiUsageBootstrap 的 Options 订阅自动完成)
         Options.shared.application.applications.remove(at: tableView.selectedRow)
-        // 同步 Logi 按键 divert 状态 (被删应用可能有独立的 Logi 滚动热键绑定)
-        LogitechHIDManager.shared.syncDivertWithBindings()
         // 重新加载
         tableView.reloadData()
         // 立即更新空状态显示

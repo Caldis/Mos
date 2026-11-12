@@ -1,4 +1,70 @@
-# 4.0.0
+# [4.2.0](https://github.com/Caldis/Mos/releases/tag/4.2.0)
+
+## 新功能
+- 新增 Logi/HID++ 原生支持, 可识别 Bolt/Unifying 接收器与蓝牙直连设备按钮, 并支持分配 Logi 专有事件。
+  - 相关协议参考了大量项目的逆向工程, 感谢 [Solaar](https://github.com/pwr-Solaar/Solaar) 等项目的开源。
+- 按钮绑定新增「打开…」动作, 可启动 App、运行脚本或打开任意文件, 支持拖拽选择与启动参数。
+- 按钮绑定新增「自定义…」录制, 可更灵活地处理鼠标按键动作。
+- 滚动功能现在支持绑定任意自定义按键。
+
+## 优化
+- 新增捷克语本地化, 感谢 @karelfh。
+
+## 修复
+- 修复滚动选项等值比较方向错误, 感谢 @seng1e。
+- 修复辅助功能权限在运行中被撤销后, 可能阻断系统输入的问题。
+- 修复按键映射功能导致在部分应用中左键点击异常的问题: https://github.com/Caldis/Mos/issues/890
+- 改进 DisplayLink 异常和屏幕变化后的平滑滚动恢复路径, 降低滚动异常或卡住的风险。
+- 修复自定义按键录制、纯修饰键显示、同时松开修饰键识别和录制期间误触发动作的问题。
+
+---
+
+## New
+- Added native Logi/HID++ support for Bolt/Unifying receivers and Bluetooth direct-connected device buttons, with support for assigning Logi-specific events.
+  - The related protocol work references reverse engineering from many projects; thanks to open-source projects such as [Solaar](https://github.com/pwr-Solaar/Solaar).
+- Added an "Open..." button action to launch apps, run scripts, or open any file, with drag-and-drop selection and launch arguments.
+- Added "Custom..." recording for button bindings, enabling more flexible mouse button actions.
+- Scroll features can now be bound to any custom key.
+
+## Improvements
+- Added Czech localization, thanks @karelfh.
+
+## Fixes
+- Fixed reversed scroll options equality comparison, thanks @seng1e.
+- Fixed system input blocking when Accessibility permission is revoked while Mos is running.
+- Fixed abnormal left-click behavior in some apps caused by button mapping: https://github.com/Caldis/Mos/issues/890
+- Improved smooth-scroll recovery after DisplayLink errors and screen changes, reducing the risk of abnormal or stuck scrolling.
+- Fixed custom key recording, pure modifier display, simultaneous modifier release detection, and accidental action execution while recording.
+
+# [4.0.2](https://github.com/Caldis/Mos/releases/tag/4.0.2)
+
+## 修复
+- 进一步尝试修复平滑滚动导致的崩溃问题。感谢 #868, #826, #699, #687, #665, #510, #512, #499, #368, #597, #859 提供的日志。
+
+---
+
+## Fixes
+- Further attempted to fix crashes caused by smooth scrolling. Thanks to #868, #826, #699, #687, #665, #510, #512, #499, #368, #597, and #859 for the logs.
+
+# [4.0.1](https://github.com/Caldis/Mos/releases/tag/4.0.1)
+
+## 新功能
+- 添加 UU 远程桌面支持, 防止主机与客户端同时安装 Mos 时出现双重平滑问题, 感谢 @jijiamoer (#879)。
+
+## 修复
+- 修复滚动事件派发问题, 引入 ScrollDispatchContext 重构 ScrollPoster, 解决部分场景下滚动异常 (#868, #826)。
+- 修复 macOS 26+ 上 LaunchPad 检测逻辑, 避免影响 Dock 文件夹弹出视图, 感谢 @Lezheng2333 反馈 (#878)。
+
+---
+
+## New
+- Added UU Remote Desktop support to prevent double-smoothing when both host and client have Mos installed, thanks @jijiamoer (#879).
+
+## Fixes
+- Fixed scroll event dispatching by introducing ScrollDispatchContext and refactoring ScrollPoster, resolving scroll anomalies in certain scenarios (#868, #826).
+- Fixed LaunchPad detection on macOS 26+, avoiding interference with Dock folder popup views, thanks @Lezheng2333 for reporting (#878).
+
+# [4.0.0](https://github.com/Caldis/Mos/releases/tag/4.0.0)
 
 > 
 
@@ -31,6 +97,118 @@
 ## Fixes
 - Fixed the smooth scrolling issue in certain scenarios.
 - Fixed the intro flow sync logic, so first launch might go more smoothly.
+
+# [4.0.0-beta-20260201.1](https://github.com/Caldis/Mos/releases/tag/4.0.0-beta-20260201.1)
+
+> 这是测试版本, 一些功能或内容可能会在正式版本中变更。
+
+## 新功能
+- 新增应用内更新检查（Sparkle），并支持可选的 Beta 渠道。
+- 滚动功能键现在支持绑定任意热键。
+
+## 改进
+- 补充并修正部分本地化内容。
+
+## 修复
+- 修复部分非 US 键盘布局下的快捷键问题。
+- 修复远程桌面或部分特殊设备的滚动输入无法被正确平滑的问题。
+
+---
+
+> This is a beta version. Some features or content may change in the official release.
+
+## New Feature
+- Added in-app update checking via Sparkle, with an optional beta channel toggle.
+- Scrolling function keys can now be bound to any key.
+
+## Improvements
+- Refined localization strings.
+
+## Fixes
+- Fixed shortcut issues on non-US keyboard layouts.
+- Fixed smooth scrolling not working properly with Remote Desktop or some special devices.
+
+# [4.0.0-beta-1201](https://github.com/Caldis/Mos/releases/tag/4.0.0-beta-1201)
+
+> 这是测试版本, 一些功能或内容可能会在正式版本中变更。
+
+## 改进
+- 为 4.0 版本更换了新的图标。
+- 优化了状态栏图标尺寸。
+- 更新了大咪照片。
+
+---
+
+> This is a beta version. Some features or content may change in the official release.
+
+## Improvements
+- Added a new icon for version 4.0.
+- Optimized the status bar icon size.
+- Updated photos of Meow.
+
+# [4.0.0-beta-1105](https://github.com/Caldis/Mos/releases/tag/4.0.0-beta-1105)
+
+> 这是测试版本, 一些功能或内容可能会在正式版本中变更。
+
+## 优化
+- 应用现在经过 Apple 公证, 不再会被提示为恶意软件了。
+- 优化了日语文本校对, 感谢 @ulyssas。
+- 优化了印尼语文本校对, 感谢 @harun-alrosyid。
+- Website: 优化了波兰语和英文文本校对, 感谢 @MaciejkaG。
+
+## 修复
+- 修复最低系统版本被错误设置为 11.0 的问题, 现在依旧兼容 10.13。
+
+---
+
+> This is a beta version. Some features or content may change in the official release.
+
+## Improvements
+- App is now notarized by Apple and should no longer be flagged as malware.
+- Improved Japanese text proofreading, thanks @ulyssas.
+- Improved Indonesian text proofreading, thanks @harun-alrosyid.
+- Website: improved Polish and English text proofreading, thanks @MaciejkaG.
+
+## Fixes
+- Fixed an issue where the minimum system version was incorrectly set to 11.0; Mos is still compatible with 10.13.
+
+# [4.0.0-beta-1102](https://github.com/Caldis/Mos/releases/tag/4.0.0-beta-1102)
+
+> 这是测试版本, 一些功能或内容可能会在正式版本中变更。
+
+## 新功能
+- 全新加入「按钮」模块：现在可以直接将鼠标按键绑定到你想要的快捷动作。🎉
+- 加入「模拟触控板」模式，我不知道有什么用, 但有点新鲜感总不是坏事 😜
+- 现在可以在「滚动」中基于垂直、水平方向独立调味了。
+
+## 优化
+- 欢迎指引、辅助功能授权流程 UI 翻新。
+- 翻译迁移到 string catalogs, 再也不需要面对 identify string 了。
+- 基于 AI 补充了一些缺失的多语言文本。(如果你觉得翻译有任何问题, 非常欢迎帮忙纠正!)
+
+## 修复
+- 修复 macOS 26 下的一些兼容性问题。
+- 修复部分场景下的滚动平滑滚动异常问题。
+- 修复欢迎指引、辅助功能授权流程中偶尔不同步的问题，希望你启动时能顺顺利利。
+
+---
+
+> This is a beta version. Some features or content may change in the official release.
+
+## New
+- Brand-new Buttons module: record mouse input and bind it to whatever shortcut you like. 🎉
+- Added Simulate Trackpad mode. Unsure how useful it is yet, but it seems fun. 😜
+- Vertical and horizontal scrolling can now be tuned independently inside the Scroll tab.
+
+## Improvements
+- Refreshed the welcome guide and accessibility permission intro flow.
+- Translations are now powered by string catalogs.
+- Filled a few missing translations with a little help from AI. If you find any problems with the translation, feel free to let us know.
+
+## Fixes
+- Fixed some compatibility issues on macOS 26.
+- Fixed smooth scrolling issues in certain scenarios.
+- Fixed the intro flow sync logic, so first launch should go more smoothly.
 
 # [3.5.0](https://github.com/Caldis/Mos/releases/tag/3.5.0)
 
@@ -767,7 +945,7 @@ Fix a issue that will cause Launchpad.app could not be handled properly in ignor
 Fix a issue that scroll reverse option in ignore list could not be handled properly.
 
 
-# [1.4.4](https://github.com/Caldis/Mos/releases/tag/1.4.2)
+# [1.4.4](https://github.com/Caldis/Mos/releases/tag/1.4.4)
 
 ## 修正
 
@@ -791,6 +969,15 @@ Fixed a problem will cause the Mos could not be handled properly while using Mac
 ## Fixed
 
 (Maybe) Fixed a problem where some of the mouse wheel could not be handled properly while scrolling slowly.
+
+
+# [1.4.1](https://github.com/Caldis/Mos/releases/tag/1.4.1)
+
+> GitHub 上存在该 prerelease, 但未提供 release notes。
+
+---
+
+> This prerelease exists on GitHub, but no release notes were provided.
 
 
 # [1.4.0](https://github.com/Caldis/Mos/releases/tag/1.4.0)
@@ -861,3 +1048,12 @@ SmoothScroll performance improved.
 ---
 
 First version released !
+
+
+# [1.0](https://github.com/Caldis/Mos/releases/tag/1.0)
+
+> GitHub 上存在该 prerelease, 但未提供 release notes。
+
+---
+
+> This prerelease exists on GitHub, but no release notes were provided.

@@ -246,9 +246,9 @@ case .mouse:
 
 CGEventTap 产生的 mouseCode 范围为 0~31, 不会出现 Logi 码, 不受 mouseMap 清理影响。
 
-#### 4.9 `tools/hidpp-full-test.swift` (不在 scope 内)
+#### 4.9 `tools/hidpp/full-test.swift` (不在 scope 内)
 
-该文件是独立脚本 (`swift tools/hidpp-full-test.swift` 直接运行), 不属于 app target,
+该文件是独立脚本 (`swift tools/hidpp/full-test.swift` 直接运行), 不属于 app target,
 无法编译引用 app 源码中的 `LogitechCIDRegistry`。保留其本地 cidNames 副本。
 后续如需统一, 需要将 Registry 提取为 shared Swift module 或将工具纳入 Xcode build target。
 
@@ -300,7 +300,7 @@ CGEventTap 产生的 mouseCode 范围为 0~31, 不会出现 Logi 码, 不受 mou
 **不涉及** (经确认无影响):
 - `MosInputProcessor.swift` (无 LogitechCIDMap/HIDPPInfo.cidNames 引用)
 - `CGEvent+Extensions.swift` (mouseCode 范围 0~31, 不涉及 Logi 码)
-- `tools/hidpp-full-test.swift` (独立脚本, 不属于 app target, 无法引用 app 源码)
+- `tools/hidpp/full-test.swift` (独立脚本, 不属于 app target, 无法引用 app 源码)
 
 ## 不变的部分
 

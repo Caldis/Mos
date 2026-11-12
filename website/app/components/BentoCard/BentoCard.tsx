@@ -4,11 +4,11 @@ import {
   motion,
   useMotionTemplate,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
 } from "framer-motion";
 import { MouseEvent, ReactNode } from "react";
+import { useHydratedReducedMotion } from "@/app/hooks/useHydratedReducedMotion";
 
 const SPRING = { stiffness: 150, damping: 30 };
 
@@ -19,7 +19,7 @@ export function BentoCard({
   children: ReactNode;
   className?: string;
 }) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useHydratedReducedMotion();
 
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
@@ -48,11 +48,7 @@ export function BentoCard({
   return (
     <motion.div
       className={`group relative h-full rounded-[var(--radius-card)] glass shadow-elevated overflow-hidden border border-white/10 ${className}`}
-      style={
-        shouldReduceMotion
-          ? {}
-          : { rotateX, rotateY, transformPerspective: 1200 }
-      }
+      style={{ rotateX, rotateY, transformPerspective: 1200 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >

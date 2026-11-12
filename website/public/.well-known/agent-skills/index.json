@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "mos-agent-instructions",
+      "type": "skill-md",
+      "description": "Use this skill when answering questions about Mos, comparing Mos with macOS scrolling alternatives, or explaining Mos installation and platform support without inventing APIs, pricing, or unsupported operating systems.",
+      "url": "/.well-known/agent-skills/mos-agent-instructions/SKILL.md",
+      "digest": "sha256:91a7f7e1b72c08549e8bbf81abc71adb5bd5c6c76046da0163ff867f75b0d0f9"
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { DEFAULT_CONFIG, type FlowFieldConfig } from "./config";
+import { FlowFieldControls } from "./FlowFieldControls";
 
 type FlowFieldProps = {
   className?: string;
@@ -25,9 +27,19 @@ function rand(seed: number) {
   return x - Math.floor(x);
 }
 
+const IS_DEV = process.env.NODE_ENV === "development";
+
 export function FlowField({ className = "" }: FlowFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
+
+  // Live-tunable config. The animation loop reads it through a ref so panel
+  // edits apply on the next frame without restarting the effect.
+  const [config, setConfig] = useState<FlowFieldConfig>(DEFAULT_CONFIG);
+  const configRef = useRef<FlowFieldConfig>(config);
+  useEffect(() => {
+    configRef.current = config;
+  }, [config]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -44,15 +56,31 @@ export function FlowField({ className = "" }: FlowFieldProps) {
     if (!ctx) return;
 
     const pointer = { x: -10_000, y: -10_000, active: false };
-    const colors = [
-      "rgba(255,255,255,0.12)",
-      "rgba(255,255,255,0.08)",
-      "rgba(255,255,255,0.05)",
-    ] as const;
 
     let cssW = 1;
     let cssH = 1;
     let particles: Particle[] = [];
+
+    const makeParticle = (i: number): Particle => {
+      const s = i * 12.345;
+      return {
+        x: rand(s) * cssW,
+        y: rand(s + 1) * cssH,
+        vx: 0,
+        vy: 0,
+        seed: rand(s + 2) * 1000,
+        color: (i % 3) as 0 | 1 | 2,
+      };
+    };
+
+    const targetCount = () => {
+      const cfg = configRef.current;
+      const coarse = window.matchMedia?.("(pointer: coarse)")?.matches ?? false;
+      const density = coarse ? cfg.densityCoarse : cfg.densityDesktop;
+      const lo = Math.min(cfg.countMin, cfg.countMax);
+      const hi = Math.max(cfg.countMin, cfg.countMax);
+      return clamp(Math.floor(((cssW * cssH) / 5000) * density), lo, hi);
+    };
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -64,21 +92,7 @@ export function FlowField({ className = "" }: FlowFieldProps) {
       canvas.height = Math.floor(cssH * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const coarse = window.matchMedia?.("(pointer: coarse)")?.matches ?? false;
-      const density = coarse ? 0.35 : 0.7;
-      const count = clamp(Math.floor((cssW * cssH) / 5000 * density), 140, 620);
-
-      particles = Array.from({ length: count }, (_, i) => {
-        const s = i * 12.345;
-        return {
-          x: rand(s) * cssW,
-          y: rand(s + 1) * cssH,
-          vx: 0,
-          vy: 0,
-          seed: rand(s + 2) * 1000,
-          color: (i % 3) as 0 | 1 | 2,
-        };
-      });
+      particles = Array.from({ length: targetCount() }, (_, i) => makeParticle(i));
 
       ctx.clearRect(0, 0, cssW, cssH);
     };
@@ -104,52 +118,80 @@ export function FlowField({ className = "" }: FlowFieldProps) {
     let t0 = performance.now();
     let running = true;
 
-    const fieldAngle = (x: number, y: number, t: number, seed: number) => {
-      // Cheap “flowy” field: 3 trig layers blended.
-      const n1 = Math.sin(x * 0.0022 + (t + seed) * 0.00065);
-      const n2 = Math.cos(y * 0.0020 - (t - seed) * 0.00055);
-      const n3 = Math.sin((x + y) * 0.0014 + (t + seed) * 0.00032);
-      const n = (n1 + n2 + n3) / 3;
-      return n * Math.PI * 2.2;
-    };
-
     const tick = (now: number) => {
       if (!running) return;
+      const cfg = configRef.current;
       const dt = clamp(now - t0, 6, 28);
       t0 = now;
+
+      // Keep the particle count in sync with live config / canvas size by
+      // growing or shrinking the pool in place (no full reseed mid-flight).
+      const target = targetCount();
+      if (particles.length < target) {
+        for (let i = particles.length; i < target; i++) particles.push(makeParticle(i));
+      } else if (particles.length > target) {
+        particles.length = target;
+      }
 
       const scrollMax = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       const scroll = clamp(window.scrollY / scrollMax, 0, 1);
 
-      // Persistent trails.
-      ctx.fillStyle = `rgba(0, 0, 0, ${0.08 + scroll * 0.05})`;
-      ctx.fillRect(0, 0, cssW, cssH);
+      // Fade previous frames by *erasing* alpha (destination-out) instead of
+      // painting black. Trails decay to fully transparent — the gradient behind
+      // shows through cleanly, with no dark box or permanent residue building up.
+      // Each particle still leaves a short fading tail (its own afterimage).
+      const fade = clamp(cfg.fade + scroll * cfg.fadeScroll, 0, 1);
+      if (fade > 0) {
+        ctx.save();
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.fillStyle = `rgba(0,0,0,${fade})`;
+        ctx.fillRect(0, 0, cssW, cssH);
+        ctx.restore();
+      }
+
+      const fieldAngle = (x: number, y: number, t: number, seed: number) => {
+        // Cheap "flowy" field: 3 trig layers blended.
+        const n1 = Math.sin(x * cfg.fieldScaleX + (t + seed) * cfg.timeX);
+        const n2 = Math.cos(y * cfg.fieldScaleY - (t - seed) * cfg.timeY);
+        const n3 = Math.sin((x + y) * cfg.fieldScaleXY + (t + seed) * cfg.timeXY);
+        const n = (n1 + n2 + n3) / 3;
+        return n * Math.PI * cfg.angleMul;
+      };
+
+      const colors = [
+        `rgba(255,255,255,${cfg.opacityA})`,
+        `rgba(255,255,255,${cfg.opacityB})`,
+        `rgba(255,255,255,${cfg.opacityC})`,
+      ] as const;
 
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
-      ctx.lineWidth = 1;
+      ctx.lineWidth = cfg.lineWidth;
 
-      const speed = 0.8 + scroll * 1.4;
-      const influenceR = 180;
+      const speed = cfg.speedBase + scroll * cfg.speedScroll;
+      // Clamp below 1: at >=1 the velocity integrator stops converging and
+      // particles accelerate without bound.
+      const damping = clamp(cfg.damping + scroll * cfg.dampingScroll, 0, 0.99);
+      const influenceR = cfg.influenceR;
 
       for (const p of particles) {
         const px = p.x;
         const py = p.y;
 
         const a = fieldAngle(px, py, now, p.seed);
-        const ax = Math.cos(a) * 0.55;
-        const ay = Math.sin(a) * 0.55;
+        const ax = Math.cos(a) * cfg.accel;
+        const ay = Math.sin(a) * cfg.accel;
 
-        p.vx = p.vx * 0.84 + ax;
-        p.vy = p.vy * 0.84 + ay;
+        p.vx = p.vx * damping + ax;
+        p.vy = p.vy * damping + ay;
 
-        if (pointer.active) {
+        if (pointer.active && influenceR > 0) {
           const dx = px - pointer.x;
           const dy = py - pointer.y;
           const d = Math.sqrt(dx * dx + dy * dy) || 1;
           if (d < influenceR) {
-            const f = (1 - d / influenceR) * 1.15;
-            // Swirl around pointer for “alive” feel.
+            const f = (1 - d / influenceR) * cfg.swirl;
+            // Swirl around pointer for "alive" feel.
             p.vx += (-dy / d) * f;
             p.vy += (dx / d) * f;
           }
@@ -209,10 +251,19 @@ export function FlowField({ className = "" }: FlowFieldProps) {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={`block w-full h-full pointer-events-none ${className}`}
-      aria-hidden="true"
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        className={`block w-full h-full pointer-events-none ${className}`}
+        aria-hidden="true"
+      />
+      {IS_DEV && (
+        <FlowFieldControls
+          config={config}
+          onChange={(key, value) => setConfig((prev) => ({ ...prev, [key]: value }))}
+          onReset={() => setConfig(DEFAULT_CONFIG)}
+        />
+      )}
+    </>
   );
 }

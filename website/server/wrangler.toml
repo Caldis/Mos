@@ -1,0 +1,66 @@
+name = "mos-server"
+main = "src/index.ts"
+compatibility_date = "2026-06-01"
+# Backend is reached only via the custom domain (mos-api.caldis.me).
+workers_dev = false
+preview_urls = false
+
+# D4: custom domain. DNS for caldis.me is already on Cloudflare, so
+# `custom_domain = true` makes wrangler create the DNS record + cert on deploy.
+routes = [
+  { pattern = "mos-api.caldis.me", custom_domain = true }
+]
+
+# Hourly moderation sweep (free Cron Trigger). Calls the Worker's `scheduled`
+# handler → wall.sweep(): rule-based spam gets hidden, and a small Workers AI
+# model flags gibberish notes for review (never auto-hidden).
+[triggers]
+crons = ["0 * * * *"]
+
+# Workers AI (free tier: 10,000 Neurons/day). Bound as env.AI; used only by the
+# sweep's low-quality judge — see src/lib/aiJudge.ts.
+[ai]
+binding = "AI"
+
+# Per-IP flood guard for GET /wall/messages (Cloudflare Rate Limiting binding,
+# bound as env.RL). A burst gets a cheap 429 before any D1 query. Worker-level and
+# per-colo: this protects D1/CPU, NOT the Worker request quota itself (the Worker
+# still runs to evaluate the limit) — for that, add an edge WAF Rate Limiting Rule
+# in the dashboard. Generous: a real user loads once + the occasional refetch.
+[[ratelimits]]
+name = "RL"
+namespace_id = "1001"
+[ratelimits.simple]
+limit = 120
+period = 60
+
+# Per-IP throttle for the admin endpoints (GET /wall/admin verify + admin DELETE),
+# bound as env.RL_ADMIN. Any request carrying an x-wall-admin header is limited
+# here BEFORE any token compare or D1 work, so a brute-force / DDoS burst gets a
+# cheap 429. The admin token's entropy is the real defense; this caps abuse. As
+# with RL, this still runs the Worker — to block before it, add an edge WAF Rate
+# limiting rule on /wall/admin* in the dashboard.
+[[ratelimits]]
+name = "RL_ADMIN"
+namespace_id = "1002"
+[ratelimits.simple]
+limit = 10
+period = 60
+
+# CORS allow-list (comma-separated). The static site lives at mos.caldis.me;
+# add http://localhost:3000 in .dev.vars for local integration testing.
+[vars]
+ALLOWED_ORIGIN = "https://mos.caldis.me"
+
+# Bind the D1 database as `env.DB` (shared by all features). Run
+# `wrangler d1 create mos-server` and paste the printed database_id here before
+# `wrangler deploy` (local dev tolerates the placeholder).
+[[d1_databases]]
+binding = "DB"
+database_name = "mos-server"
+database_id = "896f4475-222f-483e-9381-4031108764fd"
+
+# Secrets (NOT stored here) — set with:
+#   wrangler secret put TURNSTILE_SECRET
+#   wrangler secret put IP_SALT
+#   wrangler secret put ADMIN_TOKEN   # panel moderation; use `openssl rand -base64 32`

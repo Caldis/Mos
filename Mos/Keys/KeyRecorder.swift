@@ -48,6 +48,8 @@ class KeyRecorder: NSObject {
 
     // MARK: - Constants
     static let TIMEOUT: TimeInterval = 10.0
+    private static let recordedFeedbackDelay: TimeInterval = 0.7
+    private static let duplicateFeedbackDelay: TimeInterval = 1.0
     static let FLAG_CHANGE_NOTI_NAME = NSNotification.Name("RECORD_FLAG_CHANGE_NOTI_NAME")
     static let FINISH_NOTI_NAME = NSNotification.Name("RECORD_FINISH_NOTI_NAME")
     static let CANCEL_NOTI_NAME = NSNotification.Name("RECORD_CANCEL_NOTI_NAME")
@@ -88,6 +90,11 @@ class KeyRecorder: NSObject {
         CGEventFlags.maskAlternate.rawValue |
         CGEventFlags.maskCommand.rawValue |
         CGEventFlags.maskSecondaryFn.rawValue
+
+    static func recordingFeedbackDelay(isDuplicate: Bool) -> TimeInterval {
+        return isDuplicate ? duplicateFeedbackDelay : recordedFeedbackDelay
+    }
+
     // UI 组件
     private var keyPopover: KeyPopover?
     
@@ -129,7 +136,7 @@ class KeyRecorder: NSObject {
         keyPopover?.show(at: sourceView)
         // 异步 divert 所有 Logitech 按键 (BLE 通信有延迟)
         DispatchQueue.main.async {
-            LogitechHIDManager.shared.temporarilyDivertAll()
+            LogiCenter.shared.beginKeyRecording()
         }
         // 监听事件
         do {
@@ -175,8 +182,7 @@ class KeyRecorder: NSObject {
                     case .scrollWheel:
                         // 倾斜滚轮: 检测纯水平倾斜并作为虚拟鼠标键录制
                         // 排除触控板、macOS 的 Shift+上下滚动转换以及 toggleScroll 切换引发的水平滚动
-                        if !ScrollEvent.isTrackpad(with: recordedEvent),
-                           !TiltWheelHandler.isModifierDrivenHorizontalScroll(recordedEvent),
+                        if !TiltWheelHandler.isModifierDrivenHorizontalScroll(recordedEvent),
                            let tiltCode = TiltWheelHandler.tiltCode(for: recordedEvent) {
                             let tiltEvent = InputEvent(
                                 type: .mouse,
@@ -228,9 +234,9 @@ class KeyRecorder: NSObject {
                 placeAt: CGEventTapPlacement.headInsertEventTap,
                 for: CGEventTapOptions.defaultTap
             )
-            // 监听 HID++ 事件 (如果 LogitechHIDManager 已启动)
+            // 监听 HID++ 事件 (如果 LogiCenter 已启动)
             hidEventObserver = NotificationCenter.default.addObserver(
-                forName: NSNotification.Name("LogitechHIDButtonEvent"),
+                forName: LogiCenter.buttonEventRelay,
                 object: nil,
                 queue: .main
             ) { [weak self] notification in
@@ -502,9 +508,12 @@ class KeyRecorder: NSObject {
 
         keyPopover?.keyPreview
             .update(from: mosEvent.displayComponents, status: status)
+        if isDuplicate {
+            keyPopover?.showDuplicateHint()
+        }
         self.delegate?.onEventRecorded(self, didRecordEvent: mosEvent, isDuplicate: isDuplicate)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.recordingFeedbackDelay(isDuplicate: isDuplicate)) { [weak self] in
             self?.stopRecording()
         }
     }
@@ -540,7 +549,7 @@ class KeyRecorder: NSObject {
         }
         delegate?.onRecordingStopped(self, didRecord: didRecord)
         // 录制结束: 恢复到只 divert 有绑定的按键
-        LogitechHIDManager.shared.restoreDivertToBindings()
+        LogiCenter.shared.endKeyRecording()
         // 重置状态 (添加延迟确保 Popover 结束动画完成, 避免多个 popover 重复出现导致卡住)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             self?.isRecording = false

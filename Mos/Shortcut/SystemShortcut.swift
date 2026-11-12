@@ -138,6 +138,10 @@ struct SystemShortcut {
                 case "mouseMiddleClick": return "computermouse"
                 case "mouseBackClick": return "chevron.backward"
                 case "mouseForwardClick": return "chevron.forward"
+                // Mos 鼠标滚动
+                case "mosScrollDash": return "speedometer"
+                case "mosScrollToggle": return "arrow.left.arrow.right"
+                case "mosScrollBlock": return "hand.raised"
                 // 修饰键
                 case "modifierShift": return "shift"
                 case "modifierOption": return "option"
@@ -325,6 +329,10 @@ struct SystemShortcut {
         "mouseLeftClick": mouseLeftClick, "mouseRightClick": mouseRightClick,
         "mouseMiddleClick": mouseMiddleClick, "mouseBackClick": mouseBackClick,
         "mouseForwardClick": mouseForwardClick,
+        // Mos 鼠标滚动
+        "mosScrollDash": mosScrollDash,
+        "mosScrollToggle": mosScrollToggle,
+        "mosScrollBlock": mosScrollBlock,
         // 修饰键
         "modifierShift": modifierShift, "modifierOption": modifierOption,
         "modifierControl": modifierControl, "modifierCommand": modifierCommand,
@@ -405,6 +413,14 @@ struct SystemShortcut {
     static let mouseBackClick = Shortcut("mouseBackClick", 0xFFFF, NSEvent.ModifierFlags(rawValue: 3), executionMode: .stateful)
     static let mouseForwardClick = Shortcut("mouseForwardClick", 0xFFFF, NSEvent.ModifierFlags(rawValue: 4), executionMode: .stateful)
 
+    // MARK: - Mos Scroll Actions
+    // Mos 鼠标滚动动作 (由 ShortcutExecutor 转发给 ScrollCore, 保留旧的单热键配置不迁移)
+    // 使用 code=0xFFFC 作为占位, modifiers.rawValue 区分滚动功能角色
+
+    static let mosScrollDash = Shortcut("mosScrollDash", 0xFFFC, NSEvent.ModifierFlags(rawValue: 0), executionMode: .stateful)
+    static let mosScrollToggle = Shortcut("mosScrollToggle", 0xFFFC, NSEvent.ModifierFlags(rawValue: 1), executionMode: .stateful)
+    static let mosScrollBlock = Shortcut("mosScrollBlock", 0xFFFC, NSEvent.ModifierFlags(rawValue: 2), executionMode: .stateful)
+
     // MARK: - Modifier Key Actions
     // 预定义单修饰键动作 (复用 custom modifier 的 stateful 执行语义)
     // 使用 code=0xFFFD 和空修饰键作为占位, 实际执行逻辑在 ShortcutExecutor 中映射到对应 modifier keyCode
@@ -446,6 +462,13 @@ struct SystemShortcut {
         ]
     )
 
+    /// Mos 鼠标滚动动作分类
+    static let mosMouseScrollCategory: (category: String, shortcuts: [Shortcut]) = (
+        "categoryMosMouseScroll", [
+            mosScrollDash, mosScrollToggle, mosScrollBlock
+        ]
+    )
+
     /// 修饰键动作分类
     static let modifierKeysCategory: (category: String, shortcuts: [Shortcut]) = (
         "categoryModifierKeys", [
@@ -480,6 +503,7 @@ struct SystemShortcut {
         case "categoryAccessibility": return "eye"
         case "categoryModifierKeys": return "command"
         case "categoryMouseButtons": return "computermouse"
+        case "categoryMosMouseScroll": return "scroll"
         case "categoryLogiActions": return "gear.badge"
         default: return "questionmark.folder"
         }
@@ -493,15 +517,37 @@ struct SystemShortcut {
         "modifierFn": KeyCode.fnL,
     ]
 
+    private static let predefinedMouseButtonCodes: [UInt16: String] = [
+        0: "mouseLeftClick",
+        1: "mouseRightClick",
+        2: "mouseMiddleClick",
+        3: "mouseBackClick",
+        4: "mouseForwardClick",
+    ]
+
     static func predefinedModifierCode(for identifier: String) -> UInt16? {
         predefinedModifierCodes[identifier]
     }
 
     static func predefinedModifierShortcut(matchingCustomBinding customBindingName: String) -> Shortcut? {
-        guard let (code, modifiers) = ButtonBinding.normalizedCustomBindingPayload(from: customBindingName), modifiers == 0 else {
+        guard let payload = ButtonBinding.normalizedCustomBindingDescriptor(from: customBindingName),
+              payload.type == .keyboard,
+              payload.modifiers == 0 else {
             return nil
         }
-        guard let identifier = predefinedModifierCodes.first(where: { $0.value == code })?.key else {
+        guard let identifier = predefinedModifierCodes.first(where: { $0.value == payload.code })?.key else {
+            return nil
+        }
+        return getShortcut(named: identifier)
+    }
+
+    static func predefinedMouseButtonShortcut(matchingCustomBinding customBindingName: String) -> Shortcut? {
+        guard let payload = ButtonBinding.normalizedCustomBindingDescriptor(from: customBindingName),
+              payload.type == .mouse,
+              payload.modifiers == 0 else {
+            return nil
+        }
+        guard let identifier = predefinedMouseButtonCodes[payload.code] else {
             return nil
         }
         return getShortcut(named: identifier)
@@ -512,18 +558,23 @@ struct SystemShortcut {
             return directShortcut
         }
 
+        if let mouseShortcut = predefinedMouseButtonShortcut(matchingCustomBinding: bindingName) {
+            return mouseShortcut
+        }
+
         if let modifierShortcut = predefinedModifierShortcut(matchingCustomBinding: bindingName) {
             return modifierShortcut
         }
 
-        guard let (code, modifiers) = ButtonBinding.normalizedCustomBindingPayload(from: bindingName) else {
+        guard let payload = ButtonBinding.normalizedCustomBindingDescriptor(from: bindingName),
+              payload.type == .keyboard else {
             return nil
         }
 
         let matchingShortcuts = allShortcuts.values.filter { shortcut in
-            shortcut.code == code &&
-            shortcut.modifiers.rawValue == modifiers &&
-            shortcut.code < 0xFFFD
+            shortcut.code == payload.code &&
+            shortcut.modifiers.rawValue == payload.modifiers &&
+            shortcut.code < 0xFFFC  // 0xFFFC... are pseudo actions, not recordable key equivalents
         }
 
         guard matchingShortcuts.count == 1 else {

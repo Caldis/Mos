@@ -33,6 +33,9 @@
             reference = "container:MosTests/Debug.xctestplan"
             default = "YES">
          </TestPlanReference>
+         <TestPlanReference
+            reference = "container:MosTests/DebugWithDevice.xctestplan">
+         </TestPlanReference>
       </TestPlans>
       <Testables>
          <TestableReference

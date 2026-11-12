@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Debug - enUS.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>Debug.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -67,6 +72,11 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>22142D9F1E25344E00E4BFBF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>62CD1674CBD9855CE2042C81</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -6,14 +6,14 @@
 
 **Architecture:** Thread a `wrapWidth` value from `Toast.show(...)` through `ToastManager` into `ToastContentView`, where `nil` or non-positive values mean single-line truncation and positive values mean word-wrapped multiline layout. Remove the `showsFullText` storage/UI path so there is only one text-layout control model left in the component.
 
-**Tech Stack:** Swift, AppKit, `UserDefaults`, existing toast regression harness in `tools/toast_regression_tests.swift`
+**Tech Stack:** Swift, AppKit, `UserDefaults`, existing toast regression harness in `tools/regression/toast-regression-tests.swift`
 
 ---
 
 ### Task 1: Write failing regression tests for wrap-width semantics
 
 **Files:**
-- Modify: `tools/toast_regression_tests.swift`
+- Modify: `tools/regression/toast-regression-tests.swift`
 
 **Step 1: Write the failing test**
 
@@ -25,7 +25,7 @@ Add regression tests asserting:
 
 **Step 2: Run test to verify it fails**
 
-Run: `swiftc -module-cache-path /tmp/mos-toast-tests-cache -o /tmp/mos-toast-tests-bin tools/toast_regression_tests.swift Mos/Components/Toast/ToastLayout.swift Mos/Components/Toast/ToastVisibilityRules.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift && /tmp/mos-toast-tests-bin`
+Run: `swiftc -module-cache-path /tmp/mos-toast-tests-cache -o /tmp/mos-toast-tests-bin tools/regression/toast-regression-tests.swift Mos/Components/Toast/ToastLayout.swift Mos/Components/Toast/ToastVisibilityRules.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift && /tmp/mos-toast-tests-bin`
 
 Expected: FAIL because `ToastContentView` still uses `expandMessage` semantics and default multiline storage assumptions.
 
@@ -73,7 +73,7 @@ Expected: regression tests pass and build succeeds.
 
 **Step 1: Inspect diff**
 
-Run: `git diff -- Mos/AppDelegate.swift Mos/Components/Toast/Toast.swift Mos/Components/Toast/ToastManager.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift Mos/Components/Toast/ToastPanel.swift Mos/Localizable.xcstrings tools/toast_regression_tests.swift docs/plans/2026-04-11-toast-wrap-width-refactor.md`
+Run: `git diff -- Mos/AppDelegate.swift Mos/Components/Toast/Toast.swift Mos/Components/Toast/ToastManager.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift Mos/Components/Toast/ToastPanel.swift Mos/Localizable.xcstrings tools/regression/toast-regression-tests.swift docs/plans/2026-04-11-toast-wrap-width-refactor.md`
 
 **Step 2: Summarize migration**
 

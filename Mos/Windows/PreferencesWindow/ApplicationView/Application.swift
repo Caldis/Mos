@@ -14,19 +14,19 @@ class Application: Codable, Equatable {
     var path: String // executablePath or bundlePath
     // 配置: 名称
     var displayName: String? = "" {
-        didSet { Options.shared.saveOptions() }
+        didSet { Options.shared.markChanged(.application) }
     }
     // 配置: 继承
     var inherit = true {
-        didSet { Options.shared.saveOptions() }
+        didSet { Options.shared.markChanged(.application) }
     }
     // 配置: 滚动
     var scroll = OPTIONS_SCROLL_DEFAULT() {
-        didSet { Options.shared.saveOptions() }
+        didSet { Options.shared.markChanged(.application) }
     }
     // 配置: 按钮绑定 (可选表示继承全局配置)
     var buttons: OPTIONS_BUTTONS_DEFAULT? {
-        didSet { Options.shared.saveOptions() }
+        didSet { Options.shared.markChanged(.application) }
     }
     // 初始化
     init(path: String) {
@@ -79,38 +79,30 @@ extension Application {
         return inherit ? Options.shared.scroll.durationTransition : scroll.durationTransition
     }
     // 功能
+    // inherit=on 时 resolvedScrollOptions() 即全局配置, 结果与全局路径一致;
+    // inherit=off 时完全使用应用自身配置, 不再受全局开关联动 (见 #1011)
     func isSmooth(_ block: Bool) -> Bool {
         if block { return false }
-        if !Options.shared.scroll.smooth { return false }
         return resolvedScrollOptions().smooth
     }
     func isReverse() -> Bool {
-        if !Options.shared.scroll.reverse { return false }
         return resolvedScrollOptions().reverse
     }
     func isReverseVertical() -> Bool {
-        if !Options.shared.scroll.reverse { return false }
-        if !Options.shared.scroll.reverseVertical { return false }
         let target = resolvedScrollOptions()
         return target.reverse && target.reverseVertical
     }
     func isReverseHorizontal() -> Bool {
-        if !Options.shared.scroll.reverse { return false }
-        if !Options.shared.scroll.reverseHorizontal { return false }
         let target = resolvedScrollOptions()
         return target.reverse && target.reverseHorizontal
     }
     func isSmoothVertical(_ block: Bool) -> Bool {
         if block { return false }
-        if !Options.shared.scroll.smooth { return false }
-        if !Options.shared.scroll.smoothVertical { return false }
         let target = resolvedScrollOptions()
         return target.smooth && target.smoothVertical
     }
     func isSmoothHorizontal(_ block: Bool) -> Bool {
         if block { return false }
-        if !Options.shared.scroll.smooth { return false }
-        if !Options.shared.scroll.smoothHorizontal { return false }
         let target = resolvedScrollOptions()
         return target.smooth && target.smoothHorizontal
     }

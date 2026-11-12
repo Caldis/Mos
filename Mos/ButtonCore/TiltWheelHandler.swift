@@ -12,16 +12,14 @@ import Cocoa
 /// 支持类似键盘按键重复的行为：倾斜开始时立即触发 down，持续倾斜时按固定间隔重复触发 down，
 /// 停止倾斜后触发 up。
 ///
-/// 线程模型:
-///   handle(xDelta:) 在 CGEventTap 回调线程调用。
-///   synthesize / 所有计时器操作全部在主线程执行，activeCode 等状态仅在主线程访问。
+/// Interceptor callbacks and timers run on the main run loop.
 class TiltWheelHandler {
     static let shared = TiltWheelHandler()
     private init() {}
 
     // 倾斜停止判定：最后一次事件后超过此时间则认为倾斜结束
     // 设为 60ms：确保连打间隔（通常 80~150ms 静默）能被准确识别为独立手势
-    // 低于连续事件间隔（20~50ms），因此持续倾斜时不会误触发停止判定
+    // 高于连续事件间隔（20~50ms），因此持续倾斜时不会误触发停止判定
     private static let stopInterval: TimeInterval = 0.060
     // 键位重复：首次重复前的初始延迟（仿 macOS 键盘重复行为）
     private static let repeatInitialDelay: TimeInterval = 0.400
@@ -38,7 +36,7 @@ class TiltWheelHandler {
     /// 重复计时器：倾斜持续期间按 repeatInterval 重复触发 down
     private var repeatTimer: Timer?
 
-    // MARK: - Shift/切换键抑制（从回调线程设置，Date 为值类型，赋值无并发风险）
+    // MARK: - Shift/切换键抑制
 
     private var shiftSuppressedUntil: Date = .distantPast
 
@@ -61,6 +59,10 @@ class TiltWheelHandler {
     /// 从滚轮事件中提取倾斜方向对应的虚拟键码
     /// 要求纯水平滚动 (xDelta != 0 且 yDelta == 0), 否则返回 nil
     static func tiltCode(for event: CGEvent) -> UInt16? {
+        guard event.type == .scrollWheel,
+              !ScrollUtils.shared.isSyntheticSmoothEvent(event),
+              event.getIntegerValueField(.eventSourceUserData) != MosEventMarker.syntheticCustom,
+              !ScrollEvent.isTrackpad(with: event) else { return nil }
         let xDelta = event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)
         let yDelta = event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)
         guard xDelta != 0.0, yDelta == 0.0 else { return nil }
@@ -69,15 +71,17 @@ class TiltWheelHandler {
 
     // MARK: - 公开接口
 
-    /// 由 ButtonCore 的 scrollWheel 拦截器回调调用（回调线程）。
+    /// 由 ButtonCore 的 scrollWheel 拦截器回调调用。
     /// 返回 true 表示该方向有绑定，调用方应消费（返回 nil）该事件。
     func handle(code: UInt16) -> Bool {
         guard !isModifierSuppressed else { return false }
-        let hasBinding = !ButtonUtils.shared.getButtonBindings(for: .mouse, code: code).isEmpty
-        DispatchQueue.main.async { [weak self] in
-            self?.synthesize(code: code)
-        }
-        return hasBinding
+        assertMainThread()
+        let event = InputEvent(type: .mouse, code: code,
+                               modifiers: CGEventSource.flagsState(.combinedSessionState),
+                               phase: .down, source: .hidPP, device: nil)
+        guard ButtonUtils.shared.getBestMatchingBinding(for: event) != nil else { return false }
+        synthesize(code: code)
+        return true
     }
 
     /// 清理所有进行中的状态。ButtonCore disable 时调用，防止状态残留。

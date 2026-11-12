@@ -1,0 +1,11 @@
+-- AI low-quality review (see src/lib/aiJudge.ts). The hourly sweep asks a small
+-- Workers AI model whether each note is a real human message or meaningless
+-- gibberish ("Dhdh", "asdfgh"). It only FLAGS — never auto-hides — so a human
+-- makes the call.
+--
+-- ai_checked = 1 once the model has judged this note, so each note is judged
+-- exactly ONCE (clears the existing backlog over a few sweeps, then only new
+-- notes), keeping AI usage to a trickle. A flagged note keeps hidden = 0 (still
+-- visible) but gets hide_reason = 'ai-low-quality' as a review marker; clear it
+-- (NULL) or hide it (hide_reason = 'admin', hidden = 1) by hand.
+ALTER TABLE wall_notes ADD COLUMN ai_checked INTEGER NOT NULL DEFAULT 0;

@@ -17,7 +17,12 @@ class ButtonUtils {
 
     // 单例
     static let shared = ButtonUtils()
-    init() {}
+    init() {
+        // 绑定组变更时自动失效缓存 (订阅者为进程级单例, 无需注销)
+        Options.shared.observe([.buttons]) { [weak self] _ in
+            self?.invalidateCache()
+        }
+    }
 
     // MARK: - 缓存
 
@@ -48,7 +53,10 @@ class ButtonUtils {
         var bestBinding: ButtonBinding?
         var bestPriority = Int.min
 
-        for binding in candidates where binding.isEnabled {
+        for binding in candidates {
+            guard binding.isEnabled else {
+                continue
+            }
             if let predicate, !predicate(binding) {
                 continue
             }
@@ -66,6 +74,7 @@ class ButtonUtils {
 
     /// 标记缓存失效 (绑定变更后调用)
     func invalidateCache() {
+        assertMainThread()
         isDirty = true
     }
 

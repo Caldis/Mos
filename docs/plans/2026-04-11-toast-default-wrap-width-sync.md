@@ -6,14 +6,14 @@
 
 **Architecture:** Store the default wrap width in `ToastStorage` as a sanitized numeric value where `0` means single-line mode. Route `wrapWidth: nil` through that stored default inside the toast presentation path, and add a debug-panel control that edits the same stored value and uses it for test toasts unless a call site explicitly overrides `wrapWidth`.
 
-**Tech Stack:** Swift, AppKit, `UserDefaults`, existing toast regression harness in `tools/toast_regression_tests.swift`
+**Tech Stack:** Swift, AppKit, `UserDefaults`, existing toast regression harness in `tools/regression/toast-regression-tests.swift`
 
 ---
 
 ### Task 1: Write failing regression tests
 
 **Files:**
-- Modify: `tools/toast_regression_tests.swift`
+- Modify: `tools/regression/toast-regression-tests.swift`
 
 **Step 1: Write the failing test**
 
@@ -25,7 +25,7 @@ Add tests asserting:
 
 **Step 2: Run test to verify it fails**
 
-Run: `swiftc -module-cache-path /tmp/mos-toast-tests-cache -o /tmp/mos-toast-tests-bin tools/toast_regression_tests.swift Mos/Components/Toast/ToastLayout.swift Mos/Components/Toast/ToastVisibilityRules.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift && /tmp/mos-toast-tests-bin`
+Run: `swiftc -module-cache-path /tmp/mos-toast-tests-cache -o /tmp/mos-toast-tests-bin tools/regression/toast-regression-tests.swift Mos/Components/Toast/ToastLayout.swift Mos/Components/Toast/ToastVisibilityRules.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift && /tmp/mos-toast-tests-bin`
 
 Expected: FAIL because `ToastStorage` does not yet expose `defaultWrapWidth`.
 
@@ -62,7 +62,7 @@ Make debug-panel toasts pass `wrapWidth: ToastStorage.shared.defaultWrapWidth`.
 **Step 3: Run verification**
 
 Run:
-- `swiftc -module-cache-path /tmp/mos-toast-tests-cache -o /tmp/mos-toast-tests-bin tools/toast_regression_tests.swift Mos/Components/Toast/ToastLayout.swift Mos/Components/Toast/ToastVisibilityRules.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift && /tmp/mos-toast-tests-bin`
+- `swiftc -module-cache-path /tmp/mos-toast-tests-cache -o /tmp/mos-toast-tests-bin tools/regression/toast-regression-tests.swift Mos/Components/Toast/ToastLayout.swift Mos/Components/Toast/ToastVisibilityRules.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift && /tmp/mos-toast-tests-bin`
 - `xcodebuild -project Mos.xcodeproj -scheme Debug -configuration Debug -sdk macosx build CODE_SIGNING_ALLOWED=NO`
 
 Expected: regression tests pass and build succeeds.

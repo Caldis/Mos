@@ -1,0 +1,120 @@
+{
+  "$schema": "https://agent-json.org/schema/v1/agent.schema.json",
+  "schema_version": "1.0",
+  "awp_version": "0.2",
+  "name": "Mos",
+  "domain": "mos.caldis.me",
+  "description": "Mos is a free, open-source macOS utility for smooth mouse wheel scrolling, per-app profiles, independent axes, and mouse button bindings.",
+  "url": "https://mos.caldis.me/agent/",
+  "homepage": "https://mos.caldis.me/",
+  "repository": "https://github.com/Caldis/Mos",
+  "contact": "mail@caldis.me",
+  "skill_file": "/llms-full.txt",
+  "intent": "Help agents understand Mos, find install links and releases, and retrieve static documentation for the macOS smooth scrolling utility.",
+  "authentication": {
+    "type": "none",
+    "description": "Public documentation and discovery endpoints require no account, OAuth flow, API key, or cookie."
+  },
+  "auth": {
+    "type": "none",
+    "required_for": []
+  },
+  "protocols": {
+    "openapi": {
+      "endpoint": "https://mos.caldis.me/api/openapi.json",
+      "description": "Static discovery endpoints only. Mos has no hosted user API."
+    },
+    "a2a": {
+      "endpoint": "https://mos.caldis.me/.well-known/agent-card.json",
+      "description": "A2A agent card for documentation discovery."
+    },
+    "mcp": {
+      "endpoint": "https://mos.caldis.me/.well-known/mcp",
+      "status": "not_provided",
+      "description": "Mos does not currently host a public MCP tool server."
+    }
+  },
+  "capabilities": [
+    {
+      "id": "product_context",
+      "name": "Product context",
+      "description": "Explain Mos features, supported macOS versions, install paths, and project links.",
+      "endpoint": "/llms-full.txt",
+      "method": "GET",
+      "content_type": "text/plain"
+    },
+    {
+      "id": "release_lookup",
+      "name": "Release lookup",
+      "description": "Locate GitHub releases, latest downloads, and the public Sparkle appcast.",
+      "endpoint": "/appcast.xml",
+      "method": "GET",
+      "content_type": "application/xml"
+    },
+    {
+      "id": "developer_discovery",
+      "name": "Developer discovery",
+      "description": "Find llms.txt, full LLM context, OpenAPI, schema feeds, and agent discovery files.",
+      "endpoint": "/developers/",
+      "method": "GET",
+      "content_type": "text/html"
+    }
+  ],
+  "actions": [
+    {
+      "id": "read_full_context",
+      "description": "Fetch complete AI-readable Mos product documentation in one request.",
+      "auth_required": false,
+      "endpoint": "/llms-full.txt",
+      "method": "GET",
+      "execution_model": "sync"
+    },
+    {
+      "id": "read_openapi",
+      "description": "Fetch the static OpenAPI service description for public discovery endpoints.",
+      "auth_required": false,
+      "endpoint": "/api/openapi.json",
+      "method": "GET",
+      "execution_model": "sync"
+    }
+  ],
+  "links": {
+    "agent_json": "https://mos.caldis.me/agent.json",
+    "llms": "https://mos.caldis.me/llms.txt",
+    "llms_full": "https://mos.caldis.me/llms-full.txt",
+    "markdown_homepage": "https://mos.caldis.me/index.md",
+    "developer_resources": "https://mos.caldis.me/developers/",
+    "api_docs": "https://mos.caldis.me/api-docs/",
+    "api_docs_markdown": "https://mos.caldis.me/api-docs.md",
+    "auth_docs": "https://mos.caldis.me/auth/",
+    "auth_docs_markdown": "https://mos.caldis.me/auth.md",
+    "webhooks_status": "https://mos.caldis.me/webhooks/",
+    "webhooks_markdown": "https://mos.caldis.me/webhooks.md",
+    "mcp_status": "https://mos.caldis.me/mcp/",
+    "mcp_markdown": "https://mos.caldis.me/mcp.md",
+    "rate_limits": "https://mos.caldis.me/rate-limits/",
+    "rate_limits_markdown": "https://mos.caldis.me/rate-limits.md",
+    "error_responses": "https://mos.caldis.me/errors/",
+    "error_responses_markdown": "https://mos.caldis.me/errors.md",
+    "public_agents_md": "https://mos.caldis.me/AGENTS.md",
+    "well_known_agent_instructions": "https://mos.caldis.me/.well-known/agent-instructions.md",
+    "agent_instructions": "https://mos.caldis.me/agent-instructions/",
+    "about": "https://mos.caldis.me/about/",
+    "contact": "https://mos.caldis.me/contact/",
+    "privacy": "https://mos.caldis.me/privacy/",
+    "compare": "https://mos.caldis.me/compare/",
+    "api_catalog": "https://mos.caldis.me/.well-known/api-catalog",
+    "oauth_protected_resource": "https://mos.caldis.me/.well-known/oauth-protected-resource",
+    "agent_skills": "https://mos.caldis.me/.well-known/agent-skills/index.json",
+    "openapi": "https://mos.caldis.me/api/openapi.json",
+    "a2a_agent_card": "https://mos.caldis.me/.well-known/agent-card.json",
+    "mcp_discovery": "https://mos.caldis.me/.well-known/mcp",
+    "schema_map": "https://mos.caldis.me/schema-map.xml"
+  },
+  "service_status": {
+    "public_rest_api": "static-discovery-only",
+    "oauth": "not_provided",
+    "webhooks": "not_provided",
+    "hosted_mcp_server": "not_provided"
+  }
+}

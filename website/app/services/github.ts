@@ -1,8 +1,12 @@
 import useSWR from "swr";
 import { fetcher } from "./utils";
 
-export function useGithubRelease() {
+// `fallbackData` is the release fetched at build time (see app/page.tsx): it
+// renders immediately so the version always shows, and if the client's own
+// anonymous fetch hits the GitHub rate limit (403), SWR keeps this value.
+export function useGithubRelease(fallbackData?: unknown) {
   return useSWR("https://api.github.com/repos/Caldis/Mos/releases/latest", fetcher, {
+    fallbackData,
     // 30分钟内的重复请求将使用缓存
     dedupingInterval: 1000 * 60 * 30,
     // 禁用焦点重新验证

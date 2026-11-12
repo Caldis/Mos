@@ -6,14 +6,14 @@
 
 **Architecture:** Persist the preference in `ToastStorage`, thread that value through `ToastManager` into `ToastContentView`, and keep the debug panel checkbox in sync with storage. Cover the new default and view configuration with focused toast regression tests before implementation.
 
-**Tech Stack:** Swift, AppKit, `UserDefaults`, existing toast regression test harness in `tools/toast_regression_tests.swift`
+**Tech Stack:** Swift, AppKit, `UserDefaults`, existing toast regression test harness in `tools/regression/toast-regression-tests.swift`
 
 ---
 
 ### Task 1: Add the failing regression tests
 
 **Files:**
-- Modify: `tools/toast_regression_tests.swift`
+- Modify: `tools/regression/toast-regression-tests.swift`
 
 **Step 1: Write the failing test**
 
@@ -24,7 +24,7 @@ Add tests that assert:
 
 **Step 2: Run test to verify it fails**
 
-Run: `swiftc -module-cache-path /tmp/mos-toast-tests -o /tmp/mos-toast-tests tools/toast_regression_tests.swift Mos/Components/Toast/ToastLayout.swift Mos/Components/Toast/ToastVisibilityRules.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift && /tmp/mos-toast-tests`
+Run: `swiftc -module-cache-path /tmp/mos-toast-tests -o /tmp/mos-toast-tests tools/regression/toast-regression-tests.swift Mos/Components/Toast/ToastLayout.swift Mos/Components/Toast/ToastVisibilityRules.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift && /tmp/mos-toast-tests`
 
 Expected: FAIL because `ToastStorage` does not yet expose the new preference
 
@@ -71,8 +71,8 @@ Run the toast regression command again, then run a focused build command for the
 **Step 1: Run verification**
 
 Run:
-- `swiftc -module-cache-path /tmp/mos-toast-tests -o /tmp/mos-toast-tests tools/toast_regression_tests.swift Mos/Components/Toast/ToastLayout.swift Mos/Components/Toast/ToastVisibilityRules.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift && /tmp/mos-toast-tests`
+- `swiftc -module-cache-path /tmp/mos-toast-tests -o /tmp/mos-toast-tests tools/regression/toast-regression-tests.swift Mos/Components/Toast/ToastLayout.swift Mos/Components/Toast/ToastVisibilityRules.swift Mos/Components/Toast/ToastContentView.swift Mos/Components/Toast/ToastStorage.swift && /tmp/mos-toast-tests`
 
 **Step 2: Inspect diff**
 
-Run: `git diff -- Mos/Components/Toast/ToastStorage.swift Mos/Components/Toast/Toast.swift Mos/Components/Toast/ToastManager.swift Mos/Components/Toast/ToastPanel.swift Mos/Localizable.xcstrings tools/toast_regression_tests.swift docs/plans/2026-04-11-toast-expand-message-default.md`
+Run: `git diff -- Mos/Components/Toast/ToastStorage.swift Mos/Components/Toast/Toast.swift Mos/Components/Toast/ToastManager.swift Mos/Components/Toast/ToastPanel.swift Mos/Localizable.xcstrings tools/regression/toast-regression-tests.swift docs/plans/2026-04-11-toast-expand-message-default.md`

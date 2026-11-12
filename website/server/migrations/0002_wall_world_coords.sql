@@ -1,0 +1,14 @@
+-- Wall → infinite (large-but-finite) world canvas.
+--
+-- x/y changed meaning from "fraction of the SCREEN" (the old fixed canvas = one
+-- screen) to "fraction of the WORLD" — a fixed board 5× a reference viewport on
+-- each side (see website/app/services/wall.ts WORLD_W / WORLD_H).
+--
+-- Compress every existing note into the centre fifth of the world so its
+-- original on-screen layout is preserved while the surrounding 4/5 opens up:
+--     x' = 0.4 + 0.2 * x ,  y' = 0.4 + 0.2 * y
+--
+-- Reversible (x = (x' - 0.4) / 0.2). Idempotency: this is NOT idempotent — run it
+-- exactly once, after backing up wall_notes. New notes posted by the updated
+-- client already store world-fraction coords, so they must not be re-scaled.
+UPDATE wall_notes SET x = 0.4 + 0.2 * x, y = 0.4 + 0.2 * y;

@@ -1,4 +1,0 @@
-User-Agent: *
-Allow: /
-
-Sitemap: https://mos.caldis.me/sitemap.xml

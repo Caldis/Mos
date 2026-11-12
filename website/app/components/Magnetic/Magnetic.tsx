@@ -31,11 +31,24 @@ export function Magnetic({
 
     const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 
+    // The rAF loop only runs while the offset is actually settling — an idle
+    // magnet (pointer elsewhere, x/y at rest) costs nothing. It used to run
+    // unconditionally, which meant a style write + recalc every frame, forever,
+    // for every Magnetic on the page.
     const tick = () => {
       x += (tx - x) * 0.18;
       y += (ty - y) * 0.18;
+      if (Math.abs(tx - x) < 0.05 && Math.abs(ty - y) < 0.05) {
+        x = tx;
+        y = ty;
+        rafRef.current = null;
+      } else {
+        rafRef.current = window.requestAnimationFrame(tick);
+      }
       inner.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      rafRef.current = window.requestAnimationFrame(tick);
+    };
+    const wake = () => {
+      if (rafRef.current === null) rafRef.current = window.requestAnimationFrame(tick);
     };
 
     const onMove = (event: PointerEvent) => {
@@ -48,16 +61,17 @@ export function Magnetic({
 
       tx = clamp(nx, -1, 1) * strength;
       ty = clamp(ny, -1, 1) * strength;
+      wake();
     };
 
     const onLeave = () => {
       tx = 0;
       ty = 0;
+      wake();
     };
 
     root.addEventListener("pointermove", onMove, { passive: true });
     root.addEventListener("pointerleave", onLeave, { passive: true });
-    rafRef.current = window.requestAnimationFrame(tick);
 
     return () => {
       if (rafRef.current) window.cancelAnimationFrame(rafRef.current);

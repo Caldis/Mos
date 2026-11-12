@@ -1,0 +1,25 @@
+{
+  "name": "mos-server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Worker + D1 backend for the Mos website (wall, plus future features)",
+  "scripts": {
+    "preinstall": "node scripts/only-npm.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "migrate:local": "wrangler d1 migrations apply mos-server --local",
+    "migrate:remote": "wrangler d1 migrations apply mos-server --remote",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test src/lib/geo.test.ts src/lib/moderation.test.ts src/lib/aiJudge.test.ts src/lib/admin.test.ts"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250601.0",
+    "typescript": "^5.5.0",
+    "wrangler": "^4.20.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  }
+}

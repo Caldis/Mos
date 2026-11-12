@@ -9,28 +9,160 @@
     <language>en</language>
 
     <item>
-      <title>Mos 4.0.2</title>
+      <title>Mos 4.2.1</title>
 
-      <description><![CDATA[<h2>修复 / Fixes</h2>
+      <description><![CDATA[<h2>修复</h2>
 <ul>
-<li>修复平滑滚动导致的崩溃问题 / Fix crash caused by smooth scrolling (#868, #826, #699, #687, #665, #510, #512, #499, #368, #597, #859)
-<ul>
-<li>使用 CGEventPostToPid 直接投递合成滚动事件到目标进程, 彻底消除 processEventTapData 中的 use-after-free 崩溃</li>
-<li>Use CGEventPostToPid to deliver synthetic scroll events directly to the target process, eliminating the processEventTapData use-after-free crash</li>
-<li>动量阶段移动鼠标不再将滚动事件"带到"其他窗口</li>
-<li>Moving the mouse during momentum scrolling no longer redirects scroll events to other windows</li>
+<li>修复由于应用热键的输入检查导致的部分情况下的性能问题。</li>
 </ul>
-</li>
+
+<hr/>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fixed a performance issue in some cases caused by input checks for app hotkeys.</li>
 </ul>]]></description>
-      <pubDate>Sun, 08 Mar 2026 12:04:41 +0000</pubDate>
+      <pubDate>Sun, 31 May 2026 14:37:22 +0000</pubDate>
 
       <enclosure
-        url="https://github.com/Caldis/Mos/releases/download/4.0.2/Mos.Versions.4.0.2-20260308.1.zip"
-        length="11429703"
+        url="https://github.com/Caldis/Mos/releases/download/4.2.1/Mos.Versions.4.2.1-20260531.1.zip"
+        length="12127893"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.2.1"
+        sparkle:version="20260531.1"
+        sparkle:edSignature="K31Y9XZUvJ40rwnx8KP9mcQWs8RobTyAd5YQznxmkhj7WFwAPzcx3UHFrJNTYx728pykbannf8PI0a6u0HmSDg=="
+      />
+    </item>
+
+    <item>
+      <title>Mos 4.2.0</title>
+
+      <description><![CDATA[<h2>新功能</h2>
+<ul>
+<li>新增 Logi/HID++ 原生支持, 可识别 Bolt/Unifying 接收器与蓝牙直连设备按钮, 并支持分配 Logi 专有事件
+<ul>
+<li>相关协议参考了大量项目的逆向工程, 感谢 https://github.com/pwr-Solaar/Solaar 等项目的开源</li>
+</ul>
+</li>
+<li>按钮绑定新增「打开…」动作, 可启动 App、运行脚本或打开任意文件, 支持拖拽选择与启动参数</li>
+<li>按钮绑定新增「自定义…」录制、可更灵活的鼠标按键动作</li>
+<li>滚动功能现在支持绑定任意自定义按键</li>
+</ul>
+
+<h2>优化</h2>
+<ul>
+<li>新增捷克语本地化, 感谢 @karelfh</li>
+</ul>
+
+<h2>修复</h2>
+<ul>
+<li>修复滚动选项等值比较方向错误, 感谢 @seng1e</li>
+<li>修复辅助功能权限在运行中被撤销后, 可能阻断系统输入的问题</li>
+<li>修复按键映射功能导致在部分应用中左键点击异常的问题 https://github.com/Caldis/Mos/issues/890</li>
+<li>改进 DisplayLink 异常和屏幕变化后的平滑滚动恢复路径, 降低滚动异常或卡住的风险</li>
+<li>修复自定义按键录制、纯修饰键显示、同时松开修饰键识别和录制期间误触发动作的问题</li>
+</ul>
+
+<hr/>
+
+<h2>New Features</h2>
+<ul>
+<li>Added native Logi/HID++ support for Bolt/Unifying receivers and Bluetooth direct-connected device buttons, with support for assigning Logi-specific events.
+<ul>
+<li>The related protocol work references reverse engineering from many projects; thanks to open-source projects such as https://github.com/pwr-Solaar/Solaar.</li>
+</ul>
+</li>
+<li>Added an "Open..." button action to launch apps, run scripts, or open any file, with drag-and-drop selection and launch arguments.</li>
+<li>Added "Custom..." recording for button bindings, enabling more flexible mouse button actions.</li>
+<li>Scroll features can now be bound to any custom key.</li>
+</ul>
+
+<h2>Improvements</h2>
+<ul>
+<li>Added Czech localization, thanks @karelfh.</li>
+</ul>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fixed reversed scroll options equality comparison, thanks @seng1e.</li>
+<li>Fixed system input blocking when Accessibility permission is revoked while Mos is running.</li>
+<li>Fixed abnormal left-click behavior in some apps caused by button mapping. https://github.com/Caldis/Mos/issues/890</li>
+<li>Improved smooth-scroll recovery after DisplayLink errors and screen changes, reducing the risk of abnormal or stuck scrolling.</li>
+<li>Fixed custom key recording, pure modifier display, simultaneous modifier release detection, and accidental action execution while recording.</li>
+</ul>]]></description>
+      <pubDate>Mon, 04 May 2026 18:20:27 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.2.0/Mos.Versions.4.2.0-20260505.1.zip"
+        length="12114928"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.2.0"
+        sparkle:version="20260505.1"
+        sparkle:edSignature="U4ZRLJJ0pBx1oibjdBt4yVs76mvnzuNkFRod63e56FmLZ4+x6LrIcGf6N1snIB18MPlzQ1VZMIix40ASRK2sCw=="
+      />
+    </item>
+
+    <item>
+      <title>Mos 4.0.2</title>
+
+      <description><![CDATA[<h2>修复</h2>
+<ul>
+<li>进一步尝试修复平滑滚动导致的崩溃问题 (感谢 #868, #826, #699, #687, #665, #510, #512, #499, #368, #597, #859 提供的日志)</li>
+</ul>
+
+<hr/>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fix crash caused by smooth scrolling (#868, #826, #699, #687, #665, #510, #512, #499, #368, #597, #859)</li>
+</ul>]]></description>
+      <pubDate>Sun, 08 Mar 2026 15:35:15 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.0.2/Mos.Versions.4.0.2-20260308.2.zip"
+        length="11313875"
         type="application/octet-stream"
         sparkle:shortVersionString="4.0.2"
+        sparkle:version="20260308.2"
+        sparkle:edSignature="98EXQAvp+JrYQJ+2Nkj9XKMt3ap3ZTa650Tl2cm+kbVLhTeKEli8fjsz2ueovDJ0E7kZdqxSb116Xnzk/lOpAQ=="
+      />
+    </item>
+
+    <item>
+      <title>Mos 4.0.1</title>
+
+      <description><![CDATA[<h2>新功能</h2>
+<ul>
+<li>添加 UU 远程桌面（UU远程桌面）支持，防止主机与客户端同时安装 Mos 时出现双重平滑问题，感谢 @jijiamoer (#879)</li>
+</ul>
+
+<h2>修复</h2>
+<ul>
+<li>修复滚动事件派发问题，引入 ScrollDispatchContext 重构 ScrollPoster，解决部分场景下滚动异常 (#868, #826)</li>
+<li>修复 macOS 26+ 上 LaunchPad 检测逻辑，避免影响 Dock 文件夹弹出视图，感谢 @Lezheng2333 反馈 (#878)</li>
+</ul>
+
+<hr/>
+
+<h2>New Features</h2>
+<ul>
+<li>Added UU Remote Desktop (UU远程桌面) support to prevent double-smoothing when both host and client have Mos installed, thanks @jijiamoer (#879)</li>
+</ul>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fixed scroll event dispatching by introducing ScrollDispatchContext and refactoring ScrollPoster, resolving scroll anomalies in certain scenarios (#868, #826)</li>
+<li>Fixed LaunchPad detection on macOS 26+, avoiding interference with Dock folder popup views, thanks @Lezheng2333 for reporting (#878)</li>
+</ul>]]></description>
+      <pubDate>Sat, 08 Mar 2026 00:00:00 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.0.1/Mos.Versions.4.0.1-20260308.1.zip"
+        length="11313837"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.0.1"
         sparkle:version="20260308.1"
-        sparkle:edSignature="OyDmc7SDE65uJGsk2ThaQPkSxwELe8NyxjL+Wgx8dEx6zAjXI5hdfoEySaNg1aUqDun8y/bEp5//6Q0b2mq+Ag=="
+        sparkle:edSignature="9nQoJKJHbkgtO0uLU/89EW8OnetCaoti+yNJv7klZH6TisZRWq66nwq0V6rnnsJcF7nO7czcsm57tpqVm0zJAQ=="
       />
     </item>
 

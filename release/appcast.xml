@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+    xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Mos</title>
+    <link>https://mos.caldis.me/</link>
+    <description>Mos Updates</description>
+    <language>en</language>
+
+    <item>
+      <title>Mos 4.3.0</title>
+
+      <sparkle:channel>beta</sparkle:channel>
+      <description><![CDATA[<p>⚠️ 行为变更: 「目标应用程序」列表中未勾选「继承全局设定」的应用, 其平滑滚动与翻转方向设置现在独立生效, 不再受全局开关限制。如有需要, 请在升级后检查相关配置。</p>
+
+<h2>新功能</h2>
+<ul>
+<li>同一个接收器连接的多只罗技鼠标, 现在可以同时使用按键功能, 换手即用, 无需手动切换</li>
+<li>新增泰语界面, 感谢 @atomsbaza</li>
+</ul>
+
+<h2>优化</h2>
+<ul>
+<li>精简按键绑定面板的文案, 界面更紧凑</li>
+<li>大量内部优化, 运行更稳定</li>
+</ul>
+
+<h2>修复</h2>
+<ul>
+<li>修复休眠后的罗技鼠标唤醒时, 按键功能不生效的问题, 感谢 @LJAYi</li>
+<li>修复在 After Effects 等应用中左键可能卡住的问题, 感谢 @denizercealagoz</li>
+<li>修复「目标应用程序」的独立设置在全局开关关闭时不生效的问题, 感谢 @YuriNachos</li>
+<li>修复外接显示器唤醒或重新连接后, 滚动变卡的问题, 感谢 @wiskiiii</li>
+<li>修复特定情况下配置丢失导致滚动完全失效的问题, 感谢 @YuriNachos</li>
+<li>修复名称中带有 emoji 的应用在列表中显示异常的问题, 感谢 @YuriNachos</li>
+<li>修复侧键与系统原生快捷键 (如调度中心) 被同时触发的问题, 感谢 @Luizz14</li>
+<li>修复罗技键盘无法进入休眠的问题, 感谢 @MohammedAlmajhali</li>
+<li>修复长时间运行时的若干稳定性问题, 感谢 @MrMage</li>
+</ul>
+
+<p>注: 本次为修复侧键与系统快捷键的冲突, 调整了按键监听的层级。如果你在与 BetterTouchTool 等按键映射工具同时使用时遇到按键冲突, 欢迎通过 issue 反馈。</p>
+
+<hr/>
+
+<p>⚠️ Behavior change: applications in the target-application list with "Inherit global settings" unchecked now apply their smooth-scrolling and reverse settings independently, no longer limited by the global switches. Please review your configuration after upgrading if needed.</p>
+
+<h2>New Features</h2>
+<ul>
+<li>Multiple Logitech mice on the same receiver can now use button features at the same time — switch hands freely, no manual switching needed</li>
+<li>Added Thai localization, thanks @atomsbaza</li>
+</ul>
+
+<h2>Improvements</h2>
+<ul>
+<li>Trimmed the button-binding panel wording for a more compact layout</li>
+<li>Lots of internal refinements for smoother, more stable operation</li>
+</ul>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fix button features not working after a Logitech mouse wakes from sleep, thanks @LJAYi</li>
+<li>Fix the left mouse button occasionally getting stuck in apps like After Effects, thanks @denizercealagoz</li>
+<li>Fix per-application settings not taking effect while the global switch is off, thanks @YuriNachos</li>
+<li>Fix scrolling becoming laggy after an external display wakes or reconnects, thanks @wiskiiii</li>
+<li>Fix scrolling breaking entirely when preferences go missing in rare cases, thanks @YuriNachos</li>
+<li>Fix apps with emoji in their names displaying incorrectly in the list, thanks @YuriNachos</li>
+<li>Fix side buttons triggering both their binding and native system shortcuts (e.g. Mission Control) at the same time, thanks @Luizz14</li>
+<li>Fix Logitech keyboards being kept awake and unable to sleep, thanks @MohammedAlmajhali</li>
+<li>Fix several stability issues during long-running sessions, thanks @MrMage</li>
+</ul>
+
+<p>Note: to fix the side-button/system-shortcut conflict, this release adjusts the level at which button events are monitored. If you use Mos alongside tools like BetterTouchTool and run into button conflicts, please let us know via an issue.</p>]]></description>
+      <pubDate>Thu, 20 Aug 2026 15:51:02 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.3.0-beta-20260820.1/Mos.Versions.4.3.0-beta-20260820.1.zip"
+        length="11727082"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.3.0"
+        sparkle:version="20260820.1"
+        sparkle:edSignature="UvplbzZCXoLRL9EUXRIQhvWGQ9YxtD3sAFplXttSz1iQIPh/pZyeZeZolpwjS/PavMCC2T4SuG9XJ1YnFwZtBw=="
+        sparkle:channel="beta"
+      />
+    </item>
+
+    <item>
+      <title>Mos 4.2.1</title>
+
+      <description><![CDATA[<h2>修复</h2>
+<ul>
+<li>修复由于应用热键的输入检查导致的部分情况下的性能问题。</li>
+</ul>
+
+<hr/>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fixed a performance issue in some cases caused by input checks for app hotkeys.</li>
+</ul>]]></description>
+      <pubDate>Sun, 31 May 2026 14:37:22 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.2.1/Mos.Versions.4.2.1-20260531.1.zip"
+        length="12127893"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.2.1"
+        sparkle:version="20260531.1"
+        sparkle:edSignature="K31Y9XZUvJ40rwnx8KP9mcQWs8RobTyAd5YQznxmkhj7WFwAPzcx3UHFrJNTYx728pykbannf8PI0a6u0HmSDg=="
+      />
+    </item>
+
+    <item>
+      <title>Mos 4.2.0</title>
+
+      <description><![CDATA[<h2>新功能</h2>
+<ul>
+<li>新增 Logi/HID++ 原生支持, 可识别 Bolt/Unifying 接收器与蓝牙直连设备按钮, 并支持分配 Logi 专有事件
+<ul>
+<li>相关协议参考了大量项目的逆向工程, 感谢 https://github.com/pwr-Solaar/Solaar 等项目的开源</li>
+</ul>
+</li>
+<li>按钮绑定新增「打开…」动作, 可启动 App、运行脚本或打开任意文件, 支持拖拽选择与启动参数</li>
+<li>按钮绑定新增「自定义…」录制、可更灵活的鼠标按键动作</li>
+<li>滚动功能现在支持绑定任意自定义按键</li>
+</ul>
+
+<h2>优化</h2>
+<ul>
+<li>新增捷克语本地化, 感谢 @karelfh</li>
+</ul>
+
+<h2>修复</h2>
+<ul>
+<li>修复滚动选项等值比较方向错误, 感谢 @seng1e</li>
+<li>修复辅助功能权限在运行中被撤销后, 可能阻断系统输入的问题</li>
+<li>修复按键映射功能导致在部分应用中左键点击异常的问题 https://github.com/Caldis/Mos/issues/890</li>
+<li>改进 DisplayLink 异常和屏幕变化后的平滑滚动恢复路径, 降低滚动异常或卡住的风险</li>
+<li>修复自定义按键录制、纯修饰键显示、同时松开修饰键识别和录制期间误触发动作的问题</li>
+</ul>
+
+<hr/>
+
+<h2>New Features</h2>
+<ul>
+<li>Added native Logi/HID++ support for Bolt/Unifying receivers and Bluetooth direct-connected device buttons, with support for assigning Logi-specific events.
+<ul>
+<li>The related protocol work references reverse engineering from many projects; thanks to open-source projects such as https://github.com/pwr-Solaar/Solaar.</li>
+</ul>
+</li>
+<li>Added an "Open..." button action to launch apps, run scripts, or open any file, with drag-and-drop selection and launch arguments.</li>
+<li>Added "Custom..." recording for button bindings, enabling more flexible mouse button actions.</li>
+<li>Scroll features can now be bound to any custom key.</li>
+</ul>
+
+<h2>Improvements</h2>
+<ul>
+<li>Added Czech localization, thanks @karelfh.</li>
+</ul>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fixed reversed scroll options equality comparison, thanks @seng1e.</li>
+<li>Fixed system input blocking when Accessibility permission is revoked while Mos is running.</li>
+<li>Fixed abnormal left-click behavior in some apps caused by button mapping. https://github.com/Caldis/Mos/issues/890</li>
+<li>Improved smooth-scroll recovery after DisplayLink errors and screen changes, reducing the risk of abnormal or stuck scrolling.</li>
+<li>Fixed custom key recording, pure modifier display, simultaneous modifier release detection, and accidental action execution while recording.</li>
+</ul>]]></description>
+      <pubDate>Mon, 04 May 2026 18:20:27 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.2.0/Mos.Versions.4.2.0-20260505.1.zip"
+        length="12114928"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.2.0"
+        sparkle:version="20260505.1"
+        sparkle:edSignature="U4ZRLJJ0pBx1oibjdBt4yVs76mvnzuNkFRod63e56FmLZ4+x6LrIcGf6N1snIB18MPlzQ1VZMIix40ASRK2sCw=="
+      />
+    </item>
+
+    <item>
+      <title>Mos 4.0.2</title>
+
+      <description><![CDATA[<h2>修复</h2>
+<ul>
+<li>进一步尝试修复平滑滚动导致的崩溃问题 (感谢 #868, #826, #699, #687, #665, #510, #512, #499, #368, #597, #859 提供的日志)</li>
+</ul>
+
+<hr/>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fix crash caused by smooth scrolling (#868, #826, #699, #687, #665, #510, #512, #499, #368, #597, #859)</li>
+</ul>]]></description>
+      <pubDate>Sun, 08 Mar 2026 15:35:15 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.0.2/Mos.Versions.4.0.2-20260308.2.zip"
+        length="11313875"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.0.2"
+        sparkle:version="20260308.2"
+        sparkle:edSignature="98EXQAvp+JrYQJ+2Nkj9XKMt3ap3ZTa650Tl2cm+kbVLhTeKEli8fjsz2ueovDJ0E7kZdqxSb116Xnzk/lOpAQ=="
+      />
+    </item>
+
+    <item>
+      <title>Mos 4.0.1</title>
+
+      <description><![CDATA[<h2>新功能</h2>
+<ul>
+<li>添加 UU 远程桌面（UU远程桌面）支持，防止主机与客户端同时安装 Mos 时出现双重平滑问题，感谢 @jijiamoer (#879)</li>
+</ul>
+
+<h2>修复</h2>
+<ul>
+<li>修复滚动事件派发问题，引入 ScrollDispatchContext 重构 ScrollPoster，解决部分场景下滚动异常 (#868, #826)</li>
+<li>修复 macOS 26+ 上 LaunchPad 检测逻辑，避免影响 Dock 文件夹弹出视图，感谢 @Lezheng2333 反馈 (#878)</li>
+</ul>
+
+<hr/>
+
+<h2>New Features</h2>
+<ul>
+<li>Added UU Remote Desktop (UU远程桌面) support to prevent double-smoothing when both host and client have Mos installed, thanks @jijiamoer (#879)</li>
+</ul>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fixed scroll event dispatching by introducing ScrollDispatchContext and refactoring ScrollPoster, resolving scroll anomalies in certain scenarios (#868, #826)</li>
+<li>Fixed LaunchPad detection on macOS 26+, avoiding interference with Dock folder popup views, thanks @Lezheng2333 for reporting (#878)</li>
+</ul>]]></description>
+      <pubDate>Sat, 08 Mar 2026 00:00:00 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.0.1/Mos.Versions.4.0.1-20260308.1.zip"
+        length="11313837"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.0.1"
+        sparkle:version="20260308.1"
+        sparkle:edSignature="9nQoJKJHbkgtO0uLU/89EW8OnetCaoti+yNJv7klZH6TisZRWq66nwq0V6rnnsJcF7nO7czcsm57tpqVm0zJAQ=="
+      />
+    </item>
+
+    <item>
+      <title>Mos 4.0.0</title>
+
+      <description><![CDATA[<h2>新功能</h2>
+<ul>
+<li>全新「按钮」模块：将鼠标按键绑定到任意系统快捷操作。</li>
+<li>新增「模拟触控板 (Beta)」滚动模式。</li>
+<li>滚动方向反转现在支持垂直、水平方向独立设置。</li>
+<li>新增应用内更新检查（power by Sparkle）。</li>
+<li>新增远程桌面滚动事件检测, 如果发起端和受控端都安装了 Mos, 也不会冲突。</li>
+<li>滚动功能键现在支持自定义录制绑定。</li>
+</ul>
+
+<h2>优化</h2>
+<ul>
+<li>欢迎引导窗口 UI 翻新。</li>
+<li>全新应用图标与状态栏图标。</li>
+<li>滚动选项面板整合优化。</li>
+<li>适配 macOS 26 视觉风格。</li>
+<li>翻译系统迁移至 String Catalogs。</li>
+<li>新增法语翻译, 感谢 @EricPujolBRGM</li>
+<li>新增波兰语翻译, 感谢 @MaciejkaG</li>
+<li>新增印尼语翻译, 感谢 @harun-alrosyid</li>
+<li>日语本地化补全, 感谢 @ulyssas</li>
+<li>日语、印尼语文本校对, 感谢 @ulyssas @harun-alrosyid</li>
+<li>波兰语、英文文本校对, 感谢 @MaciejkaG</li>
+</ul>
+
+<h2>修复</h2>
+<ul>
+<li>修复多个滚动平滑相关问题。</li>
+<li>修复鼠标按键映射与辅助功能授权状态异常。</li>
+<li>修复非美式键盘快捷键问题, 感谢 @salakis</li>
+<li>修复鼠标中键映射问题, 感谢 @GonzFC</li>
+<li>修复其他已知问题。</li>
+</ul>
+
+<hr/>
+
+<h2>New Features</h2>
+<ul>
+<li>Brand-new Buttons module: bind mouse buttons to any system shortcut.</li>
+<li>Added Simulate Trackpad scrolling mode.</li>
+<li>Scroll direction reversal can now be set independently for vertical and horizontal axes.</li>
+<li>Added in-app update checking via Sparkle, with an optional beta channel.</li>
+<li>Added remote desktop scroll event detection, if both remote host and client are installed Mos still work fine.</li>
+<li>Scroll hotkeys can now be recorded and bound to custom keys.</li>
+</ul>
+
+<h2>Improvements</h2>
+<ul>
+<li>Refreshed the welcome guide UI.</li>
+<li>New app icon and menu bar icon.</li>
+<li>Consolidated scroll options panel.</li>
+<li>Adapted visual style for macOS 26.</li>
+<li>Migrated translations to String Catalogs.</li>
+<li>Added French translation, thanks to @EricPujolBRGM</li>
+<li>Added Polish translation, thanks to @MaciejkaG</li>
+<li>Added Indonesian translation, thanks to @harun-alrosyid</li>
+<li>Japanese localization completion, thanks to @ulyssas</li>
+<li>Japanese &amp; Indonesian text proofreading, thanks to @ulyssas @harun-alrosyid</li>
+<li>Polish &amp; English text proofreading, thanks to @MaciejkaG</li>
+</ul>
+
+<h2>Fixes</h2>
+<ul>
+<li>Fixed multiple smooth scrolling issues.</li>
+<li>Fixed mouse button mapping and accessibility authorization state issues.</li>
+<li>Fixed shortcuts on non-US keyboard layouts, thanks to @salakis</li>
+<li>Fixed middle mouse button mapping, thanks to @GonzFC</li>
+<li>Fixed other known issues.</li>
+</ul>]]></description>
+      <pubDate>Thu, 20 Feb 2026 00:00:00 +0000</pubDate>
+
+      <enclosure
+        url="https://github.com/Caldis/Mos/releases/download/4.0.0/Mos.Versions.4.0.0-20260220.1.zip"
+        length="11334806"
+        type="application/octet-stream"
+        sparkle:shortVersionString="4.0.0"
+        sparkle:version="20260220.1"
+        sparkle:edSignature="N1UZ25aHNADhPOBiqw5v+1rKhC28QXKzWFBQdcZq8oHN9brvZ1Rh3Hu2mQm/UveFSaK2RnqEFvyrbkziJy7eBw=="
+      />
+    </item>
+  </channel>
+</rss>
