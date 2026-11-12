@@ -153,6 +153,10 @@ struct KeyCode {
         179: "Fn (179)", // 179 可以通过双击 FN 触发
     ]
 
+    /// 倾斜滚轮虚拟按键码
+    static let tiltLeft: UInt16 = 21
+    static let tiltRight: UInt16 = 22
+
     /// 鼠标字符映射
     static let mouseMap: [UInt16: String] = [
         // 主要
@@ -162,6 +166,8 @@ struct KeyCode {
         9: "🖱9", 10: "🖱10", 11: "🖱11", 12: "🖱12", 13: "🖱13",
         14: "🖱14", 15: "🖱15", 16: "🖱16", 17: "🖱17", 18: "🖱18",
         19: "🖱19", 20: "🖱20",
+        // 倾斜滚轮
+        21: "🖱←", 22: "🖱→",
     ]
     static let mouseMainKeys: [UInt16] = [0,1]  // Only protect left/right clicks, allow middle button without modifiers
 }

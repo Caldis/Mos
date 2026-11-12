@@ -1062,3 +1062,72 @@ final class InputProcessorTests: XCTestCase {
     }
 
 }
+
+
+extension InputProcessorTests {
+    private func makeTiltEvent(x: Int32 = 10, y: Int32 = 0) throws -> CGEvent {
+        let event = try XCTUnwrap(CGEvent(scrollWheelEvent2Source: nil, units: .pixel,
+                                        wheelCount: 2, wheel1: y, wheel2: x, wheel3: 0))
+        event.setIntegerValueField(.scrollWheelEventIsContinuous, value: 0)
+        event.flags = []
+        ScrollEvent.isTrackpadCallCount = 2
+        return event
+    }
+
+    func testTiltWheelRecognizesOnlyHorizontalMouseScroll() throws {
+        XCTAssertEqual(TiltWheelHandler.tiltCode(for: try makeTiltEvent()), KeyCode.tiltRight)
+        XCTAssertEqual(TiltWheelHandler.tiltCode(for: try makeTiltEvent(x: -10)), KeyCode.tiltLeft)
+        XCTAssertNil(TiltWheelHandler.tiltCode(for: try makeTiltEvent(x: 0, y: 10)))
+        XCTAssertNil(TiltWheelHandler.tiltCode(for: try makeTiltEvent(y: 10)))
+        let trackpad = try makeTiltEvent()
+        trackpad.setIntegerValueField(.scrollWheelEventScrollPhase, value: 1)
+        XCTAssertNil(TiltWheelHandler.tiltCode(for: trackpad))
+    }
+
+    func testTiltWheelIgnoresSyntheticScrollAndModifierDrivenScroll() throws {
+        let event = try makeTiltEvent()
+        ScrollUtils.shared.markSyntheticSmoothEvent(event)
+        XCTAssertNil(TiltWheelHandler.tiltCode(for: event))
+        event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
+        XCTAssertNil(TiltWheelHandler.tiltCode(for: event))
+        event.flags = .maskShift
+        XCTAssertTrue(TiltWheelHandler.isModifierDrivenHorizontalScroll(event))
+        event.flags = []
+        ScrollCore.shared.toggleScroll = true
+        XCTAssertTrue(TiltWheelHandler.isModifierDrivenHorizontalScroll(event))
+    }
+
+    func testTiltWheelPassesThroughUnboundAndDisabledBindings() {
+        let handler = TiltWheelHandler.shared
+        handler.clearState()
+        defer { handler.clearState() }
+        XCTAssertFalse(handler.handle(code: KeyCode.tiltLeft))
+        let trigger = RecordedEvent(type: .mouse, code: KeyCode.tiltLeft, modifiers: 0,
+                                    displayComponents: ["🖱←"], deviceFilter: nil)
+        Options.shared.buttons.binding = [ButtonBinding(triggerEvent: trigger,
+                                                       systemShortcutName: "custom::56:0", isEnabled: false)]
+        ButtonUtils.shared.invalidateCache()
+        XCTAssertFalse(handler.handle(code: KeyCode.tiltLeft))
+    }
+
+    func testTiltWheelReleasesModifierOnStopAndClear() {
+        let handler = TiltWheelHandler.shared
+        handler.clearState()
+        defer { handler.clearState() }
+        let modifiers = CGEventSource.flagsState(.combinedSessionState).rawValue
+        let trigger = RecordedEvent(type: .mouse, code: KeyCode.tiltLeft, modifiers: UInt(modifiers),
+                                    displayComponents: ["🖱←"], deviceFilter: nil)
+        Options.shared.buttons.binding = [ButtonBinding(triggerEvent: trigger,
+                                                       systemShortcutName: "custom::56:0", isEnabled: true)]
+        ButtonUtils.shared.invalidateCache()
+        XCTAssertTrue(handler.handle(code: KeyCode.tiltLeft))
+        XCTAssertNotEqual(InputProcessor.shared.activeModifierFlags, 0)
+        handler.clearState()
+        XCTAssertEqual(InputProcessor.shared.activeModifierFlags, 0)
+        XCTAssertTrue(handler.handle(code: KeyCode.tiltLeft))
+        RunLoop.main.run(until: Date().addingTimeInterval(0.12))
+        XCTAssertEqual(InputProcessor.shared.activeModifierFlags, 0)
+        handler.notifyModifierActive()
+        XCTAssertFalse(handler.handle(code: KeyCode.tiltLeft))
+    }
+}
