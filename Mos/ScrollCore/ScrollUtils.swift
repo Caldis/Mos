@@ -14,6 +14,7 @@ class ScrollUtils {
     static let shared = ScrollUtils()
     init() { NSLog("Module initialized: ScrollUtils") }
     private let syntheticSmoothEventMarker: Int64 = 0x4D4F53534D4F4F54
+    private let syntheticDockEventMarker: Int64 = 0x4D4F53444F434B00
     
     // 判断事件目标是否变化
     var previousScrollTargetProcessID = 0.0 // 用于在鼠标移动到不同窗口时停止滚动
@@ -26,12 +27,22 @@ class ScrollUtils {
         return previousScrollTargetProcessID != currentScrollTargetProcessID && previousScrollTargetProcessID != 0.0
     }
     
-    func markSyntheticSmoothEvent(_ event: CGEvent) {
-        event.setIntegerValueField(.eventSourceUserData, value: syntheticSmoothEventMarker)
+    func markSyntheticSmoothEvent(_ event: CGEvent, targetIsDock: Bool = false) {
+        event.setIntegerValueField(.eventSourceUserData, value: targetIsDock ? syntheticDockEventMarker : syntheticSmoothEventMarker)
     }
 
     func isSyntheticSmoothEvent(_ event: CGEvent) -> Bool {
-        return event.getIntegerValueField(.eventSourceUserData) == syntheticSmoothEventMarker
+        let marker = event.getIntegerValueField(.eventSourceUserData)
+        return marker == syntheticSmoothEventMarker || marker == syntheticDockEventMarker
+    }
+
+    // Session routing can retarget an inertial frame when the Dock folder is
+    // dismissed (e.g. Escape). Never send the remaining motion into the app below.
+    func shouldDropSyntheticDockEvent(_ event: CGEvent) -> Bool {
+        guard event.getIntegerValueField(.eventSourceUserData) == syntheticDockEventMarker else {
+            return false
+        }
+        return getRunningApplication(from: event)?.bundleIdentifier != "com.apple.dock"
     }
     
     // 从 CGEvent 中携带的 PID 获取应用信息

@@ -67,8 +67,8 @@ class ScrollPoster {
 
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
-    func update(event: CGEvent, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
-        guard dispatchContext.capture(event: event) else {
+    func update(event: CGEvent, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1, targetIsDock: Bool = false) -> Self {
+        guard dispatchContext.capture(event: event, targetIsDock: targetIsDock) else {
             return self
         }
         os_unfair_lock_lock(&stateLock)
@@ -521,10 +521,9 @@ private extension ScrollPoster {
         snapshot.event.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: v.x)
         // 是否连续滚动: 始终为 1.0
         snapshot.event.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
-        ScrollUtils.shared.markSyntheticSmoothEvent(snapshot.event)
-        // 通过 CGEventPostToPid 直投目标进程:
-        // 不依赖 proxy (消除崩溃), 不经过 tap 链重新路由 (动量不跟随光标)
-        // ref: @shichangone MR: https://github.com/Caldis/Mos/pull/523, issue #868
+        ScrollUtils.shared.markSyntheticSmoothEvent(snapshot.event, targetIsDock: snapshot.targetIsDock)
+        // DispatchContext routes Dock through the session stream; other apps
+        // retain direct-PID delivery without keeping an event-tap proxy (#868).
         dispatchContext.enqueue(snapshot)
         ScrollPhase.shared.didDeliverFrame()
         return true

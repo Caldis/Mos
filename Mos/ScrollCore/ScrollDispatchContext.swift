@@ -17,6 +17,18 @@ final class ScrollDispatchContext {
         let targetPID: pid_t
         let generation: UInt64
         let capturedAt: CFTimeInterval
+        let targetIsDock: Bool
+
+        func eventForPosting(currentPointerLocation: () -> CGPoint?) -> CGEvent? {
+            if targetIsDock {
+                // Session posting also applies the event's pointer coordinates.
+                // Refresh at delivery time, not capture time, so scrolling cannot
+                // pull a moving cursor back to the original wheel-event location.
+                guard let location = currentPointerLocation() else { return nil }
+                event.location = location
+            }
+            return event
+        }
     }
 
     private struct SnapshotState {
@@ -24,6 +36,7 @@ final class ScrollDispatchContext {
         var targetPID: pid_t = 0
         var generation: UInt64 = 0
         var updatedAt: CFTimeInterval = 0.0
+        var targetIsDock = false
     }
 
     private var state = SnapshotState()
@@ -52,7 +65,7 @@ final class ScrollDispatchContext {
 #endif
 
     @discardableResult
-    func capture(event: CGEvent) -> Bool {
+    func capture(event: CGEvent, targetIsDock: Bool = false) -> Bool {
         guard let template = event.copy() else {
 #if DEBUG
             os_unfair_lock_lock(&lock)
@@ -65,6 +78,7 @@ final class ScrollDispatchContext {
         os_unfair_lock_lock(&lock)
         state.eventTemplate = template
         state.targetPID = pid
+        state.targetIsDock = targetIsDock
         state.updatedAt = CFAbsoluteTimeGetCurrent()
         os_unfair_lock_unlock(&lock)
         return true
@@ -100,7 +114,7 @@ final class ScrollDispatchContext {
             os_unfair_lock_unlock(&lock)
             return nil
         }
-        let snapshot = PostingSnapshot(event: eventClone, targetPID: state.targetPID, generation: state.generation, capturedAt: state.updatedAt)
+        let snapshot = PostingSnapshot(event: eventClone, targetPID: state.targetPID, generation: state.generation, capturedAt: state.updatedAt, targetIsDock: state.targetIsDock)
         os_unfair_lock_unlock(&lock)
         return snapshot
     }
@@ -122,13 +136,20 @@ final class ScrollDispatchContext {
             }
             os_unfair_lock_unlock(&self.lock)
             guard validGeneration && validTTL else { return }
-            // 使用 CGEventPostToPid 直接投递到目标进程:
-            // 1. 不依赖 proxy → 无生命周期崩溃 (issue #868)
-            // 2. 不经过 session event tap 链路重新路由 → 动量阶段光标移动不会
-            //    将滚动事件"带到"其他应用, 始终送达原始滚动目标进程
-            // 3. 进程内通过 event.location 做窗口级 hit-testing, 路由到正确窗口
-            // 合成事件标记 (eventSourceUserData) 作为防御性旁路保留
-            snapshot.event.postToPid(snapshot.targetPID)
+            guard let event = snapshot.eventForPosting(currentPointerLocation: {
+                CGEvent(source: nil)?.location
+            }) else { return }
+            if snapshot.targetIsDock {
+                // Dock folder grids require WindowServer's session routing for
+                // smooth scrolling. The Dock marker prevents re-smoothing and
+                // lets ScrollCore drop frames retargeted after the folder closes.
+                event.post(tap: .cgSessionEventTap)
+            } else {
+                // Keep other apps pinned to the original process: moving the
+                // pointer during momentum must not redirect their scrolling.
+                // Direct delivery also avoids retaining an expired tap proxy (#868).
+                event.postToPid(snapshot.targetPID)
+            }
 #if DEBUG
             os_unfair_lock_lock(&self.lock)
             self.postedFrames &+= 1

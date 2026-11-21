@@ -9,6 +9,24 @@ import XCTest
 @testable import Mos_Debug
 
 final class ScrollEventTests: XCTestCase {
+    func testDockFramesRemainSyntheticAfterCopyAndAreDroppedIfRetargeted() throws {
+        let event = try XCTUnwrap(CGEvent(scrollWheelEvent2Source: nil,
+            units: .pixel, wheelCount: 1, wheel1: 1, wheel2: 0, wheel3: 0))
+        // Represents a frame routed to this test host after the Dock folder closes.
+        event.setIntegerValueField(.eventTargetUnixProcessID, value: Int64(ProcessInfo.processInfo.processIdentifier))
+        ScrollUtils.shared.markSyntheticSmoothEvent(event, targetIsDock: true)
+        let copy = try XCTUnwrap(event.copy())
+        XCTAssertTrue(ScrollUtils.shared.isSyntheticSmoothEvent(copy))
+        XCTAssertTrue(ScrollUtils.shared.shouldDropSyntheticDockEvent(copy))
+
+        // Ordinary app frames still use the existing process-targeted path.
+        let ordinaryEvent = try XCTUnwrap(CGEvent(scrollWheelEvent2Source: nil,
+            units: .pixel, wheelCount: 1, wheel1: 1, wheel2: 0, wheel3: 0))
+        ScrollUtils.shared.markSyntheticSmoothEvent(ordinaryEvent)
+        XCTAssertTrue(ScrollUtils.shared.isSyntheticSmoothEvent(ordinaryEvent))
+        XCTAssertFalse(ScrollUtils.shared.shouldDropSyntheticDockEvent(ordinaryEvent))
+    }
+
 
     // MARK: - 辅助: 创建 CGEvent
 

@@ -35,6 +35,56 @@ final class ScrollDispatchContextTests: XCTestCase {
 
     // MARK: - capture
 
+    func testDockPostingUsesLivePointerPositionWithoutChangingCapturedTemplate() throws {
+        let input = try XCTUnwrap(makeScrollEvent())
+        input.location = CGPoint(x: 350, y: 420)
+        sut.capture(event: input, targetIsDock: true)
+        let firstFrame = try XCTUnwrap(sut.preparePostingSnapshot())
+        let secondFrame = try XCTUnwrap(sut.preparePostingSnapshot())
+
+        // Both frames were captured before the pointer moved. Each must use the
+        // position at actual delivery time, including the momentum tail.
+        let first = try XCTUnwrap(firstFrame.eventForPosting(currentPointerLocation: {
+            CGPoint(x: 400, y: 450)
+        }))
+        let second = try XCTUnwrap(secondFrame.eventForPosting(currentPointerLocation: {
+            CGPoint(x: 500, y: 550)
+        }))
+        XCTAssertEqual(first.location, CGPoint(x: 400, y: 450))
+        XCTAssertEqual(second.location, CGPoint(x: 500, y: 550))
+        XCTAssertEqual(input.location, CGPoint(x: 350, y: 420))
+        XCTAssertEqual(try XCTUnwrap(sut.preparePostingSnapshot()).event.location, input.location)
+    }
+
+    func testOtherAppsKeepOriginalLocationWithoutQueryingPointer() throws {
+        let input = try XCTUnwrap(makeScrollEvent())
+        input.location = CGPoint(x: 350, y: 420)
+        sut.capture(event: input)
+        let frame = try XCTUnwrap(sut.preparePostingSnapshot())
+        let posted = try XCTUnwrap(frame.eventForPosting(currentPointerLocation: {
+            XCTFail("Direct-PID posting should not query or follow the live pointer")
+            return CGPoint(x: 900, y: 900)
+        }))
+        XCTAssertEqual(posted.location, input.location)
+    }
+
+    func testQueuedDockFrameKeepsItsRouteWhenNextInputTargetsAnotherApp() throws {
+        let dockEvent = try XCTUnwrap(makeScrollEvent())
+        dockEvent.location = CGPoint(x: 350, y: 420)
+        sut.capture(event: dockEvent, targetIsDock: true)
+        let dockFrame = try XCTUnwrap(sut.preparePostingSnapshot())
+
+        let appEvent = try XCTUnwrap(makeScrollEvent())
+        appEvent.location = CGPoint(x: 700, y: 800)
+        sut.capture(event: appEvent)
+        let appFrame = try XCTUnwrap(sut.preparePostingSnapshot())
+
+        XCTAssertTrue(dockFrame.targetIsDock)
+        XCTAssertEqual(dockFrame.event.location, CGPoint(x: 350, y: 420))
+        XCTAssertFalse(appFrame.targetIsDock)
+        XCTAssertEqual(appFrame.event.location, CGPoint(x: 700, y: 800))
+    }
+
     func testCapture_withValidEvent_returnsTrue() throws {
         let event = try XCTUnwrap(makeScrollEvent(), "CGEvent construction failed; skipping on this environment")
         let result = sut.capture(event: event)
