@@ -102,6 +102,10 @@ class OPTIONS_GENERAL_DEFAULT {
         willSet {newValue ? StatusItemManager.hideStatusItem() : StatusItemManager.showStatusItem()}
         didSet {Options.shared.markChanged(.general)}
     }
+    // 状态栏图标的右键行为
+    var statusItemSecondaryClickAction = StatusItemSecondaryClickAction.default {
+        didSet {Options.shared.markChanged(.general)}
+    }
 }
 
 // 更新

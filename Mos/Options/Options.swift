@@ -14,6 +14,7 @@ struct OptionItem {
     struct General {
         static let OptionsExist = "optionsExist"
         static let HideStatusItem = "hideStatusItem"
+        static let StatusItemSecondaryClickAction = "statusItemSecondaryClickAction"
     }
 
     struct Update {
@@ -175,6 +176,9 @@ extension Options {
         // 常规
         general.autoLaunch = LoginServiceKit.isExistLoginItems(at: Bundle.main.bundlePath)
         general.hideStatusItem = UserDefaults.standard.bool(forKey: OptionItem.General.HideStatusItem)
+        general.statusItemSecondaryClickAction = StatusItemSecondaryClickAction(
+            storedValue: UserDefaults.standard.string(forKey: OptionItem.General.StatusItemSecondaryClickAction)
+        )
         // 更新
         update.checkOnAppStart = UserDefaults.standard.bool(forKey: OptionItem.Update.CheckOnAppStart)
         update.includingBetaVersion = UserDefaults.standard.bool(forKey: OptionItem.Update.IncludingBetaVersion)
@@ -251,6 +255,7 @@ extension Options {
         switch group {
         case .general:
             UserDefaults.standard.set(general.hideStatusItem, forKey: OptionItem.General.HideStatusItem)
+            UserDefaults.standard.set(general.statusItemSecondaryClickAction.rawValue, forKey: OptionItem.General.StatusItemSecondaryClickAction)
         case .update:
             UserDefaults.standard.set(update.checkOnAppStart, forKey: OptionItem.Update.CheckOnAppStart)
             UserDefaults.standard.set(update.includingBetaVersion, forKey: OptionItem.Update.IncludingBetaVersion)

@@ -103,17 +103,17 @@
             <objects>
                 <viewController title="General" storyboardIdentifier="general" id="ITL-GD-CPd" customClass="PreferencesGeneralViewController" customModule="Mos" customModuleProvider="target" sceneMemberID="viewController">
                     <visualEffectView key="view" blendingMode="behindWindow" material="toolTip" state="followsWindowActiveState" id="LZw-qp-NWH">
-                        <rect key="frame" x="0.0" y="0.0" width="450" height="105"/>
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="144"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <box hidden="YES" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="vPz-kM-wAq">
-                                <rect key="frame" x="20" y="92" width="410" height="5"/>
+                                <rect key="frame" x="20" y="131" width="410" height="5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="410" id="KJL-ZZ-WMT"/>
                                 </constraints>
                             </box>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="WWH-56-xDd">
-                                <rect key="frame" x="18" y="37" width="140" height="14"/>
+                                <rect key="frame" x="18" y="76" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="W3A-cF-zN1"/>
                                 </constraints>
@@ -124,7 +124,7 @@
                                 </textFieldCell>
                             </textField>
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="Xzk-6e-mKA">
-                                <rect key="frame" x="171" y="71" width="259" height="14"/>
+                                <rect key="frame" x="171" y="110" width="259" height="14"/>
                                 <buttonCell key="cell" type="check" title="Launch Mos at Login" bezelStyle="regularSquare" imagePosition="left" inset="2" id="xoR-7p-3qj">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -137,7 +137,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="1OP-ac-77Z">
-                                <rect key="frame" x="171" y="37" width="146" height="14"/>
+                                <rect key="frame" x="171" y="76" width="146" height="14"/>
                                 <buttonCell key="cell" type="check" title="Hide Status Bar Icon" bezelStyle="regularSquare" imagePosition="left" inset="2" id="hGj-vV-zcY">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -151,7 +151,7 @@
                                 </connections>
                             </button>
                             <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sTG-Fn-P3P">
-                                <rect key="frame" x="321" y="36" width="16" height="16"/>
+                                <rect key="frame" x="321" y="75" width="16" height="16"/>
                                 <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" controlSize="mini" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="q3R-0Q-jlP">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="miniSystem"/>
@@ -165,7 +165,7 @@
                                 </connections>
                             </button>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gt2-mv-Ris" userLabel="Launch On Login Description">
-                                <rect key="frame" x="169" y="20" width="264" height="11"/>
+                                <rect key="frame" x="169" y="59" width="264" height="11"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Re-run Mos again to show the hidden Icon" id="bB5-2R-9Da">
                                     <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -173,7 +173,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="4ng-X7-dRa">
-                                <rect key="frame" x="18" y="71" width="140" height="14"/>
+                                <rect key="frame" x="18" y="110" width="140" height="14"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="TJD-cl-63A"/>
                                 </constraints>
@@ -183,6 +183,31 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <textField wantsLayer="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verifyAmbiguity="off" translatesAutoresizingMaskIntoConstraints="NO" id="Sec-lb-ttl">
+                                <rect key="frame" x="18" y="25" width="140" height="14"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="136" id="Sec-cn-lbw"/>
+                                </constraints>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Right Click" id="Sec-tc-ttl">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Sec-pb-act">
+                                <rect key="frame" x="171" y="15" width="200" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="Sec-cn-pbw"/>
+                                </constraints>
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="Sec-pc-act">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" id="Sec-mn-act"/>
+                                </popUpButtonCell>
+                                <connections>
+                                    <action selector="statusItemSecondaryClickChange:" target="ITL-GD-CPd" id="Sec-ac-act"/>
+                                </connections>
+                            </popUpButton>
                         </subviews>
                         <constraints>
                             <constraint firstItem="WWH-56-xDd" firstAttribute="leading" secondItem="LZw-qp-NWH" secondAttribute="leading" constant="20" id="3Oo-fz-qqM"/>
@@ -194,7 +219,13 @@
                             <constraint firstItem="Xzk-6e-mKA" firstAttribute="leading" secondItem="4ng-X7-dRa" secondAttribute="trailing" constant="15" id="Eea-ai-Voa"/>
                             <constraint firstItem="vPz-kM-wAq" firstAttribute="leading" secondItem="LZw-qp-NWH" secondAttribute="leading" constant="20" id="Hjc-z6-JQI"/>
                             <constraint firstItem="WWH-56-xDd" firstAttribute="trailing" secondItem="4ng-X7-dRa" secondAttribute="trailing" id="Ilv-kY-IzH"/>
-                            <constraint firstAttribute="bottom" secondItem="Gt2-mv-Ris" secondAttribute="bottom" constant="20" id="PEZ-EE-k79"/>
+                            <constraint firstAttribute="bottom" secondItem="Sec-pb-act" secondAttribute="bottom" constant="20" id="PEZ-EE-k79"/>
+                            <constraint firstItem="Sec-pb-act" firstAttribute="top" secondItem="Gt2-mv-Ris" secondAttribute="bottom" constant="14" id="Sec-cn-pbt"/>
+                            <constraint firstItem="Sec-pb-act" firstAttribute="leading" secondItem="Xzk-6e-mKA" secondAttribute="leading" id="Sec-cn-pbl"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Sec-pb-act" secondAttribute="trailing" constant="20" id="Sec-cn-pbr"/>
+                            <constraint firstItem="Sec-lb-ttl" firstAttribute="leading" secondItem="LZw-qp-NWH" secondAttribute="leading" constant="20" id="Sec-cn-lbl"/>
+                            <constraint firstItem="Sec-lb-ttl" firstAttribute="trailing" secondItem="4ng-X7-dRa" secondAttribute="trailing" id="Sec-cn-lbt"/>
+                            <constraint firstItem="Sec-lb-ttl" firstAttribute="centerY" secondItem="Sec-pb-act" secondAttribute="centerY" id="Sec-cn-lbc"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="sTG-Fn-P3P" secondAttribute="trailing" constant="20" symbolic="YES" id="QCs-a8-qOl"/>
                             <constraint firstAttribute="trailing" secondItem="Gt2-mv-Ris" secondAttribute="trailing" constant="19" id="QIz-Bj-PTh"/>
                             <constraint firstItem="4ng-X7-dRa" firstAttribute="leading" secondItem="LZw-qp-NWH" secondAttribute="leading" constant="20" id="RNz-ur-say"/>
@@ -210,6 +241,7 @@
                     <connections>
                         <outlet property="hideStatusBarIconCheckBox" destination="1OP-ac-77Z" id="eAY-em-HEE"/>
                         <outlet property="launchOnLoginCheckBox" destination="Xzk-6e-mKA" id="Dx6-Zs-rVj"/>
+                        <outlet property="statusItemSecondaryClickPopUpButton" destination="Sec-pb-act" id="Sec-ot-act"/>
                     </connections>
                 </viewController>
                 <customObject id="KsC-af-ap0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

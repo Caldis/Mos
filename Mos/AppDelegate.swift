@@ -70,7 +70,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // 读取用户设置
         Options.shared.readOptions()
-        
+        // readOptions 期间不派发变更通知, 读完后主动同步一次状态栏图标
+        StatusItemManager.syncWithOptions()
+
         // DEBUG: 直接弹出设置窗口
         #if DEBUG
         WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.preferencesWindowController)
