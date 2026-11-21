@@ -50,6 +50,13 @@ class ButtonCore {
 
         // 使用原始 flags 匹配绑定 (不注入虚拟修饰键, 保证匹配准确)
         let mosEvent = InputEvent(fromCGEvent: event)
+
+        // 手势处理 (优先于 ButtonBinding 处理)
+        let gestureResult = GestureProcessor.shared.handleButtonEvent(mosEvent, cgEvent: event)
+        if gestureResult == .consumed {
+            return nil
+        }
+
         let result = InputProcessor.shared.process(mosEvent)
         switch result {
         case .consumed:
@@ -100,6 +107,7 @@ class ButtonCore {
             dispatchInterceptor?.stop()
             dispatchInterceptor = nil
             InputProcessor.shared.clearActiveBindings()
+            GestureProcessor.shared.clearState()
             isActive = false
         }
     }
