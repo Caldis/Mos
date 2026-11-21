@@ -129,6 +129,7 @@ class ShortcutExecutor {
     weak var modifierFlagsProvider: ModifierFlagsProviding?
 
     private var testingMouseEventObserver: ((CGEvent) -> Void)?
+    private var testingKeyboardShortcutObserver: ((CGKeyCode, UInt64, Bool) -> Void)?
 
     /// 快速识别 Mos Scroll 三个 stateful 动作, 供事件热路径避免完整 action 解析。
     static func isMosScrollActionIdentifier(_ shortcutName: String) -> Bool {
@@ -143,6 +144,11 @@ class ShortcutExecutor {
     ///   - flags: 修饰键flags (UInt64原始值)
     ///   - preserveFlagsOnKeyUp: KeyUp 时是否保留修饰键 flags (默认 false)
     func execute(code: CGKeyCode, flags: UInt64, preserveFlagsOnKeyUp: Bool = false) {
+        if let testingKeyboardShortcutObserver {
+            testingKeyboardShortcutObserver(code, flags, preserveFlagsOnKeyUp)
+            return
+        }
+
         // 创建事件源
         guard let source = CGEventSource(stateID: .hidSystemState) else {
             return
@@ -257,6 +263,11 @@ class ShortcutExecutor {
         }
         if let scrollAction = MosScrollActionKind(shortcutIdentifier: shortcutName) {
             return .mosScroll(role: scrollAction.role)
+        }
+        // Gesture navigation is driven by InputProcessor while its trigger is held;
+        // it is a menu action, not a synthetic keyboard shortcut.
+        if shortcutName == SystemShortcut.mouseGestureNavigation.identifier {
+            return nil
         }
         if shortcutName.hasPrefix("logi") {
             return .logiAction(identifier: shortcutName)
@@ -405,6 +416,16 @@ class ShortcutExecutor {
 
     func clearTestingMouseEventObserver() {
         testingMouseEventObserver = nil
+    }
+
+    func setTestingKeyboardShortcutObserver(
+        _ observer: @escaping (CGKeyCode, UInt64, Bool) -> Void = { _, _, _ in }
+    ) {
+        testingKeyboardShortcutObserver = observer
+    }
+
+    func clearTestingKeyboardShortcutObserver() {
+        testingKeyboardShortcutObserver = nil
     }
 
     func mouseTapReplayContext(for event: InputEvent) -> MouseTapReplayContext? {

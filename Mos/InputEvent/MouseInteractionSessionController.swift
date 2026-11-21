@@ -42,6 +42,7 @@ final class MouseInteractionSessionController {
     private var testStopMotionTap: (() -> Void)?
     var activeSessionCount: Int { activeSessions.count }
     private var hasActiveVirtualModifiers: Bool { InputProcessor.shared.activeModifierFlags != 0 }
+    private var hasActiveMouseGestures: Bool { InputProcessor.shared.hasActiveMouseGestureSessions }
 
     init(
         startMotionTap: (() -> Void)? = nil,
@@ -152,6 +153,13 @@ final class MouseInteractionSessionController {
         testStopMotionTap = nil
     }
 
+    #if DEBUG
+    @discardableResult
+    func handleMotionTapEventForTests(_ event: CGEvent) -> Unmanaged<CGEvent>? {
+        return handleMotionTapEvent(type: event.type, event: event)
+    }
+    #endif
+
     private static func syntheticPriority(of target: SyntheticMouseTarget) -> (Int, Int64) {
         switch target {
         case .left:
@@ -183,7 +191,7 @@ final class MouseInteractionSessionController {
     }
 
     private var shouldKeepMotionTapRunning: Bool {
-        !activeSessions.isEmpty || hasActiveVirtualModifiers
+        !activeSessions.isEmpty || hasActiveVirtualModifiers || hasActiveMouseGestures
     }
 
     private func rewrite(_ event: CGEvent, as target: SyntheticMouseTarget) {
@@ -270,6 +278,11 @@ final class MouseInteractionSessionController {
             return Unmanaged.passUnretained(event)
         }
 
+        InputProcessor.shared.handleMouseGestureMovement(
+            deltaX: CGFloat(event.getDoubleValueField(.mouseEventDeltaX)),
+            deltaY: CGFloat(event.getDoubleValueField(.mouseEventDeltaY)),
+            timestamp: TimeInterval(event.timestamp) / 1_000_000_000
+        )
         rewriteMouseInteractionEvent(event)
         return Unmanaged.passUnretained(event)
     }

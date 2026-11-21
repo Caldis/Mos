@@ -6293,6 +6293,23 @@
         }
       }
     },
+    "mouseGestureNavigation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gesture Navigation"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手势导航"
+          }
+        }
+      }
+    },
     "modifierCommand": {
       "extractionState": "manual",
       "localizations": {
