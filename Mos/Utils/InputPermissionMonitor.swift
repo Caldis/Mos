@@ -1,5 +1,4 @@
 import Cocoa
-import IOKit.hidsystem
 
 extension Notification.Name {
     static let mosInputPermissionChanged = Notification.Name("mosInputPermissionChanged")
@@ -8,7 +7,7 @@ extension Notification.Name {
 final class InputPermissionMonitor {
     static let shared = InputPermissionMonitor()
     let gate = InputPermissionGate()
-    private let probeQueue = DispatchQueue(label: "com.caldis.Mos.permission-probe", qos: .userInitiated)
+    private let probeQueue = DispatchQueue(label: "com.caldis.Mos.permission-probe", qos: .utility)
     private let watchdogQueue = DispatchQueue(label: "com.caldis.Mos.permission-watchdog", qos: .userInitiated)
     private var probeTimer: DispatchSourceTimer?
     private var watchdogTimer: DispatchSourceTimer?
@@ -18,12 +17,12 @@ final class InputPermissionMonitor {
     func start() {
         guard probeTimer == nil else { return }
         let probe = DispatchSource.makeTimerSource(queue: probeQueue)
-        probe.schedule(deadline: .now(), repeating: .milliseconds(250), leeway: .milliseconds(25))
+        probe.schedule(deadline: .now(), repeating: .seconds(1), leeway: .milliseconds(100))
         var firstSample = true
         probe.setEventHandler { [weak self] in
             guard let self = self else { return }
             let started = ProcessInfo.processInfo.systemUptime
-            let granted = Self.readAuthorization()
+            let granted = InputPermissionProbe.sample()
             let now = ProcessInfo.processInfo.systemUptime
             // tccd IPC can stall during a permission edit. An old reply cannot renew the lease.
             let fresh = now - started < self.gate.leaseDuration
@@ -62,13 +61,5 @@ final class InputPermissionMonitor {
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .mosInputPermissionChanged, object: nil)
         }
-    }
-
-    private static func readAuthorization() -> Bool {
-        if #available(macOS 10.15, *) {
-            // AXIsProcessTrusted can remain true after the TCC entry is removed.
-            return IOHIDCheckAccess(kIOHIDRequestTypePostEvent) == kIOHIDAccessTypeGranted
-        }
-        return AXIsProcessTrusted()
     }
 }

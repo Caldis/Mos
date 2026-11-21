@@ -49,12 +49,30 @@ enum AppRuntime {
     }
 }
 
-@main
+struct InputPermissionFeedback {
+    enum Prompt: Equatable {
+        case welcome
+        case pausedToast
+    }
+
+    private var previousAuthorization: Bool?
+
+    mutating func update(authorized: Bool) -> Prompt? {
+        let previous = previousAuthorization
+        previousAuthorization = authorized
+        guard !authorized else { return nil }
+        if previous == nil { return .welcome }
+        if previous == true { return .pausedToast }
+        return nil
+    }
+}
+
 class AppDelegate: NSObject, NSApplicationDelegate {
     // 防抖定时器: 显示器参数变化通知
     private var screenChangeTimer: Timer?
-    // 权限恢复轮询定时器
     private var sessionIsActive = true
+    private var hasObservedInputPermission = false
+    private var inputPermissionFeedback = InputPermissionFeedback()
 
     // 运行前预处理
     func applicationWillFinishLaunching(_ notification: Notification) {
@@ -120,10 +138,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 ScrollPoster.shared.recreateDisplayLink()
             }
         }
-        // 监听辅助功能权限在运行时被撤销
+        // 监听辅助功能权限检查结果
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(handleAccessibilityPermissionLost),
+            selector: #selector(handleInputPermissionChanged),
             name: .mosInputPermissionChanged,
             object: nil
         )
@@ -169,20 +187,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Options.shared.flushPendingSaves()
     }
     
-    @objc func startWithAccessibilityPermissionsChecker(_ timer: Timer?) {
-        guard sessionIsActive else { return }
-        if InputPermissionMonitor.shared.isAuthorized {
+    private func refreshInputServices() {
+        guard sessionIsActive, hasObservedInputPermission else { return }
+        let authorized = InputPermissionMonitor.shared.isAuthorized
+        let prompt = inputPermissionFeedback.update(authorized: authorized)
+        if authorized {
             ScrollCore.shared.enable()
             ButtonCore.shared.enable()
             LogiCenter.shared.start()
-        } else {
+        }
+        switch prompt {
+        case .welcome:
             WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.introductionWindowController)
+        case .pausedToast:
+            Toast.show(
+                NSLocalizedString("Accessibility permission lost, Mos has been paused", comment: ""),
+                style: .warning,
+                duration: 5.0
+            )
+        case nil:
+            break
         }
     }
 
     @objc func sessionDidActive(notification: NSNotification) {
         sessionIsActive = true
-        startWithAccessibilityPermissionsChecker(nil)
+        refreshInputServices()
     }
 
     @objc func sessionDidResign(notification: NSNotification) {
@@ -199,9 +229,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         LogiCenter.shared.stop()
     }
 
-    @objc func handleAccessibilityPermissionLost() {
+    @objc private func handleInputPermissionChanged() {
+        hasObservedInputPermission = true
         // Every lease transition discards old resources, including a quick revoke/regrant.
         stopInputServices()
-        startWithAccessibilityPermissionsChecker(nil)
+        refreshInputServices()
     }
 }

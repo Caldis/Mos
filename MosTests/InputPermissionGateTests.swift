@@ -2,6 +2,34 @@ import XCTest
 import Cocoa
 @testable import Mos_Debug
 
+final class InputPermissionProbeTests: XCTestCase {
+    func testFreshChildExitStatusControlsAuthorization() {
+        XCTAssertTrue(InputPermissionProbe.run(executable: URL(fileURLWithPath: "/usr/bin/true"),
+                                               arguments: [], timeout: .seconds(1)))
+        XCTAssertFalse(InputPermissionProbe.run(executable: URL(fileURLWithPath: "/usr/bin/false"),
+                                                arguments: [], timeout: .seconds(1)))
+        XCTAssertFalse(InputPermissionProbe.run(executable: URL(fileURLWithPath: "/usr/bin/MosMissingProbe"),
+                                                arguments: [], timeout: .seconds(1)))
+    }
+
+    func testTimedOutChildIsReapedBeforeTheNextProbe() throws {
+        let pidFile = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: pidFile) }
+
+        let started = ProcessInfo.processInfo.systemUptime
+        let script = "printf '%s' \"$$\" > \"$1\"; exec /bin/sleep 30"
+        XCTAssertFalse(InputPermissionProbe.run(executable: URL(fileURLWithPath: "/bin/sh"),
+                                                arguments: ["-c", script, "probe-test", pidFile.path],
+                                                timeout: .milliseconds(250)))
+        XCTAssertLessThan(ProcessInfo.processInfo.systemUptime - started, 3)
+        let pid = try XCTUnwrap(pid_t(String(contentsOf: pidFile, encoding: .utf8)))
+        XCTAssertEqual(kill(pid, 0), -1)
+        XCTAssertEqual(errno, ESRCH)
+        XCTAssertTrue(InputPermissionProbe.run(executable: URL(fileURLWithPath: "/usr/bin/true"),
+                                               arguments: [], timeout: .seconds(1)))
+    }
+}
+
 final class InputPermissionGateTests: XCTestCase {
     func testRevocationReleasesEveryInputResourceBeforeReturning() {
         let gate = InputPermissionGate()
@@ -68,6 +96,25 @@ final class InputPermissionGateTests: XCTestCase {
         gate.remove(id)
         gate.update(authorized: false, at: 1)
         XCTAssertEqual(releases, 0)
+    }
+}
+
+final class InputPermissionFeedbackTests: XCTestCase {
+    func testFirstDeniedSampleShowsWelcomeOnce() {
+        var feedback = InputPermissionFeedback()
+        XCTAssertEqual(feedback.update(authorized: false), .welcome)
+        XCTAssertNil(feedback.update(authorized: false))
+        XCTAssertNil(feedback.update(authorized: true))
+        XCTAssertEqual(feedback.update(authorized: false), .pausedToast)
+    }
+
+    func testRevocationShowsToastOnceUntilPermissionRecovers() {
+        var feedback = InputPermissionFeedback()
+        XCTAssertNil(feedback.update(authorized: true))
+        XCTAssertEqual(feedback.update(authorized: false), .pausedToast)
+        XCTAssertNil(feedback.update(authorized: false))
+        XCTAssertNil(feedback.update(authorized: true))
+        XCTAssertEqual(feedback.update(authorized: false), .pausedToast)
     }
 }
 
