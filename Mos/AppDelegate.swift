@@ -45,6 +45,7 @@ enum AppRuntime {
 class AppDelegate: NSObject, NSApplicationDelegate {
     // 防抖定时器: 显示器参数变化通知
     private var screenChangeTimer: Timer?
+    private var screenChangeLateTimer: Timer?
     // 权限恢复轮询定时器
     private var permissionRecoveryTimer: Timer?
 
@@ -109,6 +110,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         ) { [weak self] _ in
             self?.screenChangeTimer?.invalidate()
             self?.screenChangeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+                ScrollPoster.shared.recreateDisplayLink()
+            }
+            // 二次延迟检查 (t+6s): 1s 检查可能仍落在显示器过渡窗口内, 6s 检查保证至少一次
+            // 在显示器稳定后重建, 且 6s > recreateCooldown(3s), 不受冷却期阻拦
+            self?.screenChangeLateTimer?.invalidate()
+            self?.screenChangeLateTimer = Timer.scheduledTimer(withTimeInterval: 6.0, repeats: false) { _ in
+                guard ScrollCore.shared.isActive else { return }
                 ScrollPoster.shared.recreateDisplayLink()
             }
         }

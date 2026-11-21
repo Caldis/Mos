@@ -56,11 +56,20 @@ class ScrollPoster {
     // 显示器唤醒/重连时会先短暂报告过渡刷新率 (如先 60Hz 再升 144Hz), 若重建正好落在这个窗口,
     // 就会把 link 绑到偏低的刷新率, 使平滑滚动只按低帧率绘制 (卡顿), 而现有恢复机制识别不了.
     // 对策: 每次建立 link 后延迟复查若干次, 发现 link 标称率明显低于显示器实际率就重建追平.
+    // 休眠唤醒专用复查 (sleep/wake 场景):
+    // 唤醒后 CGDisplayCopyDisplayMode 与 CVDisplayLink 有时同步返回过渡值, 导致比值检测失效;
+    // 额外记录 link 建立时的 Hz (lastLinkHz), 若后续复查发现 Hz 已上升, 说明建立时处于过渡态, 需重建.
     private var rateVerifyTimer: Timer?
     private var rateVerifyAttemptsLeft = 0
     private var isVerifying = false
     private let rateVerifyDelays: [TimeInterval] = [2.0, 4.0, 8.0]
+    // 休眠唤醒后复查窗口更长, 覆盖显示器从过渡态稳定到实际率所需的时间
+    private let wakeRateVerifyDelays: [TimeInterval] = [1.0, 3.0, 6.0, 12.0]
     private let rateVerifyRatio = 0.7
+    // link 建立时记录的标称 Hz; 复查时与当前 Hz 对比, 上升则说明建立时处于过渡态
+    private var lastLinkHz: Double = -1
+    // 休眠/唤醒通知观察者句柄
+    private var wakeObserver: NSObjectProtocol?
     // 主线程访问, 无需锁
     var isAvailable: Bool { return poster != nil }
 }
@@ -199,10 +208,13 @@ extension ScrollPoster {
                 return kCVReturnSuccess
             }, nil)
             poster = validPoster
+            // 记录建立时的标称 Hz, 供复查时对比是否已从过渡态升高
+            lastLinkHz = linkNominalHz(validPoster)
             // 建立成功后安排刷新率复查; 复查内部触发的重建 (isVerifying) 不重置复查序列
             if !isVerifying { scheduleRateVerify() }
         } else {
             poster = nil
+            lastLinkHz = -1
             NSLog("ScrollPoster: CVDisplayLink creation failed (%d)", result)
         }
     }
@@ -300,6 +312,17 @@ extension ScrollPoster {
         keeper = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             self?.healthCheck()
         }
+        // 监听休眠唤醒: 唤醒后显示器可能仍在过渡态, 触发专用复查序列追平真实刷新率
+        wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didWakeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            // 稍作延迟让显示器开始响应, 再启动复查; 复查序列会持续到 Hz 稳定
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self?.scheduleRateVerify(isWake: true)
+            }
+        }
     }
     func stopKeeper() {
         keeper?.invalidate()
@@ -307,6 +330,10 @@ extension ScrollPoster {
         rateVerifyTimer?.invalidate()
         rateVerifyTimer = nil
         rateVerifyAttemptsLeft = 0
+        if let observer = wakeObserver {
+            NSWorkspace.shared.notificationCenter.removeObserver(observer)
+            wakeObserver = nil
+        }
     }
     private func healthCheck() {
         guard let validPoster = poster else {
@@ -327,31 +354,45 @@ extension ScrollPoster {
 
     // MARK: 刷新率自纠 (见属性处说明)
     // 建立 link 后调用: 重置复查序列并安排第一次复查
-    private func scheduleRateVerify() {
-        rateVerifyAttemptsLeft = rateVerifyDelays.count
-        armNextRateVerify()
+    // isWake: 休眠唤醒场景使用更长的复查时间序列, 覆盖显示器稳定窗口
+    private func scheduleRateVerify(isWake: Bool = false) {
+        let delays = isWake ? wakeRateVerifyDelays : rateVerifyDelays
+        rateVerifyAttemptsLeft = delays.count
+        armNextRateVerify(delays: delays)
     }
-    private func armNextRateVerify() {
+    private func armNextRateVerify(delays: [TimeInterval]? = nil) {
         rateVerifyTimer?.invalidate()
         guard rateVerifyAttemptsLeft > 0 else { rateVerifyTimer = nil; return }
-        let delay = rateVerifyDelays[rateVerifyDelays.count - rateVerifyAttemptsLeft]
+        let activeDelays = delays ?? rateVerifyDelays
+        let delay = activeDelays[activeDelays.count - rateVerifyAttemptsLeft]
+        // 通过 userInfo 传递 delays 数组引用, 让回调能续接后续复查
         rateVerifyTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
-            self?.verifyRateAndFixIfNeeded()
+            self?.verifyRateAndFixIfNeeded(delays: activeDelays)
         }
     }
-    // 复查: link 标称率明显低于显示器实际率 -> 重建追平 (幂等, 不受 recreateCooldown 限制)
-    private func verifyRateAndFixIfNeeded() {
+    // 复查: link 标称率明显低于显示器实际率, 或 Hz 较建立时已上升 (说明建立时处于过渡态) -> 重建追平
+    // (幂等, 不受 recreateCooldown 限制)
+    private func verifyRateAndFixIfNeeded(delays: [TimeInterval] = []) {
         rateVerifyAttemptsLeft -= 1
         guard let current = poster else { rateVerifyTimer = nil; return }
         let nominal = linkNominalHz(current)
         let maxHz = maxActiveDisplayHz()
-        guard nominal > 1, maxHz > 1, nominal < maxHz * rateVerifyRatio else {
+        // 条件1: link Hz 明显低于显示器当前 Hz (原有检测)
+        let belowDisplay = nominal > 1 && maxHz > 1 && nominal < maxHz * rateVerifyRatio
+        // 条件2: 显示器 Hz 较 link 建立时已上升, 说明 link 建立在过渡态, 需重建追平
+        // 容差 5% 避免因测量抖动误触
+        let rateRoseAfterCreate = lastLinkHz > 1 && nominal > 1 && nominal > lastLinkHz * 1.05
+        guard belowDisplay || rateRoseAfterCreate else {
             // 已追平显示器刷新率, 结束复查
             rateVerifyTimer = nil
             rateVerifyAttemptsLeft = 0
             return
         }
-        NSLog("ScrollPoster: display link rate %.0fHz below display %.0fHz, recreating", nominal, maxHz)
+        if belowDisplay {
+            NSLog("ScrollPoster: display link rate %.0fHz below display %.0fHz, recreating", nominal, maxHz)
+        } else {
+            NSLog("ScrollPoster: display link rate rose %.0fHz -> %.0fHz (was in transition at create), recreating", lastLinkHz, nominal)
+        }
         // 保持原运行状态: 若正在滚动 (running) 则重建后重新启动
         let wasRunning = CVDisplayLinkIsRunning(current)
         isVerifying = true
@@ -363,7 +404,7 @@ extension ScrollPoster {
         // 自纠说明显示器仍在过渡: 清除冷却, 让后续 screenChange 能及时用最终配置重建
         lastRecreateAttempt = 0
         // 这次重建可能仍落在过渡态, 继续后续复查直到追平或用尽次数
-        armNextRateVerify()
+        armNextRateVerify(delays: delays.isEmpty ? nil : delays)
     }
 }
 
