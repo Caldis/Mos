@@ -142,6 +142,9 @@ struct SystemShortcut {
                 case "mosScrollDash": return "speedometer"
                 case "mosScrollToggle": return "arrow.left.arrow.right"
                 case "mosScrollBlock": return "hand.raised"
+                // 音频
+                case "volumeUp": return "speaker.plus"
+                case "volumeDown": return "speaker.minus"
                 // 修饰键
                 case "modifierShift": return "shift"
                 case "modifierOption": return "option"
@@ -333,6 +336,8 @@ struct SystemShortcut {
         "mosScrollDash": mosScrollDash,
         "mosScrollToggle": mosScrollToggle,
         "mosScrollBlock": mosScrollBlock,
+        // Audio
+        "volumeUp": volumeUp, "volumeDown": volumeDown,
         // 修饰键
         "modifierShift": modifierShift, "modifierOption": modifierOption,
         "modifierControl": modifierControl, "modifierCommand": modifierCommand,
@@ -376,7 +381,7 @@ struct SystemShortcut {
     static let shortcutsByCategory: [(category: String, shortcuts: [Shortcut])] = [
         ("categoryFunctionKeys", [
             missionControl, appExpose, spotlightSys, dictation, doNotDisturb, showDesktop, escapeKey,
-            moveSpaceLeft, moveSpaceRight
+            moveSpaceLeft, moveSpaceRight, volumeUp, volumeDown
         ]),
         ("categoryAppsAndWindows", [
             switchApp, switchAppReverse,
@@ -420,6 +425,13 @@ struct SystemShortcut {
     static let mosScrollDash = Shortcut("mosScrollDash", 0xFFFC, NSEvent.ModifierFlags(rawValue: 0), executionMode: .stateful)
     static let mosScrollToggle = Shortcut("mosScrollToggle", 0xFFFC, NSEvent.ModifierFlags(rawValue: 1), executionMode: .stateful)
     static let mosScrollBlock = Shortcut("mosScrollBlock", 0xFFFC, NSEvent.ModifierFlags(rawValue: 2), executionMode: .stateful)
+
+    // MARK: - Volume Actions
+    // 音量加减 (由 ShortcutExecutor 发送系统音量媒体键)
+    // 使用 code=0xFFFB 作为占位, modifiers.rawValue 区分方向
+
+    static let volumeUp = Shortcut("volumeUp", 0xFFFB, NSEvent.ModifierFlags(rawValue: 0))
+    static let volumeDown = Shortcut("volumeDown", 0xFFFB, NSEvent.ModifierFlags(rawValue: 1))
 
     // MARK: - Modifier Key Actions
     // 预定义单修饰键动作 (复用 custom modifier 的 stateful 执行语义)

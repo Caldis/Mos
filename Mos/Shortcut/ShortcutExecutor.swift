@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import IOKit.hidsystem
 
 enum MouseButtonActionKind {
     case left
@@ -85,6 +86,7 @@ enum ResolvedAction {
     case customMouseButton(buttonNumber: UInt16, modifiers: UInt64)
     case mouseButton(kind: MouseButtonActionKind)
     case mosScroll(role: ScrollRole)
+    case volume(up: Bool)
     case systemShortcut(identifier: String)
     case logiAction(identifier: String)
     case openTarget(payload: OpenTargetPayload)
@@ -93,7 +95,7 @@ enum ResolvedAction {
         switch self {
         case .customKey, .customMouseButton, .mouseButton, .mosScroll:
             return .stateful
-        case .logiAction, .openTarget:
+        case .volume, .logiAction, .openTarget:
             return .trigger
         case .systemShortcut(let identifier):
             return SystemShortcut.getShortcut(named: identifier)?.executionMode ?? .trigger
@@ -127,6 +129,7 @@ class ShortcutExecutor {
 
     /// 修饰键 provider (启动期注入 InputProcessor.shared)。weak: provider 为永生单例。
     weak var modifierFlagsProvider: ModifierFlagsProviding?
+    private var testingVolumeKeyObserver: ((Bool) -> Void)?
 
     private var testingMouseEventObserver: ((CGEvent) -> Void)?
 
@@ -166,6 +169,10 @@ class ShortcutExecutor {
     /// 执行系统快捷键 (从SystemShortcut.Shortcut对象)
     /// - Parameter shortcut: SystemShortcut.Shortcut对象
     func execute(_ shortcut: SystemShortcut.Shortcut) {
+        if let up = Self.volumeDirection(for: shortcut.identifier) {
+            postVolumeKey(up: up)
+            return
+        }
         execute(code: shortcut.code, flags: UInt64(shortcut.modifiers.rawValue), preserveFlagsOnKeyUp: shortcut.preserveFlagsOnKeyUp)
     }
 
@@ -210,6 +217,10 @@ class ShortcutExecutor {
             )
         case .mosScroll(let role):
             scrollActionPort?.handleMosScrollAction(role: role, isDown: phase == .down)
+            return .none
+        case .volume(let up):
+            guard phase == .down else { return .none }
+            postVolumeKey(up: up)
             return .none
         case .logiAction(let identifier):
             guard phase == .down else { return .none }
@@ -258,6 +269,9 @@ class ShortcutExecutor {
         if let scrollAction = MosScrollActionKind(shortcutIdentifier: shortcutName) {
             return .mosScroll(role: scrollAction.role)
         }
+        if let up = Self.volumeDirection(for: shortcutName) {
+            return .volume(up: up)
+        }
         if shortcutName.hasPrefix("logi") {
             return .logiAction(identifier: shortcutName)
         }
@@ -278,6 +292,49 @@ class ShortcutExecutor {
         }
 
         execute(shortcut)
+    }
+
+    // MARK: - Volume Actions
+
+    /// 音量动作 identifier → 方向 (true 为提高)
+    private static func volumeDirection(for identifier: String) -> Bool? {
+        switch identifier {
+        case SystemShortcut.volumeUp.identifier: return true
+        case SystemShortcut.volumeDown.identifier: return false
+        default: return nil
+        }
+    }
+
+    /// 发送系统音量媒体键 (与键盘音量键一致, 会显示系统音量 HUD)
+    private func postVolumeKey(up: Bool) {
+        if let observer = testingVolumeKeyObserver {
+            observer(up)
+            return
+        }
+        let keyType = Int(up ? NX_KEYTYPE_SOUND_UP : NX_KEYTYPE_SOUND_DOWN)
+        postMediaKey(keyType, state: 0xA)  // key down
+        // 按下与抬起挤在同一个 runloop 轮次时系统会丢弃这对事件, 音量不变, 抬起延后一轮发送
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) { [self] in
+            postMediaKey(keyType, state: 0xB)  // key up
+        }
+    }
+
+    private func postMediaKey(_ keyType: Int, state: Int) {
+        NSEvent.otherEvent(
+            with: .systemDefined,
+            location: .zero,
+            modifierFlags: [],
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            subtype: Int16(NX_SUBTYPE_AUX_CONTROL_BUTTONS),
+            data1: (keyType << 16) | (state << 8),
+            data2: -1
+        )?.cgEvent?.post(tap: .cghidEventTap)
+    }
+
+    func setTestingVolumeKeyObserver(_ observer: ((Bool) -> Void)? = nil) {
+        testingVolumeKeyObserver = observer
     }
 
     // MARK: - Custom Binding Execution
