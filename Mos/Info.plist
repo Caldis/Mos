@@ -47,8 +47,8 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>SUFeedURL</key>
-	<string>https://mos.caldis.me/appcast.xml</string>
+	<string>https://github.com/ZHOUSJ6/Mos/releases/download/sparkle-feed/appcast.xml</string>
 	<key>SUPublicEDKey</key>
-	<string>zskqekl7thqvIANuR8SLKrfQ4LpqsZckKiDWfcD86JQ=</string>
+	<string>ZIPGVBhcI0PGAJV0+nYtILxcZGj95CSm77+w4tyYxkk=</string>
 </dict>
 </plist>

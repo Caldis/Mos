@@ -29,6 +29,152 @@ final class ScrollEventTests: XCTestCase {
         return event
     }
 
+    // MARK: - 远程控制应用识别
+
+    func testRemoteControlApplicationDetectsToDeskExecutableKeyword() {
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: "/Applications/ToDesk.app/Contents/MacOS/ToDesk",
+            bundleIdentifier: nil
+        ))
+    }
+
+    func testRemoteControlApplicationDetectsToDeskBundleIdentifierKeyword() {
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: nil,
+            bundleIdentifier: "com.youqu.todesk"
+        ))
+    }
+
+    func testRemoteControlApplicationRequiresRawPassthroughForToDesk() {
+        XCTAssertTrue(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: "/Library/Application Support/ToDesk/ToDesk_Service",
+            bundleIdentifier: nil
+        ))
+    }
+
+    func testRemoteControl_doesNotMisclassifyToDesktopPackagedApps() {
+        // Cursor 由 ToDesktop 平台打包, bundleID 前缀 com.todesktop. 恰好包含 "todesk" 关键字
+        XCTAssertFalse(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: "/Applications/Cursor.app/Contents/MacOS/Cursor",
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: "/Applications/Cursor.app/Contents/MacOS/Cursor",
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: "/Applications/Cursor.app",
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+    }
+
+    func testRemoteControl_stillDetectsRealToDeskBundleIdentifier() {
+        XCTAssertTrue(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: nil,
+            bundleIdentifier: "com.youqu.todesk"
+        ))
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: nil,
+            bundleIdentifier: "com.youqu.todesk"
+        ))
+    }
+
+    func testRemoteControlApplicationDoesNotRequireRawPassthroughForOtherRemoteApps() {
+        XCTAssertTrue(ScrollUtils.shared.isKnownRemoteControlApplication(
+            executablePath: nil,
+            bundleIdentifier: "com.teamviewer.TeamViewer"
+        ))
+        XCTAssertFalse(ScrollUtils.shared.needsRawScrollPassthrough(
+            executablePath: nil,
+            bundleIdentifier: "com.teamviewer.TeamViewer"
+        ))
+    }
+
+    // MARK: - Electron / Cursor 宿主匹配
+
+    func testOutermostAppBundlePath_resolvesCursorHelperToHostApp() {
+        let helper = "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app"
+        XCTAssertEqual(
+            ScrollUtils.outermostAppBundlePath(from: helper),
+            "/Applications/Cursor.app"
+        )
+        XCTAssertEqual(
+            ScrollUtils.outermostAppBundlePath(from: "/Applications/Cursor.app/Contents/MacOS/Cursor"),
+            "/Applications/Cursor.app"
+        )
+        XCTAssertEqual(
+            ScrollUtils.outermostAppBundlePath(from: "/Applications/Cursor.app"),
+            "/Applications/Cursor.app"
+        )
+    }
+
+    func testMatchApplication_matchesCursorHelperToHostException() {
+        let applications = EnhanceArray<Application>(matchKey: "path")
+        applications.append(Application(path: "/Applications/Cursor.app/Contents/MacOS/Cursor"))
+
+        let matched = ScrollUtils.matchApplication(
+            bundlePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app",
+            executablePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app/Contents/MacOS/Cursor Helper (Renderer)",
+            in: applications
+        )
+        XCTAssertEqual(matched?.path, "/Applications/Cursor.app/Contents/MacOS/Cursor")
+    }
+
+    func testMatchApplication_matchesHostBundlePathException() {
+        let applications = EnhanceArray<Application>(matchKey: "path")
+        applications.append(Application(path: "/Applications/Cursor.app"))
+
+        let matched = ScrollUtils.matchApplication(
+            bundlePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper.app",
+            executablePath: nil,
+            in: applications
+        )
+        XCTAssertEqual(matched?.path, "/Applications/Cursor.app")
+    }
+
+    // MARK: - 内核级宿主进程解析 (不依赖 LaunchServices)
+
+    func testProcessExecutablePath_currentProcess() {
+        let pid = pid_t(ProcessInfo.processInfo.processIdentifier)
+        let path = ScrollUtils.processExecutablePath(pid)
+        XCTAssertNotNil(path)
+        XCTAssertTrue(path?.hasPrefix("/") == true)
+    }
+
+    func testParentProcessID_currentProcess() {
+        let pid = pid_t(ProcessInfo.processInfo.processIdentifier)
+        XCTAssertGreaterThanOrEqual(ScrollUtils.parentProcessID(pid), 1)
+    }
+
+    func testResolveHostProcessID_guardsSystemPIDs() {
+        XCTAssertEqual(ScrollUtils.resolveHostProcessID(for: 0), 0)
+        XCTAssertEqual(ScrollUtils.resolveHostProcessID(for: 1), 1)
+    }
+
+    func testResolveHostProcessID_currentProcess_returnsValidPID() {
+        let pid = pid_t(ProcessInfo.processInfo.processIdentifier)
+        XCTAssertGreaterThan(ScrollUtils.resolveHostProcessID(for: pid), 1)
+    }
+
+    func testIsChromiumFamily_detectsCursorAndVSCode() {
+        XCTAssertTrue(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.todesktop.230313mzl4w4u92"
+        ))
+        XCTAssertTrue(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: nil,
+            bundleIdentifier: "com.microsoft.VSCode"
+        ))
+        XCTAssertTrue(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: "/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app",
+            bundleIdentifier: nil
+        ))
+        XCTAssertFalse(ScrollUtils.shared.isChromiumFamilyApplication(
+            bundlePath: "/Applications/Safari.app",
+            bundleIdentifier: "com.apple.Safari"
+        ))
+    }
+
     // MARK: - initEvent: 优先级 (scrollPt > scrollFixPt > scrollFix)
 
     func testInitEvent_prefersPtOverFixPt() throws {

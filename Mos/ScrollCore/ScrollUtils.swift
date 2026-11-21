@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Darwin
 
 class ScrollUtils {
     
@@ -46,15 +47,80 @@ class ScrollUtils {
         lastEventTargetPID = currEventTargetPID
         // 更新当前 PID
         currEventTargetPID = pid
-        // 使用 PID 获取 BID
-        // 如果目标 PID 变化, 则重新获取一次窗口 BID
+        // 使用 PID 获取应用
+        // Cursor 等 Electron 的 Renderer 子进程可能不注册 LaunchServices (NSRunningApplication 返回 nil),
+        // 因此先用内核信息把嵌套 Helper 解析为宿主主进程后再查询
         if lastEventTargetPID != currEventTargetPID {
-            cachedRunningApplication = NSRunningApplication.init(processIdentifier: pid)
+            let hostPID = ScrollUtils.resolveHostProcessID(for: pid)
+            cachedRunningApplication = NSRunningApplication(processIdentifier: hostPID)
+                ?? NSRunningApplication(processIdentifier: pid)
         }
         return cachedRunningApplication
     }
+
+    // 滚动事件投递目标 (CGEventPostToPid) 的解析缓存
+    // 该路径每个滚动事件都会调用, 必须避免任何 IPC
+    private var cachedScrollTargetRawPID: pid_t = 0
+    private var cachedScrollTargetResolvedPID: pid_t = 0
+    func resolveScrollTargetPID(_ pid: pid_t) -> pid_t {
+        guard pid > 1 else { return pid }
+        if pid == cachedScrollTargetRawPID { return cachedScrollTargetResolvedPID }
+        let resolved = ScrollUtils.resolveHostProcessID(for: pid)
+        cachedScrollTargetRawPID = pid
+        cachedScrollTargetResolvedPID = resolved
+        return resolved
+    }
+
+    /// 通过内核信息 (proc_pidpath + 父进程链) 将 Electron Helper 等嵌套进程解析为宿主主进程 PID
+    /// 不走 LaunchServices: Renderer 子进程可能未注册 (查不到), 且 LS 查询可能阻塞事件回调 (卡顿)
+    static func resolveHostProcessID(for pid: pid_t) -> pid_t {
+        guard pid > 1 else { return pid }
+        guard let executablePath = processExecutablePath(pid),
+              let hostBundlePath = outermostAppBundlePath(from: executablePath) else {
+            return pid
+        }
+        let hostExecutableDirectory = hostBundlePath + "/Contents/MacOS/"
+        // 可执行文件位于最外层 .app 的主目录下, 自身即宿主主进程
+        if executablePath.hasPrefix(hostExecutableDirectory) {
+            return pid
+        }
+        // 沿父进程链查找宿主主进程 (Electron Helper 均为宿主主进程的子进程)
+        var current = pid
+        for _ in 0..<16 {
+            let parent = parentProcessID(current)
+            guard parent > 1, parent != current else { break }
+            guard let parentPath = processExecutablePath(parent) else { break }
+            if parentPath.hasPrefix(hostExecutableDirectory) {
+                return parent
+            }
+            // 父进程已离开宿主 bundle, 停止查找
+            guard parentPath.hasPrefix(hostBundlePath + "/") else { break }
+            current = parent
+        }
+        return pid
+    }
+
+    /// proc_pidpath 获取进程可执行文件路径 (纯内核调用, 微秒级)
+    static func processExecutablePath(_ pid: pid_t) -> String? {
+        var buffer = [CChar](repeating: 0, count: 4096)
+        let length = proc_pidpath(pid, &buffer, UInt32(buffer.count))
+        guard length > 0 else { return nil }
+        return buffer.withUnsafeBufferPointer { (pointer) -> String? in
+            guard let baseAddress = pointer.baseAddress else { return nil }
+            return String(cString: baseAddress)
+        }
+    }
+
+    /// sysctl 获取父进程 PID (纯内核调用)
+    static func parentProcessID(_ pid: pid_t) -> pid_t {
+        var info = kinfo_proc()
+        var size = MemoryLayout<kinfo_proc>.stride
+        var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
+        guard sysctl(&mib, UInt32(mib.count), &info, &size, nil, 0) == 0, size > 0 else { return 0 }
+        return info.kp_eproc.e_ppid
+    }
     
-    // 判断目标是否为 Chrome
+    // 判断目标是否为 Chromium / Electron 家族 (Chrome 收尾帧对 Cursor / VS Code / Edge 同样必要)
     func isEventTargetingChrome(_ event: CGEvent?) -> Bool {
         guard let validEvent = event else {
             return false
@@ -62,11 +128,44 @@ class ScrollUtils {
         guard let targetRunningApplication = getRunningApplication(from: validEvent) else {
             return false
         }
-        if let targetBundleIdentifier = targetRunningApplication.bundleIdentifier, targetBundleIdentifier == "com.google.Chrome" {
+        return isChromiumFamilyApplication(
+            bundlePath: targetRunningApplication.bundleURL?.path,
+            bundleIdentifier: targetRunningApplication.bundleIdentifier
+        )
+    }
+
+    func isChromiumFamilyApplication(bundlePath: String?, bundleIdentifier: String?) -> Bool {
+        if let bundleIdentifier = bundleIdentifier?.lowercased() {
+            let prefixes = [
+                "com.google.chrome",
+                "com.microsoft.edgemac",
+                "com.brave.browser",
+                "com.operasoftware.opera",
+                "com.vivaldi.vivaldi",
+                "company.thebrowser.browser",
+                "com.microsoft.vscode",
+                "com.todesktop.",
+                "com.anysphere.",
+                "com.github.electron"
+            ]
+            if prefixes.contains(where: { bundleIdentifier == $0 || bundleIdentifier.hasPrefix($0) }) {
+                return true
+            }
+        }
+        guard let bundlePath = bundlePath else { return false }
+        let frameworks = (bundlePath as NSString).appendingPathComponent("Contents/Frameworks")
+        let electronFramework = (frameworks as NSString).appendingPathComponent("Electron Framework.framework")
+        if FileManager.default.fileExists(atPath: electronFramework) {
             return true
         }
-        return false
+        let chromeFramework = (frameworks as NSString).appendingPathComponent("Google Chrome Framework.framework")
+        if FileManager.default.fileExists(atPath: chromeFramework) {
+            return true
+        }
+        let loweredPath = bundlePath.lowercased()
+        return loweredPath.contains("electron framework") || loweredPath.contains("helper (renderer).app")
     }
+
     
     // 判断 LaunchPad 是否激活
     var launchpadActiveCache = false
@@ -108,46 +207,78 @@ class ScrollUtils {
     // 从 Applications 中取回符合传入的 key 的 Application 对象
     // Key 在 applications 初始化时指定于 Application 中
     func getTargetApplication(from runningApplication: NSRunningApplication?) -> Application? {
-        if let applicationByBundlePath = Options.shared.application.applications.get(by: runningApplication?.bundleURL?.path) {
+        return ScrollUtils.matchApplication(
+            bundlePath: runningApplication?.bundleURL?.path,
+            executablePath: runningApplication?.executableURL?.path,
+            in: Options.shared.application.applications
+        )
+    }
+
+    /// 例外列表按精确路径匹配; Electron Helper 再按最外层 .app 对齐到宿主条目
+    static func matchApplication(
+        bundlePath: String?,
+        executablePath: String?,
+        in applications: EnhanceArray<Application>
+    ) -> Application? {
+        if let applicationByBundlePath = applications.get(by: bundlePath) {
             return applicationByBundlePath
         }
-        if let applicationByExecutablePath = Options.shared.application.applications.get(by: runningApplication?.executableURL?.path) {
+        if let applicationByExecutablePath = applications.get(by: executablePath) {
             return applicationByExecutablePath
         }
+        guard let hostPath = outermostAppBundlePath(from: bundlePath)
+                ?? outermostAppBundlePath(from: executablePath) else {
+            return nil
+        }
+        if let applicationByHost = applications.get(by: hostPath) {
+            return applicationByHost
+        }
+        for index in 0..<applications.count {
+            guard let application = applications.get(by: index) else { continue }
+            if outermostAppBundlePath(from: application.path) == hostPath {
+                return application
+            }
+        }
         return nil
+    }
+
+    /// `/Applications/Cursor.app/Contents/Frameworks/Cursor Helper (Renderer).app` → `/Applications/Cursor.app`
+    static func outermostAppBundlePath(from path: String?) -> String? {
+        guard let path = path, !path.isEmpty else { return nil }
+        var url = URL(fileURLWithPath: path)
+        var lastApp: String?
+        while url.path != "/" && !url.path.isEmpty {
+            if url.pathExtension.lowercased() == "app" {
+                lastApp = url.path
+            }
+            let parent = url.deletingLastPathComponent()
+            if parent.path == url.path {
+                break
+            }
+            url = parent
+        }
+        return lastApp
     }
 
     // MARK: - 远程桌面事件检测
     // 远程桌面事件检测缓存
     private var lastSourcePID: pid_t = 0
     private var lastSourceIsRemoteControl: Bool = false
+    private var lastSourceNeedsRawScrollPassthrough: Bool = false
 
     /// 检测事件来源是否为远程桌面应用
     func isFromRemoteApplication(_ event: CGEvent) -> Bool {
-        let sourcePID = pid_t(event.getIntegerValueField(.eventSourceUnixProcessID))
-        if sourcePID == 0 { return false }
-
-        if sourcePID != lastSourcePID {
-            lastSourcePID = sourcePID
-            lastSourceIsRemoteControl = false
-
-            if let app = NSRunningApplication(processIdentifier: sourcePID) {
-                // 检查可执行文件路径（系统守护进程）
-                if let path = app.executableURL?.path {
-                    for keyword in REMOTE_CONTROL_APPLICATION.executableKeywords {
-                        if path.contains(keyword) {
-                            lastSourceIsRemoteControl = true
-                            break
-                        }
-                    }
-                }
-                // 检查 Bundle Identifier（第三方应用）
-                if !lastSourceIsRemoteControl, let bundleId = app.bundleIdentifier {
-                    lastSourceIsRemoteControl = REMOTE_CONTROL_APPLICATION.bundleIdentifiers.contains(bundleId)
-                }
-            }
-        }
+        refreshRemoteSourceCacheIfNeeded(event)
         return lastSourceIsRemoteControl
+    }
+
+    /// ToDesk 等远程控制应用对 Mos 处理后的滚轮事件兼容性差，需关闭平滑和方向翻转。
+    func shouldUseRawScrollForRemoteControl(_ event: CGEvent, targetRunningApplication: NSRunningApplication?) -> Bool {
+        if needsRawScrollPassthrough(from: targetRunningApplication) {
+            return true
+        }
+        refreshRemoteSourceCacheIfNeeded(event)
+        return lastSourceNeedsRawScrollPassthrough
     }
 
     /// 检测事件是否来自已被平滑的远程源
@@ -157,6 +288,103 @@ class ScrollUtils {
         // 检查 isContinuous 字段判断是否为连续的
         let isContinuous = event.getDoubleValueField(.scrollWheelEventIsContinuous)
         return isContinuous == 1.0  // 1.0 表示主控端已平滑
+    }
+
+    /// ToDesktop 是 Electron 应用打包平台 (Cursor 等), 其 bundleID 前缀 com.todesktop.
+    /// 恰好包含 "todesk" 关键字, 与 ToDesk 远程控制应用无关, 关键字匹配前必须排除
+    func isToDesktopPlatformApplication(bundleIdentifier: String?) -> Bool {
+        guard let bundleIdentifier = bundleIdentifier?.lowercased() else { return false }
+        return bundleIdentifier.hasPrefix("com.todesktop.")
+    }
+
+    func isKnownRemoteControlApplication(executablePath: String?, bundleIdentifier: String?) -> Bool {
+        if containsAnyKeyword(in: executablePath, keywords: REMOTE_CONTROL_APPLICATION.executableKeywords) {
+            return true
+        }
+        if let bundleIdentifier = bundleIdentifier,
+           REMOTE_CONTROL_APPLICATION.bundleIdentifiers.contains(bundleIdentifier) {
+            return true
+        }
+        if isToDesktopPlatformApplication(bundleIdentifier: bundleIdentifier) {
+            return false
+        }
+        return containsAnyKeyword(
+            in: bundleIdentifier,
+            keywords: REMOTE_CONTROL_APPLICATION.bundleIdentifierKeywords
+        )
+    }
+
+    func needsRawScrollPassthrough(executablePath: String?, bundleIdentifier: String?) -> Bool {
+        if containsAnyKeyword(
+            in: executablePath,
+            keywords: REMOTE_CONTROL_APPLICATION.rawScrollPassthroughExecutableKeywords
+        ) {
+            return true
+        }
+        if isToDesktopPlatformApplication(bundleIdentifier: bundleIdentifier) {
+            return false
+        }
+        return containsAnyKeyword(
+            in: bundleIdentifier,
+            keywords: REMOTE_CONTROL_APPLICATION.rawScrollPassthroughBundleIdentifierKeywords
+        )
+    }
+
+    private func needsRawScrollPassthrough(from runningApplication: NSRunningApplication?) -> Bool {
+        guard let runningApplication = runningApplication else { return false }
+        return needsRawScrollPassthrough(
+            executablePath: runningApplication.executableURL?.path,
+            bundleIdentifier: runningApplication.bundleIdentifier
+        ) || needsRawScrollPassthrough(
+            executablePath: runningApplication.bundleURL?.path,
+            bundleIdentifier: runningApplication.bundleIdentifier
+        )
+    }
+
+    private func refreshRemoteSourceCacheIfNeeded(_ event: CGEvent) {
+        let sourcePID = pid_t(event.getIntegerValueField(.eventSourceUnixProcessID))
+        if sourcePID == 0 {
+            lastSourcePID = 0
+            lastSourceIsRemoteControl = false
+            lastSourceNeedsRawScrollPassthrough = false
+            return
+        }
+
+        if sourcePID != lastSourcePID {
+            lastSourcePID = sourcePID
+            lastSourceIsRemoteControl = false
+            lastSourceNeedsRawScrollPassthrough = false
+
+            guard let app = NSRunningApplication(processIdentifier: sourcePID) else { return }
+            let executablePath = app.executableURL?.path
+            let bundlePath = app.bundleURL?.path
+            let bundleIdentifier = app.bundleIdentifier
+
+            lastSourceIsRemoteControl = isKnownRemoteControlApplication(
+                executablePath: executablePath,
+                bundleIdentifier: bundleIdentifier
+            ) || isKnownRemoteControlApplication(
+                executablePath: bundlePath,
+                bundleIdentifier: bundleIdentifier
+            )
+            lastSourceNeedsRawScrollPassthrough = needsRawScrollPassthrough(
+                executablePath: executablePath,
+                bundleIdentifier: bundleIdentifier
+            ) || needsRawScrollPassthrough(
+                executablePath: bundlePath,
+                bundleIdentifier: bundleIdentifier
+            )
+        }
+    }
+
+    private func containsAnyKeyword(in value: String?, keywords: [String]) -> Bool {
+        guard let lowercasedValue = value?.lowercased() else { return false }
+        for keyword in keywords {
+            if lowercasedValue.contains(keyword.lowercased()) {
+                return true
+            }
+        }
+        return false
     }
 
     // MARK: - 滚动参数: 热键

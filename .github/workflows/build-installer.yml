@@ -1,0 +1,217 @@
+name: Build macOS installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/todesk-remote-scroll
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-installer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-installer:
+    name: Build unsigned DMG
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Show build environment
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Resolve Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project Mos.xcodeproj \
+            -scheme Debug \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData"
+
+      - name: Compute unique build number
+        id: version
+        run: |
+          BUILD="$(date +%Y%m%d).${GITHUB_RUN_NUMBER}"
+          echo "build=$BUILD" >> "$GITHUB_OUTPUT"
+          echo "Using CURRENT_PROJECT_VERSION=$BUILD"
+
+      - name: Build release archive
+        run: |
+          xcodebuild archive \
+            -project Mos.xcodeproj \
+            -scheme Debug \
+            -configuration Release \
+            -destination "generic/platform=macOS" \
+            -archivePath "$RUNNER_TEMP/Mos.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            ARCHS="arm64 x86_64" \
+            ONLY_ACTIVE_ARCH=NO \
+            CURRENT_PROJECT_VERSION="${{ steps.version.outputs.build }}" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Apply ad-hoc signature
+        run: |
+          APP_PATH="$RUNNER_TEMP/Mos.xcarchive/Products/Applications/Mos.app"
+          test -d "$APP_PATH"
+          codesign --force --deep --sign - "$APP_PATH"
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+          SIGNATURE_INFO=$(codesign -dvv "$APP_PATH" 2>&1)
+          echo "$SIGNATURE_INFO"
+          if [[ "$SIGNATURE_INFO" == *runtime* ]]; then
+            echo "Ad-hoc builds must not enable Hardened Runtime because embedded frameworks have no shared Team ID."
+            exit 1
+          fi
+          lipo -archs "$APP_PATH/Contents/MacOS/Mos"
+
+      - name: Read package metadata
+        id: metadata
+        run: |
+          APP_PATH="$RUNNER_TEMP/Mos.xcarchive/Products/Applications/Mos.app"
+          INFO_PLIST="$APP_PATH/Contents/Info.plist"
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INFO_PLIST")
+          BUILD=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$INFO_PLIST")
+          DMG_NAME="Mos.${VERSION}-${BUILD}-unsigned.dmg"
+          ZIP_NAME="Mos.Versions.${VERSION}-${BUILD}.zip"
+          TAG="fork-${VERSION}-${BUILD}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "build=$BUILD" >> "$GITHUB_OUTPUT"
+          echo "dmg_name=$DMG_NAME" >> "$GITHUB_OUTPUT"
+          echo "dmg_path=$RUNNER_TEMP/$DMG_NAME" >> "$GITHUB_OUTPUT"
+          echo "zip_name=$ZIP_NAME" >> "$GITHUB_OUTPUT"
+          echo "zip_path=$RUNNER_TEMP/$ZIP_NAME" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=Mos-${VERSION}-${BUILD}-unsigned" >> "$GITHUB_OUTPUT"
+
+      - name: Create installer DMG
+        run: |
+          APP_PATH="$RUNNER_TEMP/Mos.xcarchive/Products/Applications/Mos.app"
+          DMG_ROOT="$RUNNER_TEMP/dmg-root"
+          mkdir -p "$DMG_ROOT"
+          ditto --norsrc --noextattr "$APP_PATH" "$DMG_ROOT/Mos.app"
+          ln -s /Applications "$DMG_ROOT/Applications"
+          hdiutil create \
+            -volname Mos \
+            -srcfolder "$DMG_ROOT" \
+            -format UDZO \
+            -ov \
+            "${{ steps.metadata.outputs.dmg_path }}"
+
+      - name: Verify installer
+        run: |
+          DMG_PATH="${{ steps.metadata.outputs.dmg_path }}"
+          MOUNT_PATH="$RUNNER_TEMP/dmg-mount"
+          test -s "$DMG_PATH"
+          hdiutil verify "$DMG_PATH"
+          mkdir -p "$MOUNT_PATH"
+          hdiutil attach "$DMG_PATH" -mountpoint "$MOUNT_PATH" -nobrowse -readonly
+          trap 'hdiutil detach "$MOUNT_PATH"' EXIT
+          codesign --verify --deep --strict --verbose=2 "$MOUNT_PATH/Mos.app"
+          lipo -archs "$MOUNT_PATH/Mos.app/Contents/MacOS/Mos"
+          shasum -a 256 "$DMG_PATH"
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ steps.metadata.outputs.artifact_name }}
+          path: ${{ steps.metadata.outputs.dmg_path }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+      - name: Package Sparkle zip
+        run: |
+          APP_PATH="$RUNNER_TEMP/Mos.xcarchive/Products/Applications/Mos.app"
+          ditto -c -k --norsrc --noextattr --keepParent "$APP_PATH" "${{ steps.metadata.outputs.zip_path }}"
+          zipinfo -1 "${{ steps.metadata.outputs.zip_path }}" | grep '/\._' && {
+            echo "ERROR: AppleDouble files found in zip"
+            exit 1
+          } || echo "OK: no AppleDouble files"
+
+      - name: Sign and publish fork Sparkle update
+        if: ${{ env.SPARKLE_PRIVATE_KEY != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ZIP_PATH="${{ steps.metadata.outputs.zip_path }}"
+          ZIP_NAME="${{ steps.metadata.outputs.zip_name }}"
+          VERSION="${{ steps.metadata.outputs.version }}"
+          BUILD="${{ steps.metadata.outputs.build }}"
+          TAG="${{ steps.metadata.outputs.tag }}"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/${ZIP_NAME}"
+
+          SIGN_UPDATE=$(find "$RUNNER_TEMP/DerivedData" -path "*/artifacts/sparkle/Sparkle/bin/sign_update" -type f | head -1)
+          if [[ -z "$SIGN_UPDATE" ]]; then
+            SIGN_UPDATE=$(find "$RUNNER_TEMP/DerivedData" -name sign_update -type f | head -1)
+          fi
+          test -n "$SIGN_UPDATE"
+          chmod +x "$SIGN_UPDATE"
+
+          SIGN_OUTPUT=$(printf '%s' "$SPARKLE_PRIVATE_KEY" | "$SIGN_UPDATE" --ed-key-file - "$ZIP_PATH")
+          echo "$SIGN_OUTPUT"
+          ED_SIGNATURE=$(echo "$SIGN_OUTPUT" | grep -o 'sparkle:edSignature="[^"]*"' | sed 's/sparkle:edSignature="//;s/"//')
+          FILE_LENGTH=$(echo "$SIGN_OUTPUT" | grep -o 'length="[^"]*"' | sed 's/length="//;s/"//')
+          test -n "$ED_SIGNATURE"
+          test -n "$FILE_LENGTH"
+
+          NOTES=$(git log -1 --pretty=%B | sed 's/]]>/]]]]><![CDATA[>/g')
+          CHANGELOG="<h2>更新</h2><ul><li>${NOTES}</li></ul>"
+          PUB_DATE=$(date -u "+%a, %d %b %Y %H:%M:%S +0000")
+          export NEW_ITEM
+          NEW_ITEM=$(cat <<EOF
+              <item>
+                <title>Mos ${VERSION}</title>
+                <description><![CDATA[${CHANGELOG}]]></description>
+                <pubDate>${PUB_DATE}</pubDate>
+                <enclosure
+                  url="${DOWNLOAD_URL}"
+                  length="${FILE_LENGTH}"
+                  type="application/octet-stream"
+                  sparkle:shortVersionString="${VERSION}"
+                  sparkle:version="${BUILD}"
+                  sparkle:edSignature="${ED_SIGNATURE}"
+                />
+              </item>
+          EOF
+          )
+
+          BASE_APPCAST=""
+          if gh release view sparkle-feed >/dev/null 2>&1; then
+            mkdir -p "$RUNNER_TEMP/old-feed"
+            gh release download sparkle-feed --pattern appcast.xml --dir "$RUNNER_TEMP/old-feed" || true
+            if [[ -f "$RUNNER_TEMP/old-feed/appcast.xml" ]]; then
+              BASE_APPCAST="$RUNNER_TEMP/old-feed/appcast.xml"
+            fi
+          fi
+
+          python3 scripts/generate-fork-appcast.py "${BASE_APPCAST:--}" "$BUILD" > "$RUNNER_TEMP/appcast.xml"
+
+          gh release create "$TAG" \
+            --title "Mos ${VERSION} (${BUILD})" \
+            --notes "$NOTES" \
+            --target "$GITHUB_SHA" \
+            "$ZIP_PATH"
+
+          if gh release view sparkle-feed >/dev/null 2>&1; then
+            gh release upload sparkle-feed "$RUNNER_TEMP/appcast.xml" --clobber
+          else
+            gh release create sparkle-feed \
+              --title "Sparkle feed" \
+              --notes "Independent update feed for this fork. Not affiliated with the upstream Caldis/Mos appcast." \
+              --target "$GITHUB_SHA" \
+              "$RUNNER_TEMP/appcast.xml"
+          fi
+
+      - name: Skip Sparkle publish
+        if: ${{ env.SPARKLE_PRIVATE_KEY == '' }}
+        run: echo "SPARKLE_PRIVATE_KEY secret is missing; installer artifact was still uploaded."
