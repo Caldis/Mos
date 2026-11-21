@@ -333,8 +333,8 @@ class ScrollCore: ScrollActionPort {
             guard let hotkey = hotkey else { return nil }
 
             if hotkey.isModifierKey {
-                // 修饰键：通过 flagsChanged 事件检测
-                if isFlagsChanged && keyCode == hotkey.code {
+                // 修饰键：通过 flagsChanged 事件检测, 左右两侧均可触发
+                if isFlagsChanged && hotkey.matchesModifierKeyCode(keyCode) {
                     return event.flags.contains(hotkey.modifierMask)
                 }
             } else if hotkey.matches(event, keyCode: keyCode, mouseButton: mouseButton, isMouseEvent: isMouseEvent) {

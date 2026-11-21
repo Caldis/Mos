@@ -193,4 +193,48 @@ final class ScrollHotkeyTests: XCTestCase {
         XCTAssertEqual(defaults.block?.type, .keyboard)
         XCTAssertEqual(defaults.block?.code, KeyCode.commandL)
     }
+
+    // MARK: - matchesModifierKeyCode (左右修饰键视为同一热键, #840)
+
+    func testMatchesModifierKeyCode_leftShiftHotkey_matchesBothSides() {
+        let hotkey = ScrollHotkey(type: .keyboard, code: KeyCode.shiftL)
+        XCTAssertTrue(hotkey.matchesModifierKeyCode(KeyCode.shiftL))
+        XCTAssertTrue(hotkey.matchesModifierKeyCode(KeyCode.shiftR), "right Shift should trigger a Shift hotkey")
+    }
+
+    func testMatchesModifierKeyCode_rightCommandHotkey_matchesLeftCommand() {
+        let hotkey = ScrollHotkey(type: .keyboard, code: KeyCode.commandR)
+        XCTAssertTrue(hotkey.matchesModifierKeyCode(KeyCode.commandL))
+        XCTAssertTrue(hotkey.matchesModifierKeyCode(KeyCode.commandR))
+    }
+
+    func testMatchesModifierKeyCode_allModifierFamilies_matchBothSides() {
+        let pairs: [(UInt16, UInt16)] = [
+            (KeyCode.controlL, KeyCode.controlR),
+            (KeyCode.optionL, KeyCode.optionR),
+            (KeyCode.commandL, KeyCode.commandR),
+            (KeyCode.shiftL, KeyCode.shiftR),
+            (KeyCode.fnL, KeyCode.fnR),
+        ]
+        for (left, right) in pairs {
+            XCTAssertTrue(ScrollHotkey(type: .keyboard, code: left).matchesModifierKeyCode(right), "\(left) should match \(right)")
+            XCTAssertTrue(ScrollHotkey(type: .keyboard, code: right).matchesModifierKeyCode(left), "\(right) should match \(left)")
+        }
+    }
+
+    func testMatchesModifierKeyCode_differentModifierFamily_doesNotMatch() {
+        let hotkey = ScrollHotkey(type: .keyboard, code: KeyCode.shiftL)
+        XCTAssertFalse(hotkey.matchesModifierKeyCode(KeyCode.commandR))
+        XCTAssertFalse(hotkey.matchesModifierKeyCode(KeyCode.optionL))
+    }
+
+    func testMatchesModifierKeyCode_nonModifierKeyCode_doesNotMatch() {
+        let hotkey = ScrollHotkey(type: .keyboard, code: KeyCode.shiftL)
+        XCTAssertFalse(hotkey.matchesModifierKeyCode(0), "a regular key should not match a modifier hotkey")
+    }
+
+    func testMatchesModifierKeyCode_nonModifierHotkey_neverMatches() {
+        XCTAssertFalse(ScrollHotkey(type: .keyboard, code: 0).matchesModifierKeyCode(0))
+        XCTAssertFalse(ScrollHotkey(type: .mouse, code: KeyCode.shiftL).matchesModifierKeyCode(KeyCode.shiftL))
+    }
 }
