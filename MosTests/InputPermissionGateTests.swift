@@ -134,6 +134,119 @@ final class WelcomeAuthorizationStateTests: XCTestCase {
         var state = WelcomeAuthorizationState(authorized: true)
         XCTAssertFalse(state.update(authorized: true))
     }
+
+    func testWelcomeLayoutHasNoAmbiguityAcrossStatesAndAppearances() {
+        let controller = WelcomeViewController(initialAuthorized: false)
+        let window = NSWindow(
+            contentRect: NSRect(origin: .zero, size: WelcomeWindowController.windowSize),
+            styleMask: [.titled, .closable, .fullSizeContentView],
+            backing: .buffered,
+            defer: false
+        )
+        window.isReleasedWhenClosed = false
+        window.contentViewController = controller
+        defer {
+            controller.finish()
+            window.close()
+        }
+
+        var appearances: [NSAppearance.Name] = [.aqua]
+        if #available(macOS 10.14, *) {
+            appearances.append(.darkAqua)
+        }
+
+        let renderDir = ProcessInfo.processInfo.environment["MOS_UI_RENDER_DIR"].map { URL(fileURLWithPath: $0, isDirectory: true) }
+        if let renderDir {
+            try? FileManager.default.createDirectory(at: renderDir, withIntermediateDirectories: true)
+        }
+
+        for authorized in [false, true, false] {
+            controller.updateAuthorization(authorized)
+            for name in appearances {
+                window.appearance = NSAppearance(named: name)
+                controller.view.layoutSubtreeIfNeeded()
+                assertNoLayoutIssues(in: controller.view)
+                if let renderDir, authorized || name == appearances.first || name == appearances.last {
+                    let isDark = name != .aqua
+                    let stateTag = authorized ? "auth" : "unauth"
+                    let modeTag = isDark ? "dark" : "light"
+                    writeWelcomeSnapshot(controller.view, dark: isDark, to: renderDir.appendingPathComponent("welcome-\(stateTag)-\(modeTag).png"))
+                }
+            }
+        }
+    }
+
+    private func writeWelcomeSnapshot(_ view: NSView, dark: Bool, to url: URL) {
+        view.displayIfNeeded()
+        guard let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        let bg = dark ? NSColor(srgbRed: 0.12, green: 0.13, blue: 0.15, alpha: 1) : NSColor(srgbRed: 0.94, green: 0.95, blue: 0.97, alpha: 1)
+        guard let backed = NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: rep.pixelsWide, pixelsHigh: rep.pixelsHigh,
+            bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+            colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
+        ), let ctx = NSGraphicsContext(bitmapImageRep: backed) else { return }
+        let pxRect = NSRect(x: 0, y: 0, width: rep.pixelsWide, height: rep.pixelsHigh)
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = ctx
+        bg.setFill()
+        pxRect.fill()
+        rep.draw(in: pxRect, from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: nil)
+        ctx.flushGraphics()
+        NSGraphicsContext.restoreGraphicsState()
+        if let png = backed.representation(using: .png, properties: [:]) {
+            try? png.write(to: url)
+        }
+    }
+
+    func testWelcomeVectorArtworkLifecycleIsSafe() {
+        let artwork = WelcomeArtworkView(reduceMotion: false)
+        let window = NSWindow(
+            contentRect: NSRect(origin: .zero, size: WelcomeArtworkView.stageSize),
+            styleMask: [.borderless],
+            backing: .buffered,
+            defer: false
+        )
+        window.isReleasedWhenClosed = false
+        window.contentView = artwork
+        artwork.layoutSubtreeIfNeeded()
+        artwork.updatePlayback()
+        artwork.playHeroEntrance(fromCenterOffsetY: -200, heroScale: 2.05, flightDelay: 1.46)
+        artwork.triggerSuccessPulse()
+        artwork.setReducedMotion(true)
+        artwork.stop()
+        window.close()
+
+        // Verify anchor-aware scaling introduces zero drift on standalone CALayers (anchorPoint = 0.5, 0.5).
+        let standalone = CALayer()
+        standalone.bounds = CGRect(x: 0, y: 0, width: 96, height: 96)
+        let tStandalone = WelcomeMotion.centeredTransform(scale: 0.5, dy: 0, for: standalone)
+        XCTAssertEqual(tStandalone.m41, 0, accuracy: 0.001)
+        XCTAssertEqual(tStandalone.m42, 0, accuracy: 0.001)
+
+        // Verify AppKit view-backed layers (anchorPoint = 0, 0) pivot around bounds center.
+        let viewBacked = CALayer()
+        viewBacked.bounds = CGRect(x: 0, y: 0, width: 96, height: 96)
+        viewBacked.anchorPoint = .zero
+        let tViewBacked = WelcomeMotion.centeredTransform(scale: 0.5, dy: 0, for: viewBacked)
+        XCTAssertEqual(tViewBacked.m41, 24, accuracy: 0.001)
+        XCTAssertEqual(tViewBacked.m42, 24, accuracy: 0.001)
+    }
+
+    private func assertNoLayoutIssues(in view: NSView, path: String = "root",
+                                      file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertFalse(view.hasAmbiguousLayout, "Ambiguous layout at \(path)", file: file, line: line)
+        if let field = view as? NSTextField, !field.isHidden, !field.stringValue.isEmpty {
+            XCTAssertFalse(field.isEditable, "Welcome text must not be editable at \(path)", file: file, line: line)
+            XCTAssertFalse(field.isSelectable, "Welcome text must not be selectable at \(path)", file: file, line: line)
+            XCTAssertGreaterThan(field.frame.width, 8, "Collapsed width at \(path): \(field.stringValue)", file: file, line: line)
+            XCTAssertGreaterThan(field.frame.height, 8, "Collapsed height at \(path): \(field.stringValue)", file: file, line: line)
+        }
+        for (index, subview) in view.subviews.enumerated() {
+            assertNoLayoutIssues(in: subview, path: "\(path)/\(index):\(type(of: subview))", file: file, line: line)
+        }
+    }
 }
 
 final class KeyRecorderPermissionTests: XCTestCase {

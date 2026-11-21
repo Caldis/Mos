@@ -14313,6 +14313,12 @@
             "state": "translated",
             "value": "讓每次捲動都流暢自如"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ให้ทุกการเลื่อนลื่นไหลเป็นธรรมชาติ"
+          }
         }
       }
     },
@@ -14489,6 +14495,12 @@
             "state": "translated",
             "value": "開始使用 Mos"
           }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เริ่มใช้งาน Mos"
+          }
         }
       }
     },
@@ -14576,6 +14588,2268 @@
           "stringUnit": {
             "state": "translated",
             "value": "允許存取"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "อนุญาตการเข้าถึง"
+          }
+        }
+      }
+    },
+    "Welcome to Mos": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vítejte v Mos"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Willkommen bei Mos"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Καλώς ήρθατε στο Mos"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to Mos"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bienvenue dans Mos"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mos へようこそ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mos에 오신 것을 환영합니다"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добро пожаловать в Mos"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ยินดีต้อนรับสู่ Mos"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mos’a Hoş Geldiniz"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ласкаво просимо до Mos"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "欢迎使用 Mos"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "歡迎使用 Mos"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "歡迎使用 Mos"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "歡迎使用 Mos"
+          }
+        }
+      }
+    },
+    "Smooth & Natural Scrolling": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plynulé a přirozené posouvání"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sanftes & natürliches Scrollen"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ομαλή & φυσική κύλιση"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smooth & Natural Scrolling"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Défilement fluide et naturel"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "滑らかで自然なスクロール"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "부드럽고 자연스러운 스크롤"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Плавная и естественная прокрутка"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การเลื่อนที่ลื่นไหลและเป็นธรรมชาติ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akıcı ve Doğal Kaydırma"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Плавне та природне прокручування"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑与自然滚动"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑與自然捲動"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑與自然捲動"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑與自然捲動"
+          }
+        }
+      }
+    },
+    "Turn stepped mouse wheels into fluid scrolling while keeping your trackpad direction separate.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proměňte krokové kolečko myši v plynulé posouvání se samostatným směrem pro trackpad."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwandelt gerasterte Mausräder in flüssiges Scrollen – getrennt von der Trackpad-Richtung."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Μετατρέπει τη βηματική κύλιση του ποντικιού σε ομαλή, ανεξάρτητα από την επιφάνεια αφής."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn stepped mouse wheels into fluid scrolling while keeping your trackpad direction separate."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transforme la molette crantée en défilement fluide tout en séparant le sens du trackpad."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "段階的なマウスホイールを滑らかなスクロールに変え、トラックパッドの方向を独立して設定できます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "단계식 마우스 휠을 부드러운 스크롤로 바꾸고 트랙패드 방향과 독립적으로 유지합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Превращает ступенчатую прокрутку мыши в плавную, сохраняя отдельное направление для трекпада."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปลี่ยนลูกกลิ้งเมาส์แบบเป็นขั้นให้เลื่อนได้ลื่นไหล พร้อมแยกทิศทางออกจากแทร็กแพด"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kademeli fare tekerleğini akıcı kaydırmaya dönüştürür ve izleme dörtgeni yönünü ayrı tutar."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перетворює ступінчасте коліщатко миші на плавне прокручування окремо від напрямку трекпада."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将有级滚轮化为丝滑滚动，并与触控板方向独立设置。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將有段式滾輪化為絲滑捲動，並與觸控式軌跡板方向獨立設定。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將有段式滾輪化為絲滑捲動，並與觸控式軌跡板方向獨立設定。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將有段式滾輪化為絲滑捲動，並與觸控式軌跡板方向獨立設定。"
+          }
+        }
+      }
+    },
+    "Per-App Rules & Custom Buttons": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pravidla pro aplikace a vlastní tlačítka"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App-spezifische Regeln & Maustasten"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Κανόνες ανά εφαρμογή & κουμπιά ποντικιού"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per-App Rules & Custom Buttons"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Règles par app et boutons personnalisés"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリごとの設定とボタンカスタマイズ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱별 규칙 및 버튼 사용자화"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Правила для приложений и кнопки мыши"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กฎแยกตามแอปและปุ่มเมาส์แบบกำหนดเอง"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamaya Özel Kurallar ve Düğmeler"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Правила для програм і кнопки миші"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分应用规则与按键定制"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "依應用程式規則與自訂按鍵"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "依應用程式規則與自訂按鍵"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "依應用程式規則與自訂按鍵"
+          }
+        }
+      }
+    },
+    "Fine-tune scroll behavior for specific apps and map extra mouse buttons to macOS shortcuts.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dolaďte posouvání pro jednotlivé aplikace a přiřaďte tlačítkům myši zkratky macOS."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passen Sie das Scrollen pro App an und belegen Sie zusätzliche Maustasten mit macOS-Kurzbefehlen."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ρυθμίστε την κύλιση ανά εφαρμογή και αντιστοιχίστε επιπλέον κουμπιά σε συντομεύσεις macOS."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fine-tune scroll behavior for specific apps and map extra mouse buttons to macOS shortcuts."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustez le défilement par application et associez vos boutons de souris aux raccourcis macOS."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "特定のアプリごとにスクロールを細かく調整し、マウスボタンに macOS ショートカットを割り当てます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "특정 앱별로 스크롤을 세밀하게 조정하고 추가 마우스 버튼을 macOS 단축키에 지정할 수 있습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тонко настраивайте прокрутку для отдельных приложений и назначайте кнопкам мыши сочетания macOS."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ปรับแต่งการเลื่อนแยกเฉพาะแต่ละแอป และกำหนดปุ่มเมาส์เพิ่มเติมให้เป็นคำสั่งลัดของ macOS"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belirli uygulamalar için kaydırmayı ince ayarlayın ve ek fare düğmelerini macOS kestirmelerine atayın."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Налаштовуйте прокручування для окремих програм і призначайте кнопкам миші комбінації macOS."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "为指定应用微调滚动行为，并将鼠标侧键映射为快捷操作。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "為指定應用程式微調捲動行為，並將滑鼠側鍵對應為快捷操作。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "為指定應用程式微調捲動行為，並將滑鼠側鍵對應為快捷操作。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "為指定應用程式微調捲動行為，並將滑鼠側鍵對應為快捷操作。"
+          }
+        }
+      }
+    },
+    "Accessibility Permission": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oprávnění Zpřístupnění"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bedienungshilfen-Berechtigung"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Άδεια Προσβασιμότητας"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility Permission"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autorisation d’Accessibilité"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アクセシビリティ権限"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "손쉬운 사용 권한"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Доступ к Универсальному доступу"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สิทธิ์การช่วยการเข้าถึง"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erişilebilirlik İzni"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дозвіл Доступності"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辅助功能权限"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "輔助使用權限"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "輔助使用權限"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "輔助使用權限"
+          }
+        }
+      }
+    },
+    "Required by macOS so Mos can smooth scrolling and customize mouse buttons locally.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vyžadováno systémem macOS, aby Mos mohl lokálně vyhlazovat posouvání a upravovat tlačítka myši."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Von macOS erforderlich, damit Mos Scrollen und Maustasten lokal auf Ihrem Mac anpassen kann."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Απαιτείται από το macOS ώστε το Mos να βελτιώνει τοπικά την κύλιση και τα κουμπιά του ποντικιού."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Required by macOS so Mos can smooth scrolling and customize mouse buttons locally."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Requis par macOS pour permettre à Mos de lisser le défilement et personnaliser vos boutons localement."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mos がローカルでスクロールを滑らかにし、マウスボタンをカスタマイズするために macOS で必要です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mos가 로컬에서 스크롤을 부드럽게 하고 마우스 버튼을 사용자화하려면 macOS에서 이 권한이 필요합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Требуется macOS, чтобы Mos локально сглаживал прокрутку и настраивал кнопки мыши."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "จำเป็นสำหรับ macOS เพื่อให้ Mos ปรับการเลื่อนให้ลื่นไหลและกำหนดปุ่มเมาส์ได้บนเครื่องของคุณ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mos’un kaydırmayı yumuşatabilmesi ve fare düğmelerini yerel olarak özelleştirebilmesi için macOS tarafından gereklidir."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Потрібно для macOS, щоб Mos локально згладжував прокручування та налаштовував кнопки миші."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS 需要此权限，以便 Mos 在本地优化滚动与鼠标按键。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS 需要此權限，以便 Mos 在本機最佳化捲動與滑鼠按鍵。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS 需要此權限，以便 Mos 在本機最佳化捲動與滑鼠按鍵。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS 需要此權限，以便 Mos 在本機最佳化捲動與滑鼠按鍵。"
+          }
+        }
+      }
+    },
+    "Accessibility access is active. Mos is ready to smooth scrolling and handle custom buttons.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přístup Zpřístupnění je aktivní. Mos je připraven vyhlazovat posouvání a obsluhovat tlačítka."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bedienungshilfen sind aktiviert. Mos ist bereit für sanftes Scrollen und eigene Maustasten."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Η πρόσβαση Προσβασιμότητας είναι ενεργή. Το Mos είναι έτοιμο για ομαλή κύλιση και κουμπιά."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility access is active. Mos is ready to smooth scrolling and handle custom buttons."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’accès Accessibilité est actif. Mos est prêt à lisser le défilement et gérer vos boutons."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アクセシビリティ権限が有効です。Mos はスクロールの最適化とマウスボタンの操作に対応できます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "손쉬운 사용 권한이 활성화되었습니다. Mos가 부드러운 스크롤과 사용자 지정 버튼을 처리할 준비가 되었습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Универсальный доступ активен. Mos готов сглаживать прокрутку и обрабатывать кнопки мыши."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปิดใช้งานสิทธิ์การช่วยการเข้าถึงแล้ว Mos พร้อมปรับการเลื่อนและจัดการปุ่มเมาส์แล้ว"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erişilebilirlik izni etkin. Mos akıcı kaydırma ve özel düğmeleri yönetmeye hazır."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дозвіл Доступності активний. Mos готовий згладжувати прокручування й обробляти кнопки миші."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "权限已就绪，Mos 现已准备好优化滚动体验与鼠标按键。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "權限已就緒，Mos 現已準備好最佳化捲動體驗與滑鼠按鍵。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "權限已就緒，Mos 現已準備好最佳化捲動體驗與滑鼠按鍵。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "權限已就緒，Mos 現已準備好最佳化捲動體驗與滑鼠按鍵。"
+          }
+        }
+      }
+    },
+    "Required": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vyžadováno"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erforderlich"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Απαιτείται"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Required"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Requis"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "必須"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "필수"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Требуется"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "จำเป็น"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gerekli"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Потрібно"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要授权"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要授權"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要授權"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要授權"
+          }
+        }
+      }
+    },
+    "Waiting…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Čekání…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warten…"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αναμονή…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En attente…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "待機中…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대기 중…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ожидание…"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังรอ…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bekleniyor…"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очікування…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待授权…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待授權…"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待授權…"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待授權…"
+          }
+        }
+      }
+    },
+    "Waiting for Accessibility permission…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Čekání na oprávnění Zpřístupnění…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warten auf Bedienungshilfen-Berechtigung…"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αναμονή για άδεια Προσβασιμότητας…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for Accessibility permission…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En attente de l’autorisation d’Accessibilité…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アクセシビリティ権限を待機中…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "손쉬운 사용 권한을 기다리는 중…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ожидание разрешения Универсального доступа…"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังรอสิทธิ์การช่วยการเข้าถึง…"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erişilebilirlik izni bekleniyor…"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очікування дозволу Доступності…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在等待辅助功能权限…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在等待輔助使用權限…"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在等待輔助使用權限…"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在等待輔助使用權限…"
+          }
+        }
+      }
+    },
+    "Accessibility permission required": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vyžadováno oprávnění Zpřístupnění"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bedienungshilfen-Berechtigung erforderlich"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Απαιτείται άδεια Προσβασιμότητας"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accessibility permission required"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autorisation d’Accessibilité requise"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アクセシビリティ権限が必要です"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "손쉬운 사용 권한이 필요합니다"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Требуется разрешение Универсального доступа"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "จำเป็นต้องได้รับสิทธิ์การช่วยการเข้าถึง"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erişilebilirlik izni gerekli"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Потрібен дозвіл Доступності"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要开启辅助功能权限"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要開啟輔助使用權限"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要開啟輔助使用權限"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要開啟輔助使用權限"
+          }
+        }
+      }
+    },
+    "Smooth Scrolling": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plynulé posouvání"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sanftes Scrollen"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ομαλή κύλιση"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smooth Scrolling"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Défilement fluide"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スムーズスクロール"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "부드러운 스크롤"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Плавная прокрутка"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การเลื่อนแบบลื่นไหล"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akıcı Kaydırma"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Плавне прокручування"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑滚动"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑捲動"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑捲動"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑捲動"
+          }
+        }
+      }
+    },
+    "Turn stepped mouse wheels into fluid inertial scrolling with tunable speed and duration.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proměňte krokové kolečko myši v plynulé setrvačné posouvání s nastavitelnou rychlostí."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwandelt gerasterte Mausräder in flüssiges Scrollen mit anpassbarer Geschwindigkeit und Dauer."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Μετατρέπει τη βηματική κύλιση του ποντικιού σε ομαλή με ρυθμιζόμενη ταχύτητα και διάρκεια."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn stepped mouse wheels into fluid inertial scrolling with tunable speed and duration."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transforme la molette crantée en défilement inertiel fluide à vitesse et durée réglables."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "段階的なマウスホイールを慣性付きの滑らかなスクロールに変え、速度や持続時間を調整できます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "단계식 마우스 휠을 속도와 지속 시간을 조절할 수 있는 부드러운 관성 스크롤로 바꿉니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Превращает ступенчатую прокрутку мыши в плавную инерционную с настройкой скорости и длительности."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปลี่ยนลูกกลิ้งเมาส์แบบเป็นขั้นให้เลื่อนได้ลื่นไหลแบบมีแรงเฉื่อย ปรับความเร็วและระยะเวลาได้"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kademeli fare tekerleğini hızı ve süresi ayarlanabilen akıcı ve eylemsiz kaydırmaya dönüştürür."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перетворює ступінчасте коліщатко миші на плавне інерційне прокручування з гнучкою швидкістю."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将传统有级滚轮转化为带惯性的平滑滚动，自由调节速度与步长。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將傳統有段式滾輪化為帶慣性的平滑捲動，自由調整速度與步長。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將傳統有段式滾輪化為帶慣性的平滑捲動，自由調整速度與步長。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將傳統有段式滾輪化為帶慣性的平滑捲動，自由調整速度與步長。"
+          }
+        }
+      }
+    },
+    "Independent Scroll Direction": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nezávislý směr posouvání"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unabhängige Scrollrichtung"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ανεξάρτητη κατεύθυνση κύλισης"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Independent Scroll Direction"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sens de défilement indépendant"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "独立したスクロール方向"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "독립적인 스크롤 방향"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Независимое направление прокрутки"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ทิศทางการเลื่อนที่เป็นอิสระ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bağımsız Kaydırma Yönü"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Незалежний напрямок прокручування"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "独立滚动方向"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "獨立捲動方向"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "獨立捲動方向"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "獨立捲動方向"
+          }
+        }
+      }
+    },
+    "Flip mouse wheel direction independently without changing your trackpad’s natural scroll.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otočte směr kolečka myši samostatně, aniž byste měnili přirozené posouvání trackpadu."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kehrt die Mausradrichtung unabhängig um, ohne das natürliche Scrollen des Trackpads zu ändern."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αντιστρέφει ανεξάρτητα τη φορά του ποντικιού χωρίς να αλλάζει τη φυσική κύλιση της επιφάνειας αφής."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flip mouse wheel direction independently without changing your trackpad’s natural scroll."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inversez le sens de la molette sans modifier le défilement naturel de votre trackpad."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トラックパッドのナチュラルなスクロールを維持したまま、マウスホイールの方向だけを独立して反転できます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "트랙패드의 자연스러운 스크롤을 유지한 채 마우스 휠 방향만 독립적으로 반전합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Меняйте направление колёсика мыши отдельно, сохраняя естественную прокрутку трекпада."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สลับทิศทางลูกกลิ้งเมาส์แยกต่างหาก โดยไม่กระทบการเลื่อนแบบธรรมชาติของแทร็กแพด"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İzleme dörtgeninin doğal kaydırmasını değiştirmeden fare tekerleği yönünü bağımsız olarak ters çevirir."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Змінюйте напрямок коліщатка миші окремо, не змінюючи природне прокручування трекпада."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "单独翻转鼠标滚轮方向，不再干扰触控板的自然滚动习惯。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "單獨反轉滑鼠滾輪方向，不影響觸控式軌跡板的自然捲動習慣。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "單獨反轉滑鼠滾輪方向，不影響觸控式軌跡板的自然捲動習慣。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "單獨反轉滑鼠滾輪方向，不影響觸控式軌跡板的自然捲動習慣。"
+          }
+        }
+      }
+    },
+    "Per-App Profiles": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pravidla pro jednotlivé aplikace"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App-spezifische Profile"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Προφίλ ανά εφαρμογή"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per-App Profiles"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profils par application"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリごとのプロファイル"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱별 프로필"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Профили для приложений"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โปรไฟล์แยกตามแอป"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamaya Özel Profiller"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Профілі для програм"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分应用规则"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "依應用程式規則"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "依應用程式規則"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "依應用程式規則"
+          }
+        }
+      }
+    },
+    "Set exceptions or fine-tune scrolling behavior individually for every application.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nastavte výjimky nebo dolaďte chování posouvání zvlášť pro každou aplikaci."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legen Sie Ausnahmen fest oder passen Sie das Scrollverhalten individuell pro App an."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ορίστε εξαιρέσεις ή προσαρμόστε τη συμπεριφορά κύλισης ξεχωριστά για κάθε εφαρμογή."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set exceptions or fine-tune scrolling behavior individually for every application."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Définissez des exceptions ou ajustez le défilement individuellement pour chaque app."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリごとに例外リストを設定したり、スクロールの挙動を個別に微調整できます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "각 앱별로 예외 목록을 설정하거나 스크롤 동작을 개별적으로 미세 조정할 수 있습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Задавайте исключения и тонко настраивайте поведение прокрутки отдельно для каждого приложения."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ตั้งค่ารายการยกเว้นหรือปรับแต่งพฤติกรรมการเลื่อนแยกเฉพาะแต่ละแอปได้อย่างละเอียด"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Her uygulama için ayrı ayrı istisnalar belirleyin veya kaydırma davranışını ince ayarlayın."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Налаштовуйте винятки або точно підбирайте параметри прокручування окремо для кожної програми."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "针对不同应用设置例外列表或独立参数，兼顾日常浏览与专业软件。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "針對不同應用程式設定例外清單或獨立參數，兼顧日常瀏覽與專業軟體。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "針對不同應用程式設定例外清單或獨立參數，兼顧日常瀏覽與專業軟件。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "針對不同應用程式設定例外清單或獨立參數，兼顧日常瀏覽與專業軟體。"
+          }
+        }
+      }
+    },
+    "Custom Mouse Buttons": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vlastní tlačítka myši"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eigene Maustasten"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Προσαρμοσμένα κουμπιά ποντικιού"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom Mouse Buttons"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boutons de souris personnalisés"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マウスボタンのカスタマイズ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "마우스 버튼 사용자화"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Настройка кнопок мыши"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำหนดปุ่มเมาส์เอง"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Özel Fare Düğmeleri"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Налаштування кнопок миші"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自定义鼠标按键"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自訂滑鼠按鍵"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自訂滑鼠按鍵"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自訂滑鼠按鍵"
+          }
+        }
+      }
+    },
+    "Map extra mouse buttons and gestures to macOS shortcuts, Mission Control, or media controls.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přiřaďte tlačítkům myši a gestům zkratky macOS, Mission Control nebo ovládání médií."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belegen Sie Zusatztasten und Gesten mit macOS-Kurzbefehlen, Mission Control oder Mediensteuerung."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αντιστοιχίστε κουμπιά και κινήσεις σε συντομεύσεις macOS, Mission Control ή έλεγχο πολυμέσων."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Map extra mouse buttons and gestures to macOS shortcuts, Mission Control, or media controls."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Associez vos boutons et gestes aux raccourcis macOS, à Mission Control ou aux contrôles multimédias."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マウスボタンやジェスチャに macOS ショートカット、ミッションコントロール、メディア操作を割り当てます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "추가 마우스 버튼과 제스처를 macOS 단축키, Mission Control 또는 미디어 제어에 지정합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Назначайте кнопкам и жестам мыши сочетания macOS, Mission Control или управление медиа."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำหนดปุ่มเมาส์เพิ่มเติมและท่าทางให้เป็นคำสั่งลัด macOS, Mission Control หรือควบคุมสื่อ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ek fare düğmelerini ve hareketlerini macOS kestirmelerine, Mission Control’a veya medya denetimlerine atayın."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Призначайте кнопкам і жестам миші комбінації macOS, Mission Control або керування медіа."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将鼠标侧键与组合手势映射为系统快捷键、任务控制或媒体控制。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將滑鼠側鍵與組合手勢對應為系統快捷鍵、Mission Control 或媒體控制。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將滑鼠側鍵與組合手勢對應為系統快捷鍵、Mission Control 或媒體控制。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將滑鼠側鍵與組合手勢對應為系統快捷鍵、Mission Control 或媒體控制。"
+          }
+        }
+      }
+    },
+    "Per-App Profiles & Exceptions": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profily a výjimky pro aplikace"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App-Profile & Ausnahmen"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Προφίλ & εξαιρέσεις ανά εφαρμογή"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per-App Profiles & Exceptions"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profils et exceptions par application"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリごとのプロファイルと例外設定"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱별 프로필 및 예외 규칙"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Профили и исключения для приложений"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "โปรไฟล์และข้อยกเว้นแยกตามแอป"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulamaya Özel Profiller ve İstisnalar"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Профілі та винятки для програм"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分应用规则与例外"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "依應用程式規則與例外"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "依應用程式規則與例外"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "依應用程式規則與例外"
+          }
+        }
+      }
+    },
+    "Turn stepped mouse wheels into fluid inertial scrolling with tunable speed, step size, and duration—while keeping scroll direction separate from your trackpad.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proměňte krokové kolečko myši v plynulé setrvačné posouvání s nastavitelnou rychlostí, krokem i trváním – se směrem nezávislým na trackpadu."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwandelt gerasterte Mausräder in flüssiges Scrollen mit einstellbarer Geschwindigkeit, Schrittweite und Dauer – unabhängig von der Trackpad-Richtung."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Μετατρέπει τη βηματική κύλιση του ποντικιού σε ομαλή με ρυθμιζόμενη ταχύτητα, βήμα και διάρκεια, ξεχωριστά από την κατεύθυνση της επιφάνειας αφής."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn stepped mouse wheels into fluid inertial scrolling with tunable speed, step size, and duration—while keeping scroll direction separate from your trackpad."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transforme la molette crantée en défilement inertiel fluide à vitesse, pas et durée réglables, tout en gardant un sens indépendant du trackpad."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "段階的なマウスホイールを慣性付きの滑らかなスクロールに変え、速度・ステップ・持続時間を自由に調整。トラックパッドとは独立して方向も反転できます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "단계식 마우스 휠을 속도, 단계, 지속 시간을 조절할 수 있는 부드러운 관성 스크롤로 바꾸고 트랙패드와 독립적으로 방향을 유지합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Превращает ступенчатое колёсико мыши в плавную инерционную прокрутку с настройкой скорости, шага и длительности — независимо от направления трекпада."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปลี่ยนลูกกลิ้งเมาส์แบบเป็นขั้นให้เลื่อนได้ลื่นไหลแบบมีแรงเฉื่อย ปรับความเร็ว ระยะก้าว และระยะเวลาได้ พร้อมแยกทิศทางออกจากแทร็กแพด"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kademeli fare tekerleğini hız, adım ve süresi ayarlanabilen akıcı eylemsiz kaydırmaya dönüştürür; kaydırma yönünü izleme dörtgeninden ayrı tutar."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перетворює ступінчасте коліщатко миші на плавне інерційне прокручування з налаштуванням швидкості, кроку й тривалості — окремо від трекпада."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将传统有级滚轮转化为带惯性的平滑滚动，自由调节速度、步长与持续时间，并可独立翻转滚轮方向而不影响触控板。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將傳統有段式滾輪化為帶慣性的平滑捲動，自由調整速度、步長與持續時間，並可獨立反轉滾輪方向而不影響觸控式軌跡板。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將傳統有段式滾輪化為帶慣性的平滑捲動，自由調整速度、步長與持續時間，並可獨立反轉滾輪方向而不影響觸控式軌跡板。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將傳統有段式滾輪化為帶慣性的平滑捲動，自由調整速度、步長與持續時間，並可獨立反轉滾輪方向而不影響觸控式軌跡板。"
+          }
+        }
+      }
+    },
+    "Create per-application profiles or exclusion lists so browsers, code editors, games, and creative tools each feel just the way you expect.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vytvářejte profily pro jednotlivé aplikace nebo seznamy výjimek, aby prohlížeče, editory kódu, hry i tvůrčí nástroje reagovaly přesně podle vašich představ."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstellen Sie app-spezifische Profile oder Ausnahmelisten, damit Browser, Code-Editoren, Spiele und Kreativ-Apps sich genau wie gewünscht anfühlen."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Δημιουργήστε προφίλ ανά εφαρμογή ή λίστες εξαιρέσεων, ώστε browsers, editors, παιχνίδια και δημιουργικά εργαλεία να ανταποκρίνονται όπως θέλετε."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create per-application profiles or exclusion lists so browsers, code editors, games, and creative tools each feel just the way you expect."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créez des profils par application ou des listes d’exceptions pour que navigateurs, éditeurs de code, jeux et outils créatifs répondent exactement comme prévu."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリごとのプロファイルや例外リストを作成でき、ブラウザ、コードエディタ、ゲーム、クリエイティブアプリそれぞれを理想の操作感に保てます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱별 프로필이나 예외 목록을 만들어 브라우저, 코드 편집기, 게임, 크리에이티브 도구가 모두 원하는 감각으로 동작하도록 설정하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Создавайте профили или списки исключений для отдельных приложений, чтобы браузеры, редакторы кода, игры и графические пакеты работали именно так, как удобно."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สร้างโปรไฟล์แยกตามแอปหรือรายการยกเว้น เพื่อให้เบราว์เซอร์ ตัวแก้ไขโค้ด เกม และเครื่องมือสร้างสรรค์ตอบสนองได้ตรงตามต้องการ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tarayıcılar, kod düzenleyiciler, oyunlar ve yaratıcı araçların her birinin tam istediğiniz gibi hissettirmesi için uygulama profilleri veya istisna listeleri oluşturun."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Створюйте профілі або списки винятків для окремих програм, щоб браузери, редактори коду, ігри та творчі інструменти працювали саме так, як вам зручно."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "为不同应用建立独立的滚动手感或加入例外列表，无论是日常网页阅读、代码编辑还是设计创作，都能保持得心应手。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "為不同應用程式建立獨立的捲動手感或加入例外清單，無論是日常網頁閱讀、程式碼編輯或設計創作，都能保持得心應手。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "為不同應用程式建立獨立的捲動手感或加入例外清單，無論是日常網頁閱讀、程式碼編輯或設計創作，都能保持得心應手。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "為不同應用程式建立獨立的捲動手感或加入例外清單，無論是日常網頁閱讀、程式碼編輯或設計創作，都能保持得心應手。"
+          }
+        }
+      }
+    },
+    "Map extra mouse buttons and modifier combinations to macOS system shortcuts, Mission Control, Space switching, or media controls for effortless navigation.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přiřaďte další tlačítka myši a kombinace modifikátorů systémovým zkratkám macOS, Mission Control, přepínání ploch nebo ovládání médií pro snadnou navigaci."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belegen Sie Zusatztasten und Sondertasten mit macOS-Kurzbefehlen, Mission Control, Space-Wechsel oder Mediensteuerung für mühelose Bedienung."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Αντιστοιχίστε επιπλέον κουμπιά ποντικιού και συνδυασμούς πλήκτρων σε συντομεύσεις macOS, Mission Control, εναλλαγή χώρων ή έλεγχο πολυμέσων."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Map extra mouse buttons and modifier combinations to macOS system shortcuts, Mission Control, Space switching, or media controls for effortless navigation."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Associez les boutons supplémentaires et touches de modification aux raccourcis macOS, à Mission Control, au changement d’espace ou aux contrôles multimédias."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "追加のマウスボタンや修飾キーの組み合わせに macOS ショートカット、ミッションコントロール、操作スペース切り替え、メディア操作を割り当てられます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "추가 마우스 버튼과 보조 키 조합을 macOS 단축키, Mission Control, Space 전환 또는 미디어 제어에 지정해 손쉽게 탐색하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Назначайте дополнительные кнопки мыши и сочетания модификаторов на системные команды macOS, Mission Control, переключение рабочих столов и управление медиа."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำหนดปุ่มเมาส์เพิ่มเติมและปุ่มร่วมให้เป็นคำสั่งลัด macOS, Mission Control, การสลับพื้นที่ทำงาน หรือควบคุมสื่อเพื่อการใช้งานที่คล่องตัว"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zahmetsiz gezinme için ek fare düğmelerini ve değiştirici tuş kombinasyonlarını macOS kestirmelerine, Mission Control’a, Alan geçişine veya medya denetimlerine atayın."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Призначайте додаткові кнопки миші та комбінації клавіш-модифікаторів системним командам macOS, Mission Control, перемиканню просторів або керуванню медіа."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将额外的鼠标侧键与修饰键组合映射为系统快捷键、任务控制、桌面切换或媒体控制，充分发挥每一颗鼠标按键的效率。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將額外的滑鼠側鍵與修飾鍵組合對應為系統快捷鍵、Mission Control、桌面切換或媒體控制，充分發揮每顆滑鼠按鍵的效率。"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將額外的滑鼠側鍵與修飾鍵組合對應為系統快捷鍵、Mission Control、桌面切換或媒體控制，充分發揮每顆滑鼠按鍵的效率。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將額外的滑鼠側鍵與修飾鍵組合對應為系統快捷鍵、Mission Control、桌面切換或媒體控制，充分發揮每顆滑鼠按鍵的效率。"
           }
         }
       }

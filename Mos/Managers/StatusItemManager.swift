@@ -16,6 +16,10 @@ class StatusItemManager: NSMenu, NSMenuDelegate {
     // 初始化
     override func awakeFromNib() {
         NSLog("Module initialized: StatusItemManager")
+        if AppRuntime.isOnboardingPreview {
+            StatusItemManager.hideStatusItem()
+            return
+        }
         // 设置图标/行为
         item.button?.image = #imageLiteral(resourceName: "AppStatusBarIcon")
         // 设置事件响应
@@ -70,7 +74,7 @@ extension StatusItemManager {
         }
     }
     @objc func accessibilityRequire() {
-        Utils.requireAccessibilityPermissions()
+        WindowManager.shared.showWindow(withIdentifier: WINDOW_IDENTIFIER.introductionWindowController)
     }
     // 按下 Option 按钮的菜单
     @objc func buildOptionMenu() {
