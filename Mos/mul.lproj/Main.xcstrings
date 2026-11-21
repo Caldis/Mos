@@ -29,6 +29,12 @@
             "value" : "⌥ Option"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌥ Option"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -123,6 +129,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "After the update, macOS sometimes fails to authorize correctly.\nRemove Mos from the list first, and then re-add Mos to authorize. (You can also drag the icon above directly)"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "پس از به‌روزرسانی، گاهی macOS نمی‌تواند به درستی مجوز دهد.\nابتدا Mos را از فهرست حذف کنید و سپس Mos را برای اعطای مجوز دوباره اضافه کنید. (همچنین می‌توانید نماد بالا را مستقیماً بکشید)"
           }
         },
         "fr" : {
@@ -221,6 +233,12 @@
             "value" : "Mos"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mos"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -305,6 +323,12 @@
             "value" : "Disabled"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غیرفعال"
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -339,6 +363,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Customize mouse buttons to enhance your experience"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سفارشی‌سازی دکمه‌های ماوس برای بهبود تجربه کاربری"
           }
         },
         "fr" : {
@@ -434,6 +464,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Andrew Mclaren(@mclvren)"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Andrew Mclaren(@mclvren)"
           }
         },
@@ -533,6 +569,12 @@
             "value" : "Just some little job for your mouse."
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فقط یک کار کوچک برای ماوس شما."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -627,6 +669,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Korean"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کره‌ای"
           }
         },
         "fr" : {
@@ -725,6 +773,12 @@
             "value" : "Scrolling"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "پیمایش"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -806,6 +860,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌃ Control"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌃ Control"
           }
         },
@@ -904,6 +964,12 @@
             "value" : "Introducing"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "معرفی"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -997,6 +1063,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌘ Command"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌘ Command"
           }
         },
@@ -1096,6 +1168,12 @@
             "value" : "Application"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برنامه"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1189,6 +1267,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "GitHub"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "GitHub"
           }
         },
@@ -1288,6 +1372,12 @@
             "value" : "Contributors"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مشارکت‌کنندگان"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1382,6 +1472,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Application Name"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نام برنامه"
           }
         },
         "fr" : {
@@ -1480,6 +1576,12 @@
             "value" : "Button"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "دکمه"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1576,6 +1678,12 @@
             "value" : "Status Bar Icon"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نماد نوار وضعیت"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1669,6 +1777,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Feed 🍥 a pet MEOW"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غذا دادن 🍥 به یک حیوان خانگی MEOW"
           }
         },
         "fr" : {
@@ -1767,6 +1881,12 @@
             "value" : "Donate via PayPal"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حمایت مالی از طریق PayPal"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1861,6 +1981,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Current Version"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نسخه فعلی"
           }
         },
         "fr" : {
@@ -1959,6 +2085,12 @@
             "value" : "Main Menu"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "منوی اصلی"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2053,6 +2185,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Sets scrolling acceleration"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تنظیم شتاب پیمایش"
           }
         },
         "fr" : {
@@ -2151,6 +2289,12 @@
             "value" : "Step"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "گام"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2245,6 +2389,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Re-run Mos again to show the hidden Icon"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برای نمایش نماد پنهان‌شده، Mos را دوباره اجرا کنید"
           }
         },
         "fr" : {
@@ -2343,6 +2493,12 @@
             "value" : "Application"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برنامه"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2437,6 +2593,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Duration"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مدت"
           }
         },
         "fr" : {
@@ -2535,6 +2697,12 @@
             "value" : "Toggle Key"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کلید تغییر وضعیت"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2629,6 +2797,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Enable seamless scrolling"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فعال‌سازی پیمایش پیوسته"
           }
         },
         "fr" : {
@@ -2727,6 +2901,12 @@
             "value" : "Buttons"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "دکمه‌ها"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2820,6 +3000,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌘ Command"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌘ Command"
           }
         },
@@ -2919,6 +3105,12 @@
             "value" : "Turkish"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ترکی"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3013,6 +3205,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "You need to re-run Mos to change the settings"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برای تغییر تنظیمات باید Mos را دوباره اجرا کنید"
           }
         },
         "fr" : {
@@ -3111,6 +3309,12 @@
             "value" : "Disabled"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غیرفعال"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3207,6 +3411,12 @@
             "value" : "Preferences"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تنظیمات"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3300,6 +3510,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "How fat is this cat?"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "این گربه چقدر چاق است؟"
           }
         },
         "fr" : {
@@ -3398,6 +3614,12 @@
             "value" : "Manually Select From Finder"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انتخاب دستی از Finder"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3491,6 +3713,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌃ Control"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌃ Control"
           }
         },
@@ -3590,6 +3818,12 @@
             "value" : "Create a custom configuration for specific apps"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ایجاد پیکربندی سفارشی برای برنامه‌های خاص"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3684,6 +3918,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Sets the duration of the scroll animation"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تنظیم مدت پویانمایی پیمایش"
           }
         },
         "fr" : {
@@ -3782,6 +4022,12 @@
             "value" : "Allow to access"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اجازه دسترسی"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3876,6 +4122,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Startup"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "راه‌اندازی"
           }
         },
         "fr" : {
@@ -3974,6 +4226,12 @@
             "value" : "Block Key"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کلید مسدودسازی"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4070,6 +4328,12 @@
             "value" : "No Action"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بدون عمل"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4163,6 +4427,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Horizontal Reverse"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "معکوس افقی"
           }
         },
         "fr" : {
@@ -4261,6 +4531,12 @@
             "value" : "Updates"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "به‌روزرسانی‌ها"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4354,6 +4630,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "1-10"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "1-10"
           }
         },
@@ -4453,6 +4735,12 @@
             "value" : "3.00"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3.00"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4547,6 +4835,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Welcome Window"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "پنجره خوش‌آمدگویی"
           }
         },
         "fr" : {
@@ -4645,6 +4939,12 @@
             "value" : "Assign a button to a specific action"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختصاص یک دکمه به یک عمل خاص"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4739,6 +5039,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Russian"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "روسی"
           }
         },
         "fr" : {
@@ -4837,6 +5143,12 @@
             "value" : "Speed"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سرعت"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4931,6 +5243,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Hotkey"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کلید میانبر"
           }
         },
         "fr" : {
@@ -5029,6 +5347,12 @@
             "value" : "Add Application"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "افزودن برنامه"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5122,6 +5446,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Vertical Smooth"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نرم عمودی"
           }
         },
         "fr" : {
@@ -5220,6 +5550,12 @@
             "value" : "Contributors List"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فهرست مشارکت‌کنندگان"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5314,6 +5650,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "German"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آلمانی"
           }
         },
         "fr" : {
@@ -5412,6 +5754,12 @@
             "value" : "Scroll Reverse"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "معکوس کردن پیمایش"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5506,6 +5854,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Hide Status Bar Icon"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "پنهان کردن نماد نوار وضعیت"
           }
         },
         "fr" : {
@@ -5604,6 +5958,12 @@
             "value" : "Select an action"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انتخاب یک عمل"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5700,6 +6060,12 @@
             "value" : "Dash Key"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کلید شتاب"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5793,6 +6159,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌃ Control"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌃ Control"
           }
         },
@@ -5892,6 +6264,12 @@
             "value" : "Wang Yudong(@wyudong)"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wang Yudong(@wyudong)"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5988,6 +6366,12 @@
             "value" : "Temporarily block smooth scrolling"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مسدود کردن موقت پیمایش نرم"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6081,6 +6465,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : " jrthsr700tmax(@jrthsr700tmax), Crizant(@crizant)"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : " jrthsr700tmax(@jrthsr700tmax), Crizant(@crizant)"
           }
         },
@@ -6180,6 +6570,12 @@
             "value" : "General"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عمومی"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6274,6 +6670,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Scrolling"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "پیمایش"
           }
         },
         "fr" : {
@@ -6372,6 +6774,12 @@
             "value" : "Sets the minimum scroll distance"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تنظیم حداقل مسافت پیمایش"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6468,6 +6876,12 @@
             "value" : "Customize individual settings for each app"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سفارشی‌سازی تنظیمات اختصاصی برای هر برنامه"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6552,6 +6966,12 @@
             "value" : "Scrolling"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "پیمایش"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6604,6 +7024,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Traditional Chinese"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "چینی سنتی"
           }
         },
         "fr" : {
@@ -6702,6 +7128,12 @@
             "value" : "Change vertical scrolling to horizontal scrolling"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تغییر پیمایش عمودی به پیمایش افقی"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6797,6 +7229,12 @@
             "value" : "Allowlist Mode"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حالت فهرست مجاز"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6881,6 +7319,12 @@
             "value" : "Disabled"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غیرفعال"
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6915,6 +7359,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Record Button"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ثبت دکمه"
           }
         },
         "fr" : {
@@ -7013,6 +7463,12 @@
             "value" : "Translation"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ترجمه"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7106,6 +7562,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "*"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "*"
           }
         },
@@ -7205,6 +7667,12 @@
             "value" : "© 2017-2026 Caldis. All rights reserved."
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "© 2017-2026 Caldis. All rights reserved."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7274,6 +7742,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌥ Option"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌥ Option"
           }
         },
@@ -7373,6 +7847,12 @@
             "value" : "Seçkin Kükrer(@LeaveNhA)"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçkin Kükrer(@LeaveNhA)"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7467,6 +7947,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Smooth Scrolling"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "پیمایش نرم"
           }
         },
         "fr" : {
@@ -7565,6 +8051,12 @@
             "value" : "Selim(@lima0)"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selim(@lima0)"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7658,6 +8150,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "Horizontal Smooth"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نرم افقی"
           }
         },
         "fr" : {
@@ -7756,6 +8254,12 @@
             "value" : "Simulate Trackpad (Beta)"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شبیه‌سازی ترک‌پد (Beta)"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7849,6 +8353,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⇧ Shift"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⇧ Shift"
           }
         },
@@ -7947,6 +8457,12 @@
             "value" : "Vertical Reverse"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "معکوس عمودی"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8025,6 +8541,12 @@
             "value" : "Export Log"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برون‌بری گزارش"
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8058,6 +8580,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "1-5"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "1-5"
           }
         },
@@ -8157,6 +8685,12 @@
             "value" : "3.90"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3.90"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8241,6 +8775,12 @@
             "value" : "Including beta version"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شامل نسخه بتا"
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8275,6 +8815,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Running Applications"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برنامه‌های در حال اجرا"
           }
         },
         "fr" : {
@@ -8373,6 +8919,12 @@
             "value" : "About"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "درباره"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8466,6 +9018,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Temporarily disable smooth scrolling to improve scrolling accuracy"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غیرفعال کردن موقت پیمایش نرم برای بهبود دقت پیمایش"
           }
         },
         "fr" : {
@@ -8564,6 +9122,12 @@
             "value" : "Action"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عمل"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8657,6 +9221,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⇧ Shift"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⇧ Shift"
           }
         },
@@ -8756,6 +9326,12 @@
             "value" : "⇧ Shift"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⇧ Shift"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8849,6 +9425,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Joshua Park(@godly-devotion), OrcaXS(@OrcaXS) ..."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Joshua Park(@godly-devotion), OrcaXS(@OrcaXS) ..."
           }
         },
@@ -8948,6 +9530,12 @@
             "value" : "Other"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سایر"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9042,6 +9630,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Not effective?"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تأثیری ندارد؟"
           }
         },
         "fr" : {
@@ -9140,6 +9734,12 @@
             "value" : "Reset to defaults"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بازنشانی به پیش‌فرض‌ها"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9234,6 +9834,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Check Now"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بررسی اکنون"
           }
         },
         "fr" : {
@@ -9332,6 +9938,12 @@
             "value" : "No application is Special"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هیچ برنامه‌ای استثنا نیست"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9425,6 +10037,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Woosuk Park(@readingsnail)"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Woosuk Park(@readingsnail)"
           }
         },
@@ -9524,6 +10142,12 @@
             "value" : "Rendering this chart will affect scrolling performance. Close the window when not in use."
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رندر این نمودار بر عملکرد پیمایش تأثیر می‌گذارد. هنگامی که از آن استفاده نمی‌کنید پنجره را ببندید."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9618,6 +10242,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "No buttons are set up yet"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هنوز دکمه‌ای تنظیم نشده است"
           }
         },
         "fr" : {
@@ -9716,6 +10346,12 @@
             "value" : "Running Applications"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برنامه‌های در حال اجرا"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9800,6 +10436,12 @@
             "value" : "Buy me a coffee"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "یک قهوه مهمانم کنید"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9863,6 +10505,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "⌥ Option"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "⌥ Option"
           }
         },
@@ -9961,6 +10609,12 @@
             "value" : "The allowlist mode will make Mos only apply to apps within the application list."
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حالت فهرست مجاز باعث می‌شود Mos فقط برای برنامه‌های موجود در فهرست برنامه‌ها اعمال شود."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10054,6 +10708,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "0.1-100"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "0.1-100"
           }
         },
@@ -10153,6 +10813,12 @@
             "value" : "35.00"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "35.00"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10247,6 +10913,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Check for updates:"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بررسی برای به‌روزرسانی‌ها:"
           }
         },
         "fr" : {
@@ -10345,6 +11017,12 @@
             "value" : "Disabled"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غیرفعال"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10439,6 +11117,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Disabled"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غیرفعال"
           }
         },
         "fr" : {
@@ -10537,6 +11221,12 @@
             "value" : "Invert wheel direction"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "معکوس کردن جهت چرخ"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10630,6 +11320,12 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "May affect the scrolling behavior."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ممکن است بر رفتار پیمایش تأثیر بگذارد."
           }
         },
         "fr" : {
@@ -10728,6 +11424,12 @@
             "value" : "Inherit Global Settings"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ارث‌بری از تنظیمات سراسری"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10822,6 +11524,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "English"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انگلیسی"
           }
         },
         "fr" : {
@@ -10920,6 +11628,12 @@
             "value" : " Application"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " برنامه"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11014,6 +11728,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Application Name"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نام برنامه"
           }
         },
         "fr" : {
@@ -11112,6 +11832,12 @@
             "value" : "Getting trouble ?"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "به مشکل برخورده‌اید؟"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11208,6 +11934,12 @@
             "value" : "Waiting for you"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "در انتظار شما"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11277,6 +12009,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Launch on Login"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "راه‌اندازی هنگام ورود"
           }
         },
         "fr" : {
@@ -11375,6 +12113,12 @@
             "value" : "Home Page"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "صفحه اصلی"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11468,6 +12212,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Your mouse is about to get a smoother scrolling experience.\nPick up your mouse, there are a few things you need to check."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ماوس شما در آستانه تجربه پیمایش نرم‌تری است.\nماوس خود را بردارید، چند مورد وجود دارد که باید بررسی کنید."
           }
         },
         "fr" : {
@@ -11566,6 +12316,12 @@
             "value" : "Mos"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mos"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11650,6 +12406,12 @@
             "value" : "Check on app start"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بررسی هنگام شروع برنامه"
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11684,6 +12446,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Increase scrolling speed on long pages"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "افزایش سرعت پیمایش در صفحه‌های طولانی"
           }
         },
         "fr" : {
@@ -11782,6 +12550,12 @@
             "value" : "Contributors"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مشارکت‌کنندگان"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11876,6 +12650,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Simplified Chinese"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "چینی ساده‌شده"
           }
         },
         "fr" : {
@@ -11974,6 +12754,12 @@
             "value" : "⌘ Command"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⌘ Command"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12056,6 +12842,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Disabled"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غیرفعال"
           }
         },
         "th" : {
