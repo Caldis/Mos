@@ -22,6 +22,104 @@ final class ScrollPosterStateTests: XCTestCase {
         super.tearDown()
     }
 
+    // MARK: - resolveAxisInput
+
+    func testResolveAxisInput_sameDirection_accumulatesBuffer() {
+        var current = 10.0
+        var buffer = 50.0
+        var delta = 12.0
+        var reverseCandidate = ScrollReverseCandidateState()
+
+        let decision = sut.resolveAxisInput(
+            input: 8.0,
+            speed: 2.0,
+            amplification: 1.0,
+            deadZone: 1.0,
+            current: &current,
+            buffer: &buffer,
+            delta: &delta,
+            reverseCandidate: &reverseCandidate
+        )
+
+        XCTAssertEqual(decision, .acceptedContinuation)
+        XCTAssertEqual(current, 10.0, accuracy: 1e-10)
+        XCTAssertEqual(buffer, 66.0, accuracy: 1e-10)
+        XCTAssertEqual(delta, 8.0, accuracy: 1e-10)
+        XCTAssertEqual(reverseCandidate, ScrollReverseCandidateState())
+    }
+
+    func testResolveAxisInput_firstOppositePulseWhileActive_isIgnored() {
+        var current = 40.0
+        var buffer = 100.0
+        var delta = 12.0
+        var reverseCandidate = ScrollReverseCandidateState()
+
+        let decision = sut.resolveAxisInput(
+            input: -8.0,
+            speed: 2.0,
+            amplification: 1.0,
+            deadZone: 1.0,
+            current: &current,
+            buffer: &buffer,
+            delta: &delta,
+            reverseCandidate: &reverseCandidate
+        )
+
+        XCTAssertEqual(decision, .ignoredOppositePulse)
+        XCTAssertEqual(current, 40.0, accuracy: 1e-10)
+        XCTAssertEqual(buffer, 100.0, accuracy: 1e-10)
+        XCTAssertEqual(delta, 12.0, accuracy: 1e-10)
+        XCTAssertEqual(reverseCandidate.sign, -1.0, accuracy: 1e-10)
+        XCTAssertEqual(reverseCandidate.count, 1)
+    }
+
+    func testResolveAxisInput_secondOppositePulseWhileActive_acceptsReversal() {
+        var current = 40.0
+        var buffer = 100.0
+        var delta = 12.0
+        var reverseCandidate = ScrollReverseCandidateState(sign: -1.0, count: 1)
+
+        let decision = sut.resolveAxisInput(
+            input: -8.0,
+            speed: 2.0,
+            amplification: 1.0,
+            deadZone: 1.0,
+            current: &current,
+            buffer: &buffer,
+            delta: &delta,
+            reverseCandidate: &reverseCandidate
+        )
+
+        XCTAssertEqual(decision, .acceptedReversal)
+        XCTAssertEqual(current, 0.0, accuracy: 1e-10)
+        XCTAssertEqual(buffer, -16.0, accuracy: 1e-10)
+        XCTAssertEqual(delta, -8.0, accuracy: 1e-10)
+        XCTAssertEqual(reverseCandidate, ScrollReverseCandidateState())
+    }
+
+    func testResolveAxisInput_oppositePulseWithoutResidual_acceptsImmediately() {
+        var current = 0.0
+        var buffer = 0.0
+        var delta = 12.0
+        var reverseCandidate = ScrollReverseCandidateState()
+
+        let decision = sut.resolveAxisInput(
+            input: -8.0,
+            speed: 2.0,
+            amplification: 1.0,
+            deadZone: 1.0,
+            current: &current,
+            buffer: &buffer,
+            delta: &delta,
+            reverseCandidate: &reverseCandidate
+        )
+
+        XCTAssertEqual(decision, .acceptedReversal)
+        XCTAssertEqual(current, 0.0, accuracy: 1e-10)
+        XCTAssertEqual(buffer, -16.0, accuracy: 1e-10)
+        XCTAssertEqual(delta, -8.0, accuracy: 1e-10)
+    }
+
     // MARK: - shift: shifting = false (默认)
 
     func testShift_whenNotShifting_passThrough() {
