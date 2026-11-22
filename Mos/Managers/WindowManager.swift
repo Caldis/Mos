@@ -24,11 +24,18 @@ class WindowManager {
  **/
 extension WindowManager {
     // 显示对应 Identifier 的窗口
-    func showWindow(withIdentifier identifier: String, withTitle title: String? = nil) {
+    func showWindow(withIdentifier requestedIdentifier: String, withTitle title: String? = nil) {
+        let identifier = requestedIdentifier == WINDOW_IDENTIFIER.welcomeWindowController
+            ? WINDOW_IDENTIFIER.introductionWindowController : requestedIdentifier
         // 检查是否在引用列表中
         guard let windowController = refs[identifier] else {
             // 如果不存在, 则从 Storyboard 获取一个实例并保存到引用列表中
-            let windowController = Utils.instantiateControllerFromStoryboard(withIdentifier: identifier) as NSWindowController
+            let windowController: NSWindowController
+            if identifier == WINDOW_IDENTIFIER.welcomeWindowController || identifier == WINDOW_IDENTIFIER.introductionWindowController {
+                windowController = WelcomeWindowController(identifier: identifier)
+            } else {
+                windowController = Utils.instantiateControllerFromStoryboard(withIdentifier: identifier)
+            }
             if let windowTitle = title {
                 windowController.window?.title = windowTitle
             }
@@ -37,6 +44,8 @@ extension WindowManager {
             showWindow(withIdentifier: identifier, withTitle: title)
             return
         }
+        // Activation policy must be regular before ordering a window in Stage Manager.
+        Utils.showDockIcon()
         // 显示
         windowController.showWindow(self)
         // 前置并激活（已打开窗口也要置顶）
@@ -48,8 +57,6 @@ extension WindowManager {
             window.orderFrontRegardless()
         }
         NSApp.activate(ignoringOtherApps: true)
-        // 显示 Dock 图标
-        Utils.showDockIcon()
     }
     // 关闭对应 Identifier 的窗口
     func hideWindow(withIdentifier identifier: String, destroy: Bool = false) {

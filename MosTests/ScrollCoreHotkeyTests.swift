@@ -39,6 +39,23 @@ final class ScrollCoreHotkeyTests: XCTestCase {
         super.tearDown()
     }
 
+    func testDisableClearsHeldStateEvenWhenCoreIsAlreadyInactive() {
+        let core = ScrollCore()
+        core.dashKeyHeld = true
+        core.toggleKeyHeld = true
+        core.blockKeyHeld = true
+        core.handleMosScrollAction(role: .dash, isDown: true)
+        core.handleMosScrollAction(role: .toggle, isDown: true)
+        core.handleMosScrollAction(role: .block, isDown: true)
+        core.disable()
+        XCTAssertFalse(core.dashKeyHeld)
+        XCTAssertFalse(core.toggleKeyHeld)
+        XCTAssertFalse(core.blockKeyHeld)
+        XCTAssertFalse(core.dashScroll)
+        XCTAssertFalse(core.toggleScroll)
+        XCTAssertFalse(core.blockSmooth)
+    }
+
     // MARK: - key-up: 无已激活状态时
 
     func testKeyUp_withNoHeldCodes_returnsFalse() {
