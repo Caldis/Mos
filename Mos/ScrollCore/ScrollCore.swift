@@ -67,6 +67,10 @@ class ScrollCore: ScrollActionPort {
 #endif
             return Unmanaged.passUnretained(event)
         }
+        // Preserve excluded sources before changing fields or Mos Scroll action state.
+        if ScrollSourceFilter.shared.shouldPassthrough(event) {
+            return Unmanaged.passUnretained(event)
+        }
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
         let hasVerticalDelta = scrollEvent.Y.valid && scrollEvent.Y.usableValue != 0.0
