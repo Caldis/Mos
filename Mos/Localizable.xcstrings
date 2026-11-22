@@ -327,7 +327,7 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "erledigt"
+            "value": "Autorisiert"
           }
         },
         "el": {
@@ -363,7 +363,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Готово"
+            "value": "Разрешено"
           }
         },
         "th": {
@@ -381,7 +381,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Готово"
+            "value": "Дозволено"
           }
         },
         "zh-Hans": {
