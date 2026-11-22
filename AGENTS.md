@@ -47,6 +47,8 @@ scripts/qa/lint-logi-boundary.sh
 
 真实设备测试前必须确认 Logi 设备已连接。`scripts/qa/lint-logi-boundary.sh` 用于守住 `Mos/Logi` 和 `Mos/Integration` 的边界。
 
+- 复验侧键拦截、绑定配对或浏览器误导航时，使用 `python3 scripts/qa/mouse-input-qa.py --help`。从本机运行注入探针，按 [输入事件端到端复验](.agents/docs/testing.md#输入事件端到端复验) 区分 Quartz、虚拟 HID 和实体设备证据。
+
 ## 质量门槛
 
 改动完成前，根据风险选择验证，不要只靠静态阅读宣称通过。最低要求：

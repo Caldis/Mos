@@ -10,6 +10,7 @@ final class InputProcessorTests: XCTestCase {
         MouseInteractionSessionController.shared.setTestingMotionTapHooks()
         MouseInteractionSessionController.shared.clearAllSessions()
         ShortcutExecutor.shared.setTestingMouseEventObserver()
+        ShortcutExecutor.shared.testingKeyboardEventObserver = { _ in }
         InputProcessor.shared.clearActiveBindings()
         ScrollCore.shared.dashScroll = false
         ScrollCore.shared.dashAmplification = 1.0
@@ -34,6 +35,7 @@ final class InputProcessorTests: XCTestCase {
         MouseInteractionSessionController.shared.clearAllSessions()
         MouseInteractionSessionController.shared.clearTestingMotionTapHooks()
         ShortcutExecutor.shared.clearTestingMouseEventObserver()
+        ShortcutExecutor.shared.testingKeyboardEventObserver = nil
         Options.shared.buttons.binding = []
         ButtonUtils.shared.invalidateCache()
         super.tearDown()
@@ -176,6 +178,134 @@ final class InputProcessorTests: XCTestCase {
         let upEvent = InputEvent(type: .mouse, code: 3, modifiers: .init(rawValue: 0),
                                  phase: .up, source: .hidPP, device: nil)
         XCTAssertEqual(InputProcessor.shared.process(upEvent), .passthrough)
+    }
+
+    func testButtonCore_consumesNativeSideClickAndSendsBothSpacesShortcutEvents() throws {
+        Options.shared.buttons.binding = [
+            sideButtonBinding(code: 3, modifiers: .maskCommand, shortcut: "moveSpaceRight")
+        ]
+        ButtonUtils.shared.invalidateCache()
+        var generated: [CGEvent] = []
+        ShortcutExecutor.shared.testingKeyboardEventObserver = { generated.append($0) }
+
+        let down = try nativeSideButton(.down, code: 3, number: 41, modifiers: .maskCommand)
+        XCTAssertFalse(passesThroughButtonTap(down))
+        let resolved = SystemShortcut.resolveSystemShortcut("moveSpaceRight")
+        let shortcut = SystemShortcut.moveSpaceRight
+        let keyCode = resolved?.code ?? shortcut.code
+        let flags = resolved?.modifiers ?? UInt64(shortcut.modifiers.rawValue)
+        XCTAssertEqual(generated.map(\.type), [.keyDown, .keyUp])
+        XCTAssertEqual(generated.map(\.keyCode), [keyCode, keyCode])
+        XCTAssertEqual(generated.first?.flags.rawValue, flags)
+        for event in generated {
+            XCTAssertTrue(passesThroughButtonTap(event))
+        }
+
+        // Releasing the modifier or changing the active binding must not rematch the click.
+        Options.shared.buttons.binding = []
+        ButtonUtils.shared.invalidateCache()
+        let up = try nativeSideButton(.up, code: 3, number: 41)
+        XCTAssertFalse(passesThroughButtonTap(up))
+        XCTAssertTrue(passesThroughButtonTap(up))
+        XCTAssertEqual(generated.count, 2)
+    }
+
+    func testButtonCore_preservesOverlappingCustomAndAppSwitcherCombinations() throws {
+        let customFlags = CGEventFlags.maskAlternate.rawValue
+        Options.shared.buttons.binding = [
+            sideButtonBinding(code: 3, shortcut: "switchAppReverse"),
+            sideButtonBinding(code: 4, shortcut: "custom::12:\(customFlags)")
+        ]
+        ButtonUtils.shared.invalidateCache()
+        var generated: [CGEvent] = []
+        ShortcutExecutor.shared.testingKeyboardEventObserver = { generated.append($0) }
+
+        XCTAssertFalse(passesThroughButtonTap(try nativeSideButton(.down, code: 4, number: 50)))
+        XCTAssertFalse(passesThroughButtonTap(try nativeSideButton(.down, code: 3, number: 51)))
+        XCTAssertFalse(passesThroughButtonTap(try nativeSideButton(.up, code: 3, number: 51)))
+        XCTAssertFalse(passesThroughButtonTap(try nativeSideButton(.up, code: 4, number: 50)))
+
+        let appSwitcher = SystemShortcut.switchAppReverse
+        let appSwitcherFlags = UInt64(appSwitcher.modifiers.rawValue)
+        XCTAssertEqual(generated.map(\.type), [.keyDown, .keyDown, .keyUp, .keyUp])
+        XCTAssertEqual(generated.map(\.keyCode), [12, appSwitcher.code, appSwitcher.code, 12])
+        XCTAssertEqual(generated.map { $0.flags.rawValue },
+                       [customFlags, appSwitcherFlags, appSwitcherFlags, customFlags])
+    }
+
+    func testButtonCore_preservesReleasesFromUnmatchedClicksAndOtherSources() throws {
+        Options.shared.buttons.binding = [
+            sideButtonBinding(code: 3, modifiers: .maskCommand, shortcut: "moveSpaceLeft")
+        ]
+        ButtonUtils.shared.invalidateCache()
+
+        let boundDown = try nativeSideButton(.down, code: 3, number: 61, modifiers: .maskCommand)
+        XCTAssertFalse(passesThroughButtonTap(boundDown))
+        XCTAssertTrue(passesThroughButtonTap(try nativeSideButton(.down, code: 3, number: 62)))
+        XCTAssertTrue(passesThroughButtonTap(try nativeSideButton(.up, code: 3, number: 62)))
+        XCTAssertTrue(passesThroughButtonTap(try nativeSideButton(.up, code: 4, number: 61)))
+
+        let hidRelease = InputEvent(type: .mouse, code: 3, modifiers: [], phase: .up,
+                                    source: .hidPP, device: nil)
+        XCTAssertEqual(InputProcessor.shared.process(hidRelease), .passthrough)
+        let syntheticUp = try nativeSideButton(.up, code: 3, number: 61)
+        syntheticUp.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
+        XCTAssertTrue(passesThroughButtonTap(syntheticUp))
+        XCTAssertFalse(passesThroughButtonTap(try nativeSideButton(.up, code: 3, number: 61)))
+    }
+
+    func testButtonCore_clearsPendingTriggerClickWhenTapIsDisabled() throws {
+        Options.shared.buttons.binding = [sideButtonBinding(code: 3, shortcut: "moveSpaceLeft")]
+        ButtonUtils.shared.invalidateCache()
+
+        let down = try nativeSideButton(.down, code: 3, number: 71)
+        XCTAssertFalse(passesThroughButtonTap(down))
+        let proxy = CGEventTapProxy(bitPattern: 1)!
+        XCTAssertNotNil(ButtonCore.shared.buttonEventCallBack(proxy, .tapDisabledByTimeout, down, nil))
+        XCTAssertTrue(passesThroughButtonTap(try nativeSideButton(.up, code: 3, number: 71)))
+
+        XCTAssertFalse(passesThroughButtonTap(try nativeSideButton(.down, code: 3, number: 72)))
+        XCTAssertFalse(passesThroughButtonTap(try nativeSideButton(.up, code: 3, number: 72)))
+    }
+
+    func testButtonCore_doesNotConsumeUnnumberedClickAfterAnUnmatchedDown() throws {
+        Options.shared.buttons.binding = [
+            sideButtonBinding(code: 3, modifiers: .maskCommand, shortcut: "moveSpaceLeft")
+        ]
+        ButtonUtils.shared.invalidateCache()
+
+        let down = try nativeSideButton(.down, code: 3, number: 0, modifiers: .maskCommand)
+        let up = try nativeSideButton(.up, code: 3, number: 0)
+        XCTAssertFalse(passesThroughButtonTap(down))
+        XCTAssertFalse(passesThroughButtonTap(up))
+
+        // Simulate a third-party producer that omits event numbers and drops an up.
+        XCTAssertFalse(passesThroughButtonTap(down))
+        XCTAssertTrue(passesThroughButtonTap(try nativeSideButton(.down, code: 3, number: 0)))
+        XCTAssertTrue(passesThroughButtonTap(up))
+    }
+
+    private func sideButtonBinding(code: UInt16, modifiers: CGEventFlags = [],
+                                   shortcut: String) -> ButtonBinding {
+        let trigger = RecordedEvent(type: .mouse, code: code, modifiers: UInt(modifiers.rawValue),
+                                    displayComponents: [], deviceFilter: nil)
+        return ButtonBinding(triggerEvent: trigger, systemShortcutName: shortcut, isEnabled: true)
+    }
+
+    private func nativeSideButton(_ phase: InputPhase, code: UInt16, number: Int64,
+                                  modifiers: CGEventFlags = []) throws -> CGEvent {
+        let event = try XCTUnwrap(CGEvent(mouseEventSource: nil,
+                                         mouseType: phase == .down ? .otherMouseDown : .otherMouseUp,
+                                         mouseCursorPosition: .zero, mouseButton: .center))
+        event.setIntegerValueField(.mouseEventButtonNumber, value: Int64(code))
+        event.setIntegerValueField(.mouseEventNumber, value: number)
+        event.flags = modifiers
+        return event
+    }
+
+    private func passesThroughButtonTap(_ event: CGEvent) -> Bool {
+        let proxy = CGEventTapProxy(bitPattern: 1)!
+        return ButtonCore.shared.buttonEventCallBack(proxy, event.type, event, nil) != nil
     }
 
     func testProcess_upEvent_consumedForStatefulMouseShortcut() {
