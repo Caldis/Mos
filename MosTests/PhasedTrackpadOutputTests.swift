@@ -225,6 +225,35 @@ final class PhasedTrackpadOutputTests: XCTestCase {
         XCTAssertNil(context.preparePostingSnapshot())
     }
 
+    func testAdapterTeardownWaitsForQueuedEnd() throws {
+        let context = ScrollDispatchContext()
+        let sink = RecordingSink()
+        let event = try XCTUnwrap(CGEvent(scrollWheelEvent2Source: nil, units: .line, wheelCount: 1, wheel1: 1, wheel2: 0, wheel3: 0))
+        XCTAssertTrue(context.capture(event: event, route: .adapter(sink), targetPID: 1))
+        let ending = expectation(description: "end started")
+        let release = expectation(description: "adapter teardown")
+        let allowEndToFinish = DispatchSemaphore(value: 0)
+        var released = false
+        sink.onEnd = {
+            ending.fulfill()
+            XCTAssertEqual(allowEndToFinish.wait(timeout: .now() + 2), .success)
+        }
+        context.enqueueAdapterEnd()
+        wait(for: [ending], timeout: 1)
+
+        context.afterPendingAdapterOutput {
+            XCTAssertTrue(Thread.isMainThread)
+            XCTAssertEqual(sink.calls, ["end"])
+            released = true
+            release.fulfill()
+        }
+        DispatchQueue.main.async {
+            XCTAssertFalse(released)
+            allowEndToFinish.signal()
+        }
+        wait(for: [release], timeout: 1)
+    }
+
     // MARK: - 系统版本注册
 
     func testRegistrationRespectsMinimumSystemVersion() {

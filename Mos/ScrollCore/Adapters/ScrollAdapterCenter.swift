@@ -90,9 +90,17 @@ final class ScrollAdapterCenter {
         isStarted = false
         observers.forEach { NSWorkspace.shared.notificationCenter.removeObserver($0) }
         observers = []
-        activeAdapters.forEach { $0.deactivate() }
-        activeAdapters = []
+        let stoppingAdapters = activeAdapters
+        activeAdapters.removeAll()
         updateArming()
+        guard !stoppingAdapters.isEmpty else { return }
+        // A restart can activate fresh adapters before the previous gesture finishes posting.
+        for adapter in stoppingAdapters {
+            adapters.removeValue(forKey: adapter.descriptor.identifier)
+        }
+        ScrollDispatchContext.shared.afterPendingAdapterOutput {
+            stoppingAdapters.forEach { $0.deactivate() }
+        }
     }
 
     private func registration(for app: NSRunningApplication) -> ScrollAdapterRegistration? {

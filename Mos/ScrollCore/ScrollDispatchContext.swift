@@ -168,6 +168,12 @@ final class ScrollDispatchContext {
         }
     }
 
+    func afterPendingAdapterOutput(_ completion: @escaping () -> Void) {
+        postQueue.async {
+            DispatchQueue.main.async(execute: completion)
+        }
+    }
+
     /// 代次与 TTL 校验, 进程路由与适配器路由共用
     private func isDeliverable(_ snapshot: PostingSnapshot) -> Bool {
         os_unfair_lock_lock(&lock)
