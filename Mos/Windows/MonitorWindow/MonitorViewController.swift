@@ -12,7 +12,6 @@ final class MonitorViewController: NSViewController {
 
     private var channel: MonitorChannel = .scroll
     private var selection: MonitorEvent?
-    private var pinnedEnd: CFTimeInterval?
     private var content: NSStackView?
     private var topConstraint: NSLayoutConstraint?
 
@@ -132,7 +131,6 @@ final class MonitorViewController: NSViewController {
         selection = event
         let expanded = !inspectorItem.isCollapsed
         if let event = event {
-            pinnedEnd = min(capture.displayTime, event.time + timeline.duration * 0.18)
             inspector.display(event)
             if !expanded {
                 inspectorItem.isCollapsed = false
@@ -142,7 +140,6 @@ final class MonitorViewController: NSViewController {
                 }
             }
         } else {
-            pinnedEnd = nil
             inspectorItem.isCollapsed = true
             events.update(channel: channel, selectedID: nil)
         }
@@ -157,7 +154,7 @@ final class MonitorViewController: NSViewController {
             monitorToolbar.update(capture.state, canClear: !capture.isEmpty, canExport: capture.count(channel) > 0)
         }
         if update.contains(.state) { updateNotice() }
-        if pinnedEnd == nil || update.contains(.state) { updatePlot() }
+        updatePlot()
     }
 
     private func updateNotice() {
@@ -178,12 +175,13 @@ final class MonitorViewController: NSViewController {
 
     private func updatePlot() {
         guard channel == .scroll else { return }
-        let duration = timeline.duration
-        let end = max(capture.origin + duration, pinnedEnd ?? capture.displayTime, selection?.time ?? capture.origin)
-        let range = (end - duration)...end
+        let range = MonitorCurveView.visibleRange(
+            endingAt: capture.displayTime, duration: timeline.duration,
+            selection: selection?.time, recording: capture.state == .recording
+        )
         timeline.curve.display(
-            capture.timeline(in: range), range: range, origin: capture.origin,
-            axis: timeline.axis, selection: selection?.time,
+            capture.timeline(in: range), range: range, axis: timeline.axis,
+            selection: selection?.time,
             waitingForInput: capture.state == .recording && capture.count(.scroll) == 0
         )
     }

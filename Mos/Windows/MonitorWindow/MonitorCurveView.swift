@@ -4,22 +4,31 @@ struct MonitorTimelineSample {
     let time: CFTimeInterval
     let stage: ScrollMonitorStage
     let delta: MonitorDelta
+    let phase: Int64
+    let hasMomentum: Bool
 
     init?(event: MonitorEvent) {
         guard case .scroll(let sample) = event.payload else { return nil }
         time = event.time
         stage = sample.stage
         delta = sample.delta
+        phase = sample.fields?.phase ?? 0
+        hasMomentum = (sample.fields?.momentum ?? 0) != 0
     }
 }
 
 final class MonitorCurveView: NSView {
     private var samples: [MonitorTimelineSample] = []
     private var range: ClosedRange<CFTimeInterval> = 0...5
-    private var origin: CFTimeInterval = 0
     private var axis: MonitorAxis = .vertical
     private var selection: CFTimeInterval?
     private var waitingForInput = false
+    private let numberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }()
 
     static let frameColor = NSColor.systemBlue
     static let postColor = NSColor.systemOrange
@@ -29,154 +38,171 @@ final class MonitorCurveView: NSView {
     func display(
         _ samples: [MonitorTimelineSample],
         range: ClosedRange<CFTimeInterval>,
-        origin: CFTimeInterval,
         axis: MonitorAxis,
         selection: CFTimeInterval?,
         waitingForInput: Bool
     ) {
+        let durationChanged = range.upperBound - range.lowerBound != self.range.upperBound - self.range.lowerBound
+        let needsRedraw = !samples.isEmpty || !self.samples.isEmpty || durationChanged
+            || axis != self.axis || selection != self.selection || waitingForInput != self.waitingForInput
+
         self.samples = samples
         self.range = range
-        self.origin = origin
         self.axis = axis
         self.selection = selection
         self.waitingForInput = waitingForInput
-        needsDisplay = true
+        if needsRedraw { needsDisplay = true }
+    }
+
+    static func visibleRange(
+        endingAt now: CFTimeInterval,
+        duration: CFTimeInterval,
+        selection: CFTimeInterval?,
+        recording: Bool
+    ) -> ClosedRange<CFTimeInterval> {
+        // Inspecting a row can reposition a paused graph. A live graph always
+        // follows the recording clock while the selected raw values stay put.
+        if !recording, let selection = selection, selection < now - duration {
+            let end = selection + duration / 5
+            return (end - duration)...end
+        }
+        return (now - duration)...now
     }
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        guard bounds.width >= 220, bounds.height >= 100 else { return }
+        guard bounds.width >= 320, bounds.height >= 100 else { return }
 
-        let inputTitle = NSLocalizedString("monitor-captured", comment: "Captured input in the timeline")
-        let outputTitle = NSLocalizedString("monitor-output", comment: "Output overlay in the timeline")
-        let laneFont = NSFont.systemFont(ofSize: 11, weight: .semibold)
-        let inset = max(106, [inputTitle, outputTitle].map {
-            ($0 as NSString).size(withAttributes: [.font: laneFont]).width
-        }.max() ?? 0) + 16
-        let width = bounds.width - inset - 18
-        guard width > 1 else { return }
+        let panel = NSBezierPath(roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5), xRadius: 7, yRadius: 7)
+        NSColor.textBackgroundColor.setFill()
+        panel.fill()
+        stroke(panel, color: NSColor.labelColor.withAlphaComponent(0.15), width: 1)
 
-        let height = (bounds.height - 34) / 2
-        let input = NSRect(x: inset, y: 8, width: width, height: height)
-        let output = input.offsetBy(dx: 0, dy: height)
-        let inputPeak = peak(forInput: true, floor: 24)
-        let outputPeak = peak(forInput: false, floor: 8)
+        let laneTitles = [
+            NSLocalizedString("monitor-captured", comment: "Captured input in the timeline"),
+            NSLocalizedString("monitor-output", comment: "Output overlay in the timeline"),
+        ]
+        let plotStart = max(154, (laneTitles.map { textWidth($0) }.max() ?? 0) + 23)
+        let width = bounds.width - plotStart - 14
+        guard width > 0 else { return }
 
-        drawGrid(input: input, output: output)
-        drawLaneLabel(inputTitle, peak: inputPeak, at: input.midY, font: laneFont)
-        drawLaneLabel(outputTitle, peak: outputPeak, at: output.midY, font: laneFont)
+        let laneHeight = (bounds.height - 30) / 2
+        let input = NSRect(x: plotStart, y: 8, width: width, height: laneHeight)
+        let output = input.offsetBy(dx: 0, dy: laneHeight)
+        drawLane(laneTitles[0], input: true, in: input)
+        drawLane(laneTitles[1], input: false, in: output)
         drawSelection(in: input.union(output))
-        drawSamples(input: input, inputPeak: inputPeak, output: output, outputPeak: outputPeak)
+        drawTimeAxis(in: NSRect(x: plotStart, y: output.maxY + 3, width: width, height: 16))
+
         if waitingForInput {
-            let text = NSLocalizedString("monitor-waiting-scroll", comment: "No scroll input received yet")
-            let font = NSFont.systemFont(ofSize: 12)
-            let width = (text as NSString).size(withAttributes: [.font: font]).width
-            draw(text, at: NSPoint(x: input.midX - width / 2, y: input.maxY - 8), font: font)
+            let message = NSLocalizedString("monitor-waiting-scroll", comment: "No scroll input received yet")
+            drawText(message, at: NSPoint(x: input.midX - textWidth(message) / 2, y: input.maxY - 8),
+                     color: .secondaryLabelColor)
         }
     }
 
-    private func peak(forInput input: Bool, floor: Double) -> Double {
-        samples.reduce(floor) { peak, sample in
+    private func drawLane(_ title: String, input: Bool, in plot: NSRect) {
+        let points = samples.filter { ($0.stage == .captured) == input && $0.delta[axis].isFinite && range.contains($0.time) }
+        let peak = points.reduce(1.0) { max($0, abs($1.delta[axis])) }
+        drawText(title, at: NSPoint(x: 13, y: plot.midY - 15), color: .labelColor, weight: .medium)
+        if !points.isEmpty {
+            drawText("±\(scaleLabel(peak)) pt", at: NSPoint(x: 13, y: plot.midY + 1), color: .secondaryLabelColor)
+        }
+
+        let baseline = NSBezierPath()
+        baseline.move(to: NSPoint(x: plot.minX, y: plot.midY))
+        baseline.line(to: NSPoint(x: plot.maxX, y: plot.midY))
+        stroke(baseline, color: NSColor.labelColor.withAlphaComponent(0.24), width: 0.7)
+
+        let grid = NSBezierPath()
+        for step in 0...4 {
+            let x = plot.minX + CGFloat(step) * plot.width / 4
+            grid.move(to: NSPoint(x: x, y: plot.minY + 3))
+            grid.line(to: NSPoint(x: x, y: plot.maxY - 3))
+        }
+        stroke(grid, color: NSColor.labelColor.withAlphaComponent(0.13), width: 0.6)
+
+        let stems = NSBezierPath()
+        let inputMomentum = NSBezierPath()
+        let posts = NSBezierPath()
+        let momentumPosts = NSBezierPath()
+        let began = NSBezierPath()
+        let ended = NSBezierPath()
+        let scale = plot.height / 2 - 7
+
+        for sample in points {
             let value = sample.delta[axis]
-            guard value.isFinite, (sample.stage == .captured) == input else { return peak }
-            return max(peak, abs(value).rounded(.up))
+            let x = position(of: sample.time, in: plot)
+            let y = plot.midY - CGFloat(value / peak) * scale
+            switch sample.stage {
+            case .captured, .frame:
+                // Keep each input and computed frame as the original discrete stem.
+                if value != 0 {
+                    let path = input && sample.hasMomentum ? inputMomentum : stems
+                    path.move(to: NSPoint(x: x, y: plot.midY))
+                    path.line(to: NSPoint(x: x, y: y))
+                }
+            case .postedToProcess, .postedToHID:
+                if sample.phase == 1 || sample.phase == 4 {
+                    let marker = sample.phase == 1 ? began : ended
+                    marker.move(to: NSPoint(x: x, y: plot.minY + 4))
+                    marker.line(to: NSPoint(x: x, y: plot.maxY - 4))
+                }
+                let dots = sample.hasMomentum ? momentumPosts : posts
+                dots.appendOval(in: NSRect(x: x - 2, y: y - 2, width: 4, height: 4))
+            }
         }
+
+        let isHorizontalInput = input && axis == .horizontal
+        stroke(began, color: .systemRed, width: 1)
+        stroke(ended, color: .systemPurple, width: 1, dashed: true)
+        stroke(stems, color: isHorizontalInput ? .systemTeal : Self.frameColor, width: 1.5, dashed: isHorizontalInput)
+        stroke(inputMomentum, color: Self.postColor, width: 1.5, dashed: isHorizontalInput)
+        Self.postColor.setFill()
+        posts.fill()
+        stroke(momentumPosts, color: Self.postColor, width: 1.1)
     }
 
-    private func x(_ time: CFTimeInterval, in rect: NSRect) -> CGFloat {
+    private func position(of time: CFTimeInterval, in rect: NSRect) -> CGFloat {
         let fraction = (time - range.lowerBound) / (range.upperBound - range.lowerBound)
         return rect.minX + rect.width * CGFloat(fraction)
-    }
-
-    private func drawGrid(input: NSRect, output: NSRect) {
-        let grid = NSBezierPath()
-        let zero = NSBezierPath()
-        for step in 0...5 {
-            let position = input.minX + input.width * CGFloat(step) / 5
-            grid.move(to: NSPoint(x: position, y: input.minY))
-            grid.line(to: NSPoint(x: position, y: output.maxY))
-
-            let time = range.lowerBound + (range.upperBound - range.lowerBound) * Double(step) / 5
-            let label = "\(MonitorPresentation.displacement(time - origin)) s"
-            let font = NSFont.monospacedDigitSystemFont(ofSize: 10, weight: .regular)
-            let offset = (label as NSString).size(withAttributes: [.font: font]).width / 2
-            let left = min(max(0, position - offset), bounds.maxX - offset * 2)
-            draw(label, at: NSPoint(x: left, y: output.maxY + 6), font: font)
-        }
-        for lane in [input, output] {
-            zero.move(to: NSPoint(x: lane.minX, y: lane.midY))
-            zero.line(to: NSPoint(x: lane.maxX, y: lane.midY))
-        }
-        stroke(grid, color: NSColor.labelColor.withAlphaComponent(0.14), width: 0.5)
-        stroke(zero, color: NSColor.labelColor.withAlphaComponent(0.37), width: 0.75)
-    }
-
-    private func drawLaneLabel(_ title: String, peak: Double, at y: CGFloat, font: NSFont) {
-        draw(title, at: NSPoint(x: 3, y: y - 12), font: font, color: .labelColor)
-        draw("±\(MonitorPresentation.displacement(peak)) pt",
-             at: NSPoint(x: 3, y: y + 3),
-             font: .monospacedDigitSystemFont(ofSize: 10, weight: .regular))
     }
 
     private func drawSelection(in rect: NSRect) {
         guard let selection = selection, range.contains(selection) else { return }
         let path = NSBezierPath()
-        let position = x(selection, in: rect)
-        path.move(to: NSPoint(x: position, y: rect.minY))
-        path.line(to: NSPoint(x: position, y: rect.maxY))
+        let x = position(of: selection, in: rect)
+        path.move(to: NSPoint(x: x, y: rect.minY))
+        path.line(to: NSPoint(x: x, y: rect.maxY))
         stroke(path, color: Self.frameColor.withAlphaComponent(0.75), width: 0.75)
     }
 
-    private func drawSamples(input: NSRect, inputPeak: Double, output: NSRect, outputPeak: Double) {
-        let captured = NSBezierPath()
-        let frames = NSBezierPath()
-        let framePoints = NSBezierPath()
-        let posts = NSBezierPath()
-        var previousFrameTime: CFTimeInterval?
-        for sample in samples {
-            let value = sample.delta[axis]
-            guard value.isFinite, range.contains(sample.time) else { continue }
-            let isInput = sample.stage == .captured
-            let lane = isInput ? input : output
-            let peak = isInput ? inputPeak : outputPeak
-            let horizontal = x(sample.time, in: lane)
-            let point = NSPoint(x: horizontal, y: lane.midY - CGFloat(value / peak) * (lane.height / 2 - 5))
-
-            switch sample.stage {
-            case .captured:
-                captured.move(to: NSPoint(x: horizontal, y: lane.midY))
-                captured.line(to: point)
-            case .frame:
-                // Break the line across idle gaps instead of drawing invented frames.
-                if let previous = previousFrameTime, sample.time - previous <= 0.12 {
-                    frames.line(to: point)
-                } else {
-                    frames.move(to: point)
-                    framePoints.appendOval(in: NSRect(x: point.x - 1, y: point.y - 1, width: 2, height: 2))
-                }
-                previousFrameTime = sample.time
-            case .postedToProcess, .postedToHID:
-                posts.appendOval(in: NSRect(x: point.x - 2, y: point.y - 2, width: 4, height: 4))
-            }
-        }
-        stroke(captured, color: .secondaryLabelColor, width: 1.1)
-        stroke(frames, color: Self.frameColor, width: 1.25)
-        Self.frameColor.setFill()
-        framePoints.fill()
-        Self.postColor.setFill()
-        posts.fill()
+    private func drawTimeAxis(in axis: NSRect) {
+        drawText("−\(scaleLabel(range.upperBound - range.lowerBound)) s", at: axis.origin, color: .secondaryLabelColor)
+        let now = "0 s"
+        drawText(now, at: NSPoint(x: axis.maxX - textWidth(now), y: axis.minY), color: .secondaryLabelColor)
     }
 
-    private func draw(
-        _ label: String, at point: NSPoint, font: NSFont, color: NSColor = .secondaryLabelColor
-    ) {
-        (label as NSString).draw(at: point, withAttributes: [.font: font, .foregroundColor: color])
+    private func scaleLabel(_ value: Double) -> String {
+        numberFormatter.string(from: NSNumber(value: value)) ?? ""
     }
 
-    private func stroke(_ path: NSBezierPath, color: NSColor, width: CGFloat) {
-        path.lineWidth = width
+    private func stroke(_ path: NSBezierPath, color: NSColor, width: CGFloat, dashed: Bool = false) {
+        if dashed { path.setLineDash([2, 2], count: 2, phase: 0) }
         color.setStroke()
+        path.lineWidth = width
         path.stroke()
+    }
+
+    private func textWidth(_ text: String) -> CGFloat {
+        (text as NSString).size(withAttributes: [.font: NSFont.systemFont(ofSize: 11)]).width
+    }
+
+    private func drawText(_ text: String, at point: NSPoint, color: NSColor, weight: NSFont.Weight = .regular) {
+        (text as NSString).draw(at: point, withAttributes: [
+            .font: NSFont.systemFont(ofSize: 11, weight: weight),
+            .foregroundColor: color,
+        ])
     }
 }
 

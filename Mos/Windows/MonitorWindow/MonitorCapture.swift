@@ -144,8 +144,9 @@ final class MonitorCapture {
             stop(as: .tapUnavailable)
             return
         }
+        let update = drain()
         displayTime = CACurrentMediaTime()
-        didUpdate?(drain())
+        didUpdate?(update)
     }
 
     private func stop(as next: State) {

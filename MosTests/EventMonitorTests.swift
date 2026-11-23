@@ -54,6 +54,8 @@ final class EventMonitorTests: XCTestCase {
         event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: 2.49)
         event.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: -1.75)
         event.setIntegerValueField(.eventTargetUnixProcessID, value: 17)
+        event.setIntegerValueField(.scrollWheelEventScrollPhase, value: 1)
+        event.setIntegerValueField(.scrollWheelEventMomentumPhase, value: 2)
         trace.record(event, stage: .postedToProcess, targetPID: 42)
         trace.record(event, stage: .postedToHID)
 
@@ -74,6 +76,9 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertEqual(posted.delta.x, -1)
         XCTAssertEqual(posted.postingPID, 42)
         XCTAssertEqual(posted.fields?.quartz.targetPID, 17)
+        let point = try XCTUnwrap(MonitorTimelineSample(event: postedEvent))
+        XCTAssertEqual(point.phase, 1)
+        XCTAssertTrue(point.hasMomentum)
         XCTAssertEqual(hid.stage, .postedToHID)
         XCTAssertNil(hid.postingPID)
         let detail = MonitorPresentation.detail(postedEvent)
@@ -117,6 +122,12 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertEqual(history.events(in: 3.5...4).map(\.id), [4])
         XCTAssertEqual(history.events(in: 5...5).map(\.id), [5])
         XCTAssertTrue(history.events(in: 0...2).isEmpty)
+    }
+
+    func testLiveTimelineKeepsMovingWithAnOlderRowSelected() {
+        XCTAssertEqual(MonitorCurveView.visibleRange(endingAt: 20, duration: 5, selection: 10, recording: true), 15...20)
+        XCTAssertEqual(MonitorCurveView.visibleRange(endingAt: 22, duration: 5, selection: 10, recording: true), 17...22)
+        XCTAssertEqual(MonitorCurveView.visibleRange(endingAt: 22, duration: 5, selection: 10, recording: false), 6...11)
     }
 
     func testButtonRowsShowTheObservingTapAndActualRawFields() throws {
