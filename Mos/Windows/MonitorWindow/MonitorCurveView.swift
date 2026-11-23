@@ -30,8 +30,8 @@ final class MonitorCurveView: NSView {
         return formatter
     }()
 
-    static let verticalColor = NSColor.systemBlue
-    static let horizontalColor = NSColor.systemTeal
+    static let verticalColor = NSColor(red: 96.0 / 255.0, green: 198.0 / 255.0, blue: 85.0 / 255.0, alpha: 1)
+    static let horizontalColor = NSColor(red: 246.0 / 255.0, green: 191.0 / 255.0, blue: 79.0 / 255.0, alpha: 1)
 
     override var isFlipped: Bool { true }
 
@@ -161,16 +161,16 @@ final class MonitorCurveView: NSView {
 
         for sample in points {
             let value = sample.delta[axis]
+            // Zero-displacement dots stack along the baseline during single-axis scrolling.
+            guard value != 0 else { continue }
             let x = position(of: sample.time, in: plot)
             let y = plot.midY - CGFloat(value / peak) * scale
             switch sample.stage {
             case .captured, .frame:
                 // Keep each input and computed frame as the original discrete stem.
-                if value != 0 {
-                    let path = sample.hasMomentum ? momentumStems : stems
-                    path.move(to: NSPoint(x: x, y: plot.midY))
-                    path.line(to: NSPoint(x: x, y: y))
-                }
+                let path = sample.hasMomentum ? momentumStems : stems
+                path.move(to: NSPoint(x: x, y: plot.midY))
+                path.line(to: NSPoint(x: x, y: y))
             case .posted:
                 let dots = sample.hasMomentum ? momentumPosts : posts
                 // A hollow X marker stays legible over a coincident Y point

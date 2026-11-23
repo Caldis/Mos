@@ -159,6 +159,28 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertEqual(MonitorCurveView.visibleRange(endingAt: 22, duration: 5, selection: 10, recording: false), 6...11)
     }
 
+    @MainActor
+    func testZeroDeltaPostedEventLeavesBaselineClear() throws {
+        let curve = MonitorCurveView(frame: NSRect(x: 0, y: 0, width: 480, height: 200))
+
+        func render(_ stage: ScrollMonitorStage, y: Double) throws -> Data {
+            let event = MonitorEvent(
+                id: 1, time: 0.5,
+                payload: .scroll(.init(stage: stage, delta: MonitorDelta(x: 0, y: y)))
+            )
+            let sample = try XCTUnwrap(MonitorTimelineSample(event: event))
+            curve.display([sample], range: 0...1, selection: nil, waitingForInput: false)
+
+            let bitmap = try XCTUnwrap(curve.bitmapImageRepForCachingDisplay(in: curve.bounds))
+            curve.cacheDisplay(in: curve.bounds, to: bitmap)
+            return try XCTUnwrap(bitmap.representation(using: .png, properties: [:]))
+        }
+
+        let baseline = try render(.frame, y: 0)
+        XCTAssertEqual(try render(.posted, y: 0), baseline)
+        XCTAssertNotEqual(try render(.posted, y: 1), baseline)
+    }
+
     func testButtonRowsShowTheObservingTapAndActualRawFields() throws {
         let trace = ScrollMonitorTrace()
         trace.setRecording(true)
