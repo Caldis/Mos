@@ -47,6 +47,13 @@ final class EventMonitorTests: XCTestCase {
         let input = try XCTUnwrap(samples.first)
         XCTAssertEqual(MonitorPresentation.columns(input, origin: input.time), ["0.000 s", "Annotated Session Tap", "-7", "12"])
         XCTAssertEqual(MonitorPresentation.detail(input).source?.value, "Annotated Session Tap")
+        XCTAssertEqual(MonitorPresentation.detail(input).source?.title, NSLocalizedString("monitor-capture-tap", comment: ""))
+        let columns = MonitorPresentation.columnDefinitions(for: .scroll)
+        for field in MonitorPresentation.detail(input).fields {
+            let column = try XCTUnwrap(columns.first { $0.title == field.title })
+            XCTAssertEqual(column.enumID, field.enumID)
+            XCTAssertEqual(column.value(input, input.time), field.value)
+        }
     }
 
     func testOverlayPreservesComputedAndPostedValuesWithoutInventingACaptureTap() throws {
@@ -115,6 +122,25 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertEqual(try scrollSample(entry).delta.y, 4)
     }
 
+    func testPostTapIsOnlyShownForEventsPostedAtATap() throws {
+        let trace = ScrollMonitorTrace()
+        trace.setRecording(true)
+        let event = try scrollEvent()
+        trace.recordPosted(event)
+        trace.recordPosted(event, postTap: .cghidEventTap)
+        var events: [MonitorEvent] = []
+        trace.drain(into: &events)
+        let direct = try XCTUnwrap(events.first)
+        let tapped = try XCTUnwrap(events.last)
+        let columns = MonitorPresentation.columnDefinitions(for: .scroll)
+        let captureTap = try XCTUnwrap(columns.first { $0.id == "captureTap" })
+        let postTap = try XCTUnwrap(columns.first { $0.id == "postTap" })
+        XCTAssertNil(captureTap.value(tapped, tapped.time))
+        XCTAssertNil(postTap.value(direct, direct.time))
+        XCTAssertEqual(postTap.value(tapped, tapped.time), "HID Tap")
+        XCTAssertEqual(MonitorPresentation.detail(tapped).source?.title, NSLocalizedString("monitor-post-tap", comment: ""))
+    }
+
     func testTimelineLookupUsesSampleTimesAfterRingWraps() {
         var history = MonitorHistory<MonitorEvent>(capacity: 3)
         for index in 1...5 {
@@ -128,7 +154,7 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertTrue(history.events(in: 0...2).isEmpty)
     }
 
-    func testScrollListsKeepInputAndPostedEventsSeparateAfterHistoryWraps() {
+    func testScrollFiltersReadTheSameOrderedHistoryAfterItWraps() {
         var scroll = MonitorScrollHistory(capacity: 4)
         let stages: [ScrollMonitorStage] = [.captured, .frame, .posted, .captured, .frame]
         for (index, stage) in stages.enumerated() {
@@ -141,7 +167,12 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertEqual(scroll.history.map(\.id), [2, 3, 4, 5])
         XCTAssertEqual(scroll.rowCount(for: .captured), 1)
         XCTAssertEqual(scroll.rowCount(for: .posted), 1)
-        XCTAssertEqual(scroll.rowCount(for: .frame), 0)
+        XCTAssertEqual(scroll.rowCount(for: .all), 2)
+        XCTAssertEqual(scroll.rowCount(for: []), 0)
+        XCTAssertEqual(scroll.event(at: 0, in: .all)?.id, 4)
+        XCTAssertEqual(scroll.event(at: 1, in: .all)?.id, 3)
+        XCTAssertEqual(scroll.row(for: 3, in: .all), 1)
+        XCTAssertNil(scroll.row(for: 1, in: .all))
         XCTAssertEqual(scroll.event(at: 0, in: .captured)?.id, 4)
         XCTAssertEqual(scroll.event(at: 0, in: .posted)?.id, 3)
         XCTAssertNil(scroll.event(at: 1, in: .captured))
@@ -151,6 +182,7 @@ final class EventMonitorTests: XCTestCase {
         scroll.removeAll()
         XCTAssertEqual(scroll.rowCount(for: .captured), 0)
         XCTAssertEqual(scroll.rowCount(for: .posted), 0)
+        XCTAssertEqual(scroll.rowCount(for: .all), 0)
     }
 
     func testLiveTimelineKeepsMovingWithAnOlderRowSelected() {
@@ -279,23 +311,44 @@ final class EventMonitorTests: XCTestCase {
     }
 
     @MainActor
-    func testEventTableShowsRawInputByDefaultAndCanShowPostedEvents() throws {
+    func testScrollFiltersUseOneTableAndKeepTheSelectedColumns() throws {
         let events = MonitorEventTable(capture: MonitorCapture())
         let header = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSStackView }.first)
-        let filter = try XCTUnwrap(header.arrangedSubviews.compactMap { $0 as? NSSegmentedControl }.first)
+        let filters = try XCTUnwrap(header.arrangedSubviews.compactMap { $0 as? NSStackView }.first)
+        let buttons = filters.arrangedSubviews.compactMap { $0 as? NSButton }
+        XCTAssertEqual(buttons.map(\.state), [.on, .on])
+        let input = try XCTUnwrap(buttons.first)
+        let posted = try XCTUnwrap(buttons.last)
         let scroller = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSScrollView }.first)
         XCTAssertFalse(scroller.drawsBackground)
         XCTAssertEqual(scroller.borderType, .noBorder)
-        XCTAssertEqual(filter.selectedSegment, 0)
-        XCTAssertEqual(filter.label(forSegment: 0), MonitorPresentation.stageName(.captured))
-        XCTAssertEqual((scroller.documentView as? NSTableView)?.tableColumns.map(\.title), [
-            NSLocalizedString("monitor-time", comment: ""), NSLocalizedString("monitor-tap", comment: ""), "ΔX", "ΔY",
-        ])
-        filter.selectedSegment = 1
-        NSApp.sendAction(try XCTUnwrap(filter.action), to: filter.target, from: filter)
-        XCTAssertEqual((scroller.documentView as? NSTableView)?.tableColumns.map(\.title), [
-            NSLocalizedString("monitor-time", comment: ""), "ΔX", "ΔY",
-        ])
+        let table = try XCTUnwrap(scroller.documentView as? NSTableView)
+        let menu = try XCTUnwrap(table.headerView?.menu)
+        let defaults = ["time", "stage", "captureTap", "postTap", "deltaX", "deltaY"]
+        XCTAssertEqual(table.tableColumns.filter { !$0.isHidden }.map { $0.identifier.rawValue }, defaults)
+        XCTAssertTrue(table.allowsColumnReordering)
+
+        events.menuNeedsUpdate(menu)
+        let point = try XCTUnwrap(menu.items.first { $0.representedObject as? String == "field.96" })
+        XCTAssertEqual(point.state, .off)
+        XCTAssertTrue(NSApp.sendAction(try XCTUnwrap(point.action), to: point.target, from: point))
+        let pointID = NSUserInterfaceItemIdentifier("field.96")
+        let pointColumn = try XCTUnwrap(table.tableColumn(withIdentifier: pointID))
+        XCTAssertFalse(pointColumn.isHidden)
+        table.moveColumn(table.column(withIdentifier: pointID), toColumn: 0)
+
+        input.performClick(nil)
+        XCTAssertEqual(input.state, .off)
+        XCTAssertEqual(posted.state, .on)
+        XCTAssertTrue(scroller.documentView === table)
+        XCTAssertEqual(table.tableColumns.first?.identifier, pointID)
+        XCTAssertFalse(pointColumn.isHidden)
+
+        events.menuNeedsUpdate(menu)
+        let reset = try XCTUnwrap(menu.items.last)
+        XCTAssertTrue(NSApp.sendAction(try XCTUnwrap(reset.action), to: reset.target, from: reset))
+        XCTAssertEqual(table.tableColumns.filter { !$0.isHidden }.map { $0.identifier.rawValue }, defaults)
+        XCTAssertTrue(pointColumn.isHidden)
     }
 
     @MainActor

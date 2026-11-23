@@ -1,6 +1,14 @@
 import Cocoa
 import QuartzCore
 
+struct MonitorScrollFilter: OptionSet {
+    let rawValue: Int
+
+    static let captured = Self(rawValue: 1 << 0)
+    static let posted = Self(rawValue: 1 << 1)
+    static let all: Self = [.captured, .posted]
+}
+
 /// Main-thread owner of the recording lifecycle and the histories shared by
 /// the table, plot, inspector, and export. Producers never access these rings.
 final class MonitorCapture {
@@ -12,7 +20,7 @@ final class MonitorCapture {
     }
 
     enum EventList: Equatable {
-        case scroll(ScrollMonitorStage)
+        case scroll(MonitorScrollFilter)
         case buttons
     }
 
@@ -117,21 +125,21 @@ final class MonitorCapture {
 
     func rowCount(in list: EventList) -> Int {
         switch list {
-        case .scroll(let stage): return scroll.rowCount(for: stage)
+        case .scroll(let filter): return scroll.rowCount(for: filter)
         case .buttons: return buttons.count
         }
     }
 
     func event(at row: Int, in list: EventList) -> MonitorEvent? {
         switch list {
-        case .scroll(let stage): return scroll.event(at: row, in: stage)
+        case .scroll(let filter): return scroll.event(at: row, in: filter)
         case .buttons: return buttons.newest(at: row)
         }
     }
 
     func row(for id: UInt64, in list: EventList) -> Int? {
         switch list {
-        case .scroll(let stage): return scroll.row(for: id, in: stage)
+        case .scroll(let filter): return scroll.row(for: id, in: filter)
         case .buttons: return buttons.newestIndex(matching: id, by: { $0.id })
         }
     }
@@ -199,11 +207,13 @@ final class MonitorCapture {
 /// export. Indices older than the current history window are ignored.
 struct MonitorScrollHistory {
     private(set) var history: MonitorHistory<MonitorEvent>
+    private var events: MonitorHistory<UInt64>
     private var inputs: MonitorHistory<UInt64>
     private var posted: MonitorHistory<UInt64>
 
     init(capacity: Int) {
         history = MonitorHistory(capacity: capacity)
+        events = MonitorHistory(capacity: capacity)
         inputs = MonitorHistory(capacity: capacity)
         posted = MonitorHistory(capacity: capacity)
     }
@@ -213,37 +223,40 @@ struct MonitorScrollHistory {
         switch stage {
         case .captured: inputs.append(event.id)
         case .posted: posted.append(event.id)
-        case .frame: break
+        case .frame: return
         }
+        events.append(event.id)
     }
 
     mutating func removeAll() {
         history.removeAll()
+        events.removeAll()
         inputs.removeAll()
         posted.removeAll()
     }
 
-    func rowCount(for stage: ScrollMonitorStage) -> Int {
-        guard let oldest = history.first, let ids = ids(for: stage) else { return 0 }
+    func rowCount(for filter: MonitorScrollFilter) -> Int {
+        guard let oldest = history.first, let ids = ids(for: filter) else { return 0 }
         return ids.count - ids.lowerBound { $0 >= oldest.id }
     }
 
-    func event(at row: Int, in stage: ScrollMonitorStage) -> MonitorEvent? {
-        guard let id = ids(for: stage)?.newest(at: row),
+    func event(at row: Int, in filter: MonitorScrollFilter) -> MonitorEvent? {
+        guard let id = ids(for: filter)?.newest(at: row),
               let index = history.newestIndex(matching: id, by: { $0.id }) else { return nil }
         return history.newest(at: index)
     }
 
-    func row(for id: UInt64, in stage: ScrollMonitorStage) -> Int? {
+    func row(for id: UInt64, in filter: MonitorScrollFilter) -> Int? {
         guard let oldest = history.first, id >= oldest.id else { return nil }
-        return ids(for: stage)?.newestIndex(matching: id, by: { $0 })
+        return ids(for: filter)?.newestIndex(matching: id, by: { $0 })
     }
 
-    private func ids(for stage: ScrollMonitorStage) -> MonitorHistory<UInt64>? {
-        switch stage {
+    private func ids(for filter: MonitorScrollFilter) -> MonitorHistory<UInt64>? {
+        switch filter {
+        case .all: return events
         case .captured: return inputs
         case .posted: return posted
-        case .frame: return nil
+        default: return nil
         }
     }
 }

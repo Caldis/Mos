@@ -41,8 +41,8 @@ final class ScrollMonitorTrace {
         recordScroll(event, stage: .captured, tap: tap)
     }
 
-    func recordPosted(_ event: CGEvent) {
-        recordScroll(event, stage: .posted, tap: nil)
+    func recordPosted(_ event: CGEvent, postTap: CGEventTapLocation? = nil) {
+        recordScroll(event, stage: .posted, tap: postTap)
     }
 
     private func recordScroll(_ event: CGEvent, stage: ScrollMonitorStage, tap: CGEventTapLocation?) {
