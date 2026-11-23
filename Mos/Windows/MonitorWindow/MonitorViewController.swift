@@ -1,350 +1,392 @@
-//
-//  MonitorViewController.swift
-//  Mos
-//  滚动监控界面
-//  Created by Caldis on 2017/1/10.
-//  Copyright © 2017年 Caldis. All rights reserved.
-//
-
 import Cocoa
-import DGCharts
 
-let scrollEventName = NSNotification.Name(rawValue: "ScrollEvent")
-let buttonEventName = NSNotification.Name(rawValue: "ButtonEvent")
+final class MonitorViewController: NSViewController {
+    private enum LogChannel: Int {
+        case scroll
+        case buttons
 
-class MonitorViewController: NSViewController, ChartViewDelegate {
-
-    private enum PreviewRefresh {
-        static let buttonLogInterval: TimeInterval = 0.1
-    }
-    
-    // MARK: - UI: 图表
-    var lineChartCount = 0.0
-    @IBOutlet weak var lineChart: LineChartView!
-    
-    // MARK: - UI: Log 文本
-    @IBOutlet var parsedLogTextField: NSTextView!
-    @IBOutlet var scrollLogTextField: NSTextView!
-    @IBOutlet var scrollDetailLogTextField: NSTextView!
-    @IBOutlet var buttonEventLogTextField: NSTextView!
-    @IBOutlet var processLogTextField: NSTextView!
-    @IBOutlet var mouseLogTextField: NSTextView!
-
-    // MARK: - UI: 事件触发器
-    @IBOutlet weak var shortcutMenu: NSMenu!
-    @IBOutlet weak var shortcutPopUpButton: NSPopUpButton!
-
-    // MARK: - 生命周期
-    override func viewWillAppear() {
-        initCharts()
-        initScrollObserver()
-        initButtonObserver()
-        setupShortcutMenu()
-    }
-    override func viewWillDisappear() {
-        uninitScrollObserver()
-        uninitButtonObserver()
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    // MARK: - 监听: 滚动
-    var scrollEventInterceptor: Interceptor?
-    let scrollEventMask = ScrollCore.shared.scrollEventMask
-    let scrollEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        // 发送 ScrollWheelEventUpdate 通知
-        NotificationCenter.default.post(name: scrollEventName, object: event)
-        // 返回事件对象
-        return Unmanaged.passUnretained(event)
-    }
-    // 更新面板
-    var prevScrollWheelEventScrollPhase = 0.0
-    var prevScrollWheelEventMomentumPhase = 0.0
-    @objc private func updateScrollEventData(notification: NSNotification) {
-        let event = notification.object as! CGEvent
-        // 更新图表
-        if let data = lineChart.data {
-            // scrollWheelEventPointDelta
-            data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)), toDataSet: 0)
-            data.appendEntry(ChartDataEntry(x: lineChartCount, y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)), toDataSet: 1)
-
-            // scrollWheelEventIsContinuous
-            let isContinuous = Double(event.getIntegerValueField(.scrollWheelEventIsContinuous))
-            data.appendEntry(ChartDataEntry(x: lineChartCount, y: isContinuous), toDataSet: 2)
-            
-            // scrollWheelEventScrollCount
-            data.appendEntry(ChartDataEntry(x: lineChartCount, y: Double(event.getIntegerValueField(.scrollWheelEventScrollCount))), toDataSet: 3)
-            
-            // scrollWheelEventScrollPhase
-            let scrollPhase = Double(event.getIntegerValueField(.scrollWheelEventScrollPhase))
-            data.appendEntry(ChartDataEntry(x: lineChartCount, y: scrollPhase), toDataSet: 4)
-
-            // scrollWheelEventMomentumPhase
-            let momentumPhase = Double(event.getIntegerValueField(.scrollWheelEventMomentumPhase))
-            data.appendEntry(ChartDataEntry(x: lineChartCount, y: momentumPhase), toDataSet: 5)
-
-            // Logs
-            if prevScrollWheelEventScrollPhase != scrollPhase || prevScrollWheelEventMomentumPhase != momentumPhase {
-                if prevScrollWheelEventScrollPhase != scrollPhase {
-                    prevScrollWheelEventScrollPhase = scrollPhase
-                }
-                if prevScrollWheelEventMomentumPhase != momentumPhase {
-                    prevScrollWheelEventMomentumPhase = momentumPhase
-                }
-                NSLog("Phase updated -> prevScrollWheelEventScrollPhase: \(scrollPhase), prevScrollWheelEventMomentumPhase: \(momentumPhase)")
-            }
-
-            lineChart.setVisibleXRange(minXRange: 1.0, maxXRange: 100.0)
-            lineChart.moveViewToX(lineChartCount)
-            lineChart.notifyDataSetChanged()
-            lineChartCount += 1.0
-        }
-        // 更新 Log
-        parsedLogTextField.string = Logger.getParsedLog(form: event)
-        scrollLogTextField.string = Logger.getScrollLog(form: event)
-        scrollDetailLogTextField.string = Logger.getScrollDetailLog(form: event)
-        processLogTextField.string = Logger.getProcessLog(form: event)
-        mouseLogTextField.string = Logger.getMouseLog(form: event)
-    }
-    // 初始化监听
-    func initScrollObserver() {
-        // 监听内部事件
-        NotificationCenter.default.addObserver(self, selector: #selector(updateScrollEventData), name: scrollEventName, object: nil)
-        // 启动事件拦截
-        do {
-            scrollEventInterceptor = try Interceptor(
-                event: scrollEventMask,
-                handleBy: scrollEventCallBack,
-                listenOn: .cgAnnotatedSessionEventTap,
-                placeAt: .tailAppendEventTap,
-                for: .listenOnly
-            )
-        } catch {
-            NSLog("[MonitorView] Create scroll interceptor failure: \(error)")
-        }
-    }
-    // 停止
-    func uninitScrollObserver() {
-        scrollEventInterceptor?.stop()
-    }
-    
-    // MARK: - 监听: 按键
-    var buttonEventInterceptor: Interceptor?
-    var buttonEventMask: CGEventMask {
-        let buttonDownEvents =
-            CGEventMask(1 << CGEventType.leftMouseDown.rawValue) |
-            CGEventMask(1 << CGEventType.rightMouseDown.rawValue) |
-            CGEventMask(1 << CGEventType.otherMouseDown.rawValue)
-        let buttonUpEvents =
-            CGEventMask(1 << CGEventType.leftMouseUp.rawValue) |
-            CGEventMask(1 << CGEventType.rightMouseUp.rawValue) |
-            CGEventMask(1 << CGEventType.otherMouseUp.rawValue)
-        let dragEvents =
-            CGEventMask(1 << CGEventType.leftMouseDragged.rawValue) |
-            CGEventMask(1 << CGEventType.rightMouseDragged.rawValue) |
-            CGEventMask(1 << CGEventType.otherMouseDragged.rawValue)
-        let keyboardEvents =
-            CGEventMask(1 << CGEventType.keyDown.rawValue) |
-            CGEventMask(1 << CGEventType.flagsChanged.rawValue)
-        let moveEvents = CGEventMask(1 << CGEventType.mouseMoved.rawValue)
-        return buttonDownEvents | buttonUpEvents | dragEvents | keyboardEvents | moveEvents
-    }
-    let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
-        // 发送按钮事件通知
-        NotificationCenter.default.post(name: buttonEventName, object: event)
-        // 返回事件对象
-        return Unmanaged.passUnretained(event)
-    }
-    // 按钮日志
-    private let buttonEventLogStore = MonitorLogStore(previewLineLimit: 200)
-    private var isButtonPreviewRefreshScheduled = false
-    // 更新面板
-    @objc private func updateButtonEventData(notification: NSNotification) {
-        let event = notification.object as! CGEvent
-        buttonEventLogStore.append(buttonEventLogLine(for: event), to: .buttonEvent)
-        scheduleButtonPreviewRefresh()
-    }
-
-    func buttonEventLogLine(for event: CGEvent) -> String {
-        let modifiers = event.modifierString.isEmpty ? "none" : event.modifierString
-        let flagsHex = String(event.flags.rawValue, radix: 16)
-
-        if event.isMouseInteractionEvent {
-            let userData = event.getIntegerValueField(.eventSourceUserData)
-            let deltaX = Int(event.getDoubleValueField(.mouseEventDeltaX))
-            let deltaY = Int(event.getDoubleValueField(.mouseEventDeltaY))
-            return "[\(event.timestampFormatted)] \(event.eventTypeName) button: \(event.mouseCode) delta:(\(deltaX),\(deltaY)) mods:[\(modifiers)] flags:0x\(flagsHex) userData: \(userData)"
-        }
-
-        if event.type == .flagsChanged {
-            let phase = event.isKeyDown ? "down" : "up"
-            return "[\(event.timestampFormatted)] \(event.eventTypeName) key: \(event.keyCodeName) phase: \(phase) mods:[\(modifiers)] flags:0x\(flagsHex)"
-        }
-
-        if event.isKeyboardEvent {
-            return "[\(event.timestampFormatted)] \(event.eventTypeName) key: \(event.keyCodeName) keyCode: \(event.keyCode) mods:[\(modifiers)] flags:0x\(flagsHex)"
-        }
-
-        return "[\(event.timestampFormatted)] \(event.eventTypeName) \(event.displayName) flags:0x\(flagsHex)"
-    }
-    // 初始化
-    func initButtonObserver() {
-        // 监听内部事件
-        NotificationCenter.default.addObserver(self, selector: #selector(updateButtonEventData), name: buttonEventName, object: nil)
-        // 启动事件拦截
-        do {
-            buttonEventInterceptor = try Interceptor(
-                event: buttonEventMask,
-                handleBy: buttonEventCallBack,
-                listenOn: .cgAnnotatedSessionEventTap,
-                placeAt: .tailAppendEventTap,
-                for: .listenOnly
-            )
-        } catch {
-            NSLog("[MonitorView] Create button interceptor failure: \(error)")
-        }
-    }
-    // 停止
-    func uninitButtonObserver() {
-        buttonEventInterceptor?.stop()
-    }
-
-    private func scheduleButtonPreviewRefresh() {
-        guard !isButtonPreviewRefreshScheduled else { return }
-        isButtonPreviewRefreshScheduled = true
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + PreviewRefresh.buttonLogInterval) { [weak self] in
-            guard let self else { return }
-            self.isButtonPreviewRefreshScheduled = false
-            self.refreshButtonLogPreview()
-        }
-    }
-
-    private func refreshButtonLogPreview() {
-        guard let textView = buttonEventLogTextField else { return }
-        textView.string = buttonEventLogStore.previewText(for: .buttonEvent)
-        textView.scrollRangeToVisible(NSRange(location: 0, length: 0))
-    }
-
-    @IBAction private func exportButtonEventLog(_ sender: Any) {
-        guard let window = view.window else { return }
-
-        let savePanel = NSSavePanel()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd-HHmmss"
-        savePanel.nameFieldStringValue = "monitor-button-events-\(formatter.string(from: Date())).log"
-        savePanel.allowedFileTypes = ["log", "txt"]
-
-        savePanel.beginSheetModal(for: window) { [weak self] response in
-            guard response == .OK, let url = savePanel.url, let self else { return }
-            let output = self.buttonEventLogStore.exportText(for: .buttonEvent)
-            do {
-                try output.write(to: url, atomically: true, encoding: .utf8)
-            } catch {
-                NSLog("[MonitorView] Export button event log failure: \(error)")
+        var fileName: String {
+            switch self {
+            case .scroll: return "monitor-scroll-events"
+            case .buttons: return "monitor-button-events"
             }
         }
     }
 
-    // MARK: - 按键事件处理
-    func setupShortcutMenu() {
-        guard shortcutMenu != nil else {
-            NSLog("[MonitorView] shortcutMenu 未连接，无法构建菜单")
-            return
-        }
+    private static let tapMask = [
+        CGEventType.scrollWheel, .leftMouseDown, .leftMouseUp, .rightMouseDown, .rightMouseUp,
+        .otherMouseDown, .otherMouseUp, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged,
+        .mouseMoved, .keyDown, .keyUp, .flagsChanged,
+    ].reduce(CGEventMask(0)) { $0 | (CGEventMask(1) << $1.rawValue) }
 
-        // 使用 ShortcutManager 构建分级菜单
-        ShortcutManager.buildShortcutMenu(
-            into: shortcutMenu,
-            target: self,
-            action: #selector(onShortcutMenuItemSelected(_:))
+    private let trace = ScrollMonitorTrace.shared
+    private let startTime = CACurrentMediaTime()
+    private var displayTime = CACurrentMediaTime()
+    private var scrollHistory = MonitorHistory<ScrollMonitorSample>(capacity: 16_384)
+    private var buttonHistory = MonitorHistory<MonitorButtonEvent>(capacity: 8_192)
+    private var incoming: [ScrollMonitorSample] = []
+    private var tap: Interceptor?
+    private var refreshTimer: Timer?
+    private var nextLogRefresh: CFTimeInterval = 0
+    private var logChannel = LogChannel.scroll
+    private var logNeedsRefresh = true
+    private var recordingStarted = false
+    private var windowDuration: CFTimeInterval = 5
+    private var droppedSamples = 0
+    private var captureUnavailable = false
+
+    private let curve = MonitorCurveView()
+    private let log = NSTextView(frame: .zero)
+    private let status = NSTextField(labelWithString: "")
+    private let durationLabel = NSTextField(labelWithString: "5 s")
+    private let durationFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 1
+        return formatter
+    }()
+    private let logParagraphStyle: NSParagraphStyle = {
+        let style = NSMutableParagraphStyle()
+        style.headIndent = 15
+        style.paragraphSpacing = 2
+        return style
+    }()
+    private lazy var recordingButton = NSButton(title: "", target: self, action: #selector(toggleRecording))
+    private lazy var copyButton = NSButton(
+        title: NSLocalizedString("copy", comment: "Copy"), target: self, action: #selector(copyLog)
+    )
+    private lazy var exportButton = NSButton(
+        title: NSLocalizedString("monitor-export-log", comment: "Export the selected event log"),
+        target: self,
+        action: #selector(exportLog)
+    )
+    private lazy var shortcutButton = NSButton(
+        title: NSLocalizedString("monitor-test-shortcut", comment: "End-user shortcut test menu"),
+        target: self,
+        action: #selector(showShortcuts(_:))
+    )
+
+    deinit {
+        if refreshTimer != nil {
+            trace.setRecording(false)
+        }
+        refreshTimer?.invalidate()
+        tap?.stop()
+    }
+
+    override func loadView() {
+        let root = NSView()
+        let windowLabel = NSTextField(labelWithString: NSLocalizedString("monitor-time-window", comment: "Scroll timeline time window"))
+        let slider = NSSlider(
+            value: windowDuration, minValue: 1, maxValue: 10, target: self, action: #selector(changeDuration(_:))
         )
+        slider.isContinuous = true
+        slider.setAccessibilityLabel(windowLabel.stringValue)
+        slider.widthAnchor.constraint(equalToConstant: 136).isActive = true
+        durationLabel.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        durationLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 38).isActive = true
 
-        // 设置默认选择 placeholder
-        shortcutPopUpButton?.selectItem(at: 0)
+        let clearButton = NSButton(
+            title: NSLocalizedString("monitor-clear", comment: "Clear the timeline and event logs"),
+            target: self,
+            action: #selector(clear)
+        )
+        let timelineControls = controls([windowLabel, slider, durationLabel, NSView(), recordingButton, clearButton])
+        curve.setAccessibilityElement(true)
+        curve.setAccessibilityRole(.group)
+        curve.setAccessibilityLabel(NSLocalizedString("monitor-scroll-timeline", comment: "Accessible name for the scroll timeline"))
+
+        let filter = NSSegmentedControl(
+            labels: [
+                NSLocalizedString("monitor-scroll-log", comment: "Scroll event log tab"),
+                NSLocalizedString("monitor-button-log", comment: "Mouse and keyboard event log tab"),
+            ],
+            trackingMode: .selectOne, target: self, action: #selector(changeChannel(_:))
+        )
+        filter.selectedSegment = logChannel.rawValue
+        shortcutButton.isHidden = true
+        let eventControls = controls([filter, NSView(), shortcutButton, copyButton, exportButton])
+        status.textColor = .secondaryLabelColor
+        status.isHidden = true
+
+        let logScroll = makeLogScrollView()
+        let content = NSStackView(views: [timelineControls, curve, status, eventControls, logScroll])
+        content.orientation = .vertical
+        content.alignment = .leading
+        content.distribution = .fill
+        content.spacing = 12
+        content.translatesAutoresizingMaskIntoConstraints = false
+        root.addSubview(content)
+        NSLayoutConstraint.activate([
+            content.topAnchor.constraint(equalTo: root.topAnchor, constant: 16),
+            content.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: 18),
+            content.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -18),
+            content.bottomAnchor.constraint(equalTo: root.bottomAnchor, constant: -16),
+            timelineControls.widthAnchor.constraint(equalTo: content.widthAnchor),
+            curve.widthAnchor.constraint(equalTo: content.widthAnchor),
+            curve.heightAnchor.constraint(equalToConstant: 232),
+            eventControls.widthAnchor.constraint(equalTo: content.widthAnchor),
+            logScroll.widthAnchor.constraint(equalTo: content.widthAnchor),
+            logScroll.heightAnchor.constraint(greaterThanOrEqualToConstant: 160),
+        ])
+        view = root
+        updateRecordingButton()
+        refreshLog(force: true)
     }
-    @objc func onShortcutMenuItemSelected(_ sender: NSMenuItem) {
-        guard let shortcut = sender.representedObject as? SystemShortcut.Shortcut else {
-            NSLog("[MonitorView] 无法获取快捷键信息")
+
+    private func controls(_ views: [NSView]) -> NSStackView {
+        let row = NSStackView(views: views)
+        row.orientation = .horizontal
+        row.alignment = .centerY
+        row.spacing = 8
+        return row
+    }
+
+    private func makeLogScrollView() -> NSScrollView {
+        let scroll = NSScrollView()
+        scroll.borderType = .bezelBorder
+        scroll.hasVerticalScroller = true
+        scroll.autohidesScrollers = true
+        log.isEditable = false
+        log.isSelectable = true
+        log.isRichText = false
+        log.isVerticallyResizable = true
+        log.autoresizingMask = [.width]
+        log.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        log.textContainer?.containerSize = NSSize(width: 0, height: CGFloat.greatestFiniteMagnitude)
+        log.textContainer?.widthTracksTextView = true
+        log.textContainerInset = NSSize(width: 10, height: 8)
+        log.defaultParagraphStyle = logParagraphStyle
+        scroll.documentView = log
+        return scroll
+    }
+
+    func startRecording() {
+        guard refreshTimer == nil else { return }
+
+        do {
+            tap = try Interceptor(
+                event: Self.tapMask,
+                handleBy: { [weak self] _, type, event, _ in
+                    self?.observe(type, event: event)
+                    return Unmanaged.passUnretained(event)
+                },
+                listenOn: .cgAnnotatedSessionEventTap,
+                placeAt: .tailAppendEventTap,
+                for: .listenOnly
+            )
+            trace.setRecording(true)
+            recordingStarted = true
+            captureUnavailable = false
+            updateStatus()
+            let timer = Timer(timeInterval: 1.0 / 30, repeats: true) { [weak self] _ in
+                self?.refresh()
+            }
+            timer.tolerance = 0.005
+            refreshTimer = timer
+            RunLoop.main.add(timer, forMode: .common)
+            updateRecordingButton()
+        } catch {
+            captureUnavailable = true
+            updateStatus()
+        }
+    }
+
+    func stopRecording() {
+        guard refreshTimer != nil else { return }
+        trace.setRecording(false)
+        refreshTimer?.invalidate()
+        refreshTimer = nil
+        tap?.stop()
+        tap = nil
+        readPendingSamples()
+        displayTime = CACurrentMediaTime()
+        refreshTimeline()
+        refreshLog(force: true)
+        updateRecordingButton()
+    }
+
+    private func observe(_ type: CGEventType, event: CGEvent) {
+        if type == .scrollWheel {
+            trace.record(event, stage: .observed)
+        } else if type != .tapDisabledByTimeout, type != .tapDisabledByUserInput,
+                  let sample = MonitorButtonEvent(event) {
+            buttonHistory.append(sample)
+            if logChannel == .buttons { logNeedsRefresh = true }
+        }
+    }
+
+    private func refresh() {
+        guard InputPermissionMonitor.shared.isAuthorized else {
+            stopRecording()
+            captureUnavailable = true
+            updateStatus()
             return
         }
-        // 使用 ShortcutExecutor 触发快捷键
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        readPendingSamples()
+        displayTime = CACurrentMediaTime()
+        refreshTimeline()
+        if displayTime >= nextLogRefresh {
+            nextLogRefresh = displayTime + 0.15
+            refreshLog()
+            captureUnavailable = tap?.isRunning() != true
+            updateStatus()
+        }
+    }
+
+    private func readPendingSamples() {
+        droppedSamples += trace.drain(into: &incoming)
+        for sample in incoming { scrollHistory.append(sample) }
+        if !incoming.isEmpty && logChannel == .scroll { logNeedsRefresh = true }
+    }
+
+    private func refreshTimeline() {
+        let start = displayTime - windowDuration
+        let visible = scrollHistory.reversed().prefix { $0.time >= start }.filter { $0.stage.lane != nil }
+        curve.update(samples: Array(visible.reversed()), end: displayTime, duration: windowDuration)
+    }
+
+    private func refreshLog(force: Bool = false) {
+        guard force || logNeedsRefresh else { return }
+        let canCopy: Bool
+        switch logChannel {
+        case .scroll: canCopy = !scrollHistory.isEmpty
+        case .buttons: canCopy = !buttonHistory.isEmpty
+        }
+        copyButton.isEnabled = canCopy
+        exportButton.isEnabled = canCopy
+        if !force && (log.selectedRange().length > 0 || (log.enclosingScrollView?.contentView.bounds.minY ?? 0) > 1) {
+            return
+        }
+        logNeedsRefresh = false
+        let lines: [String]
+        switch logChannel {
+        case .scroll: lines = scrollHistory.suffix(60).reversed().map { $0.logLine(since: startTime) }
+        case .buttons: lines = buttonHistory.suffix(60).reversed().map { $0.logLine(since: startTime) }
+        }
+        let empty = lines.isEmpty
+        let text = empty ? NSLocalizedString("monitor-no-events", comment: "Event log empty state") : lines.joined(separator: "\n")
+        let font: NSFont
+        if empty {
+            font = .systemFont(ofSize: 12)
+        } else if #available(macOS 10.15, *) {
+            font = .monospacedSystemFont(ofSize: 11, weight: .regular)
+        } else {
+            font = NSFont.userFixedPitchFont(ofSize: 11) ?? .systemFont(ofSize: 11)
+        }
+        log.textStorage?.setAttributedString(NSAttributedString(string: text, attributes: [
+            .font: font,
+            .foregroundColor: empty ? NSColor.secondaryLabelColor : NSColor.labelColor,
+            .paragraphStyle: logParagraphStyle,
+        ]))
+        log.scrollRangeToVisible(NSRange(location: 0, length: 0))
+    }
+
+    private func logTextForExport() -> String {
+        switch logChannel {
+        case .scroll: return scrollHistory.map { $0.logLine(since: startTime) }.joined(separator: "\n")
+        case .buttons: return buttonHistory.map { $0.logLine(since: startTime) }.joined(separator: "\n")
+        }
+    }
+
+    private func updateRecordingButton() {
+        if refreshTimer != nil {
+            recordingButton.title = NSLocalizedString("monitor-pause", comment: "Pause recording event data")
+        } else if recordingStarted {
+            recordingButton.title = NSLocalizedString("monitor-resume", comment: "Resume recording event data")
+        } else {
+            recordingButton.title = NSLocalizedString("monitor-record", comment: "Start recording event data")
+        }
+    }
+
+    private func updateStatus() {
+        if captureUnavailable {
+            status.stringValue = NSLocalizedString("monitor-capture-unavailable", comment: "The passive event listener could not be enabled")
+        } else if droppedSamples > 0 {
+            let label = NSLocalizedString("monitor-dropped-samples", comment: "Number of scroll samples lost when the capture queue filled")
+            status.stringValue = "\(label) \(droppedSamples)"
+        } else {
+            status.stringValue = ""
+        }
+        status.isHidden = status.stringValue.isEmpty
+    }
+
+    @objc private func toggleRecording() {
+        if refreshTimer == nil {
+            startRecording()
+        } else {
+            stopRecording()
+            captureUnavailable = false
+            updateStatus()
+        }
+    }
+
+    @objc private func changeDuration(_ sender: NSSlider) {
+        windowDuration = (sender.doubleValue * 2).rounded() / 2
+        let seconds = durationFormatter.string(from: NSNumber(value: windowDuration)) ?? String(windowDuration)
+        durationLabel.stringValue = "\(seconds) s"
+        refreshTimeline()
+    }
+
+    @objc private func changeChannel(_ sender: NSSegmentedControl) {
+        guard let channel = LogChannel(rawValue: sender.selectedSegment) else { return }
+        logChannel = channel
+        shortcutButton.isHidden = channel != .buttons
+        refreshLog(force: true)
+    }
+
+    @objc private func clear() {
+        trace.drain(into: &incoming)
+        incoming.removeAll(keepingCapacity: true)
+        scrollHistory.removeAll()
+        buttonHistory.removeAll()
+        droppedSamples = 0
+        displayTime = CACurrentMediaTime()
+        refreshTimeline()
+        refreshLog(force: true)
+        updateStatus()
+    }
+
+    @objc private func copyLog() {
+        readPendingSamples()
+        let text = logTextForExport()
+        guard !text.isEmpty else { return }
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+    }
+
+    @objc private func exportLog() {
+        guard let window = view.window else { return }
+        readPendingSamples()
+        let text = logTextForExport()
+        guard !text.isEmpty else { return }
+
+        let date = DateFormatter()
+        date.dateFormat = "yyyy-MM-dd-HHmmss"
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = "\(logChannel.fileName)-\(date.string(from: Date())).log"
+        panel.allowedFileTypes = ["log", "txt"]
+        panel.beginSheetModal(for: window) { [weak self] response in
+            guard response == .OK, let url = panel.url else { return }
+            do {
+                try text.write(to: url, atomically: true, encoding: .utf8)
+            } catch {
+                self?.presentError(error)
+            }
+        }
+    }
+
+    @objc private func showShortcuts(_ sender: NSButton) {
+        let menu = NSMenu()
+        ShortcutManager.buildShortcutMenu(into: menu, target: self, action: #selector(runShortcut(_:)))
+        menu.items = menu.items.filter { $0.submenu != nil }
+        menu.popUp(positioning: nil, at: NSPoint(x: 0, y: -4), in: sender)
+    }
+
+    @objc private func runShortcut(_ sender: NSMenuItem) {
+        guard let shortcut = sender.representedObject as? SystemShortcut.Shortcut else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             ShortcutExecutor.shared.execute(shortcut)
         }
-    }
-    
-
-    // MARK: - 图表管理
-    // 初始化
-    func initCharts() {
-        // 定义颜色
-        let green = NSUIColor(red: 96.0/255.0, green: 198.0/255.0, blue: 85.0/255.0, alpha: 1.0)
-        let yellow = NSUIColor(red: 246.0/255.0, green: 191.0/255.0, blue: 79.0/255.0, alpha: 1.0)
-        let blue = NSUIColor(red: 52.0/255.0, green: 152.0/255.0, blue: 219.0/255.0, alpha: 1.0)
-        let purple = NSUIColor(red: 155.0/255.0, green: 89.0/255.0, blue: 182.0/255.0, alpha: 1.0)
-        let orange = NSUIColor(red: 230.0/255.0, green: 126.0/255.0, blue: 34.0/255.0, alpha: 1.0)
-        let red = NSUIColor(red: 231.0/255.0, green: 76.0/255.0, blue: 60.0/255.0, alpha: 1.0)
-        
-        // 设置代理
-        lineChart.delegate = self
-        // 初始化图表数据
-        lineChartCount = 0.0
-        
-        // 设置数据集
-        let verticalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Vertical")
-        verticalData.valueTextColor = NSColor.labelColor
-        verticalData.colors = [green]
-        verticalData.circleRadius = 1.5
-        verticalData.circleColors = [green]
-        
-        let horizontalData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "Horizontal")
-        horizontalData.valueTextColor = NSColor.labelColor
-        horizontalData.colors = [yellow]
-        horizontalData.circleRadius = 1.5
-        horizontalData.circleColors = [yellow]
-        
-        let isContinuousData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "IsContinuous")
-        isContinuousData.valueTextColor = NSColor.labelColor
-        isContinuousData.colors = [blue]
-        isContinuousData.circleRadius = 1.5
-        isContinuousData.circleColors = [blue]
-        
-        let scrollCountData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "ScrollCount")
-        scrollCountData.valueTextColor = NSColor.labelColor
-        scrollCountData.colors = [purple]
-        scrollCountData.circleRadius = 1.5
-        scrollCountData.circleColors = [purple]
-        
-        let scrollPhaseData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "ScrollPhase")
-        scrollPhaseData.valueTextColor = NSColor.labelColor
-        scrollPhaseData.colors = [orange]
-        scrollPhaseData.circleRadius = 1.5
-        scrollPhaseData.circleColors = [orange]
-        
-        let momentumPhaseData = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: "MomentumPhase")
-        momentumPhaseData.valueTextColor = NSColor.labelColor
-        momentumPhaseData.colors = [red]
-        momentumPhaseData.circleRadius = 1.5
-        momentumPhaseData.circleColors = [red]
-        
-        lineChart.data = LineChartData(dataSets: [verticalData, horizontalData, isContinuousData, scrollCountData, scrollPhaseData, momentumPhaseData])
-        
-        // 设置图表样式
-        lineChart.noDataTextColor = NSColor.labelColor
-        lineChart.chartDescription.text = ""
-        lineChart.legend.textColor = NSColor.labelColor
-        lineChart.xAxis.labelTextColor = NSColor.labelColor
-        lineChart.leftAxis.labelTextColor = NSColor.labelColor
-        lineChart.rightAxis.labelTextColor = NSColor.labelColor
-        lineChart.drawBordersEnabled = true
-        lineChart.borderColor = NSColor.secondaryLabelColor
-    }
-    // 刷新内容
-    @IBAction func refreshChart(_ sender: Any) {
-        initCharts()
-        // 清空按钮事件日志
-        buttonEventLogStore.clear(.buttonEvent)
-        isButtonPreviewRefreshScheduled = false
-        buttonEventLogTextField?.string = ""
     }
 }

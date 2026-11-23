@@ -33,6 +33,8 @@ extension WindowManager {
             let windowController: NSWindowController
             if identifier == WINDOW_IDENTIFIER.welcomeWindowController || identifier == WINDOW_IDENTIFIER.introductionWindowController {
                 windowController = WelcomeWindowController(identifier: identifier)
+            } else if identifier == WINDOW_IDENTIFIER.monitorWindowController {
+                windowController = MonitorWindowController()
             } else {
                 windowController = Utils.instantiateControllerFromStoryboard(withIdentifier: identifier)
             }

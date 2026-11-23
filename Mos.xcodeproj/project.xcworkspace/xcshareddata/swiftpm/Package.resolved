@@ -1,15 +1,6 @@
 {
-  "originHash" : "af73c27b4be5d9d7fad62ad5b30a4d2dd3cd0404fc359a2993fea7d523571790",
+  "originHash" : "4129178d20908cfb635893b611b5a4eb44359a61746e2b9a38c97153832e072f",
   "pins" : [
-    {
-      "identity" : "charts",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/danielgindi/Charts",
-      "state" : {
-        "revision" : "dd9c72e3d7e751e769971092a6bd72d39198ae63",
-        "version" : "5.1.0"
-      }
-    },
     {
       "identity" : "loginservicekit",
       "kind" : "remoteSourceControl",

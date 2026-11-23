@@ -112,6 +112,9 @@ final class PhasedTrackpadSink: ScrollOutputSink {
         for step in steps {
             for event in Self.makeEvents(for: step, sender: sender) {
                 event.post(tap: .cghidEventTap)
+                if event.type == .scrollWheel {
+                    ScrollMonitorTrace.shared.record(event, stage: .postedToHID)
+                }
             }
         }
     }
