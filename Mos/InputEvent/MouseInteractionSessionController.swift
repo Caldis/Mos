@@ -217,11 +217,13 @@ final class MouseInteractionSessionController {
             do {
                 try motionInterceptor.start()
                 isMotionTapRunning = true
+                return
             } catch {
                 NSLog("MouseInteractionSessionController: Failed to start motion interceptor: \(error)")
                 isMotionTapRunning = false
+                motionInterceptor.stop()
+                self.motionInterceptor = nil
             }
-            return
         }
 
         do {

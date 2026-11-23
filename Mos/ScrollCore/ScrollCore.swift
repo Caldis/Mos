@@ -366,8 +366,8 @@ class ScrollCore: ScrollActionPort {
             guard let hotkey = hotkey else { return nil }
 
             if hotkey.isModifierKey {
-                // 修饰键：通过 flagsChanged 事件检测
-                if isFlagsChanged && keyCode == hotkey.code {
+                // 修饰键：通过 flagsChanged 事件检测, 左右两侧均可触发
+                if isFlagsChanged && hotkey.matchesModifierKeyCode(keyCode) {
                     return event.flags.contains(hotkey.modifierMask)
                 }
             } else if hotkey.matches(event, keyCode: keyCode, mouseButton: mouseButton, isMouseEvent: isMouseEvent) {
@@ -466,11 +466,25 @@ class ScrollCore: ScrollActionPort {
             // 应用滚动适配器: 只在目标应用运行时创建 session 层 tap
             ScrollAdapterCenter.shared.start()
         } catch {
+            disable()
             print("[ScrollCore] Create Interceptor failure: \(error)")
         }
     }
     // 停止
     func disable() {
+        dashKeyHeld = false
+        toggleKeyHeld = false
+        blockKeyHeld = false
+        hidDashHeldCode = nil
+        hidToggleHeldCode = nil
+        hidBlockHeldCode = nil
+        mosDashActionCount = 0
+        mosToggleActionCount = 0
+        mosBlockActionCount = 0
+        currentApplication = nil
+        refreshDashState()
+        refreshToggleState()
+        refreshBlockState()
         // Guard
         if !isActive {return}
         isActive = false

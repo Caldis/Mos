@@ -44,6 +44,22 @@ extension KeyRecorderDelegate {
     }
 }
 
+protocol RecordingEventCapture: AnyObject {
+    func stop()
+}
+
+extension Interceptor: RecordingEventCapture {}
+
+struct KeyRecorderEnvironment {
+    var isAuthorized: () -> Bool = { InputPermissionMonitor.shared.isAuthorized }
+    var createCapture: (CGEventMask, @escaping Interceptor.Handler) throws -> RecordingEventCapture = { mask, handler in
+        try Interceptor(event: mask, handleBy: handler, listenOn: .cgSessionEventTap,
+                        placeAt: .headInsertEventTap, for: .defaultTap)
+    }
+    var beginHardwareRecording: () -> Void = { LogiCenter.shared.beginKeyRecording() }
+    var endHardwareRecording: () -> Void = { LogiCenter.shared.endKeyRecording() }
+}
+
 class KeyRecorder: NSObject {
 
     // MARK: - Constants
@@ -57,8 +73,10 @@ class KeyRecorder: NSObject {
     // Delegate
     weak var delegate: KeyRecorderDelegate?
     // Recording
-    private var interceptor: Interceptor?
-    private var isRecording = false
+    private var interceptor: RecordingEventCapture?
+    private let environment: KeyRecorderEnvironment
+    private(set) var isRecording = false
+    private var recordingGeneration = UUID()
     private var isRecorded = false // 是否已经记录过 (每次启动只记录一个按键
     private var recordTimeoutTimer: Timer? // 超时保护定时器
     private var invalidKeyPressCount = 0 // 无效按键计数
@@ -99,6 +117,11 @@ class KeyRecorder: NSObject {
     private var keyPopover: KeyPopover?
     
     // MARK: - Life Cycle
+    init(environment: KeyRecorderEnvironment = KeyRecorderEnvironment()) {
+        self.environment = environment
+        super.init()
+    }
+
     deinit {
         stopRecording()
     }
@@ -121,10 +144,13 @@ class KeyRecorder: NSObject {
     ///   - mode: 录制模式，默认为组合键模式
     func startRecording(from sourceView: NSView, mode: KeyRecordingMode = .combination) {
         // Guard: 防止重复执行
-        guard !isRecording else { return }
+        guard !isRecording, environment.isAuthorized() else { return }
+        recordingGeneration = UUID()
+        let generation = recordingGeneration
         isRecording = true
         recordingMode = mode
         delegate?.onRecordingStarted(self)
+        guard isRecording, recordingGeneration == generation else { return }
         // Log
         NSLog("[EventRecorder] Starting in \(mode) mode")
         // 确保清理任何存在的录制界面
@@ -134,8 +160,9 @@ class KeyRecorder: NSObject {
         keyPopover = KeyPopover()
         keyPopover?.show(at: sourceView)
         // 异步 divert 所有 Logitech 按键 (BLE 通信有延迟)
-        DispatchQueue.main.async {
-            LogiCenter.shared.beginKeyRecording()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, self.isRecording, self.recordingGeneration == generation else { return }
+            self.environment.beginHardwareRecording()
         }
         // 监听事件
         do {
@@ -160,19 +187,29 @@ class KeyRecorder: NSObject {
                 name: KeyRecorder.CANCEL_NOTI_NAME,
                 object: nil
             )
+            NotificationCenter.default.addObserver(self, selector: #selector(permissionChanged),
+                                                   name: .mosInputPermissionChanged, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(permissionChanged),
+                                                   name: .mosAccessibilityPermissionLost, object: nil)
             // 启动拦截器
-            interceptor = try Interceptor(
-                event: eventMask,
-                handleBy: { (proxy, type, event, refcon) in
+            interceptor = try environment.createCapture(eventMask, { [weak self] (proxy, type, event, refcon) in
+                    guard let self = self, self.isRecording, self.recordingGeneration == generation else {
+                        return Unmanaged.passUnretained(event)
+                    }
+                    if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+                        self.stopRecording()
+                        return Unmanaged.passUnretained(event)
+                    }
                     // 跳过 Mos 合成事件, 避免 executeCustom 的合成事件干扰录制
                     if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
-                        return nil
+                        return Unmanaged.passUnretained(event)
                     }
                     let recordedEvent = event
                     switch type {
                     case .flagsChanged:
                         // 修饰键变化，发送通知 (单键模式下也用于完成录制)
-                        DispatchQueue.main.async {
+                        DispatchQueue.main.async { [weak self] in
+                            guard let self = self, self.isRecording, self.recordingGeneration == generation else { return }
                             NotificationCenter.default.post(
                                 name: KeyRecorder.FLAG_CHANGE_NOTI_NAME,
                                 object: recordedEvent
@@ -180,7 +217,8 @@ class KeyRecorder: NSObject {
                         }
                     case .leftMouseDown, .rightMouseDown, .otherMouseDown:
                         // 鼠标按键
-                        DispatchQueue.main.async {
+                        DispatchQueue.main.async { [weak self] in
+                            guard let self = self, self.isRecording, self.recordingGeneration == generation else { return }
                             NotificationCenter.default.post(
                                 name: KeyRecorder.FINISH_NOTI_NAME,
                                 object: recordedEvent
@@ -189,7 +227,8 @@ class KeyRecorder: NSObject {
                     case .keyDown:
                         // ESC键特殊处理：取消录制
                         if recordedEvent.keyCode == KeyCode.escape {
-                            DispatchQueue.main.async {
+                            DispatchQueue.main.async { [weak self] in
+                                guard let self = self, self.isRecording, self.recordingGeneration == generation else { return }
                                 NotificationCenter.default.post(
                                     name: KeyRecorder.CANCEL_NOTI_NAME,
                                     object: nil
@@ -197,7 +236,8 @@ class KeyRecorder: NSObject {
                             }
                         } else {
                             // 普通按键录制
-                            DispatchQueue.main.async {
+                            DispatchQueue.main.async { [weak self] in
+                                guard let self = self, self.isRecording, self.recordingGeneration == generation else { return }
                                 NotificationCenter.default.post(
                                     name: KeyRecorder.FINISH_NOTI_NAME,
                                     object: recordedEvent
@@ -208,10 +248,7 @@ class KeyRecorder: NSObject {
                         break
                     }
                     return nil
-                },
-                listenOn: CGEventTapLocation.cgSessionEventTap,
-                placeAt: CGEventTapPlacement.headInsertEventTap,
-                for: CGEventTapOptions.defaultTap
+                }
             )
             // 监听 HID++ 事件 (如果 LogiCenter 已启动)
             hidEventObserver = NotificationCenter.default.addObserver(
@@ -233,8 +270,7 @@ class KeyRecorder: NSObject {
             NSLog("[EventRecorder] Started")
         } catch {
             NSLog("[EventRecorder] Failed to start: \(error)")
-            // 如果创建失败，重置状态
-            isRecording = false
+            stopRecording()
         }
     }
     // 修饰键变化处理
@@ -492,16 +528,27 @@ class KeyRecorder: NSObject {
         }
         self.delegate?.onEventRecorded(self, didRecordEvent: mosEvent, isDuplicate: isDuplicate)
 
+        let generation = recordingGeneration
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.recordingFeedbackDelay(isDuplicate: isDuplicate)) { [weak self] in
-            self?.stopRecording()
+            guard let self = self, self.recordingGeneration == generation else { return }
+            self.stopRecording()
         }
     }
+
+    @objc private func permissionChanged() { stopRecording() }
 
     // 停止记录
     func stopRecording() {
         // Guard: 需要 Recording 才进行后续处理
         guard isRecording else { return }
         let didRecord = isRecorded
+        isRecording = false
+        isRecorded = false
+        invalidKeyPressCount = 0
+        recordingGeneration = UUID()
+        // Release the filtering tap before animations or delegate callbacks.
+        interceptor?.stop()
+        interceptor = nil
         // Log
         NSLog("[EventRecorder] Stopping")
         // 隐藏录制界面
@@ -522,29 +569,25 @@ class KeyRecorder: NSObject {
         NotificationCenter.default.removeObserver(self, name: KeyRecorder.FINISH_NOTI_NAME, object: nil)
         NotificationCenter.default.removeObserver(self, name: KeyRecorder.FLAG_CHANGE_NOTI_NAME, object: nil)
         NotificationCenter.default.removeObserver(self, name: KeyRecorder.CANCEL_NOTI_NAME, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .mosInputPermissionChanged, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .mosAccessibilityPermissionLost, object: nil)
         if let observer = hidEventObserver {
             NotificationCenter.default.removeObserver(observer)
             hidEventObserver = nil
         }
+        environment.endHardwareRecording()
         delegate?.onRecordingStopped(self, didRecord: didRecord)
-        // 录制结束: 恢复到只 divert 有绑定的按键
-        LogiCenter.shared.endKeyRecording()
-        // 重置状态 (添加延迟确保 Popover 结束动画完成, 避免多个 popover 重复出现导致卡住)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.isRecording = false
-            self?.isRecorded = false
-            self?.invalidKeyPressCount = 0
-            NSLog("[EventRecorder] Stopped")
-        }
+
     }
     
     // MARK: - Timeout Protection
     private func startTimeoutTimer() {
         cancelTimeoutTimer()
-        recordTimeoutTimer = Timer.scheduledTimer(withTimeInterval: KeyRecorder.TIMEOUT, repeats: false) { [weak self] _ in
+        recordTimeoutTimer = Timer(timeInterval: KeyRecorder.TIMEOUT, repeats: false) { [weak self] _ in
             NSLog("[EventRecorder] Recording timed out")
             self?.stopRecording()
         }
+        if let timer = recordTimeoutTimer { RunLoop.main.add(timer, forMode: .common) }
     }
     private func cancelTimeoutTimer() {
         recordTimeoutTimer?.invalidate()

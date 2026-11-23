@@ -24,14 +24,28 @@ class InputProcessor: ModifierFlagsProviding {
     init() { NSLog("Module initialized: InputProcessor") }
 
     private static let mosScrollTapReplayMovementTolerance: CGFloat = 8.0
+    private static let pendingTriggerClickLimit = 64
 
     // MARK: - Active Bindings Table
     /// 跟踪当前按下中的 stateful 动作, 用于 Up 事件配对
     private var activeBindings: [TriggerKey: ActiveBindingSession] = [:]
+    private var consumedTriggerClicks: Set<NativeMouseClick> = []
 
     private struct TriggerKey: Hashable {
         let type: EventType
         let code: UInt16
+    }
+
+    private struct NativeMouseClick: Hashable {
+        let button: UInt16
+        let number: Int64
+
+        init?(_ event: InputEvent) {
+            guard event.type == .mouse, case let .cgEvent(mouseEvent) = event.source else { return nil }
+            button = event.code
+            // Core Graphics gives matching mouse downs and ups the same event number.
+            number = mouseEvent.getIntegerValueField(.mouseEventNumber)
+        }
     }
 
     private struct ActiveBindingSession {
@@ -59,6 +73,7 @@ class InputProcessor: ModifierFlagsProviding {
             )
         }
         activeBindings.removeAll()
+        consumedTriggerClicks.removeAll(keepingCapacity: true)
         activeModifierFlags = 0
         MouseInteractionSessionController.shared.clearAllSessions()
         MouseInteractionSessionController.shared.refreshMotionTapState()
@@ -92,6 +107,15 @@ class InputProcessor: ModifierFlagsProviding {
     /// - Returns: .consumed 表示事件已处理, .passthrough 表示未匹配
     func process(_ event: InputEvent) -> InputResult {
         assertMainThread()
+        let pendingClick = consumedTriggerClicks.isEmpty ? nil : NativeMouseClick(event)
+        if let pendingClick {
+            // A new down supersedes a lost up when a producer reuses an event number.
+            let matched = consumedTriggerClicks.remove(pendingClick) != nil
+            if matched && event.phase == .up {
+                return .consumed
+            }
+        }
+
         if event.phase == .up {
             // Up 事件: 按 (type, code) 查表, 忽略 modifiers (用户可能已松开修饰键)
             if releaseActiveBinding(for: event) {
@@ -113,6 +137,13 @@ class InputProcessor: ModifierFlagsProviding {
         }
 
         if action.executionMode == .trigger {
+            if let click = pendingClick ?? NativeMouseClick(event) {
+                // Bound the state when another input tool drops releases.
+                if consumedTriggerClicks.count >= Self.pendingTriggerClickLimit {
+                    consumedTriggerClicks.removeAll(keepingCapacity: true)
+                }
+                consumedTriggerClicks.insert(click)
+            }
             ShortcutExecutor.shared.execute(action: action, phase: .down, inputModifiers: event.modifiers)
             return .consumed
         }

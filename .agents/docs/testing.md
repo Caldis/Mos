@@ -26,6 +26,35 @@ xcodebuild -scheme Debug -destination 'platform=macOS' test -only-testing:MosTes
 | 本地化 / UI 文案 | 检查 `LOCALIZATION.md`，确认 `.xcstrings` 同步 | 长文本、Dark Mode、macOS 10.13 fallback 人工验证 |
 | 准备发布 / appcast 更新 | `release-preparation` skill 内的验证步骤 | GitHub draft 与 appcast URL 对齐 |
 
+## 输入事件端到端复验
+
+`scripts/qa/mouse-input-qa.py` 用本机 Quartz 发送一对侧键按下和松开，在 Mos 的事件监听前后观察同一编号，再核对浏览器页面。远程桌面只需操作浏览器，侧键从 Mac 本机进入事件链。探针需要 macOS 10.15+、Xcode 命令行工具以及当前终端已有的辅助功能、输入监听和屏幕录制权限。浏览器使用前台窗口的标题确认测试目标。
+
+准备修复前后的两份正常签名 Debug 构建，分别放在独立的 DerivedData 中。`app` 子命令接受已有辅助功能授权、支持 `--mos-check-input-permission` 的 `com.caldis.Mos.debug`。退出其他运行中的 Mos，再开始测试。工具先启动独立的本机 launchd 定时器，每轮只启动一份 Debug，绑定通过进程参数载入。到期时定时器会退出该会话的 Debug。
+
+以下用 #1068 作例子。先运行 `start`，保存输出的 `session`，用 Chrome 访客窗口打开输出的 `url`，沿页内链接依次访问第 1、2、3 页。在最左边的 macOS 桌面运行测试，确保绑定的「向左移动空间」没有可切换的目标。每轮 `check` 都从第 3 页开始，退页后从浏览器前进回到第 3 页。
+
+探针需要页面有可点击的露出区域。如果提示窗口被覆盖，可放大验收窗口后重试。
+
+```bash
+python3 scripts/qa/mouse-input-qa.py start
+
+# 把 path 变量设为前一步输出的会话和实际的 Debug app 路径。
+python3 scripts/qa/mouse-input-qa.py check "$qa_session" --expect both --page 2
+python3 scripts/qa/mouse-input-qa.py app "$qa_session" "$qa_baseline_app" --bind 3=moveSpaceLeft
+python3 scripts/qa/mouse-input-qa.py check "$qa_session" --expect up --page 2
+python3 scripts/qa/mouse-input-qa.py app "$qa_session" "$qa_fixed_app" --bind 3=moveSpaceLeft
+python3 scripts/qa/mouse-input-qa.py check "$qa_session" --expect none --page 3
+python3 scripts/qa/mouse-input-qa.py check "$qa_session" --button 5 --expect both --page 3
+python3 scripts/qa/mouse-input-qa.py stop "$qa_session"
+```
+
+`check` 返回非零表示输入链或页面与预期不符。保留会话内的 `results.jsonl` 作为对照证据。`stop` 清除该会话的 launchd 任务，并核对 Debug 持久设置和启动前一致。关闭为验收打开的浏览器窗口。
+
+- **Quartz** 覆盖系统鼠标事件经过 Mos 到浏览器的路径，组合键的精确按下和松开语义另用 `InputProcessorTests` 验证。
+- **虚拟 HID** 需要实际创建设备，并确认系统解析了它发出的 HID 报告。CoreHID 使用系统授权的 `com.apple.developer.hid.virtual.device`。此工具的记录标为 `quartz`，HID 设备枚举和报告链路需要单独证据。
+- **实体设备** 覆盖 USB / 蓝牙和 Logitech HID++ 等硬件特有行为，按下面的设备测试流程验收。
+
 ## 真实设备测试
 
 真实 Logi 设备测试前必须先向用户确认设备已连接：

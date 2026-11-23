@@ -129,6 +129,9 @@ class ShortcutExecutor {
     weak var modifierFlagsProvider: ModifierFlagsProviding?
 
     private var testingMouseEventObserver: ((CGEvent) -> Void)?
+    #if DEBUG
+    var testingKeyboardEventObserver: ((CGEvent) -> Void)?
+    #endif
 
     /// 快速识别 Mos Scroll 三个 stateful 动作, 供事件热路径避免完整 action 解析。
     static func isMosScrollActionIdentifier(_ shortcutName: String) -> Bool {
@@ -151,7 +154,7 @@ class ShortcutExecutor {
         // 发送按键按下事件
         if let keyDown = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: true) {
             keyDown.flags = CGEventFlags(rawValue: flags)
-            keyDown.post(tap: .cghidEventTap)
+            postKeyboardEvent(keyDown)
         }
 
         // 发送按键抬起事件
@@ -159,8 +162,18 @@ class ShortcutExecutor {
             if preserveFlagsOnKeyUp {
                 keyUp.flags = CGEventFlags(rawValue: flags)
             }
-            keyUp.post(tap: .cghidEventTap)
+            postKeyboardEvent(keyUp)
         }
+    }
+
+    private func postKeyboardEvent(_ event: CGEvent) {
+        #if DEBUG
+        if let testingKeyboardEventObserver {
+            testingKeyboardEventObserver(event)
+            return
+        }
+        #endif
+        event.post(tap: .cghidEventTap)
     }
 
     /// 执行系统快捷键 (从SystemShortcut.Shortcut对象)
@@ -302,14 +315,14 @@ class ShortcutExecutor {
             }
             // 标记为 Mos 合成事件, 避免被 ScrollCore/ButtonCore/KeyRecorder 误处理
             event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
-            event.post(tap: .cghidEventTap)
+            postKeyboardEvent(event)
         } else {
             // 普通键: 使用 keyDown/keyUp
             guard let event = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: phase == .down) else { return }
             event.flags = CGEventFlags(rawValue: modifiers)
             // 标记为 Mos 合成事件
             event.setIntegerValueField(.eventSourceUserData, value: MosEventMarker.syntheticCustom)
-            event.post(tap: .cghidEventTap)
+            postKeyboardEvent(event)
         }
     }
 

@@ -1,19 +1,7 @@
-//
-//  Interceptor.swift
-//  Mos
-//  事件截取工具函数
-//  Created by Caldis on 2018/3/18.
-//  Copyright © 2018年 Caldis. All rights reserved.
-//
-
 import Cocoa
 
-class Interceptor {
-
+final class Interceptor {
     private var keeper: Timer?
-    private var _eventTapRef: CFMachPort?
-    private var _runLoopSourceRef: CFRunLoopSource?
-
     /// keeper 触发的自动重启时间戳, 仅保留冷却窗口内的记录
     private var autoRestartHistory: [Date] = []
 
@@ -29,146 +17,121 @@ class Interceptor {
         return history.filter { $0 > windowStart }.count >= autoRestartLimit
     }
 
-    /// 重启时的额外清理操作 (由调用方注入, 避免 Interceptor 耦合特定子系统)
-    /// 注意: 闭包不应捕获 Interceptor 实例, 否则会形成循环引用
+    private var registration: UUID?
+    private var tap: CFMachPort?
+    private var source: CFRunLoopSource?
+    private let ownerRunLoop = CFRunLoopGetCurrent()
+    typealias Handler = (CGEventTapProxy, CGEventType, CGEvent, UnsafeMutableRawPointer?) -> Unmanaged<CGEvent>?
+    private let handler: Handler
+    private let gate: InputPermissionGate
     var onRestart: (() -> Void)?
-    /// 控制是否继续执行自动重启逻辑 (默认 true)
     var shouldRestart: (() -> Bool)?
-    
-    // 可访问对象只读
-    public var eventTapRef: CFMachPort? { _eventTapRef }
-    public var runLoopSourceRef: CFRunLoopSource? { _runLoopSourceRef }
-    
-    public init(event mask: CGEventMask, handleBy eventHandler: @escaping CGEventTapCallBack, listenOn eventTap: CGEventTapLocation, placeAt eventPlace: CGEventTapPlacement, for behaver: CGEventTapOptions) throws {
-        // 创建拦截层
-        guard let tap = CGEvent.tapCreate(tap: eventTap, place: eventPlace, options: behaver, eventsOfInterest: mask, callback: eventHandler, userInfo: nil) else {
-            throw InterceptorError.eventTapCreationFailed
-        }
-        _eventTapRef = tap
-        _runLoopSourceRef = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
-        // 启动
-        try start()
-    }
-    
-    deinit {
-        // 先停止所有操作
-        stop()
-        // 清理 event tap
-        if let tap = _eventTapRef {
-            CGEvent.tapEnable(tap: tap, enable: false)
-            // CoreGraphics 内部持有该 CFMachPort 的引用, 仅释放引用不会销毁它; 不调用
-            // CFMachPortInvalidate 的话, WindowServer 会保留这个 (已禁用的) tap 注册直到
-            // 进程退出。ScrollCore/ButtonCore 每次休眠唤醒都重建 Interceptor, 累积的僵尸
-            // 注册会拖慢全系统输入 (#970)。
-            CFMachPortInvalidate(tap)
-            _eventTapRef = nil
-        }
-        // 清理 run loop source
-        if let source = _runLoopSourceRef {
-            if CFRunLoopContainsSource(CFRunLoopGetCurrent(), source, .commonModes) {
-                CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, .commonModes)
-            }
-            _runLoopSourceRef = nil
-        }
-    }
-}
 
-// MARK: - Error Type
-extension Interceptor {
+    var eventTapRef: CFMachPort? { tap }
+    var runLoopSourceRef: CFRunLoopSource? { source }
+
     enum InterceptorError: Error {
         case eventTapCreationFailed
         case eventTapEnableFailed
     }
-}
 
-// MARK: - 开关
-extension Interceptor {
-    @objc public func start() throws {
-        // 创建拦截层
-        guard let tap = _eventTapRef, let source = _runLoopSourceRef else {
+    init(event mask: CGEventMask, handleBy eventHandler: @escaping Handler,
+         listenOn location: CGEventTapLocation, placeAt placement: CGEventTapPlacement,
+         for options: CGEventTapOptions) throws {
+        handler = eventHandler
+        gate = InputPermissionMonitor.shared.gate
+        guard gate.isAuthorized else { throw InterceptorError.eventTapEnableFailed }
+        guard let created = CGEvent.tapCreate(tap: location, place: placement, options: options,
+            eventsOfInterest: mask, callback: { proxy, type, event, context in
+                guard let context = context else { return Unmanaged.passUnretained(event) }
+                let owner = Unmanaged<Interceptor>.fromOpaque(context).takeUnretainedValue()
+                guard owner.gate.isAuthorized else { return Unmanaged.passUnretained(event) }
+                return owner.handler(proxy, type, event, nil)
+            }, userInfo: Unmanaged.passUnretained(self).toOpaque()) else {
+            throw InterceptorError.eventTapCreationFailed
+        }
+        CGEvent.tapEnable(tap: created, enable: false)
+        tap = created
+        guard let createdSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, created, 0) else {
+            CFMachPortInvalidate(created)
+            throw InterceptorError.eventTapCreationFailed
+        }
+        source = createdSource
+        try start()
+    }
+
+    deinit { stop() }
+
+    func start() throws {
+        keeper?.invalidate()
+        guard let tap = tap, let source = source, CFMachPortIsValid(tap) else {
             throw InterceptorError.eventTapEnableFailed
         }
-        // 权限已被撤销时, 不启用 tap, 避免僵尸 tap 吞没系统事件
-        guard AXIsProcessTrusted() else {
-            NotificationCenter.default.post(name: .mosAccessibilityPermissionLost, object: nil)
+        if let id = registration { gate.remove(id) }
+        registration = nil
+        // Registration and enable share the lease lock with revocation.
+        registration = gate.register(activate: {
+            CFRunLoopAddSource(ownerRunLoop, source, .commonModes)
+            CGEvent.tapEnable(tap: tap, enable: true)
+        }, release: {
+            CGEvent.tapEnable(tap: tap, enable: false)
+            CFMachPortInvalidate(tap)
+            CFRunLoopSourceInvalidate(source)
+        })
+        guard registration != nil, gate.isAuthorized, CFMachPortIsValid(tap) else {
             throw InterceptorError.eventTapEnableFailed
         }
-        // 确保 source 没有被重复添加
-        if !CFRunLoopContainsSource(CFRunLoopGetCurrent(), source, .commonModes) {
-            CFRunLoopAddSource(CFRunLoopGetCurrent(), source, .commonModes)
-        }
-        // 启动拦截层
-        CGEvent.tapEnable(tap: tap, enable: true)
-        // 启动守护
-        keeper = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
+        let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
             guard let self = self else { return }
-            // 权限被撤销时, 主动停止 tap 并通知, 不等 restart 判断
-            guard AXIsProcessTrusted() else {
-                self.stop()
-                self.onRestart?()
-                NotificationCenter.default.post(name: .mosAccessibilityPermissionLost, object: nil)
-                return
-            }
             if !self.isRunning() {
                 let now = Date()
                 self.autoRestartHistory.removeAll { now.timeIntervalSince($0) >= Self.autoRestartWindow }
-                guard !Self.isAutoRestartThrottled(history: self.autoRestartHistory, now: now) else {
-                    NSLog("Mos: event tap auto-restart throttled (%d restarts within %.0fs), cooling down",
-                          Self.autoRestartLimit, Self.autoRestartWindow)
-                    return
-                }
+                guard !Self.isAutoRestartThrottled(history: self.autoRestartHistory, now: now) else { return }
                 self.autoRestartHistory.append(now)
                 self.restart()
             }
         }
-    }
-    
-    public func stop() {
-        stop(removeFromRunLoop: true)
+        keeper = timer
+        RunLoop.current.add(timer, forMode: .common)
     }
 
-    public func pause() {
-        stop(removeFromRunLoop: false)
-    }
-
-    private func stop(removeFromRunLoop: Bool) {
-        // 停止守护
+    func stop() {
         keeper?.invalidate()
         keeper = nil
-        // 关闭拦截层
-        if let tap = _eventTapRef, let source = _runLoopSourceRef {
+        if let id = registration { gate.remove(id) }
+        registration = nil
+        if let tap = tap {
             CGEvent.tapEnable(tap: tap, enable: false)
-            if removeFromRunLoop, CFRunLoopContainsSource(CFRunLoopGetCurrent(), source, .commonModes) {
-                CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, .commonModes)
-            }
+            CFMachPortInvalidate(tap)
         }
+        if let source = source {
+            CFRunLoopRemoveSource(ownerRunLoop, source, .commonModes)
+            CFRunLoopSourceInvalidate(source)
+        }
+        source = nil
+        tap = nil
     }
-}
 
-// MARK: - 状态
-extension Interceptor {
-    public func isRunning() -> Bool {
-        if let tap = _eventTapRef {
-            return CGEvent.tapIsEnabled(tap: tap)
-        } else {
-            return false
-        }
+    func pause() {
+        keeper?.invalidate()
+        keeper = nil
+        if let tap = tap { CGEvent.tapEnable(tap: tap, enable: false) }
     }
-    
-    public func restart() {
-        // 权限已被撤销时, 不再尝试重新启用 tap
-        guard AXIsProcessTrusted() else {
+
+    func isRunning() -> Bool {
+        guard let tap = tap, CFMachPortIsValid(tap) else { return false }
+        return gate.isAuthorized && CGEvent.tapIsEnabled(tap: tap)
+    }
+
+    func restart() {
+        guard gate.isAuthorized, let tap = tap, CFMachPortIsValid(tap) else {
             stop()
             onRestart?()
-            NotificationCenter.default.post(name: .mosAccessibilityPermissionLost, object: nil)
             return
         }
         pause()
         onRestart?()
         guard shouldRestart?() ?? true else { return }
-        // 使用 closure timer 避免 @objc throws 方法作为 selector 的 ObjC bridge 问题
-        keeper = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
-            try? self?.start()
-        }
+        try? start()
     }
 }
