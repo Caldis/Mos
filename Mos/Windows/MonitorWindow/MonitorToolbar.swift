@@ -41,8 +41,19 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
         toolbar.allowsUserCustomization = false
         toolbar.autosavesConfiguration = false
 
-        setAppearance(of: clearItem, named: NSLocalizedString("monitor-clear", comment: "Clear Monitor"), symbol: "trash")
-        setAppearance(of: exportItem, named: NSLocalizedString("monitor-export-log", comment: "Export Monitor events"), symbol: "arrow.down.doc")
+        let clearSymbol: String
+        if #available(macOS 12.0, *) {
+            clearSymbol = "eraser"
+        } else {
+            clearSymbol = "clear"
+        }
+        setAppearance(
+            of: clearItem, named: NSLocalizedString("monitor-clear", comment: "Clear Monitor"), symbol: clearSymbol
+        )
+        setAppearance(
+            of: exportItem, named: NSLocalizedString("monitor-export-log", comment: "Export Monitor events"),
+            symbol: "square.and.arrow.up"
+        )
         update(.paused, canClear: false, canExport: false)
     }
 
@@ -65,17 +76,17 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
         case .recording:
             caption = NSLocalizedString("monitor-recording", comment: "Monitor is recording")
             action = NSLocalizedString("monitor-pause", comment: "Pause Monitor")
-            icon = "pause.circle.fill"
+            icon = "pause.fill"
             tint = .systemGreen
         case .paused:
             caption = NSLocalizedString("monitor-paused", comment: "Monitor is paused")
             action = NSLocalizedString("monitor-resume", comment: "Resume Monitor")
-            icon = "play.circle"
+            icon = "play.fill"
             tint = nil
         case .accessibilityRequired, .tapUnavailable:
             caption = NSLocalizedString("monitor-unavailable", comment: "Monitor capture is unavailable")
             action = NSLocalizedString("monitor-retry", comment: "Retry Monitor capture")
-            icon = "arrow.clockwise.circle"
+            icon = "arrow.clockwise"
             tint = .systemOrange
         }
         setAppearance(of: captureItem, named: "\(caption) · \(action)", symbol: icon, tint: tint)
