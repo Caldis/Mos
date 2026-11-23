@@ -353,6 +353,17 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertTrue(NSApp.sendAction(try XCTUnwrap(reset.action), to: reset.target, from: reset))
         XCTAssertEqual(table.tableColumns.filter { !$0.isHidden }.map { $0.identifier.rawValue }, defaults)
         XCTAssertTrue(pointColumn.isHidden)
+
+        let note = NSLocalizedString("monitor-button-capture-note", comment: "")
+        XCTAssertFalse(header.arrangedSubviews.compactMap { $0 as? NSTextField }.contains {
+            $0.stringValue == note && !$0.isHidden
+        })
+        events.update(channel: .buttons, selectedID: nil)
+        let noteView = try XCTUnwrap(header.arrangedSubviews.compactMap { $0 as? NSTextField }.first {
+            $0.stringValue == note
+        })
+        XCTAssertFalse(noteView.isHidden)
+        XCTAssertTrue(filters.isHidden)
     }
 
     @MainActor
@@ -376,6 +387,10 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertEqual(button.imagePosition, .imageOnly)
         XCTAssertNotNil(button.image)
         XCTAssertEqual(button.toolTip, NSLocalizedString("monitor-follow-latest", comment: ""))
+        XCTAssertEqual(button.frame.size, NSSize(width: 22, height: MonitorStyle.headerControlHeight))
+        let buttonInPane = events.view.convert(button.bounds, from: button)
+        XCTAssertEqual(events.view.bounds.maxY - buttonInPane.maxY, MonitorStyle.contentVerticalInset, accuracy: 0.5)
+        XCTAssertEqual(events.view.bounds.maxX - buttonInPane.maxX, MonitorStyle.padding, accuracy: 0.5)
         let scroller = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSScrollView }.first)
         XCTAssertGreaterThan(scroller.contentView.bounds.height, 0)
         let table = try XCTUnwrap(scroller.documentView as? NSTableView)
@@ -427,6 +442,8 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertEqual(copy.imagePosition, .imageOnly)
         XCTAssertNotNil(copy.image)
         XCTAssertEqual(copy.toolTip, NSLocalizedString("monitor-copy-raw", comment: ""))
+        XCTAssertEqual(copy.frame.size, NSSize(width: 22, height: MonitorStyle.headerControlHeight))
+        XCTAssertEqual(close.frame.size, copy.frame.size)
         XCTAssertEqual(copy.frame.midY, close.frame.midY, accuracy: 0.5)
         XCTAssertLessThan(copy.frame.maxX, close.frame.minX)
         let scroller = try XCTUnwrap(content.arrangedSubviews.compactMap { $0 as? NSScrollView }.first)

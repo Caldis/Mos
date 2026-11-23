@@ -9408,6 +9408,100 @@
         }
       }
     },
+    "monitor-button-capture-note": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kliknutí levým a pravým tlačítkem se nezaznamenávají"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Linke und rechte Mausklicks werden nicht erfasst"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Δεν καταγράφονται κλικ με το αριστερό και το δεξί κουμπί"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left and right mouse clicks are excluded"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les clics gauche et droit ne sont pas enregistrés"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マウスの左右クリックは記録しません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "마우스 왼쪽·오른쪽 클릭은 기록하지 않음"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Щелчки левой и правой кнопками не записываются"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่บันทึกการคลิกเมาส์ปุ่มซ้ายและขวา"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sol ve sağ fare tıklamaları kaydedilmez"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Клацання лівою й правою кнопками миші не записуються"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不记录鼠标左右键"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不記錄滑鼠左右鍵"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不記錄滑鼠左鍵和右鍵"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不記錄滑鼠左右鍵"
+          }
+        }
+      }
+    },
     "monitor-follow-latest": {
       "localizations": {
         "cs": {

@@ -5,6 +5,9 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
     private var table = NSTableView()
     private let scroller = NSScrollView()
     private let empty = NSTextField(labelWithString: NSLocalizedString("monitor-no-events", comment: "Empty Monitor table"))
+    private let buttonCaptureNote = NSTextField(labelWithString: NSLocalizedString(
+        "monitor-button-capture-note", comment: "Primary mouse clicks are excluded from the Monitor button log"
+    ))
     private lazy var scrollFilters: NSStackView = {
         let input = makeFilter(
             MonitorPresentation.stageName(.captured), filter: .captured,
@@ -21,12 +24,14 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
     }()
     private lazy var followLatestButton: NSButton = {
         let title = NSLocalizedString("monitor-follow-latest", comment: "Keep the newest event in view")
-        let button = NSButton(title: title, target: self, action: #selector(toggleFollowLatest(_:)))
+        let button = MonitorHeaderIconButton()
+        button.title = title
+        button.target = self
+        button.action = #selector(toggleFollowLatest(_:))
         button.setButtonType(.pushOnPushOff)
         button.identifier = NSUserInterfaceItemIdentifier("monitor.followLatest")
         MonitorStyle.styleButton(button, neutral: true)
         setMonitorButtonIcon(button, symbol: "arrow.up.to.line", fallback: NSImage.touchBarGoUpTemplateName)
-        button.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
         return button
     }()
     private lazy var columnMenu: NSMenu = {
@@ -58,7 +63,13 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
         let root = NSView()
         MonitorStyle.styleSection(root, isLog: true)
         let title = MonitorStyle.sectionHeader(NSLocalizedString("monitor-events", comment: "Events table heading"))
-        let header = NSStackView(views: [title, scrollFilters, NSView(), followLatestButton])
+        buttonCaptureNote.font = .systemFont(ofSize: 10)
+        buttonCaptureNote.textColor = .secondaryLabelColor
+        buttonCaptureNote.lineBreakMode = .byTruncatingTail
+        buttonCaptureNote.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        buttonCaptureNote.toolTip = buttonCaptureNote.stringValue
+        buttonCaptureNote.isHidden = true
+        let header = NSStackView(views: [title, scrollFilters, buttonCaptureNote, NSView(), followLatestButton])
         header.alignment = .centerY
         header.spacing = 8
         header.detachesHiddenViews = true
@@ -104,6 +115,7 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
             table.dataSource = nil
             self.channel = channel
             scrollFilters.isHidden = channel == .buttons
+            buttonCaptureNote.isHidden = channel != .buttons
             table = NSTableView()
             configureTable()
         }
@@ -263,7 +275,7 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
     private let sourceTitle = NSTextField(labelWithString: "")
     private let sourceValue = NSTextField(labelWithString: "")
     private let source = NSStackView()
-    private let copyButton = NSButton()
+    private let copyButton = MonitorHeaderIconButton()
     private var fields: [MonitorField] = []
 
     var didClose: (() -> Void)?
@@ -276,22 +288,17 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         root.addSubview(panel)
         let title = MonitorStyle.sectionHeader(NSLocalizedString("monitor-inspector", comment: "Selected event inspector"))
         let closeTitle = NSLocalizedString("monitor-close-inspector", comment: "Close the event inspector")
-        let close = NSButton(title: closeTitle, target: self, action: #selector(closeInspector))
+        let close = MonitorHeaderIconButton()
+        close.title = closeTitle
+        close.target = self
+        close.action = #selector(closeInspector)
         MonitorStyle.styleButton(close, neutral: true)
-        close.widthAnchor.constraint(greaterThanOrEqualToConstant: 22).isActive = true
-        close.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
-        if #available(macOS 11.0, *), let icon = NSImage(systemSymbolName: "xmark", accessibilityDescription: closeTitle) {
-            close.image = icon
-            close.imagePosition = .imageOnly
-            close.setAccessibilityLabel(closeTitle)
-            close.toolTip = closeTitle
-        }
+        setMonitorButtonIcon(close, symbol: "xmark", fallback: NSImage.stopProgressFreestandingTemplateName)
         copyButton.title = NSLocalizedString("monitor-copy-raw", comment: "Copy the selected event fields")
         copyButton.target = self
         copyButton.action = #selector(copyRawValues)
         MonitorStyle.styleButton(copyButton)
         setMonitorButtonIcon(copyButton, symbol: "doc.on.doc", fallback: NSImage.multipleDocumentsName)
-        copyButton.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
         let header = row([title, NSView(), copyButton, close])
 
         sourceTitle.textColor = .secondaryLabelColor
@@ -388,7 +395,12 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
     }
 }
 
-private func setMonitorButtonIcon(_ button: NSButton, symbol: String, fallback: NSImage.Name) {
+private final class MonitorHeaderIconButton: NSButton {
+    // Auto Layout aligns the same frame that the custom background layer fills.
+    override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsets() }
+}
+
+private func setMonitorButtonIcon(_ button: MonitorHeaderIconButton, symbol: String, fallback: NSImage.Name) {
     let title = button.title
     if #available(macOS 11.0, *), let image = NSImage(systemSymbolName: symbol, accessibilityDescription: title) {
         button.image = image
@@ -400,6 +412,7 @@ private func setMonitorButtonIcon(_ button: NSButton, symbol: String, fallback: 
     button.setAccessibilityLabel(title)
     button.toolTip = title
     button.widthAnchor.constraint(equalToConstant: 22).isActive = true
+    button.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
 }
 
 private func configureMonitorTable(_ table: NSTableView, in scroller: NSScrollView) {

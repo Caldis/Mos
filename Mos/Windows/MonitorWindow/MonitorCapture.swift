@@ -37,11 +37,11 @@ final class MonitorCapture {
     }
 
     // Observe at the head of Session so buttons stopped by an active filter
-    // later in that tap still appear here. No decisions are inferred from it.
+    // later in that tap still appear here. Primary mouse clicks are excluded
+    // so clicking the Monitor does not populate the list.
     private static let buttonTap = CGEventTapLocation.cgSessionEventTap
     private static let observedButtons = [
-        CGEventType.leftMouseDown, .leftMouseUp, .rightMouseDown, .rightMouseUp,
-        .otherMouseDown, .otherMouseUp, .keyDown, .keyUp, .flagsChanged,
+        CGEventType.otherMouseDown, .otherMouseUp, .keyDown, .keyUp, .flagsChanged,
     ].reduce(CGEventMask(0)) { $0 | (CGEventMask(1) << $1.rawValue) }
 
     private let trace = ScrollMonitorTrace.shared
