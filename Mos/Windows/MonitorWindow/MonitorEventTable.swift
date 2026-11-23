@@ -48,13 +48,14 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
         empty.textColor = .secondaryLabelColor
         root.addSubview(empty)
         NSLayoutConstraint.activate([
-            header.topAnchor.constraint(equalTo: root.topAnchor, constant: 4),
+            header.topAnchor.constraint(equalTo: root.topAnchor, constant: MonitorStyle.contentVerticalInset),
+            header.heightAnchor.constraint(greaterThanOrEqualToConstant: MonitorStyle.headerControlHeight),
             header.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: MonitorStyle.padding),
             header.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -MonitorStyle.padding),
             scroller.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 2),
             scroller.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: 4),
             scroller.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -4),
-            scroller.bottomAnchor.constraint(equalTo: root.bottomAnchor, constant: -4),
+            scroller.bottomAnchor.constraint(equalTo: root.bottomAnchor, constant: -MonitorStyle.contentVerticalInset),
             empty.centerXAnchor.constraint(equalTo: scroller.centerXAnchor),
             empty.centerYAnchor.constraint(equalTo: scroller.centerYAnchor),
         ])
@@ -166,7 +167,7 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         let close = NSButton(title: closeTitle, target: self, action: #selector(closeInspector))
         MonitorStyle.styleButton(close, neutral: true)
         close.widthAnchor.constraint(greaterThanOrEqualToConstant: 22).isActive = true
-        close.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        close.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
         if #available(macOS 11.0, *), let icon = NSImage(systemSymbolName: "xmark", accessibilityDescription: closeTitle) {
             close.image = icon
             close.imagePosition = .imageOnly
@@ -189,7 +190,7 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         copyButton.target = self
         copyButton.action = #selector(copyRawValues)
         MonitorStyle.styleButton(copyButton)
-        copyButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        copyButton.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
         let rawHeader = row([rawTitle, NSView(), copyButton])
 
         configureMonitorTable(table, in: scroller)
@@ -213,10 +214,10 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
             panel.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: MonitorStyle.padding - 1),
             panel.trailingAnchor.constraint(equalTo: root.trailingAnchor),
             panel.bottomAnchor.constraint(equalTo: root.bottomAnchor),
-            content.topAnchor.constraint(equalTo: panel.topAnchor, constant: 4),
+            content.topAnchor.constraint(equalTo: panel.topAnchor, constant: MonitorStyle.contentVerticalInset),
             content.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: MonitorStyle.padding),
             content.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -MonitorStyle.padding),
-            content.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -4),
+            content.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -MonitorStyle.contentVerticalInset),
             header.widthAnchor.constraint(equalTo: content.widthAnchor),
             source.widthAnchor.constraint(equalTo: content.widthAnchor),
             rawHeader.widthAnchor.constraint(equalTo: content.widthAnchor),

@@ -262,9 +262,15 @@ final class EventMonitorTests: XCTestCase {
         root.layoutSubtreeIfNeeded()
         let content = try XCTUnwrap(root.subviews.first as? NSStackView)
         XCTAssertLessThan(root.convert(content.frame, to: nil).maxY, window.contentLayoutRect.maxY)
-        let timeline = try XCTUnwrap(content.arrangedSubviews.first { $0 is MonitorTimelineView })
+        let timeline = try XCTUnwrap(content.arrangedSubviews.compactMap { $0 as? MonitorTimelineView }.first)
         XCTAssertFalse(timeline.isHidden)
         XCTAssertGreaterThan(timeline.frame.height, 180)
+        let header = try XCTUnwrap(timeline.subviews.compactMap { $0 as? NSStackView }.first)
+        if #available(macOS 26.0, *) {
+            let radius = try XCTUnwrap(timeline.layer?.cornerRadius)
+            XCTAssertEqual(timeline.bounds.maxY - header.frame.midY, radius, accuracy: 0.5)
+        }
+        XCTAssertEqual(timeline.curve.frame.minY - timeline.bounds.minY, MonitorStyle.contentVerticalInset, accuracy: 0.5)
 
         modes.selectedSegment = MonitorChannel.buttons.rawValue
         XCTAssertTrue(NSApp.sendAction(try XCTUnwrap(modes.action), to: modes.target, from: modes))

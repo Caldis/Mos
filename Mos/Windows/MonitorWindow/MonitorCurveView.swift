@@ -274,13 +274,13 @@ final class MonitorTimelineView: NSView {
         curve.setAccessibilityLabel(title.stringValue)
         addSubview(curve)
         NSLayoutConstraint.activate([
-            header.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            header.topAnchor.constraint(equalTo: topAnchor, constant: MonitorStyle.contentVerticalInset),
             header.leadingAnchor.constraint(equalTo: leadingAnchor, constant: MonitorStyle.padding),
             header.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -MonitorStyle.padding),
             curve.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 2),
             curve.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
             curve.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
-            curve.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
+            curve.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -MonitorStyle.contentVerticalInset),
         ])
         updateRangeControls()
     }
@@ -313,7 +313,7 @@ final class MonitorTimelineView: NSView {
         button.title = symbol
         MonitorStyle.styleButton(button, neutral: true)
         button.widthAnchor.constraint(greaterThanOrEqualToConstant: 20).isActive = true
-        button.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        button.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
         button.target = self
         button.action = action
         button.toolTip = name
