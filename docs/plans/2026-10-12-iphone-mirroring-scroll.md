@@ -121,10 +121,9 @@ flowchart LR
 
 ## 验证
 
-- Debug build 通过; 当前 Xcode 27 不支持 10.13 部署目标, 本地编译验证使用 MACOSX_DEPLOYMENT_TARGET=12.0 覆盖
-- 二进制中 CoreHID 为弱链接 (LC_LOAD_WEAK_DYLIB)
-- MosTests 全部 573 项通过 (3 项跳过), 新增 PhasedTrackpadOutputTests 21 项
-- 实机验证需要签名包含 HID Virtual Device, 尚未进行
+- 2026-10-12 使用 Xcode 27 完成 Debug 构建, 命令行临时使用 macOS 12.0 部署目标。二进制中 CoreHID 为弱链接 (LC_LOAD_WEAK_DYLIB)
+- 2026-10-12 的 MosTests 日志记录 576 项, 3 项跳过, 0 项失败。维护者使用带 HID Virtual Device 授权的 Debug 版验证了镜像平滑滚动和光标移动
+- 2026-11-23 使用临时工程运行 105 项定向测试, 0 项失败。测试产物的 Mos 主程序部署目标为 macOS 12.0, `MosOnboardingExtras` 为 13.0。仓库的 Mos 主程序部署目标仍为 10.13
 
 ## 已知风险
 
@@ -134,3 +133,10 @@ flowchart LR
 - 往复滚动偶有跳变, 原因未定位; Lab 数据显示方向反转发生在同一手势内部, 速度直接变号
 - 镜像路由沿用 Mos 的插值参数, 实验反馈有插值过度的拖滞感, 需要实机调校
 - MT2 描述符与握手应答取自 acidanthera/VoodooInput (GPL-2.0, GitHub API 2026-10-12 查询), 代码中保留致谢
+
+### 2026-11-23 实机复验
+
+- 平滑尾段期间移出再移回镜像窗口, 列表可能在没有新滚轮输入时恢复移动。维护者确认可复现并接受现状
+- 关闭「流畅滚动」后在 iPhone Mirroring 内拨动鼠标滚轮, 再开启「流畅滚动」, 可触发镜像输入会话卡住。卡住时内置触控板和点击也失效。断开并重新连接 iPhone Mirroring 可恢复
+  - Mac 端采样仍能看到 Mos 发出的 `Began`、`Changed`、`Ended` 滚动事件, 点击在 Annotated Session 层的目标 PID 仍指向 iPhone Mirroring。镜像会话内部的失败条件待确认
+  - 维护者确认日常使用可接受, 本轮暂缓定位和修复
