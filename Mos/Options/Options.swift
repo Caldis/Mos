@@ -34,6 +34,7 @@ struct OptionItem {
         static let Duration = "duration"
         static let DeadZone = "deadZone"
         static let SmoothSimTrackpad = "smoothSimTrackpad"
+        static let SmoothAppCompatibility = "smoothAppCompatibility"
         static let SmoothVertical = "smoothVertical"
         static let SmoothHorizontal = "smoothHorizontal"
     }
@@ -215,6 +216,7 @@ extension Options {
             scroll.deadZone = OPTIONS_SCROLL_DEFAULT().deadZone
         }
         scroll.smoothSimTrackpad = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothSimTrackpad)
+        scroll.smoothAppCompatibility = UserDefaults.standard.object(forKey: OptionItem.Scroll.SmoothAppCompatibility) as? Bool
         if UserDefaults.standard.object(forKey: OptionItem.Scroll.SmoothVertical) == nil {
             scroll.smoothVertical = true
         } else {
@@ -246,7 +248,7 @@ extension Options {
         }
     }
 
-    // 按组写入 UserDefaults (键与全量写入逐一对应, 零增减)
+    // 按组写入 UserDefaults
     private func save(group: OptionsGroup) {
         switch group {
         case .general:
@@ -267,6 +269,7 @@ extension Options {
             UserDefaults.standard.set(scroll.duration, forKey: OptionItem.Scroll.Duration)
             UserDefaults.standard.set(scroll.deadZone, forKey: OptionItem.Scroll.DeadZone)
             UserDefaults.standard.set(scroll.smoothSimTrackpad, forKey: OptionItem.Scroll.SmoothSimTrackpad)
+            UserDefaults.standard.set(scroll.usesApplicationScrollAdapters, forKey: OptionItem.Scroll.SmoothAppCompatibility)
             UserDefaults.standard.set(scroll.smoothVertical, forKey: OptionItem.Scroll.SmoothVertical)
             UserDefaults.standard.set(scroll.smoothHorizontal, forKey: OptionItem.Scroll.SmoothHorizontal)
         case .buttons:

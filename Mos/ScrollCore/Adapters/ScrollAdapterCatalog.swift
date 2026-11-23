@@ -10,5 +10,6 @@ enum ScrollAdapterCatalog {
 
     static let registrations: [ScrollAdapterRegistration] = [
         ScrollAdapterRegistration(descriptor: IPhoneMirroringAdapter.descriptor) { IPhoneMirroringAdapter() },
+        ScrollAdapterRegistration(descriptor: CalendarScrollAdapter.descriptor) { CalendarScrollAdapter() },
     ]
 }

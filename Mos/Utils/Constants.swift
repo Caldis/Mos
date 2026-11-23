@@ -167,6 +167,11 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
     var smoothSimTrackpad = false {
         didSet {Options.shared.markChanged(scrollContainer: self)}
     }
+    // Optional storage keeps application profiles written before this setting decodable.
+    var smoothAppCompatibility: Bool? {
+        didSet {Options.shared.markChanged(scrollContainer: self)}
+    }
+    var usesApplicationScrollAdapters: Bool { smoothAppCompatibility ?? true }
     var smoothVertical = true {
         didSet {Options.shared.markChanged(scrollContainer: self)}
     }
@@ -201,6 +206,7 @@ extension OPTIONS_SCROLL_DEFAULT: Equatable {
             l.duration == r.duration &&
             l.deadZone == r.deadZone &&
             l.smoothSimTrackpad == r.smoothSimTrackpad &&
+            l.usesApplicationScrollAdapters == r.usesApplicationScrollAdapters &&
             l.smoothVertical == r.smoothVertical &&
             l.smoothHorizontal == r.smoothHorizontal &&
             l.durationBeforeSimTrackpadLock == r.durationBeforeSimTrackpadLock

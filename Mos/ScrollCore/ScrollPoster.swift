@@ -58,6 +58,10 @@ class ScrollPoster {
 extension ScrollPoster {
     func update(event: CGEvent, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1,
                 route: ScrollDispatchContext.Route = .process, targetPID: pid_t? = nil) -> Self {
+        let pid = targetPID ?? pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
+        if dispatchContext.isAdapterDestinationChanging(to: route, targetPID: pid) {
+            stop(.TrackingEnd)
+        }
         guard dispatchContext.capture(event: event, route: route, targetPID: targetPID) else {
             return self
         }
@@ -130,6 +134,10 @@ extension ScrollPoster {
         os_unfair_lock_lock(&stateLock)
         resetUnlocked()
         os_unfair_lock_unlock(&stateLock)
+    }
+
+    func cancelAdapterSession(targetPID: pid_t? = nil) {
+        if dispatchContext.hasAdapterSession(targetPID: targetPID) { stop(.TrackingEnd) }
     }
 
 #if DEBUG

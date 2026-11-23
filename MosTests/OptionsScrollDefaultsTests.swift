@@ -25,6 +25,16 @@ final class OptionsScrollDefaultsTests: XCTestCase {
     private let expectedSpeed = OPTIONS_SCROLL_DEFAULT().speed       // 2.70
     private let expectedDuration = OPTIONS_SCROLL_DEFAULT().duration // 4.35
 
+    func testReadOptionsUsesCompatibilityDefaultAndPreservesExplicitOptOut() {
+        snapshotUserDefaultsAndSet(OptionItem.General.OptionsExist, to: "optionsExist")
+        snapshotUserDefaultsAndRemove(OptionItem.Scroll.SmoothAppCompatibility)
+        Options.shared.readOptions()
+        XCTAssertTrue(Options.shared.scroll.usesApplicationScrollAdapters)
+        defaults.set(false, forKey: OptionItem.Scroll.SmoothAppCompatibility)
+        Options.shared.readOptions()
+        XCTAssertFalse(Options.shared.scroll.usesApplicationScrollAdapters)
+    }
+
     // MARK: - Missing key falls back to the OPTIONS_SCROLL_DEFAULT() value
 
     func testReadOptions_restoresSpeedDefault_whenKeyMissing() {
@@ -123,6 +133,7 @@ private struct ScrollSnapshot {
     let duration: Double
     let deadZone: Double
     let smoothSimTrackpad: Bool
+    let smoothAppCompatibility: Bool?
     let smoothVertical: Bool
     let smoothHorizontal: Bool
     let durationBeforeSimTrackpadLock: Double?
@@ -140,6 +151,7 @@ private struct ScrollSnapshot {
         self.duration = scroll.duration
         self.deadZone = scroll.deadZone
         self.smoothSimTrackpad = scroll.smoothSimTrackpad
+        self.smoothAppCompatibility = scroll.smoothAppCompatibility
         self.smoothVertical = scroll.smoothVertical
         self.smoothHorizontal = scroll.smoothHorizontal
         self.durationBeforeSimTrackpadLock = scroll.durationBeforeSimTrackpadLock
@@ -158,6 +170,7 @@ private struct ScrollSnapshot {
         scroll.duration = duration
         scroll.deadZone = deadZone
         scroll.smoothSimTrackpad = smoothSimTrackpad
+        scroll.smoothAppCompatibility = smoothAppCompatibility
         scroll.smoothVertical = smoothVertical
         scroll.smoothHorizontal = smoothHorizontal
         scroll.durationBeforeSimTrackpadLock = durationBeforeSimTrackpadLock

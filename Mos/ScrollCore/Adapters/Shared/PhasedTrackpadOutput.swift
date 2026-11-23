@@ -11,6 +11,9 @@ enum TrackpadEventField {
     static let sender = CGEventField(rawValue: 87)!
     static let gestureSubtype = CGEventField(rawValue: 110)!
     static let gestureDX = CGEventField(rawValue: 116)!
+    static let calendarGestureDX = CGEventField(rawValue: 118)!
+    static let gestureSeriesType = CGEventField(rawValue: 117)!
+    static let gestureFlags = CGEventField(rawValue: 135)!
     static let gestureDY = CGEventField(rawValue: 119)!
     static let gesturePhase = CGEventField(rawValue: 132)!
     static let acceleratedX = CGEventField(rawValue: 175)!
@@ -66,14 +69,21 @@ struct PhasedTrackpadGesture {
 /// 以虚拟触控板为 sender, 从 HID 层投递 phased 事件的输出端
 final class PhasedTrackpadSink: ScrollOutputSink {
 
+    enum Profile {
+        case mirroring
+        case calendar
+    }
+
     private let identity: VirtualTrackpadIdentity
+    private let profile: Profile
     /// 判断光标是否仍在目标窗口的可见区域内, 可在任意线程调用
     private let contains: (CGPoint) -> Bool
     /// 只在投递队列上访问
     private var gesture = PhasedTrackpadGesture()
 
-    init(identity: VirtualTrackpadIdentity, contains: @escaping (CGPoint) -> Bool) {
+    init(identity: VirtualTrackpadIdentity, profile: Profile = .mirroring, contains: @escaping (CGPoint) -> Bool) {
         self.identity = identity
+        self.profile = profile
         self.contains = contains
     }
 
@@ -110,7 +120,7 @@ final class PhasedTrackpadSink: ScrollOutputSink {
 
     private func post(_ steps: [PhasedTrackpadGesture.Step], sender: Int64) {
         for step in steps {
-            for event in Self.makeEvents(for: step, sender: sender) {
+            for event in Self.makeEvents(for: step, sender: sender, profile: profile) {
                 event.post(tap: .cghidEventTap)
             }
         }
@@ -120,7 +130,10 @@ final class PhasedTrackpadSink: ScrollOutputSink {
 
     /// 事件不写入 location, 保留创建时的光标位置。HID 层投递的事件会把光标移到其 location,
     /// 写入会话开始时的位置会把光标锁在原地
-    static func makeEvents(for step: PhasedTrackpadGesture.Step, sender: Int64) -> [CGEvent] {
+    static func makeEvents(for step: PhasedTrackpadGesture.Step, sender: Int64, profile: Profile = .mirroring) -> [CGEvent] {
+        if profile == .calendar {
+            return makeCalendarEvents(for: step, sender: sender)
+        }
         switch step {
         case .interrupt:
             return [
@@ -139,6 +152,43 @@ final class PhasedTrackpadSink: ScrollOutputSink {
         case .ended:
             return pair(y: 0, x: 0, phase: 4, sender: sender)
         }
+    }
+
+    private static func makeCalendarEvents(for step: PhasedTrackpadGesture.Step, sender: Int64) -> [CGEvent] {
+        if step == .interrupt {
+            return makeEvents(for: step, sender: sender).map { event in
+                if event.type.rawValue == 29 { event.setIntegerValueField(TrackpadEventField.gestureFlags, value: 1) }
+                return event
+            }
+        }
+        let y: Int64, x: Int64, phase: Int64
+        switch step {
+        case .mayBegin: (y, x, phase) = (0, 0, 128)
+        case .began(let dy, let dx): (y, x, phase) = (dy, dx, 1)
+        case .changed(let dy, let dx): (y, x, phase) = (dy, dx, 2)
+        case .ended: (y, x, phase) = (0, 0, 4)
+        case .interrupt: return []
+        }
+        var events: [CGEvent] = []
+        if phase == 1, let boundary = makeSeriesBoundary(started: true, sender: sender) { events.append(boundary) }
+        if let gesture = makeGesture(y: y, x: 0, phase: phase, sender: sender) {
+            gesture.setDoubleValueField(TrackpadEventField.calendarGestureDX, value: Double(x))
+            gesture.setIntegerValueField(TrackpadEventField.gestureFlags, value: 1)
+            events.append(gesture)
+        }
+        if let scroll = makeScroll(y: y, x: x, phase: phase, momentum: 0, sender: sender) { events.append(scroll) }
+        if phase == 4, let boundary = makeSeriesBoundary(started: false, sender: sender) { events.append(boundary) }
+        return events
+    }
+
+    private static func makeSeriesBoundary(started: Bool, sender: Int64) -> CGEvent? {
+        guard let event = CGEvent(source: nil), let type = CGEventType(rawValue: 29) else { return nil }
+        event.type = type
+        event.setIntegerValueField(TrackpadEventField.gestureSubtype, value: started ? 61 : 62)
+        event.setIntegerValueField(TrackpadEventField.gestureSeriesType, value: 6)
+        event.setIntegerValueField(TrackpadEventField.sender, value: sender)
+        ScrollUtils.shared.markSyntheticSmoothEvent(event)
+        return event
     }
 
     private static func pair(y: Int64, x: Int64, phase: Int64, sender: Int64) -> [CGEvent] {

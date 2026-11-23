@@ -21,6 +21,9 @@ Mos/ScrollCore/Adapters/
     PhasedTrackpadOutput.swift     phased 手势状态机, 事件构造, PhasedTrackpadSink
     VirtualTrackpadIdentity.swift  共享的虚拟 Magic Trackpad 2 身份 (macOS 15+, CoreHID)
     VirtualTrackpadDescriptor.swift
+    PhasedWindowScrollAdapter.swift  窗口缓存, 命中判断与虚拟触控板输出的共享实现
+  Calendar/
+    CalendarScrollAdapter.swift    macOS 26+ 的 Calendar 月视图与年视图内容区
   <AppName>/                   单个应用的适配器, 一个应用一个目录
     <AppName>Adapter.swift
 ```
@@ -51,6 +54,43 @@ Mos/ScrollCore/Adapters/
 - minimumSystemVersion 是唯一的版本门槛。ScrollAdapterCenter 启动时按当前系统过滤注册项, 不满足的注册项不会调用 make, 也不会注册任何 NSWorkspace 监听
 - 全部注册项都不满足时, ScrollAdapterCenter 不注册监听, 不创建 tap, 不运行定时器
 - 依赖高版本框架时, 在使用点加 #available 并在链接设置中弱链接该框架 (示例: OTHER_LDFLAGS 中的 -weak_framework CoreHID), 低版本系统上仍能启动
+
+## 配置与会话
+
+平滑滚动详细设置中的 Application compatibility scrolling (应用兼容滚动) 控制适配器启用状态, 默认开启. 全局设置和应用例外共用该配置; 应用选择继承时跟随全局, 取消继承时使用自身配置
+
+| 条件 | 行为 |
+|---|---|
+| 应用兼容滚动关闭 | 停用对应适配器, 释放其虚拟设备引用, 后续输入使用标准路径 |
+| 白名单模式中没有匹配的应用条目 | 适配器保持停用, 平滑和反向均跳过 |
+| 平滑关闭或临时禁用平滑热键按下 | 原始事件按反向设置放行, 新的平滑帧停止产生 |
+| 只有一个轴开启平滑 | 开启的轴进入插值; 另一个轴原样放行, 反向设置分别生效 |
+| 设置变化或临时禁用平滑热键按下 | 当前适配器会话结束, 旧代次的排队帧失效 |
+| 目标进程或适配器输出端变化 | 结束前一会话并清空插值残余, 再开始新会话 |
+
+适配器输出端自行生成手势阶段. Simulate Trackpad (模拟触控板) 仍控制标准路径的 phase / momentum 字段; 适配器继续读取常规平滑参数. 两个开关具有独立作用
+
+全局配置使用 smoothAppCompatibility 键. 应用配置中的同名字段为可选值, 缺失时按开启处理; 旧应用配置继续正常解码. 设置变化期间, 适配器 tap 已处理的放行事件仍按时间戳跳过标准路径的第二次处理
+
+## Calendar 范围
+
+Calendar 适配器注册 com.apple.iCal, 最低版本为 macOS 26.0. 窗口检测复用 PhasedWindowScrollAdapter, 输出复用虚拟触控板身份与 phased 手势状态机. Calendar 输出另含 type 29 的手势序列开始和结束事件, subtype 分别为 61 和 62
+
+CalendarScrollScope 在后台队列读取主窗口 CALMainWindow 的 views-switcher 与 active-view. 仅 month-button 或 year-button 单独选中时接受内容区域. 日视图, 周视图, 侧栏和工具栏沿用标准路径. 辅助功能结构读取失败时暂停 Calendar 适配; 查询具有超时, 缓存有效期为 2 秒. 滚动回调与投递队列读取缓存
+
+视图选择变化时结束 Calendar 当前适配器会话. 识别刷新沿用框架的前台 0.25 秒和后台 1 秒间隔, 视图切换具有相应的缓存延迟
+
+## 设计决策
+
+- Calendar 的早期相关反馈见 [Mos #132](https://github.com/Caldis/Mos/issues/132): 2019 年的 macOS 10.12.6 月视图无法滚动. [Mac Mouse Fix #1558](https://github.com/noah-nuebling/mac-mouse-fix/issues/1558) 在 2025-09-19 明确记录 macOS 26.0 月/年视图异常. 本次兼容起点按用户选择限定为 26.0; 早期报告与当前幅度跳跃问题的根因关系仍待验证
+- [LinearMouse #1224](https://github.com/linearmouse/linearmouse/pull/1224) 补充了触控板式手势边界和伴随事件. Calendar profile 采用该事件结构, 沿用 Mos 已有的虚拟 sender 和 HID 层输出. [后续反馈 #1290](https://github.com/linearmouse/linearmouse/issues/1290) 仍有慢速卡顿与快速反弹, 因此手感与跨月/跨年幅度需要人工验收
+- 独立兼容开关保留常规平滑、反向和应用例外语义, 同时提供退回标准输出的入口
+
+## 验证范围
+
+自动化测试覆盖版本门槛、月/年视图标识、手势边界字段、旧配置解码、开关继承、分轴设置、目标切换和过期帧丢弃. 实际 Calendar 滚动幅度、顺滑程度、日/周视图回归及 iPhone 镜像手感由用户测试
+
+HID 投递仍跟随当前光标. 队列中的帧检查缓存内容矩形, 矩形内部临时出现遮挡窗口时仍存在命中缓存延迟; 进入窗口时捕获尚未启用的第一格滚动也可能使用标准路径
 
 ## 运行时开销约束
 

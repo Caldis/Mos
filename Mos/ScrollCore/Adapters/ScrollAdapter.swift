@@ -66,3 +66,12 @@ struct ScrollAdapterRegistration {
             >= (minimum.majorVersion, minimum.minorVersion, minimum.patchVersion)
     }
 }
+
+enum ScrollAdapterPolicy {
+    static func isEnabled(application: Application?, global: OPTIONS_SCROLL_DEFAULT, allowlist: Bool) -> Bool {
+        if let application = application {
+            return (application.inherit ? global : application.scroll).usesApplicationScrollAdapters
+        }
+        return !allowlist && global.usesApplicationScrollAdapters
+    }
+}

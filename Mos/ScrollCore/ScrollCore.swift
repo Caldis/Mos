@@ -30,7 +30,11 @@ class ScrollCore: ScrollActionPort {
     var toggleScroll = false {
         didSet { ScrollPoster.shared.updateShifting(enable: toggleScroll) }
     }
-    var blockSmooth = false
+    var blockSmooth = false {
+        didSet {
+            if blockSmooth && !oldValue { ScrollPoster.shared.cancelAdapterSession() }
+        }
+    }
     // 非修饰键热键的按下状态跟踪
     var dashKeyHeld = false
     var toggleKeyHeld = false
@@ -117,32 +121,18 @@ class ScrollCore: ScrollActionPort {
         }
         // 获取列表中应用程序的列外设置信息
         ScrollCore.shared.application = ScrollUtils.shared.getTargetApplication(from: targetRunningApplication)
-        // 平滑/翻转
-        var enableSmooth = false,
-            enableSmoothVertical = false,
-            enableSmoothHorizontal = false,
-            enableReverseVertical = false,
-            enableReverseHorizontal = false
-        var step = Options.shared.scroll.step,
-            speed = Options.shared.scroll.speed,
-            duration = Options.shared.scroll.durationTransition
-        if let targetApplication = ScrollCore.shared.application {
-            enableSmooth = targetApplication.isSmooth(ScrollCore.shared.blockSmooth)
-            enableSmoothVertical = targetApplication.isSmoothVertical(ScrollCore.shared.blockSmooth)
-            enableSmoothHorizontal = targetApplication.isSmoothHorizontal(ScrollCore.shared.blockSmooth)
-            enableReverseVertical = targetApplication.isReverseVertical()
-            enableReverseHorizontal = targetApplication.isReverseHorizontal()
-            step = targetApplication.getStep()
-            speed = targetApplication.getSpeed()
-            duration = targetApplication.getDuration()
-        } else if !Options.shared.application.allowlist {
-            enableSmooth = Options.shared.scroll.smooth && !ScrollCore.shared.blockSmooth
-            enableSmoothVertical = enableSmooth && Options.shared.scroll.smoothVertical
-            enableSmoothHorizontal = enableSmooth && Options.shared.scroll.smoothHorizontal
-            let allowReverse = Options.shared.scroll.reverse
-            enableReverseVertical = allowReverse && Options.shared.scroll.reverseVertical
-            enableReverseHorizontal = allowReverse && Options.shared.scroll.reverseHorizontal
-        }
+        let settings = ScrollResolvedSettings(application: ScrollCore.shared.application,
+                                              global: Options.shared.scroll,
+                                              allowlist: Options.shared.application.allowlist,
+                                              blockSmooth: ScrollCore.shared.blockSmooth)
+        var enableSmooth = settings.smooth
+        var enableSmoothVertical = settings.smoothVertical
+        var enableSmoothHorizontal = settings.smoothHorizontal
+        let enableReverseVertical = settings.reverseVertical
+        let enableReverseHorizontal = settings.reverseHorizontal
+        let step = settings.step
+        let speed = settings.speed
+        let duration = settings.duration
         // Launchpad 激活则强制屏蔽平滑
         if ScrollUtils.shared.getLaunchpadActivity(withRunningApplication: targetRunningApplication) {
             enableSmooth = false
@@ -189,6 +179,10 @@ class ScrollCore: ScrollActionPort {
         let needHorizontalPassthrough = hasHorizontalDelta && !shouldSmoothHorizontal
         let needsPassthrough = needVerticalPassthrough || needHorizontalPassthrough
         let shouldSmoothAny = (smoothedY != 0.0) || (smoothedX != 0.0)
+
+        if !shouldSmoothAny && (hasVerticalDelta || hasHorizontalDelta) {
+            ScrollPoster.shared.cancelAdapterSession()
+        }
 
         if shouldSmoothAny {
             ScrollPoster.shared.update(
@@ -486,5 +480,29 @@ class ScrollCore: ScrollActionPort {
         scrollEventInterceptor = nil
         hotkeyEventInterceptor = nil
         mouseEventInterceptor = nil
+    }
+}
+
+struct ScrollResolvedSettings {
+    let smooth: Bool
+    let smoothVertical: Bool
+    let smoothHorizontal: Bool
+    let reverseVertical: Bool
+    let reverseHorizontal: Bool
+    let step: Double
+    let speed: Double
+    let duration: Double
+
+    init(application: Application?, global: OPTIONS_SCROLL_DEFAULT, allowlist: Bool, blockSmooth: Bool) {
+        let options = application.map { $0.inherit ? global : $0.scroll } ?? global
+        let included = application != nil || !allowlist
+        smooth = included && options.smooth && !blockSmooth
+        smoothVertical = smooth && options.smoothVertical
+        smoothHorizontal = smooth && options.smoothHorizontal
+        reverseVertical = included && options.reverse && options.reverseVertical
+        reverseHorizontal = included && options.reverse && options.reverseHorizontal
+        step = options.step
+        speed = options.speed
+        duration = options.durationTransition
     }
 }

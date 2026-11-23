@@ -10,6 +10,123 @@ import XCTest
 
 final class PhasedTrackpadOutputTests: XCTestCase {
 
+    func testCalendarRegistrationStartsAtMacOS26() {
+        let registration = ScrollAdapterRegistration(descriptor: CalendarScrollAdapter.descriptor) { nil }
+        XCTAssertFalse(registration.isSupported(on: OperatingSystemVersion(majorVersion: 25, minorVersion: 9, patchVersion: 9)))
+        XCTAssertTrue(registration.isSupported(on: OperatingSystemVersion(majorVersion: 26, minorVersion: 0, patchVersion: 0)))
+        XCTAssertTrue(registration.isSupported(on: OperatingSystemVersion(majorVersion: 27, minorVersion: 0, patchVersion: 0)))
+        XCTAssertEqual(registration.descriptor.bundleIdentifiers, ["com.apple.iCal"])
+    }
+
+    func testCalendarScopeAcceptsOnlyUnambiguousMonthOrYearSelection() {
+        XCTAssertEqual(CalendarScrollScope.View.selected(in: ["month-button"]), .month)
+        XCTAssertEqual(CalendarScrollScope.View.selected(in: ["year-button"]), .year)
+        XCTAssertNil(CalendarScrollScope.View.selected(in: ["day-button"]))
+        XCTAssertNil(CalendarScrollScope.View.selected(in: ["week-button"]))
+        XCTAssertNil(CalendarScrollScope.View.selected(in: []))
+        XCTAssertNil(CalendarScrollScope.View.selected(in: ["month-button", "year-button"]))
+    }
+
+    func testCalendarGestureHasSeriesBoundariesAndHorizontalCompanionDelta() throws {
+        let begin = PhasedTrackpadSink.makeEvents(for: .began(y: 7, x: -3), sender: 42, profile: .calendar)
+        XCTAssertEqual(begin.map { $0.type.rawValue }, [29, 29, CGEventType.scrollWheel.rawValue])
+        XCTAssertEqual(begin[0].getIntegerValueField(TrackpadEventField.gestureSubtype), 61)
+        XCTAssertEqual(begin[0].getIntegerValueField(TrackpadEventField.gestureSeriesType), 6)
+        XCTAssertEqual(begin[1].getDoubleValueField(CGEventField(rawValue: 118)!), -3)
+        XCTAssertEqual(begin[1].getDoubleValueField(CGEventField(rawValue: 119)!), 7)
+        XCTAssertEqual(begin[1].getIntegerValueField(CGEventField(rawValue: 135)!), 1)
+        XCTAssertEqual(begin[2].getIntegerValueField(.scrollWheelEventMomentumPhase), 0)
+        XCTAssertTrue(begin.allSatisfy { ScrollUtils.shared.isSyntheticSmoothEvent($0) })
+
+        let change = PhasedTrackpadSink.makeEvents(for: .changed(y: 2, x: 0), sender: 42, profile: .calendar)
+        XCTAssertEqual(change.count, 2)
+        let end = PhasedTrackpadSink.makeEvents(for: .ended, sender: 42, profile: .calendar)
+        XCTAssertEqual(end.count, 3)
+        XCTAssertEqual(end[1].getIntegerValueField(.scrollWheelEventScrollPhase), 4)
+        XCTAssertEqual(end[2].getIntegerValueField(TrackpadEventField.gestureSubtype), 62)
+    }
+
+    func testCompatibilitySwitchRespectsGlobalApplicationInheritanceAndAllowlist() {
+        let global = OPTIONS_SCROLL_DEFAULT()
+        let application = Application(path: "/Applications/Calendar.app")
+        XCTAssertTrue(ScrollAdapterPolicy.isEnabled(application: nil, global: global, allowlist: false))
+        XCTAssertFalse(ScrollAdapterPolicy.isEnabled(application: nil, global: global, allowlist: true))
+        global.smoothAppCompatibility = false
+        XCTAssertFalse(ScrollAdapterPolicy.isEnabled(application: application, global: global, allowlist: false))
+        application.inherit = false
+        XCTAssertTrue(ScrollAdapterPolicy.isEnabled(application: application, global: global, allowlist: true))
+        application.scroll.smoothAppCompatibility = false
+        global.smoothAppCompatibility = true
+        XCTAssertFalse(ScrollAdapterPolicy.isEnabled(application: application, global: global, allowlist: false))
+    }
+
+    func testOlderApplicationProfileKeepsCompatibilityDefaultAndExplicitOptOutRoundTrips() throws {
+        let application = Application(path: "/Applications/Calendar.app")
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(application)
+        let decoded = try JSONDecoder().decode(Application.self, from: data)
+        XCTAssertNil(decoded.scroll.smoothAppCompatibility)
+        XCTAssertTrue(decoded.scroll.usesApplicationScrollAdapters)
+        application.scroll.smoothAppCompatibility = false
+        let optOut = try JSONDecoder().decode(Application.self, from: encoder.encode(application))
+        XCTAssertFalse(optOut.scroll.usesApplicationScrollAdapters)
+    }
+
+    func testResolvedSettingsKeepReverseIndependentOfSmoothingAndBlockHotkey() {
+        let global = OPTIONS_SCROLL_DEFAULT()
+        global.smooth = false
+        global.reverse = true
+        let reverseOnly = ScrollResolvedSettings(application: nil, global: global, allowlist: false, blockSmooth: false)
+        XCTAssertFalse(reverseOnly.smooth)
+        XCTAssertFalse(reverseOnly.smoothVertical)
+        XCTAssertTrue(reverseOnly.reverseVertical)
+        global.smooth = true
+        let blocked = ScrollResolvedSettings(application: nil, global: global, allowlist: false, blockSmooth: true)
+        XCTAssertFalse(blocked.smooth)
+        XCTAssertTrue(blocked.reverseVertical)
+        let excluded = ScrollResolvedSettings(application: nil, global: global, allowlist: true, blockSmooth: false)
+        XCTAssertFalse(excluded.smooth)
+        XCTAssertFalse(excluded.reverseVertical)
+    }
+
+    func testResolvedSettingsUseIndependentApplicationAxesAndParameters() {
+        let global = OPTIONS_SCROLL_DEFAULT()
+        global.smooth = false
+        global.reverse = false
+        let application = Application(path: "/Applications/Calendar.app")
+        application.inherit = false
+        application.scroll.smoothVertical = false
+        application.scroll.reverseHorizontal = false
+        application.scroll.speed = 1.5
+        let own = ScrollResolvedSettings(application: application, global: global, allowlist: true, blockSmooth: false)
+        XCTAssertTrue(own.smooth)
+        XCTAssertFalse(own.smoothVertical)
+        XCTAssertTrue(own.smoothHorizontal)
+        XCTAssertTrue(own.reverseVertical)
+        XCTAssertFalse(own.reverseHorizontal)
+        XCTAssertEqual(own.speed, 1.5)
+        application.inherit = true
+        let inherited = ScrollResolvedSettings(application: application, global: global, allowlist: true, blockSmooth: false)
+        XCTAssertFalse(inherited.smooth)
+        XCTAssertFalse(inherited.reverseVertical)
+    }
+
+    func testAdapterDestinationChangesRequireASeparateSession() throws {
+        let context = ScrollDispatchContext()
+        let first = RecordingSink()
+        let second = RecordingSink()
+        let event = try XCTUnwrap(CGEvent(scrollWheelEvent2Source: nil, units: .line, wheelCount: 1, wheel1: 1, wheel2: 0, wheel3: 0))
+        XCTAssertTrue(context.capture(event: event, route: .adapter(first), targetPID: 10))
+        XCTAssertTrue(context.hasAdapterSession)
+        XCTAssertFalse(context.isAdapterDestinationChanging(to: .adapter(first), targetPID: 10))
+        XCTAssertTrue(context.isAdapterDestinationChanging(to: .adapter(first), targetPID: 11))
+        XCTAssertTrue(context.isAdapterDestinationChanging(to: .adapter(second), targetPID: 10))
+        XCTAssertTrue(context.isAdapterDestinationChanging(to: .process, targetPID: 10))
+        context.clearContext()
+        XCTAssertFalse(context.hasAdapterSession)
+        XCTAssertFalse(context.isAdapterDestinationChanging(to: .adapter(second), targetPID: 11))
+    }
+
     // MARK: - PhasedTrackpadGesture
 
     func testSubPixelFramesCarryOverUntilOnePixel() {
@@ -80,6 +197,7 @@ final class PhasedTrackpadOutputTests: XCTestCase {
         XCTAssertTrue(center.screenStandardScroll(handled))
         XCTAssertFalse(center.screenStandardScroll(other))
         center.setPassthroughTimestampForTests(1_000, armed: false)
+        XCTAssertTrue(center.screenStandardScroll(handled), "A settings change between tap callbacks must not reverse the event twice")
         XCTAssertFalse(center.screenStandardScroll(handled))
     }
 

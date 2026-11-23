@@ -96,6 +96,24 @@ final class ScrollDispatchContext {
         os_unfair_lock_unlock(&lock)
     }
 
+    var hasAdapterSession: Bool {
+        hasAdapterSession(targetPID: nil)
+    }
+
+    func hasAdapterSession(targetPID: pid_t?) -> Bool {
+        os_unfair_lock_lock(&lock)
+        defer { os_unfair_lock_unlock(&lock) }
+        return state.eventTemplate != nil && state.route.sink != nil &&
+            (targetPID == nil || targetPID == state.targetPID)
+    }
+
+    func isAdapterDestinationChanging(to route: Route, targetPID: pid_t) -> Bool {
+        os_unfair_lock_lock(&lock)
+        defer { os_unfair_lock_unlock(&lock) }
+        guard state.eventTemplate != nil, state.route.sink != nil || route.sink != nil else { return false }
+        return state.targetPID != targetPID || state.route.sink !== route.sink
+    }
+
     func clearContext() {
         os_unfair_lock_lock(&lock)
         state.eventTemplate = nil

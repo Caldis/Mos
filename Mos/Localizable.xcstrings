@@ -14135,6 +14135,198 @@
           }
         }
       }
+    },
+    "Application compatibility scrolling": {
+      "comment": "Application scroll adapters switch",
+      "extractionState": "manual",
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kompatibilní posouvání v aplikacích"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kompatibles Scrollen in Apps"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Συμβατή κύλιση εφαρμογών"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Application compatibility scrolling"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Défilement compatible avec les apps"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリ互換スクロール"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱 호환 스크롤"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Совместимая прокрутка в приложениях"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การเลื่อนที่เข้ากันได้กับแอป"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uygulama uyumluluğu için kaydırma"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сумісне прокручування в програмах"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用兼容滚动"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "應用程式相容捲動"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "應用程式相容捲動"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "應用程式相容捲動"
+          }
+        }
+      }
+    },
+    "Use compatible scroll events in supported apps. Smooth scrolling, reverse scrolling, and application settings still apply.": {
+      "comment": "Application scroll adapters explanation",
+      "extractionState": "manual",
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "V podporovaných aplikacích používat kompatibilní události posouvání. Nastavení plynulého posouvání, obráceného směru a aplikací zůstávají platná."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kompatible Scroll-Ereignisse in unterstützten Apps verwenden. Sanftes Scrollen, umgekehrte Scrollrichtung und App-Einstellungen gelten weiterhin."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Χρήση συμβατών συμβάντων κύλισης στις υποστηριζόμενες εφαρμογές. Η ομαλή κύλιση, η αντίστροφη κύλιση και οι ρυθμίσεις εφαρμογών εξακολουθούν να ισχύουν."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use compatible scroll events in supported apps. Smooth scrolling, reverse scrolling, and application settings still apply."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utiliser des événements de défilement compatibles dans les apps prises en charge. Le défilement fluide, le sens inversé et les réglages par app restent appliqués."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "対応アプリで互換性のあるスクロールイベントを使用します。スムーズスクロール、逆方向スクロール、アプリ別設定は引き続き適用されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지원되는 앱에서 호환되는 스크롤 이벤트를 사용합니다. 부드러운 스크롤, 역방향 스크롤 및 앱별 설정이 계속 적용됩니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Использовать совместимые события прокрутки в поддерживаемых приложениях. Плавная прокрутка, обратное направление и настройки приложений продолжают действовать."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ใช้เหตุการณ์การเลื่อนที่เข้ากันได้ในแอปที่รองรับ การเลื่อนอย่างราบรื่น การเลื่อนย้อนกลับ และการตั้งค่าเฉพาะแอปยังคงมีผล"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desteklenen uygulamalarda uyumlu kaydırma olayları kullanılır. Akıcı kaydırma, ters kaydırma ve uygulama ayarları geçerli olmaya devam eder."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Використовувати сумісні події прокручування в підтримуваних програмах. Плавне прокручування, зворотний напрямок і налаштування програм залишаються чинними."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在支持的应用中使用兼容的滚动事件. 平滑滚动、反向滚动及应用例外设置仍然生效."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在支援的應用程式中使用相容的捲動事件. 平滑捲動、反向捲動及應用程式例外設定仍然生效."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在支援的應用程式中使用相容的捲動事件. 平滑捲動、反向捲動及應用程式例外設定仍然生效."
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在支援的應用程式中使用相容的捲動事件. 平滑捲動、反向捲動及應用程式例外設定仍然生效."
+          }
+        }
+      }
     }
   },
   "version": "1.1"

@@ -38,6 +38,7 @@ final class ScrollAdapterCenter {
     /// 适配器 tap 最近一次处理并放行的事件时间戳; 标准路径据此跳过同一事件, 避免翻转执行两次
     private var lastPassthroughTimestamp: CGEventTimestamp = 0
     private(set) var isStarted = false
+    private var observesOptions = false
 
     #if DEBUG
     func setPassthroughTimestampForTests(_ timestamp: CGEventTimestamp, armed: Bool) {
@@ -61,6 +62,12 @@ final class ScrollAdapterCenter {
         registrations = all.filter { $0.isSupported(on: version) }
         guard !registrations.isEmpty else { return }
         isStarted = true
+        if !observesOptions {
+            observesOptions = true
+            Options.shared.observe([.scroll, .application]) { [weak self] _ in
+                self?.optionsChanged()
+            }
+        }
 
         let center = NSWorkspace.shared.notificationCenter
         let launched: (Notification) -> Void = { [weak self] note in
@@ -101,7 +108,7 @@ final class ScrollAdapterCenter {
     }
 
     private func applicationLaunched(_ app: NSRunningApplication) {
-        guard let registration = registration(for: app) else { return }
+        guard isEnabled(for: app), let registration = registration(for: app) else { return }
         let identifier = registration.descriptor.identifier
         guard let adapter = adapters[identifier] ?? registration.make() else { return }
         adapters[identifier] = adapter
@@ -109,6 +116,30 @@ final class ScrollAdapterCenter {
         adapter.activate(app)
         activeAdapters.append(adapter)
         updateArming()
+    }
+
+    private func isEnabled(for app: NSRunningApplication) -> Bool {
+        ScrollAdapterPolicy.isEnabled(
+            application: ScrollUtils.shared.getTargetApplication(from: app),
+            global: Options.shared.scroll,
+            allowlist: Options.shared.application.allowlist
+        )
+    }
+
+    private func optionsChanged() {
+        guard isStarted else { return }
+        ScrollPoster.shared.cancelAdapterSession()
+        let running = NSWorkspace.shared.runningApplications
+        let disabled = activeAdapters.filter { adapter in
+            !running.contains { app in
+                app.bundleIdentifier.map(adapter.descriptor.bundleIdentifiers.contains) == true && isEnabled(for: app)
+            }
+        }
+        disabled.forEach { $0.deactivate() }
+        activeAdapters.removeAll { adapter in disabled.contains { $0 === adapter } }
+        updateArming()
+        running.forEach(applicationLaunched)
+        if isArmed { refreshAndProbeCursor() }
     }
 
     private func applicationTerminated(_ app: NSRunningApplication) {
@@ -226,10 +257,11 @@ final class ScrollAdapterCenter {
     /// 用时间戳而非事件标记: eventSourceUserData 一经写入非零值便无法覆盖, 来源进程写过的事件无法再标记
     /// 未激活任何适配器时只读取一个布尔值
     func screenStandardScroll(_ event: CGEvent) -> Bool {
-        guard isArmed else { return false }
         if lastPassthroughTimestamp != 0 && event.timestamp == lastPassthroughTimestamp {
+            lastPassthroughTimestamp = 0
             return true
         }
+        guard isArmed else { return false }
         if !isGateOpen, route(at: event.location) != nil {
             openGate()
         }
