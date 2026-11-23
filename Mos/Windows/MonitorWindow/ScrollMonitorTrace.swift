@@ -38,17 +38,21 @@ final class ScrollMonitorTrace {
         case .standard: tap = .cgAnnotatedSessionEventTap
         case .adapter: tap = .cgSessionEventTap
         }
-        record(event, stage: .captured, tap: tap)
+        recordScroll(event, stage: .captured, tap: tap)
     }
 
-    func record(_ event: CGEvent, stage: ScrollMonitorStage, targetPID: pid_t? = nil, tap: CGEventTapLocation? = nil) {
+    func recordPosted(_ event: CGEvent) {
+        recordScroll(event, stage: .posted, tap: nil)
+    }
+
+    private func recordScroll(_ event: CGEvent, stage: ScrollMonitorStage, tap: CGEventTapLocation?) {
         append {
             let delta = MonitorDelta(
                 x: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2),
                 y: event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1)
             )
             return .scroll(MonitorEvent.ScrollSample(
-                stage: stage, delta: delta, fields: .init(event), tap: tap, postingPID: targetPID
+                stage: stage, delta: delta, fields: .init(event), tap: tap
             ))
         }
     }

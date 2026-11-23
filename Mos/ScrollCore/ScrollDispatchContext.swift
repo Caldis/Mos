@@ -136,7 +136,7 @@ final class ScrollDispatchContext {
             // 合成事件标记 (eventSourceUserData) 作为防御性旁路保留
             snapshot.event.postToPid(snapshot.targetPID)
             if ScrollMonitorTrace.isRecording {
-                ScrollMonitorTrace.shared.record(snapshot.event, stage: .postedToProcess, targetPID: snapshot.targetPID)
+                ScrollMonitorTrace.shared.recordPosted(snapshot.event)
             }
             self.recordPostedFrame()
         }

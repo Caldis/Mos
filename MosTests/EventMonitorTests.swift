@@ -44,6 +44,9 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertEqual(second.delta.y, 4)
         XCTAssertEqual(first.fields?.raw.y, 9.25)
         XCTAssertEqual(first.fields?.quartz.flags, CGEventFlags.maskShift.rawValue)
+        let input = try XCTUnwrap(samples.first)
+        XCTAssertEqual(MonitorPresentation.columns(input, origin: input.time), ["0.000 s", "Annotated Session Tap", "-7", "12"])
+        XCTAssertEqual(MonitorPresentation.detail(input).source?.value, "Annotated Session Tap")
     }
 
     func testOverlayPreservesComputedAndPostedValuesWithoutInventingACaptureTap() throws {
@@ -56,34 +59,35 @@ final class EventMonitorTests: XCTestCase {
         event.setIntegerValueField(.eventTargetUnixProcessID, value: 17)
         event.setIntegerValueField(.scrollWheelEventScrollPhase, value: 1)
         event.setIntegerValueField(.scrollWheelEventMomentumPhase, value: 2)
-        trace.record(event, stage: .postedToProcess, targetPID: 42)
-        trace.record(event, stage: .postedToHID)
+        trace.recordPosted(event)
 
         var samples: [MonitorEvent] = []
         trace.drain(into: &samples)
         let first = try scrollSample(samples.first)
-        let postedEvent = try XCTUnwrap(samples.dropFirst().first)
+        let postedEvent = try XCTUnwrap(samples.last)
         let posted = try scrollSample(postedEvent)
-        let hid = try scrollSample(samples.last)
+        XCTAssertEqual(samples.count, 2)
         XCTAssertEqual(samples.map(\.time), samples.map(\.time).sorted())
         XCTAssertEqual(first.stage, .frame)
         XCTAssertEqual(first.delta[.vertical], 2.49)
         XCTAssertEqual(first.delta[.horizontal], -1.75)
         XCTAssertNil(first.fields)
-        XCTAssertEqual(posted.stage, .postedToProcess)
+        XCTAssertEqual(posted.stage, .posted)
         XCTAssertNil(posted.tap)
         XCTAssertEqual(posted.delta.y, 2)
         XCTAssertEqual(posted.delta.x, -1)
-        XCTAssertEqual(posted.postingPID, 42)
         XCTAssertEqual(posted.fields?.quartz.targetPID, 17)
         let point = try XCTUnwrap(MonitorTimelineSample(event: postedEvent))
         XCTAssertEqual(point.phase, 1)
         XCTAssertTrue(point.hasMomentum)
-        XCTAssertEqual(hid.stage, .postedToHID)
-        XCTAssertNil(hid.postingPID)
         let detail = MonitorPresentation.detail(postedEvent)
-        XCTAssertEqual(detail.source?.value, "postToPid")
-        XCTAssertTrue(detail.fields.contains(where: { $0.title == "postToPid target PID" && $0.value == "42" }))
+        XCTAssertNil(detail.source)
+        XCTAssertEqual(MonitorPresentation.columns(postedEvent, origin: postedEvent.time), ["0.000 s", "-1", "2"])
+        XCTAssertTrue(detail.fields.contains {
+            $0.enumID == CGEventField.eventTargetUnixProcessID.rawValue
+                && $0.title == "Event target PID" && $0.value == "17"
+        })
+        XCTAssertFalse(MonitorPresentation.export(postedEvent, origin: postedEvent.time).contains("postToPid"))
     }
 
     func testTracePauseOverflowAndClearStayWithinTheRecorder() throws {
@@ -124,6 +128,31 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertTrue(history.events(in: 0...2).isEmpty)
     }
 
+    func testScrollListsKeepInputAndPostedEventsSeparateAfterHistoryWraps() {
+        var scroll = MonitorScrollHistory(capacity: 4)
+        let stages: [ScrollMonitorStage] = [.captured, .frame, .posted, .captured, .frame]
+        for (index, stage) in stages.enumerated() {
+            let event = MonitorEvent(
+                id: UInt64(index + 1), time: Double(index),
+                payload: .scroll(.init(stage: stage, delta: MonitorDelta(x: 0, y: 1)))
+            )
+            scroll.append(event, stage: stage)
+        }
+        XCTAssertEqual(scroll.history.map(\.id), [2, 3, 4, 5])
+        XCTAssertEqual(scroll.rowCount(for: .captured), 1)
+        XCTAssertEqual(scroll.rowCount(for: .posted), 1)
+        XCTAssertEqual(scroll.rowCount(for: .frame), 0)
+        XCTAssertEqual(scroll.event(at: 0, in: .captured)?.id, 4)
+        XCTAssertEqual(scroll.event(at: 0, in: .posted)?.id, 3)
+        XCTAssertNil(scroll.event(at: 1, in: .captured))
+        XCTAssertEqual(scroll.row(for: 4, in: .captured), 0)
+        XCTAssertNil(scroll.row(for: 1, in: .captured))
+        XCTAssertNil(scroll.row(for: 4, in: .posted))
+        scroll.removeAll()
+        XCTAssertEqual(scroll.rowCount(for: .captured), 0)
+        XCTAssertEqual(scroll.rowCount(for: .posted), 0)
+    }
+
     func testLiveTimelineKeepsMovingWithAnOlderRowSelected() {
         XCTAssertEqual(MonitorCurveView.visibleRange(endingAt: 20, duration: 5, selection: 10, recording: true), 15...20)
         XCTAssertEqual(MonitorCurveView.visibleRange(endingAt: 22, duration: 5, selection: 10, recording: true), 17...22)
@@ -153,8 +182,11 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertEqual(mouse.channel, .buttons)
         XCTAssertEqual(MonitorPresentation.columns(mouse, origin: 0).last, "Session Tap")
         let fields = MonitorPresentation.detail(mouse).fields
-        XCTAssertTrue(fields.contains(where: { $0.title == "Event type" && $0.value == "25 · otherMouseDown" }))
-        XCTAssertTrue(fields.contains(where: { $0.title == "3 Button number" && $0.value.hasPrefix("3 ·") }))
+        XCTAssertTrue(fields.contains(where: { $0.enumID == nil && $0.title == "Event type" && $0.value == "25 · otherMouseDown" }))
+        XCTAssertTrue(fields.contains {
+            $0.enumID == CGEventField.mouseEventButtonNumber.rawValue
+                && $0.title == "Button number" && $0.value.hasPrefix("3 ·")
+        })
         XCTAssertTrue(fields.contains(where: { $0.title == "Flags" && $0.value == "0x0" }))
         guard case let .button(snapshot, _) = keyboard.payload else { return XCTFail("Expected a modifier sample") }
         XCTAssertTrue(snapshot.isDown)
@@ -180,11 +212,25 @@ final class EventMonitorTests: XCTestCase {
         let toolbar = try XCTUnwrap(window.toolbar)
         let customItems = toolbar.items.filter { $0.itemIdentifier.rawValue.hasPrefix("monitor.") }
         XCTAssertEqual(customItems.map { $0.itemIdentifier.rawValue },
-                       ["monitor.views", "monitor.status", "monitor.capture", "monitor.clear", "monitor.export"])
-        XCTAssertTrue(customItems.first { $0.itemIdentifier.rawValue == "monitor.status" }?.view is NSTextField)
-        XCTAssertTrue(customItems.suffix(3).allSatisfy { $0.view is NSButton })
+                       ["monitor.views", "monitor.capture", "monitor.clear", "monitor.export"])
+        let modes = try XCTUnwrap(customItems.first?.view as? NSSegmentedControl)
+        let capture = try XCTUnwrap(customItems.first { $0.itemIdentifier.rawValue == "monitor.capture" })
+        if #available(macOS 11.0, *) {
+            XCTAssertNotNil(modes.image(forSegment: 0))
+            XCTAssertNotNil(modes.image(forSegment: 1))
+            XCTAssertTrue(customItems.suffix(3).allSatisfy { $0.image != nil })
+        } else {
+            XCTAssertTrue(customItems.suffix(3).allSatisfy { $0.view is NSButton })
+        }
+        XCTAssertTrue(capture.isEnabled)
+        XCTAssertTrue(customItems.suffix(2).allSatisfy { !$0.isEnabled })
 
         let monitor = try XCTUnwrap(window.contentViewController as? MonitorViewController)
+        monitor.monitorToolbar.update(.recording, canClear: false, canExport: false)
+        XCTAssertEqual(capture.toolTip, [
+            NSLocalizedString("monitor-recording", comment: ""),
+            NSLocalizedString("monitor-pause", comment: ""),
+        ].joined(separator: " · "))
         let root = try XCTUnwrap(monitor.view as? NSVisualEffectView)
         window.setContentSize(window.contentMinSize)
         root.layoutSubtreeIfNeeded()
@@ -197,6 +243,49 @@ final class EventMonitorTests: XCTestCase {
         monitor.monitorToolbar.didSelectChannel?(.buttons)
         root.layoutSubtreeIfNeeded()
         XCTAssertTrue(timeline.isHidden)
+    }
+
+    @MainActor
+    func testEventTableShowsRawInputByDefaultAndCanShowPostedEvents() throws {
+        let events = MonitorEventTable(capture: MonitorCapture())
+        let header = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSStackView }.first)
+        let filter = try XCTUnwrap(header.arrangedSubviews.compactMap { $0 as? NSSegmentedControl }.first)
+        let scroller = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSScrollView }.first)
+        XCTAssertEqual(filter.selectedSegment, 0)
+        XCTAssertEqual(filter.label(forSegment: 0), MonitorPresentation.stageName(.captured))
+        XCTAssertEqual((scroller.documentView as? NSTableView)?.tableColumns.map(\.title), [
+            NSLocalizedString("monitor-time", comment: ""), NSLocalizedString("monitor-tap", comment: ""), "ΔX", "ΔY",
+        ])
+        filter.selectedSegment = 1
+        NSApp.sendAction(try XCTUnwrap(filter.action), to: filter.target, from: filter)
+        XCTAssertEqual((scroller.documentView as? NSTableView)?.tableColumns.map(\.title), [
+            NSLocalizedString("monitor-time", comment: ""), "ΔX", "ΔY",
+        ])
+    }
+
+    @MainActor
+    func testInspectorSeparatesFieldIDNameAndValue() throws {
+        let trace = ScrollMonitorTrace()
+        trace.setRecording(true)
+        trace.recordPosted(try scrollEvent())
+        var events: [MonitorEvent] = []
+        trace.drain(into: &events)
+        let event = try XCTUnwrap(events.first)
+        let inspector = MonitorInspector()
+        inspector.display(event)
+        let content = try XCTUnwrap(inspector.view.subviews.first as? NSStackView)
+        let scroller = try XCTUnwrap(content.arrangedSubviews.compactMap { $0 as? NSScrollView }.first)
+        let table = try XCTUnwrap(scroller.documentView as? NSTableView)
+        XCTAssertEqual(table.tableColumns.map(\.title), [
+            NSLocalizedString("ID", comment: ""),
+            NSLocalizedString("monitor-field", comment: ""),
+            NSLocalizedString("monitor-value", comment: ""),
+        ])
+        let values = table.tableColumns.map { column in
+            (inspector.tableView(table, viewFor: column, row: 0) as? NSTableCellView)?.textField?.stringValue
+        }
+        XCTAssertEqual(values, ["96", "Point Y", "12.0"])
+        XCTAssertTrue(MonitorPresentation.rawText(MonitorPresentation.detail(event).fields).hasPrefix("96\tPoint Y\t12.0\n"))
     }
 
     private func scrollEvent() throws -> CGEvent {

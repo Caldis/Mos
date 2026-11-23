@@ -5,7 +5,14 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
     private var table = NSTableView()
     private let scroller = NSScrollView()
     private let empty = NSTextField(labelWithString: NSLocalizedString("monitor-no-events", comment: "Empty Monitor table"))
-    private var channel: MonitorChannel = .scroll
+    private lazy var scrollFilter = NSSegmentedControl(
+        labels: [MonitorPresentation.stageName(.captured), MonitorPresentation.stageName(.posted)],
+        trackingMode: .selectOne, target: self, action: #selector(changeScrollFilter(_:))
+    )
+    private var scrollStage: ScrollMonitorStage = .captured
+    private var list: MonitorCapture.EventList = .scroll(.captured)
+    private var displayedCount = 0
+    private var displayedNewestID: UInt64?
     private var restoringSelection = false
 
     var didSelect: ((MonitorEvent?) -> Void)?
@@ -22,8 +29,15 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
         let root = NSView()
         let title = NSTextField(labelWithString: NSLocalizedString("monitor-events", comment: "Events table heading"))
         title.font = .systemFont(ofSize: 14, weight: .semibold)
-        title.translatesAutoresizingMaskIntoConstraints = false
-        root.addSubview(title)
+        scrollFilter.selectedSegment = 0
+        scrollFilter.controlSize = .small
+        scrollFilter.setAccessibilityLabel(NSLocalizedString("monitor-stage", comment: "Scroll event filter"))
+        let header = NSStackView(views: [title, NSView(), scrollFilter])
+        header.alignment = .centerY
+        header.spacing = 8
+        header.detachesHiddenViews = true
+        header.translatesAutoresizingMaskIntoConstraints = false
+        root.addSubview(header)
 
         configureTable()
         scroller.translatesAutoresizingMaskIntoConstraints = false
@@ -33,9 +47,10 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
         empty.textColor = .secondaryLabelColor
         root.addSubview(empty)
         NSLayoutConstraint.activate([
-            title.topAnchor.constraint(equalTo: root.topAnchor, constant: 5),
-            title.leadingAnchor.constraint(equalTo: root.leadingAnchor),
-            scroller.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 7),
+            header.topAnchor.constraint(equalTo: root.topAnchor, constant: 5),
+            header.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+            header.trailingAnchor.constraint(equalTo: root.trailingAnchor),
+            scroller.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 7),
             scroller.leadingAnchor.constraint(equalTo: root.leadingAnchor),
             scroller.trailingAnchor.constraint(equalTo: root.trailingAnchor),
             scroller.bottomAnchor.constraint(equalTo: root.bottomAnchor),
@@ -47,58 +62,75 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
 
     func update(channel: MonitorChannel, selectedID: UInt64?) {
         _ = view
+        let nextList: MonitorCapture.EventList = channel == .scroll ? .scroll(scrollStage) : .buttons
+        let listChanged = list != nextList
         let previousRow = table.selectedRow
-        let selectedWasVisible = previousRow >= 0 && NSLocationInRange(previousRow, table.rows(in: table.visibleRect))
+        let selectedWasVisible = !listChanged && previousRow >= 0
+            && NSLocationInRange(previousRow, table.rows(in: table.visibleRect))
 
         restoringSelection = true
         defer { restoringSelection = false }
-        if self.channel != channel {
-            // Scroll and Buttons have different schemas. Replacing the table
-            // keeps AppKit's cached row views tied to their original columns.
+        if listChanged {
+            // AppKit's cached row views belong to the previous column schema.
             table.delegate = nil
             table.dataSource = nil
-            self.channel = channel
+            list = nextList
+            scrollFilter.isHidden = channel == .buttons
             table = NSTableView()
             configureTable()
             scroller.contentView.scroll(to: .zero)
         }
-        empty.isHidden = capture.count(channel) > 0
-        table.reloadData()
+        let count = capture.rowCount(in: list)
+        let newestID = capture.event(at: 0, in: list)?.id
+        let rowsChanged = listChanged || count != displayedCount || newestID != displayedNewestID
+        if rowsChanged {
+            displayedCount = count
+            displayedNewestID = newestID
+            empty.isHidden = count > 0
+            table.reloadData()
+        }
 
         // Rows are newest-first and shift on every drain. Keep the ID of the
         // selected snapshot, including when it has just aged out of the ring.
-        if let id = selectedID, let row = capture.row(for: id, in: channel) {
-            table.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
-            if selectedWasVisible { table.scrollRowToVisible(row) }
-        } else {
+        if let id = selectedID, let row = capture.row(for: id, in: list) {
+            if row != table.selectedRow { table.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false) }
+            if rowsChanged && selectedWasVisible { table.scrollRowToVisible(row) }
+        } else if table.selectedRow >= 0 {
             table.deselectAll(nil)
         }
     }
 
     func numberOfRows(in tableView: NSTableView) -> Int {
-        capture.count(channel)
+        capture.rowCount(in: list)
     }
 
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         guard let column = tableColumn, let index = Int(column.identifier.rawValue),
-              let event = capture.event(at: row, in: channel) else { return nil }
+              let event = capture.event(at: row, in: list) else { return nil }
         let cells = MonitorPresentation.columns(event, origin: capture.origin)
         guard cells.indices.contains(index) else { return nil }
-        let isNumber = index == 0 || (channel == .scroll && index >= 3)
+        let isNumber = index == 0 || (list != .buttons && index >= cells.count - 2)
         return monitorCell(cells[index], in: tableView, identifier: column.identifier, numeric: isNumber)
     }
 
     func tableViewSelectionDidChange(_ notification: Notification) {
         guard !restoringSelection else { return }
-        didSelect?(capture.event(at: table.selectedRow, in: channel))
+        didSelect?(capture.event(at: table.selectedRow, in: list))
+    }
+
+    @objc private func changeScrollFilter(_ sender: NSSegmentedControl) {
+        scrollStage = sender.selectedSegment == 0 ? .captured : .posted
+        update(channel: .scroll, selectedID: nil)
+        didSelect?(nil)
     }
 
     private func configureTable() {
         addMonitorColumn(to: table, title: NSLocalizedString("monitor-time", comment: "Time column"), width: 82, minimum: 67)
-        switch channel {
-        case .scroll:
-            addMonitorColumn(to: table, title: NSLocalizedString("monitor-stage", comment: "Scroll stage column"), width: 96, minimum: 64)
-            addMonitorColumn(to: table, title: NSLocalizedString("monitor-route", comment: "Tap or posting API column"), width: 170, minimum: 144)
+        switch list {
+        case .scroll(let stage):
+            if stage == .captured {
+                addMonitorColumn(to: table, title: NSLocalizedString("monitor-tap", comment: "Tap where the input was seen"), width: 168, minimum: 120)
+            }
             addMonitorColumn(to: table, title: "ΔX", width: 58, minimum: 44)
             addMonitorColumn(to: table, title: "ΔY", width: 58, minimum: 44)
         case .buttons:
@@ -159,13 +191,16 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         configureMonitorTable(table, in: scroller)
         table.delegate = self
         table.dataSource = self
-        addMonitorColumn(to: table, title: NSLocalizedString("monitor-field", comment: "Raw field name column"), width: 148, minimum: 98)
-        addMonitorColumn(to: table, title: NSLocalizedString("monitor-value", comment: "Raw field value column"), width: 190, minimum: 137)
+        addMonitorColumn(to: table, title: NSLocalizedString("ID", comment: "CGEventField enum ID column"), width: 44, minimum: 34)
+        table.tableColumns[0].maxWidth = 60
+        addMonitorColumn(to: table, title: NSLocalizedString("monitor-field", comment: "Raw field name column"), width: 126, minimum: 94)
+        addMonitorColumn(to: table, title: NSLocalizedString("monitor-value", comment: "Raw field value column"), width: 190, minimum: 126)
 
         let content = NSStackView(views: [header, source, rawHeader, scroller])
         content.orientation = .vertical
         content.alignment = .leading
         content.distribution = .fill
+        content.detachesHiddenViews = true
         content.spacing = 8
         content.translatesAutoresizingMaskIntoConstraints = false
         root.addSubview(content)
@@ -201,11 +236,17 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
 
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         guard let column = tableColumn, fields.indices.contains(row) else { return nil }
-        let isValue = column.identifier.rawValue == "1"
         let field = fields[row]
+        let text: String
+        switch column.identifier.rawValue {
+        case "0": text = field.enumID.map(String.init) ?? "—"
+        case "1": text = field.title
+        case "2": text = field.value
+        default: return nil
+        }
         return monitorCell(
-            isValue ? field.value : field.title,
-            in: tableView, identifier: column.identifier, numeric: isValue, selectable: true
+            text, in: tableView, identifier: column.identifier,
+            numeric: column.identifier.rawValue != "1", selectable: true
         )
     }
 

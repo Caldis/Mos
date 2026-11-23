@@ -17,11 +17,10 @@ struct MonitorDelta {
     subscript(_ axis: MonitorAxis) -> Double { axis == .vertical ? y : x }
 }
 
-enum ScrollMonitorStage {
+enum ScrollMonitorStage: Equatable {
     case captured
     case frame
-    case postedToProcess
-    case postedToHID
+    case posted
 }
 
 struct MonitorEvent {
@@ -44,7 +43,6 @@ struct MonitorEvent {
         let delta: MonitorDelta
         var fields: ScrollSnapshot?
         var tap: CGEventTapLocation?
-        var postingPID: pid_t?
     }
 
     /// A value snapshot taken at the tap or sender. CGEvent stays on the
@@ -70,8 +68,8 @@ struct MonitorEvent {
     }
 
     struct ScrollSnapshot {
-        private static let invertedField = CGEventField(rawValue: 137)!
-        private static let momentumOptionsField = CGEventField(rawValue: 173)!
+        static let invertedField = CGEventField(rawValue: 137)!
+        static let momentumOptionsField = CGEventField(rawValue: 173)!
 
         let quartz: QuartzSnapshot
         let lineX: Int64

@@ -1,4 +1,5 @@
 import Cocoa
+import QuartzCore
 
 struct MonitorTimelineSample {
     let time: CFTimeInterval
@@ -51,6 +52,12 @@ final class MonitorCurveView: NSView {
         if needsRedraw { needsDisplay = true }
     }
 
+    func advance(to now: CFTimeInterval, duration: CFTimeInterval) {
+        guard !samples.isEmpty, now > range.upperBound else { return }
+        range = (now - duration)...now
+        needsDisplay = true
+    }
+
     static func visibleRange(
         endingAt now: CFTimeInterval,
         duration: CFTimeInterval,
@@ -76,7 +83,7 @@ final class MonitorCurveView: NSView {
         stroke(panel, color: NSColor.labelColor.withAlphaComponent(0.15), width: 1)
 
         let laneTitles = [
-            NSLocalizedString("monitor-captured", comment: "Captured input in the timeline"),
+            MonitorPresentation.stageName(.captured),
             NSLocalizedString("monitor-output", comment: "Output overlay in the timeline"),
         ]
         let plotStart = max(154, (laneTitles.map { textWidth($0) }.max() ?? 0) + 23)
@@ -130,7 +137,7 @@ final class MonitorCurveView: NSView {
     private func drawPhaseMarkers(_ points: [MonitorTimelineSample], in plot: NSRect) {
         let began = NSBezierPath()
         let ended = NSBezierPath()
-        for sample in points where sample.stage == .postedToProcess || sample.stage == .postedToHID {
+        for sample in points where sample.stage == .posted {
             guard sample.phase == 1 || sample.phase == 4 else { continue }
             let marker = sample.phase == 1 ? began : ended
             let x = position(of: sample.time, in: plot)
@@ -164,7 +171,7 @@ final class MonitorCurveView: NSView {
                     path.move(to: NSPoint(x: x, y: plot.midY))
                     path.line(to: NSPoint(x: x, y: y))
                 }
-            case .postedToProcess, .postedToHID:
+            case .posted:
                 let dots = sample.hasMomentum ? momentumPosts : posts
                 // A hollow X marker stays legible over a coincident Y point
                 // without shifting either sample away from its timestamp.
@@ -236,6 +243,7 @@ final class MonitorTimelineView: NSView {
     private let durationLabel = NSTextField(labelWithString: "")
     private let decrease = NSButton()
     private let increase = NSButton()
+    private var animation: Timer?
 
     init() {
         super.init(frame: .zero)
@@ -283,6 +291,27 @@ final class MonitorTimelineView: NSView {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) { fatalError("Use init()") }
+
+    deinit { animation?.invalidate() }
+
+    func animateLiveCurve(_ active: Bool) {
+        guard active, let window = window, window.isVisible, !window.isMiniaturized else {
+            animation?.invalidate()
+            animation = nil
+            return
+        }
+        guard animation == nil else { return }
+
+        // The playhead advances between recorder drains using the same clock
+        // as the samples. Each tick uses the plot's current snapshot.
+        let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
+            guard let view = self else { return }
+            view.curve.advance(to: CACurrentMediaTime(), duration: view.duration)
+        }
+        timer.tolerance = 0.001
+        RunLoop.main.add(timer, forMode: .common)
+        animation = timer
+    }
 
     private func configureStep(_ button: NSButton, symbol: String, name: String, action: Selector) {
         button.title = symbol

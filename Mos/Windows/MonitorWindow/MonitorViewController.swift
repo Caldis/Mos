@@ -1,4 +1,5 @@
 import Cocoa
+import QuartzCore
 
 final class MonitorViewController: NSViewController {
     let monitorToolbar = MonitorToolbar()
@@ -174,15 +175,21 @@ final class MonitorViewController: NSViewController {
     }
 
     private func updatePlot() {
-        guard channel == .scroll else { return }
+        guard channel == .scroll else {
+            timeline.animateLiveCurve(false)
+            return
+        }
+        let recording = capture.state == .recording
         let range = MonitorCurveView.visibleRange(
-            endingAt: capture.displayTime, duration: timeline.duration,
-            selection: selection?.time, recording: capture.state == .recording
+            endingAt: recording ? CACurrentMediaTime() : capture.displayTime,
+            duration: timeline.duration, selection: selection?.time, recording: recording
         )
+        let samples = capture.timeline(in: range)
         timeline.curve.display(
-            capture.timeline(in: range), range: range, selection: selection?.time,
-            waitingForInput: capture.state == .recording && capture.count(.scroll) == 0
+            samples, range: range, selection: selection?.time,
+            waitingForInput: recording && capture.count(.scroll) == 0
         )
+        timeline.animateLiveCurve(recording && !samples.isEmpty)
     }
 
     private func export() {

@@ -15,10 +15,12 @@ extension MonitorChannel {
 }
 
 struct MonitorField {
+    let enumID: UInt32?
     let title: String
     let value: String
 
-    init(_ title: String, _ value: String) {
+    init(_ title: String, _ value: String, enumID: UInt32? = nil) {
+        self.enumID = enumID
         self.title = title
         self.value = value
     }
@@ -37,14 +39,17 @@ enum MonitorPresentation {
         return String(format: value.rounded(.towardZero) == value ? "%.0f" : "%.2f", value)
     }
 
-    static func columns(_ event: MonitorEvent, origin: CFTimeInterval) -> [String] {
+    static func columns(_ event: MonitorEvent, origin: CFTimeInterval, forExport: Bool = false) -> [String] {
         let time = String(format: "%.3f s", max(0, event.time - origin))
         switch event.payload {
         case .scroll(let sample):
-            return [
-                time, stageName(sample.stage), source(of: sample)?.value ?? missing,
+            let delta = [
                 displacement(sample.delta.x), displacement(sample.delta.y)
             ]
+            let tap = sample.tap.map(tapName) ?? missing
+            if forExport { return [time, stageName(sample.stage), tap] + delta }
+            if sample.stage == .captured { return [time, tap] + delta }
+            return [time] + delta
         case let .button(snapshot, tap):
             return [time, buttonInput(snapshot), tapName(tap)]
         }
@@ -53,39 +58,30 @@ enum MonitorPresentation {
     static func detail(_ event: MonitorEvent) -> Detail {
         switch event.payload {
         case .scroll(let sample):
-            return Detail(source: source(of: sample), fields: scrollFields(sample))
+            return Detail(source: sample.tap.map(tapField), fields: scrollFields(sample))
         case let .button(snapshot, tap):
             return Detail(source: tapField(tap), fields: buttonFields(snapshot))
         }
     }
 
     static func rawText(_ fields: [MonitorField]) -> String {
-        fields.map { "\($0.title)\t\($0.value)" }.joined(separator: "\n")
+        fields.map { field in
+            [field.enumID.map(String.init) ?? "", field.title, field.value].joined(separator: "\t")
+        }.joined(separator: "\n")
     }
 
     static func export(_ event: MonitorEvent, origin: CFTimeInterval) -> String {
         [
-            columns(event, origin: origin).joined(separator: "\t"),
+            columns(event, origin: origin, forExport: true).joined(separator: "\t"),
             rawText(detail(event).fields),
         ].joined(separator: "\n")
     }
 
-    private static func stageName(_ stage: ScrollMonitorStage) -> String {
+    static func stageName(_ stage: ScrollMonitorStage) -> String {
         switch stage {
-        case .captured: return NSLocalizedString("monitor-captured-stage", comment: "Captured event stage")
+        case .captured: return NSLocalizedString("monitor-captured", comment: "Raw scroll input at the tap")
         case .frame: return NSLocalizedString("monitor-frame-stage", comment: "Computed frame stage")
-        case .postedToProcess, .postedToHID: return NSLocalizedString("monitor-posted-stage", comment: "Posted event stage")
-        }
-    }
-
-    private static func source(of sample: MonitorEvent.ScrollSample) -> MonitorField? {
-        if let tap = sample.tap { return tapField(tap) }
-        // Posting hooks observe a call to the output API, not an input tap.
-        let title = NSLocalizedString("monitor-output", comment: "Scroll output")
-        switch sample.stage {
-        case .postedToProcess: return MonitorField(title, "postToPid")
-        case .postedToHID: return MonitorField(title, "postToHID")
-        case .captured, .frame: return nil
+        case .posted: return NSLocalizedString("monitor-posted-stage", comment: "Posted event stage")
         }
     }
 
@@ -139,7 +135,7 @@ enum MonitorPresentation {
     }
 
     private static func field<T>(_ field: CGEventField, _ name: String, _ value: T, decoded: String = "") -> MonitorField {
-        MonitorField("\(field.rawValue) \(name)", raw(value, decoded: decoded))
+        MonitorField(name, raw(value, decoded: decoded), enumID: field.rawValue)
     }
 
     private static func quartzFields(_ snapshot: MonitorEvent.QuartzSnapshot) -> [MonitorField] {
@@ -157,19 +153,13 @@ enum MonitorPresentation {
         guard let fields = sample.fields else {
             return [MonitorField("ΔX (pt)", raw(sample.delta.x)), MonitorField("ΔY (pt)", raw(sample.delta.y))]
         }
-        var result: [MonitorField] = [
+        let result: [MonitorField] = [
             field(.scrollWheelEventPointDeltaAxis1, "Point Y", sample.delta.y),
             field(.scrollWheelEventPointDeltaAxis2, "Point X", sample.delta.x),
             field(.scrollWheelEventScrollPhase, "Scroll phase", fields.phase,
                   decoded: [0: "None", 1: "Began", 2: "Changed", 4: "Ended", 8: "Cancelled", 128: "MayBegin"][fields.phase] ?? ""),
             field(.scrollWheelEventMomentumPhase, "Momentum", fields.momentum,
                   decoded: [0: "None", 1: "Begin", 2: "Continue", 3: "End"][fields.momentum] ?? ""),
-        ]
-        // The explicit postToPid argument can differ from CGEvent's own target field.
-        if let pid = sample.postingPID {
-            result.append(MonitorField("postToPid target PID", String(pid)))
-        }
-        result.append(contentsOf: [
             field(.scrollWheelEventDeltaAxis1, "Line Y", fields.lineY),
             field(.scrollWheelEventDeltaAxis2, "Line X", fields.lineX),
             field(.scrollWheelEventFixedPtDeltaAxis1, "Fixed Y", fields.fixed.y),
@@ -181,9 +171,9 @@ enum MonitorPresentation {
             field(TrackpadEventField.sender, "Sender", fields.sender),
             field(.scrollWheelEventIsContinuous, "Continuous", fields.continuous),
             field(.scrollWheelEventScrollCount, "Scroll count", fields.count),
-            MonitorField("137 Inverted", raw(fields.inverted)),
-            MonitorField("173 Momentum options", raw(fields.momentumOptions)),
-        ])
+            field(MonitorEvent.ScrollSnapshot.invertedField, "Inverted", fields.inverted),
+            field(MonitorEvent.ScrollSnapshot.momentumOptionsField, "Momentum options", fields.momentumOptions),
+        ]
         return result + quartzFields(fields.quartz)
     }
 
