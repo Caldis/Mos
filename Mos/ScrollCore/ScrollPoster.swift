@@ -67,8 +67,9 @@ class ScrollPoster {
 
 // MARK: - 滚动数据更新控制
 extension ScrollPoster {
-    func update(event: CGEvent, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1) -> Self {
-        guard dispatchContext.capture(event: event) else {
+    func update(event: CGEvent, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1,
+                route: ScrollDispatchContext.Route = .process, targetPID: pid_t? = nil) -> Self {
+        guard dispatchContext.capture(event: event, route: route, targetPID: targetPID) else {
             return self
         }
         os_unfair_lock_lock(&stateLock)
@@ -135,6 +136,7 @@ extension ScrollPoster {
         os_unfair_lock_unlock(&stateLock)
     }
     func reset() {
+        dispatchContext.enqueueAdapterEnd()
         dispatchContext.invalidateAll()
         os_unfair_lock_lock(&stateLock)
         resetUnlocked()
@@ -261,6 +263,8 @@ extension ScrollPoster {
                 )
             }
         }
+        // 适配器路由不使用阶段帧, 会话结束时单独结束其手势
+        dispatchContext.enqueueAdapterEnd()
         manualInputEnded = true
         momentumActive = false
         // 重置参数 (不递增 generation, 保留本次收尾帧有效性)
@@ -508,6 +512,12 @@ private extension ScrollPoster {
 
     @discardableResult
     func post(_ snapshot: ScrollDispatchContext.PostingSnapshot, _ v: (y: Double, x: Double), phaseOverride: (scroll: Double, momentum: Double)? = nil, fallbackToCurrentPhase: Bool = true) -> Bool {
+        // 适配器路由只取帧位移, 阶段由适配器的输出端生成
+        if let sink = snapshot.route.sink {
+            dispatchContext.enqueueAdapterFrame(snapshot, sink: sink, y: v.y, x: v.x)
+            ScrollPhase.shared.didDeliverFrame()
+            return true
+        }
         if let override = phaseOverride {
             snapshot.event.setDoubleValueField(.scrollWheelEventScrollPhase, value: override.scroll)
             snapshot.event.setDoubleValueField(.scrollWheelEventMomentumPhase, value: override.momentum)
