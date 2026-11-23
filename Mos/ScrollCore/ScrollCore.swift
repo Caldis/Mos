@@ -85,7 +85,7 @@ class ScrollCore: ScrollActionPort {
     /// 鼠标滚轮的翻转与平滑决策。返回 nil 表示原始事件已被平滑管线接管
     func handleScroll(_ event: CGEvent, route: ScrollRoute) -> Unmanaged<CGEvent>? {
         if ScrollMonitorTrace.isRecording {
-            ScrollMonitorTrace.shared.record(event, stage: .captured)
+            ScrollMonitorTrace.shared.recordCapture(event, route: route)
         }
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)

@@ -5,7 +5,7 @@ final class MonitorWindowController: NSWindowController, NSWindowDelegate {
     private var hasOpened = false
 
     init() {
-        let size = NSSize(width: 1080, height: 680)
+        let size = NSSize(width: 1080, height: 712)
         let window = NSWindow(
             contentRect: NSRect(origin: .zero, size: size),
             styleMask: [.titled, .closable, .resizable, .miniaturizable, .fullSizeContentView],
@@ -16,14 +16,16 @@ final class MonitorWindowController: NSWindowController, NSWindowDelegate {
         window.titleVisibility = .hidden
         if #available(macOS 11.0, *) {
             window.titlebarSeparatorStyle = .none
+            window.toolbarStyle = .unified
         }
         super.init(window: window)
+        window.toolbar = monitor.monitorToolbar.toolbar
         window.contentViewController = monitor
         window.title = NSLocalizedString("Event Monitor", comment: "Event Monitor window title")
             .trimmingCharacters(in: .whitespaces)
-        let titlebarHeight = NSWindow.frameRect(forContentRect: .zero, styleMask: .titled).height
-        window.setContentSize(NSSize(width: size.width, height: size.height + titlebarHeight))
-        window.contentMinSize = NSSize(width: 800, height: 550 + titlebarHeight)
+        window.setContentSize(size)
+        monitor.alignBelowToolbar(in: window)
+        window.contentMinSize = NSSize(width: 800, height: 565)
         window.center()
         window.delegate = self
     }
