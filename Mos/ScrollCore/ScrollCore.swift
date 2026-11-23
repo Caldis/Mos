@@ -84,7 +84,9 @@ class ScrollCore: ScrollActionPort {
 
     /// 鼠标滚轮的翻转与平滑决策。返回 nil 表示原始事件已被平滑管线接管
     func handleScroll(_ event: CGEvent, route: ScrollRoute) -> Unmanaged<CGEvent>? {
-        ScrollMonitorTrace.shared.record(event, stage: .captured)
+        if ScrollMonitorTrace.isRecording {
+            ScrollMonitorTrace.shared.record(event, stage: .captured)
+        }
         // 滚动事件
         let scrollEvent = ScrollEvent(with: event)
         let hasVerticalDelta = scrollEvent.Y.valid && scrollEvent.Y.usableValue != 0.0

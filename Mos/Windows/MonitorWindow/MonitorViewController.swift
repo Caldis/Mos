@@ -68,14 +68,22 @@ final class MonitorViewController: NSViewController {
 
     deinit {
         if refreshTimer != nil {
-            trace.setRecording(false)
+            ScrollMonitorTrace.setSharedRecording(false)
+            trace.drain(into: &incoming)
         }
         refreshTimer?.invalidate()
         tap?.stop()
     }
 
     override func loadView() {
-        let root = NSView()
+        let root = NSVisualEffectView()
+        root.blendingMode = .behindWindow
+        root.state = .followsWindowActiveState
+        if #available(macOS 10.14, *) {
+            root.material = .underWindowBackground
+        } else {
+            root.material = .appearanceBased
+        }
         let windowLabel = NSTextField(labelWithString: NSLocalizedString("monitor-time-window", comment: "Scroll timeline time window"))
         let slider = NSSlider(
             value: windowDuration, minValue: 1, maxValue: 10, target: self, action: #selector(changeDuration(_:))
@@ -117,8 +125,16 @@ final class MonitorViewController: NSViewController {
         content.spacing = 12
         content.translatesAutoresizingMaskIntoConstraints = false
         root.addSubview(content)
+        let contentTop: NSLayoutConstraint
+        let topPadding: CGFloat = 8
+        if #available(macOS 11.0, *) {
+            contentTop = content.topAnchor.constraint(equalTo: root.safeAreaLayoutGuide.topAnchor, constant: topPadding)
+        } else {
+            let titlebarHeight = NSWindow.frameRect(forContentRect: .zero, styleMask: .titled).height
+            contentTop = content.topAnchor.constraint(equalTo: root.topAnchor, constant: titlebarHeight + topPadding)
+        }
         NSLayoutConstraint.activate([
-            content.topAnchor.constraint(equalTo: root.topAnchor, constant: 16),
+            contentTop,
             content.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: 18),
             content.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -18),
             content.bottomAnchor.constraint(equalTo: root.bottomAnchor, constant: -16),
@@ -175,7 +191,7 @@ final class MonitorViewController: NSViewController {
                 placeAt: .tailAppendEventTap,
                 for: .listenOnly
             )
-            trace.setRecording(true)
+            ScrollMonitorTrace.setSharedRecording(true)
             recordingStarted = true
             captureUnavailable = false
             updateStatus()
@@ -194,7 +210,7 @@ final class MonitorViewController: NSViewController {
 
     func stopRecording() {
         guard refreshTimer != nil else { return }
-        trace.setRecording(false)
+        ScrollMonitorTrace.setSharedRecording(false)
         refreshTimer?.invalidate()
         refreshTimer = nil
         tap?.stop()

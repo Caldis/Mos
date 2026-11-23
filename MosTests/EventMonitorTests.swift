@@ -67,6 +67,16 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertEqual(samples.map(\.y), [3])
     }
 
+    func testSharedFastFlagFollowsRecordingLifecycle() {
+        ScrollMonitorTrace.setSharedRecording(false)
+        defer { ScrollMonitorTrace.setSharedRecording(false) }
+        XCTAssertFalse(ScrollMonitorTrace.isRecording)
+        ScrollMonitorTrace.setSharedRecording(true)
+        XCTAssertTrue(ScrollMonitorTrace.isRecording)
+        ScrollMonitorTrace.setSharedRecording(false)
+        XCTAssertFalse(ScrollMonitorTrace.isRecording)
+    }
+
     func testMouseLogIncludesModifiersAndSourceData() throws {
         let event = try XCTUnwrap(CGEvent(
             mouseEventSource: nil, mouseType: .mouseMoved, mouseCursorPosition: CGPoint(x: 32, y: 48), mouseButton: .left
@@ -116,12 +126,18 @@ final class EventMonitorTests: XCTestCase {
         let controller = MonitorWindowController()
         let window = try XCTUnwrap(controller.window)
         XCTAssertFalse(window.isVisible)
+        XCTAssertTrue(window.styleMask.contains(.fullSizeContentView))
+        XCTAssertTrue(window.titlebarAppearsTransparent)
+        XCTAssertEqual(window.titleVisibility, .hidden)
         let monitor = try XCTUnwrap(window.contentViewController as? MonitorViewController)
-        let root = monitor.view
+        let root = try XCTUnwrap(monitor.view as? NSVisualEffectView)
+        XCTAssertEqual(root.blendingMode, .behindWindow)
+        XCTAssertEqual(root.state, .followsWindowActiveState)
         window.setContentSize(window.contentMinSize)
         root.layoutSubtreeIfNeeded()
 
         let stack = try XCTUnwrap(root.subviews.first as? NSStackView)
+        XCTAssertLessThan(root.convert(stack.frame, to: nil).maxY, window.contentLayoutRect.maxY)
         let timeline = try XCTUnwrap(stack.arrangedSubviews.first { $0 is MonitorCurveView })
         let log = try XCTUnwrap(stack.arrangedSubviews.last as? NSScrollView)
         XCTAssertGreaterThanOrEqual(timeline.frame.height, 200)

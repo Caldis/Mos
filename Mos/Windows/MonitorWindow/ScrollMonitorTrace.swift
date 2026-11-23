@@ -99,6 +99,14 @@ struct ScrollMonitorSample {
 final class ScrollMonitorTrace {
     static let shared = ScrollMonitorTrace()
 
+    static var isRecording: Bool { MosMonitorIsRecording() }
+
+    // Window lifecycle changes the fast flag on the main thread. The lock still protects in-flight samples.
+    static func setSharedRecording(_ enabled: Bool) {
+        shared.setRecording(enabled)
+        MosMonitorSetRecording(enabled)
+    }
+
     private var lock = os_unfair_lock_s()
     private var pending: [ScrollMonitorSample] = []
     private var dropped = 0
@@ -146,6 +154,7 @@ final class ScrollMonitorTrace {
         os_unfair_lock_lock(&lock)
         defer { os_unfair_lock_unlock(&lock) }
         swap(&pending, &batch)
+        if !recording { pending.removeAll() }
         let droppedCount = dropped
         dropped = 0
         return droppedCount
