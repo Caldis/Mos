@@ -1,7 +1,8 @@
-# 实验记录（在另一台设备上填写）
+# iPhone Mirroring 滚动实验记录
 
-> 逐项记录 Phase 0 / Phase 1 的观测。命题编号见 `02-experiment-plan.md`。
-> 环境: macOS 26.5.1 (25F80) + Xcode 26.0 (17A324) / iOS 26 / MacBook (Apple Silicon) / Logitech MX Master 3S (蓝牙直连, Logi Options+ 未运行) / 日期 2026-07-11
+> C0–C5 对应[虚拟 HID 验证计划](02-experiment-plan.md), E1–E3 的 Lab 轮次保存在[证据归档](evidence/2026-10-12/lab/)
+>
+> 2026-07-11 环境为 macOS 26.5.1 (25F80), Xcode 26.0 (17A324), iOS 26, Apple Silicon MacBook 与蓝牙直连的 Logitech MX Master 3S. Logi Options+ 当时未运行
 
 ## Phase 0 — Karabiner 代理(2026-07-11 已完成)
 
@@ -40,7 +41,7 @@
 3. **Xcode 无此能力映射**:Xcode 26.0 的门户能力缓存 `DVTPortal.framework/Resources/DVTPortalCachedPortalCapabilities.json`(102 项)**不含**任何对应 `hid.virtual.device` 的 capability——自动签名从机制上就不可能配出它。对照组:DriverKit HID 三项(`DRIVERKIT_FAMILY_HIDDEVICE_PUB` / `HIDEVENTSERVICE_PUB` / `TRANSPORT_HID_PUB`,均标注 "for development")在列表中存在。
 4. **本机无背书**:本机全部描述文件均不含该 entitlement;Apple 官方文档(entitlement 页 + CoreHID "Creating virtual devices")也未公开任何申请渠道。
 
-**推论**:Phase 1(CoreHID 原型实跑)硬阻塞于 Apple 授权,按 plan §决策门"以 Phase 0 结论推进"。**注意**:DriverKit HID 能力(Karabiner 架构)development 阶段反而是自助的(已在 App ID `com.caldis.Mos.driver` 启用,见 `04`)——若 Phase 0 = go 而 CoreHID 授权迟迟不下,可直接用 development 签名做 DriverKit dext 原型替代 Phase 1,不必等待。
+> 7 月的 CoreHID 签名阻塞已在 9 月解除. DriverKit 开发原型是当时考虑的备选, 其分发申请随后被拒. [授权记录](04-entitlement-application.md)
 
 ### Phase 1 复测 (2026-09-30, HID Virtual Device 授权已下发)
 
@@ -63,9 +64,9 @@
 - 系统匹配 AppleUserHIDEventDriver, 双指滑动只产生 kCGEventGesture (type 29) 事件, 手势子类型字段 110 为 0, 没有滚动事件
 - 结论: 系统没有把通用数字化仪触控板识别为触控板, 镜像侧响应待 Phase 3 验证
 
-## Phase 3 — 触控板式输入 (待测)
+## Phase 3 — 触控板式输入试验矩阵
 
-目标: 让 iPhone 镜像收到触控板双指滑动的体验, 即连续平移加 iOS 原生惯性, 而非滚轮的分段滚动
+W, T, V 用例保留为对照设计. 后续 Lab 另行执行了 E1–E3, 测得惯性与 sender 的对照结果, 见[重测与 E3 盲测结果](#重测与-e3-盲测结果-2026-10-12)
 
 依据 (社区实现):
 - jfarcand/mirroir-mcp: kCGHIDEventTap 投递 IsContinuous=1 的滚动事件, scrollPhase 依次为 MayBegin(128, 零增量) / Began(1) / Changed(2) / Ended(4, 零增量), 快速滑动后追加 momentumPhase 1/2/3 的衰减尾巴 (每 16ms 乘 0.94)
@@ -86,7 +87,7 @@
 
 工具: tools/build.sh 构建 winctl / evspy 与原型 .app; mirror-session.sh 在镜像未连接时通过辅助功能树检测占位页并中止
 
-## Phase 2 — cghidEventTap 注入(2026-07-11 新增,源自 cua.ai 文章方法论 + mirroir 项目)
+## Phase 2 — CGEvent 投递与消费
 
 **背景**:全网检索发现在售项目 `jfarcand/mirroir-mcp` 用 `CGEvent.post(tap: .cghidEventTap)` 驱动镜像 swipe,与"镜像够不到"的结论冲突,实测裁决。
 
@@ -98,37 +99,26 @@
 | 可重复 | ☑ 是 | 下/上/再滚三轮均生效 |
 | 权限成本 | 仅**辅助功能**;零 entitlement / 零虚拟设备 / 零 dext | 远轻于路线 B(dext) |
 
-**Phase 2 结论**:`.cghidEventTap` **投递**的滚轮能到达镜像。**但仅解决"注入",未解决"翻转物理滚动"**。
+探针 C 验证了 `.cghidEventTap` 投递普通滚轮的到达与方向控制
 
-**下一关键实验 → 已完成(2026-07-11),结论:能压制,#762 无需 dext 可修**
+2026-07-11 的后续探针分别观测了消费与组合重投
 
 | 探针 | 做什么 | 结果 |
 |---|---|---|
 | probeD | `kCGHIDEventTap` 消费型 tap,吞掉所有物理滚轮(`return nil`) | 物理滚动镜像 **纹丝不动**(237 事件被吞,截图逐帧对齐)→ 底层消费**能压制**镜像那份副本 |
 | probeE | `kCGHIDEventTap` 消费原始 + 取反 delta 从 `kCGHIDEventTap` 重投 | 物理滚动镜像时,镜像与普通 App **一致按翻转方向**移动(420+ 事件翻转)。probeE 全局翻转,若够不到镜像应"内外相反",实测一致 = 翻转到达镜像 |
 
-**根因定位(Mos 代码)**:
-- tap 挂 `.cgAnnotatedSessionEventTap`(`ScrollCore.swift:409`,session 最高层)→ 消费/改写在镜像底层读取点上游之后,镜像读走原始。
-- 重投用 `event.postToPid()`(`ScrollDispatchContext.swift:131`)→ 到不了镜像(mirroir 项目已证)。
+当时 Mos 使用 Annotated Session 捕获及按进程投递. 在当时的输入配置下, 镜像内无法复现普通 App 的方向控制. 当前实现见[适配器方案](../../plans/2026-10-12-iphone-mirroring-scroll.md)
 
-**→ 路线 C 成立**(见 `01-findings.md §4 路线 C`):镜像前台时下沉 `kCGHIDEventTap` 消费+翻转重投,仅需辅助功能,无 dext。
+探针 E 提供了组合重投的支持性观测. 同手势的翻转开关对照因镜像断连而中止. 7 月方向样本的验证范围不含端到端平滑, 惯性或多显示器
 
-**仍待验证**:平滑(C4);与 session-tap 管线协同;动量/多显示器鲁棒性。**清洁 A/B**(probeE 开/关同手势看方向反转)因 iPhone 反复被使用断连未跑完,但 probeC+probeD 两个原子能力已分别铁证,组合逻辑上成立、probeE 已确认可组合不自锁。
+## 2026-07-11 的阶段结论 (历史)
 
-## 总结论(2026-07-11)
+Karabiner 实测确认虚拟滚轮的到达和方向控制 (C2/C3)
 
-☑ **路线 B 架构成立**:虚拟 HID 注入的滚轮可到达镜像(C2)且方向可控(C3)——由 Karabiner 代理实测证实。
-☐ ~~路线 B 不可行~~(已排除)
-
-尚未闭环的部分:
-- **C4(平滑)**:Karabiner 的 flip 不改变事件频率/粒度,无法代测;需我们自己的注入器(CoreHID 或 dext)验证。
-- **C5(是否必须 seize)**:Karabiner 场景下 seize 是既成事实(且证明 seize + 重发可行、无双份输入);「不 seize 直接注入会不会双份」仍未测,待 CoreHID 授权或 dext 原型。
-- **Phase 1 路径选择**:CoreHID entitlement development 即门控(见上),两条路——① 向 Apple 争取 `hid.virtual.device`;② 直接做 DriverKit dext 原型(development 能力自助,App ID 已配好,架构同 Karabiner,Phase 0 已验证这条链路端到端可行)。
-
-残留风险确认(见 plan §"全部通过是否足以支撑结论"):
-- entitlement 分发授权: **CoreHID development 即门控(实测);DriverKit 分发申请 7CTL26535S 等回复**
-- 多鼠标/热插拔/休眠: 未覆盖(原型阶段不测)
-- CoreHID vs DriverKit: **天平已向 DriverKit 倾斜**——CoreHID 连开发验证都受阻,而 dext 链路被 Phase 0 端到端证实且 development 自助
+- C4 超出 Karabiner 方向实验范围, 该实验保持事件频率与粒度
+- C5 的测试条件为 Karabiner 独占设备后重发. 物理滚轮与虚拟滚轮直接并行的结果未测
+- 9 月 CoreHID 授权与复测取代了当时的签名判断, 见 [Phase 1 复测](#phase-1-复测-2026-09-30-hid-virtual-device-授权已下发)
 
 ## P0 — 字段记录器与离线核对 (2026-10-10, 工具实现与离线核对, 无设备实验)
 
@@ -199,7 +189,7 @@
 原 "先发 MayBegin (128)" 更名为 "手势开始前发送预备事件 (MayBegin, 128)", 只发预备事件; 打断信号是包含预备事件的三事件序列。手感与 iPhone 端惯性打断效果尚未实测
 
 
-### 第 0 步实验: 惯性归属与 Sender 独立性 (2026-10-12, 待实测)
+### 2026-10-12 实验配置
 
 Lab 左栏新增 "实验" 区 (Sources/Experiments.swift)。每个变体以 2026-10-09 实测顺滑的 phased 配置为基线, 只改变一个变量; 套用变体时自动以变体编号开始记录轮次, 观察写入该轮次的 notes.txt。
 
@@ -226,7 +216,7 @@ E2 中 sender 不指向虚拟妙控板的变体会销毁虚拟设备, 轮次目�
 
 结论与限定:
 
-- E1: 镜像的滑行距离不随 Mac 侧惯性衰减变化, 滑行由 iOS 按手势结束时的速度自行生成。Mac 侧合成惯性只带来首帧和交接处的卡顿, 镜像路径不发送惯性事件
+- E1: 该组对照中, 镜像滑行距离在不同 Mac 侧惯性衰减配置下相近. 改变衰减比主要影响首帧与交接的手感. 结合实测, Mos 的镜像适配器仅输出手势阶段, 选择让 iOS 负责松手后的滑行
 - E2: 只有 sender 指向触控板类设备 (虚拟妙控板或内置触控板) 的变体可用。物理鼠标 sender 加补齐时, 镜像按鼠标设备属性解释 175-178, 位移被放大
 - E1-N 与 E2-V 的配置完全相同 (config.json 一致, sender 同为 4295510148), 评价却不同。单次主观评价的偶然差异较大, V 与 T 的差异需要盲测 E3 复核
 - E2-Z 与 E2-M0 的结果作废: Lab 的 phased 输出先写像素位移 96 再写行位移 11, 写行位移时 CGEvent 按 1 行 = 8 像素重算 93 与 96, 所有 phased 事件的公开位移都是 ±8 (frames.jsonl 中 point_y 恒为 ±8, 独立脚本复现)。sender 非零时镜像读取 175-178, 不受影响; sender 为 0 时镜像读取的正是被改写的公开位移。已修正写入顺序并加入自检, 两个变体需要重测
@@ -244,12 +234,12 @@ E2 中 sender 不指向虚拟妙控板的变体会销毁虚拟设备, 轮次目�
 
 结论与限定:
 
-- 修正公开位移后 sender 为 0 仍不可用。镜像路径要求 sender 指向触控板类设备, 虚拟妙控板与内置触控板手感接近, 盲测中没有稳定差异
-- E3-Y 首轮无反应时 Mac 侧输出与后续正常轮次一致, 原因在镜像或 iOS 一侧, 未定位。已知条件: 该轮紧接 sender 从虚拟妙控板切换到内置触控板之后。推断: 同一会话内切换 sender 可能让镜像暂时忽略新设备, 待验证
+- 修正公开位移后, 零 sender 在本配置下仍无法取得连续手感. 虚拟妙控板和内置触控板 sender 均取得接近的手感, 盲测中没有稳定差异
+- E3-Y 首轮无反应时, Mac 侧记录了 881 个 posted 事件, sender 与后续正常轮次相同. 该轮紧接一次 sender 切换. 切换后镜像暂时忽略新设备是待验证推断
 - 往复跳变: Mac 侧数据显示, 方向反转发生在同一个手势内部, 插值缓冲在反转时清零, 速度从 +7 直接跳到 -5, 快速拨动时单帧可达 -178。跳变与该速度突变的关系未验证
 - 两个 sender 都有插值过度的反馈。iOS 会在手势结束后自行滑行, Mos 插值的拖尾与 iOS 滑行叠加, 镜像路径的插值时长需要单独调校
 
 
 ### 证据归档说明 (2026-10-12)
 
-evidence/ 下体积较大的 frames.jsonl 与 services.json 以 gzip 压缩归档 (后缀 .gz), 使用前用 gunzip 解压; tools/analyze-round.py 读取解压后的 frames.jsonl
+大部分轮次的 `frames.jsonl` 与 `services.json` 以 gzip 归档. [离线分析脚本](../../../experiments/MirroringScrollLab/tools/analyze-round.py)读取未压缩的帧记录, 可在临时副本中解压后分析

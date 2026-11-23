@@ -1,12 +1,12 @@
 # iPhone Mirroring 滚动机制与实验交接 (2026-10-09)
 
-虚拟 Magic Trackpad 已有顺滑滚动的成功记录, 当前证据尚未证明它是精确平滑滚动的必要条件. 普通 CGEvent 在历史实验中也能让镜像滚动且方向可控. 下一轮最有价值的工作, 是补齐 CGEvent 的 Raw/Accelerated 字段和有效设备来源, 与已成功的虚拟设备方案做一次可判定的 A/B 实验.
+> 2026-10-09 的机制还原与实验设计. 10 月 10 日完成 P0 字段记录与离线核对. 10 月 12 日的 E1–E3 实测补充了 P1/P2 所关注的 sender, 字段与惯性证据. 合入方案见[研究索引](00-README.md), 样本和未完成项见[实验记录](03-experiment-log.md)
 
-## 结论与未知
+## 2026-10-09 的结论与未知
 
 对能滚和控制方向这两个目标, 2026-07-11 已存实验支持虚拟 HID 可选. 对细粒度连续滚动, 阶段切换, 惯性以及再次输入打断惯性的完整体验, 纯 CGEvent 替代方案仍待验证. 本轮没有重跑设备实验.
 
-当前 Mos 鼠标平滑帧改写 Point Delta, 而已还原的镜像转换器在非零 sender 分支读取 Raw/Accelerated Delta. 这提供了一个具体且可测试的解释. 实际接收事件样本和投递路径尚缺, 因此字段差异还不能认定为已完成端到端验证的主因.
+当时 Mos 的标准平滑路径改写 Point Delta. 已还原的镜像转换器在非零 sender 分支读取 Raw/Accelerated Delta. 两者的差异为后续字段对照提供了实验条件
 
 | 判断 | 证据等级 | 限度 |
 |---|---|---|
@@ -34,7 +34,7 @@ iPhone 接收实现, 设备属性的远端依赖, 各类 delta 的单位关系, 
 | 研究工作树 | /Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring |
 | 研究分支 | research/iphone-mirroring-scroll, HEAD 752730c, 初始已有未提交改动 |
 
-后续实验优先使用研究工作树. 下列改动在本轮报告开始前已经存在, 必须保留; 它们不归因于本轮报告整理.
+下表保留当时工作区快照, 对应工具与记录随后归档于 `a06b130` 和 `fc862fe`
 
 | 已有改动类型 | 路径 |
 |---|---|
@@ -111,11 +111,11 @@ Apple 的 [TN3210](https://developer.apple.com/documentation/technotes/tn3210-op
 
 这份公开契约没有给出合成 CGEvent 的分类算法. Mac 端字段完整, 不等于手机侧必然获得 continuous 输入; 该项需要与设备属性和画面响应一起验证.
 
-## Mos 与真实触控板的字段差异
+## 2026-10-09 的 Mos 与真实触控板字段差异
 
-当前主工作区在 [ScrollCore.swift:79](/Users/caldis/Desktop/Code/Mos/Mos/ScrollCore/ScrollCore.swift:79) 放行触控板事件. 真实触控板的完整字段沿原路径继续传递. 鼠标平滑则复制原事件模板, 每帧改写部分公开字段.
+当时的 `ScrollCore.swift` 放行触控板事件, 真实触控板的字段随事件继续传递. 鼠标平滑复制原事件模板, 每帧改写部分公开字段. [源码快照](https://github.com/Caldis/Mos/blob/8a2fd112/Mos/ScrollCore/ScrollCore.swift#L79)
 
-模板捕获见 [ScrollDispatchContext.swift:55](/Users/caldis/Desktop/Code/Mos/Mos/ScrollCore/ScrollDispatchContext.swift:55), 每帧克隆见同文件第 96 行. [ScrollPoster.swift:510](/Users/caldis/Desktop/Code/Mos/Mos/ScrollCore/ScrollPoster.swift:510) 改写 Point 96/97, Continuous 88 和合成标记, 可选改写 phase 99, momentum 123. 最终在 [ScrollDispatchContext.swift:131](/Users/caldis/Desktop/Code/Mos/Mos/ScrollCore/ScrollDispatchContext.swift:131) 调用 postToPid.
+模板捕获见 `ScrollDispatchContext.swift` 第 55 行, 每帧克隆见第 96 行, 按进程投递见第 131 行. `ScrollPoster.post` 改写 Point 96/97, Continuous 88 和合成标记, 并可改写 phase 99 和 momentum 123. [投递上下文快照](https://github.com/Caldis/Mos/blob/8a2fd112/Mos/ScrollCore/ScrollDispatchContext.swift) · [平滑投递快照](https://github.com/Caldis/Mos/blob/8a2fd112/Mos/ScrollCore/ScrollPoster.swift#L510)
 
 若合成事件仍保留非零 sender, 且抵达上述转换器分支, 每个平滑帧可能重复读取模板里旧的 Raw/Accelerated 值. 模板复制与字段不联动已经得到离线验证. 实际镜像接收值以及 postToPid 的到达情况仍需采样, 投递层级必须作为独立变量控制.
 
@@ -135,27 +135,19 @@ Apple 的 [TN3210](https://developer.apple.com/documentation/technotes/tn3210-op
 
 CGEvent scroll phase 的 Changed=2, NSEvent.phase 的 Changed=4; CGEvent momentum 的 Continue=2, NSEvent.momentumPhase 的 Changed=4. 实现中应分别映射, 不得把一个数值域直接写成另一个. 映射摘段见 [appkit-phase-mapping.txt](evidence/2026-10-09/appkit-phase-mapping.txt). 当前 SDK 公开列出 173 和 175..178 的枚举名称; 87 与 137 没有公开枚举名称, 语义来自对应 getter 的反汇编.
 
-## 历史实验与当前 Lab 缺口
+## 2026-10-09 的 Lab 基线
 
-[03-experiment-log.md](/Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring/docs/research/iphone-mirroring-scroll/03-experiment-log.md:93) 记录 2026-07-11 的非虚拟 HID 实验: CGEvent.post(.cghidEventTap) 能滚动且方向可控, 消费 237 个物理事件能压制滚动, 消费后反向重投 420+ 个事件曾生效. 第 116 行仍将平滑 C4 标为待验证, 并说明干净的同手势方向 A/B 因断连未完成.
+7 月实测验证了 HID 层 CGEvent 投递与方向控制, 也记录了消费 237 个物理事件后镜像停止滚动. 消费与重投组合取得支持性结果, 同手势方向对照因断连中止. [Phase 2 实验记录](03-experiment-log.md#phase-2--cgevent-投递与消费)
 
-[01-findings.md:114](/Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring/docs/research/iphone-mirroring-scroll/01-findings.md:114) 已修正 IOHID-only 的旧判断. 00-README 的旧概览和 05-issue-comment-draft 的早期结论仍含"CGEvent 够不到, 虚拟 HID 唯一"的说法. 下一会话应使用本轮证据和历史实验的具体观测, 不把早期判断作为排除 CGEvent 的依据.
+当时的 phased 模式写入 88, 99, 123, 96/97, 93/94, 11/12 及可选 sender 87, 字段 175–178 尚未接入. 后续 Lab 已支持补齐字段并对照 sender. Lab 能使用零 sender, 真实触控板 sender 或 AppleMultitouchDevice ID. 服务映射仍是解释实验结果的前提. [Lab 引擎](../../../experiments/MirroringScrollLab/Sources/ScrollEngine.swift) · [字段与 sender 对照](03-experiment-log.md#2026-10-12-实验配置)
 
-当前 [ScrollEngine.swift:431](/Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring/experiments/MirroringScrollLab/Sources/ScrollEngine.swift:431) 的 phased 模式新建 wheel=0 的事件, 写入 88, 99, 123, 96/97, 93/94, 11/12 和可选 sender 87. 它没有写 175..178. 因此此前 phased 效果差, 尚不能证明完整 CGEvent 路径失败.
+虚拟 Magic Trackpad 实验将每帧输出换算成触点移动, 系统再生成 Raw/Accelerated, 阶段和惯性. 该方案同时改变字段, 设备服务和手势识别过程. 原型曾取得顺滑结果, 也记录到间歇只有 MayBegin/Cancelled 或无事件. 通用数字化仪触控板只产生过 type 29, subtype 0, 当时未观测到滚动. [虚拟设备原型](../../../experiments/MirroringScrollLab/Sources/VirtualDevices.swift) · [Lab 代码指南](../../../experiments/MirroringScrollLab/CODE-GUIDE.md)
 
-[ScrollEngine.swift:470](/Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring/experiments/MirroringScrollLab/Sources/ScrollEngine.swift:470) 支持零 sender, 学习真实触控板 sender, AppleMultitouchDevice id. 最后一项不能默认等同 IOHIDEventService id. 没有完成服务映射的样本不能用于判断字段方案失败.
+## 2026-10-09 的实验设计
 
-虚拟 Magic Trackpad 在 [VirtualDevices.swift:251](/Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring/experiments/MirroringScrollLab/Sources/VirtualDevices.swift:251) 使用 Apple vendor/product, I2C 与 feature-report 握手匹配 AppleMultitouch 驱动. [ScrollEngine.swift:279](/Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring/experiments/MirroringScrollLab/Sources/ScrollEngine.swift:279) 将输出帧换成手指移动, 系统再生成 Raw/Accelerated, phase 和惯性. 这同时改变了字段, 设备服务和手势识别过程, 成功结果只证明整套方案可行.
-
-[CODE-GUIDE.md:22](/Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring/experiments/MirroringScrollLab/CODE-GUIDE.md:22) 记录顺滑效果, 第 70-80 行记录间歇 MayBegin/Cancelled 或无事件, 且样本受真实滚动干扰. generic touchpad 曾只产生 type 29/subtype 0, 没有 scroll. 这些记录不足以把虚拟 Magic Trackpad 判为唯一解.
-
-## 按优先级执行的实验
-
-以下是提案, 本轮均未执行. 建议参数用于形成可重复输入, 不代表已测效果. 实验前先定义比较容差和有效样本条件, 并保留虚拟 Magic Trackpad 的成功配置作为阳性基线.
+P0 的实现与离线验证见[实验记录](03-experiment-log.md). P1/P2 保留为完整变量矩阵, 10 月 12 日的 E1–E3 为其中部分问题提供了实测证据
 
 ### P0: 建立可追踪的输入与输出
-
-下一会话先重读 AGENTS.md 和 .agents/INDEX.md, 检查 Git 状态, 系统/App 版本及 SDK. 对已有 dirty 文件逐项记录归属, 另存实验配置和结果. 先实现日志, 完成离线字段核对后再按项目确认边界运行.
 
 每帧记录捕获事件与发出事件两份数据, 保留会话编号和帧编号. 最小日志内容为:
 
@@ -216,25 +208,6 @@ P1 完成后, 独立比较 phase 序列与 173 interrupted 位的保留策略. �
 
 先在实验 Lab 验证, 保留生产 Mos 实现和现有 dirty 改动. 不通过修改全局自然滚动, 权限或持久化设置绕过失败. 不自动使用 adhoc 签名启动完整 Mos 测试; 测试前按项目规则检查运行实例和签名风险. 本轮只整理报告与证据, 没有 commit, push, 签名, 注入或真实设备实验.
 
-## 下一会话启动提示
-
-下面的提示可用于新编码会话. 实验运行需要在该会话取得项目规则要求的确认, 先推进代码与离线验证.
-
-```text
-请在 /Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring 继续研究.
-先读 AGENTS.md, .agents/INDEX.md 与以下报告:
-docs/research/iphone-mirroring-scroll/06-2026-10-09-core-mechanism-and-experiment-handoff.md
-再读同目录 06-scroll-pipeline.pseudo.swift 和 evidence/2026-10-09/.
-保留所有已有 dirty 改动, 不提交, 不推送, 不先改生产 Mos.
-先为 MirroringScrollLab 实现 P0 字段日志和服务映射, 离线核对字段.
-保留虚拟 Magic Trackpad 成功基线, 新增补齐 175..178 的 CGEvent 实验模式.
-按 P1 的鼠标 sender, 触控板 service sender 两组做单变量 A/B.
-真实样本先标定单位与倍率, 无效 sender/到达失败不能记成 CGEvent 失败.
-运行真实设备/权限操作前遵守项目用户确认边界, 单次只运行一个输入工具.
-每条件至少 5 次有效重复, 保存配置, 日志, 画面与服务映射.
-用结果判断虚拟 HID 的必要性, 不把字段差异的条件性解释写成已验证根因.
-```
-
 ## 证据导航
 
 以下文件保存本轮证据, 主链引用使用仓库内路径, 避免依赖临时目录. 源码位置以所列 Git 快照为准, 后续变动需要重新核对行号.
@@ -249,5 +222,5 @@ docs/research/iphone-mirroring-scroll/06-2026-10-09-core-mechanism-and-experimen
 - [AppKit phase 映射](evidence/2026-10-09/appkit-phase-mapping.txt): CGEvent 与 NSEvent 数值域的转换
 - [Apple TN3210](https://developer.apple.com/documentation/technotes/tn3210-optimizing-your-app-for-iphone-mirroring): 手机侧间接输入及 continuous/discrete 的公开契约
 - [环境与工作树快照](evidence/2026-10-09/environment-and-worktree.txt): 版本, Git 状态与磁盘设置
-- [历史实验日志](03-experiment-log.md): 2026-07-11 设备观测; C4 平滑仍待验证
-- [Lab 代码指南](/Users/caldis/Desktop/Code/Mos/.claude/worktrees/iphone-mirroring/experiments/MirroringScrollLab/CODE-GUIDE.md): 虚拟 Magic Trackpad 成功记录与间歇失败
+- 7 月探针结果, 9 月 CoreHID 复测和 10 月 Lab 对照. [实验记录](03-experiment-log.md)
+- 虚拟 Magic Trackpad 成功记录与间歇失败. [Lab 代码指南](../../../experiments/MirroringScrollLab/CODE-GUIDE.md)

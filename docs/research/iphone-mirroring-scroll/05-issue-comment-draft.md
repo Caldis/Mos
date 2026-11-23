@@ -1,3 +1,7 @@
+# Issue #762 早期回复草稿 (已废弃)
+
+> 历史草稿. 独占 IOHID 路径, 虚拟 HID 是唯一解以及切换系统「自然滚动」的建议均已撤回. 现行方案见[研究索引](00-README.md)和 [PR #1045](https://github.com/Caldis/Mos/pull/1045)
+
 ## 深入定位:根因已在系统二进制层面确认
 
 对 macOS 26 上的 iPhone 镜像做了一轮逆向,之前"底层 CGEvent + Secure Enclave 加密所以不可篡改"的猜测方向对了(不走 CGEvent),但**归因归错了层**——加密只发生在**发往 iPhone 的网络传输**那一段,和本地滚动方向失效无关。
@@ -30,6 +34,8 @@
 在兼容前,建议继续把 iPhone 镜像留在平滑滚动默认禁用列表中。
 
 ---
+
+> Archived draft. The [research index](00-README.md) and [PR #1045](https://github.com/Caldis/Mos/pull/1045) record the current implementation and supersede the conclusions below.
 
 ## Root cause confirmed at the system-binary level
 

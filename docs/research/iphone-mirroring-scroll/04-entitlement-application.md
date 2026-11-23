@@ -1,6 +1,6 @@
 # Entitlement 申请记录
 
-## 已提交:DriverKit Entitlement 请求
+## 2026-07 DriverKit Entitlement 请求 (已结案)
 - **Request ID: `7CTL26535S`**(跟进时引用)
 - 提交账号邮箱: cn@caldis.me / Team: BIAO CHEN – N7Z52F27XK
 - Company/Product URL: https://github.com/Caldis/Mos
@@ -8,16 +8,12 @@
 - UserClient Bundle IDs: `com.caldis.Mos.driver`
 - 描述要点: 开源可审计 + 发布单个虚拟 HID 定位设备 + App 经 user client 驱动它 + 因某些系统组件(如 iPhone 镜像)在 CGEvent 层之下读输入,故需虚拟 HID 让用户偏好一致生效 + 用户自有输入、opt-in、不采集不针对其它应用。
 
-### 跟进方式(无后台状态页)
-- 结果走邮件到 cn@caldis.me(**查垃圾箱/推广箱**,加白 `@apple.com`)。
-- 时间: 常见 2–4 周,也可能更久/无回音。
-- 催办(带 Request ID 7CTL26535S): [developer.apple.com/contact](https://developer.apple.com/contact/) → Membership & Account;或开 DTS 工单(最有效);或回复 Apple 邮件。
-
 ## 审批结果 (2026-09)
 - DriverKit 申请 7CTL26535S 被拒 (Transport HID, HID EventService, Family HID Device, UserClient Access, DriverKit), dext 路线只能用于本机开发
 - HID Virtual Device (com.apple.developer.hid.virtual.device) 于 2026-09-15 下发到开发者账号, 分发类型含 Development 与 Developer ID
 - 启用方式: Xcode 目标的 Signing & Capabilities 中添加 HID Virtual Device, 或在开发者网站 Identifiers 的 Capabilities 页勾选; 命令行构建不会自动启用
-- 已启用的 App ID: com.mos.vhidprobe (验证原型), com.caldis.Mos (2026-09-30 在 Xcode 中试加过, 本地 entitlements 已撤回)
+- 2026-09-30 复测使用 App ID `com.mos.vhidprobe`. 同日曾在 `com.caldis.Mos` 中试启用, 该次试验的本地 entitlements 随后撤回
+- PR #1045 合入 Mos 的 HID Virtual Device 签名配置. 普通 Debug 构建使用空 entitlement, 受限能力构建需要对应 Apple 授权和描述文件. [当前签名配置](../../../Config/MosDebug.xcconfig) · [适配器方案](../../plans/2026-10-12-iphone-mirroring-scroll.md)
 
 ## 标识符(App ID)配置
 为过申请表的 bundle id 校验,注册了 explicit App ID **`com.caldis.Mos.driver`**,并在其能力页启用 DriverKit **(development)** 系列。dext 需要的完整集合(对齐 Karabiner):
@@ -29,11 +25,7 @@
 | entitlement | 类别 | 能否第三方获取 | 用途 |
 |---|---|---|---|
 | `com.apple.private.hid.client.event-dispatch` | `private` | ❌ 只发 Apple 自家 | 直接向 IOHIDEventSystem 注入(我们**不需要**也拿不到) |
-| `com.apple.developer.driverkit.*` / `family.hid.*` | `developer` | ✅ 需申请(已提交) | DriverKit 路线 B |
-| `com.apple.developer.hid.virtual.device` | `developer` | ✅ 门控 | CoreHID 路线 B(**本轮选定**) |
+| `com.apple.developer.driverkit.*` / `family.hid.*` | `developer` | 分发申请被拒 | DriverKit 备选方案 |
+| `com.apple.developer.hid.virtual.device` | `developer` | 已获受管能力 | CoreHID 原型与 Mos 的设备身份 |
 
-## 待办
-- CoreHID 路线用的是 `com.apple.developer.hid.virtual.device`,**与已提交的 DriverKit 申请不是同一个**。若 CoreHID 原型验证需要它而其分发授权也需单独申请,再评估是否补交。开发验证阶段:development 签名 + 该能力若可自助勾选则无需审批(见实验 README「签名」)。
-- **2026-07-11 更新:上一条的"若可自助勾选"已被实测否定**。该能力不在 Xcode 26 门户能力缓存中,`-allowProvisioningUpdates` 也无法生成含它的 profile,development 阶段即门控(完整证据链见 `03-experiment-log.md` Phase 1)。含义:
-  - CoreHID 路线连本机验证都需先向 Apple 要授权,**无公开申请表**——可行途径:DTS 工单 / Feedback Assistant / 回复跟进 DriverKit 申请(7CTL26535S)时一并询问。
-  - 对照:DriverKit HID 能力 development 是自助的(本 App ID 已启用)——CoreHID 卡死时,dext 原型可作为 Phase 1 替代路径。
+7 月自动签名失败记录涵盖当时的 Xcode 26.0 与尚未获批的账号. 9 月复测使用 Xcode 26.3 和包含 HID Virtual Device 能力的描述文件. [签名诊断与复测](03-experiment-log.md)

@@ -1,6 +1,6 @@
 # Mirroring Scroll Lab 代码阅读指南
 
-本文面向准备评审 Lab 关键代码、并据此决定 Mos 开发方向的开发者。全文先给出系统层级模型，再按阅读顺序标出每个关键位置，最后列出尚未查清的系统行为
+Lab 覆盖 CGEvent, 虚拟鼠标与完整虚拟触控板的输入对照. Mos 的镜像适配器采用其中的 phased CGEvent 路径, 使用虚拟触控板提供 sender 身份. [产品实现](../../docs/plans/2026-10-12-iphone-mirroring-scroll.md)
 
 ## 1. 系统层级模型
 
@@ -13,11 +13,9 @@
 | 3 CGEvent 管线 | WindowServer 生成 CGEvent, 依次经过 HID tap, Session tap, Annotated Session tap | TapController.swift, CGOutput |
 | 4 应用 | NSEvent, 或 iPhone 镜像的输入读取点 | 观测对象 |
 
-已经确认的事实如下：
-
-- iPhone 镜像读取滚动的位置位于第 3 层底部附近。Mos 的 tap 挂在 Annotated Session 层，处于最上游之后，因此改写不到镜像收到的事件。这就是 issue #762 的根因
-- 在 HID tap 吞掉原始事件并重新投递，可以影响镜像。投递普通滚轮时，镜像内表现为分段滚动
-- 第 1 层注入的虚拟设备与真实硬件没有区别：
+- 实验确认镜像能响应从 HID 层投递的 CGEvent. Mac 端反汇编还确认了镜像窗口的 NSEvent 转换路径. 该证据覆盖已观察到的路径. [机制报告](../../docs/research/iphone-mirroring-scroll/06-2026-10-09-core-mechanism-and-experiment-handoff.md)
+- 7 月的探针分别验证了 HID 层消费与投递. PR #1045 的窗口适配器使用 Session 层捕获, 标准路径使用 Annotated Session
+- 虚拟设备经系统驱动处理, 输出形式随设备类型而变
   - 虚拟鼠标的滚轮报文会经过第 2 层的滚轮加速，每格位移随报文频率增大，最高约 95pt。通过设备属性无法关闭这一加速
   - 伪装为 Magic Trackpad 2 的虚拟设备会被 AppleMultitouchTrackpadHIDEventDriver 接管，系统为它生成带阶段标记的原生触控板滚动和惯性。镜像在这种输入下首次出现了顺滑滚动
 
@@ -25,13 +23,13 @@
 
 ### 2.1 事件入口: TapController.swift
 
-1. 文件头注释说明 tap 链顺序与 iPhone 镜像的读取位置
+1. 文件头注释记录 Lab 的早期层级假设, 镜像读取路径以 10 月机制报告为准
 2. install (约第 47 行): tap 的位置和插入点来自配置，事件掩码只包含 scrollWheel 和 keyDown
 3. handle (约第 77 行): 每个滚动事件的处理分支
    - 自身事件判定：UserData 标记，或字段 87 命中虚拟设备的服务 ID
    - 范围判定，连续输入过滤，原地改写分支
    - 计算三种增量后交给引擎，再按配置吞掉原始事件
-4. 字段 87 是事件来源 IOHIDEventService 的注册表 ID，由 hidEventServiceIDs (VirtualDevices.swift 约第 233 行) 按厂商 ID 和产品 ID 查询得到。早期版本靠指针位移学习来源 ID，会把物理鼠标误判为自身，已经废弃
+4. 字段 87 携带来源注册表 ID. 虚拟鼠标通过设备属性查询服务 ID, 虚拟触控板通过 AppleMultitouchDevice 查询身份. 早期通过指针位移学习来源 ID 的方式曾误判物理鼠标, 已废弃
 
 ### 2.2 帧调度与插值: ScrollEngine.swift
 
