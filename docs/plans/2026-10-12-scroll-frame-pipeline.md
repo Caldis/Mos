@@ -1,13 +1,13 @@
 # 滚动帧管线: 可切换帧时钟与时间归一化
 
-面向开发者与后续维护的 agent。本文描述 ScrollPoster 的帧驱动与插值计时如何拆分为可切换的两条链路, 以及从现有 CVDisplayLink 链路过渡到 NSScreen.displayLink 链路的方式。实验依据见研究分支 research/iphone-mirroring-scroll 的 MirroringScrollLab (FrameClock.swift 与 ScrollEngine 的 frameScale)。
+当前分支已接入基于 CVDisplayLink 的 `ScrollFrameClock` 和 `FrameTick`. NSScreen.displayLink, 时间归一化与设置开关仍处于方案阶段. [Lab 帧时钟](../../experiments/MirroringScrollLab/Sources/FrameClock.swift) · [Lab 插值换算](../../experiments/MirroringScrollLab/Sources/ScrollEngine.swift)
 
 ## 范围
 
 - 包含: 帧时钟抽象与两种实现, 按 60 Hz 基准的时间归一化, 两个实验性开关, 切换时机与降级
 - 不包含: 插值算法本身的调整, 适配器路由 (项目 A) 的行为变化, Monitor 重做 (任务 3)
 
-## 现状
+## 抽取帧时钟前的实现
 
 ScrollPoster 同时承担两类职责:
 
