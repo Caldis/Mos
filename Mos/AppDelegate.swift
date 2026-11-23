@@ -149,8 +149,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         LogiCenter.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
-        // 恢复因 iPhone 镜像临时改写的系统自然滚动方向
-        MirroringScrollCoordinator.shared.disable()
         // 写入尚未 flush 的脏配置组
         Options.shared.flushPendingSaves()
     }
@@ -166,7 +164,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 NSLog("First Initialization (Accessibility Authorization Needed)")
                 ScrollCore.shared.enable()
                 ButtonCore.shared.enable()
-                MirroringScrollCoordinator.shared.enable()
                 LogiCenter.shared.start()
             }
         } else {
@@ -174,7 +171,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 NSLog("Regular Initialization")
                 ScrollCore.shared.enable()
                 ButtonCore.shared.enable()
-                MirroringScrollCoordinator.shared.enable()
                 LogiCenter.shared.start()
             } else {
                 // 如果应用不在辅助权限列表内, 则弹出欢迎窗口
@@ -203,7 +199,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         LogiCenter.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
-        MirroringScrollCoordinator.shared.disable()
     }
     // 辅助功能权限在运行时被撤销 (可能由多个 Interceptor 同时触发, 此方法必须幂等)
     @objc func handleAccessibilityPermissionLost() {
@@ -213,7 +208,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         LogiCenter.shared.stop()
         ScrollCore.shared.disable()
         ButtonCore.shared.disable()
-        MirroringScrollCoordinator.shared.disable()
         Toast.show(
             NSLocalizedString("Accessibility permission lost, Mos has been paused", comment: ""),
             style: .warning,
