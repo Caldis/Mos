@@ -352,6 +352,50 @@ final class EventMonitorTests: XCTestCase {
     }
 
     @MainActor
+    func testFollowLatestButtonScrollsToTheFirstRowBelowTheHeader() throws {
+        class Rows: NSObject, NSTableViewDataSource {
+            func numberOfRows(in tableView: NSTableView) -> Int { 80 }
+        }
+
+        let events = MonitorEventTable(capture: MonitorCapture())
+        let size = NSSize(width: 600, height: 230)
+        let window = NSWindow(
+            contentRect: NSRect(origin: .zero, size: size),
+            styleMask: [.titled], backing: .buffered, defer: false
+        )
+        window.contentViewController = events
+        window.setContentSize(size)
+        events.view.layoutSubtreeIfNeeded()
+
+        let header = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSStackView }.first)
+        let button = try XCTUnwrap(header.arrangedSubviews.compactMap { $0 as? NSButton }.first)
+        let scroller = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSScrollView }.first)
+        XCTAssertGreaterThan(scroller.contentView.bounds.height, 0)
+        let table = try XCTUnwrap(scroller.documentView as? NSTableView)
+        let tableHeader = try XCTUnwrap(table.headerView)
+        let rows = Rows()
+        withExtendedLifetime(rows) {
+            table.dataSource = rows
+            table.reloadData()
+            table.scrollRowToVisible(55)
+            XCTAssertEqual(button.state, .off)
+            XCTAssertFalse(NSLocationInRange(0, table.rows(in: table.visibleRect)))
+
+            button.performClick(nil)
+            XCTAssertEqual(button.state, .on)
+            XCTAssertTrue(NSLocationInRange(0, table.rows(in: table.visibleRect)))
+            let rowBounds = scroller.convert(table.rect(ofRow: 0), from: table)
+            let headerBounds = scroller.convert(tableHeader.bounds, from: tableHeader)
+            XCTAssertGreaterThanOrEqual(rowBounds.minY + 0.5, headerBounds.maxY)
+
+            table.scrollRowToVisible(55)
+            button.performClick(nil)
+            XCTAssertEqual(button.state, .off)
+            XCTAssertFalse(NSLocationInRange(0, table.rows(in: table.visibleRect)))
+        }
+    }
+
+    @MainActor
     func testInspectorSeparatesFieldIDNameAndValue() throws {
         let trace = ScrollMonitorTrace()
         trace.setRecording(true)

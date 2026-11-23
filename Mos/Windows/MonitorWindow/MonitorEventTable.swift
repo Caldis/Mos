@@ -19,6 +19,19 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
         filters.spacing = 4
         return filters
     }()
+    private lazy var followLatestButton: NSButton = {
+        let title = NSLocalizedString("monitor-follow-latest", comment: "Keep the newest event in view")
+        let button = NSButton(title: title, target: self, action: #selector(toggleFollowLatest(_:)))
+        button.setButtonType(.pushOnPushOff)
+        button.identifier = NSUserInterfaceItemIdentifier("monitor.followLatest")
+        button.toolTip = title
+        MonitorStyle.styleButton(button, neutral: true)
+        button.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
+        let paddedWidth = button.widthAnchor.constraint(greaterThanOrEqualToConstant: button.intrinsicContentSize.width + 10)
+        paddedWidth.priority = .defaultHigh
+        paddedWidth.isActive = true
+        return button
+    }()
     private lazy var columnMenu: NSMenu = {
         let menu = NSMenu()
         menu.delegate = self
@@ -48,7 +61,7 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
         let root = NSView()
         MonitorStyle.styleSection(root, isLog: true)
         let title = MonitorStyle.sectionHeader(NSLocalizedString("monitor-events", comment: "Events table heading"))
-        let header = NSStackView(views: [title, scrollFilters, NSView()])
+        let header = NSStackView(views: [title, scrollFilters, NSView(), followLatestButton])
         header.alignment = .centerY
         header.spacing = 8
         header.detachesHiddenViews = true
@@ -100,24 +113,23 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
         let count = capture.rowCount(in: list)
         let newestID = capture.event(at: 0, in: list)?.id
         let rowsChanged = listChanged || count != displayedCount || newestID != displayedNewestID
+        let showsFirstRow = rowsChanged && (listChanged || displayedCount == 0 || followLatestButton.state == .on)
         if rowsChanged {
-            let showsFirstRow = listChanged || displayedCount == 0
             displayedCount = count
             displayedNewestID = newestID
             empty.isHidden = count > 0
             table.reloadData()
-            // AppKit's row scroll includes the space reserved for the header.
-            if showsFirstRow && count > 0 { table.scrollRowToVisible(0) }
         }
 
         // Rows are newest-first and shift on every drain. Keep the ID of the
         // selected snapshot, including when it has just aged out of the ring.
         if let id = selectedID, let row = capture.row(for: id, in: list) {
             if row != table.selectedRow { table.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false) }
-            if rowsChanged && selectedWasVisible { table.scrollRowToVisible(row) }
+            if rowsChanged && selectedWasVisible && !showsFirstRow { table.scrollRowToVisible(row) }
         } else if table.selectedRow >= 0 {
             table.deselectAll(nil)
         }
+        if showsFirstRow { scrollToLatest() }
     }
 
     func numberOfRows(in tableView: NSTableView) -> Int {
@@ -134,6 +146,24 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
     func tableViewSelectionDidChange(_ notification: Notification) {
         guard !restoringSelection else { return }
         didSelect?(capture.event(at: table.selectedRow, in: list))
+    }
+
+    @objc private func toggleFollowLatest(_ sender: NSButton) {
+        let enabled = sender.state == .on
+        MonitorStyle.styleButton(sender, neutral: !enabled)
+        if enabled { scrollToLatest() }
+    }
+
+    private func scrollToLatest() {
+        guard table.numberOfRows > 0 else { return }
+        let clipView = scroller.contentView
+        var bounds = clipView.bounds
+        // The clip view clamps to the top of the document, including the header inset.
+        bounds.origin.y = table.frame.minY - bounds.height
+        let origin = clipView.constrainBoundsRect(bounds).origin
+        guard origin != clipView.bounds.origin else { return }
+        clipView.scroll(to: origin)
+        scroller.reflectScrolledClipView(clipView)
     }
 
     private func makeFilter(_ title: String, filter: MonitorScrollFilter, color: NSColor) -> NSButton {
