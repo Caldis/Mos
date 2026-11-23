@@ -19,25 +19,22 @@ class ButtonCore {
     
     // 拦截层
     var dispatchInterceptor: Interceptor?
-    var primaryObservationInterceptor: Interceptor?
-
     // 组合的按钮事件掩码
-    let leftDown = CGEventMask(1 << CGEventType.leftMouseDown.rawValue)
-    let leftUp = CGEventMask(1 << CGEventType.leftMouseUp.rawValue)
-    let rightDown = CGEventMask(1 << CGEventType.rightMouseDown.rawValue)
-    let rightUp = CGEventMask(1 << CGEventType.rightMouseUp.rawValue)
     let otherDown = CGEventMask(1 << CGEventType.otherMouseDown.rawValue)
     let keyDown = CGEventMask(1 << CGEventType.keyDown.rawValue)
     let flagsChanged = CGEventMask(1 << CGEventType.flagsChanged.rawValue)
     let otherUp = CGEventMask(1 << CGEventType.otherMouseUp.rawValue)
     let keyUp = CGEventMask(1 << CGEventType.keyUp.rawValue)
     var dispatchEventMask: CGEventMask {
+        // Primary mouse buttons are intentionally excluded. Mos does not allow
+        // recording an unmodified primary click, and installing a global tap for
+        // those events can disturb applications that manage their own drag state.
         return otherDown | otherUp | keyDown | keyUp
     }
 
-    var primaryObservationEventMask: CGEventMask {
-        return leftDown | leftUp | rightDown | rightUp
-    }
+    // 在系统处理 Mission Control 等原生鼠标按钮快捷键之前拦截。
+    // 未被 Mos 绑定的事件继续向下传递，由系统按原有语义消费。
+    let dispatchEventTapLocation = CGEventTapLocation.cgSessionEventTap
 
     // MARK: - 按钮事件处理
     let buttonEventCallBack: CGEventTapCallBack = { (proxy, type, event, refcon) in
@@ -71,16 +68,6 @@ class ButtonCore {
         }
     }
 
-    let primaryMouseObservationCallBack: CGEventTapCallBack = { (_, type, event, _) in
-        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
-            return Unmanaged.passUnretained(event)
-        }
-        if event.getIntegerValueField(.eventSourceUserData) == MosEventMarker.syntheticCustom {
-            return Unmanaged.passUnretained(event)
-        }
-        return Unmanaged.passUnretained(event)
-    }
-    
     // MARK: - 启用和禁用
     
     // 启用按钮监控
@@ -90,26 +77,17 @@ class ButtonCore {
                 dispatchInterceptor = try Interceptor(
                     event: dispatchEventMask,
                     handleBy: buttonEventCallBack,
-                    listenOn: .cgAnnotatedSessionEventTap,
+                    listenOn: dispatchEventTapLocation,
                     placeAt: .tailAppendEventTap,
                     for: .defaultTap
                 )
                 dispatchInterceptor?.onRestart = {
                     InputProcessor.shared.clearActiveBindings()
                 }
-                primaryObservationInterceptor = try Interceptor(
-                    event: primaryObservationEventMask,
-                    handleBy: primaryMouseObservationCallBack,
-                    listenOn: .cgAnnotatedSessionEventTap,
-                    placeAt: .tailAppendEventTap,
-                    for: .listenOnly
-                )
                 isActive = true
             } catch {
                 dispatchInterceptor?.stop()
-                primaryObservationInterceptor?.stop()
                 dispatchInterceptor = nil
-                primaryObservationInterceptor = nil
                 NSLog("ButtonCore: Failed to create interceptor: \(error)")
             }
         }
@@ -120,9 +98,7 @@ class ButtonCore {
         if isActive {
             NSLog("ButtonCore disabled")
             dispatchInterceptor?.stop()
-            primaryObservationInterceptor?.stop()
             dispatchInterceptor = nil
-            primaryObservationInterceptor = nil
             InputProcessor.shared.clearActiveBindings()
             isActive = false
         }

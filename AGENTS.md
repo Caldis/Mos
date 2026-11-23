@@ -33,6 +33,7 @@
 - 新增或移动 Swift 文件后，必须确认加入正确的 `Mos` / `MosTests` target，并跑一次相关 build 或 test。
 - UI 文案必须本地化；因为最低支持 macOS 10.13，Swift 代码使用 `NSLocalizedString(_:comment:)`，不要使用 `String(localized:)`。
 - Logi/HID、Accessibility、签名、notarization、发布和真实设备测试都属于高风险操作，必要时先向用户确认。
+- 危险命令：`xcodebuild test` 加 `CODE_SIGNING_ALLOWED=NO` 会把 `Mos Debug.app` 重签成 adhoc，改变代码签名身份，触发 macOS TCC 重新弹"允许访问"授权窗；若此时有完整 Mos 实例在跑（带全局 CGEvent tap），模态弹窗会占住主线程冻结全部鼠标键盘输入。验证代码优先用纯 `xcodebuild build`（只编译不启动、不改签名，与 Xcode ⌘B 等价）；确需跑 test 前先 `pgrep -fl "Mos Debug.app"` 确认无实例在跑，跑完用正常身份重新 build 把 app 签回去。
 
 ## 常用命令
 
@@ -46,6 +47,8 @@ scripts/qa/lint-logi-boundary.sh
 
 真实设备测试前必须确认 Logi 设备已连接。`scripts/qa/lint-logi-boundary.sh` 用于守住 `Mos/Logi` 和 `Mos/Integration` 的边界。
 
+- 复验侧键拦截、绑定配对或浏览器误导航时，使用 `python3 scripts/qa/mouse-input-qa.py --help`。从本机运行注入探针，按 [输入事件端到端复验](.agents/docs/testing.md#输入事件端到端复验) 区分 Quartz、虚拟 HID 和实体设备证据。
+
 ## 质量门槛
 
 改动完成前，根据风险选择验证，不要只靠静态阅读宣称通过。最低要求：
@@ -55,6 +58,7 @@ scripts/qa/lint-logi-boundary.sh
 - Xcode 工程、target membership 或跨模块改动跑 Debug build。
 - Logi/HID 改动跑相关单测，并在涉及边界时跑 `scripts/qa/lint-logi-boundary.sh`。
 - 准备发布、更新 appcast、签名/notarization 或创建 GitHub release draft 时，必须使用 `release-preparation` skill，不要自行拼接发布流程。
+- 处理社区 PR（评估/审查/合并/关闭/批量扫描）与发版后回访 issue 时，必须使用 `community-pr-loop` skill（`.agents/skills/community-pr-loop/SKILL.md`），不要自行拼接处理流程。
 
 最终汇报只列出已执行的相关验证、与本次改动直接相关但无法执行的验证，以及真实剩余风险。
 
@@ -66,6 +70,7 @@ AI 可以辅助实现、测试和整理文档，但这些动作必须由用户�
 
 - 发布 GitHub release、推送发布分支、提交 notarization 或签名相关变更。
 - 运行真实设备测试或需要用户本机权限/设备状态的操作。
+- 注入鼠标或键盘事件、移动光标、启动或退出用户应用的自动化测试与压测：会与用户的实时输入互相干扰，先征得同意并约定用户离开电脑的时段；用户在用电脑时只做不触碰桌面的验证。
 - 提交安全报告、批量创建 issue/PR、或替用户对外声明维护结论。
 - 修改会影响旧用户数据读取、更新检测、权限提示或持久化格式的行为。
 

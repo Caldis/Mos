@@ -76,9 +76,11 @@ digraph release {
      -scheme Debug \
      -project Mos.xcodeproj \
      -configuration Release \
-     -archivePath /tmp/Mos.xcarchive
+     -archivePath /tmp/Mos.xcarchive \
+     -allowProvisioningUpdates
    ```
    Note: The scheme is named "Debug" but `-configuration Release` ensures Release build settings.
+   `-allowProvisioningUpdates` is required: `Mos/MosRelease.entitlements` contains the managed capability `com.apple.developer.hid.virtual.device` (iPhone Mirroring scroll adapter), so Xcode must fetch a provisioning profile that includes it. The `com.caldis.Mos` App ID must have HID Virtual Device enabled in the developer portal, and the Account Holder must have accepted the latest Program License Agreement; otherwise archive or export fails with a profile error.
 
 3. **Export with Developer ID** (Direct Distribution):
    ```bash
@@ -117,6 +119,8 @@ digraph release {
    # Should show: Developer ID Application: BIAO CHEN (N7Z52F27XK)
    spctl --assess --type execute --verbose /tmp/MosExport/Mos.app
    # Should show: accepted, source=Notarized Developer ID
+   codesign -d --entitlements - /tmp/MosExport/Mos.app 2>/dev/null | grep hid.virtual.device
+   # Should show: com.apple.developer.hid.virtual.device (missing = profile lacks the capability; the scroll adapter silently degrades)
    ```
 
 The notarized app at `/tmp/MosExport/Mos.app` is used for Step 1.

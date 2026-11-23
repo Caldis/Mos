@@ -8,7 +8,7 @@ import {
   useTransform,
   useVelocity,
 } from "framer-motion";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import {
   NOTE_COLORS,
   NOTE_COLOR_KEYS,
@@ -23,10 +23,33 @@ import { useI18n } from "@/app/i18n/context";
 import { format } from "@/app/i18n/format";
 import { TurnstileWidget, WALL_TURNSTILE_ENABLED } from "./TurnstileWidget";
 
+// Intl formatters are expensive to construct (~0.1–1ms each); with hundreds of
+// placed notes, building them inside render multiplied into a visible stall on
+// every wall re-render. One formatter per language is enough — cache them.
+const rtfCache = new Map<string, Intl.RelativeTimeFormat>();
+function getRtf(lang: string): Intl.RelativeTimeFormat {
+  let f = rtfCache.get(lang);
+  if (!f) {
+    f = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+    rtfCache.set(lang, f);
+  }
+  return f;
+}
+
+const dtfCache = new Map<string, Intl.DateTimeFormat>();
+function getDtf(lang: string): Intl.DateTimeFormat {
+  let f = dtfCache.get(lang);
+  if (!f) {
+    f = new Intl.DateTimeFormat(lang, { dateStyle: "medium", timeStyle: "short" });
+    dtfCache.set(lang, f);
+  }
+  return f;
+}
+
 // Localized relative time ("2h ago" / "2小时前") via Intl — no extra i18n keys.
 // Computed at render; runs client-side only (placed notes never render on the server).
 function relativeTime(ms: number, lang: string): string {
-  const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+  const rtf = getRtf(lang);
   const sec = Math.round((ms - Date.now()) / 1000); // negative = past
   const a = Math.abs(sec);
   if (a < 60) return rtf.format(sec, "second");
@@ -111,7 +134,11 @@ function Card({
   );
 }
 
-export function StickyNote({
+// memo: placed notes receive stable props (note objects keep identity across SWR
+// mutations, callbacks are useCallback'd in wall-client), so wall-level state
+// changes — every compose keystroke, every draft-drag pointermove — no longer
+// re-render all several-hundred placed notes, only the draft.
+export const StickyNote = memo(function StickyNote({
   note,
   composing = false,
   mine = false,
@@ -430,7 +457,7 @@ export function StickyNote({
             >
               <span className="min-w-0 flex-1 truncate">{note.name?.trim() || t.wall.anonymous}</span>
               <span
-                title={new Intl.DateTimeFormat(language, { dateStyle: "medium", timeStyle: "short" }).format(note.createdAt)}
+                title={getDtf(language).format(note.createdAt)}
                 className="shrink-0 tabular-nums"
                 style={{ paddingLeft: 8 * k }}
               >
@@ -442,4 +469,4 @@ export function StickyNote({
       </Card>
     </motion.div>
   );
-}
+});

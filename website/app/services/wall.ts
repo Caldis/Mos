@@ -227,19 +227,20 @@ export function getOwner(): string {
 
 // --- Admin (panel moderation) -----------------------------------------------
 // A single shared secret unlocks panel moderation (delete ANY note). It lives in
-// sessionStorage — cleared when the tab closes, safer than localStorage for a
-// privileged credential — and rides on the x-wall-admin header. The Worker is the
-// only authority: without a valid token every admin request is rejected, so the
-// client-side "admin mode" is purely a UI affordance, not a security boundary.
+// localStorage — the maintainer asked for a non-expiring unlock, so it survives
+// reloads, closed tabs and restarts until explicitly locked — and rides on the
+// x-wall-admin header. The Worker is the only authority: without a valid token
+// every admin request is rejected, so the client-side "admin mode" is purely a
+// UI affordance, not a security boundary.
 const ADMIN_TOKEN_KEY = "wall_admin";
 // Same-tab listeners can't use the native `storage` event (it only fires in OTHER
 // tabs), so unlock/lock dispatch this so the current tab's hook re-renders too.
 export const WALL_ADMIN_EVENT = "wall-admin-change";
 
 export function getAdminToken(): string {
-  if (typeof sessionStorage === "undefined") return "";
+  if (typeof localStorage === "undefined") return "";
   try {
-    return sessionStorage.getItem(ADMIN_TOKEN_KEY) ?? "";
+    return localStorage.getItem(ADMIN_TOKEN_KEY) ?? "";
   } catch {
     return "";
   }
@@ -251,8 +252,8 @@ export function isAdminUnlocked(): boolean {
 
 function setAdminToken(token: string): void {
   try {
-    if (token) sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
-    else sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+    if (token) localStorage.setItem(ADMIN_TOKEN_KEY, token);
+    else localStorage.removeItem(ADMIN_TOKEN_KEY);
   } catch {
     // private mode / quota — admin mode just won't persist; ignore.
   }

@@ -18,3 +18,18 @@
 - 不要跳过 skill 自带验证步骤。
 - 不要在用户确认前发布 GitHub release。
 - 不要在用户确认前推送发布分支。
+
+## community-pr-loop
+
+路径：`.agents/skills/community-pr-loop/SKILL.md`
+
+触发场景：
+
+- 处理外部贡献者的 PR：评估价值、审查、合并、关闭、批量扫描 open PR。
+- 发版后回访相关 issue 与贡献者（通知验证、shipped 告知）。
+
+约束：
+
+- 决策优先级固定为 稳定性 > 兼容性 > 性能 > 可维护性。
+- 触碰 event tap 位置/模式/掩码的 PR 必须逐项出具专项清单评估。
+- 每个合并/关闭的 PR 都必须留具体的致谢评论。

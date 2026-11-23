@@ -29,7 +29,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
             type: .mouse,
             code: 1006,
             modifiers: 0,
-            displayComponents: ["Back Button", "[Logi]"],
+            displayComponents: ["Back", "[Logi]"],
             deviceFilter: DeviceFilter(vendorId: 0x046D, productId: 0xB034)
         )
 
@@ -38,7 +38,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
         XCTAssertEqual(converted?.type, .mouse)
         XCTAssertEqual(converted?.code, 3)
         XCTAssertEqual(converted?.modifiers, 0)
-        XCTAssertEqual(converted?.displayComponents, ["🖱️ Back Button"])
+        XCTAssertEqual(converted?.displayComponents, ["🖱️ Back"])
         XCTAssertNil(converted?.deviceFilter)
     }
 
@@ -47,7 +47,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
             type: .mouse,
             code: 1006,
             modifiers: 0,
-            displayComponents: ["Back Button", "[Logi]"],
+            displayComponents: ["Back", "[Logi]"],
             deviceFilter: nil
         )
         let diagnosis = LogiButtonCaptureDiagnosis(
@@ -61,7 +61,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
         let normalized = event.normalizedForButtonBinding(diagnosis: diagnosis)
 
         XCTAssertEqual(normalized.code, 3)
-        XCTAssertEqual(normalized.displayComponents, ["🖱️ Back Button"])
+        XCTAssertEqual(normalized.displayComponents, ["🖱️ Back"])
     }
 
     func testRecordedEventKeepsLogiCodeWhenDeliveryUsesHIDPPEvents() {
@@ -69,7 +69,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
             type: .mouse,
             code: 1006,
             modifiers: 0,
-            displayComponents: ["Back Button", "[Logi]"],
+            displayComponents: ["Back", "[Logi]"],
             deviceFilter: nil
         )
         let diagnosis = LogiButtonCaptureDiagnosis(
@@ -83,7 +83,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
         let normalized = event.normalizedForButtonBinding(diagnosis: diagnosis)
 
         XCTAssertEqual(normalized.code, 1006)
-        XCTAssertEqual(normalized.displayComponents, ["Back Button", "[Logi]"])
+        XCTAssertEqual(normalized.displayComponents, ["Back", "[Logi]"])
     }
 
     func testRecordedEventDoesNotConvertUnsupportedButton() {
@@ -91,7 +91,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
             type: .mouse,
             code: 1000,
             modifiers: 0,
-            displayComponents: ["Mouse Gesture Button", "[Logi]"],
+            displayComponents: ["Gesture", "[Logi]"],
             deviceFilter: nil
         )
 
@@ -103,7 +103,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
             type: .mouse,
             code: 1007,
             modifiers: UInt(CGEventFlags.maskCommand.rawValue),
-            displayComponents: ["Forward Button", "[Logi]"],
+            displayComponents: ["Forward", "[Logi]"],
             deviceFilter: DeviceFilter(vendorId: 0x046D, productId: 0xB034)
         )
         let binding = ButtonBinding(
@@ -139,7 +139,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
             type: .mouse,
             code: 3,
             modifiers: 0,
-            displayComponents: ["🖱️ Back Button"],
+            displayComponents: ["🖱️ Back"],
             deviceFilter: nil
         )
         let existingNative = ButtonBinding(
@@ -155,7 +155,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
                 type: .mouse,
                 code: 1006,
                 modifiers: 0,
-                displayComponents: ["Back Button", "[Logi]"],
+                displayComponents: ["Back", "[Logi]"],
                 deviceFilter: nil
             ),
             systemShortcutName: "launchpad",
@@ -251,7 +251,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
             type: .mouse,
             code: 3,
             modifiers: 0,
-            displayComponents: ["🖱️ Back Button"],
+            displayComponents: ["🖱️ Back"],
             deviceFilter: nil
         )
     }
@@ -261,7 +261,7 @@ final class LogiStandardMouseButtonAliasTests: XCTestCase {
             type: .mouse,
             code: 1006,
             modifiers: 0,
-            displayComponents: ["Back Button", "[Logi]"],
+            displayComponents: ["Back", "[Logi]"],
             deviceFilter: nil
         )
     }

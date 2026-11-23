@@ -89,6 +89,13 @@ struct ScrollHotkey: Codable, Equatable {
         guard type == .keyboard else { return CGEventFlags(rawValue: 0) }
         return KeyCode.getKeyMask(code)
     }
+
+    /// 修饰键热键按「修饰键族」匹配: 左右两侧 (如 ⇧L / ⇧R) 视为同一热键
+    /// 录制器与默认配置只会保存左侧 keyCode, 因此必须按 mask 而非 keyCode 匹配 (#840)
+    func matchesModifierKeyCode(_ keyCode: UInt16) -> Bool {
+        guard isModifierKey else { return false }
+        return KeyCode.getKeyMask(keyCode) == modifierMask
+    }
 }
 
 // MARK: - RecordedEvent

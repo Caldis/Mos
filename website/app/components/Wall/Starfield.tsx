@@ -93,16 +93,77 @@ export function Starfield({ vp, config = DEFAULT_STAR_CONFIG }: { vp: UseViewpor
     const plane = buildGalacticPlane();
 
     const N = STARS.length;
-    const phase = new Float32Array(N);
-    const speed = new Float32Array(N);
-    for (let i = 0; i < N; i++) {
-      const frac = (n: number) => {
-        const v = Math.sin(n) * 43758.5453;
-        return v - Math.floor(v);
-      };
-      phase[i] = frac(i * 12.9898 + STARS[i][0] * 78.233) * Math.PI * 2;
-      speed[i] = 0.5 + frac(i * 4.1414) * 1.9; // 0.5–2.4 rad/s
-    }
+
+    // --- Per-star render batches --------------------------------------------
+    // The old frame loop paid, for every one of ~28k stars, a fillStyle string
+    // parse (colour mode), a Math.pow (magnitude curve) and a Math.sin (twinkle)
+    // — enough to eat the whole frame budget on its own while panning. All of it
+    // is precomputed here into one interleaved Float32Array, bucketed by
+    // quantised colour with glow stars grouped first, so per frame the canvas
+    // fillStyle/shadow state changes at most once per bucket and each star costs
+    // wrap + cull + one LUT read + one fillRect. Rebuilt only when the dev panel
+    // changes gamma/density; the visual output is identical (same positions,
+    // sizes, alphas, and per-star twinkle phases keyed on the catalogue index).
+    const BUCKETS = CI_STEPS + 1;
+    const STRIDE = 6; // x, y, size, alphaBase, speed, phase
+    let starData = new Float32Array(0);
+    const bucketStart = new Int32Array(BUCKETS + 1);
+    const glowEnd = new Int32Array(BUCKETS);
+    let builtKey = "";
+    const frac = (n: number) => {
+      const v = Math.sin(n) * 43758.5453;
+      return v - Math.floor(v);
+    };
+    const ensureBuilt = (cfg: StarfieldConfig) => {
+      const key = `${cfg.gamma}|${cfg.density}`;
+      if (key === builtKey) return;
+      builtKey = key;
+      const g = cfg.gamma;
+      const bMin = (1 - cfg.density) * 0.28; // brightness cutoff = effective magnitude limit
+      // Pass 1: bucket sizes (and how many of each bucket's stars carry a glow).
+      const counts = new Int32Array(BUCKETS);
+      const glowCounts = new Int32Array(BUCKETS);
+      for (let i = 0; i < N; i += STEP) {
+        const s = STARS[i];
+        if (s[2] < bMin) continue;
+        counts[s[3]]++;
+        const bAdj = g === 1 ? s[2] : Math.pow(s[2], g);
+        if (bAdj > 0.6) glowCounts[s[3]]++;
+      }
+      let total = 0;
+      for (let c = 0; c < BUCKETS; c++) {
+        bucketStart[c] = total;
+        glowEnd[c] = total + glowCounts[c];
+        total += counts[c];
+      }
+      bucketStart[BUCKETS] = total;
+      // Pass 2: scatter. The twinkle hash stays keyed on the ORIGINAL catalogue
+      // index so every star keeps the exact phase/speed it had before.
+      starData = new Float32Array(total * STRIDE);
+      const glowCursor = Int32Array.from(bucketStart.subarray(0, BUCKETS));
+      const plainCursor = Int32Array.from(glowEnd);
+      for (let i = 0; i < N; i += STEP) {
+        const s = STARS[i];
+        if (s[2] < bMin) continue;
+        const bAdj = g === 1 ? s[2] : Math.pow(s[2], g);
+        const at = bAdj > 0.6 ? glowCursor[s[3]]++ : plainCursor[s[3]]++;
+        const p = at * STRIDE;
+        starData[p] = s[0];
+        starData[p + 1] = s[1];
+        starData[p + 2] = 0.7 + bAdj * 2.6; // continuous: bright → larger
+        starData[p + 3] = 0.22 + bAdj * 1.05; // alpha before twinkle
+        starData[p + 4] = 0.5 + frac(i * 4.1414) * 1.9; // 0.5–2.4 rad/s
+        starData[p + 5] = frac(i * 12.9898 + s[0] * 78.233) * Math.PI * 2;
+      }
+    };
+
+    // Nearest-entry sine table for the twinkle — 1024 steps over 2π is far below
+    // anything visible in a 0..1 brightness wobble, and far cheaper than Math.sin.
+    const SIN_N = 1024;
+    const SIN_MASK = SIN_N - 1;
+    const SIN_INV = SIN_N / (Math.PI * 2);
+    const SIN_LUT = new Float32Array(SIN_N);
+    for (let i = 0; i < SIN_N; i++) SIN_LUT[i] = Math.sin((i / SIN_N) * Math.PI * 2);
 
     let w = 0;
     let h = 0;
@@ -148,8 +209,6 @@ export function Starfield({ vp, config = DEFAULT_STAR_CONFIG }: { vp: UseViewpor
       const t = (now - startT) / 1000;
       const tile = baseTile * sScale;
       const useColor = cfg.color;
-      const g = cfg.gamma;
-      const bMin = (1 - cfg.density) * 0.28; // brightness cutoff = effective magnitude limit
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
@@ -176,33 +235,48 @@ export function Starfield({ vp, config = DEFAULT_STAR_CONFIG }: { vp: UseViewpor
       }
 
       // --- Stars ---
-      if (!useColor) ctx.fillStyle = "#ffffff";
-      for (let i = 0; i < N; i += STEP) {
-        const star = STARS[i];
-        const b = star[2]; // brightness 0..1
-        if (b < bMin) continue; // density cutoff (cheap, before the position/twinkle work)
-        // Position-cull next (cheap mod): ~75% of stars wrap off-screen each frame.
-        const px = (((star[0] * tile + offX) % tile) + tile) % tile;
-        if (px > w + 3) continue;
-        const py = (((star[1] * tile + offY) % tile) + tile) % tile;
-        if (py > h + 3) continue;
-        const tw = 0.5 + 0.5 * Math.sin(t * speed[i] + phase[i]); // 0..1
-        const bAdj = g === 1 ? b : Math.pow(b, g); // magnitude curve
-        const a = Math.min(1, (0.22 + bAdj * 1.05) * tw);
-        if (a < 0.04) continue;
-        const size = 0.7 + bAdj * 2.6; // continuous: bright → larger
-        if (useColor) ctx.fillStyle = palette[star[3]];
-        ctx.globalAlpha = a;
-        if (bAdj > 0.6) {
-          // Bright stars: sharp core + a small glow (tinted to the star in colour mode).
-          ctx.shadowColor = useColor ? palette[star[3]] : "rgba(170,205,255,0.95)";
-          ctx.shadowBlur = 4;
-          ctx.fillRect(px - size / 2, py - size / 2, size, size);
-          ctx.shadowBlur = 0;
-        } else {
-          ctx.fillRect(px - size / 2, py - size / 2, size, size);
+      ensureBuilt(cfg); // no-op unless the dev panel changed gamma/density
+      if (!useColor) {
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "rgba(170,205,255,0.95)";
+      }
+      const wLim = w + 3;
+      const hLim = h + 3;
+      for (let c = 0; c < BUCKETS; c++) {
+        const start = bucketStart[c];
+        const end = bucketStart[c + 1];
+        if (start === end) continue;
+        if (useColor) {
+          ctx.fillStyle = palette[c];
+          ctx.shadowColor = palette[c]; // glow tinted to the star, as before
+        }
+        const gEnd = glowEnd[c];
+        // Bright (glow) stars first with the shadow on, then the rest with it
+        // off — the same halo as the old per-star toggle, at bucket granularity.
+        for (let seg = 0; seg < 2; seg++) {
+          const s0 = seg === 0 ? start : gEnd;
+          const s1 = seg === 0 ? gEnd : end;
+          if (s0 === s1) continue;
+          ctx.shadowBlur = seg === 0 ? 4 : 0;
+          let p = s0 * STRIDE;
+          for (let j = s0; j < s1; j++, p += STRIDE) {
+            // Position-cull first (cheap mod): ~75% of stars wrap off-screen.
+            let px = (starData[p] * tile + offX) % tile;
+            if (px < 0) px += tile;
+            if (px > wLim) continue;
+            let py = (starData[p + 1] * tile + offY) % tile;
+            if (py < 0) py += tile;
+            if (py > hLim) continue;
+            const tw = 0.5 + 0.5 * SIN_LUT[((t * starData[p + 4] + starData[p + 5]) * SIN_INV) & SIN_MASK];
+            const a = Math.min(1, starData[p + 3] * tw);
+            if (a < 0.04) continue;
+            ctx.globalAlpha = a;
+            const size = starData[p + 2];
+            ctx.fillRect(px - size / 2, py - size / 2, size, size);
+          }
         }
       }
+      ctx.shadowBlur = 0;
       ctx.globalAlpha = 1;
     };
     raf = requestAnimationFrame(draw);

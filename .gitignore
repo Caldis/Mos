@@ -35,3 +35,6 @@ build/*.zip
 pnpm-lock.yaml
 yarn.lock
 bun.lockb
+
+# Mos Debug 本地签名覆盖 (见 Config/MosDebug.xcconfig)
+/Config/MosDebug.local.xcconfig
