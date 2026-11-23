@@ -47,13 +47,10 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
         } else {
             clearSymbol = "clear"
         }
-        setAppearance(
-            of: clearItem, named: NSLocalizedString("monitor-clear", comment: "Clear Monitor"), symbol: clearSymbol
-        )
-        setAppearance(
-            of: exportItem, named: NSLocalizedString("monitor-export-log", comment: "Export Monitor events"),
-            symbol: "square.and.arrow.up"
-        )
+        let clearTitle = NSLocalizedString("monitor-clear", comment: "Clear Monitor")
+        let exportTitle = NSLocalizedString("monitor-export-log", comment: "Export Monitor events")
+        setAppearance(of: clearItem, named: clearTitle, image: symbol(clearSymbol, named: clearTitle))
+        setAppearance(of: exportItem, named: exportTitle, image: symbol("square.and.arrow.up", named: exportTitle))
         update(.paused, canClear: false, canExport: false)
     }
 
@@ -70,26 +67,32 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
     private func updateCaptureItem(for state: MonitorCapture.State) {
         let caption: String
         let action: String
-        let icon: String
-        let tint: NSColor?
+        let actionIcon: String
+        let statusIcon: String
+        let statusTint: NSColor
         switch state {
         case .recording:
             caption = NSLocalizedString("monitor-recording", comment: "Monitor is recording")
             action = NSLocalizedString("monitor-pause", comment: "Pause Monitor")
-            icon = "pause.fill"
-            tint = .systemGreen
+            actionIcon = "pause.fill"
+            statusIcon = "circle.fill"
+            statusTint = .systemGreen
         case .paused:
             caption = NSLocalizedString("monitor-paused", comment: "Monitor is paused")
             action = NSLocalizedString("monitor-resume", comment: "Resume Monitor")
-            icon = "play.fill"
-            tint = nil
+            actionIcon = "play.fill"
+            statusIcon = "circle"
+            statusTint = .secondaryLabelColor
         case .accessibilityRequired, .tapUnavailable:
             caption = NSLocalizedString("monitor-unavailable", comment: "Monitor capture is unavailable")
             action = NSLocalizedString("monitor-retry", comment: "Retry Monitor capture")
-            icon = "arrow.clockwise"
-            tint = .systemOrange
+            actionIcon = "arrow.clockwise"
+            statusIcon = "exclamationmark.circle"
+            statusTint = .systemOrange
         }
-        setAppearance(of: captureItem, named: "\(caption) · \(action)", symbol: icon, tint: tint)
+        let title = "\(caption) · \(action)"
+        let image = captureSymbol(status: statusIcon, tint: statusTint, action: actionIcon, named: title)
+        setAppearance(of: captureItem, named: title, image: image)
     }
 
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
@@ -128,12 +131,12 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
         return item
     }
 
-    private func setAppearance(of item: NSToolbarItem, named title: String, symbol name: String, tint: NSColor? = nil) {
+    private func setAppearance(of item: NSToolbarItem, named title: String, image: NSImage?) {
         item.label = title
         item.paletteLabel = title
         item.toolTip = title
 
-        if let image = symbol(name, named: title, tint: tint) {
+        if let image = image {
             item.image = image
         } else {
             let button = item.view as? NSButton ?? NSButton(title: title, target: self, action: item.action)
@@ -145,16 +148,38 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
         }
     }
 
-    private func symbol(_ name: String, named title: String, tint: NSColor? = nil) -> NSImage? {
+    private func symbol(_ name: String, named title: String) -> NSImage? {
+        guard #available(macOS 11.0, *) else { return nil }
+        return NSImage(systemSymbolName: name, accessibilityDescription: title)
+    }
+
+    private func captureSymbol(status: String, tint: NSColor, action: String, named title: String) -> NSImage? {
         guard #available(macOS 11.0, *),
-              let image = NSImage(systemSymbolName: name, accessibilityDescription: title) else { return nil }
-        if #available(macOS 12.0, *), let tint = tint,
-           let colored = image.withSymbolConfiguration(.init(paletteColors: [tint])) {
-            colored.isTemplate = false
-            colored.accessibilityDescription = title
-            return colored
+              let statusImage = symbol(status, named: title)?
+                .withSymbolConfiguration(.init(pointSize: 8, weight: .semibold)),
+              let actionImage = symbol(action, named: title)?
+                .withSymbolConfiguration(.init(pointSize: 14, weight: .medium)) else { return nil }
+        let image = NSImage(size: NSSize(width: 30, height: 18), flipped: false) { bounds in
+            Self.drawSymbol(statusImage, color: tint, center: NSPoint(x: bounds.minX + 6, y: bounds.midY))
+            Self.drawSymbol(actionImage, color: .labelColor, center: NSPoint(x: bounds.maxX - 8, y: bounds.midY))
+            return true
         }
+        image.accessibilityDescription = title
+        // Resolve semantic colors against the toolbar's current appearance.
+        image.cacheMode = .never
         return image
+    }
+
+    private static func drawSymbol(_ image: NSImage, color: NSColor, center: NSPoint) {
+        guard let context = NSGraphicsContext.current?.cgContext else { return }
+        let size = image.size
+        let rect = NSRect(x: center.x - size.width / 2, y: center.y - size.height / 2,
+                          width: size.width, height: size.height)
+        context.beginTransparencyLayer(auxiliaryInfo: nil)
+        image.draw(in: rect)
+        color.setFill()
+        rect.fill(using: .sourceIn)
+        context.endTransparencyLayer()
     }
 
     @objc private func selectChannel(_ sender: NSSegmentedControl) {
