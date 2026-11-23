@@ -2427,7 +2427,8 @@ class LogiDebugPanel: NSObject {
     }
 
     private var blockCornerRadius: CGFloat {
-        if #available(macOS 26.0, *) { return 10 }
+        // Inset the unified toolbar window's corner by the content padding.
+        if #available(macOS 26.0, *) { return 26 - L.pad }
         return 5
     }
 

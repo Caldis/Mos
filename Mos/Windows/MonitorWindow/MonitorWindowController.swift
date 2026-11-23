@@ -60,7 +60,8 @@ enum MonitorStyle {
         view.layer?.borderWidth = 1
         view.layer?.borderColor = NSColor(calibratedWhite: 1, alpha: 0.08).cgColor
         if #available(macOS 26.0, *) {
-            view.layer?.cornerRadius = 10
+            // Inset the unified toolbar window's corner by the content padding.
+            view.layer?.cornerRadius = 26 - padding
         } else {
             view.layer?.cornerRadius = 5
         }
