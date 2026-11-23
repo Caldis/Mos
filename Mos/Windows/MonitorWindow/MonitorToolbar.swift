@@ -67,31 +67,27 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
     private func updateCaptureItem(for state: MonitorCapture.State) {
         let caption: String
         let action: String
-        let actionIcon: String
-        let statusIcon: String
-        let statusTint: NSColor
+        let icon: String
+        let tint: NSColor
         switch state {
         case .recording:
             caption = NSLocalizedString("monitor-recording", comment: "Monitor is recording")
             action = NSLocalizedString("monitor-pause", comment: "Pause Monitor")
-            actionIcon = "pause.fill"
-            statusIcon = "circle.fill"
-            statusTint = .systemGreen
+            icon = "stop.circle"
+            tint = .systemRed
         case .paused:
             caption = NSLocalizedString("monitor-paused", comment: "Monitor is paused")
             action = NSLocalizedString("monitor-resume", comment: "Resume Monitor")
-            actionIcon = "play.fill"
-            statusIcon = "circle"
-            statusTint = .secondaryLabelColor
+            icon = "record.circle"
+            tint = .labelColor
         case .accessibilityRequired, .tapUnavailable:
             caption = NSLocalizedString("monitor-unavailable", comment: "Monitor capture is unavailable")
             action = NSLocalizedString("monitor-retry", comment: "Retry Monitor capture")
-            actionIcon = "arrow.clockwise"
-            statusIcon = "exclamationmark.circle"
-            statusTint = .systemOrange
+            icon = "arrow.clockwise"
+            tint = .systemOrange
         }
         let title = "\(caption) · \(action)"
-        let image = captureSymbol(status: statusIcon, tint: statusTint, action: actionIcon, named: title)
+        let image = symbol(icon, named: title, tint: tint)
         setAppearance(of: captureItem, named: title, image: image)
     }
 
@@ -148,38 +144,16 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
         }
     }
 
-    private func symbol(_ name: String, named title: String) -> NSImage? {
-        guard #available(macOS 11.0, *) else { return nil }
-        return NSImage(systemSymbolName: name, accessibilityDescription: title)
-    }
-
-    private func captureSymbol(status: String, tint: NSColor, action: String, named title: String) -> NSImage? {
+    private func symbol(_ name: String, named title: String, tint: NSColor? = nil) -> NSImage? {
         guard #available(macOS 11.0, *),
-              let statusImage = symbol(status, named: title)?
-                .withSymbolConfiguration(.init(pointSize: 8, weight: .semibold)),
-              let actionImage = symbol(action, named: title)?
-                .withSymbolConfiguration(.init(pointSize: 14, weight: .medium)) else { return nil }
-        let image = NSImage(size: NSSize(width: 30, height: 18), flipped: false) { bounds in
-            Self.drawSymbol(statusImage, color: tint, center: NSPoint(x: bounds.minX + 6, y: bounds.midY))
-            Self.drawSymbol(actionImage, color: .labelColor, center: NSPoint(x: bounds.maxX - 8, y: bounds.midY))
-            return true
+              let image = NSImage(systemSymbolName: name, accessibilityDescription: title) else { return nil }
+        if #available(macOS 12.0, *), let tint = tint,
+           let colored = image.withSymbolConfiguration(.init(paletteColors: [tint])) {
+            colored.isTemplate = false
+            colored.accessibilityDescription = title
+            return colored
         }
-        image.accessibilityDescription = title
-        // Resolve semantic colors against the toolbar's current appearance.
-        image.cacheMode = .never
         return image
-    }
-
-    private static func drawSymbol(_ image: NSImage, color: NSColor, center: NSPoint) {
-        guard let context = NSGraphicsContext.current?.cgContext else { return }
-        let size = image.size
-        let rect = NSRect(x: center.x - size.width / 2, y: center.y - size.height / 2,
-                          width: size.width, height: size.height)
-        context.beginTransparencyLayer(auxiliaryInfo: nil)
-        image.draw(in: rect)
-        color.setFill()
-        rect.fill(using: .sourceIn)
-        context.endTransparencyLayer()
     }
 
     @objc private func selectChannel(_ sender: NSSegmentedControl) {
