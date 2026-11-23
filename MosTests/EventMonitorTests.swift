@@ -316,6 +316,10 @@ final class EventMonitorTests: XCTestCase {
         let header = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSStackView }.first)
         let filters = try XCTUnwrap(header.arrangedSubviews.compactMap { $0 as? NSStackView }.first)
         let buttons = filters.arrangedSubviews.compactMap { $0 as? NSButton }
+        XCTAssertEqual(buttons.map(\.title), [
+            NSLocalizedString("monitor-captured", comment: ""),
+            NSLocalizedString("monitor-output", comment: ""),
+        ])
         XCTAssertEqual(buttons.map(\.state), [.on, .on])
         let input = try XCTUnwrap(buttons.first)
         let posted = try XCTUnwrap(buttons.last)
@@ -369,6 +373,9 @@ final class EventMonitorTests: XCTestCase {
 
         let header = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSStackView }.first)
         let button = try XCTUnwrap(header.arrangedSubviews.compactMap { $0 as? NSButton }.first)
+        XCTAssertEqual(button.imagePosition, .imageOnly)
+        XCTAssertNotNil(button.image)
+        XCTAssertEqual(button.toolTip, NSLocalizedString("monitor-follow-latest", comment: ""))
         let scroller = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSScrollView }.first)
         XCTAssertGreaterThan(scroller.contentView.bounds.height, 0)
         let table = try XCTUnwrap(scroller.documentView as? NSTableView)
@@ -417,6 +424,9 @@ final class EventMonitorTests: XCTestCase {
         ])
         let copy = try XCTUnwrap(buttons.first)
         let close = try XCTUnwrap(buttons.last)
+        XCTAssertEqual(copy.imagePosition, .imageOnly)
+        XCTAssertNotNil(copy.image)
+        XCTAssertEqual(copy.toolTip, NSLocalizedString("monitor-copy-raw", comment: ""))
         XCTAssertEqual(copy.frame.midY, close.frame.midY, accuracy: 0.5)
         XCTAssertLessThan(copy.frame.maxX, close.frame.minX)
         let scroller = try XCTUnwrap(content.arrangedSubviews.compactMap { $0 as? NSScrollView }.first)

@@ -122,7 +122,7 @@ enum MonitorPresentation {
         switch stage {
         case .captured: return NSLocalizedString("monitor-captured", comment: "Raw scroll input at the tap")
         case .frame: return NSLocalizedString("monitor-frame-stage", comment: "Computed frame stage")
-        case .posted: return NSLocalizedString("monitor-posted-stage", comment: "Posted event stage")
+        case .posted: return NSLocalizedString("monitor-output", comment: "Posted event stage")
         }
     }
 

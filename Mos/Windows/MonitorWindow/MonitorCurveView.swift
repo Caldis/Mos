@@ -79,7 +79,7 @@ final class MonitorCurveView: NSView {
 
         let laneTitles = [
             MonitorPresentation.stageName(.captured),
-            NSLocalizedString("monitor-output", comment: "Output overlay in the timeline"),
+            MonitorPresentation.stageName(.posted),
         ]
         let plotStart = max(154, (laneTitles.map { textWidth($0) }.max() ?? 0) + 23)
         let width = bounds.width - plotStart - 14

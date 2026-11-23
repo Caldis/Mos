@@ -24,12 +24,9 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
         let button = NSButton(title: title, target: self, action: #selector(toggleFollowLatest(_:)))
         button.setButtonType(.pushOnPushOff)
         button.identifier = NSUserInterfaceItemIdentifier("monitor.followLatest")
-        button.toolTip = title
         MonitorStyle.styleButton(button, neutral: true)
+        setMonitorButtonIcon(button, symbol: "arrow.up.to.line", fallback: NSImage.touchBarGoUpTemplateName)
         button.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
-        let paddedWidth = button.widthAnchor.constraint(greaterThanOrEqualToConstant: button.intrinsicContentSize.width + 10)
-        paddedWidth.priority = .defaultHigh
-        paddedWidth.isActive = true
         return button
     }()
     private lazy var columnMenu: NSMenu = {
@@ -293,6 +290,7 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         copyButton.target = self
         copyButton.action = #selector(copyRawValues)
         MonitorStyle.styleButton(copyButton)
+        setMonitorButtonIcon(copyButton, symbol: "doc.on.doc", fallback: NSImage.multipleDocumentsName)
         copyButton.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
         let header = row([title, NSView(), copyButton, close])
 
@@ -388,6 +386,20 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         pasteboard.clearContents()
         pasteboard.setString(MonitorPresentation.rawText(fields), forType: .string)
     }
+}
+
+private func setMonitorButtonIcon(_ button: NSButton, symbol: String, fallback: NSImage.Name) {
+    let title = button.title
+    if #available(macOS 11.0, *), let image = NSImage(systemSymbolName: symbol, accessibilityDescription: title) {
+        button.image = image
+    } else {
+        button.image = NSImage(named: fallback)
+    }
+    button.imagePosition = .imageOnly
+    button.imageScaling = .scaleProportionallyDown
+    button.setAccessibilityLabel(title)
+    button.toolTip = title
+    button.widthAnchor.constraint(equalToConstant: 22).isActive = true
 }
 
 private func configureMonitorTable(_ table: NSTableView, in scroller: NSScrollView) {

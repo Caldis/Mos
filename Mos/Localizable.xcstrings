@@ -8656,100 +8656,6 @@
         }
       }
     },
-    "monitor-posted-stage": {
-      "localizations": {
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Odesláno"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gesendet"
-          }
-        },
-        "el": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Απεστάλη"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Posted"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Émis"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "送信"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "전송됨"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Отправлено"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ส่งแล้ว"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gönderildi"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Надіслано"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已发出"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已送出"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已送出"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已送出"
-          }
-        }
-      }
-    },
     "monitor-recording": {
       "localizations": {
         "cs": {
@@ -10355,91 +10261,91 @@
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zachycený vstup"
+            "value": "Zachycení"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Erfasste Eingabe"
+            "value": "Erfassung"
           }
         },
         "el": {
           "stringUnit": {
             "state": "translated",
-            "value": "Καταγεγραμμένη είσοδος"
+            "value": "Καταγραφή"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Raw Input"
+            "value": "Capture"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Entrée capturée"
+            "value": "Capture"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "キャプチャした入力"
+            "value": "キャプチャ"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "캡처된 입력"
+            "value": "캡처"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Перехваченный ввод"
+            "value": "Захват"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "อินพุตที่ตรวจจับ"
+            "value": "การจับ"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yakalanan girdi"
+            "value": "Yakalama"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Перехоплене введення"
+            "value": "Захоплення"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "原始输入"
+            "value": "捕获"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "原始輸入"
+            "value": "擷取"
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "原始輸入"
+            "value": "擷取"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "原始輸入"
+            "value": "擷取"
           }
         }
       }
@@ -10925,91 +10831,91 @@
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Odeslané události"
+            "value": "Výstupní události"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gesendete Ereignisse"
+            "value": "Ausgabeereignisse"
           }
         },
         "el": {
           "stringUnit": {
             "state": "translated",
-            "value": "Απεσταλμένα συμβάντα"
+            "value": "Συμβάντα εξόδου"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Posted events"
+            "value": "Output events"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Événements émis"
+            "value": "Événements de sortie"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "送信したイベント"
+            "value": "出力イベント"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "전송된 이벤트"
+            "value": "출력 이벤트"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Отправленные события"
+            "value": "Выходные события"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เหตุการณ์ที่ส่ง"
+            "value": "เหตุการณ์เอาต์พุต"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gönderilen olaylar"
+            "value": "Çıkış olayları"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Надіслані події"
+            "value": "Вихідні події"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已发出事件"
+            "value": "输出事件"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "已送出的事件"
+            "value": "輸出事件"
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "已送出的事件"
+            "value": "輸出事件"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "已送出的事件"
+            "value": "輸出事件"
           }
         }
       }
