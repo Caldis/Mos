@@ -133,6 +133,8 @@ class LogiDeviceSession {
 
     // MARK: - Lock Screen / Permission-Denied Session Recovery
     private(set) var needsSessionReopen: Bool = false
+    private(set) var openedWhileAccessRestricted: Bool = false
+    private(set) var needsPostRestrictionProbe: Bool = false
     private var isTearingDown: Bool = false
     private var reprogFeatureUnsupported: Bool = false
 
@@ -692,7 +694,12 @@ class LogiDeviceSession {
         }
 
         bleStandardUndivertGuardTargets = activeTargets
-        sendBLEUndivertGuardReportingQueries(for: activeTargets)
+        if isSubjectToKeyboardHIDRestriction {
+            markPostRestrictionProbeNeeded()
+            LogiSessionManager.shared.scheduleRestrictionClearWatch()
+        } else {
+            sendBLEUndivertGuardReportingQueries(for: activeTargets)
+        }
         scheduleBLEUndivertGuardTick(
             expectedTargets: activeTargets,
             generation: generation,
@@ -1018,9 +1025,12 @@ class LogiDeviceSession {
         setupInputReportCallback()
 
         if Self.requiresUnlockedKeyboardClient(usagePage: usagePage, usage: usage),
-           LogiSessionManager.shared.isScreenLocked {
+           LogiSessionManager.shared.isKeyboardHIDAccessRestricted {
+            openedWhileAccessRestricted = true
             needsSessionReopen = true
-            LogiDebugPanel.log("\(tag) Composite keyboard-primary HID session opened while screen locked; flagged for post-unlock reopen")
+            LogiDebugPanel.log("\(tag) Composite keyboard-primary HID session opened while keyboard HID access restricted; deferring handshake until restriction clears")
+            LogiSessionManager.shared.scheduleRestrictionClearWatch()
+            return
         }
 
         // 标记初次 discovery 开始 (覆盖 receiver enumeration + BLE direct discovery + 缓存验证),
@@ -1118,6 +1128,39 @@ class LogiDeviceSession {
         return usagePage == 0x0001 && usage == 0x0006
     }
 
+    var isSubjectToKeyboardHIDRestriction: Bool {
+        return Self.requiresUnlockedKeyboardClient(usagePage: usagePage, usage: usage)
+            && LogiSessionManager.shared.isKeyboardHIDAccessRestricted
+    }
+
+    /// Decide whether a `kIOReturnNotPermitted` / `kIOReturnNotPrivileged` error on `SetReport`
+    /// requires tearing down and reopening the `IOHIDManager` session, or whether the existing
+    /// `IOHIDLibUserClient` should be preserved until transient `SecureEventInput` clears.
+    ///
+    /// When macOS enters `SecureEventInput` (e.g. a browser password field is focused), XNU's
+    /// `IOHIDLibUserClient::resourceNotificationGated` temporarily sets `fValid = false` on any
+    /// device conforming to `GenericDesktop/Keyboard (0x01/0x06)` and automatically restores
+    /// `fValid = true` (`setStateForQueues: 0x0`) as soon as `SecureEventInput` ends — provided
+    /// the session was originally opened while unrestricted and already completed initialization.
+    static func shouldReopenSessionOnPermissionDenied(
+        openedWhileAccessRestricted: Bool,
+        reprogInitComplete: Bool,
+        isAccessCurrentlyRestricted: Bool
+    ) -> Bool {
+        if openedWhileAccessRestricted || !reprogInitComplete {
+            return true
+        }
+        return !isAccessCurrentlyRestricted
+    }
+
+    func markPostRestrictionProbeNeeded() {
+        needsPostRestrictionProbe = true
+    }
+
+    func clearPostRestrictionProbe() {
+        needsPostRestrictionProbe = false
+    }
+
     static func shouldRecoverIncompleteBLESession(
         isBLEDirect: Bool,
         isCandidate: Bool,
@@ -1147,15 +1190,33 @@ class LogiDeviceSession {
     }
 
     private func noteWritePermissionDenied(_ result: IOReturn) {
-        let wasAlreadyFlagged = needsSessionReopen
-        needsSessionReopen = true
-        cancelInflightDiscovery()
-        setDiscoveryInFlight(false)
-        if !wasAlreadyFlagged {
+        let accessRestricted = LogiSessionManager.shared.isKeyboardHIDAccessRestricted
+        if Self.shouldReopenSessionOnPermissionDenied(
+            openedWhileAccessRestricted: openedWhileAccessRestricted,
+            reprogInitComplete: reprogInitComplete,
+            isAccessCurrentlyRestricted: accessRestricted
+        ) {
+            let wasAlreadyFlagged = needsSessionReopen
+            needsSessionReopen = true
+            cancelInflightDiscovery()
+            setDiscoveryInFlight(false)
+            if !wasAlreadyFlagged {
+                LogiDebugPanel.log(
+                    device: deviceInfo.name,
+                    type: .warning,
+                    message: "HID setReport denied (\(String(format: "0x%08x", result))); session queued for reopen"
+                )
+            }
+        } else {
+            needsPostRestrictionProbe = true
+            reportingQueryTimer?.invalidate()
+            reportingQueryTimer = nil
+            pendingBLEUndivertGuardQueries.removeAll()
+            LogiSessionManager.shared.recomputeAndNotifyActivityState()
             LogiDebugPanel.log(
                 device: deviceInfo.name,
                 type: .warning,
-                message: "HID setReport denied (\(String(format: "0x%08x", result))); session queued for reopen"
+                message: "HID setReport transiently denied (\(String(format: "0x%08x", result))) while keyboard HID access restricted; preserving active session"
             )
         }
         guard !isTearingDown else { return }
@@ -1211,8 +1272,11 @@ class LogiDeviceSession {
 
         if Self.isPermissionDeniedIOReturn(result) {
             noteWritePermissionDenied(result)
-        } else if result == kIOReturnSuccess, !needsSessionReopen {
-            LogiSessionManager.shared.noteSessionSendSucceeded()
+        } else if result == kIOReturnSuccess {
+            needsPostRestrictionProbe = false
+            if !needsSessionReopen {
+                LogiSessionManager.shared.noteSessionSendSucceeded()
+            }
         }
         return result
     }
@@ -3336,6 +3400,9 @@ class LogiDeviceSession {
     func handleInputReport(_ report: UnsafeBufferPointer<UInt8>) {
         if needsSessionReopen {
             LogiSessionManager.shared.noteSessionActivityWhileBlocked(self, at: LogiDeviceSession.continuousTimestamp())
+        } else if needsPostRestrictionProbe, !LogiSessionManager.shared.isKeyboardHIDAccessRestricted {
+            clearPostRestrictionProbe()
+            refreshReportingState()
         }
         guard report.count >= 7 else { return }
         guard report[0] == Self.hidppShortReportId || report[0] == Self.hidppLongReportId else { return }
@@ -3814,6 +3881,11 @@ class LogiDeviceSession {
               currentReceiverTargetIsConnected,
               !discoveredControls.isEmpty,
               featureIndex[Self.featureReprogV4] != nil else { return }
+        if isSubjectToKeyboardHIDRestriction {
+            markPostRestrictionProbeNeeded()
+            LogiSessionManager.shared.scheduleRestrictionClearWatch()
+            return
+        }
         if reportingQueryTimer != nil { return }
         LogiDebugPanel.log("[\(deviceInfo.name)] Refreshing reporting state (throttled)")
         startReportingQuery()

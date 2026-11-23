@@ -6,6 +6,7 @@
 //  Copyright © 2026 Caldis. All rights reserved.
 //
 
+import Carbon
 import CoreGraphics
 import Foundation
 import IOKit
@@ -29,6 +30,8 @@ internal class LogiSessionManager {
     private static let screenIsUnlockedNotification = Notification.Name("com.apple.screenIsUnlocked")
     private static let unlockRecoveryDelay: TimeInterval = 0.35
     private static let maxUnlockSettlePolls = 4
+    private static let restrictionClearWatchInterval: TimeInterval = 0.75
+    private static let maxRestrictionWatchPolls = 2400
     private static let permissionRetryDelays: [TimeInterval] = [0.5, 1.5, 3.0]
     private static let lazyActivityRecoveryCooldown: TimeInterval = 3.0
     private static let maxLazyActivityRecoveryAttempts = 2
@@ -42,6 +45,8 @@ internal class LogiSessionManager {
     private var screenLockObserved = false
     private var unlockRecoveryWorkItem: DispatchWorkItem?
     private var unlockSettlePollCount = 0
+    private var restrictionWatchWorkItem: DispatchWorkItem?
+    private var restrictionWatchPollCount = 0
     private var permissionRetryWorkItem: DispatchWorkItem?
     private var permissionRetryCount = 0
     private var lazyActivityRecoveryCount = 0
@@ -97,6 +102,9 @@ internal class LogiSessionManager {
             unlockRecoveryWorkItem?.cancel()
             unlockRecoveryWorkItem = nil
             unlockSettlePollCount = 0
+            restrictionWatchWorkItem?.cancel()
+            restrictionWatchWorkItem = nil
+            restrictionWatchPollCount = 0
             permissionRetryWorkItem?.cancel()
             permissionRetryWorkItem = nil
             permissionRetryCount = 0
@@ -141,6 +149,17 @@ internal class LogiSessionManager {
 
     var isScreenLocked: Bool {
         return screenLockObserved || Self.queryScreenLocked()
+    }
+
+    static func querySecureEventInputEnabled() -> Bool {
+        return IsSecureEventInputEnabled()
+    }
+
+    /// True when macOS kernel `IOHIDLibUserClient` denies keyboard-conforming HID interfaces
+    /// (either because the session screen is locked or because an app such as a browser
+    /// password field has enabled `SecureEventInput`).
+    var isKeyboardHIDAccessRestricted: Bool {
+        return isScreenLocked || Self.querySecureEventInputEnabled()
     }
 
     static func shouldReopenSessionsOnUnlock(
@@ -198,6 +217,9 @@ internal class LogiSessionManager {
         unlockRecoveryWorkItem?.cancel()
         unlockRecoveryWorkItem = nil
         unlockSettlePollCount = 0
+        restrictionWatchWorkItem?.cancel()
+        restrictionWatchWorkItem = nil
+        restrictionWatchPollCount = 0
         permissionRetryWorkItem?.cancel()
         permissionRetryWorkItem = nil
         LogiDebugPanel.log("[LogitechHID] Screen locked")
@@ -206,6 +228,9 @@ internal class LogiSessionManager {
     private func handleScreenUnlocked() {
         screenLockObserved = false
         unlockSettlePollCount = 0
+        restrictionWatchWorkItem?.cancel()
+        restrictionWatchWorkItem = nil
+        restrictionWatchPollCount = 0
         permissionRetryWorkItem?.cancel()
         permissionRetryWorkItem = nil
         guard isActive else { return }
@@ -241,6 +266,15 @@ internal class LogiSessionManager {
         lastLazyActivityRecoveryTime = 0
 
         let candidates = sessions.values.filter { $0.isHIDPPCandidate }
+        if Self.querySecureEventInputEnabled() {
+            LogiDebugPanel.log("[LogitechHID] Screen unlocked while SecureEventInput active; deferring recovery until SecureEventInput clears")
+            for session in candidates where !session.needsSessionReopen && !session.needsPostSleepHandshakeRecovery {
+                session.markPostRestrictionProbeNeeded()
+            }
+            scheduleRestrictionClearWatch()
+            return
+        }
+
         let anyNeedsReopen = candidates.contains { $0.needsSessionReopen }
         let anyIncomplete = candidates.contains { $0.needsPostSleepHandshakeRecovery }
         if Self.shouldReopenSessionsOnUnlock(
@@ -252,12 +286,67 @@ internal class LogiSessionManager {
         }
     }
 
+    func scheduleRestrictionClearWatch() {
+        guard isActive, !isScreenLocked, restrictionWatchWorkItem == nil else { return }
+        let item = DispatchWorkItem { [weak self] in
+            guard let self = self else { return }
+            self.restrictionWatchWorkItem = nil
+            self.evaluateRestrictionClearWatch()
+        }
+        restrictionWatchWorkItem = item
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.restrictionClearWatchInterval, execute: item)
+    }
+
+    private func evaluateRestrictionClearWatch() {
+        guard isActive, !isScreenLocked else {
+            restrictionWatchPollCount = 0
+            return
+        }
+        let candidates = sessions.values.filter { $0.isHIDPPCandidate }
+        let anyPendingRecovery = candidates.contains {
+            $0.needsSessionReopen || $0.needsPostRestrictionProbe || $0.needsPostSleepHandshakeRecovery
+        }
+        guard anyPendingRecovery else {
+            restrictionWatchPollCount = 0
+            return
+        }
+        if isKeyboardHIDAccessRestricted {
+            if restrictionWatchPollCount < Self.maxRestrictionWatchPolls {
+                restrictionWatchPollCount += 1
+                scheduleRestrictionClearWatch()
+            } else {
+                restrictionWatchPollCount = 0
+            }
+            return
+        }
+        restrictionWatchPollCount = 0
+        permissionRetryCount = 0
+        lazyActivityRecoveryCount = 0
+        lastLazyActivityRecoveryTime = 0
+        let anyNeedsRestart = candidates.contains {
+            $0.needsSessionReopen || $0.needsPostSleepHandshakeRecovery
+        }
+        if anyNeedsRestart {
+            restartManagerForRecovery(reason: "keyboard HID access restriction cleared")
+            return
+        }
+        for session in candidates where session.needsPostRestrictionProbe {
+            session.clearPostRestrictionProbe()
+            session.refreshReportingState()
+        }
+    }
+
     func noteSessionPermissionDenied(_ session: LogiDeviceSession, ioreturn: IOReturn) {
         guard isActive else { return }
-        if isScreenLocked {
+        if isKeyboardHIDAccessRestricted {
             LogiDebugPanel.log(
-                "[LogitechHID] \(session.deviceInfo.name) setReport denied (\(String(format: "0x%08x", ioreturn))) while screen locked; waiting for unlock"
+                "[LogitechHID] \(session.deviceInfo.name) setReport denied (\(String(format: "0x%08x", ioreturn))) while keyboard HID access restricted (screenLocked=\(isScreenLocked), secureInput=\(Self.querySecureEventInputEnabled())); waiting for restriction to clear"
             )
+            scheduleRestrictionClearWatch()
+            return
+        }
+        guard session.needsSessionReopen else {
+            scheduleRestrictionClearWatch()
             return
         }
         guard permissionRetryWorkItem == nil,
@@ -272,7 +361,11 @@ internal class LogiSessionManager {
         let item = DispatchWorkItem { [weak self] in
             guard let self = self else { return }
             self.permissionRetryWorkItem = nil
-            guard self.isActive, !self.isScreenLocked else { return }
+            guard self.isActive else { return }
+            if self.isKeyboardHIDAccessRestricted {
+                self.scheduleRestrictionClearWatch()
+                return
+            }
             guard self.sessions.values.contains(where: { $0.needsSessionReopen }) else { return }
             self.restartManagerForRecovery(reason: "HID setReport permission retry #\(attempt)")
         }
@@ -281,11 +374,15 @@ internal class LogiSessionManager {
     }
 
     func noteSessionActivityWhileBlocked(_ session: LogiDeviceSession, at now: TimeInterval) {
-        guard isActive,
-              unlockRecoveryWorkItem == nil,
+        guard isActive else { return }
+        if isKeyboardHIDAccessRestricted {
+            scheduleRestrictionClearWatch()
+            return
+        }
+        guard unlockRecoveryWorkItem == nil,
               permissionRetryWorkItem == nil,
               Self.canAttemptLazyActivityRecovery(
-                  isScreenLocked: isScreenLocked,
+                  isScreenLocked: isKeyboardHIDAccessRestricted,
                   completedAttempts: lazyActivityRecoveryCount,
                   now: now,
                   lastAttemptTime: lastLazyActivityRecoveryTime
@@ -296,7 +393,7 @@ internal class LogiSessionManager {
         lastLazyActivityRecoveryTime = now
         let attempt = lazyActivityRecoveryCount
         DispatchQueue.main.async { [weak self] in
-            guard let self = self, self.isActive, !self.isScreenLocked else { return }
+            guard let self = self, self.isActive, !self.isKeyboardHIDAccessRestricted else { return }
             guard self.sessions.values.contains(where: { $0.needsSessionReopen }) else { return }
             self.restartManagerForRecovery(reason: "post-denial input activity #\(attempt)")
         }

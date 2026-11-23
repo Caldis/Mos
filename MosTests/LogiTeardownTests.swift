@@ -193,4 +193,27 @@ final class LogiTeardownTests: XCTestCase {
         store.resetAll()
         XCTAssertEqual(store.mode(for: key), .hidpp)
     }
+
+    func test_transientSecureEventInput_preservesInitializedSession() {
+        XCTAssertFalse(LogiDeviceSession.shouldReopenSessionOnPermissionDenied(
+            openedWhileAccessRestricted: false,
+            reprogInitComplete: true,
+            isAccessCurrentlyRestricted: true
+        ))
+        XCTAssertTrue(LogiDeviceSession.shouldReopenSessionOnPermissionDenied(
+            openedWhileAccessRestricted: true,
+            reprogInitComplete: true,
+            isAccessCurrentlyRestricted: true
+        ))
+        XCTAssertTrue(LogiDeviceSession.shouldReopenSessionOnPermissionDenied(
+            openedWhileAccessRestricted: false,
+            reprogInitComplete: false,
+            isAccessCurrentlyRestricted: true
+        ))
+        XCTAssertTrue(LogiDeviceSession.shouldReopenSessionOnPermissionDenied(
+            openedWhileAccessRestricted: false,
+            reprogInitComplete: true,
+            isAccessCurrentlyRestricted: false
+        ))
+    }
 }
