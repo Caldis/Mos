@@ -180,8 +180,9 @@ final class MonitorCurveView: NSView {
             }
         }
 
-        stroke(stems, color: color, width: 1.5, dashed: horizontal)
-        stroke(momentumStems, color: color.withAlphaComponent(0.7), width: 1.5, dashed: true)
+        // The stems share a baseline, so dash gaps would line up across samples.
+        stroke(stems, color: color, width: 1.5)
+        stroke(momentumStems, color: color.withAlphaComponent(0.7), width: 1.5)
         if horizontal {
             stroke(posts, color: color, width: 1.1)
         } else {
