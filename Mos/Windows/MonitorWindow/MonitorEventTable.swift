@@ -259,7 +259,12 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
             close.setAccessibilityLabel(closeTitle)
             close.toolTip = closeTitle
         }
-        let header = row([title, NSView(), close])
+        copyButton.title = NSLocalizedString("monitor-copy-raw", comment: "Copy the selected event fields")
+        copyButton.target = self
+        copyButton.action = #selector(copyRawValues)
+        MonitorStyle.styleButton(copyButton)
+        copyButton.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
+        let header = row([title, NSView(), copyButton, close])
 
         sourceTitle.textColor = .secondaryLabelColor
         sourceValue.font = .systemFont(ofSize: 11, weight: .medium)
@@ -270,14 +275,6 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         source.spacing = 8
         for view in [sourceTitle, sourceValue, NSView()] { source.addArrangedSubview(view) }
 
-        let rawTitle = MonitorStyle.sectionHeader(NSLocalizedString("monitor-raw-values", comment: "Raw Values inspector section"))
-        copyButton.title = NSLocalizedString("monitor-copy-raw", comment: "Copy the selected event fields")
-        copyButton.target = self
-        copyButton.action = #selector(copyRawValues)
-        MonitorStyle.styleButton(copyButton)
-        copyButton.heightAnchor.constraint(equalToConstant: MonitorStyle.headerControlHeight).isActive = true
-        let rawHeader = row([rawTitle, NSView(), copyButton])
-
         configureMonitorTable(table, in: scroller)
         table.delegate = self
         table.dataSource = self
@@ -286,7 +283,7 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         addMonitorColumn(to: table, title: NSLocalizedString("monitor-field", comment: "Raw field name column"), width: 126, minimum: 94)
         addMonitorColumn(to: table, title: NSLocalizedString("monitor-value", comment: "Raw field value column"), width: 190, minimum: 126)
 
-        let content = NSStackView(views: [header, source, rawHeader, scroller])
+        let content = NSStackView(views: [header, source, scroller])
         content.orientation = .vertical
         content.alignment = .leading
         content.distribution = .fill
@@ -305,7 +302,6 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
             content.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -MonitorStyle.contentVerticalInset),
             header.widthAnchor.constraint(equalTo: content.widthAnchor),
             source.widthAnchor.constraint(equalTo: content.widthAnchor),
-            rawHeader.widthAnchor.constraint(equalTo: content.widthAnchor),
             scroller.widthAnchor.constraint(equalTo: content.widthAnchor),
         ])
         view = root

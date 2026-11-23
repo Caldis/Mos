@@ -361,8 +361,20 @@ final class EventMonitorTests: XCTestCase {
         let event = try XCTUnwrap(events.first)
         let inspector = MonitorInspector()
         inspector.display(event)
+        inspector.view.frame.size = NSSize(width: 292, height: 230)
+        inspector.view.layoutSubtreeIfNeeded()
         let panel = try XCTUnwrap(inspector.view.subviews.first)
         let content = try XCTUnwrap(panel.subviews.first as? NSStackView)
+        let header = try XCTUnwrap(content.arrangedSubviews.first as? NSStackView)
+        let buttons = header.arrangedSubviews.compactMap { $0 as? NSButton }
+        XCTAssertEqual(buttons.map(\.title), [
+            NSLocalizedString("monitor-copy-raw", comment: ""),
+            NSLocalizedString("monitor-close-inspector", comment: ""),
+        ])
+        let copy = try XCTUnwrap(buttons.first)
+        let close = try XCTUnwrap(buttons.last)
+        XCTAssertEqual(copy.frame.midY, close.frame.midY, accuracy: 0.5)
+        XCTAssertLessThan(copy.frame.maxX, close.frame.minX)
         let scroller = try XCTUnwrap(content.arrangedSubviews.compactMap { $0 as? NSScrollView }.first)
         let table = try XCTUnwrap(scroller.documentView as? NSTableView)
         XCTAssertEqual(table.tableColumns.map(\.title), [
