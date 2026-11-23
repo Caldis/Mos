@@ -178,8 +178,11 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertFalse(window.isVisible)
         XCTAssertTrue(window.styleMask.contains(.fullSizeContentView))
         let toolbar = try XCTUnwrap(window.toolbar)
-        XCTAssertTrue(toolbar.items.contains { $0.itemIdentifier.rawValue == "monitor.views" })
-        XCTAssertTrue(toolbar.items.contains { $0.itemIdentifier.rawValue == "monitor.commands" })
+        let customItems = toolbar.items.filter { $0.itemIdentifier.rawValue.hasPrefix("monitor.") }
+        XCTAssertEqual(customItems.map { $0.itemIdentifier.rawValue },
+                       ["monitor.views", "monitor.status", "monitor.capture", "monitor.clear", "monitor.export"])
+        XCTAssertTrue(customItems.first { $0.itemIdentifier.rawValue == "monitor.status" }?.view is NSTextField)
+        XCTAssertTrue(customItems.suffix(3).allSatisfy { $0.view is NSButton })
 
         let monitor = try XCTUnwrap(window.contentViewController as? MonitorViewController)
         let root = try XCTUnwrap(monitor.view as? NSVisualEffectView)

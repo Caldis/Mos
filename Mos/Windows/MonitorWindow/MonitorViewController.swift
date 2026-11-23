@@ -180,8 +180,7 @@ final class MonitorViewController: NSViewController {
             selection: selection?.time, recording: capture.state == .recording
         )
         timeline.curve.display(
-            capture.timeline(in: range), range: range, axis: timeline.axis,
-            selection: selection?.time,
+            capture.timeline(in: range), range: range, selection: selection?.time,
             waitingForInput: capture.state == .recording && capture.count(.scroll) == 0
         )
     }

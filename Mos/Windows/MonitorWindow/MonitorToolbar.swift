@@ -2,7 +2,10 @@ import Cocoa
 
 final class MonitorToolbar: NSObject, NSToolbarDelegate {
     private static let viewsID = NSToolbarItem.Identifier("monitor.views")
-    private static let commandsID = NSToolbarItem.Identifier("monitor.commands")
+    private static let statusID = NSToolbarItem.Identifier("monitor.status")
+    private static let captureID = NSToolbarItem.Identifier("monitor.capture")
+    private static let clearID = NSToolbarItem.Identifier("monitor.clear")
+    private static let exportID = NSToolbarItem.Identifier("monitor.export")
 
     let toolbar = NSToolbar(identifier: "MosEventMonitor")
     var didSelectChannel: ((MonitorChannel) -> Void)?
@@ -15,22 +18,19 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
     private let clearButton = NSButton()
     private let exportButton = NSButton()
 
-    private lazy var modes: NSStackView = {
+    private lazy var modes: NSSegmentedControl = {
         let tabs = NSSegmentedControl(
             labels: [MonitorChannel.scroll.title, MonitorChannel.buttons.title],
             trackingMode: .selectOne, target: self, action: #selector(selectChannel(_:))
         )
         tabs.selectedSegment = MonitorChannel.scroll.rawValue
-        return row([tabs, state])
-    }()
-
-    private lazy var commands: NSStackView = {
-        row([captureButton, clearButton, exportButton])
+        return tabs
     }()
 
     override init() {
         super.init()
         state.font = .systemFont(ofSize: 12, weight: .medium)
+        state.setContentCompressionResistancePriority(.required, for: .horizontal)
         configure(captureButton, title: "", action: #selector(toggleRecording))
         configure(clearButton, title: NSLocalizedString("monitor-clear", comment: "Clear Monitor"), action: #selector(clear))
         configure(exportButton, title: NSLocalizedString("monitor-export-log", comment: "Export Monitor events"), action: #selector(export))
@@ -62,15 +62,22 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
             color = .systemOrange
         }
 
-        state.stringValue = caption
-        state.textColor = color
-        captureButton.title = action
+        if state.stringValue != caption {
+            state.stringValue = caption
+            state.textColor = color
+        }
+        if captureButton.title != action {
+            captureButton.title = action
+            toolbar.items.first { $0.itemIdentifier == Self.captureID }?.label = action
+        }
         clearButton.isEnabled = canClear
         exportButton.isEnabled = canExport
     }
 
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [Self.viewsID, .flexibleSpace, Self.commandsID]
+        // A spacer breaks AppKit's automatic shared glass background.
+        [Self.viewsID, .space, Self.statusID, .flexibleSpace,
+         Self.captureID, .space, Self.clearID, .space, Self.exportID]
     }
 
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
@@ -87,9 +94,16 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
         case Self.viewsID:
             item.view = modes
             item.label = NSLocalizedString("monitor-views", comment: "Monitor views toolbar item")
-        case Self.commandsID:
-            item.view = commands
-            item.label = NSLocalizedString("monitor-recording-controls", comment: "Monitor recording actions toolbar item")
+        case Self.statusID:
+            item.view = state
+            item.label = state.stringValue
+            if #available(macOS 10.15, *) { item.isBordered = false }
+        case Self.captureID:
+            attach(captureButton, to: item)
+        case Self.clearID:
+            attach(clearButton, to: item)
+        case Self.exportID:
+            attach(exportButton, to: item)
         default:
             return nil
         }
@@ -97,12 +111,11 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
         return item
     }
 
-    private func row(_ views: [NSView]) -> NSStackView {
-        let stack = NSStackView(views: views)
-        stack.orientation = .horizontal
-        stack.alignment = .centerY
-        stack.spacing = 8
-        return stack
+    private func attach(_ button: NSButton, to item: NSToolbarItem) {
+        item.view = button
+        item.label = button.title
+        item.target = self
+        item.action = button.action
     }
 
     private func configure(_ button: NSButton, title: String, action: Selector) {
@@ -110,6 +123,7 @@ final class MonitorToolbar: NSObject, NSToolbarDelegate {
         button.bezelStyle = .rounded
         button.target = self
         button.action = action
+        button.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 
     @objc private func selectChannel(_ sender: NSSegmentedControl) {
