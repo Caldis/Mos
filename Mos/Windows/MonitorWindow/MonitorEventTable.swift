@@ -27,10 +27,11 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
 
     override func loadView() {
         let root = NSView()
-        let title = NSTextField(labelWithString: NSLocalizedString("monitor-events", comment: "Events table heading"))
-        title.font = .systemFont(ofSize: 14, weight: .semibold)
+        MonitorStyle.styleSection(root, isLog: true)
+        let title = MonitorStyle.sectionHeader(NSLocalizedString("monitor-events", comment: "Events table heading"))
         scrollFilter.selectedSegment = 0
         scrollFilter.controlSize = .small
+        scrollFilter.segmentStyle = .smallSquare
         scrollFilter.setAccessibilityLabel(NSLocalizedString("monitor-stage", comment: "Scroll event filter"))
         let header = NSStackView(views: [title, NSView(), scrollFilter])
         header.alignment = .centerY
@@ -47,13 +48,13 @@ final class MonitorEventTable: NSViewController, NSTableViewDataSource, NSTableV
         empty.textColor = .secondaryLabelColor
         root.addSubview(empty)
         NSLayoutConstraint.activate([
-            header.topAnchor.constraint(equalTo: root.topAnchor, constant: 5),
-            header.leadingAnchor.constraint(equalTo: root.leadingAnchor),
-            header.trailingAnchor.constraint(equalTo: root.trailingAnchor),
-            scroller.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 7),
-            scroller.leadingAnchor.constraint(equalTo: root.leadingAnchor),
-            scroller.trailingAnchor.constraint(equalTo: root.trailingAnchor),
-            scroller.bottomAnchor.constraint(equalTo: root.bottomAnchor),
+            header.topAnchor.constraint(equalTo: root.topAnchor, constant: 4),
+            header.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: MonitorStyle.padding),
+            header.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -MonitorStyle.padding),
+            scroller.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 2),
+            scroller.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: 4),
+            scroller.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -4),
+            scroller.bottomAnchor.constraint(equalTo: root.bottomAnchor, constant: -4),
             empty.centerXAnchor.constraint(equalTo: scroller.centerXAnchor),
             empty.centerYAnchor.constraint(equalTo: scroller.centerYAnchor),
         ])
@@ -156,12 +157,16 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
 
     override func loadView() {
         let root = NSView()
-        let title = NSTextField(labelWithString: NSLocalizedString("monitor-inspector", comment: "Selected event inspector"))
-        title.font = .systemFont(ofSize: 14, weight: .semibold)
+        let panel = NSView()
+        MonitorStyle.styleSection(panel)
+        panel.translatesAutoresizingMaskIntoConstraints = false
+        root.addSubview(panel)
+        let title = MonitorStyle.sectionHeader(NSLocalizedString("monitor-inspector", comment: "Selected event inspector"))
         let closeTitle = NSLocalizedString("monitor-close-inspector", comment: "Close the event inspector")
         let close = NSButton(title: closeTitle, target: self, action: #selector(closeInspector))
-        close.bezelStyle = .rounded
-        close.controlSize = .small
+        MonitorStyle.styleButton(close, neutral: true)
+        close.widthAnchor.constraint(greaterThanOrEqualToConstant: 22).isActive = true
+        close.heightAnchor.constraint(equalToConstant: 20).isActive = true
         if #available(macOS 11.0, *), let icon = NSImage(systemSymbolName: "xmark", accessibilityDescription: closeTitle) {
             close.image = icon
             close.imagePosition = .imageOnly
@@ -171,7 +176,7 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         let header = row([title, NSView(), close])
 
         sourceTitle.textColor = .secondaryLabelColor
-        sourceValue.font = .systemFont(ofSize: 12, weight: .medium)
+        sourceValue.font = .systemFont(ofSize: 11, weight: .medium)
         sourceValue.lineBreakMode = .byTruncatingTail
         sourceValue.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         source.orientation = .horizontal
@@ -179,13 +184,12 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         source.spacing = 8
         for view in [sourceTitle, sourceValue, NSView()] { source.addArrangedSubview(view) }
 
-        let rawTitle = NSTextField(labelWithString: NSLocalizedString("monitor-raw-values", comment: "Raw Values inspector section"))
-        rawTitle.font = .systemFont(ofSize: 12, weight: .semibold)
+        let rawTitle = MonitorStyle.sectionHeader(NSLocalizedString("monitor-raw-values", comment: "Raw Values inspector section"))
         copyButton.title = NSLocalizedString("monitor-copy-raw", comment: "Copy the selected event fields")
         copyButton.target = self
         copyButton.action = #selector(copyRawValues)
-        copyButton.bezelStyle = .rounded
-        copyButton.controlSize = .small
+        MonitorStyle.styleButton(copyButton)
+        copyButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
         let rawHeader = row([rawTitle, NSView(), copyButton])
 
         configureMonitorTable(table, in: scroller)
@@ -201,14 +205,18 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
         content.alignment = .leading
         content.distribution = .fill
         content.detachesHiddenViews = true
-        content.spacing = 8
+        content.spacing = 4
         content.translatesAutoresizingMaskIntoConstraints = false
-        root.addSubview(content)
+        panel.addSubview(content)
         NSLayoutConstraint.activate([
-            content.topAnchor.constraint(equalTo: root.topAnchor, constant: 5),
-            content.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: 10),
-            content.trailingAnchor.constraint(equalTo: root.trailingAnchor),
-            content.bottomAnchor.constraint(equalTo: root.bottomAnchor),
+            panel.topAnchor.constraint(equalTo: root.topAnchor),
+            panel.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: MonitorStyle.padding - 1),
+            panel.trailingAnchor.constraint(equalTo: root.trailingAnchor),
+            panel.bottomAnchor.constraint(equalTo: root.bottomAnchor),
+            content.topAnchor.constraint(equalTo: panel.topAnchor, constant: 4),
+            content.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: MonitorStyle.padding),
+            content.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -MonitorStyle.padding),
+            content.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -4),
             header.widthAnchor.constraint(equalTo: content.widthAnchor),
             source.widthAnchor.constraint(equalTo: content.widthAnchor),
             rawHeader.widthAnchor.constraint(equalTo: content.widthAnchor),
@@ -270,8 +278,31 @@ final class MonitorInspector: NSViewController, NSTableViewDataSource, NSTableVi
     }
 }
 
+private final class MonitorTableHeaderCell: NSTableHeaderCell {
+    override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
+        drawInterior(withFrame: cellFrame, in: controlView)
+    }
+}
+
+private final class MonitorTableHeaderView: NSTableHeaderView {
+    override var isOpaque: Bool { false }
+
+    override func draw(_ dirtyRect: NSRect) {
+        NSColor(calibratedWhite: 1, alpha: 0.08).setFill()
+        NSRect(x: bounds.minX, y: bounds.maxY - 1, width: bounds.width, height: 1).fill()
+        guard let table = tableView else { return }
+        for (index, column) in table.tableColumns.enumerated() {
+            let rect = headerRect(ofColumn: index)
+            if dirtyRect.intersects(rect) {
+                column.headerCell.draw(withFrame: rect, in: self)
+            }
+        }
+    }
+}
+
 private func configureMonitorTable(_ table: NSTableView, in scroller: NSScrollView) {
-    table.usesAlternatingRowBackgroundColors = true
+    table.backgroundColor = .clear
+    table.headerView = MonitorTableHeaderView()
     table.allowsEmptySelection = true
     table.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
     table.intercellSpacing = NSSize(width: 8, height: 3)
@@ -282,13 +313,21 @@ private func configureMonitorTable(_ table: NSTableView, in scroller: NSScrollVi
     scroller.hasVerticalScroller = true
     scroller.hasHorizontalScroller = true
     scroller.autohidesScrollers = true
-    scroller.borderType = .lineBorder
+    scroller.scrollerStyle = .overlay
+    scroller.scrollerKnobStyle = .light
+    scroller.borderType = .noBorder
+    scroller.drawsBackground = false
     scroller.documentView = table
 }
 
 private func addMonitorColumn(to table: NSTableView, title: String, width: CGFloat, minimum: CGFloat) {
     let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier(String(table.numberOfColumns)))
-    column.title = title
+    let header = MonitorTableHeaderCell(textCell: title)
+    header.attributedStringValue = NSAttributedString(string: title, attributes: [
+        .font: NSFont.systemFont(ofSize: 10, weight: .medium),
+        .foregroundColor: NSColor.secondaryLabelColor,
+    ])
+    column.headerCell = header
     column.headerToolTip = title
     column.minWidth = minimum
     column.width = width
@@ -314,7 +353,7 @@ private func monitorCell(
         label.lineBreakMode = selectable ? .byCharWrapping : .byTruncatingTail
         label.font = numeric
             ? .monospacedDigitSystemFont(ofSize: 11, weight: .regular)
-            : .systemFont(ofSize: 12)
+            : .systemFont(ofSize: 11)
         label.translatesAutoresizingMaskIntoConstraints = false
         cell.addSubview(label)
         cell.textField = label

@@ -19,11 +19,11 @@ final class MonitorViewController: NSViewController {
     override func loadView() {
         let root = NSVisualEffectView()
         root.blendingMode = .behindWindow
-        root.state = .followsWindowActiveState
+        root.state = .active
         if #available(macOS 10.14, *) {
-            root.material = .underWindowBackground
+            root.material = .hudWindow
         } else {
-            root.material = .appearanceBased
+            root.material = .dark
         }
 
         view = root
@@ -35,20 +35,20 @@ final class MonitorViewController: NSViewController {
         content.orientation = .vertical
         content.alignment = .leading
         content.distribution = .fill
-        content.spacing = 10
+        content.spacing = MonitorStyle.padding
         content.detachesHiddenViews = true
         content.translatesAutoresizingMaskIntoConstraints = false
         root.addSubview(content)
         self.content = content
-        let top = content.topAnchor.constraint(equalTo: root.topAnchor, constant: 12)
+        let top = content.topAnchor.constraint(equalTo: root.topAnchor, constant: MonitorStyle.padding)
         topConstraint = top
         let chartHeight = timeline.heightAnchor.constraint(equalToConstant: 255)
         chartHeight.priority = .defaultHigh
         NSLayoutConstraint.activate([
             top,
-            content.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: 17),
-            content.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -17),
-            content.bottomAnchor.constraint(equalTo: root.bottomAnchor, constant: -14),
+            content.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: MonitorStyle.padding),
+            content.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -MonitorStyle.padding),
+            content.bottomAnchor.constraint(equalTo: root.bottomAnchor, constant: -MonitorStyle.padding),
             notice.widthAnchor.constraint(equalTo: content.widthAnchor),
             timeline.widthAnchor.constraint(equalTo: content.widthAnchor),
             timeline.heightAnchor.constraint(greaterThanOrEqualToConstant: 194),
@@ -65,10 +65,10 @@ final class MonitorViewController: NSViewController {
         topConstraint?.isActive = false
         let replacement: NSLayoutConstraint
         if let layout = window.contentLayoutGuide as? NSLayoutGuide {
-            replacement = content.topAnchor.constraint(equalTo: layout.topAnchor, constant: 12)
+            replacement = content.topAnchor.constraint(equalTo: layout.topAnchor, constant: 4)
         } else {
             let inset = max(0, view.convert(view.bounds, to: nil).maxY - window.contentLayoutRect.maxY)
-            replacement = content.topAnchor.constraint(equalTo: view.topAnchor, constant: 12 + inset)
+            replacement = content.topAnchor.constraint(equalTo: view.topAnchor, constant: max(MonitorStyle.padding, inset + 4))
         }
         replacement.isActive = true
         topConstraint = replacement
@@ -84,11 +84,13 @@ final class MonitorViewController: NSViewController {
     }
 
     private func configureSplit() {
-        detailSplit.splitView.isVertical = true
-        detailSplit.splitView.dividerStyle = .thin
+        let split = MonitorDetailSplitView()
+        split.isVertical = true
+        split.dividerStyle = .thin
+        detailSplit.splitView = split
         let tableItem = NSSplitViewItem(viewController: events)
         tableItem.minimumThickness = 370
-        inspectorItem.minimumThickness = 284
+        inspectorItem.minimumThickness = 284 + MonitorStyle.padding
         inspectorItem.canCollapse = true
         detailSplit.addSplitViewItem(tableItem)
         detailSplit.addSplitViewItem(inspectorItem)
@@ -209,4 +211,9 @@ final class MonitorViewController: NSViewController {
             }
         }
     }
+}
+
+private final class MonitorDetailSplitView: NSSplitView {
+    // Keep the system divider geometry for collapsing, with a gutter in the inspector pane.
+    override func drawDivider(in rect: NSRect) {}
 }

@@ -77,11 +77,6 @@ final class MonitorCurveView: NSView {
         super.draw(dirtyRect)
         guard bounds.width >= 320, bounds.height >= 100 else { return }
 
-        let panel = NSBezierPath(roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5), xRadius: 7, yRadius: 7)
-        NSColor.textBackgroundColor.setFill()
-        panel.fill()
-        stroke(panel, color: NSColor.labelColor.withAlphaComponent(0.15), width: 1)
-
         let laneTitles = [
             MonitorPresentation.stageName(.captured),
             NSLocalizedString("monitor-output", comment: "Output overlay in the timeline"),
@@ -248,8 +243,8 @@ final class MonitorTimelineView: NSView {
 
     init() {
         super.init(frame: .zero)
-        let title = NSTextField(labelWithString: NSLocalizedString("monitor-scroll-timeline", comment: "Scroll Timeline title"))
-        title.font = .systemFont(ofSize: 14, weight: .semibold)
+        MonitorStyle.styleSection(self)
+        let title = MonitorStyle.sectionHeader(NSLocalizedString("monitor-scroll-timeline", comment: "Scroll Timeline title"))
 
         configureStep(decrease, symbol: "−", name: NSLocalizedString("monitor-shorten-window", comment: "Shorten time window"),
                       action: #selector(shorten))
@@ -279,13 +274,13 @@ final class MonitorTimelineView: NSView {
         curve.setAccessibilityLabel(title.stringValue)
         addSubview(curve)
         NSLayoutConstraint.activate([
-            header.topAnchor.constraint(equalTo: topAnchor),
-            header.leadingAnchor.constraint(equalTo: leadingAnchor),
-            header.trailingAnchor.constraint(equalTo: trailingAnchor),
-            curve.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 6),
-            curve.leadingAnchor.constraint(equalTo: leadingAnchor),
-            curve.trailingAnchor.constraint(equalTo: trailingAnchor),
-            curve.bottomAnchor.constraint(equalTo: bottomAnchor),
+            header.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            header.leadingAnchor.constraint(equalTo: leadingAnchor, constant: MonitorStyle.padding),
+            header.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -MonitorStyle.padding),
+            curve.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 2),
+            curve.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 4),
+            curve.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+            curve.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
         ])
         updateRangeControls()
     }
@@ -316,8 +311,9 @@ final class MonitorTimelineView: NSView {
 
     private func configureStep(_ button: NSButton, symbol: String, name: String, action: Selector) {
         button.title = symbol
-        button.bezelStyle = .rounded
-        button.controlSize = .small
+        MonitorStyle.styleButton(button, neutral: true)
+        button.widthAnchor.constraint(greaterThanOrEqualToConstant: 20).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 20).isActive = true
         button.target = self
         button.action = action
         button.toolTip = name

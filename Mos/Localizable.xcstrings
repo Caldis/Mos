@@ -1,6 +1,10 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Self-Test…": {
+      "comment": "HID++ self-test toolbar button",
+      "shouldTranslate": false
+    },
     "⚠️ Warning": {
       "comment": "Toast debug style button"
     },

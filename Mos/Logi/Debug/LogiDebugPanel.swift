@@ -297,6 +297,14 @@ class LogiDebugPanel: NSObject {
 
     private var window: NSPanel?
 
+    private enum ToolbarItem: String {
+        case selfTest = "hidDebug.selfTest"
+        case clear = "hidDebug.clear"
+        case export = "hidDebug.export"
+
+        var identifier: NSToolbarItem.Identifier { NSToolbarItem.Identifier(rawValue) }
+    }
+
     // MARK: - Sidebar
 
     private var outlineView: NSOutlineView!
@@ -610,6 +618,16 @@ class LogiDebugPanel: NSObject {
         panel.isMovableByWindowBackground = true
         panel.hasShadow = true
         panel.hidesOnDeactivate = false
+        let toolbar = NSToolbar(identifier: "MosHIDDebug")
+        toolbar.delegate = self
+        toolbar.displayMode = .iconOnly
+        toolbar.allowsUserCustomization = false
+        toolbar.autosavesConfiguration = false
+        panel.toolbar = toolbar
+        if #available(macOS 11.0, *) {
+            panel.titlebarSeparatorStyle = .none
+            panel.toolbarStyle = .unified
+        }
 
         let effectView = NSVisualEffectView(frame: NSRect(origin: .zero, size: panel.frame.size))
         effectView.autoresizingMask = [.width, .height]
@@ -623,8 +641,11 @@ class LogiDebugPanel: NSObject {
         }
         panel.contentView = effectView
 
-        let topInset = resolvedTopInset(for: panel)
-        buildContent(in: effectView, topInset: topInset)
+        if let guide = panel.contentLayoutGuide as? NSLayoutGuide {
+            buildContent(in: effectView, topAnchor: guide.topAnchor, topInset: 4)
+        } else {
+            buildContent(in: effectView, topAnchor: effectView.topAnchor, topInset: resolvedTopInset(for: panel))
+        }
 
         windowCloseObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.willCloseNotification, object: panel, queue: .main
@@ -685,7 +706,7 @@ class LogiDebugPanel: NSObject {
 
     // MARK: - Build Content (Auto Layout)
 
-    private func buildContent(in container: NSView, topInset: CGFloat) {
+    private func buildContent(in container: NSView, topAnchor: NSLayoutYAxisAnchor, topInset: CGFloat) {
         // --- Sidebar ---
         let sidebar = NSView()
         sidebar.translatesAutoresizingMaskIntoConstraints = false
@@ -701,12 +722,12 @@ class LogiDebugPanel: NSObject {
 
         NSLayoutConstraint.activate([
             sidebar.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
-            sidebar.topAnchor.constraint(equalTo: container.topAnchor, constant: topInset),
+            sidebar.topAnchor.constraint(equalTo: topAnchor, constant: topInset),
             sidebar.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8),
             sidebar.widthAnchor.constraint(equalToConstant: L.sidebarWidth),
 
             split.leadingAnchor.constraint(equalTo: sidebar.trailingAnchor, constant: L.gap),
-            split.topAnchor.constraint(equalTo: container.topAnchor, constant: topInset),
+            split.topAnchor.constraint(equalTo: topAnchor, constant: topInset),
             split.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8),
             split.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8),
         ])
@@ -1146,37 +1167,6 @@ class LogiDebugPanel: NSObject {
             fx += 42
         }
 
-        let clearBtn = makeActionBtn(title: "Clear", action: #selector(clearLogClicked))
-        clearBtn.frame = NSRect(x: 0, y: 4, width: 42, height: 20)
-        clearBtn.font = NSFont.systemFont(ofSize: 9, weight: .medium)
-        clearBtn.autoresizingMask = [.minXMargin]
-        toolbar.addSubview(clearBtn)
-        // Pin to right with constraints
-        clearBtn.translatesAutoresizingMaskIntoConstraints = true
-        clearBtn.autoresizingMask = [.minXMargin]
-
-        let exportBtn = makeActionBtn(title: "Export", action: #selector(exportLogClicked))
-        exportBtn.frame = NSRect(x: 0, y: 4, width: 46, height: 20)
-        exportBtn.font = NSFont.systemFont(ofSize: 9, weight: .medium)
-        exportBtn.autoresizingMask = [.minXMargin]
-        toolbar.addSubview(exportBtn)
-
-        let selfTestBtn = makeActionBtn(title: "Self-Test\u{2026}", action: #selector(selfTestClicked))
-        selfTestBtn.frame = NSRect(x: 0, y: 4, width: 70, height: 20)
-        selfTestBtn.font = NSFont.systemFont(ofSize: 9, weight: .medium)
-        selfTestBtn.autoresizingMask = [.minXMargin]
-        toolbar.addSubview(selfTestBtn)
-
-        // Position clear/export/self-test from right using frame + autoresizingMask
-        // Will be repositioned after layout
-        toolbar.postsFrameChangedNotifications = true
-        NotificationCenter.default.addObserver(forName: NSView.frameDidChangeNotification, object: toolbar, queue: .main) { _ in
-            let w = toolbar.bounds.width
-            clearBtn.frame.origin.x = w - 50
-            exportBtn.frame.origin.x = w - 100
-            // exportBtn.x (w-100) - selfTest width (70) - gap (4) = w - 174
-            selfTestBtn.frame.origin.x = w - 174
-        }
     }
 
     @objc private func selfTestClicked() {
@@ -2474,6 +2464,58 @@ class LogiDebugPanel: NSObject {
 }
 
 // MARK: - NSOutlineViewDataSource & Delegate
+
+extension LogiDebugPanel: NSToolbarDelegate {
+    func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        [ToolbarItem.selfTest.identifier, .flexibleSpace, ToolbarItem.clear.identifier, .space, ToolbarItem.export.identifier]
+    }
+
+    func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        toolbarDefaultItemIdentifiers(toolbar)
+    }
+
+    func toolbar(
+        _ toolbar: NSToolbar,
+        itemForItemIdentifier identifier: NSToolbarItem.Identifier,
+        willBeInsertedIntoToolbar flag: Bool
+    ) -> NSToolbarItem? {
+        guard let command = ToolbarItem(rawValue: identifier.rawValue) else { return nil }
+        let title: String
+        let symbol: String
+        let action: Selector
+        switch command {
+        case .selfTest:
+            title = NSLocalizedString("Self-Test…", comment: "HID++ self-test toolbar button")
+            symbol = "stethoscope"
+            action = #selector(selfTestClicked)
+        case .clear:
+            title = NSLocalizedString("monitor-clear", comment: "Clear debug log")
+            if #available(macOS 12.0, *) { symbol = "eraser" } else { symbol = "clear" }
+            action = #selector(clearLogClicked)
+        case .export:
+            title = NSLocalizedString("monitor-export-log", comment: "Export debug log")
+            symbol = "square.and.arrow.up"
+            action = #selector(exportLogClicked)
+        }
+
+        let item = NSToolbarItem(itemIdentifier: identifier)
+        item.label = title
+        item.paletteLabel = title
+        item.toolTip = title
+        item.target = self
+        item.action = action
+        item.autovalidates = false
+        if #available(macOS 10.15, *) { item.isBordered = true }
+        if #available(macOS 11.0, *), let image = NSImage(systemSymbolName: symbol, accessibilityDescription: title) {
+            item.image = image
+        } else {
+            let button = NSButton(title: title, target: self, action: action)
+            button.bezelStyle = .rounded
+            item.view = button
+        }
+        return item
+    }
+}
 
 extension LogiDebugPanel: NSOutlineViewDataSource {
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {

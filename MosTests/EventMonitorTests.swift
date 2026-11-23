@@ -226,34 +226,38 @@ final class EventMonitorTests: XCTestCase {
     }
 
     @MainActor
-    func testNativeToolbarAndMonitorLayoutAtMinimumSize() throws {
+    func testHUDToolbarAndMonitorLayoutAtMinimumSize() throws {
         let controller = MonitorWindowController()
         let window = try XCTUnwrap(controller.window)
         XCTAssertFalse(window.isVisible)
         XCTAssertTrue(window.styleMask.contains(.fullSizeContentView))
+        XCTAssertEqual(window.appearance?.name, .vibrantDark)
+        let monitor = try XCTUnwrap(window.contentViewController as? MonitorViewController)
         let toolbar = try XCTUnwrap(window.toolbar)
-        let customItems = toolbar.items.filter { $0.itemIdentifier.rawValue.hasPrefix("monitor.") }
-        XCTAssertEqual(customItems.map { $0.itemIdentifier.rawValue },
+        let items = toolbar.items.filter { $0.itemIdentifier.rawValue.hasPrefix("monitor.") }
+        XCTAssertEqual(items.map { $0.itemIdentifier.rawValue },
                        ["monitor.views", "monitor.capture", "monitor.clear", "monitor.export"])
-        let modes = try XCTUnwrap(customItems.first?.view as? NSSegmentedControl)
-        let capture = try XCTUnwrap(customItems.first { $0.itemIdentifier.rawValue == "monitor.capture" })
+        let modes = try XCTUnwrap(items.first?.view as? NSSegmentedControl)
+        let capture = try XCTUnwrap(items.first { $0.itemIdentifier.rawValue == "monitor.capture" })
         if #available(macOS 11.0, *) {
+            XCTAssertEqual(window.toolbarStyle, .unified)
             XCTAssertNotNil(modes.image(forSegment: 0))
             XCTAssertNotNil(modes.image(forSegment: 1))
-            XCTAssertTrue(customItems.suffix(3).allSatisfy { $0.image != nil })
+            XCTAssertTrue(items.suffix(3).allSatisfy { $0.image != nil })
         } else {
-            XCTAssertTrue(customItems.suffix(3).allSatisfy { $0.view is NSButton })
+            XCTAssertTrue(items.suffix(3).allSatisfy { $0.view is NSButton })
         }
         XCTAssertTrue(capture.isEnabled)
-        XCTAssertTrue(customItems.suffix(2).allSatisfy { !$0.isEnabled })
+        XCTAssertTrue(items.suffix(2).allSatisfy { !$0.isEnabled })
 
-        let monitor = try XCTUnwrap(window.contentViewController as? MonitorViewController)
         monitor.monitorToolbar.update(.recording, canClear: false, canExport: false)
         XCTAssertEqual(capture.toolTip, [
             NSLocalizedString("monitor-recording", comment: ""),
             NSLocalizedString("monitor-pause", comment: ""),
         ].joined(separator: " · "))
         let root = try XCTUnwrap(monitor.view as? NSVisualEffectView)
+        if #available(macOS 10.14, *) { XCTAssertEqual(root.material, .hudWindow) }
+        XCTAssertEqual(root.state, .active)
         window.setContentSize(window.contentMinSize)
         root.layoutSubtreeIfNeeded()
         let content = try XCTUnwrap(root.subviews.first as? NSStackView)
@@ -262,7 +266,8 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertFalse(timeline.isHidden)
         XCTAssertGreaterThan(timeline.frame.height, 180)
 
-        monitor.monitorToolbar.didSelectChannel?(.buttons)
+        modes.selectedSegment = MonitorChannel.buttons.rawValue
+        XCTAssertTrue(NSApp.sendAction(try XCTUnwrap(modes.action), to: modes.target, from: modes))
         root.layoutSubtreeIfNeeded()
         XCTAssertTrue(timeline.isHidden)
     }
@@ -273,6 +278,8 @@ final class EventMonitorTests: XCTestCase {
         let header = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSStackView }.first)
         let filter = try XCTUnwrap(header.arrangedSubviews.compactMap { $0 as? NSSegmentedControl }.first)
         let scroller = try XCTUnwrap(events.view.subviews.compactMap { $0 as? NSScrollView }.first)
+        XCTAssertFalse(scroller.drawsBackground)
+        XCTAssertEqual(scroller.borderType, .noBorder)
         XCTAssertEqual(filter.selectedSegment, 0)
         XCTAssertEqual(filter.label(forSegment: 0), MonitorPresentation.stageName(.captured))
         XCTAssertEqual((scroller.documentView as? NSTableView)?.tableColumns.map(\.title), [
@@ -295,7 +302,8 @@ final class EventMonitorTests: XCTestCase {
         let event = try XCTUnwrap(events.first)
         let inspector = MonitorInspector()
         inspector.display(event)
-        let content = try XCTUnwrap(inspector.view.subviews.first as? NSStackView)
+        let panel = try XCTUnwrap(inspector.view.subviews.first)
+        let content = try XCTUnwrap(panel.subviews.first as? NSStackView)
         let scroller = try XCTUnwrap(content.arrangedSubviews.compactMap { $0 as? NSScrollView }.first)
         let table = try XCTUnwrap(scroller.documentView as? NSTableView)
         XCTAssertEqual(table.tableColumns.map(\.title), [
