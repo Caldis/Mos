@@ -457,6 +457,9 @@ private extension ScrollPoster {
         // 发送滚动结果 - 只有当输出值超过死区阈值时才发送
         let outputMagnitude = max(abs(shiftedValue.y), abs(shiftedValue.x))
         if outputMagnitude > deadZone {
+            if ScrollMonitorTrace.isRecording {
+                ScrollMonitorTrace.shared.recordFrame(y: shiftedValue.y, x: shiftedValue.x)
+            }
             _ = post(shiftedValue)
         }
 

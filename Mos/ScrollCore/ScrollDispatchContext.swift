@@ -135,6 +135,9 @@ final class ScrollDispatchContext {
             // 3. 进程内通过 event.location 做窗口级 hit-testing, 路由到正确窗口
             // 合成事件标记 (eventSourceUserData) 作为防御性旁路保留
             snapshot.event.postToPid(snapshot.targetPID)
+            if ScrollMonitorTrace.isRecording {
+                ScrollMonitorTrace.shared.recordPosted(snapshot.event, to: .process(Int64(snapshot.targetPID)))
+            }
             self.recordPostedFrame()
         }
     }
