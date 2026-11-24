@@ -109,9 +109,13 @@ final class PhasedTrackpadSink: ScrollOutputSink {
     }
 
     private func post(_ steps: [PhasedTrackpadGesture.Step], sender: Int64) {
+        let postTap = CGEventTapLocation.cghidEventTap
         for step in steps {
             for event in Self.makeEvents(for: step, sender: sender) {
-                event.post(tap: .cghidEventTap)
+                event.post(tap: postTap)
+                if ScrollMonitorTrace.isRecording && event.type == .scrollWheel {
+                    ScrollMonitorTrace.shared.recordPosted(event, to: .tap(postTap))
+                }
             }
         }
     }

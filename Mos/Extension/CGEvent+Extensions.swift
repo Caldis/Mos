@@ -230,14 +230,6 @@ extension CGEvent {
         return false
     }
 
-    /// 时间戳
-    var timestampFormatted: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss.SSS"
-        formatter.timeZone = TimeZone.current
-        return formatter.string(from: Date(timeIntervalSince1970: (Double(self.timestamp)) / 1_000_000_000.0))
-    }
-
     /// 显示名称 (原始分组)
     var displayComponents: [String] {
         var components: [String] = []

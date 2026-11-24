@@ -82,7 +82,7 @@ extension StatusItemManager {
             // Reset
             menu.removeAllItems()
             // Monitor
-            Utils.addMenuItem(to: menu, title: "Debug: Event Monitor", action: #selector(monitorClick))
+            Utils.addMenuItem(to: menu, title: "Debug: Monitor", action: #selector(monitorClick))
             // HID++ Debug
             Utils.addMenuItem(to: menu, title: "Debug: HID++", action: #selector(hidDebugClick))
             // Toast Debug
