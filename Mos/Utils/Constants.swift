@@ -85,10 +85,6 @@ struct REMOTE_CONTROL_APPLICATION {
     ]
 }
 
-enum ScrollDurationLimits {
-    static let simulateTrackpadDefault: Double = 4.75
-}
-
 /// 默认设置项
 // 常规
 class OPTIONS_GENERAL_DEFAULT {
@@ -173,8 +169,13 @@ class OPTIONS_SCROLL_DEFAULT: Codable {
     var smoothHorizontal = true {
         didSet {Options.shared.markChanged(scrollContainer: self)}
     }
-    var durationBeforeSimTrackpadLock: Double? {
-        didSet {Options.shared.markChanged(scrollContainer: self)}
+    // Older per-app presets stored their unlocked duration in this Codable field.
+    var durationBeforeSimTrackpadLock: Double?
+
+    func restoreLegacyTrackpadDuration() {
+        guard let savedDuration = durationBeforeSimTrackpadLock else { return }
+        duration = savedDuration
+        durationBeforeSimTrackpadLock = nil
     }
     // 工具
     static func generateDurationTransition(with duration: Double) -> Double {

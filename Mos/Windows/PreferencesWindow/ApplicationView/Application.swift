@@ -112,7 +112,7 @@ extension Application {
     }
 }
 
-private extension Application {
+extension Application {
     func resolvedScrollOptions() -> OPTIONS_SCROLL_DEFAULT {
         return inherit ? Options.shared.scroll : scroll
     }

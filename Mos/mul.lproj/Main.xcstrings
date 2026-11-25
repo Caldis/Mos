@@ -10300,96 +10300,96 @@
       }
     },
     "W2z-NX-9UO.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Adds gesture and momentum phases for trackpad compatibility. Locks scroll duration and may change inertia\"; ObjectID = \"W2z-NX-9UO\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Uses a virtual trackpad to convert mouse wheel input to two-finger scrolling. Requires macOS 15 or later\"; ObjectID = \"W2z-NX-9UO\";",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přidává fáze gest a setrvačnosti pro kompatibilitu s trackpadem. Uzamkne dobu posuvu a může změnit setrvačnost"
+            "value" : "Převádí pohyb kolečka myši na posouvání dvěma prsty na virtuálním trackpadu. Vyžaduje macOS 15 nebo novější"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ergänzt Gesten- und Trägheitsphasen für die Trackpad-Kompatibilität. Fixiert die Scroll-Dauer und kann das Ausrollen verändern"
+            "value" : "Wandelt Mausradbewegungen in Zwei-Finger-Scrollen auf einem virtuellen Trackpad um. Erfordert macOS 15 oder neuer"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Προσθέτει φάσεις χειρονομίας και αδράνειας για συμβατότητα με trackpad. Κλειδώνει τη διάρκεια κύλισης και μπορεί να αλλάξει την αδράνεια"
+            "value" : "Μετατρέπει την είσοδο από τη ροδέλα του ποντικιού σε κύλιση με δύο δάχτυλα σε εικονική επιφάνεια αφής. Απαιτεί macOS 15 ή νεότερο"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Adds gesture and momentum phases for trackpad compatibility. Locks scroll duration and may change inertia"
+            "value" : "Uses a virtual trackpad to convert mouse wheel input to two-finger scrolling. Requires macOS 15 or later"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajoute des phases de geste et d’inertie pour la compatibilité avec le trackpad. Fixe la durée du défilement et peut modifier l’inertie"
+            "value" : "Convertit la molette de la souris en défilement à deux doigts sur un trackpad virtuel. Nécessite macOS 15 ou version ultérieure"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ジェスチャーと慣性のフェーズを追加し、トラックパッド互換性を高めます。スクロール時間が固定され、慣性が変わる場合があります"
+            "value" : "マウスのホイール入力を仮想トラックパッドの2本指スクロールに変換します。macOS 15以降が必要です"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "트랙패드 호환성을 위해 제스처 및 관성 단계를 추가합니다. 스크롤 시간이 고정되고 관성이 달라질 수 있습니다"
+            "value" : "마우스 휠 입력을 가상 트랙패드의 두 손가락 스크롤로 변환합니다. macOS 15 이상이 필요합니다"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавляет фазы жеста и инерции для совместимости с трекпадом. Фиксирует длительность прокрутки и может изменить инерцию"
+            "value" : "Преобразует прокрутку колёсиком мыши в прокрутку двумя пальцами на виртуальном трекпаде. Требуется macOS 15 или новее"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เพิ่มช่วงท่าทางและแรงเฉื่อยเพื่อให้เข้ากับแทร็กแพด ล็อกระยะเวลาเลื่อนและอาจเปลี่ยนแรงเฉื่อย"
+            "value" : "แปลงการหมุนล้อเมาส์เป็นการเลื่อนด้วยสองนิ้วบนแทร็คแพดเสมือน ต้องใช้ macOS 15 ขึ้นไป"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trackpad uyumluluğu için hareket ve atalet aşamaları ekler. Kaydırma süresini sabitler ve ataleti değiştirebilir"
+            "value" : "Fare tekerleği girişini sanal izleme dörtgeninde iki parmakla kaydırmaya dönüştürür. macOS 15 veya üstü gerekir"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Додає фази жесту й інерції для сумісності з трекпадом. Фіксує тривалість прокручування і може змінювати інерцію"
+            "value" : "Перетворює прокручування коліщатком миші на прокручування двома пальцями на віртуальному трекпеді. Потрібна macOS 15 або новіша версія"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "为平滑滚动加上手势阶段和惯性标记，帮助部分应用识别触控板滚动。开启时固定滚动时长，惯性表现可能变化"
+            "value" : "将鼠标滚轮输入转换为虚拟触控板上的双指滑动，需要 macOS 15 或更高版本"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動。開啟時固定捲動時間，慣性表現可能改變"
+            "value" : "將滑鼠滾輪輸入轉換為虛擬觸控板上的雙指滑動，需要 macOS 15 或更新版本"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動。開啟時固定捲動時間，慣性表現可能改變"
+            "value" : "將滑鼠滾輪輸入轉換為虛擬觸控板上的雙指滑動，需要 macOS 15 或更新版本"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動。開啟時固定捲動時間，慣性表現可能改變"
+            "value" : "將滑鼠滾輪輸入轉換為虛擬觸控式軌跡板上的雙指捲動，需要 macOS 15 或更新版本"
           }
         }
       }

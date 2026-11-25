@@ -430,11 +430,15 @@ extension Options {
 
         // 尝试解析
         do {
-            return try EnhanceArray<Application>(
+            let applications = try EnhanceArray<Application>(
                 withData: data,
                 matchKey: "path",
                 forObserver: { Options.shared.markChanged(.application) }
             )
+            for index in 0..<applications.count {
+                applications.get(by: index)?.scroll.restoreLegacyTrackpadDuration()
+            }
+            return applications
         } catch {
             NSLog("Failed to decode applications data: \(error), resetting to defaults")
             UserDefaults.standard.removeObject(forKey: OptionItem.Application.Applications)

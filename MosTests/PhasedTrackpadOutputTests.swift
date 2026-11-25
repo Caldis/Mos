@@ -304,3 +304,225 @@ private final class RecordingSink: ScrollOutputSink {
     func frame(y: Double, x: Double, at location: CGPoint) { calls.append("frame \(y)"); onFrame?() }
     func end(at location: CGPoint) { calls.append("end"); onEnd?() }
 }
+
+final class VirtualTrackpadTouchReportTests: XCTestCase {
+    func testBeganMovedAndLiftMatchTheLabPackets() {
+        let down = VirtualTrackpadTouchReport.Position(y: 2603)
+        let moved = VirtualTrackpadTouchReport.Position(xOffset: 25, y: 2400)
+        let reports = [
+            VirtualTrackpadTouchReport.contactReport(at: down, firstID: 1, phase: .began, milliseconds: 100),
+            VirtualTrackpadTouchReport.contactReport(at: moved, firstID: 1, phase: .moved, milliseconds: 108),
+        ] + VirtualTrackpadTouchReport.releaseReports(at: moved, firstID: 1, milliseconds: 116)
+        XCTAssertEqual(reports.map { $0.map { String(format: "%02x", $0) }.joined() }, [
+            "020000000000000331240300651d006814140a05817902006c14140a0582",
+            "0200000000000003316403007e7d198814140a05819262198c14140a0582",
+            "020000000000000231a403007e7d19e80000000081926219ec0000000082",
+            "020000000000000231a403007e7d19000000000081",
+            "020000000000000231a40300",
+        ])
+    }
+
+    func testPositionKeepsBothContactsWithinTheTrackpad() {
+        let position = VirtualTrackpadTouchReport.Position(xOffset: .max, y: .min)
+        XCTAssertEqual(position.xOffset, 3134)
+        XCTAssertEqual(position.y, 0)
+    }
+}
+
+@available(macOS 15.0, *)
+final class VirtualTrackpadIdentityTests: XCTestCase {
+    private typealias Position = VirtualTrackpadTouchReport.Position
+    private let start = Position(y: 2603)
+
+    @MainActor
+    func testSharedDeviceDeliversReportsAndKeepsTheMirroringSender() async throws {
+        let device = RecordingVirtualTrackpadDevice()
+        let identity = VirtualTrackpadIdentity(makeDevice: { device })
+        let mirroring = PhasedTrackpadSink(identity: identity, contains: { _ in true })
+        identity.retain()
+        defer { identity.release() }
+        identity.retain()
+        let sender = try await readySender(for: identity)
+        XCTAssertTrue(mirroring.isReady)
+
+        try await identity.sendTouchGesture(from: start, moves: moves([
+            Position(y: 2500), Position(xOffset: 25, y: 2400)
+        ]))
+        let activations = await device.activations
+        let reports = await device.reports
+        XCTAssertEqual(activations, 1)
+        XCTAssertEqual(reports.map(\.count), [30, 30, 30, 30, 21, 12])
+        XCTAssertEqual(reports.compactMap { $0.count > 15 ? $0[15] >> 5 : nil }, [3, 4, 4, 7, 0])
+        XCTAssertTrue(reports.filter { $0.count == 30 }.allSatisfy {
+            ($0[20] & 0xf) == 1 && ($0[29] & 0xf) == 2
+        })
+        identity.release()
+        XCTAssertEqual(identity.sender, sender)
+        XCTAssertTrue(mirroring.isReady)
+    }
+
+    @MainActor
+    func testDeviceRemainsReadyUntilTheFinalLiftReportCompletes() async throws {
+        let lastReport = expectation(description: "The empty release report is in flight")
+        let gate = AsyncStream<Void>.makeStream()
+        let device = RecordingVirtualTrackpadDevice { report in
+            guard report.count == 12 else { return }
+            lastReport.fulfill()
+            for await _ in gate.stream {}
+        }
+        let identity = VirtualTrackpadIdentity(makeDevice: { device })
+        identity.retain()
+        defer {
+            gate.continuation.finish()
+            identity.release()
+        }
+        let sender = try await readySender(for: identity)
+
+        let sending = Task {
+            try await identity.sendTouchGesture(from: start, moves: moves([Position(y: 2400)]))
+        }
+        await fulfillment(of: [lastReport], timeout: 3)
+        do {
+            try await identity.sendTouchGesture(from: start, moves: moves([]))
+            XCTFail("An in-flight release still owns the device")
+        } catch {
+            XCTAssertEqual(error as? VirtualTrackpadIdentity.TouchError, .gestureInProgress)
+        }
+
+        identity.release()
+        XCTAssertEqual(identity.sender, sender)
+        gate.continuation.finish()
+        try await sending.value
+        XCTAssertNil(identity.sender)
+    }
+
+    @MainActor
+    func testCancellingTheInputStreamStillLiftsBothContacts() async throws {
+        let down = expectation(description: "The initial contact report started")
+        let device = RecordingVirtualTrackpadDevice { report in
+            if report.count > 15 && report[15] >> 5 == 3 { down.fulfill() }
+        }
+        let identity = VirtualTrackpadIdentity(makeDevice: { device })
+        let waitingForMoves = AsyncStream<Position>.makeStream()
+        identity.retain()
+        defer {
+            waitingForMoves.continuation.finish()
+            identity.release()
+        }
+        let sender = try await readySender(for: identity)
+
+        let sending = Task {
+            try await identity.sendTouchGesture(from: start, moves: waitingForMoves.stream)
+        }
+        await fulfillment(of: [down], timeout: 3)
+        sending.cancel()
+        do {
+            try await sending.value
+            XCTFail("The gesture should report cancellation")
+        } catch {
+            XCTAssertTrue(error is CancellationError)
+        }
+        let reports = await device.reports
+        XCTAssertEqual(reports.map(\.count), [30, 30, 21, 12])
+        XCTAssertEqual(identity.sender, sender)
+    }
+
+    @MainActor
+    func testVirtualTrackpadOutputConvertsWheelFramesAndLifts() async throws {
+        let lifted = expectation(description: "The output submits the empty touch frame")
+        let device = RecordingVirtualTrackpadDevice { report in
+            if report.count == 12 { lifted.fulfill() }
+        }
+        let identity = VirtualTrackpadIdentity(makeDevice: { device })
+        identity.retain()
+        defer { identity.release() }
+        let sender = try await readySender(for: identity)
+
+        let location = CGPoint(x: 100, y: 100)
+        let output = VirtualTrackpadScrollOutput(
+            identity: identity, cursorLocation: { location }, naturalScrolling: { false }
+        )
+        for _ in 0..<6 {
+            output.frame(y: 12, x: 0, at: location)
+        }
+        output.end(at: location)
+        await fulfillment(of: [lifted], timeout: 3)
+
+        let reports = await device.reports
+        let movement = try XCTUnwrap(reports.last { $0.count == 30 && $0[15] >> 5 == 4 })
+        let packed = UInt32(movement[12]) | (UInt32(movement[13]) << 8)
+            | (UInt32(movement[14]) << 16) | (UInt32(movement[15]) << 24)
+        XCTAssertEqual((packed >> 13) & 0x1fff, 288)
+        XCTAssertEqual(reports.suffix(3).map(\.count), [30, 21, 12])
+        XCTAssertEqual(identity.sender, sender)
+    }
+
+    @MainActor
+    func testCoreHIDDeviceSendsGestureAndKeepsItsSender() async throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["MOS_VIRTUAL_TRACKPAD_LIVE_TEST"] == "1",
+                           "Run this test only during an agreed virtual input test window")
+        try XCTSkipIf(VirtualTrackpadIdentity.multitouchDeviceID() != nil,
+                      "An existing Mos virtual trackpad would make the sender ambiguous")
+        let identity = VirtualTrackpadIdentity.shared
+        identity.retain()
+        identity.retain()
+        defer {
+            identity.release()
+            identity.release()
+        }
+        let sender = try await readySender(for: identity, timeout: 6)
+        let mirroring = PhasedTrackpadSink(identity: identity, contains: { _ in true })
+        XCTAssertTrue(mirroring.isReady)
+
+        let positions = AsyncStream<Position>.makeStream(bufferingPolicy: .bufferingNewest(1))
+        let producer = Task {
+            for frame in 1...24 {
+                try? await Task.sleep(nanoseconds: 10_000_000)
+                positions.continuation.yield(Position(y: 2603 - frame * 35))
+            }
+            positions.continuation.finish()
+        }
+        defer { producer.cancel() }
+        try await identity.sendTouchGesture(from: start, moves: positions.stream)
+        XCTAssertEqual(identity.sender, sender)
+        XCTAssertEqual(VirtualTrackpadIdentity.multitouchDeviceID(), sender)
+        XCTAssertTrue(mirroring.isReady)
+    }
+
+    private func readySender(for identity: VirtualTrackpadIdentity, timeout: TimeInterval = 3) async throws -> Int64 {
+        let deadline = ProcessInfo.processInfo.systemUptime + timeout
+        while identity.sender == nil && ProcessInfo.processInfo.systemUptime < deadline {
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        return try XCTUnwrap(identity.sender)
+    }
+
+    private func moves(_ positions: [Position]) -> AsyncStream<Position> {
+        AsyncStream { continuation in
+            for position in positions { continuation.yield(position) }
+            continuation.finish()
+        }
+    }
+}
+
+@available(macOS 15.0, *)
+private actor RecordingVirtualTrackpadDevice: VirtualTrackpadDevice {
+    private(set) var activations = 0
+    private(set) var reports: [Data] = []
+    private let onReport: (Data) async throws -> Void
+
+    init(onReport: @escaping (Data) async throws -> Void = { _ in }) {
+        self.onReport = onReport
+    }
+
+    func activateTrackpad() async -> Int64? {
+        activations += 1
+        return 314
+    }
+
+    func sendTrackpadReport(_ report: Data) async throws {
+        try Task.checkCancellation()
+        reports.append(report)
+        try await onReport(report)
+    }
+}

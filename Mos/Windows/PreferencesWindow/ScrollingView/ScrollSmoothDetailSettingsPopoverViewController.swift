@@ -64,22 +64,7 @@ class ScrollSmoothDetailSettingsPopoverViewController: AdaptivePopover, ScrollOp
 
     @IBAction func simulateTrackpadToggle(_ sender: NSButton) {
         let scrollOptions = getTargetApplicationScrollOptions()
-        let isOn = sender.state == .on
-        let wasOn = scrollOptions.smoothSimTrackpad
-        scrollOptions.smoothSimTrackpad = isOn
-        if isOn {
-            if !wasOn {
-                scrollOptions.durationBeforeSimTrackpadLock = scrollOptions.duration
-            }
-            scrollOptions.duration = ScrollDurationLimits.simulateTrackpadDefault
-        } else {
-            if wasOn, let previous = scrollOptions.durationBeforeSimTrackpadLock {
-                scrollOptions.duration = previous
-            }
-            if wasOn {
-                scrollOptions.durationBeforeSimTrackpadLock = nil
-            }
-        }
+        scrollOptions.smoothSimTrackpad = sender.state == .on
         syncViewWithOptions()
         onOptionsChanged?()
     }
@@ -91,6 +76,9 @@ class ScrollSmoothDetailSettingsPopoverViewController: AdaptivePopover, ScrollOp
 
     private func syncViewWithOptions() {
         updateSimulateTrackpadControl(simulateTrackpadCheckBox)
+        if #unavailable(macOS 15.0) {
+            simulateTrackpadCheckBox?.isEnabled = false
+        }
         let scroll = getTargetApplicationScrollOptions()
         updateSmoothDependentControl(verticalSmoothCheckBox, isOn: scroll.smoothVertical)
         updateSmoothDependentControl(horizontalSmoothCheckBox, isOn: scroll.smoothHorizontal)

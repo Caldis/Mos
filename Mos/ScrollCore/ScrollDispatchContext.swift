@@ -18,10 +18,18 @@ final class ScrollDispatchContext {
         case process
         /// 交给应用适配器的输出端
         case adapter(ScrollOutputSink)
+        case virtualTrackpad(ScrollOutputSink)
 
         var sink: ScrollOutputSink? {
-            if case .adapter(let sink) = self { return sink }
-            return nil
+            switch self {
+            case .process: return nil
+            case .adapter(let sink), .virtualTrackpad(let sink): return sink
+            }
+        }
+
+        var usesVirtualTrackpad: Bool {
+            if case .virtualTrackpad = self { return true }
+            return false
         }
     }
 

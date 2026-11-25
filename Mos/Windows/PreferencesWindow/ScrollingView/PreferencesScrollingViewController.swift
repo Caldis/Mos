@@ -31,16 +31,10 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     @IBOutlet weak var scrollDurationSlider: NSSlider!
     @IBOutlet weak var scrollDurationInput: NSTextField!
     @IBOutlet weak var scrollDurationStepper: NSStepper!
-    @IBOutlet weak var scrollDurationDescriptionLabel: NSTextField?
     @IBOutlet weak var resetToDefaultsButton: NSButton!
     var resetButtonHeightConstraint: NSLayoutConstraint?
     // Constants
     let DefaultConfigForCompare = OPTIONS_SCROLL_DEFAULT()
-    private var scrollDurationDescriptionDefaultText: String?
-    private let scrollDurationLockedDescription = NSLocalizedString(
-        "scrollDurationLockedMessage",
-        comment: "Message shown when simulate trackpad locks the duration setting"
-    )
     // KeyRecorder for custom hotkey recording
     private let keyRecorder = KeyRecorder()
     private weak var currentRecordingPopup: NSButton?
@@ -53,7 +47,6 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
         // 创建高度约束
         resetButtonHeightConstraint = resetToDefaultsButton.heightAnchor.constraint(equalToConstant: 24)
         resetButtonHeightConstraint?.isActive = true
-        scrollDurationDescriptionDefaultText = scrollDurationDescriptionLabel?.stringValue
         // 设置 KeyRecorder 代理
         keyRecorder.delegate = self
         // 读取设置
@@ -160,11 +153,7 @@ class PreferencesScrollingViewController: NSViewController, ScrollOptionsContext
     }
     func setScrollDuration(value: Double) {
         let scrollOptions = getTargetApplicationScrollOptions()
-        if scrollOptions.smoothSimTrackpad {
-            scrollOptions.duration = ScrollDurationLimits.simulateTrackpadDefault
-        } else {
-            scrollOptions.duration = value
-        }
+        scrollOptions.duration = value
         syncViewWithOptions()
     }
     
@@ -219,27 +208,12 @@ extension PreferencesScrollingViewController {
         scrollSpeedInput.stringValue = String(format: "%.2f", speed)
         scrollSpeedInput.isEnabled = isNotInherit
         // 过渡
-        let isSimTrackpadEnabled = scroll.smoothSimTrackpad
-        let resolvedDuration: Double
-        if isSimTrackpadEnabled {
-            resolvedDuration = ScrollDurationLimits.simulateTrackpadDefault
-            if scroll.duration != resolvedDuration {
-                scroll.duration = resolvedDuration
-            }
-        } else {
-            resolvedDuration = scroll.duration
-        }
-        scrollDurationSlider.doubleValue = resolvedDuration
-        scrollDurationSlider.isEnabled = isNotInherit && !isSimTrackpadEnabled
-        scrollDurationStepper.doubleValue = resolvedDuration
-        scrollDurationStepper.isEnabled = isNotInherit && !isSimTrackpadEnabled
-        scrollDurationInput.stringValue = String(format: "%.2f", resolvedDuration)
-        scrollDurationInput.isEnabled = isNotInherit && !isSimTrackpadEnabled
-        if isSimTrackpadEnabled {
-            scrollDurationDescriptionLabel?.stringValue = scrollDurationLockedDescription
-        } else if let defaultText = scrollDurationDescriptionDefaultText {
-            scrollDurationDescriptionLabel?.stringValue = defaultText
-        }
+        scrollDurationSlider.doubleValue = scroll.duration
+        scrollDurationSlider.isEnabled = isNotInherit
+        scrollDurationStepper.doubleValue = scroll.duration
+        scrollDurationStepper.isEnabled = isNotInherit
+        scrollDurationInput.stringValue = String(format: "%.2f", scroll.duration)
+        scrollDurationInput.isEnabled = isNotInherit
         // 更新重置按钮状态
         updateResetButtonState()
     }

@@ -1537,7 +1537,6 @@
                         <outlet property="disableKeyBindButton" destination="tqn-BT-jaW" id="Ixz-Dg-J8J"/>
                         <outlet property="disableKeyDelButton" destination="Lsg-Nt-2NN" id="kve-01-kRl"/>
                         <outlet property="resetToDefaultsButton" destination="JjW-7S-QNG" id="bxA-s3-U5j"/>
-                        <outlet property="scrollDurationDescriptionLabel" destination="sat-Nx-2q9" id="JPP-VY-Tch"/>
                         <outlet property="scrollDurationInput" destination="yLh-Cc-KrW" id="KB1-tR-39d"/>
                         <outlet property="scrollDurationSlider" destination="ILS-hD-J9N" id="LZW-wb-dCh"/>
                         <outlet property="scrollDurationStepper" destination="d2K-LV-vnb" id="wG5-7L-Anh"/>
@@ -1625,7 +1624,7 @@
                             </button>
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="T2A-GP-RAS">
                                 <rect key="frame" x="37" y="20" width="160" height="11"/>
-                                <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Adds gesture and momentum phases for trackpad compatibility. Locks scroll duration and may change inertia" id="W2z-NX-9UO">
+                                <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Uses a virtual trackpad to convert mouse wheel input to two-finger scrolling. Requires macOS 15 or later" id="W2z-NX-9UO">
                                     <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
