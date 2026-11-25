@@ -1615,7 +1615,7 @@
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Yww-b9-vE7">
                                 <rect key="frame" x="20" y="36" width="175" height="14"/>
-                                <buttonCell key="cell" type="check" title="Simulate Trackpad (Beta)" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="p7Y-SJ-d6t">
+                                <buttonCell key="cell" type="check" title="Simulate Trackpad (Experimental)" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="p7Y-SJ-d6t">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
@@ -1625,7 +1625,7 @@
                             </button>
                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="T2A-GP-RAS">
                                 <rect key="frame" x="37" y="20" width="160" height="11"/>
-                                <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="May affect the scrolling behavior" id="W2z-NX-9UO">
+                                <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Adds gesture and momentum phases for trackpad compatibility. Locks scroll duration and may change inertia" id="W2z-NX-9UO">
                                     <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1641,7 +1641,7 @@
                             <constraint firstItem="xHE-gD-zSo" firstAttribute="top" secondItem="Ii6-1I-pb4" secondAttribute="top" constant="20" symbolic="YES" id="EEv-wf-TaC"/>
                             <constraint firstItem="Yww-b9-vE7" firstAttribute="leading" secondItem="xHE-gD-zSo" secondAttribute="leading" id="M1T-ng-xhj"/>
                             <constraint firstItem="k59-to-Z4j" firstAttribute="trailing" secondItem="xHE-gD-zSo" secondAttribute="trailing" id="N99-DU-Lrz"/>
-                            <constraint firstItem="T2A-GP-RAS" firstAttribute="trailing" secondItem="Yww-b9-vE7" secondAttribute="trailing" id="VeS-ix-CF2"/>
+                            <constraint firstItem="T2A-GP-RAS" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Yww-b9-vE7" secondAttribute="trailing" id="VeS-ix-CF2"/>
                             <constraint firstItem="k59-to-Z4j" firstAttribute="top" secondItem="xHE-gD-zSo" secondAttribute="bottom" constant="10" id="iBr-mq-zbi"/>
                             <constraint firstAttribute="bottom" secondItem="T2A-GP-RAS" secondAttribute="bottom" constant="20" symbolic="YES" id="oMp-uu-4Di"/>
                             <constraint firstItem="xHE-gD-zSo" firstAttribute="leading" secondItem="Ii6-1I-pb4" secondAttribute="leading" constant="20" symbolic="YES" id="qH5-So-jW9"/>
@@ -1649,6 +1649,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="detailsFooter" destination="T2A-GP-RAS" id="pCI-5k-XiA"/>
+                        <outlet property="footerBottomConstraint" destination="oMp-uu-4Di" id="w4A-ND-m0X"/>
                         <outlet property="horizontalSmoothCheckBox" destination="k59-to-Z4j" id="h4G-3M-qMA"/>
                         <outlet property="simulateTrackpadCheckBox" destination="Yww-b9-vE7" id="K2i-qm-Qml"/>
                         <outlet property="verticalSmoothCheckBox" destination="xHE-gD-zSo" id="kA0-Us-rIW"/>

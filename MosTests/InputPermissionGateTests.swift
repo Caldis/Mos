@@ -32,7 +32,7 @@ final class InputPermissionProbeTests: XCTestCase {
 
 final class InputPermissionGateTests: XCTestCase {
     func testRevocationReleasesEveryInputResourceBeforeReturning() {
-        let gate = InputPermissionGate()
+        let gate = InputPermissionGate(leaseDuration: 2)
         gate.update(authorized: true, at: 0)
         var active = 0
         for _ in 0..<4 {
@@ -45,18 +45,20 @@ final class InputPermissionGateTests: XCTestCase {
     }
 
     func testBlockedPermissionProbeExpiresLease() {
-        let gate = InputPermissionGate()
+        let gate = InputPermissionGate(leaseDuration: 2)
         gate.update(authorized: true, at: 10)
+        XCTAssertEqual(gate.expiresAt, 12)
         var released = false
         _ = gate.register(activate: {}, release: { released = true })
         XCTAssertFalse(gate.expire(at: 11))
-        XCTAssertTrue(gate.expire(at: 12.1))
+        XCTAssertTrue(gate.expire(at: 12))
         XCTAssertTrue(released)
         XCTAssertFalse(gate.isAuthorized)
+        XCTAssertNil(gate.expiresAt)
     }
 
     func testRecoveryRequiresNewResources() {
-        let gate = InputPermissionGate()
+        let gate = InputPermissionGate(leaseDuration: 2)
         var activations = 0
         XCTAssertNil(gate.register(activate: { activations += 1 }, release: {}))
         gate.update(authorized: true, at: 0)
@@ -69,7 +71,7 @@ final class InputPermissionGateTests: XCTestCase {
     }
 
     func testRevocationAllowsPassthroughWhileResourceTeardownIsStillRunning() {
-        let gate = InputPermissionGate()
+        let gate = InputPermissionGate(leaseDuration: 2)
         gate.update(authorized: true, at: 0)
         let releaseStarted = DispatchSemaphore(value: 0)
         let finishRelease = DispatchSemaphore(value: 0)
@@ -89,13 +91,113 @@ final class InputPermissionGateTests: XCTestCase {
     }
 
     func testRemovedResourceIsNotReleasedAgain() {
-        let gate = InputPermissionGate()
+        let gate = InputPermissionGate(leaseDuration: 2)
         gate.update(authorized: true, at: 0)
         var releases = 0
         let id = gate.register(activate: {}, release: { releases += 1 })!
         gate.remove(id)
         gate.update(authorized: false, at: 1)
         XCTAssertEqual(releases, 0)
+    }
+}
+
+final class InputPermissionMonitorTests: XCTestCase {
+    func testAuthorizedMonitorStartsProbesThreeSecondsApart() {
+        let notifications = NotificationCenter()
+        let authorized = expectation(description: "First probe authorizes input")
+        let probesStarted = expectation(description: "Two probes start")
+        probesStarted.expectedFulfillmentCount = 2
+        let lock = NSLock()
+        var startTimes: [TimeInterval] = []
+        let monitor = InputPermissionMonitor(sample: {
+            lock.lock()
+            startTimes.append(ProcessInfo.processInfo.systemUptime)
+            lock.unlock()
+            probesStarted.fulfill()
+            return true
+        }, notificationCenter: notifications)
+        let observer = notifications.addObserver(forName: .mosInputPermissionChanged, object: nil, queue: nil) { _ in
+            XCTAssertTrue(monitor.isAuthorized)
+            authorized.fulfill()
+        }
+        defer { notifications.removeObserver(observer) }
+
+        monitor.start()
+        wait(for: [authorized, probesStarted], timeout: 6)
+        XCTAssertTrue(monitor.isAuthorized)
+        monitor.stop()
+
+        lock.lock()
+        let times = startTimes
+        lock.unlock()
+        XCTAssertEqual(times.count, 2)
+        if times.count == 2 {
+            XCTAssertGreaterThanOrEqual(times[1] - times[0], 2.99)
+        }
+        XCTAssertEqual(monitor.gate.leaseDuration, 4.25, accuracy: 0.001)
+    }
+
+    func testBlockedProbeReleasesTapAtLeaseExpiry() {
+        let notifications = NotificationCenter()
+        let authorized = expectation(description: "First probe authorizes input")
+        let blocked = expectation(description: "Second probe blocks")
+        let released = expectation(description: "Lease releases tap before the probe returns")
+        let unblock = DispatchSemaphore(value: 0)
+        var firstProbe = true
+        let monitor = InputPermissionMonitor(probeInterval: 0.25, sample: {
+            if firstProbe {
+                firstProbe = false
+                return true
+            }
+            blocked.fulfill()
+            _ = unblock.wait(timeout: .now() + 5)
+            return false
+        }, notificationCenter: notifications)
+        let observer = notifications.addObserver(forName: .mosInputPermissionChanged, object: nil, queue: nil) { _ in
+            if monitor.isAuthorized { authorized.fulfill() }
+        }
+        defer {
+            monitor.stop()
+            unblock.signal()
+            notifications.removeObserver(observer)
+        }
+
+        monitor.start()
+        wait(for: [authorized], timeout: 2)
+        XCTAssertNotNil(monitor.gate.register(activate: {}, release: { released.fulfill() }))
+        wait(for: [blocked, released], timeout: 3, enforceOrder: true)
+        XCTAssertFalse(monitor.isAuthorized)
+    }
+
+    func testStoppedMonitorDiscardsAnInFlightGrant() {
+        let notifications = NotificationCenter()
+        let started = expectation(description: "Probe starts")
+        let returning = expectation(description: "Probe returns a grant")
+        let published = expectation(description: "Stopped monitor publishes a change")
+        published.isInverted = true
+        let unblock = DispatchSemaphore(value: 0)
+        let monitor = InputPermissionMonitor(sample: {
+            started.fulfill()
+            _ = unblock.wait(timeout: .now() + 5)
+            returning.fulfill()
+            return true
+        }, notificationCenter: notifications)
+        let observer = notifications.addObserver(forName: .mosInputPermissionChanged, object: nil, queue: nil) { _ in
+            published.fulfill()
+        }
+        defer {
+            monitor.stop()
+            unblock.signal()
+            notifications.removeObserver(observer)
+        }
+
+        monitor.start()
+        wait(for: [started], timeout: 2)
+        monitor.stop()
+        unblock.signal()
+        wait(for: [returning], timeout: 2)
+        wait(for: [published], timeout: 0.25)
+        XCTAssertFalse(monitor.isAuthorized)
     }
 }
 

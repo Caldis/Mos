@@ -9,35 +9,31 @@
 import Cocoa
 
 class ScrollFilter {
-    
-    var curveWindowY = [0.0, 0.0]
-    var curveWindowX = [0.0, 0.0]
-    
-    // 填充值
-    public func fill(with nextValue: ( y: Double, x: Double )) -> ( y: Double, x: Double ) {
-        curveWindowY = polish(curveWindowY, with: nextValue.y)
-        curveWindowX = polish(curveWindowX, with: nextValue.x)
-        return value()
+
+    private var output = (y: 0.0, x: 0.0)
+    private var next = (y: 0.0, x: 0.0)
+    private var previousFrameScale = 1.0
+
+    func fill(with nextValue: (y: Double, x: Double), timing: FrameTiming = .legacy) -> (y: Double, x: Double) {
+        // The previous window's second sample is the only sample used by the next frame.
+        // Rescale the displacement to preserve its velocity across a change in frame interval.
+        let rescale = timing.scale / previousFrameScale
+        previousFrameScale = timing.scale
+        let y = next.y * rescale
+        let x = next.x * rescale
+        let weight = timing.fraction(0.23)
+        output = (y, x)
+        next = (y + weight * (nextValue.y - y), x + weight * (nextValue.x - x))
+        return output
     }
-    // 获取值
-    public func value() -> ( y: Double, x: Double ) {
-        return ( y: curveWindowY[0], x: curveWindowX[0] )
+
+    public func value() -> (y: Double, x: Double) {
+        return output
     }
-    // 清空
+
     public func reset() {
-        curveWindowY = [0.0, 0.0]
-        curveWindowX = [0.0, 0.0]
-    }
-
-}
-
-extension ScrollFilter {
-    // 曲线平滑
-    // 计算曲线窗口数组首位与 nextValue 的距离, 用定长的非线性数列填充以平滑曲线
-    // 例如: 数组首位为 1, nextValue 为 2, 则生成数列 [1.00, 1.23, 1.50, 1.77, 2.00]
-    private func polish(_ array: [Double], with nextValue: Double) -> [Double] {
-        let first = array[1]
-        let diff = nextValue - first
-        return [first, first+0.23*diff, first+0.5*diff, first+0.77*diff, nextValue]
+        output = (0, 0)
+        next = (0, 0)
+        previousFrameScale = 1
     }
 }

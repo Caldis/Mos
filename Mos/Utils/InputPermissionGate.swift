@@ -6,7 +6,16 @@ final class InputPermissionGate {
     private var authorized = false
     private var checkedAt: TimeInterval = 0
     private var releases: [UUID: () -> Void] = [:]
-    let leaseDuration: TimeInterval = 2
+    let leaseDuration: TimeInterval
+
+    init(leaseDuration: TimeInterval) {
+        self.leaseDuration = leaseDuration
+    }
+
+    var expiresAt: TimeInterval? {
+        lock.lock(); defer { lock.unlock() }
+        return authorized ? checkedAt + leaseDuration : nil
+    }
 
     var isAuthorized: Bool {
         lock.lock(); defer { lock.unlock() }
@@ -28,7 +37,7 @@ final class InputPermissionGate {
 
     func expire(at time: TimeInterval) -> Bool {
         lock.lock()
-        guard authorized, time - checkedAt >= leaseDuration else {
+        guard authorized, time >= checkedAt + leaseDuration else {
             lock.unlock()
             return false
         }
