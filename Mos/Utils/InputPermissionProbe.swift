@@ -5,6 +5,7 @@ import IOKit.hidsystem
 
 enum InputPermissionProbe {
     static let argument = "--mos-check-input-permission"
+    static let timeoutMilliseconds = 900
 
     static func checkCurrentProcess() -> Bool {
         if #available(macOS 10.15, *) {
@@ -16,7 +17,7 @@ enum InputPermissionProbe {
     static func sample() -> Bool {
         guard let executable = Bundle.main.executableURL else { return false }
         // A running process can retain an old TCC decision after both revoke and grant.
-        return run(executable: executable, arguments: [argument], timeout: .milliseconds(900))
+        return run(executable: executable, arguments: [argument], timeout: .milliseconds(timeoutMilliseconds))
     }
 
     static func run(executable: URL, arguments: [String], timeout: DispatchTimeInterval) -> Bool {
