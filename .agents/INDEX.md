@@ -7,6 +7,7 @@
 | 任务 | 必读 | 视情况读取 |
 |------|------|------------|
 | 任意代码改动 | `.agents/docs/code-map.md`, `.agents/docs/testing.md`, `.agents/docs/quality-gates.md` | 相关源码、相关 `MosTests/*` |
+| 滚动管线、帧时钟与性能回归 | [滚动管线基准](docs/testing.md#滚动管线基准) | `scripts/qa/scroll-pipeline-benchmark.py` |
 | bugfix | `.agents/docs/testing.md`, `.agents/docs/quality-gates.md` | 历史 issue/plan、相关回归测试 |
 | UI / 文案 / 本地化 | `LOCALIZATION.md`, `.agents/docs/quality-gates.md` | `Mos/mul.lproj/Main.xcstrings`, `Mos/Localizable.xcstrings` |
 | 应用滚动适配器 (个别应用的替代滚动输出) | `.agents/docs/scroll-adapters.md`, `.agents/docs/quality-gates.md` | `Mos/ScrollCore/Adapters/*`, `docs/plans/2026-10-12-iphone-mirroring-scroll.md` |

@@ -20,6 +20,7 @@ final class OptionsScrollDefaultsTests: XCTestCase {
     // In-memory snapshot of every scroll field readOptions() writes, so the
     // shared singleton is left exactly as we found it.
     private var scrollSnapshot: ScrollSnapshot?
+    private var savedNormalizeTiming = false
 
     private let expectedStep = OPTIONS_SCROLL_DEFAULT().step         // 33.6
     private let expectedSpeed = OPTIONS_SCROLL_DEFAULT().speed       // 2.70
@@ -72,11 +73,28 @@ final class OptionsScrollDefaultsTests: XCTestCase {
                           "missing speed key must never resolve to 0.0 (deadens scrolling)")
     }
 
+    func testNormalizationInheritsEitherExistingToggleUntilSaved() throws {
+        let domain = "MosTests.NormalizeTiming.\(UUID())"
+        let isolatedDefaults = try XCTUnwrap(UserDefaults(suiteName: domain))
+        defer { isolatedDefaults.removePersistentDomain(forName: domain) }
+        XCTAssertFalse(OptionItem.Scroll.readNormalizeTiming(from: isolatedDefaults))
+
+        isolatedDefaults.set(true, forKey: OptionItem.Scroll.TimeNormalization)
+        XCTAssertTrue(OptionItem.Scroll.readNormalizeTiming(from: isolatedDefaults))
+        isolatedDefaults.set(false, forKey: OptionItem.Scroll.TimeNormalization)
+        isolatedDefaults.set(true, forKey: OptionItem.Scroll.ScreenFrameClock)
+        XCTAssertTrue(OptionItem.Scroll.readNormalizeTiming(from: isolatedDefaults))
+
+        isolatedDefaults.set(false, forKey: OptionItem.Scroll.NormalizeTiming)
+        XCTAssertFalse(OptionItem.Scroll.readNormalizeTiming(from: isolatedDefaults))
+    }
+
     // MARK: - setUp / tearDown
 
     override func setUp() {
         super.setUp()
         scrollSnapshot = ScrollSnapshot(of: Options.shared.scroll)
+        savedNormalizeTiming = Options.shared.scrollNormalizeTiming
     }
 
     override func tearDown() {
@@ -92,6 +110,7 @@ final class OptionsScrollDefaultsTests: XCTestCase {
         defaultsSnapshots.removeAll()
         scrollSnapshot?.restore(into: Options.shared.scroll)
         scrollSnapshot = nil
+        Options.shared.scrollNormalizeTiming = savedNormalizeTiming
         super.tearDown()
     }
 

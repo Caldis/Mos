@@ -7537,97 +7537,97 @@
       }
     },
     "p7Y-SJ-d6t.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Simulate Trackpad (Beta)\"; ObjectID = \"p7Y-SJ-d6t\";",
+      "comment" : "Class = \"NSButtonCell\"; title = \"Simulate Trackpad (Experimental)\"; ObjectID = \"p7Y-SJ-d6t\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Simulovat trackpad (Beta)"
+            "value" : "Simulovat trackpad (experimentální)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trackpad simulieren (Beta)"
+            "value" : "Trackpad simulieren (experimentell)"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Προσομοίωση trackpad (Beta)"
+            "value" : "Προσομοίωση trackpad (πειραματικό)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Simulate Trackpad (Beta)"
+            "value" : "Simulate Trackpad (Experimental)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Simuler Trackpad (Beta)"
+            "value" : "Simuler Trackpad (expérimental)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "トラックパッドをシミュレート（ベータ）"
+            "value" : "トラックパッドをシミュレート（試験的）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "트랙패드를 시뮬레이션 (베타)"
+            "value" : "트랙패드를 시뮬레이션(실험적)"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Симулировать трекпад (бета)"
+            "value" : "Симулировать трекпад (экспериментально)"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "จำลองแทร็กแพด (เบต้า)"
+            "value" : "จำลองแทร็กแพด (ทดลอง)"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trackpad’i simüle et (Beta)"
+            "value" : "Trackpad’i simüle et (deneysel)"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Імітація трекпада (бета)"
+            "value" : "Імітація трекпада (експериментально)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "模拟触控板 (Beta)"
+            "value" : "模拟触控板（实验性）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "模擬觸控板 (Beta)"
+            "value" : "模擬觸控板（實驗性）"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "模擬觸控板 (Beta)"
+            "value" : "模擬觸控板（實驗性）"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "模擬觸控板 (Beta)"
+            "value" : "模擬觸控板（實驗性）"
           }
         }
       }
@@ -10300,96 +10300,96 @@
       }
     },
     "W2z-NX-9UO.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"May affect the scrolling behavior\"; ObjectID = \"W2z-NX-9UO\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Adds gesture and momentum phases for trackpad compatibility. Locks scroll duration and may change inertia\"; ObjectID = \"W2z-NX-9UO\";",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Může ovlivnit chování posouvání."
+            "value" : "Přidává fáze gest a setrvačnosti pro kompatibilitu s trackpadem. Uzamkne dobu posuvu a může změnit setrvačnost"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kann das Scrollverhalten beeinflussen."
+            "value" : "Ergänzt Gesten- und Trägheitsphasen für die Trackpad-Kompatibilität. Fixiert die Scroll-Dauer und kann das Ausrollen verändern"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Μπορεί να επηρεάσει τη συμπεριφορά κύλισης."
+            "value" : "Προσθέτει φάσεις χειρονομίας και αδράνειας για συμβατότητα με trackpad. Κλειδώνει τη διάρκεια κύλισης και μπορεί να αλλάξει την αδράνεια"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "May affect the scrolling behavior."
+            "value" : "Adds gesture and momentum phases for trackpad compatibility. Locks scroll duration and may change inertia"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Peut affecter le comportement du défilement"
+            "value" : "Ajoute des phases de geste et d’inertie pour la compatibilité avec le trackpad. Fixe la durée du défilement et peut modifier l’inertie"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "スクロールの動作に影響する場合があります。"
+            "value" : "ジェスチャーと慣性のフェーズを追加し、トラックパッド互換性を高めます。スクロール時間が固定され、慣性が変わる場合があります"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스크롤 동작에 영향을 줄 수 있습니다."
+            "value" : "트랙패드 호환성을 위해 제스처 및 관성 단계를 추가합니다. 스크롤 시간이 고정되고 관성이 달라질 수 있습니다"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Может повлиять на поведение прокрутки."
+            "value" : "Добавляет фазы жеста и инерции для совместимости с трекпадом. Фиксирует длительность прокрутки и может изменить инерцию"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "อาจส่งผลต่อพฤติกรรมการเลื่อน"
+            "value" : "เพิ่มช่วงท่าทางและแรงเฉื่อยเพื่อให้เข้ากับแทร็กแพด ล็อกระยะเวลาเลื่อนและอาจเปลี่ยนแรงเฉื่อย"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kaydırma davranışını etkileyebilir."
+            "value" : "Trackpad uyumluluğu için hareket ve atalet aşamaları ekler. Kaydırma süresini sabitler ve ataleti değiştirebilir"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Може вплинути на поведінку прокручування."
+            "value" : "Додає фази жесту й інерції для сумісності з трекпадом. Фіксує тривалість прокручування і може змінювати інерцію"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可能会影响滚动行为。"
+            "value" : "为平滑滚动加上手势阶段和惯性标记，帮助部分应用识别触控板滚动。开启时固定滚动时长，惯性表现可能变化"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可能會影響捲動行為。"
+            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動。開啟時固定捲動時間，慣性表現可能改變"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可能會影響捲動行為。"
+            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動。開啟時固定捲動時間，慣性表現可能改變"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可能會影響捲動行為。"
+            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動。開啟時固定捲動時間，慣性表現可能改變"
           }
         }
       }

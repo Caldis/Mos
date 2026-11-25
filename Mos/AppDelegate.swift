@@ -133,9 +133,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             forName: NSApplication.didChangeScreenParametersNotification,
             object: nil, queue: .main
         ) { [weak self] _ in
+            ScrollPoster.shared.invalidateDisplayLayout()
             self?.screenChangeTimer?.invalidate()
             self?.screenChangeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
                 ScrollPoster.shared.recreateDisplayLink()
+            }
+        }
+        for notification in [NSWorkspace.screensDidSleepNotification, NSWorkspace.screensDidWakeNotification,
+                             NSWorkspace.didWakeNotification] {
+            NSWorkspace.shared.notificationCenter.addObserver(forName: notification, object: nil, queue: .main) { _ in
+                ScrollPoster.shared.invalidateDisplayLayout()
             }
         }
         // 监听辅助功能权限检查结果

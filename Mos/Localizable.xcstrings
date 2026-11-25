@@ -9314,6 +9314,194 @@
         }
       }
     },
+    "scroll-screen-frame-clock": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sjednotit plynulý posuv (experimentální)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flüssiges Scrollen vereinheitlichen (experimentell)"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ενοποίηση ομαλής κύλισης (πειραματικό)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normalize Smooth Scrolling (Experimental)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uniformiser le défilement fluide (expérimental)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "滑らかなスクロールの感覚を揃える（実験的）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "부드러운 스크롤 감각 통일(실험적)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Унифицировать плавную прокрутку (экспериментально)"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ปรับการเลื่อนแบบราบรื่นให้สม่ำเสมอ (ทดลอง)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yumuşak kaydırmayı standartlaştır (deneysel)"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уніфікувати плавне прокручування (експериментально)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑手感归一化（实验性）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑手感正規化（實驗性）"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑手感正規化（實驗性）"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑手感正規化（實驗性）"
+          }
+        }
+      }
+    },
+    "scroll-screen-frame-clock-description": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sjednocuje pocit z posuvu na displejích s různou obnovovací frekvencí. Mos automaticky vybere vhodné časování snímků pro interpolaci"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sorgt bei unterschiedlichen Bildwiederholraten für ein einheitliches Scrollgefühl. Mos wählt automatisch einen passenden Bildtakt für die Interpolation"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ενοποιεί την αίσθηση κύλισης σε οθόνες με διαφορετικούς ρυθμούς ανανέωσης. Το Mos επιλέγει αυτόματα το κατάλληλο ρολόι καρέ για την παρεμβολή"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keeps scrolling feel consistent across displays with different refresh rates. Mos selects a frame clock to optimize the interpolation rate"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Harmonise la sensation de défilement sur les écrans de fréquences différentes. Mos choisit automatiquement une cadence adaptée à l’interpolation"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リフレッシュレートが異なる画面間でスクロールの感触を揃えます。Mos が補間に適したフレームクロックを自動で選びます"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "재생률이 다른 디스플레이 간의 스크롤 감각을 일정하게 유지합니다. Mos가 보간에 적합한 프레임 클록을 자동으로 선택합니다"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выравнивает ощущение прокрутки на экранах с разной частотой обновления. Mos автоматически выбирает подходящий источник кадров для интерполяции"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ทำให้ความรู้สึกในการเลื่อนสม่ำเสมอบนจอที่มีอัตรารีเฟรชต่างกัน Mos จะเลือกจังหวะเฟรมที่เหมาะกับการคำนวณค่าระหว่างเฟรมโดยอัตโนมัติ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farklı yenileme hızlarına sahip ekranlarda kaydırma hissini tutarlı tutar. Mos, enterpolasyon için uygun kare saatini otomatik olarak seçer"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вирівнює відчуття прокручування на екранах із різною частотою оновлення. Mos автоматично вибирає відповідне джерело кадрів для інтерполяції"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "统一不同屏幕间刷新频率存在差异时的手感, 应用会自动选取最合适的帧时钟来优化插值频率"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "統一不同螢幕更新率下的捲動手感，應用程式會自動選擇最合適的影格時鐘以最佳化內插頻率"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "統一不同螢幕刷新率下的捲動手感，應用程式會自動選擇最合適的畫格時鐘以優化插值頻率"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "統一不同螢幕更新率下的捲動手感，應用程式會自動選擇最合適的影格時鐘以最佳化內插頻率"
+          }
+        }
+      }
+    },
     "monitor-post-tap": {
       "localizations": {
         "cs": {

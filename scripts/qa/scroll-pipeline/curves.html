@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mos 滚动曲线</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --font-size-base: 14px;
+      --background: #fff;
+      --foreground: #181a1f;
+      --muted-foreground: #515965;
+      --muted: #e9eef5;
+      --border: #dbe0e6;
+      --blue: #1467cb;
+      --orange: #9f4e00;
+      --green: #007745;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #181a1f;
+        --foreground: #ebeced;
+        --muted-foreground: #bcc3cd;
+        --muted: #282e37;
+        --border: #414750;
+        --blue: #76b3ff;
+        --orange: #ffb35d;
+        --green: #79d7a6;
+      }
+    }
+    body {
+      box-sizing: border-box; max-width: 1024px; margin: 20px auto; padding: 0 16px;
+      background: var(--background); color: var(--foreground);
+      font: 14px/1.45 -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+    h2, h3, p { margin: 0; }
+    h2 { font-size: 20px; font-weight: 600; }
+    h3 { font-size: 14px; font-weight: 600; }
+    .viz-controls { display: flex; flex-wrap: wrap; gap: 12px 18px; }
+    .form-label { display: grid; gap: 4px; }
+    .form-select { font: inherit; min-height: 30px; }
+    [hidden] { display: none !important; }
+    .text-small { font-size: 12px; }
+    .text-muted { color: var(--muted-foreground); }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+<section id="mos-clock-curves" aria-labelledby="mos-clock-title">
+  <style>
+    #mos-clock-curves { display: grid; gap: calc(var(--font-size-base) * 0.75); }
+    #mos-clock-curves .mos-chart { width: 100%; min-width: 0; }
+    #mos-clock-curves .mos-chart svg { display: block; max-width: 100%; }
+    #mos-clock-curves .mos-series { display: flex; flex-wrap: wrap; gap: calc(var(--font-size-base) * 0.9) calc(var(--font-size-base) * 1.6); }
+    #mos-clock-curves .mos-series-item { display: grid; gap: calc(var(--font-size-base) * 0.2); }
+    #mos-clock-curves .mos-series-name { display: flex; align-items: center; gap: calc(var(--font-size-base) * 0.42); font-weight: 500; }
+    #mos-clock-curves .mos-swatch { display: inline-block; width: calc(var(--font-size-base) * 1.4); height: 0; border-top: 2px solid var(--series-color); }
+    #mos-clock-curves [data-clock="cvdisplaylink"] { --series-color: var(--viz-series-1, var(--blue)); }
+    #mos-clock-curves [data-clock="timer"] { --series-color: var(--viz-series-2, var(--orange)); }
+    #mos-clock-curves [data-clock="nsscreen"] { --series-color: var(--viz-series-3, var(--green)); }
+    #mos-clock-curves [data-clock="timer"] .mos-swatch { border-top-style: dashed; }
+    #mos-clock-curves [data-clock="nsscreen"] .mos-swatch { border-top-style: dotted; }
+    #mos-clock-curves .mos-chart text { fill: var(--muted-foreground); font: inherit; }
+    #mos-clock-curves .mos-chart .mos-grid { stroke: var(--border); stroke-width: 1; }
+    #mos-clock-curves .mos-chart .mos-axis { stroke: var(--muted-foreground); stroke-width: 1; }
+    #mos-clock-curves .mos-chart .mos-line { fill: none; stroke: var(--series-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    #mos-clock-curves .mos-chart .mos-line[data-clock="timer"] { stroke-dasharray: 6 4; }
+    #mos-clock-curves .mos-chart .mos-line[data-clock="nsscreen"] { stroke-dasharray: 1 4; }
+    #mos-clock-curves .mos-chart .mos-point { fill: var(--series-color); }
+    #mos-clock-curves .mos-chart .mos-input-zone { fill: var(--muted); opacity: 0.55; }
+  </style>
+  <h2 id="mos-clock-title">三种帧时钟的滚动输出</h2>
+  <div class="viz-controls">
+    <label class="form-label">输入所在屏幕
+      <select class="form-select" data-mos-display></select>
+    </label>
+    <label class="form-label">平滑手感归一化
+      <select class="form-select" data-mos-normalization>
+        <option value="false">关闭</option>
+        <option value="true">开启</option>
+      </select>
+    </label>
+  </div>
+  <p class="text-small text-muted">阴影为输入阶段，每组 6 次滚轮输入，间隔 28 ms</p>
+  <div class="mos-series tabular-nums" data-mos-series aria-live="polite"></div>
+  <section aria-labelledby="mos-total-chart-title">
+    <h3 id="mos-total-chart-title">累计位移（点）</h3>
+    <div class="mos-chart text-small" data-mos-total></div>
+  </section>
+  <section aria-labelledby="mos-delta-chart-title">
+    <h3 id="mos-delta-chart-title">每次输出的位移（点）</h3>
+    <div class="mos-chart text-small" data-mos-delta></div>
+  </section>
+  <section aria-labelledby="mos-gap-chart-title" data-mos-gap-section hidden>
+    <h3 id="mos-gap-chart-title">位移帧间隔（ms）</h3>
+    <div class="mos-chart text-small" data-mos-gap></div>
+  </section>
+  <script type="application/json" data-mos-curves>__CAPTURE__</script>
+</section>
+<script>
+(() => {
+  const root = document.getElementById("mos-clock-curves");
+  const data = JSON.parse(root.querySelector("[data-mos-curves]").textContent);
+  const displaySelect = root.querySelector("[data-mos-display]");
+  const modeSelect = root.querySelector("[data-mos-normalization]");
+  const seriesPanel = root.querySelector("[data-mos-series]");
+  const totalPanel = root.querySelector("[data-mos-total]");
+  const deltaPanel = root.querySelector("[data-mos-delta]");
+  const gapPanel = root.querySelector("[data-mos-gap]");
+  const names = data.clockNames;
+  const clocks = Object.keys(names);
+  const palette = ["cvdisplaylink", "timer", "nsscreen"];
+  const colors = Object.fromEntries(clocks.map((key, index) => [key, palette[index % palette.length]]));
+  const svgNamespace = "http://www.w3.org/2000/svg";
+  const integer = new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 0 });
+  const decimal = new Intl.NumberFormat("zh-CN", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+  function svgNode(name, attributes, content) {
+    const node = document.createElementNS(svgNamespace, name);
+    for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+    if (content !== undefined) node.textContent = content;
+    return node;
+  }
+
+  function element(name, className, text) {
+    const node = document.createElement(name);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  for (const display of data.displays) {
+    const option = element("option", "", display.name + " · " + integer.format(display.hz) + " Hz");
+    option.value = display.id;
+    displaySelect.append(option);
+  }
+  displaySelect.value = data.displays[0].id;
+  modeSelect.value = data.pacing ? "true" : "false";
+  if (data.pacing) {
+    modeSelect.parentElement.hidden = true;
+    root.querySelector("[data-mos-gap-section]").hidden = false;
+    document.getElementById("mos-clock-title").textContent = "同一帧时钟下的目标频率对照";
+  }
+
+  const groups = Object.values(data.groups).flatMap(group => Object.values(group));
+  const observations = groups.flatMap(group => Object.values(group).flatMap(series => series.points));
+  const xMax = Math.ceil(Math.max(...observations.map(point => point[0])) / 100) * 100;
+  const totalMax = Math.ceil(Math.max(...observations.map(point => point[2])) / 100) * 100;
+  const deltaMax = Math.ceil(Math.max(...observations.map(point => point[1])) / 5) * 5;
+  const intervals = groups.flatMap(group => Object.values(group).flatMap(series => series.gaps));
+  const gapMax = Math.ceil(Math.max(5, ...intervals.map(point => point[1])) / 5) * 5;
+
+  function selected() {
+    return data.groups[displaySelect.value][modeSelect.value];
+  }
+
+  function drawLegend(group) {
+    seriesPanel.replaceChildren();
+    for (const key of clocks) {
+      const values = group[key];
+      const item = element("div", "mos-series-item");
+      item.setAttribute("data-clock", colors[key]);
+      const title = element("div", "mos-series-name");
+      const swatch = element("span", "mos-swatch");
+      swatch.setAttribute("aria-hidden", "true");
+      title.append(swatch, element("span", "", names[key]));
+      const bound = values.bound?.name ?? "独立定时器";
+      const cadence = values.targetHz == null ? "" : " → " + decimal.format(values.pacedHz) + " Hz";
+      item.append(title,
+        element("div", "text-small", bound + " · " + decimal.format(values.hz) + " Hz" + cadence),
+        element("div", "text-small text-muted", "T90 " + integer.format(values.t90) +
+          " ms · " + integer.format(values.total) + " 点 · " + integer.format(values.frames) + " 位移帧"));
+      seriesPanel.append(item);
+    }
+  }
+
+  function drawChart(panel, group, kind) {
+    const cumulative = kind === "total";
+    const gaps = kind === "gap";
+    const width = Math.round(panel.getBoundingClientRect().width) || 736;
+    const height = width < 500 ? 177 : 215;
+    const left = 47, right = width - 24, top = 14, bottom = height - 44;
+    const yMax = gaps ? gapMax : cumulative ? totalMax : deltaMax;
+    const x = value => left + (right - left) * value / xMax;
+    const y = value => bottom - (bottom - top) * value / yMax;
+    const svg = svgNode("svg", {
+      width, height, viewBox: "0 0 " + width + " " + height,
+      role: "img", "aria-label": gaps ? "连续位移事件之间的实际时间" : cumulative
+        ? "三种帧时钟相对首次输入的累计输出位移"
+        : "三种帧时钟每次实际输出的位移和时间",
+    });
+    const shadeEnd = Math.max(...clocks.flatMap(key => group[key].inputs));
+    svg.append(svgNode("rect", { x: left, y: top, width: x(shadeEnd) - left, height: bottom - top,
+      class: "mos-input-zone", "aria-hidden": "true" }));
+
+    const yStep = cumulative ? 100 : Math.ceil(yMax / (width < 460 ? 3 : 5) / 5) * 5;
+    for (let value = 0; value <= yMax; value += yStep) {
+      const py = y(value);
+      svg.append(svgNode("line", { x1: left, y1: py, x2: right, y2: py, class: "mos-grid" }),
+        svgNode("text", { x: left - 8, y: py + 4, "text-anchor": "end" }, integer.format(value)));
+    }
+    const xStep = Math.ceil(xMax / (width < 430 ? 4 : 6) / 100) * 100;
+    for (let value = 0; value <= xMax; value += xStep) {
+      const px = x(value);
+      svg.append(svgNode("line", { x1: px, y1: top, x2: px, y2: bottom, class: "mos-grid" }),
+        svgNode("text", { x: px, y: bottom + 18, "text-anchor": "middle" }, integer.format(value)));
+    }
+    svg.append(
+      svgNode("line", { x1: left, y1: top, x2: left, y2: bottom, class: "mos-axis" }),
+      svgNode("line", { x1: left, y1: bottom, x2: right, y2: bottom, class: "mos-axis" }),
+      svgNode("text", { x: (left + right) / 2, y: height - 5, "text-anchor": "middle" }, "距首次输入时间（ms）"),
+    );
+
+    const hitGroups = new Map();
+    for (const key of clocks) {
+      const points = gaps ? group[key].gaps : group[key].points;
+      const color = colors[key];
+      if (cumulative) {
+        const path = "M" + x(0) + " " + y(0) +
+          points.map(point => "H" + x(point[0]) + "V" + y(point[2])).join("") + "H" + x(xMax);
+        svg.append(svgNode("path", { d: path, class: "mos-line", "data-clock": color }));
+        continue;
+      }
+      for (const [time, delta] of points) {
+        const px = x(time), py = y(delta);
+        const mark = { class: "mos-point", "data-clock": color, "aria-hidden": "true" };
+        if (color === "cvdisplaylink") {
+          svg.append(svgNode("circle", { cx: px, cy: py, r: 2.1, ...mark }));
+        } else if (color === "timer") {
+          svg.append(svgNode("rect", { x: px - 2, y: py - 2, width: 4, height: 4, ...mark }));
+        } else {
+          svg.append(svgNode("polygon", {
+            points: [[px, py - 2.8], [px + 2.5, py], [px, py + 2.8], [px - 2.5, py]].map(pair => pair.join(",")).join(" "),
+            ...mark,
+          }));
+        }
+        const bucket = Math.round(px / 6) + ":" + Math.round(py / 6);
+        if (!hitGroups.has(bucket)) hitGroups.set(bucket, { px, py, labels: [] });
+        const value = gaps ? decimal.format(delta) + " ms 间隔" : integer.format(delta) + " 点";
+        hitGroups.get(bucket).labels.push(names[key] + " · " + decimal.format(time) + " ms · " + value);
+      }
+    }
+    for (const { px, py, labels } of hitGroups.values()) {
+      const target = svgNode("circle", { cx: px, cy: py, r: 5, fill: "transparent" });
+      target.append(svgNode("title", {}, labels.join(" / ")));
+      svg.append(target);
+    }
+    panel.replaceChildren(svg);
+  }
+
+  function draw() {
+    const group = selected();
+    drawLegend(group);
+    drawChart(totalPanel, group, "total");
+    drawChart(deltaPanel, group, "delta");
+    if (data.pacing) drawChart(gapPanel, group, "gap");
+  }
+
+  displaySelect.addEventListener("change", draw);
+  modeSelect.addEventListener("change", draw);
+  draw();
+  let lastWidth = Math.round(totalPanel.getBoundingClientRect().width);
+  if (typeof ResizeObserver === "function") {
+    const observer = new ResizeObserver(() => {
+      const width = Math.round(totalPanel.getBoundingClientRect().width);
+      if (width !== lastWidth) {
+        lastWidth = width;
+        draw();
+      }
+    });
+    observer.observe(totalPanel);
+  }
+})();
+</script>
+</body>
+</html>

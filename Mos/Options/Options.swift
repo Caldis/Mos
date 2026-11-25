@@ -36,6 +36,15 @@ struct OptionItem {
         static let SmoothSimTrackpad = "smoothSimTrackpad"
         static let SmoothVertical = "smoothVertical"
         static let SmoothHorizontal = "smoothHorizontal"
+        // Keep the key used by the earlier refresh-rate experiment.
+        static let NormalizeTiming = "scrollFrameSync"
+        static let TimeNormalization = "scrollTimeNormalization"
+        static let ScreenFrameClock = "scrollScreenFrameClock"
+
+        static func readNormalizeTiming(from defaults: UserDefaults) -> Bool {
+            if let saved = defaults.object(forKey: NormalizeTiming) as? Bool { return saved }
+            return defaults.bool(forKey: TimeNormalization) || defaults.bool(forKey: ScreenFrameClock)
+        }
     }
 
     struct Button {
@@ -76,6 +85,9 @@ class Options {
     // 滚动
     var scroll = OPTIONS_SCROLL_DEFAULT() {
         didSet { markChanged(.scroll) }
+    }
+    var scrollNormalizeTiming = false {
+        didSet { if scrollNormalizeTiming != oldValue { markChanged(.scroll) } }
     }
     // 按钮绑定
     var buttons = OPTIONS_BUTTONS_DEFAULT() {
@@ -215,6 +227,7 @@ extension Options {
             scroll.deadZone = OPTIONS_SCROLL_DEFAULT().deadZone
         }
         scroll.smoothSimTrackpad = UserDefaults.standard.bool(forKey: OptionItem.Scroll.SmoothSimTrackpad)
+        scrollNormalizeTiming = OptionItem.Scroll.readNormalizeTiming(from: .standard)
         if UserDefaults.standard.object(forKey: OptionItem.Scroll.SmoothVertical) == nil {
             scroll.smoothVertical = true
         } else {
@@ -269,6 +282,7 @@ extension Options {
             UserDefaults.standard.set(scroll.smoothSimTrackpad, forKey: OptionItem.Scroll.SmoothSimTrackpad)
             UserDefaults.standard.set(scroll.smoothVertical, forKey: OptionItem.Scroll.SmoothVertical)
             UserDefaults.standard.set(scroll.smoothHorizontal, forKey: OptionItem.Scroll.SmoothHorizontal)
+            UserDefaults.standard.set(scrollNormalizeTiming, forKey: OptionItem.Scroll.NormalizeTiming)
         case .buttons:
             saveButtonBindingsData()
         case .application:
