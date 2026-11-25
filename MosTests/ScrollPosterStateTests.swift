@@ -320,6 +320,27 @@ final class ScrollPosterStateTests: XCTestCase {
     }
 
     @MainActor
+    func testFailedDisplayClockStartLetsNextInputCaptureCurrentSettings() throws {
+        let saved = Options.shared.scrollNormalizeTiming
+        defer { Options.shared.scrollNormalizeTiming = saved }
+        Options.shared.scrollNormalizeTiming = true
+
+        let display = TestFrameClock(.displayLink)
+        display.startSucceeds = false
+        let poster = ScrollPoster(clockOverride: .displayLink, makeDisplayClock: { display })
+        defer { poster.stop() }
+
+        try input(to: poster, at: .zero)
+        XCTAssertFalse(display.isRunning)
+
+        Options.shared.scrollNormalizeTiming = false
+        display.startSucceeds = true
+        try input(to: poster, at: .zero)
+        XCTAssertTrue(display.isRunning)
+        XCTAssertFalse(poster.configSnapshotForTests.normalizesTiming)
+    }
+
+    @MainActor
     func testFixedClockRestartsWithThe60HzReferenceInterval() {
         let clock = FixedRateFrameClock()
         for _ in 0..<2 {
@@ -355,6 +376,7 @@ final class ScrollPosterStateTests: XCTestCase {
         let kind: ScrollFrameClockKind
         var onTick: ((FrameTick) -> Void)?
         let isAvailable: Bool
+        var startSucceeds = true
         private(set) var isRunning = false
 
         init(_ kind: ScrollFrameClockKind, isAvailable: Bool = true) {
@@ -364,8 +386,8 @@ final class ScrollPosterStateTests: XCTestCase {
 
         func prepare() {}
         func start() -> Bool {
-            isRunning = true
-            return true
+            isRunning = startSucceeds
+            return isRunning
         }
         func stop() { isRunning = false }
         func rebuild() -> Bool { start() }

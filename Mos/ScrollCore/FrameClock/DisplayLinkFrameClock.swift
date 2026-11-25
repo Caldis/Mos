@@ -94,17 +94,12 @@ final class DisplayLinkFrameClock: ScrollFrameClock {
 
     @discardableResult
     func start() -> Bool {
-        guard let valid = link else {
-            // cooldown 拒绝重建时由调用方清理陈旧 buffer, 防止恢复后滚动跳变
-            return rebuild()
-        }
-        if !CVDisplayLinkIsRunning(valid) {
+        if let valid = link {
+            if CVDisplayLinkIsRunning(valid) { return true }
             markStarted()
-            if CVDisplayLinkStart(valid) != kCVReturnSuccess {
-                rebuild()
-            }
+            if CVDisplayLinkStart(valid) == kCVReturnSuccess { return true }
         }
-        return true
+        return rebuild() && isRunning
     }
 
     func stop() {
