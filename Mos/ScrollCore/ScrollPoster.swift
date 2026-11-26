@@ -461,7 +461,13 @@ private extension ScrollPoster {
         let residualX = buffer.x - current.x
         let residualMagnitude = max(residualY.magnitude, residualX.magnitude)
         let deadZone = config.deadZone
-        if manualInputEnded && residualMagnitude > deadZone {
+        let frameDeadZone = deadZone * timing.scale
+        let outputMagnitude = max(abs(shiftedValue.y), abs(shiftedValue.x))
+        if config.usesVirtualTrackpad && manualInputEnded
+            && outputMagnitude <= frameDeadZone && max(abs(frame.y), abs(frame.x)) <= frameDeadZone {
+            // Holding stationary contacts until the CGEvent tail converges delays the native scroll's release.
+            pendingStopPhase = .TrackingEnd
+        } else if manualInputEnded && residualMagnitude > deadZone {
             if !momentumActive {
                 perform(ScrollPhase.shared.onMomentumStart(), emitTargetImmediately: false)
                 momentumActive = true
@@ -481,19 +487,17 @@ private extension ScrollPoster {
             }
         }
         // 发送滚动结果 - 只有当输出值超过死区阈值时才发送
-        let frameDeadZone = deadZone * timing.scale
-        let outputMagnitude = max(abs(shiftedValue.y), abs(shiftedValue.x))
         if outputMagnitude > frameDeadZone {
             if ScrollMonitorTrace.isRecording {
                 ScrollMonitorTrace.shared.recordFrame(y: shiftedValue.y, x: shiftedValue.x)
             }
             postFrame(shiftedValue)
-        } else if config.usesVirtualTrackpad {
+        } else if config.usesVirtualTrackpad && pendingStopPhase == nil {
             // A contact remains active between nonzero motion frames.
             postFrame((y: 0, x: 0))
         }
 
-        if let scheduled = momentumEndScheduledTime, momentumActive {
+        if pendingStopPhase == nil, let scheduled = momentumEndScheduledTime, momentumActive {
             if now >= scheduled {
                 momentumEndScheduledTime = nil
                 momentumActive = false
