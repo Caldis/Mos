@@ -46,6 +46,12 @@ final class ScrollMonitorTrace {
         recordScroll(event, stage: .posted, deliveryTarget: target)
     }
 
+    /// Native trackpad events carry the system's target at the annotated session tap.
+    func recordVirtualTrackpadOutput(_ event: CGEvent) {
+        let pid = event.getIntegerValueField(.eventTargetUnixProcessID)
+        recordScroll(event, stage: .posted, deliveryTarget: pid > 0 ? .process(pid) : nil)
+    }
+
     private func recordScroll(
         _ event: CGEvent, stage: ScrollMonitorStage,
         captureTap: CGEventTapLocation? = nil, deliveryTarget: MonitorDeliveryTarget? = nil

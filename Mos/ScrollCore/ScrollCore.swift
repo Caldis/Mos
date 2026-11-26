@@ -83,6 +83,9 @@ class ScrollCore: ScrollActionPort {
             return Unmanaged.passUnretained(event)
         }
         if ScrollCore.shared.isVirtualTrackpadOutput(event) {
+            if ScrollMonitorTrace.isRecording {
+                ScrollMonitorTrace.shared.recordVirtualTrackpadOutput(event)
+            }
             return Unmanaged.passUnretained(event)
         }
         // 适配器已在 session 层处理过该事件 (放行的未平滑轴); 未激活适配器时只读取一个布尔值
