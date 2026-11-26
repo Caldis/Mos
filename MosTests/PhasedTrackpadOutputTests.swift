@@ -85,6 +85,58 @@ final class PhasedTrackpadOutputTests: XCTestCase {
 
     // MARK: - 事件字段
 
+    func testTrackpadCompanionsIncludeSeriesBoundariesAndTrackingDeltas() throws {
+        let sender: Int64 = 4_295_510_148
+        let began = try XCTUnwrap(PhasedTrackpadSink.makeScroll(y: 0, x: 0, phase: 1, momentum: 0, sender: sender))
+        let changed = try XCTUnwrap(PhasedTrackpadSink.makeScroll(y: -8, x: 3, phase: 2, momentum: 0, sender: sender))
+        let ended = try XCTUnwrap(PhasedTrackpadSink.makeScroll(y: 0, x: 0, phase: 4, momentum: 0, sender: sender))
+        let momentum = try XCTUnwrap(PhasedTrackpadSink.makeScroll(y: -5, x: 0, phase: 0, momentum: 1, sender: sender))
+        changed.location = CGPoint(x: 120, y: 300)
+        changed.flags = .maskAlternate
+        changed.timestamp = 123_000
+
+        var companions = TrackpadGestureCompanions()
+        let start = companions.events(for: began)
+        let startBoundary = try XCTUnwrap(start.dropFirst().first)
+        let update = try XCTUnwrap(companions.events(for: changed).first)
+        let end = companions.events(for: ended)
+        let endGesture = try XCTUnwrap(end.first)
+        let endBoundary = try XCTUnwrap(end.last)
+        XCTAssertEqual((start + [update] + end).map { $0.type.rawValue }, [29, 29, 29, 29, 29, 29])
+        XCTAssertEqual(start.map { $0.getIntegerValueField(TrackpadEventField.gestureSubtype) }, [6, 61, 6])
+        XCTAssertEqual(start.map { $0.getIntegerValueField(TrackpadEventField.gesturePhase) }, [128, 0, 1])
+        XCTAssertEqual(startBoundary.getIntegerValueField(CGEventField(rawValue: 117)!), 6)
+        XCTAssertEqual(update.getIntegerValueField(TrackpadEventField.gesturePhase), 2)
+        XCTAssertEqual(update.getDoubleValueField(CGEventField(rawValue: 118)!), 3)
+        XCTAssertEqual(update.getDoubleValueField(TrackpadEventField.gestureDY), -8)
+        XCTAssertEqual(update.getIntegerValueField(CGEventField(rawValue: 135)!), 1)
+        XCTAssertEqual(update.getIntegerValueField(TrackpadEventField.sender), sender)
+        XCTAssertEqual(update.location, changed.location)
+        XCTAssertEqual(update.flags, changed.flags)
+        XCTAssertEqual(update.timestamp, changed.timestamp)
+        XCTAssertEqual(changed.getDoubleValueField(.scrollWheelEventPointDeltaAxis1), -8)
+        XCTAssertEqual(end.map { $0.getIntegerValueField(TrackpadEventField.gestureSubtype) }, [6, 62])
+        XCTAssertEqual(endGesture.getIntegerValueField(TrackpadEventField.gesturePhase), 4)
+        XCTAssertEqual(endBoundary.getIntegerValueField(CGEventField(rawValue: 117)!), 6)
+        XCTAssertTrue(companions.events(for: momentum).isEmpty)
+        XCTAssertTrue(companions.cancel().isEmpty)
+    }
+
+    func testTrackpadCompanionsRestartAfterCancellation() throws {
+        let changed = try XCTUnwrap(PhasedTrackpadSink.makeScroll(y: -8, x: 0, phase: 2, momentum: 0, sender: 42))
+        var companions = TrackpadGestureCompanions()
+        let first = companions.events(for: changed)
+        let cancelled = companions.cancel()
+        let cancelGesture = try XCTUnwrap(cancelled.first)
+        XCTAssertEqual(cancelled.map { $0.getIntegerValueField(TrackpadEventField.gestureSubtype) }, [6, 62])
+        XCTAssertEqual(cancelGesture.getIntegerValueField(TrackpadEventField.gesturePhase), 8)
+        XCTAssertEqual(cancelGesture.getDoubleValueField(TrackpadEventField.gestureDY), 0)
+        XCTAssertTrue(companions.cancel().isEmpty)
+        let next = companions.events(for: changed)
+        XCTAssertEqual(next.map { $0.getIntegerValueField(TrackpadEventField.gesturePhase) }, [128, 0, 1])
+        XCTAssertEqual(first.last?.getDoubleValueField(TrackpadEventField.gestureDY), -8)
+    }
+
     func testScrollEventKeepsPointDeltaAfterLineDelta() throws {
         let event = try XCTUnwrap(PhasedTrackpadSink.makeScroll(y: 3, x: -2, phase: 2, momentum: 0, sender: 42))
         XCTAssertEqual(event.getIntegerValueField(.scrollWheelEventPointDeltaAxis1), 3)
@@ -92,6 +144,21 @@ final class PhasedTrackpadOutputTests: XCTestCase {
         XCTAssertEqual(event.getIntegerValueField(.scrollWheelEventDeltaAxis1), 1)
         XCTAssertEqual(event.getIntegerValueField(.scrollWheelEventDeltaAxis2), -1)
         XCTAssertEqual(event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1), 0.3, accuracy: 0.001)
+    }
+
+    func testAddingDeviceFieldsToACopyPreservesScrollDeltasAndPhase() throws {
+        let input = try XCTUnwrap(PhasedTrackpadSink.makeScroll(y: 17, x: -3, phase: 2, momentum: 0, sender: 42))
+        let output = try XCTUnwrap(input.copy())
+        TrackpadEventField.setDeviceFields(output, sender: 4_295_510_148, y: 17, x: -3)
+
+        XCTAssertEqual(input.getIntegerValueField(TrackpadEventField.sender), 42)
+        XCTAssertEqual(output.getIntegerValueField(TrackpadEventField.sender), 4_295_510_148)
+        XCTAssertEqual(output.getDoubleValueField(TrackpadEventField.rawY), 17)
+        XCTAssertEqual(output.getDoubleValueField(TrackpadEventField.acceleratedX), -3)
+        XCTAssertEqual(output.getIntegerValueField(.scrollWheelEventPointDeltaAxis1), 17)
+        XCTAssertEqual(output.getIntegerValueField(.scrollWheelEventPointDeltaAxis2), -3)
+        XCTAssertEqual(output.getIntegerValueField(.scrollWheelEventScrollPhase), 2)
+        XCTAssertEqual(output.getIntegerValueField(.scrollWheelEventMomentumPhase), 0)
     }
 
     func testScrollEventCarriesMirroringFields() throws {

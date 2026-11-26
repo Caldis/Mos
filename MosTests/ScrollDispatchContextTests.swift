@@ -48,6 +48,17 @@ final class ScrollDispatchContextTests: XCTestCase {
         XCTAssertNotNil(snapshot, "after capture, snapshot should be available")
     }
 
+    func testChangingTargetPreservesQueuedWheelFrames() throws {
+        let event = try XCTUnwrap(makeScrollEvent())
+        sut.capture(event: event, targetPID: 41)
+        let initial = try XCTUnwrap(sut.preparePostingSnapshot())
+        sut.capture(event: event, targetPID: 42)
+        let next = try XCTUnwrap(sut.preparePostingSnapshot())
+        XCTAssertEqual(initial.targetPID, 41)
+        XCTAssertEqual(next.targetPID, 42)
+        XCTAssertEqual(next.generation, initial.generation)
+    }
+
     // MARK: - preparePostingSnapshot: 无 capture 时
 
     func testPreparePostingSnapshot_withoutCapture_returnsNil() {

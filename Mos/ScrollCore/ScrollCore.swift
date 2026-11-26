@@ -41,6 +41,12 @@ class ScrollCore: ScrollActionPort {
     // 例外应用数据
     var application: Application?
     var currentApplication: Application? // 用于区分按下热键及抬起时的作用目标
+    private var retainsTrackpadIdentity = false
+    private lazy var observeTrackpadIdentityOptions: Void = {
+        Options.shared.observe([.scroll, .application]) { [weak self] _ in
+            self?.syncTrackpadIdentity()
+        }
+    }()
     // 拦截层
     var scrollEventInterceptor: Interceptor?
     var hotkeyEventInterceptor: Interceptor?
@@ -230,6 +236,28 @@ class ScrollCore: ScrollActionPort {
         return Unmanaged.passUnretained(event)
     }
     
+    private func syncTrackpadIdentity() {
+        guard #available(macOS 15.0, *) else { return }
+        let options = Options.shared
+        let applications = options.application.applications
+        let shouldRetain = isActive && (
+            (options.scroll.smooth && options.scroll.smoothSimTrackpad)
+            || (0..<applications.count).contains { index in
+                guard let app = applications.get(by: index), !app.inherit else { return false }
+                return app.scroll.smooth && app.scroll.smoothSimTrackpad
+            }
+        )
+        guard shouldRetain != retainsTrackpadIdentity else { return }
+        retainsTrackpadIdentity = shouldRetain
+        let identity = VirtualTrackpadIdentity.shared
+        if shouldRetain {
+            identity.retain()
+        } else {
+            ScrollPoster.shared.endTrackpadSenderSession()
+            ScrollDispatchContext.shared.afterPendingAdapterOutput { identity.release() }
+        }
+    }
+
     // MARK: - HID++ 滚动热键处理
 
     /// 跟踪当前由哪个 HID++ 按键码激活了热键状态
@@ -466,6 +494,8 @@ class ScrollCore: ScrollActionPort {
             // 初始化滚动事件发送器
             ScrollPoster.shared.create()
             ScrollPoster.shared.startKeeper()
+            _ = observeTrackpadIdentityOptions
+            syncTrackpadIdentity()
             // 应用滚动适配器: 只在目标应用运行时创建 session 层 tap
             ScrollAdapterCenter.shared.start()
         } catch {
@@ -494,6 +524,7 @@ class ScrollCore: ScrollActionPort {
         // 停止滚动事件发送器
         ScrollPoster.shared.stop()
         ScrollPoster.shared.stopKeeper()
+        syncTrackpadIdentity()
         // 停止截取事件
         ScrollAdapterCenter.shared.stop()
         scrollEventInterceptor?.stop()

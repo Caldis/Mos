@@ -76,6 +76,7 @@ class ScrollPoster {
     // 滚动配置快照: 主线程在 update 时捕获, 帧时钟线程只读, 避免热路径跨线程读 Options/ScrollCore
     private struct ConfigSnapshot {
         var simTrackpadEnabled: Bool
+        var trackpadSender: Int64?
         var deadZone: Double
         var normalizesTiming = false
     }
@@ -241,6 +242,15 @@ extension ScrollPoster {
             reset()
         }
     }
+    func endTrackpadSenderSession() {
+        guard clockSessionActive, let snapshot = dispatchContext.preparePostingSnapshot(),
+              case .process = snapshot.route else { return }
+        os_unfair_lock_lock(&stateLock)
+        let hasSender = config.trackpadSender != nil
+        os_unfair_lock_unlock(&stateLock)
+        if hasSender { stop() }
+    }
+
     // 停止事件发送器
     func stop(_ requestedPhase: Phase = Phase.MomentumEnd) {
         clockSessionActive = false
@@ -530,8 +540,13 @@ private extension ScrollPoster {
         } else {
             simTrackpad = Options.shared.scroll.smoothSimTrackpad
         }
+        // Keep the sender stable even if device registration completes during a scroll.
+        let sender = simTrackpad
+            ? (clockSessionActive && config.simTrackpadEnabled ? config.trackpadSender : VirtualTrackpadIdentity.shared.sender)
+            : nil
         config = ConfigSnapshot(
             simTrackpadEnabled: simTrackpad,
+            trackpadSender: sender,
             deadZone: Options.shared.scroll.deadZone,
             normalizesTiming: clockSessionActive ? config.normalizesTiming : Options.shared.scrollNormalizeTiming
         )
@@ -570,11 +585,18 @@ private extension ScrollPoster {
         snapshot.event.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: v.x)
         // 是否连续滚动: 始终为 1.0
         snapshot.event.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
+        if let sender = config.trackpadSender {
+            TrackpadEventField.setDeviceFields(
+                snapshot.event, sender: sender,
+                y: snapshot.event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1),
+                x: snapshot.event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)
+            )
+        }
         ScrollUtils.shared.markSyntheticSmoothEvent(snapshot.event)
         // 通过 CGEventPostToPid 直投目标进程:
         // 不依赖 proxy (消除崩溃), 不经过 tap 链重新路由 (动量不跟随光标)
         // ref: @shichangone MR: https://github.com/Caldis/Mos/pull/523, issue #868
-        dispatchContext.enqueue(snapshot)
+        dispatchContext.enqueue(snapshot, includesGestureCompanions: config.simTrackpadEnabled)
         ScrollPhase.shared.didDeliverFrame()
         return true
     }

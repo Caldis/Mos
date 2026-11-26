@@ -11,9 +11,8 @@ import os
 import CoreHID
 #endif
 
-/// 全部适配器共用的一台虚拟 Magic Trackpad 2。设备只提供 sender 身份, 不发送触摸报文。
-/// 适配器激活时 retain, 停用时 release; 计数归零时销毁设备。
-/// retain / release 在主线程调用, sender 可在任意线程读取
+/// Provides a shared Magic Trackpad 2 sender for phased CGEvents.
+/// Users of the device retain and release it on the main thread. The sender is safe to read on any thread.
 final class VirtualTrackpadIdentity {
 
     static let shared = VirtualTrackpadIdentity()

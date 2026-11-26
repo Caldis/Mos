@@ -6,6 +6,10 @@
 
 import Cocoa
 
+extension CGEventType {
+    static let appKitGesture = CGEventType(rawValue: UInt32(NSEvent.EventType.gesture.rawValue))
+}
+
 /// 触控板滚动事件使用的私有 CGEvent 字段编号
 enum TrackpadEventField {
     static let sender = CGEventField(rawValue: 87)!
@@ -17,6 +21,14 @@ enum TrackpadEventField {
     static let acceleratedY = CGEventField(rawValue: 176)!
     static let rawX = CGEventField(rawValue: 177)!
     static let rawY = CGEventField(rawValue: 178)!
+
+    static func setDeviceFields(_ event: CGEvent, sender: Int64, y: Double, x: Double) {
+        event.setDoubleValueField(acceleratedY, value: y)
+        event.setDoubleValueField(acceleratedX, value: x)
+        event.setDoubleValueField(rawY, value: y)
+        event.setDoubleValueField(rawX, value: x)
+        event.setIntegerValueField(Self.sender, value: sender)
+    }
 }
 
 /// phased 手势状态机。帧位移按整数像素输出, 不足 1 像素的部分结转到下一帧; 不产生惯性事件
@@ -166,18 +178,14 @@ final class PhasedTrackpadSink: ScrollOutputSink {
         event.setIntegerValueField(.scrollWheelEventPointDeltaAxis2, value: x)
         event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: Double(y) / 10)
         event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: Double(x) / 10)
-        event.setDoubleValueField(TrackpadEventField.acceleratedY, value: Double(y))
-        event.setDoubleValueField(TrackpadEventField.acceleratedX, value: Double(x))
-        event.setDoubleValueField(TrackpadEventField.rawY, value: Double(y))
-        event.setDoubleValueField(TrackpadEventField.rawX, value: Double(x))
-        event.setIntegerValueField(TrackpadEventField.sender, value: sender)
+        TrackpadEventField.setDeviceFields(event, sender: sender, y: Double(y), x: Double(x))
         ScrollUtils.shared.markSyntheticSmoothEvent(event)
         return event
     }
 
     /// 真实触控板的每个滚动事件都伴随一个 type 29 手势事件 (滚动子类型 6)
     static func makeGesture(y: Int64, x: Int64, phase: Int64, sender: Int64) -> CGEvent? {
-        guard let event = CGEvent(source: nil), let gestureType = CGEventType(rawValue: 29) else { return nil }
+        guard let event = CGEvent(source: nil), let gestureType = CGEventType.appKitGesture else { return nil }
         event.type = gestureType
         event.setIntegerValueField(TrackpadEventField.gestureSubtype, value: 6)
         event.setIntegerValueField(TrackpadEventField.gesturePhase, value: phase)

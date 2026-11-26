@@ -10300,54 +10300,54 @@
       }
     },
     "W2z-NX-9UO.title" : {
-      "comment" : "Class = \"NSTextFieldCell\"; title = \"Adds gesture and momentum phases for trackpad compatibility. Locks scroll duration and may change inertia\"; ObjectID = \"W2z-NX-9UO\";",
+      "comment" : "Class = \"NSTextFieldCell\"; title = \"Adds gesture and momentum phases for trackpad compatibility\"; ObjectID = \"W2z-NX-9UO\";",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přidává fáze gest a setrvačnosti pro kompatibilitu s trackpadem. Uzamkne dobu posuvu a může změnit setrvačnost"
+            "value" : "Přidává fáze gest a setrvačnosti pro kompatibilitu s trackpadem"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ergänzt Gesten- und Trägheitsphasen für die Trackpad-Kompatibilität. Fixiert die Scroll-Dauer und kann das Ausrollen verändern"
+            "value" : "Ergänzt Gesten- und Trägheitsphasen für die Trackpad-Kompatibilität"
           }
         },
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Προσθέτει φάσεις χειρονομίας και αδράνειας για συμβατότητα με trackpad. Κλειδώνει τη διάρκεια κύλισης και μπορεί να αλλάξει την αδράνεια"
+            "value" : "Προσθέτει φάσεις χειρονομίας και αδράνειας για συμβατότητα με trackpad"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Adds gesture and momentum phases for trackpad compatibility. Locks scroll duration and may change inertia"
+            "value" : "Adds gesture and momentum phases for trackpad compatibility"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajoute des phases de geste et d’inertie pour la compatibilité avec le trackpad. Fixe la durée du défilement et peut modifier l’inertie"
+            "value" : "Ajoute des phases de geste et d’inertie pour la compatibilité avec le trackpad"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ジェスチャーと慣性のフェーズを追加し、トラックパッド互換性を高めます。スクロール時間が固定され、慣性が変わる場合があります"
+            "value" : "ジェスチャーと慣性のフェーズを追加し、トラックパッド互換性を高めます"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "트랙패드 호환성을 위해 제스처 및 관성 단계를 추가합니다. 스크롤 시간이 고정되고 관성이 달라질 수 있습니다"
+            "value" : "트랙패드 호환성을 위해 제스처 및 관성 단계를 추가합니다"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавляет фазы жеста и инерции для совместимости с трекпадом. Фиксирует длительность прокрутки и может изменить инерцию"
+            "value" : "Добавляет фазы жеста и инерции для совместимости с трекпадом"
           }
         },
         "th" : {
@@ -10359,37 +10359,37 @@
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trackpad uyumluluğu için hareket ve atalet aşamaları ekler. Kaydırma süresini sabitler ve ataleti değiştirebilir"
+            "value" : "Trackpad uyumluluğu için hareket ve atalet aşamaları ekler"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Додає фази жесту й інерції для сумісності з трекпадом. Фіксує тривалість прокручування і може змінювати інерцію"
+            "value" : "Додає фази жесту й інерції для сумісності з трекпадом"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "为平滑滚动加上手势阶段和惯性标记，帮助部分应用识别触控板滚动。开启时固定滚动时长，惯性表现可能变化"
+            "value" : "为平滑滚动加上手势阶段和惯性标记，帮助部分应用识别触控板滚动"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動。開啟時固定捲動時間，慣性表現可能改變"
+            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動"
           }
         },
         "zh-Hant-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動。開啟時固定捲動時間，慣性表現可能改變"
+            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動。開啟時固定捲動時間，慣性表現可能改變"
+            "value" : "為平滑捲動加上手勢階段和慣性標記，協助部分 App 識別觸控板捲動"
           }
         }
       }

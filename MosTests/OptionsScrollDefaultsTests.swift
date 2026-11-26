@@ -89,6 +89,26 @@ final class OptionsScrollDefaultsTests: XCTestCase {
         XCTAssertFalse(OptionItem.Scroll.readNormalizeTiming(from: isolatedDefaults))
     }
 
+    func testReadOptionsRecoversTheUnlockedDurationOfALegacyAppPreset() throws {
+        let originalApplications = Options.shared.application.applications
+        defer { Options.shared.withReadingLockForTests { Options.shared.application.applications = originalApplications } }
+        let app = Application(path: "/Applications/Trackpad Fixture.app")
+        Options.shared.withReadingLockForTests {
+            app.inherit = false
+            app.scroll.smoothSimTrackpad = true
+            app.scroll.duration = 4.75
+            app.scroll.durationBeforeSimTrackpadLock = 3.25
+        }
+        snapshotUserDefaultsAndSet(OptionItem.General.OptionsExist, to: "optionsExist")
+        snapshotUserDefaultsAndSet(OptionItem.Application.Applications, to: try JSONEncoder().encode([app]))
+        Options.shared.readOptions()
+
+        let restored = try XCTUnwrap(Options.shared.application.applications.get(by: app.path))
+        XCTAssertEqual(restored.scroll.duration, 3.25)
+        XCTAssertTrue(restored.scroll.smoothSimTrackpad)
+        XCTAssertNil(restored.scroll.durationBeforeSimTrackpadLock)
+    }
+
     // MARK: - setUp / tearDown
 
     override func setUp() {
