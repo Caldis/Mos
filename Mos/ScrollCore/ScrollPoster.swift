@@ -596,7 +596,7 @@ private extension ScrollPoster {
         // 通过 CGEventPostToPid 直投目标进程:
         // 不依赖 proxy (消除崩溃), 不经过 tap 链重新路由 (动量不跟随光标)
         // ref: @shichangone MR: https://github.com/Caldis/Mos/pull/523, issue #868
-        dispatchContext.enqueue(snapshot)
+        dispatchContext.enqueue(snapshot, includesGestureCompanions: config.simTrackpadEnabled)
         ScrollPhase.shared.didDeliverFrame()
         return true
     }

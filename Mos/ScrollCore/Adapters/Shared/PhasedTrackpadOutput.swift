@@ -6,6 +6,10 @@
 
 import Cocoa
 
+extension CGEventType {
+    static let appKitGesture = CGEventType(rawValue: UInt32(NSEvent.EventType.gesture.rawValue))
+}
+
 /// 触控板滚动事件使用的私有 CGEvent 字段编号
 enum TrackpadEventField {
     static let sender = CGEventField(rawValue: 87)!
@@ -181,7 +185,7 @@ final class PhasedTrackpadSink: ScrollOutputSink {
 
     /// 真实触控板的每个滚动事件都伴随一个 type 29 手势事件 (滚动子类型 6)
     static func makeGesture(y: Int64, x: Int64, phase: Int64, sender: Int64) -> CGEvent? {
-        guard let event = CGEvent(source: nil), let gestureType = CGEventType(rawValue: 29) else { return nil }
+        guard let event = CGEvent(source: nil), let gestureType = CGEventType.appKitGesture else { return nil }
         event.type = gestureType
         event.setIntegerValueField(TrackpadEventField.gestureSubtype, value: 6)
         event.setIntegerValueField(TrackpadEventField.gesturePhase, value: phase)

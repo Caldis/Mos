@@ -41,11 +41,15 @@ final class ScrollDispatchContext {
         var route: Route = .process
         /// 最近一次适配器会话的输出端, 会话上下文清理后仍保留, 用于结束其进行中的手势
         var lastSink: ScrollOutputSink?
+        var mayHaveGestureSeries = false
     }
 
     private var state = SnapshotState()
     private var lock = os_unfair_lock_s()
     private let postQueue = DispatchQueue(label: "me.caldis.mos.scrollposter.post", qos: .userInteractive)
+    // The active series belongs to the process and sender that received its first companion.
+    private var gestureCompanions = TrackpadGestureCompanions()
+    private var gestureDestination: (pid: pid_t, sender: Int64)?
     // TTL 仅作为 enqueue 投递时的兜底安全网, 不用于快照创建门控
     // 需覆盖最长惯性减速阶段 (通常 1-3s, 极端 ~5s)
 #if DEBUG
@@ -93,6 +97,7 @@ final class ScrollDispatchContext {
     func advanceGeneration() {
         os_unfair_lock_lock(&lock)
         state.generation &+= 1
+        cancelGestureSeriesLocked()
         os_unfair_lock_unlock(&lock)
     }
 
@@ -107,6 +112,7 @@ final class ScrollDispatchContext {
     func invalidateAll() {
         os_unfair_lock_lock(&lock)
         state.generation &+= 1
+        cancelGestureSeriesLocked()
         state.eventTemplate = nil
         state.targetPID = 0
         state.updatedAt = 0.0
@@ -125,9 +131,14 @@ final class ScrollDispatchContext {
         return snapshot
     }
 
-    func enqueue(_ snapshot: PostingSnapshot) {
+    func enqueue(_ snapshot: PostingSnapshot, includesGestureCompanions: Bool = false) {
         postQueue.async { [self] in
-            guard self.isDeliverable(snapshot) else { return }
+            guard self.isDeliverable(snapshot, mayBeginGestureSeries: includesGestureCompanions) else { return }
+            if includesGestureCompanions {
+                self.postGestureCompanions(for: snapshot)
+            } else {
+                self.cancelGestureSeries()
+            }
             // 使用 CGEventPostToPid 直接投递到目标进程:
             // 1. 不依赖 proxy → 无生命周期崩溃 (issue #868)
             // 2. 不经过 session event tap 链路重新路由 → 动量阶段光标移动不会
@@ -142,10 +153,37 @@ final class ScrollDispatchContext {
         }
     }
 
+    private func postGestureCompanions(for snapshot: PostingSnapshot) {
+        let pid = snapshot.targetPID
+        let sender = snapshot.event.getIntegerValueField(TrackpadEventField.sender)
+        if let destination = gestureDestination, destination.pid != pid || destination.sender != sender {
+            cancelGestureSeries()
+        }
+        for event in gestureCompanions.events(for: snapshot.event) {
+            event.postToPid(pid)
+        }
+        gestureDestination = gestureCompanions.isActive ? (pid, sender) : nil
+    }
+
+    private func cancelGestureSeries() {
+        guard let destination = gestureDestination else { return }
+        gestureDestination = nil
+        for event in gestureCompanions.cancel() {
+            event.postToPid(destination.pid)
+        }
+    }
+
+    private func cancelGestureSeriesLocked() {
+        guard state.mayHaveGestureSeries else { return }
+        state.mayHaveGestureSeries = false
+        postQueue.async { [self] in self.cancelGestureSeries() }
+    }
+
     /// 适配器路由的一帧位移。与 enqueue 使用同一队列与同一套代次/TTL 校验, 保证帧顺序
     func enqueueAdapterFrame(_ snapshot: PostingSnapshot, sink: ScrollOutputSink, y: Double, x: Double) {
         postQueue.async { [self] in
             guard self.isDeliverable(snapshot) else { return }
+            self.cancelGestureSeries()
             sink.frame(y: y, x: x, at: snapshot.event.location)
             self.recordPostedFrame()
         }
@@ -178,11 +216,12 @@ final class ScrollDispatchContext {
     }
 
     /// 代次与 TTL 校验, 进程路由与适配器路由共用
-    private func isDeliverable(_ snapshot: PostingSnapshot) -> Bool {
+    private func isDeliverable(_ snapshot: PostingSnapshot, mayBeginGestureSeries: Bool = false) -> Bool {
         os_unfair_lock_lock(&lock)
         defer { os_unfair_lock_unlock(&lock) }
         let validGeneration = snapshot.generation == state.generation
         let validTTL = CFAbsoluteTimeGetCurrent() - snapshot.capturedAt <= eventTTL
+        if validGeneration && validTTL && mayBeginGestureSeries { state.mayHaveGestureSeries = true }
 #if DEBUG
         if !validGeneration {
             droppedFramesByGeneration &+= 1
