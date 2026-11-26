@@ -8,3 +8,12 @@ part of the Mos app target.
   components outside the full Xcode test target.
 
 Run scripts from the repository root unless a script says otherwise.
+
+The button-core lifecycle harness uses test doubles for event taps and options;
+it does not install global event taps or post input events:
+
+```bash
+mkdir -p .cache
+swiftc Mos/ButtonCore/ButtonCore.swift tools/regression/button-core-lifecycle-tests.swift -o .cache/button-core-lifecycle-tests
+.cache/button-core-lifecycle-tests
+```
