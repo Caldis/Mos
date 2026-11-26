@@ -107,32 +107,6 @@ final class EventMonitorTests: XCTestCase {
         XCTAssertFalse(MonitorPresentation.export(postedEvent, origin: postedEvent.time).contains("postToPid"))
     }
 
-    func testNativeVirtualTrackpadEventsProduceOutputRowsWithTheSystemTarget() throws {
-        let trace = ScrollMonitorTrace()
-        trace.setRecording(true)
-        trace.recordFrame(y: 12, x: 0)
-        let event = try scrollEvent()
-        event.setIntegerValueField(.eventTargetUnixProcessID, value: 81)
-        event.setIntegerValueField(.scrollWheelEventScrollPhase, value: 2)
-        event.timestamp = 4_012_345_678
-        trace.recordVirtualTrackpadOutput(event)
-
-        event.setIntegerValueField(.eventTargetUnixProcessID, value: 0)
-        trace.recordVirtualTrackpadOutput(event)
-
-        var events: [MonitorEvent] = []
-        trace.drain(into: &events)
-        let output = events.filter { $0.stage == .posted }
-        XCTAssertEqual(events.map(\.stage), [.frame, .posted, .posted])
-        let targeted = try scrollSample(output.first)
-        XCTAssertNil(targeted.captureTap)
-        XCTAssertEqual(targeted.deliveryTarget, .process(81))
-        XCTAssertEqual(targeted.fields?.quartz.timestamp, 4_012_345_678)
-        XCTAssertEqual(targeted.delta.y, 12)
-        XCTAssertEqual(try XCTUnwrap(output.first.flatMap(MonitorTimelineSample.init(event:))).phase, 2)
-        XCTAssertNil(try scrollSample(output.last).deliveryTarget)
-    }
-
     func testTracePauseOverflowAndClearStayWithinTheRecorder() throws {
         let trace = ScrollMonitorTrace(pendingLimit: 2)
         var events: [MonitorEvent] = []

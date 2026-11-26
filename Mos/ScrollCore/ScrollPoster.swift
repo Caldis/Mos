@@ -46,7 +46,6 @@ class ScrollPoster {
     private var clockSessionActive = false
     private var screenClockUnavailable = false
     private var inputLocation: CGPoint?
-    private var virtualTrackpadTargetPID: pid_t?
     // Match callbacks and queued stops against the active clock and input under stateLock.
     private var clockRevision: UInt64 = 0
     private var inputRevision: UInt64 = 0
@@ -76,11 +75,12 @@ class ScrollPoster {
     private let dispatchContext = ScrollDispatchContext.shared
     // 滚动配置快照: 主线程在 update 时捕获, 帧时钟线程只读, 避免热路径跨线程读 Options/ScrollCore
     private struct ConfigSnapshot {
+        var simTrackpadEnabled: Bool
+        var trackpadSender: Int64?
         var deadZone: Double
         var normalizesTiming = false
-        var usesVirtualTrackpad = false
     }
-    private var config = ConfigSnapshot(deadZone: 1.0)
+    private var config = ConfigSnapshot(simTrackpadEnabled: false, deadZone: 1.0)
     // 主线程访问, 无需锁
     var isAvailable: Bool {
         if clock.isAvailable { return true }
@@ -92,16 +92,9 @@ class ScrollPoster {
 extension ScrollPoster {
     func update(event: CGEvent, duration: Double, y: Double, x: Double, speed: Double, amplification: Double = 1,
                 route: ScrollDispatchContext.Route = .process, targetPID: pid_t? = nil) -> Self {
-        let virtualTarget = route.usesVirtualTrackpad
-            ? (targetPID ?? pid_t(event.getIntegerValueField(.eventTargetUnixProcessID)))
-            : nil
-        if clockSessionActive && virtualTrackpadTargetPID != virtualTarget {
-            stop(.TrackingEnd)
-        }
         guard dispatchContext.capture(event: event, route: route, targetPID: targetPID) else {
             return self
         }
-        virtualTrackpadTargetPID = virtualTarget
         if !clockSessionActive && inputLocation == nil {
             let kind = requestedClockKind
             if kind == .screen || (kind == .displayLink && Options.shared.scrollNormalizeTiming) {
@@ -113,7 +106,7 @@ extension ScrollPoster {
         inputRevision &+= 1
         frameStopScheduled = !clockSessionActive
         // 捕获本次手势的配置快照 (主线程读 Options/ScrollCore, 帧时钟线程只读)
-        captureConfigSnapshotLocked(usesVirtualTrackpad: route.usesVirtualTrackpad)
+        captureConfigSnapshotLocked()
         // 更新滚动配置
         self.duration = duration
         // 更新滚动数据
@@ -178,7 +171,6 @@ extension ScrollPoster {
     func reset() {
         clockSessionActive = false
         inputLocation = nil
-        virtualTrackpadTargetPID = nil
         dispatchContext.enqueueAdapterEnd()
         dispatchContext.invalidateAll()
         os_unfair_lock_lock(&stateLock)
@@ -194,10 +186,10 @@ extension ScrollPoster {
         captureConfigSnapshotLocked()
         os_unfair_lock_unlock(&stateLock)
     }
-    var configSnapshotForTests: (deadZone: Double, normalizesTiming: Bool, usesVirtualTrackpad: Bool) {
+    var configSnapshotForTests: (simTrackpadEnabled: Bool, deadZone: Double, normalizesTiming: Bool) {
         os_unfair_lock_lock(&stateLock)
         defer { os_unfair_lock_unlock(&stateLock) }
-        return (config.deadZone, config.normalizesTiming, config.usesVirtualTrackpad)
+        return (config.simTrackpadEnabled, config.deadZone, config.normalizesTiming)
     }
 
     var frameClockKindForTests: ScrollFrameClockKind { clock.kind }
@@ -250,15 +242,19 @@ extension ScrollPoster {
             reset()
         }
     }
-    func stopVirtualTrackpadOutput() {
-        if virtualTrackpadTargetPID != nil { stop(.TrackingEnd) }
+    func endTrackpadSenderSession() {
+        guard clockSessionActive, let snapshot = dispatchContext.preparePostingSnapshot(),
+              case .process = snapshot.route else { return }
+        os_unfair_lock_lock(&stateLock)
+        let hasSender = config.trackpadSender != nil
+        os_unfair_lock_unlock(&stateLock)
+        if hasSender { stop() }
     }
 
     // 停止事件发送器
     func stop(_ requestedPhase: Phase = Phase.MomentumEnd) {
         clockSessionActive = false
         inputLocation = nil
-        virtualTrackpadTargetPID = nil
         os_unfair_lock_lock(&stateLock)
         inputRevision &+= 1
         frameStopScheduled = true
@@ -269,17 +265,29 @@ extension ScrollPoster {
         dispatchContext.advanceGeneration()
         os_unfair_lock_lock(&stateLock)
 
-        if requestedPhase == .MomentumEnd {
-            _ = ScrollPhase.shared.onMomentumFinish()
+        // 判断是否启用触控板模拟 (读 update 时主线程捕获的快照, 避免跨线程读)
+        let enableSimTrackpad = config.simTrackpadEnabled
+        let plan: ScrollPhase.TransitionPlan
+        if requestedPhase == Phase.MomentumEnd {
+            plan = ScrollPhase.shared.onMomentumFinish()
         } else {
-            _ = ScrollPhase.shared.onManualInputEnded()
+            plan = ScrollPhase.shared.onManualInputEnded()
         }
 
-        if let snapshot = dispatchContext.preparePostingSnapshot(),
-           case .process = snapshot.route,
-           ScrollUtils.shared.isEventTargetingChrome(snapshot.event),
-           let phaseValues = phaseValues(for: .TrackingEnd) {
-            _ = post(snapshot, (y: 0.0, x: 0.0), phaseOverride: phaseValues)
+        // 发送结束事件
+        if enableSimTrackpad {
+            perform(plan, emitTargetImmediately: true)
+        } else {
+            if let snapshot = dispatchContext.preparePostingSnapshot(),
+               ScrollUtils.shared.isEventTargetingChrome(snapshot.event),
+               let phaseValues = phaseValues(for: .TrackingEnd) {
+                _ = post(
+                    snapshot,
+                    (y: 0.0, x: 0.0),
+                    phaseOverride: phaseValues,
+                    fallbackToCurrentPhase: false
+                )
+            }
         }
         // 适配器路由不使用阶段帧, 会话结束时单独结束其手势
         dispatchContext.enqueueAdapterEnd()
@@ -413,11 +421,12 @@ private extension ScrollPoster {
 
     func emitPhase(_ item: (Phase, Phase?), delta: (y: Double, x: Double)) {
         ScrollPhase.shared.apply(phase: item.0, autoAdvance: item.1)
-        guard let snapshot = dispatchContext.preparePostingSnapshot(), !snapshot.route.usesVirtualTrackpad else {
+        guard let snapshot = dispatchContext.preparePostingSnapshot() else {
             ScrollPhase.shared.didDeliverFrame()
             return
         }
-        _ = post(snapshot, delta)
+        let phaseOverride = resolveSimTrackpadEnabled() ? phaseValues(for: item.0) : nil
+        _ = post(snapshot, delta, phaseOverride: phaseOverride, fallbackToCurrentPhase: false)
     }
 
     // 处理滚动事件
@@ -461,13 +470,7 @@ private extension ScrollPoster {
         let residualX = buffer.x - current.x
         let residualMagnitude = max(residualY.magnitude, residualX.magnitude)
         let deadZone = config.deadZone
-        let frameDeadZone = deadZone * timing.scale
-        let outputMagnitude = max(abs(shiftedValue.y), abs(shiftedValue.x))
-        if config.usesVirtualTrackpad && manualInputEnded
-            && outputMagnitude <= frameDeadZone && max(abs(frame.y), abs(frame.x)) <= frameDeadZone {
-            // Holding stationary contacts until the CGEvent tail converges delays the native scroll's release.
-            pendingStopPhase = .TrackingEnd
-        } else if manualInputEnded && residualMagnitude > deadZone {
+        if manualInputEnded && residualMagnitude > deadZone {
             if !momentumActive {
                 perform(ScrollPhase.shared.onMomentumStart(), emitTargetImmediately: false)
                 momentumActive = true
@@ -487,17 +490,16 @@ private extension ScrollPoster {
             }
         }
         // 发送滚动结果 - 只有当输出值超过死区阈值时才发送
+        let frameDeadZone = deadZone * timing.scale
+        let outputMagnitude = max(abs(shiftedValue.y), abs(shiftedValue.x))
         if outputMagnitude > frameDeadZone {
             if ScrollMonitorTrace.isRecording {
                 ScrollMonitorTrace.shared.recordFrame(y: shiftedValue.y, x: shiftedValue.x)
             }
             postFrame(shiftedValue)
-        } else if config.usesVirtualTrackpad && pendingStopPhase == nil {
-            // A contact remains active between nonzero motion frames.
-            postFrame((y: 0, x: 0))
         }
 
-        if pendingStopPhase == nil, let scheduled = momentumEndScheduledTime, momentumActive {
+        if let scheduled = momentumEndScheduledTime, momentumActive {
             if now >= scheduled {
                 momentumEndScheduledTime = nil
                 momentumActive = false
@@ -531,12 +533,27 @@ private extension ScrollPoster {
     }
 
     /// 主线程读取当前 (全局 / 例外应用) 配置存入快照。调用方须持有 stateLock。
-    func captureConfigSnapshotLocked(usesVirtualTrackpad: Bool = false) {
+    func captureConfigSnapshotLocked() {
+        let simTrackpad: Bool
+        if let application = ScrollCore.shared.application, !application.inherit {
+            simTrackpad = application.scroll.smoothSimTrackpad
+        } else {
+            simTrackpad = Options.shared.scroll.smoothSimTrackpad
+        }
+        // Keep the sender stable even if device registration completes during a scroll.
+        let sender = simTrackpad
+            ? (clockSessionActive && config.simTrackpadEnabled ? config.trackpadSender : VirtualTrackpadIdentity.shared.sender)
+            : nil
         config = ConfigSnapshot(
+            simTrackpadEnabled: simTrackpad,
+            trackpadSender: sender,
             deadZone: Options.shared.scroll.deadZone,
-            normalizesTiming: clockSessionActive ? config.normalizesTiming : Options.shared.scrollNormalizeTiming,
-            usesVirtualTrackpad: usesVirtualTrackpad
+            normalizesTiming: clockSessionActive ? config.normalizesTiming : Options.shared.scrollNormalizeTiming
         )
+    }
+
+    func resolveSimTrackpadEnabled() -> Bool {
+        return config.simTrackpadEnabled
     }
 
     func phaseValues(for phase: Phase) -> (scroll: Double, momentum: Double)? {
@@ -548,7 +565,7 @@ private extension ScrollPoster {
     }
 
     @discardableResult
-    func post(_ snapshot: ScrollDispatchContext.PostingSnapshot, _ v: (y: Double, x: Double), phaseOverride: (scroll: Double, momentum: Double)? = nil) -> Bool {
+    func post(_ snapshot: ScrollDispatchContext.PostingSnapshot, _ v: (y: Double, x: Double), phaseOverride: (scroll: Double, momentum: Double)? = nil, fallbackToCurrentPhase: Bool = true) -> Bool {
         // 适配器路由只取帧位移, 阶段由适配器的输出端生成
         if let sink = snapshot.route.sink {
             dispatchContext.enqueueAdapterFrame(snapshot, sink: sink, y: v.y, x: v.x)
@@ -558,11 +575,23 @@ private extension ScrollPoster {
         if let override = phaseOverride {
             snapshot.event.setDoubleValueField(.scrollWheelEventScrollPhase, value: override.scroll)
             snapshot.event.setDoubleValueField(.scrollWheelEventMomentumPhase, value: override.momentum)
+        } else if fallbackToCurrentPhase,
+                  resolveSimTrackpadEnabled(),
+                  let currentPhaseValues = phaseValues(for: ScrollPhase.shared.phase) {
+            snapshot.event.setDoubleValueField(.scrollWheelEventScrollPhase, value: currentPhaseValues.scroll)
+            snapshot.event.setDoubleValueField(.scrollWheelEventMomentumPhase, value: currentPhaseValues.momentum)
         }
         snapshot.event.setDoubleValueField(.scrollWheelEventPointDeltaAxis1, value: v.y)
         snapshot.event.setDoubleValueField(.scrollWheelEventPointDeltaAxis2, value: v.x)
         // 是否连续滚动: 始终为 1.0
         snapshot.event.setDoubleValueField(.scrollWheelEventIsContinuous, value: 1.0)
+        if let sender = config.trackpadSender {
+            TrackpadEventField.setDeviceFields(
+                snapshot.event, sender: sender,
+                y: snapshot.event.getDoubleValueField(.scrollWheelEventPointDeltaAxis1),
+                x: snapshot.event.getDoubleValueField(.scrollWheelEventPointDeltaAxis2)
+            )
+        }
         ScrollUtils.shared.markSyntheticSmoothEvent(snapshot.event)
         // 通过 CGEventPostToPid 直投目标进程:
         // 不依赖 proxy (消除崩溃), 不经过 tap 链重新路由 (动量不跟随光标)

@@ -6,6 +6,7 @@
 //  不应再被全局开关联动压制; 继承开启时仍与全局保持一致。
 //
 
+import AppKit
 import XCTest
 @testable import Mos_Debug
 
@@ -136,6 +137,54 @@ final class ScrollTargetApplicationRulesTests: XCTestCase {
 
         XCTAssertFalse(application.isSmooth(true), "block hotkey must suppress per-app smoothing")
         XCTAssertFalse(application.isSmoothVertical(true), "block hotkey must suppress per-app axis smoothing")
+    }
+
+    @MainActor
+    func testMirroringExceptionLocksSimulateTrackpadForBothPickStyles() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let bundle = directory.appendingPathComponent("镜像 Fixture.app")
+        let contents = bundle.appendingPathComponent("Contents")
+        let executable = contents.appendingPathComponent("MacOS/Mirroring")
+        try FileManager.default.createDirectory(at: executable.deletingLastPathComponent(), withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let info = [
+            "CFBundleIdentifier": "com.apple.ScreenContinuity",
+            "CFBundlePackageType": "APPL",
+            "CFBundleExecutable": "Mirroring",
+        ]
+        let plist = try PropertyListSerialization.data(fromPropertyList: info, format: .xml, options: 0)
+        try plist.write(to: contents.appendingPathComponent("Info.plist"))
+        try Data().write(to: executable)
+
+        let control = NSButton(checkboxWithTitle: "Simulate Trackpad", target: nil, action: nil)
+        let popover = ScrollSmoothDetailSettingsPopoverViewController(nibName: nil, bundle: nil)
+        popover.view = NSView()
+        popover.simulateTrackpadCheckBox = control
+        let global = Options.shared.scroll
+        let savedSimulation = global.smoothSimTrackpad
+        defer { Options.shared.withReadingLockForTests { global.smoothSimTrackpad = savedSimulation } }
+        Options.shared.withReadingLockForTests { global.smoothSimTrackpad = false }
+
+        for path in [bundle.path, executable.path] {
+            let application = Application(path: path)
+            popover.currentTargetApplication = application
+            for inherit in [true, false] {
+                Options.shared.withReadingLockForTests { application.inherit = inherit }
+                popover.viewWillAppear()
+                XCTAssertEqual(control.state, .on)
+                XCTAssertFalse(control.isEnabled)
+                popover.simulateTrackpadToggle(control)
+                XCTAssertFalse(application.scroll.smoothSimTrackpad)
+                XCTAssertFalse(global.smoothSimTrackpad)
+            }
+        }
+
+        let other = makeApplication(inherit: false)
+        Options.shared.withReadingLockForTests { other.scroll.smooth = true }
+        popover.currentTargetApplication = other
+        popover.viewWillAppear()
+        XCTAssertEqual(control.state, .off)
+        XCTAssertTrue(control.isEnabled)
     }
 
     // MARK: - 匹配链: 两种添加方式保存的路径都能命中运行中应用

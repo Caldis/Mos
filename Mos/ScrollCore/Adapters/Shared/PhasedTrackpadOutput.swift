@@ -17,6 +17,14 @@ enum TrackpadEventField {
     static let acceleratedY = CGEventField(rawValue: 176)!
     static let rawX = CGEventField(rawValue: 177)!
     static let rawY = CGEventField(rawValue: 178)!
+
+    static func setDeviceFields(_ event: CGEvent, sender: Int64, y: Double, x: Double) {
+        event.setDoubleValueField(acceleratedY, value: y)
+        event.setDoubleValueField(acceleratedX, value: x)
+        event.setDoubleValueField(rawY, value: y)
+        event.setDoubleValueField(rawX, value: x)
+        event.setIntegerValueField(Self.sender, value: sender)
+    }
 }
 
 /// phased 手势状态机。帧位移按整数像素输出, 不足 1 像素的部分结转到下一帧; 不产生惯性事件
@@ -166,11 +174,7 @@ final class PhasedTrackpadSink: ScrollOutputSink {
         event.setIntegerValueField(.scrollWheelEventPointDeltaAxis2, value: x)
         event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: Double(y) / 10)
         event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: Double(x) / 10)
-        event.setDoubleValueField(TrackpadEventField.acceleratedY, value: Double(y))
-        event.setDoubleValueField(TrackpadEventField.acceleratedX, value: Double(x))
-        event.setDoubleValueField(TrackpadEventField.rawY, value: Double(y))
-        event.setDoubleValueField(TrackpadEventField.rawX, value: Double(x))
-        event.setIntegerValueField(TrackpadEventField.sender, value: sender)
+        TrackpadEventField.setDeviceFields(event, sender: sender, y: Double(y), x: Double(x))
         ScrollUtils.shared.markSyntheticSmoothEvent(event)
         return event
     }

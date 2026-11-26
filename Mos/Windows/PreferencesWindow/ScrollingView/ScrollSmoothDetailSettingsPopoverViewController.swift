@@ -24,6 +24,16 @@ class ScrollSmoothDetailSettingsPopoverViewController: AdaptivePopover, ScrollOp
     var currentTargetApplication: Application?
     var onOptionsChanged: (() -> Void)?
 
+    private var usesIPhoneMirroringAdapter: Bool {
+        guard let path = currentTargetApplication?.path else { return false }
+        // The exception list can store either the application bundle or its executable.
+        let components = (path as NSString).pathComponents
+        guard let appIndex = components.lastIndex(where: { $0.lowercased().hasSuffix(".app") }) else { return false }
+        let bundlePath = NSString.path(withComponents: Array(components[...appIndex]))
+        guard let bundleIdentifier = Bundle(path: bundlePath)?.bundleIdentifier else { return false }
+        return IPhoneMirroringAdapter.descriptor.bundleIdentifiers.contains(bundleIdentifier)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         if let footer = detailsFooter {
@@ -63,6 +73,10 @@ class ScrollSmoothDetailSettingsPopoverViewController: AdaptivePopover, ScrollOp
     }
 
     @IBAction func simulateTrackpadToggle(_ sender: NSButton) {
+        guard !usesIPhoneMirroringAdapter else {
+            syncViewWithOptions()
+            return
+        }
         let scrollOptions = getTargetApplicationScrollOptions()
         scrollOptions.smoothSimTrackpad = sender.state == .on
         syncViewWithOptions()
@@ -75,9 +89,11 @@ class ScrollSmoothDetailSettingsPopoverViewController: AdaptivePopover, ScrollOp
     }
 
     private func syncViewWithOptions() {
-        updateSimulateTrackpadControl(simulateTrackpadCheckBox)
-        if #unavailable(macOS 15.0) {
+        if usesIPhoneMirroringAdapter {
+            simulateTrackpadCheckBox?.state = .on
             simulateTrackpadCheckBox?.isEnabled = false
+        } else {
+            updateSimulateTrackpadControl(simulateTrackpadCheckBox)
         }
         let scroll = getTargetApplicationScrollOptions()
         updateSmoothDependentControl(verticalSmoothCheckBox, isOn: scroll.smoothVertical)

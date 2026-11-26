@@ -252,8 +252,7 @@ final class ScrollAdapterCenter {
             center.closeGate()
             return Unmanaged.passUnretained(event)
         }
-        guard type == .scrollWheel, !ScrollUtils.shared.isSyntheticSmoothEvent(event),
-              !ScrollCore.shared.isVirtualTrackpadOutput(event) else {
+        guard type == .scrollWheel, !ScrollUtils.shared.isSyntheticSmoothEvent(event) else {
             return Unmanaged.passUnretained(event)
         }
         guard let route = center.route(at: event.location) else {

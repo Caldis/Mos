@@ -1,3 +1,9 @@
+//
+//  VirtualTrackpadIdentity.swift
+//  Mos
+//  为 phased 输出提供 sender 身份的虚拟 Magic Trackpad 2
+//
+
 import Foundation
 import IOKit
 import os
@@ -5,172 +11,81 @@ import os
 import CoreHID
 #endif
 
-protocol VirtualTrackpadDevice: AnyObject, Sendable {
-    @available(macOS 15.0, *)
-    func activateTrackpad() async -> Int64?
-
-    @available(macOS 15.0, *)
-    func sendTrackpadReport(_ report: Data) async throws
-}
-
-/// The shared virtual Magic Trackpad 2 provides a sender ID and accepts one touch gesture at a time.
+/// Provides a shared Magic Trackpad 2 sender for phased CGEvents.
+/// Users of the device retain and release it on the main thread. The sender is safe to read on any thread.
 final class VirtualTrackpadIdentity {
+
     static let shared = VirtualTrackpadIdentity()
 
-    enum TouchError: Error, Equatable {
-        case deviceNotReady
-        case gestureInProgress
-    }
-
-    private let makeDevice: () -> VirtualTrackpadDevice?
     private var lock = os_unfair_lock_s()
-    private var device: VirtualTrackpadDevice?
-    private var currentSender: Int64?
-    private var deviceStart = DispatchTime.now()
+    private var _sender: Int64?
+    /// 每次创建或销毁递增, 用于丢弃过期的异步创建结果
+    private var generation = 0
+    /// HIDVirtualDevice 实例; 释放引用即从注册表移除设备
+    private var device: AnyObject?
     private var retainCount = 0
-    private var gestureInProgress = false
-    private var nextContactID: UInt8 = 1
 
-    init(makeDevice: @escaping () -> VirtualTrackpadDevice? = VirtualTrackpadIdentity.makeCoreHIDDevice) {
-        self.makeDevice = makeDevice
-    }
-
-    /// Registry ID of the AppleMultitouchDevice after the driver handshake.
+    /// 虚拟设备 AppleMultitouchDevice 的注册表 ID, 由内核分配; 设备未就绪时为 nil
     var sender: Int64? {
-        withLock { currentSender }
+        os_unfair_lock_lock(&lock)
+        defer { os_unfair_lock_unlock(&lock) }
+        return _sender
     }
 
-    // The adapters own these references on the main thread.
     func retain() {
-        let shouldCreate = withLock {
-            retainCount += 1
-            return device == nil
-        }
-        if shouldCreate { create() }
+        retainCount += 1
+        if retainCount == 1 { create() }
     }
 
     func release() {
-        withLock {
-            guard retainCount > 0 else { return }
-            retainCount -= 1
-            if retainCount == 0 && !gestureInProgress { clearDevice() }
-        }
+        guard retainCount > 0 else { return }
+        retainCount -= 1
+        if retainCount == 0 { destroy() }
     }
 
-    /// Positions are absolute touch coordinates. Finishing or cancelling the stream lifts both fingers.
-    @available(macOS 15.0, *)
-    func sendTouchGesture(
-        from start: VirtualTrackpadTouchReport.Position,
-        moves: AsyncStream<VirtualTrackpadTouchReport.Position>
-    ) async throws {
-        try Task.checkCancellation()
-        let (device, firstID, started) = try beginGesture()
-        var unusable = false
-        defer { finishGesture(discardDevice: unusable) }
-
-        var position = start
-        var movementError: Error?
-        do {
-            try await device.sendTrackpadReport(VirtualTrackpadTouchReport.contactReport(
-                at: start, firstID: firstID, phase: .began, milliseconds: milliseconds(since: started)
-            ))
-            for await move in moves {
-                try Task.checkCancellation()
-                position = move
-                try await device.sendTrackpadReport(VirtualTrackpadTouchReport.contactReport(
-                    at: move, firstID: firstID, phase: .moved, milliseconds: milliseconds(since: started)
-                ))
-            }
-            try Task.checkCancellation()
-        } catch {
-            movementError = error
-        }
-
-        let release = VirtualTrackpadTouchReport.releaseReports(
-            at: position, firstID: firstID, milliseconds: milliseconds(since: started)
-        )
-        do {
-            // Keep the release sequence alive after cancellation of the input stream.
-            try await Task {
-                var releaseError: Error?
-                for report in release {
-                    do {
-                        try await device.sendTrackpadReport(report)
-                    } catch {
-                        releaseError = releaseError ?? error
-                    }
-                }
-                if let releaseError = releaseError { throw releaseError }
-            }.value
-        } catch {
-            unusable = true
-            throw movementError ?? error
-        }
-
-        if let movementError = movementError { throw movementError }
-    }
-
-    private func beginGesture() throws -> (VirtualTrackpadDevice, UInt8, DispatchTime) {
-        try withLock {
-            guard retainCount > 0, currentSender != nil, let device = device else {
-                throw TouchError.deviceNotReady
-            }
-            guard !gestureInProgress else { throw TouchError.gestureInProgress }
-            gestureInProgress = true
-            let firstID = nextContactID
-            nextContactID = (nextContactID + 1) % 15 + 1
-            return (device, firstID, deviceStart)
-        }
-    }
-
-    private func finishGesture(discardDevice: Bool) {
-        withLock {
-            gestureInProgress = false
-            if discardDevice || retainCount == 0 { clearDevice() }
-        }
+    private func setSender(_ value: Int64?, ifGeneration expected: Int) {
+        os_unfair_lock_lock(&lock)
+        if generation == expected { _sender = value }
+        os_unfair_lock_unlock(&lock)
     }
 
     private func create() {
-        guard #available(macOS 15.0, *), let created = makeDevice() else { return }
-        withLock {
-            deviceStart = .now()
-            device = created
-        }
-        Task { [weak self] in
-            let sender = await created.activateTrackpad()
-            guard let self = self else { return }
-            self.withLock {
-                if self.device === created { self.currentSender = sender }
-            }
-        }
-    }
-
-    private func clearDevice() {
-        currentSender = nil
-        device = nil
-    }
-
-    private func withLock<T>(_ body: () throws -> T) rethrows -> T {
-        os_unfair_lock_lock(&lock)
-        defer { os_unfair_lock_unlock(&lock) }
-        return try body()
-    }
-
-    private func milliseconds(since started: DispatchTime) -> UInt32 {
-        UInt32(truncatingIfNeeded: (DispatchTime.now().uptimeNanoseconds - started.uptimeNanoseconds) / 1_000_000) &+ 100
-    }
-
-    private static func makeCoreHIDDevice() -> VirtualTrackpadDevice? {
+        guard #available(macOS 15.0, *) else { return }
         #if canImport(CoreHID)
-        guard #available(macOS 15.0, *) else { return nil }
-        guard let device = HIDVirtualDevice(properties: VirtualTrackpadDescriptor.properties) else {
+        os_unfair_lock_lock(&lock)
+        generation += 1
+        let current = generation
+        os_unfair_lock_unlock(&lock)
+
+        guard let created = HIDVirtualDevice(properties: VirtualTrackpadDescriptor.properties) else {
             NSLog("VirtualTrackpadIdentity: HIDVirtualDevice creation failed (missing com.apple.developer.hid.virtual.device?)")
-            return nil
+            return
         }
-        return device
-        #else
-        return nil
+        os_unfair_lock_lock(&lock)
+        device = created
+        os_unfair_lock_unlock(&lock)
+
+        Task { [weak self] in
+            await created.activate(delegate: VirtualTrackpadDescriptor.Delegate())
+            // AppleMultitouchDevice 在驱动完成特性报文握手后才出现
+            for _ in 0..<50 {
+                if let id = Self.multitouchDeviceID() {
+                    self?.setSender(id, ifGeneration: current)
+                    return
+                }
+                try? await Task.sleep(nanoseconds: 100_000_000)
+            }
+            NSLog("VirtualTrackpadIdentity: AppleMultitouchDevice did not appear")
+        }
         #endif
+    }
+
+    private func destroy() {
+        os_unfair_lock_lock(&lock)
+        generation += 1
+        _sender = nil
+        device = nil
+        os_unfair_lock_unlock(&lock)
     }
 
     /// 查找序列号与 Mos 虚拟设备一致的 AppleMultitouchDevice
@@ -195,23 +110,3 @@ final class VirtualTrackpadIdentity {
         return result
     }
 }
-
-#if canImport(CoreHID)
-@available(macOS 15.0, *)
-extension HIDVirtualDevice: VirtualTrackpadDevice {
-    func activateTrackpad() async -> Int64? {
-        activate(delegate: VirtualTrackpadDescriptor.Delegate())
-        // The driver publishes AppleMultitouchDevice after its feature-report handshake.
-        for _ in 0..<50 {
-            if let id = VirtualTrackpadIdentity.multitouchDeviceID() { return id }
-            try? await Task.sleep(nanoseconds: 100_000_000)
-        }
-        NSLog("VirtualTrackpadIdentity: AppleMultitouchDevice did not appear")
-        return nil
-    }
-
-    func sendTrackpadReport(_ report: Data) async throws {
-        try await dispatchInputReport(data: report, timestamp: SuspendingClock().now)
-    }
-}
-#endif

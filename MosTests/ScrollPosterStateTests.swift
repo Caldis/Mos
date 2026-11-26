@@ -341,46 +341,6 @@ final class ScrollPosterStateTests: XCTestCase {
     }
 
     @MainActor
-    func testVirtualTouchEndsWhenTheVisibleMotionSettles() async throws {
-        let savedDeadZone = Options.shared.scroll.deadZone
-        defer { Options.shared.scroll.deadZone = savedDeadZone }
-        Options.shared.scroll.deadZone = 1
-
-        let clock = TestFrameClock(.fixedRate)
-        let poster = ScrollPoster(clockOverride: .fixedRate, makeFixedClock: { clock })
-        defer { poster.stop() }
-        let sink = TestScrollSink()
-        let moved = expectation(description: "The gesture produced visible displacement")
-        let lifted = expectation(description: "The virtual output was ended")
-        var sawMovement = false
-        sink.onFrame = { y in
-            if y != 0 && !sawMovement {
-                sawMovement = true
-                moved.fulfill()
-            }
-        }
-        sink.onEnd = { [weak sink] in
-            sink?.onEnd = nil
-            lifted.fulfill()
-        }
-
-        let event = try XCTUnwrap(CGEvent(
-            scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 1, wheel1: 30, wheel2: 0, wheel3: 0
-        ))
-        poster.update(event: event, duration: 0.12, y: 30, x: 0, speed: 1,
-                      route: .virtualTrackpad(sink), targetPID: ProcessInfo.processInfo.processIdentifier).tryStart()
-        let tick = FrameTick(timestamp: 0, interval: 1.0 / 60)
-        for _ in 0..<6 { clock.onTick?(tick) }
-        await fulfillment(of: [moved], timeout: 1)
-        XCTAssertTrue(clock.isRunning)
-
-        try await Task.sleep(nanoseconds: 190_000_000)
-        for _ in 0..<22 { clock.onTick?(tick) }
-        await fulfillment(of: [lifted], timeout: 1)
-        XCTAssertFalse(clock.isRunning)
-    }
-
-    @MainActor
     func testFixedClockRestartsWithThe60HzReferenceInterval() {
         let clock = FixedRateFrameClock()
         for _ in 0..<2 {
@@ -436,9 +396,7 @@ final class ScrollPosterStateTests: XCTestCase {
     }
 
     private final class TestScrollSink: ScrollOutputSink {
-        var onFrame: ((Double) -> Void)?
-        var onEnd: (() -> Void)?
-        func frame(y: Double, x: Double, at location: CGPoint) { onFrame?(y) }
-        func end(at location: CGPoint) { onEnd?() }
+        func frame(y: Double, x: Double, at location: CGPoint) {}
+        func end(at location: CGPoint) {}
     }
 }

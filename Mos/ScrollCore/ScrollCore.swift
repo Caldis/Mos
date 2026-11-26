@@ -41,11 +41,10 @@ class ScrollCore: ScrollActionPort {
     // 例外应用数据
     var application: Application?
     var currentApplication: Application? // 用于区分按下热键及抬起时的作用目标
-    private var virtualTrackpadOutput: ScrollOutputSink?
-    private var virtualTrackpadSender: Int64 = 0
-    private lazy var observeVirtualTrackpadOptions: Void = {
+    private var retainsTrackpadIdentity = false
+    private lazy var observeTrackpadIdentityOptions: Void = {
         Options.shared.observe([.scroll, .application]) { [weak self] _ in
-            self?.syncVirtualTrackpadOutput()
+            self?.syncTrackpadIdentity()
         }
     }()
     // 拦截层
@@ -80,12 +79,6 @@ class ScrollCore: ScrollActionPort {
 #if DEBUG
             ScrollPoster.shared.recordSkippedSyntheticEvent()
 #endif
-            return Unmanaged.passUnretained(event)
-        }
-        if ScrollCore.shared.isVirtualTrackpadOutput(event) {
-            if ScrollMonitorTrace.isRecording {
-                ScrollMonitorTrace.shared.recordVirtualTrackpadOutput(event)
-            }
             return Unmanaged.passUnretained(event)
         }
         // 适配器已在 session 层处理过该事件 (放行的未平滑轴); 未激活适配器时只读取一个布尔值
@@ -214,7 +207,7 @@ class ScrollCore: ScrollActionPort {
                 x: smoothedX,
                 speed: speed,
                 amplification: ScrollCore.shared.dashAmplification,
-                route: outputRoute(for: targetRunningApplication, adapterSink: adapterSink),
+                route: adapterSink.map { .adapter($0) } ?? .process,
                 targetPID: targetRunningApplication?.processIdentifier
             ).tryStart()
         }
@@ -243,46 +236,25 @@ class ScrollCore: ScrollActionPort {
         return Unmanaged.passUnretained(event)
     }
     
-    // MARK: - Virtual trackpad output
-
-    func isVirtualTrackpadOutput(_ event: CGEvent) -> Bool {
-        virtualTrackpadSender != 0 && event.getIntegerValueField(TrackpadEventField.sender) == virtualTrackpadSender
-    }
-
-    private func outputRoute(for target: NSRunningApplication?, adapterSink: ScrollOutputSink?)
-        -> ScrollDispatchContext.Route {
-        if let adapterSink = adapterSink { return .adapter(adapterSink) }
-        let options = application?.resolvedScrollOptions() ?? Options.shared.scroll
-        guard options.smoothSimTrackpad, let output = virtualTrackpadOutput,
-              let target = target, target.bundleIdentifier != "com.apple.ScreenContinuity",
-              let sender = VirtualTrackpadIdentity.shared.sender else { return .process }
-        virtualTrackpadSender = sender
-        return .virtualTrackpad(output)
-    }
-
-    private func syncVirtualTrackpadOutput() {
+    private func syncTrackpadIdentity() {
         guard #available(macOS 15.0, *) else { return }
         let options = Options.shared
         let applications = options.application.applications
-        let needed = isActive && (
+        let shouldRetain = isActive && (
             (options.scroll.smooth && options.scroll.smoothSimTrackpad)
             || (0..<applications.count).contains { index in
                 guard let app = applications.get(by: index), !app.inherit else { return false }
                 return app.scroll.smooth && app.scroll.smoothSimTrackpad
             }
         )
-        if needed {
-            if virtualTrackpadOutput == nil {
-                let identity = VirtualTrackpadIdentity.shared
-                identity.retain()
-                virtualTrackpadOutput = VirtualTrackpadScrollOutput(identity: identity)
-            }
-        } else if virtualTrackpadOutput != nil {
-            virtualTrackpadOutput = nil
-            ScrollPoster.shared.stopVirtualTrackpadOutput()
-            ScrollDispatchContext.shared.afterPendingAdapterOutput {
-                VirtualTrackpadIdentity.shared.release()
-            }
+        guard shouldRetain != retainsTrackpadIdentity else { return }
+        retainsTrackpadIdentity = shouldRetain
+        let identity = VirtualTrackpadIdentity.shared
+        if shouldRetain {
+            identity.retain()
+        } else {
+            ScrollPoster.shared.endTrackpadSenderSession()
+            ScrollDispatchContext.shared.afterPendingAdapterOutput { identity.release() }
         }
     }
 
@@ -522,8 +494,8 @@ class ScrollCore: ScrollActionPort {
             // 初始化滚动事件发送器
             ScrollPoster.shared.create()
             ScrollPoster.shared.startKeeper()
-            _ = observeVirtualTrackpadOptions
-            syncVirtualTrackpadOutput()
+            _ = observeTrackpadIdentityOptions
+            syncTrackpadIdentity()
             // 应用滚动适配器: 只在目标应用运行时创建 session 层 tap
             ScrollAdapterCenter.shared.start()
         } catch {
@@ -552,7 +524,7 @@ class ScrollCore: ScrollActionPort {
         // 停止滚动事件发送器
         ScrollPoster.shared.stop()
         ScrollPoster.shared.stopKeeper()
-        syncVirtualTrackpadOutput()
+        syncTrackpadIdentity()
         // 停止截取事件
         ScrollAdapterCenter.shared.stop()
         scrollEventInterceptor?.stop()
