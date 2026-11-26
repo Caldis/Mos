@@ -8,6 +8,7 @@
 //
 
 import Cocoa
+import Darwin
 import IOKit
 import IOKit.hid
 
@@ -48,6 +49,7 @@ class LogiDeviceSession {
     let deviceInfo: InputDevice
     let usagePage: Int
     let usage: Int
+    let hasMouseCollection: Bool
     let transport: String
 
     // MARK: - Connection Mode
@@ -126,7 +128,15 @@ class LogiDeviceSession {
     private var pendingDiscovery: [UInt16: (UInt8?) -> Void] = [:]
     private var discoveryTimer: Timer?
     private static let discoveryTimeout: TimeInterval = 5.0
+    private static let cacheValidationTimeout: TimeInterval = 1.5
     private var pendingCacheValidation: UInt8? = nil  // 等待 ping 响应验证缓存
+
+    // MARK: - Lock Screen / Permission-Denied Session Recovery
+    private(set) var needsSessionReopen: Bool = false
+    private(set) var openedWhileAccessRestricted: Bool = false
+    private(set) var needsPostRestrictionProbe: Bool = false
+    private var isTearingDown: Bool = false
+    private var reprogFeatureUnsupported: Bool = false
 
     // MARK: - Query Timeouts (防止 Bolt receiver 上 HID++ 响应丢包 / 错误导致 query 链路卡死)
     private var controlInfoQueryTimer: Timer?
@@ -146,6 +156,7 @@ class LogiDeviceSession {
         var reprogControlCount: Int = 0
         var reprogQueryIndex: Int = 0
         var reportingQueryIndex: Int = 0      // GetControlReporting 逐按键查询进度
+        var controlCountRetryCount: Int = 0
         var controlInfoRetryCounts: [Int: Int] = [:]
         var lastApplied: Set<UInt16> = []     // divert 对账缓存: 上次下发的 divert 目标集
         // 按键按下/抬起状态跟踪: 必须按 slot 独立, 否则同型号两只鼠标 (CID 相同) 的
@@ -187,6 +198,10 @@ class LogiDeviceSession {
     private var reportingQueryIndex: Int {
         get { slotStates[deviceIndex]?.reportingQueryIndex ?? 0 }
         set { slotStates[deviceIndex, default: PerSlotState()].reportingQueryIndex = newValue }
+    }
+    private var controlCountRetryCount: Int {
+        get { slotStates[deviceIndex]?.controlCountRetryCount ?? 0 }
+        set { slotStates[deviceIndex, default: PerSlotState()].controlCountRetryCount = newValue }
     }
     private var controlInfoRetryCounts: [Int: Int] {
         get { slotStates[deviceIndex]?.controlInfoRetryCounts ?? [:] }
@@ -380,6 +395,9 @@ class LogiDeviceSession {
         self.hidDevice = hidDevice
         self.usagePage = IOHIDDeviceGetProperty(hidDevice, kIOHIDPrimaryUsagePageKey as CFString) as? Int ?? 0
         self.usage = IOHIDDeviceGetProperty(hidDevice, kIOHIDPrimaryUsageKey as CFString) as? Int ?? 0
+        self.hasMouseCollection = LogiSessionManager.hasMouseCollection(
+            IOHIDDeviceGetProperty(hidDevice, kIOHIDDeviceUsagePairsKey as CFString)
+        )
         self.transport = IOHIDDeviceGetProperty(hidDevice, kIOHIDTransportKey as CFString) as? String ?? ""
         self.deviceInfo = InputDevice(
             vendorId: UInt16(IOHIDDeviceGetProperty(hidDevice, kIOHIDVendorIDKey as CFString) as? Int ?? 0),
@@ -395,12 +413,20 @@ class LogiDeviceSession {
 
     /// 是否为 HID++ 候选接口
     var isHIDPPCandidate: Bool {
+        return Self.isHIDPPCandidate(
+            isBLE: isBLE, usagePage: usagePage, usage: usage, hasMouseCollection: hasMouseCollection
+        )
+    }
+
+    static func isHIDPPCandidate(isBLE: Bool, usagePage: Int, usage: Int, hasMouseCollection: Bool) -> Bool {
         // USB: 只有 vendor-specific usage page 支持 HID++
         if !isBLE {
             return usagePage == 0xFF00 || usagePage == 0xFF43 || usagePage == 0xFFC0
         }
-        // BLE: HID++ 复用标准 mouse interface
-        return usagePage == 0x0001 && usage == 0x0002
+        // BLE: HID++ 复用标准 mouse interface. M720 等设备 PrimaryUsage 是 Keyboard,
+        // 但同一接口的 DeviceUsagePairs 含 Mouse collection.
+        if usagePage == 0x0001 && usage == 0x0002 { return true }
+        return usagePage == 0x0001 && usage == 0x0006 && hasMouseCollection
     }
 
     /// CID set last passed to setControlReporting. Diffed against next applyUsage's
@@ -668,7 +694,12 @@ class LogiDeviceSession {
         }
 
         bleStandardUndivertGuardTargets = activeTargets
-        sendBLEUndivertGuardReportingQueries(for: activeTargets)
+        if isSubjectToKeyboardHIDRestriction {
+            markPostRestrictionProbeNeeded()
+            LogiSessionManager.shared.scheduleRestrictionClearWatch()
+        } else {
+            sendBLEUndivertGuardReportingQueries(for: activeTargets)
+        }
         scheduleBLEUndivertGuardTick(
             expectedTargets: activeTargets,
             generation: generation,
@@ -993,6 +1024,15 @@ class LogiDeviceSession {
 
         setupInputReportCallback()
 
+        if Self.requiresUnlockedKeyboardClient(usagePage: usagePage, usage: usage),
+           LogiSessionManager.shared.isKeyboardHIDAccessRestricted {
+            openedWhileAccessRestricted = true
+            needsSessionReopen = true
+            LogiDebugPanel.log("\(tag) Composite keyboard-primary HID session opened while keyboard HID access restricted; deferring handshake until restriction clears")
+            LogiSessionManager.shared.scheduleRestrictionClearWatch()
+            return
+        }
+
         // 标记初次 discovery 开始 (覆盖 receiver enumeration + BLE direct discovery + 缓存验证),
         // UI 打开 debug panel 时能看到 Initializing spinner.
         setDiscoveryInFlight(true)
@@ -1010,8 +1050,11 @@ class LogiDeviceSession {
             LogiDebugPanel.log("\(tag) Using cached feature index: REPROG at 0x\(String(format: "%02X", reprogIdx))")
             self.featureIndex = cached.reduce(into: [UInt16: UInt8]()) { $0[$1.key] = $1.value }
             // 用 ping 验证缓存是否有效 (IRoot.GetProtocolVersion)
-            sendRequest(featureIndex: 0x00, functionId: 1)
-            pendingCacheValidation = reprogIdx
+            let pingStatus = sendRequest(featureIndex: 0x00, functionId: 1)
+            if !Self.isPermissionDeniedIOReturn(pingStatus) {
+                pendingCacheValidation = reprogIdx
+                scheduleCacheValidationTimeout(tag: tag)
+            }
         } else {
             LogiDebugPanel.log("\(tag) Starting feature discovery for REPROG_CONTROLS_V4 (0x1B04)")
             startFreshDiscovery(tag: tag)
@@ -1028,6 +1071,7 @@ class LogiDeviceSession {
     }
 
     func teardown() {
+        isTearingDown = true
         LogiDebugPanel.log("[\(deviceInfo.name)] Teardown")
         pendingInitialTargetSelection = false
         pendingDeviceInfoSlots.removeAll()
@@ -1044,11 +1088,13 @@ class LogiDeviceSession {
         reportingQueryTimer?.invalidate()
         reportingQueryTimer = nil
         pendingDiscovery.removeAll()
+        pendingCacheValidation = nil
+        controlCountRetryCount = 0
         controlInfoRetryCounts.removeAll()
         cancelDivertReassertion()
         cancelBLEStandardUndivertGuard()
         releaseAllActiveButtonState(reason: "teardown")
-        if let reprogIdx = featureIndex[Self.featureReprogV4] {
+        if !needsSessionReopen, let reprogIdx = featureIndex[Self.featureReprogV4] {
             for cid in divertedCIDs {
                 setControlReporting(featureIndex: reprogIdx, cid: cid, divert: false)
             }
@@ -1072,12 +1118,116 @@ class LogiDeviceSession {
         session.handleInputReport(buffer)
     }
 
-    // MARK: - HID++ Send
+    // MARK: - HID++ Send & Lock Screen Permission Guards
+
+    static func isPermissionDeniedIOReturn(_ result: IOReturn) -> Bool {
+        return result == kIOReturnNotPermitted || result == kIOReturnNotPrivileged
+    }
+
+    static func requiresUnlockedKeyboardClient(usagePage: Int, usage: Int) -> Bool {
+        return usagePage == 0x0001 && usage == 0x0006
+    }
+
+    var isSubjectToKeyboardHIDRestriction: Bool {
+        return Self.requiresUnlockedKeyboardClient(usagePage: usagePage, usage: usage)
+            && LogiSessionManager.shared.isKeyboardHIDAccessRestricted
+    }
+
+    /// Decide whether a `kIOReturnNotPermitted` / `kIOReturnNotPrivileged` error on `SetReport`
+    /// requires tearing down and reopening the `IOHIDManager` session, or whether the existing
+    /// `IOHIDLibUserClient` should be preserved until transient `SecureEventInput` clears.
+    ///
+    /// When macOS enters `SecureEventInput` (e.g. a browser password field is focused), XNU's
+    /// `IOHIDLibUserClient::resourceNotificationGated` temporarily sets `fValid = false` on any
+    /// device conforming to `GenericDesktop/Keyboard (0x01/0x06)` and automatically restores
+    /// `fValid = true` (`setStateForQueues: 0x0`) as soon as `SecureEventInput` ends — provided
+    /// the session was originally opened while unrestricted and already completed initialization.
+    static func shouldReopenSessionOnPermissionDenied(
+        openedWhileAccessRestricted: Bool,
+        reprogInitComplete: Bool,
+        isAccessCurrentlyRestricted: Bool
+    ) -> Bool {
+        if openedWhileAccessRestricted || !reprogInitComplete {
+            return true
+        }
+        return !isAccessCurrentlyRestricted
+    }
+
+    func markPostRestrictionProbeNeeded() {
+        needsPostRestrictionProbe = true
+    }
+
+    func clearPostRestrictionProbe() {
+        needsPostRestrictionProbe = false
+    }
+
+    static func shouldRecoverIncompleteBLESession(
+        isBLEDirect: Bool,
+        isCandidate: Bool,
+        reprogInitComplete: Bool,
+        reprogFeatureUnsupported: Bool,
+        isActivityInProgress: Bool
+    ) -> Bool {
+        return isBLEDirect
+            && isCandidate
+            && !reprogInitComplete
+            && !reprogFeatureUnsupported
+            && !isActivityInProgress
+    }
+
+    var needsPostSleepHandshakeRecovery: Bool {
+        return Self.shouldRecoverIncompleteBLESession(
+            isBLEDirect: connectionMode == .bleDirect,
+            isCandidate: isHIDPPCandidate,
+            reprogInitComplete: reprogInitComplete,
+            reprogFeatureUnsupported: reprogFeatureUnsupported,
+            isActivityInProgress: isActivityInProgress
+        )
+    }
+
+    static func continuousTimestamp() -> TimeInterval {
+        return Double(clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW)) / 1_000_000_000.0
+    }
+
+    private func noteWritePermissionDenied(_ result: IOReturn) {
+        let accessRestricted = LogiSessionManager.shared.isKeyboardHIDAccessRestricted
+        if Self.shouldReopenSessionOnPermissionDenied(
+            openedWhileAccessRestricted: openedWhileAccessRestricted,
+            reprogInitComplete: reprogInitComplete,
+            isAccessCurrentlyRestricted: accessRestricted
+        ) {
+            let wasAlreadyFlagged = needsSessionReopen
+            needsSessionReopen = true
+            cancelInflightDiscovery()
+            setDiscoveryInFlight(false)
+            if !wasAlreadyFlagged {
+                LogiDebugPanel.log(
+                    device: deviceInfo.name,
+                    type: .warning,
+                    message: "HID setReport denied (\(String(format: "0x%08x", result))); session queued for reopen"
+                )
+            }
+        } else {
+            needsPostRestrictionProbe = true
+            reportingQueryTimer?.invalidate()
+            reportingQueryTimer = nil
+            pendingBLEUndivertGuardQueries.removeAll()
+            LogiSessionManager.shared.recomputeAndNotifyActivityState()
+            LogiDebugPanel.log(
+                device: deviceInfo.name,
+                type: .warning,
+                message: "HID setReport transiently denied (\(String(format: "0x%08x", result))) while keyboard HID access restricted; preserving active session"
+            )
+        }
+        guard !isTearingDown else { return }
+        LogiSessionManager.shared.noteSessionPermissionDenied(self, ioreturn: result)
+    }
 
     /// 发送 HID++ 请求
     /// BLE 直连: long report (20 bytes) + report ID in payload (hidapi 兼容)
     /// Receiver: TODO - 可能需要不同格式, 待 Bolt/Unifying 测试后实现
-    private func sendRequest(featureIndex: UInt8, functionId: UInt8, params: [UInt8] = []) {
+    @discardableResult
+    private func sendRequest(featureIndex: UInt8, functionId: UInt8, params: [UInt8] = []) -> IOReturn {
         var report: [UInt8]
         let result: IOReturn
 
@@ -1112,16 +1262,39 @@ class LogiDeviceSession {
 
         case .unsupported:
             LogiDebugPanel.log(device: deviceInfo.name, type: .warning, message: "Cannot send: unsupported connection mode")
-            return
+            return kIOReturnUnsupported
         }
 
         let hex = report.prefix(8).map { String(format: "%02X", $0) }.joined(separator: " ")
         let resultStr = result == kIOReturnSuccess ? "OK" : String(format: "0x%08x", result)
         let decoded = decodeRequest(featureIndex: featureIndex, functionId: functionId, params: params)
         LogiDebugPanel.log(device: deviceInfo.name, type: .tx, message: "TX: \(hex)... -> \(resultStr)", decoded: decoded)
+
+        if Self.isPermissionDeniedIOReturn(result) {
+            noteWritePermissionDenied(result)
+        } else if result == kIOReturnSuccess {
+            needsPostRestrictionProbe = false
+            if !needsSessionReopen {
+                LogiSessionManager.shared.noteSessionSendSucceeded()
+            }
+        }
+        return result
     }
 
     // MARK: - Feature Discovery
+
+    private func scheduleCacheValidationTimeout(tag: String) {
+        discoveryTimer?.invalidate()
+        discoveryTimer = Timer.scheduledTimer(withTimeInterval: Self.cacheValidationTimeout, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            self.discoveryTimer = nil
+            guard self.pendingCacheValidation != nil else { return }
+            self.pendingCacheValidation = nil
+            self.featureIndex.removeAll()
+            LogiDebugPanel.log("\(tag) Cached feature ping timed out; falling back to fresh discovery")
+            self.startFreshDiscovery(tag: tag)
+        }
+    }
 
     private func startFreshDiscovery(tag: String) {
         discoverFeature(featureId: Self.featureReprogV4) { [weak self] index in
@@ -1193,7 +1366,8 @@ class LogiDeviceSession {
 
     private func discoverFeature(featureId: UInt16, completion: @escaping (UInt8?) -> Void) {
         let params: [UInt8] = [UInt8(featureId >> 8), UInt8(featureId & 0xFF)]
-        sendRequest(featureIndex: 0x00, functionId: 0, params: params)
+        let status = sendRequest(featureIndex: 0x00, functionId: 0, params: params)
+        guard !Self.isPermissionDeniedIOReturn(status) else { return }
         pendingDiscovery[featureId] = completion
 
         discoveryTimer?.invalidate()
@@ -1211,12 +1385,42 @@ class LogiDeviceSession {
 
     private func sendGetControlCount(featureIndex: UInt8) {
         LogiDebugPanel.log("[\(deviceInfo.name)] Sending GetControlCount")
-        sendRequest(featureIndex: featureIndex, functionId: 0)
+        let status = sendRequest(featureIndex: featureIndex, functionId: 0)
+        guard !Self.isPermissionDeniedIOReturn(status) else { return }
+        scheduleControlCountTimeout()
+    }
+
+    private func scheduleControlCountTimeout() {
+        controlInfoQueryTimer?.invalidate()
+        controlInfoQueryTimer = Timer.scheduledTimer(withTimeInterval: Self.reprogQueryTimeout, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            self.controlInfoQueryTimer = nil
+            let retryCount = self.controlCountRetryCount
+            if Self.shouldRetryControlInfoTimeout(
+                connectionMode: self.connectionMode,
+                retryCount: retryCount
+            ), let idx = self.featureIndex[Self.featureReprogV4] {
+                self.controlCountRetryCount = retryCount + 1
+                LogiDebugPanel.log(
+                    "[\(self.deviceInfo.name)] GetControlCount timed out, retrying (\(retryCount + 1)/\(Self.bleControlInfoRetryLimit))"
+                )
+                self.sendGetControlCount(featureIndex: idx)
+                return
+            }
+
+            self.controlCountRetryCount = 0
+            LogiDebugPanel.log("[\(self.deviceInfo.name)] GetControlCount timed out; marking handshake complete")
+            self.markHandshakeComplete()
+            NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
+            LogiSessionManager.shared.recomputeAndNotifyActivityState()
+            self.receiverSlotDiscoveryDidFinish(didDivert: false)
+        }
     }
 
     private func sendGetControlInfo(featureIndex: UInt8, index: Int) {
         LogiDebugPanel.log("[\(deviceInfo.name)] Sending GetControlInfo(\(index))")
-        sendRequest(featureIndex: featureIndex, functionId: 1, params: [UInt8(index)])
+        let status = sendRequest(featureIndex: featureIndex, functionId: 1, params: [UInt8(index)])
+        guard !Self.isPermissionDeniedIOReturn(status) else { return }
         scheduleControlInfoTimeout(index: index)
     }
 
@@ -1394,10 +1598,12 @@ class LogiDeviceSession {
         resetForceSensingState()
         discoveredControls.removeAll()
         reprogInitComplete = false
+        reprogFeatureUnsupported = false
         handshakeComplete = false  // 允许 markHandshakeComplete 再次 post sessionChanged 以刷右侧面板
         reprogControlCount = 0
         reprogQueryIndex = 0
         reportingQueryIndex = 0
+        controlCountRetryCount = 0
         controlInfoRetryCounts.removeAll()
         releaseAllActiveButtonState(reason: "rediscover")
         lastApplied.removeAll()
@@ -1420,6 +1626,7 @@ class LogiDeviceSession {
         reportingQueryTimer?.invalidate(); reportingQueryTimer = nil
         pendingDiscovery.removeAll()
         pendingCacheValidation = nil
+        controlCountRetryCount = 0
         controlInfoRetryCounts.removeAll()
         cancelDivertReassertion()
         cancelBLEStandardUndivertGuard()
@@ -3191,6 +3398,12 @@ class LogiDeviceSession {
     }
 
     func handleInputReport(_ report: UnsafeBufferPointer<UInt8>) {
+        if needsSessionReopen {
+            LogiSessionManager.shared.noteSessionActivityWhileBlocked(self, at: LogiDeviceSession.continuousTimestamp())
+        } else if needsPostRestrictionProbe, !LogiSessionManager.shared.isKeyboardHIDAccessRestricted {
+            clearPostRestrictionProbe()
+            refreshReportingState()
+        }
         guard report.count >= 7 else { return }
         guard report[0] == Self.hidppShortReportId || report[0] == Self.hidppLongReportId else { return }
 
@@ -3280,6 +3493,16 @@ class LogiDeviceSession {
             if let reprogIdx = featureIndex[Self.featureReprogV4],
                originalFeatureIdx == reprogIdx {
                 switch originalFuncId {
+                case 0 where !reprogInitComplete:  // GetControlCount
+                    LogiDebugPanel.log("[\(deviceInfo.name)] GetControlCount returned error, marking handshake complete")
+                    controlInfoQueryTimer?.invalidate()
+                    controlInfoQueryTimer = nil
+                    controlCountRetryCount = 0
+                    reprogFeatureUnsupported = true
+                    markHandshakeComplete()
+                    NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
+                    LogiSessionManager.shared.recomputeAndNotifyActivityState()
+                    receiverSlotDiscoveryDidFinish(didDivert: false)
                 case 1 where !reprogInitComplete:  // GetControlInfo
                     LogiDebugPanel.log("[\(deviceInfo.name)] GetControlInfo[\(reprogQueryIndex)] returned error, skipping")
                     advanceControlInfoQuery()
@@ -3298,6 +3521,8 @@ class LogiDeviceSession {
             // 缓存验证: ping 响应 (function 1) 确认设备在线, 直接用缓存的 feature index
             if let reprogIdx = pendingCacheValidation, functionId == 1 {
                 pendingCacheValidation = nil
+                discoveryTimer?.invalidate()
+                discoveryTimer = nil
                 LogiDebugPanel.log("[\(deviceInfo.name)] Cache validated (protocol \(report[4]).\(report[5])), using cached index 0x\(String(format: "%02X", reprogIdx))")
                 sendGetControlCount(featureIndex: reprogIdx)
                 return
@@ -3599,11 +3824,17 @@ class LogiDeviceSession {
             discoveryTimer?.invalidate()
             discoveryTimer = nil  // 置 nil: 否则 anyDiscoveryInFlight 会因已失效但非 nil 的 timer 永远误判在飞, 毒死 pump
             pendingDiscovery.removeValue(forKey: featureId)
+            if featureId == Self.featureReprogV4 && discoveredIndex == 0 {
+                reprogFeatureUnsupported = true
+            }
             callback(discoveredIndex == 0 ? nil : discoveredIndex)
         }
     }
 
     private func handleGetControlCountResponse(_ report: UnsafeBufferPointer<UInt8>) {
+        controlInfoQueryTimer?.invalidate()
+        controlInfoQueryTimer = nil
+        controlCountRetryCount = 0
         reprogControlCount = Int(report[4])
         reprogQueryIndex = 0
         controlInfoRetryCounts.removeAll()
@@ -3613,6 +3844,7 @@ class LogiDeviceSession {
             sendGetControlInfo(featureIndex: idx, index: 0)
         } else {
             // 设备声明 0 个可编程控件: discovery 走到终点, 记为握手完成.
+            reprogFeatureUnsupported = true
             markHandshakeComplete()
             NotificationCenter.default.post(name: LogiSessionManager.reportingQueryDidCompleteNotification, object: nil)
             LogiSessionManager.shared.recomputeAndNotifyActivityState()
@@ -3649,6 +3881,11 @@ class LogiDeviceSession {
               currentReceiverTargetIsConnected,
               !discoveredControls.isEmpty,
               featureIndex[Self.featureReprogV4] != nil else { return }
+        if isSubjectToKeyboardHIDRestriction {
+            markPostRestrictionProbeNeeded()
+            LogiSessionManager.shared.scheduleRestrictionClearWatch()
+            return
+        }
         if reportingQueryTimer != nil { return }
         LogiDebugPanel.log("[\(deviceInfo.name)] Refreshing reporting state (throttled)")
         startReportingQuery()
@@ -3679,8 +3916,9 @@ class LogiDeviceSession {
         guard controlIndex < discoveredControls.count else { return }
         let cid = discoveredControls[controlIndex].cid
         // GetControlReporting: function 2, params: CID(2)
-        sendRequest(featureIndex: featureIndex, functionId: 2,
-                    params: [UInt8(cid >> 8), UInt8(cid & 0xFF)])
+        let status = sendRequest(featureIndex: featureIndex, functionId: 2,
+                                 params: [UInt8(cid >> 8), UInt8(cid & 0xFF)])
+        guard !Self.isPermissionDeniedIOReturn(status) else { return }
         scheduleReportingTimeout(index: controlIndex)
     }
 

@@ -165,6 +165,11 @@ final class LogiButtonDeliveryModeStore {
         modes = modes.filter { $0.key.name != name || $0.key.productId != productId }
         clearWindows = clearWindows.filter { $0.key.name != name || $0.key.productId != productId }
     }
+
+    func resetAll() {
+        modes.removeAll()
+        clearWindows.removeAll()
+    }
 }
 
 extension LogiTransportIdentity {
