@@ -271,4 +271,82 @@ final class ScrollDispatchContextTests: XCTestCase {
         XCTAssertEqual(snap1?.generation, snap2?.generation)
         XCTAssertEqual(snap1?.targetPID, snap2?.targetPID)
     }
+
+    // MARK: - 合成帧标记
+
+    // CoreGraphics 对 eventSourceUserData 只接受首次写入。外部工具在事件上显式写过 userData 时,
+    // 副本后续写入 Mos 标记会被静默忽略, 帧回到 Mos 的 tap 时会被当作新输入。
+    func testMarkedFrame_isRecognisedAsSynthetic_whenIncomingEventCarriesUserData() throws {
+        let foreignMarker: Int64 = 0x4F494E4B
+        let originalSender: Int64 = 0x100000888
+        let expectedFlags: CGEventFlags = [.maskCommand, .maskShift]
+        let expectedLocation = CGPoint(x: 321.5, y: 654.25)
+        let targetPID = Int64(ProcessInfo.processInfo.processIdentifier)
+
+        let source = try XCTUnwrap(CGEventSource(stateID: .hidSystemState))
+        source.userData = foreignMarker
+        let incoming = try XCTUnwrap(
+            CGEvent(scrollWheelEvent2Source: source, units: .pixel, wheelCount: 2, wheel1: 96, wheel2: 0, wheel3: 0)
+        )
+        incoming.flags = expectedFlags
+        incoming.location = expectedLocation
+        incoming.setIntegerValueField(.eventSourceUserData, value: foreignMarker)
+        incoming.setIntegerValueField(TrackpadEventField.sender, value: originalSender)
+        // preparePostingSnapshot() 要求 targetPID != 0
+        incoming.setIntegerValueField(.eventTargetUnixProcessID, value: targetPID)
+        sut.capture(event: incoming)
+
+        XCTAssertEqual(
+            incoming.getIntegerValueField(.eventSourceUserData),
+            foreignMarker,
+            "capture must not mutate the caller's incoming event"
+        )
+
+        let frame = try XCTUnwrap(sut.preparePostingSnapshot()?.event)
+        ScrollUtils.shared.markSyntheticSmoothEvent(frame)
+
+        XCTAssertTrue(
+            ScrollUtils.shared.isSyntheticSmoothEvent(frame),
+            "a frame copied from an event that carries its own user data must still be recognised as Mos's own"
+        )
+        XCTAssertEqual(frame.flags, expectedFlags)
+        XCTAssertEqual(frame.location, expectedLocation)
+        XCTAssertEqual(frame.getIntegerValueField(TrackpadEventField.sender), originalSender)
+        XCTAssertEqual(frame.getIntegerValueField(.eventTargetUnixProcessID), targetPID)
+    }
+
+    func testMarkedFrame_isRecognisedAsSynthetic_whenIncomingEventExplicitlySetsZeroUserData() throws {
+        let incoming = try XCTUnwrap(makeScrollEvent())
+        // 显式写入 0 同样会锁住 eventSourceUserData, 导致后续直接写入合成标记失效
+        incoming.setIntegerValueField(.eventSourceUserData, value: 0)
+        sut.capture(event: incoming)
+
+        let frame = try XCTUnwrap(sut.preparePostingSnapshot()?.event)
+        ScrollUtils.shared.markSyntheticSmoothEvent(frame)
+
+        XCTAssertTrue(
+            ScrollUtils.shared.isSyntheticSmoothEvent(frame),
+            "a frame copied from an event with an explicit zero user data must still be recognised as Mos's own"
+        )
+    }
+
+    func testCapture_preservesSourceIdentityAndSender_forOrdinaryWheelEvent() throws {
+        let incoming = try XCTUnwrap(makeScrollEvent())
+        let originalSourcePID: Int64 = 4242
+        let originalSender: Int64 = 0x100000999
+        incoming.setIntegerValueField(.eventSourceUnixProcessID, value: originalSourcePID)
+        incoming.setIntegerValueField(TrackpadEventField.sender, value: originalSender)
+        sut.capture(event: incoming)
+
+        let frame = try XCTUnwrap(sut.preparePostingSnapshot()?.event)
+        ScrollUtils.shared.markSyntheticSmoothEvent(frame)
+
+        XCTAssertTrue(ScrollUtils.shared.isSyntheticSmoothEvent(frame))
+        XCTAssertEqual(
+            frame.getIntegerValueField(.eventSourceUnixProcessID),
+            originalSourcePID,
+            "ordinary wheel events should not replace their CGEventSource"
+        )
+        XCTAssertEqual(frame.getIntegerValueField(TrackpadEventField.sender), originalSender)
+    }
 }

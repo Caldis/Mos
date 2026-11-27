@@ -82,6 +82,10 @@ final class ScrollDispatchContext {
 #endif
             return false
         }
+        // 进程路由从模板复制出平滑帧并经 CGEventPostToPid 投递, 先确保模板带上合成标记
+        if case .process = route {
+            ScrollUtils.shared.adoptSyntheticSmoothTemplate(template)
+        }
         // session 层事件的目标 pid 为前台应用, 适配器路由由调用方传入
         let pid = targetPID ?? pid_t(event.getIntegerValueField(.eventTargetUnixProcessID))
         os_unfair_lock_lock(&lock)
