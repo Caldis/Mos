@@ -13,7 +13,19 @@ class ScrollUtils {
     // 单例
     static let shared = ScrollUtils()
     init() { NSLog("Module initialized: ScrollUtils") }
-    private let syntheticSmoothEventMarker: Int64 = 0x4D4F53534D4F4F54
+    private static let syntheticSmoothEventMarker: Int64 = 0x4D4F53534D4F4F54
+    /// 仅在外来事件自身已写过 eventSourceUserData 导致无法覆写时, 替换模板的事件源。
+    /// 关闭本地事件抑制, 避免投递平滑帧时触发系统默认的 0.25s 本地键鼠抑制。
+    private static let syntheticSmoothEventSource: CGEventSource? = {
+        let source = CGEventSource(stateID: .hidSystemState)
+        source?.userData = ScrollUtils.syntheticSmoothEventMarker
+        source?.localEventsSuppressionInterval = 0.0
+        source?.setLocalEventsFilterDuringSuppressionState(
+            [.permitLocalMouseEvents, .permitLocalKeyboardEvents, .permitSystemDefinedEvents],
+            state: .eventSuppressionStateSuppressionInterval
+        )
+        return source
+    }()
     
     // 判断事件目标是否变化
     var previousScrollTargetProcessID = 0.0 // 用于在鼠标移动到不同窗口时停止滚动
@@ -27,11 +39,29 @@ class ScrollUtils {
     }
     
     func markSyntheticSmoothEvent(_ event: CGEvent) {
-        event.setIntegerValueField(.eventSourceUserData, value: syntheticSmoothEventMarker)
+        event.setIntegerValueField(.eventSourceUserData, value: Self.syntheticSmoothEventMarker)
     }
 
     func isSyntheticSmoothEvent(_ event: CGEvent) -> Bool {
-        return event.getIntegerValueField(.eventSourceUserData) == syntheticSmoothEventMarker
+        return event.getIntegerValueField(.eventSourceUserData) == Self.syntheticSmoothEventMarker
+    }
+
+    /// 为平滑模板写入合成标记, 使之后从模板复制出的帧都携带 Mos 标记。
+    /// CoreGraphics 对 eventSourceUserData 只接受首次写入 (包含显式写入 0); 若外部工具已在事件上写过该字段,
+    /// 直接覆写会被静默忽略, 平滑帧回到 Mos 的 tap 时会被当作新输入。
+    /// 优先直接写入以保持物理滚轮事件源及硬件字段不变; 仅在写不进去时才换源并保留原有 sender。
+    func adoptSyntheticSmoothTemplate(_ event: CGEvent) {
+        markSyntheticSmoothEvent(event)
+        if isSyntheticSmoothEvent(event) {
+            return
+        }
+        guard let source = Self.syntheticSmoothEventSource else { return }
+        let sender = event.getIntegerValueField(TrackpadEventField.sender)
+        event.setSource(source)
+        if sender != 0 {
+            event.setIntegerValueField(TrackpadEventField.sender, value: sender)
+        }
+        markSyntheticSmoothEvent(event)
     }
     
     // 从 CGEvent 中携带的 PID 获取应用信息
